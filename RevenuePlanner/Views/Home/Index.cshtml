@@ -2283,6 +2283,9 @@
                       var cnt = 0;
                       $("#accordion-element-improvement-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                           var taskid = $(this).attr('taskid');
+                          //#840 : Undefined error on home when all BU and all Plans are selected : Kalpesh Sharma
+                          //Check that task is exists or not before we render it.
+                          if (gantt.isTaskExists(taskid)) {
                           if (typeof gantt.getTask(taskid) != 'undefined') {
                               var taskVisible = gantt.getTask(taskid).$open;     // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                               if (CampaignID == '') {
@@ -2296,6 +2299,7 @@
                                       cnt = cnt + 1;
                                   }
                               }
+                          }
                           }
                       });
 
@@ -2311,6 +2315,10 @@
                       $("#accordion-element-improvement-" + tid).find('a[class^="accordion-inner"]').each(function () {
                           var taskPrefix = leftNavTaskID.substring(0, leftNavTaskID.indexOf('_')) + '_';
                           var taskid = taskPrefix + $(this).attr('taskid');
+
+                          //#840 : Undefined error on home when all BU and all Plans are selected : Kalpesh Sharma
+                          //Check that task is exists or not before we render it.
+                          if (gantt.isTaskExists(taskid)) {
                           var task = gantt.getTask(taskid);
                           if (typeof task != 'undefined') {
                               var taskVisible = gantt.getTask(taskid).$open;     // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
@@ -2326,6 +2334,7 @@
                                   }
                               }
                           }
+                          }
                       });
                       if ($("#" + this.id).text() != '' && leftNavTaskID.indexOf("_I") > 0) {
                           updateCountOnExpand($("#" + this.id), cnt);
@@ -2338,6 +2347,9 @@
                       cnt = 0;
                       $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index1) {
                           var taskid = $(this).attr('taskid');
+                          //#840 : Undefined error on home when all BU and all Plans are selected : Kalpesh Sharma
+                          //Check that task is exists or not before we render it.
+                          if (gantt.isTaskExists(taskid)) {
                           var taskVisible = gantt.getTask(taskid).$open; // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                           if (CampaignID == '') {
                               if (taskid == leftNavTaskID && (typeof taskVisible != 'undefined') && taskVisible == true) { // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
@@ -2349,6 +2361,7 @@
                                   (typeof taskVisible != 'undefined') && taskVisible == true) { // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                                   cnt = cnt + 1;
                               }
+                          }
                           }
                       });
 
