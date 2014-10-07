@@ -337,6 +337,7 @@
     <Content Include="Content\images\bullhorn-flag-white.png" />
     <Content Include="Content\images\busunit.png" />
     <Content Include="Content\images\button-arrow.png" />
+    <Content Include="Content\images\chat-button.png" />
     <Content Include="Content\images\check-green.png" />
     <Content Include="Content\images\check-red.png" />
     <Content Include="Content\images\check_signup.png" />

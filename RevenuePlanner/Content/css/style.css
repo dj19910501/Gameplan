@@ -4982,11 +4982,11 @@ span.red-arrow-down-icon {
 
 .chat-div {
     border-top: 5px solid #ccc;
-    height: 150px;
+    height: 285px;
     border: 1px solid #ccc;
     padding-left: 7px;
     padding-top: 7px;
-    border-top-width: 3px;
+    border-top-width: 1px;
     margin-top: 19px;
     box-shadow: 0px -4px 3px #ccc;
     box-shadow: 0px -4px 3px #ccc;
@@ -5002,12 +5002,15 @@ span.red-arrow-down-icon {
 
 .new-comment {
     resize: vertical;
-    width: 87%;
+    width: 82%;
+    height: 40px;
 }
 
 .new-comment-buttom {
-    margin-left: 40px;
-    height: 25px !important;
+    /*margin-left: 5px;
+    height: 40px !important;*/
+    float: right;
+    /*width: 9% !important;*/
 }
 
 .shareTactic-buttom {
@@ -8628,7 +8631,7 @@ li.close-list{background-color:#cccccc !important;}
 }
 
 .comment-icon {
-    background: url("../images/comment_icon.png") no-repeat 0 0;
+    background: url("../images/chat-button.png") no-repeat 0 0;
     display: block;
     width: 30px;
     height: 30px;
@@ -8637,4 +8640,32 @@ li.close-list{background-color:#cccccc !important;}
 
 .remove-bottom-border {
     border-bottom: none !important;
+}
+.sub-head {
+    color:#6d6d6d;
+    font-size:13px;
+    padding-top:6px;
+    padding-bottom:10px;
+}
+.review-box {
+    border:1px solid #c6c6c6 !important;
+    margin-right:25px !important;
+}
+.review-box span {
+    color:#4d4d4d !important;
+    }
+.review-box-last {
+    margin-right:0 !important;
+}
+
+.margin-top23 {
+    margin-top: 23px !important;
+}
+.right-col-tab {
+    padding-left:15px;
+    width:56% !important;
+}
+
+.comment-scroll-section {
+max-height:350px;
 }
