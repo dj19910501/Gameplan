@@ -2754,6 +2754,7 @@ namespace RevenuePlanner.Controllers
                 Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = null;
                 Plan_Campaign_Program objPlan_Campaign_Program = null;
                 Plan_Campaign objPlan_Campaign = null;
+                Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
                 int planId = 0;
 
                 if (Convert.ToString(section) != "")
@@ -2775,7 +2776,8 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
-                        planId = Sessions.PlanId;
+                        objPlan_Improvement_Campaign_Program_Tactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(picpobjw => picpobjw.ImprovementPlanTacticId.Equals(id)).FirstOrDefault();
+                        planId = db.Plan_Improvement_Campaign.Where(picobjw => picobjw.ImprovementPlanCampaignId.Equals(db.Plan_Improvement_Campaign_Program.Where(picpobjw => picpobjw.ImprovementPlanProgramId.Equals(objPlan_Improvement_Campaign_Program_Tactic.ImprovementPlanProgramId)).Select(r => r.ImprovementPlanCampaignId).FirstOrDefault())).Select(r => r.ImprovePlanId).FirstOrDefault();
                     }
                 }
 
