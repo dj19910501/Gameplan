@@ -131,7 +131,7 @@
                         planLineItemIds = planLineItemIds.Remove(planLineItemIds.Length - 1, 1);
                     }
                     <tr class="height42">
-                        <th class="font3F3F3F actual-popup-tile">ROI</th>
+                        <th class="font3F3F3F actual-popup-tile table-head">ROI</th>
                         <th class="border-r font3F3F3F"></th>
                         <th class="font3F3F3F"></th>
                         <th class="border-r font3F3F3F"></th>
@@ -298,8 +298,8 @@
                 error: function () {
                     $("#errorMessage").css("display", "block");
                     /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                    var topsize = $(document).scrollTop() + 41;
-                    $("#modal-container-186470").css("top", topsize + "px");
+                    //var topsize = $(document).scrollTop() + 41;
+                    //$("#modal-container-186470").css("top", topsize + "px");
                     $("#spanMessageError").empty();
                     GoToLogin();
                     return false;
@@ -671,8 +671,8 @@
             if (isError) {
                 $("#errorMessage").css("display", "block");
                 /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                var topsize = $(document).scrollTop() + 41;
-                $("#modal-container-186470").css("top", topsize + "px");
+                //var topsize = $(document).scrollTop() + 41;
+                //$("#modal-container-186470").css("top", topsize + "px");
                 $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
                 return false;
             }
@@ -681,8 +681,8 @@
                 var msgdisplay = msg.replace('{0}', FormatCommas(totalMQLActual.toString())).replace('{1}', '@ViewBag.TacticStageTitle').replace('{3}', '@ViewBag.TacticStageTitle').replace('{2}', FormatCommas(totalProjectedStageValueActual.toString())).replace(/{4\}/g, '@MQlTitle');
                 $("#spanMessageError").text(msgdisplay);
                 $("#errorMessage").css("display", "block");
-                var topsize = $(document).scrollTop() + 41;
-                $("#modal-container-186470").css("top", topsize + "px");
+               // var topsize = $(document).scrollTop() + 41;
+               // $("#modal-container-186470").css("top", topsize + "px");
                 return false;
             }
             if (!isData) {
@@ -713,8 +713,8 @@
                     if (data != 'undefined') {
                         if (data.id != 0) {
                             $("#successMessage").css("display", "block");
-                            var topsize = $(document).scrollTop() + 41;
-                            $("#modal-container-186470").css("top", topsize + "px");
+                           // var topsize = $(document).scrollTop() + 41;
+                          //  $("#modal-container-186470").css("top", topsize + "px");
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
                             loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);
@@ -729,8 +729,8 @@
                 error: function () {
                     $("#errorMessage").css("display", "block");
                     /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                    var topsize = $(document).scrollTop() + 41;
-                    $("#modal-container-186470").css("top", topsize + "px");
+                   // var topsize = $(document).scrollTop() + 41;
+                    //$("#modal-container-186470").css("top", topsize + "px");
                     $("#spanMessageError").empty();
                     GoToLogin();
                     return false;
