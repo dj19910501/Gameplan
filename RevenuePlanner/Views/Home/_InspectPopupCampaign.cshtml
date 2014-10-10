@@ -13,7 +13,7 @@
 @Html.Hidden("hdnCampaignStatus", campaignMaster.Status, new { id = "hdnCampaignStatus" })
 <div class="modal-popup-title">
     <span class="icon-flag bg-purple" style="background-color:#@campaignMaster.ColorCode !important;"></span>
-    <h2 class="title-simple source-sans-prolight"><span class="tipsyclassTitle">@Html.Raw(campaignMaster.CampaignTitle)</span>
+    <h2 class="title-simple source-sans-prolight"><span class="tipsyclassTitle" title="@Html.Raw(campaignMaster.CampaignTitle)">@Html.Raw(campaignMaster.CampaignTitle)</span>
     @if (IsPlanEditable)
     {
             @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0, tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large" })
@@ -105,8 +105,6 @@
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-              var topsize = $(document).scrollTop();
-              $("#modal-container-186470").css("top", topsize + "px");/*end changes*/
               var tabtext = ($(this).children('a').text());
               var planTacticId = $("#hdnPlanTacticId").val();
               loadReview(planCampaignId, tabtext);
@@ -119,8 +117,6 @@
               e.preventDefault();
               $(this).closest(".alert").css("display", "none");
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-              var topsize = $(document).scrollTop();
-              $("#modal-container-186470").css("top", topsize + "px");
           });
 
       });

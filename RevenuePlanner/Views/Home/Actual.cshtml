@@ -223,14 +223,12 @@
                 <label id="last-updated" class="pull-left last-updated" style="Width:45%;">@ViewBag.UpdatedBy</label>
                 <label id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
-            <div class="btn-group dropup  border-top-div" style="width:100%;">
-                @* <button class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>*@
                 @if (IsTacticEditable)
                 {
-                <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left;" type="button">Update Actuals</button>
+                    <div class="btn-group dropup  border-top-div" style="width:100%;">
+                        <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left;" type="button">Update Actuals</button>
+                    </div>
                 }
-        </div>
-       
     </div>
 </div>
 <!--end content-panel-tab-->

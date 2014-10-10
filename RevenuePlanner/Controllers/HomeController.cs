@@ -3534,7 +3534,14 @@ namespace RevenuePlanner.Controllers
             //var IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);    // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             if (lstAllowedGeography.Contains(tid.FirstOrDefault().GeographyId.ToString().ToLower()) && lstAllowedVertical.Contains(tid.FirstOrDefault().VerticalId.ToString()) && lstAllowedBusinessUnit.Contains(tid.FirstOrDefault().BusinessUnitId.ToString().ToLower()))//&& IsBusinessUnitEditable)   // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             {
-                ViewBag.IsTacticEditable = true;
+                if (Common.CheckAfterApprovedStatus(im.Status))
+                {
+                    ViewBag.IsTacticEditable = true;
+                }
+                else
+                {
+                    ViewBag.IsTacticEditable = false;
+                }
             }
             else
             {

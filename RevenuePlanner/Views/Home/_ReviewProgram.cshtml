@@ -400,16 +400,12 @@
                           }
                           /*End : Added by Mitesh Vaishnav for PL ticket #690 */
                           $("#successMessage").css("display", "block");
-                          var topsize = $(document).scrollTop() + 41;
-                          $("#modal-container-186470").css("top", topsize + "px");
                           $("#spanMessageSuccess").empty();
                           $("#spanMessageSuccess").text(data.msg);
                       }
                   },
                   error: function () {
                       $("#errorMessage").css("display", "block");
-                      var topsize = $(document).scrollTop() + 41;
-                      $("#modal-container-186470").css("top", topsize + "px");
                       $("#spanMessageError").empty();
                       GoToLogin();
                       return false;
@@ -430,14 +426,10 @@
               $("#successMessage").css("display", "none");
               $("#errorMessage").css("display", "none");
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-              var topsize = $(document).scrollTop();
-              $("#modal-container-186470").css("top", topsize + "px");
               var commentText = $('#txtAreaComment').val();
               if (commentText == '') {
                   var msgspan = "@Common.objCached.ValidateForEmptyFieldAndValid";
                   $("#errorMessage").css("display", "block");
-                  var topsize = $(document).scrollTop() + 41;
-                  $("#modal-container-186470").css("top", topsize + "px");
 
                   $("#txtAreaComment").addClass("error");
                   $("#spanMessageError").text(msgspan);
@@ -471,8 +463,6 @@
                       if (data != 'undefined') {
                           if (data.id != 0) {
                               $("#successMessage").css("display", "block");
-                              var topsize = $(document).scrollTop() + 41;
-                              $("#modal-container-186470").css("top", topsize + "px");
 
                               $("#spanMessageSuccess").empty();
                               $("#spanMessageSuccess").text(data.msg);
@@ -480,8 +470,6 @@
                           }
                           else {
                               $("#errorMessage").css("display", "block");
-                              var topsize = $(document).scrollTop() + 41;
-                              $("#modal-container-186470").css("top", topsize + "px");
 
                               $("#spanMessageError").empty();
                               $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
@@ -490,8 +478,6 @@
                   },
                   error: function () {
                       $("#errorMessage").css("display", "block");
-                      var topsize = $(document).scrollTop() + 41;
-                      $("#modal-container-186470").css("top", topsize + "px");
 
                       $("#spanMessageError").empty();
                       GoToLogin();
@@ -504,8 +490,6 @@
           $("#btnApproved").click(function () {
               $("#successMessage").css("display", "none");
               $("#errorMessage").css("display", "none");
-              var topsize = $(document).scrollTop();
-              $("#modal-container-186470").css("top", topsize + "px");
               statusValue = $("#hdnStatusValue").val();
               var PlanTacticId = $('#hdnPlanProgramId').val();
               var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
@@ -530,8 +514,6 @@
                       if (data != 'undefined') {
                           if (data.id != 0) {
                               $("#successMessage").css("display", "block");
-                              var topsize = $(document).scrollTop() + 41;
-                              $("#modal-container-186470").css("top", topsize + "px");
 
                               $("#spanMessageSuccess").empty();
                               $("#spanMessageSuccess").text(data.msg);
@@ -539,9 +521,6 @@
                           }
                           else {
                               $("#errorMessage").css("display", "block");
-                              var topsize = $(document).scrollTop() + 41;
-                              $("#modal-container-186470").css("top", topsize + "px");
-
                               $("#spanMessageError").empty();
                               $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                           }
@@ -552,9 +531,6 @@
                   },
                   error: function () {
                       $("#errorMessage").css("display", "block");
-                      var topsize = $(document).scrollTop() + 41;
-                      $("#modal-container-186470").css("top", topsize + "px");
-
                       $("#spanMessageError").empty();
                       GoToLogin();
                       return false;

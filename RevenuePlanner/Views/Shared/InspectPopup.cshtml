@@ -15,7 +15,7 @@
 <div class="modal-popup-title">
     <span class="icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
     <h2 class="title-simple source-sans-prolight">
-        <span class="tipsyclassTitle">@Html.Raw(tacticMaster.TacticTitle)</span>
+        <span class="tipsyclassTitle" title="@Html.Raw(tacticMaster.TacticTitle)">@Html.Raw(tacticMaster.TacticTitle)</span>
     @if (IsPlanEditable)
     {
         @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = tacticMaster.PlanCampaignId, programId = tacticMaster.PlanProgramId, tacticId = tacticMaster.PlanTacticId, EditObject = "Tactic", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large"})   
@@ -122,8 +122,6 @@
                   $("#errorMessage").css("display", "none");
                   $("#successMessage").css("display", "none");
                   /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                  var topsize = $(document).scrollTop();
-                  $("#modal-container-186470").css("top", topsize + "px");
                   var tabtext = ($(this).children('a').text());
                   var planTacticId = $("#hdnPlanTacticId").val();
                   loadReview(planTacticId, tabtext);
@@ -136,16 +134,12 @@
               e.preventDefault();
               $(this).closest(".alert").css("display", "none");
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-              var topsize = $(document).scrollTop();
-              $("#modal-container-186470").css("top", topsize + "px");
           });
 
           //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
           $(document).on("click", "#confirmClose", function (e) {
               $('#spanMessageError').html("");
               $("#errorMessage").hide();
-              var topsize = $(document).scrollTop();
-              $("#modal-container-186470").css("top", topsize + "px");
           });
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
@@ -158,8 +152,6 @@
         $("#errorMessage").css("display", "none");
         $("#successMessage").css("display", "none");
         /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-        var topsize = $(document).scrollTop();
-        $("#modal-container-186470").css("top", topsize + "px");
         var tabtext = ($("#li" + tabText).children('a').text());
         var planTacticId = $("#hdnPlanTacticId").val();
         loadReview(planTacticId, tabtext);
@@ -219,8 +211,6 @@
         if (isDataChanged()) {
             $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
             $("#errorMessage").css("display", "block");
-            var topsize = $(document).scrollTop() + 41;
-            $("#modal-container-186470").css("top", topsize + "px");
             $("#btnConfirmOK").click(function () {
                 //alert(id);
                 $('#spanMessageError').html("");
@@ -237,8 +227,6 @@
         if (isDataChanged()) {
             $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
             $("#errorMessage").css("display", "block");
-            var topsize = $(document).scrollTop() + 41;
-            $("#modal-container-186470").css("top", topsize + "px");
             $("#btnConfirmOK").click(function () {
                 //alert(id);
                 $('#spanMessageError').html("");
