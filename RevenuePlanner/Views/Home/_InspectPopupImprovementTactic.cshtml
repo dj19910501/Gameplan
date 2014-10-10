@@ -12,7 +12,7 @@
 @Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
 <div class="modal-popup-title">
-    <span class="boost-icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
+    <span class="boost-icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important; margin-left:0px !important;"></span>
     <h2 class="title-simple source-sans-prolight"><span class="tipsyclassTitle">@Html.Raw(tacticMaster.TacticTitle)</span>
     @if (IsPlanEditable)
     {
@@ -53,15 +53,7 @@
                  <span id="status" class="source-sans-prosemibold statuscreated"> @tacticMaster.Status</span>
             }
                                                .</p>
-
-        <div class="nl-overlay"></div>
-
     </div>
-    <!--To call js for forms animations-->
-    <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
-    <script>
-        var nlform2 = new NLForm(document.getElementById('nl-form'));
-    </script>
 </div>
 
 <div>
@@ -77,27 +69,7 @@
             <a>Impact</a>
         </li>
          <li class="pull-right">
-              <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
-           @* <p class="status-option-title hide" style="display: block;">Status: </p>*@
-           @*    added by uday for PL #509*@
-            @*@if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
-            {
-                <span class="status-option statussubmitted">@tacticMaster.Status</span>
-            }
-            else if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value)
-            {
-                <span class="status-option statusrejected">@tacticMaster.Status</span>
-            }
-            else if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value ||
-                     tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value ||
-                     tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value)
-            {
-                <span class="status-option statusapproved">@tacticMaster.Status</span>
-            }
-            else if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
-            {
-                <span class="status-option statuscreated">@tacticMaster.Status</span>
-            }*@
+              <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>          
         </li>
     </ul>
     <div id="divTab">
@@ -128,7 +100,7 @@
           loadReview(planTacticId, tabtext);
 
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $(".pull-left").on("click", function () {
+          $("#InspectTab li").on("click", function () {
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");

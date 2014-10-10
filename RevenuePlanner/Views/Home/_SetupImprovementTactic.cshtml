@@ -8,17 +8,16 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanTacticId)
-                                       
+                 <div class="inspect-column-parent source-sans-proregular remove-bottom-border">                      
     <div class="span6" id="inspect-modal-left-column1">
         <p>Parent Campaign</p>
             @Html.TextBox("txtCampaign",HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
      @*   <p>Parent Program</p>
             @Html.TextBox("txtProgram", tactic.ProgramTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.ProgramTitle })*@
         <p>Description</p>
-            @Html.TextArea("txtDescription",HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;height:93px;", @readonly = "true" })
-        <p style="width:110%;">Deployed to Integration</p>
-            @Html.TextBox("txtDeployStatus",deployStatus,new {@class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true"})
-        <div style="clear: both; width: 250%;">
+            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;height:93px;", @readonly = "true" })
+        
+        <div style="clear: both; width: 100%;">
             <label style="color: #808080">This improvement tactics boosts @ViewBag.NoOfTacticBoosts activities.</label> 
             <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
         </div>
@@ -28,12 +27,16 @@
         @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
         <p>Effective Date</p>
             @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDate", @readonly = "true" })
+        <p>Deployed to Integration</p>
+            @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
+    </div>
+    <div class="span3" id="inspect-modal-left-column3">
         <p>Business Unit</p>
         @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
         <p>Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
-    </div>
-                                        
+        </div>
+              </div>                          
     <span class="flag-icon"></span>
 }
 
@@ -43,5 +46,12 @@
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $('#txtDate').val($('#txtDate').val().split(" ")[0].toString());
+
+          $('form').find(".sbSelector").each(function () {
+              $(this).unbind("click");
+              $(this).removeAttr("href");
+              $(this).prev().unbind("click");
+              $(this).prev().removeAttr("href");
+          });
       });
 </script>

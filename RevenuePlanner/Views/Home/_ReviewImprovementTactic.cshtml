@@ -9,7 +9,7 @@
         IntegrationStatus = "No";
     }
 }
-<div class="span5 width360" id="inspect-modal-right-div">
+<div class="span5 width360" id="inspect-modal-right-div" style="width: 420px !important;">
     @*<div class="font-size18">Overview</div>*@
     <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
         <div style="float: left; width: 48%;">
@@ -198,6 +198,50 @@
             }
         }
 
+        if (IsDeployToIntegrationVisible)
+        {
+            if ((bool)ViewBag.IsModelDeploy)
+            {
+        <div class="margin-top23 margin-right10" style="float: left;">
+            <div id="btn_sync_status" class="btn-group dropup">
+                <button id="btnSync" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
+                    <span class="flag-icon sync-icon-dropdown"></span>
+                    <span id="spanSyncStatus">
+                        @if (tacticReview.IsDeployedToIntegration)
+                        {
+                            @Html.Raw("Sync")
+                        }
+                        else
+                        {
+                            @Html.Raw("Don't Sync") 
+                        }
+
+                    </span>
+                </button>
+                @if (tacticReview.IsDeployedToIntegration)
+                {
+                    @Html.Hidden("hdnSyncStatusValue", "Sync", new { id = "hdnSyncStatusValue" });
+                }
+                else
+                {
+                    @Html.Hidden("hdnSyncStatusValue", "Don't Sync", new { id = "hdnSyncStatusValue" });
+                }
+                <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
+                    <span class="caret "></span>
+                </button>
+                <ul class="dropdown-menu " id="uldivSync">
+                    <li>
+                        <a id="aSync">Sync</a>
+                    </li>
+                    <li>
+                        <a id="aNotSync">Don't Sync</a>
+                    </li>
+                </ul>
+            </div>
+        </div> 
+            }
+        }
+
         if (isVisibleStatus)
         {
             int len = aryStatus.Count;
@@ -240,50 +284,6 @@
 
             </div>
 
-        </div> 
-            }
-        }
-
-        if (IsDeployToIntegrationVisible)
-        {
-            if ((bool)ViewBag.IsModelDeploy)
-            {
-        <div class="margin-top23" style="float: left;">
-            <div id="btn_sync_status" class="btn-group dropup">
-                <button id="btnSync" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
-                    <span class="flag-icon sync-icon-dropdown"></span>
-                    <span id="spanSyncStatus">
-                        @if (tacticReview.IsDeployedToIntegration)
-                        {
-                            @Html.Raw("Sync")
-                        }
-                        else
-                        {
-                            @Html.Raw("Don't Sync") 
-                        }
-
-                    </span>
-                </button>
-                @if (tacticReview.IsDeployedToIntegration)
-                {
-                    @Html.Hidden("hdnSyncStatusValue", "Sync", new { id = "hdnSyncStatusValue" });
-                }
-                else
-                {
-                    @Html.Hidden("hdnSyncStatusValue", "Don't Sync", new { id = "hdnSyncStatusValue" });
-                }
-                <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
-                    <span class="caret "></span>
-                </button>
-                <ul class="dropdown-menu " id="uldivSync">
-                    <li>
-                        <a id="aSync">Sync</a>
-                    </li>
-                    <li>
-                        <a id="aNotSync">Don't Sync</a>
-                    </li>
-                </ul>
-            </div>
         </div> 
             }
         }

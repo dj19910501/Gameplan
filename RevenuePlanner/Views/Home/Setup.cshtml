@@ -52,7 +52,7 @@
             @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
         </div>
         
-         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(0, Enums.EntityType.Tactic.ToString(),2)
+         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(tactic.PlanTacticId, Enums.EntityType.Tactic.ToString(),2)
     </div>
    
                                         
@@ -67,5 +67,13 @@
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point to add title tooltip 2-7-2014
           $(".selectBox select").selectbox();
+
+          $('form').find(".sbSelector").each(function () {
+              $(this).unbind("click");
+              $(this).removeAttr("href");
+              $(this).prev().unbind("click");
+              $(this).prev().removeAttr("href");
+          });
+
       });
 </script>

@@ -50,16 +50,9 @@
             {
                  <span id="status" class="source-sans-prosemibold statuscreated">@programMaster.Status</span>
             }
-                                               .</p>
-
-        <div class="nl-overlay"></div>
-
+            .
+        </p>
     </div>
-    <!--To call js for forms animations-->
-    <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
-    <script>
-        var nlform2 = new NLForm(document.getElementById('nl-form'));
-    </script>
 </div>
 
 <div>
@@ -71,28 +64,8 @@
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
-      <li class="pull-right">
-          <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
-            @*<p class="status-option-title hide" style="display: block;">Status: </p>*@
-             @*    added by uday for PL #509*@
-            @*@if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
-            {
-                <span class="status-option statussubmitted">@programMaster.Status</span>
-            }
-            else if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value)
-            {
-                <span class="status-option statusrejected">@programMaster.Status</span>
-            }
-            else if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value ||
-                     programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value ||
-                     programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value)
-            {
-                <span class="status-option statusapproved">@programMaster.Status</span>
-            }
-            else if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
-            {
-                <span class="status-option statuscreated">@programMaster.Status</span>
-            }*@
+        <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
         </li>
     </ul>
     <div id="divTab">
@@ -123,7 +96,7 @@
           loadReview(planProgramId, tabtext);
 
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $(".pull-left").on("click", function () {
+          $("#InspectTab li").on("click", function () {
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");

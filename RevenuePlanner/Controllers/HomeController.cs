@@ -2748,7 +2748,38 @@ namespace RevenuePlanner.Controllers
                 // Get current user permission for edit own and subordinates plans.
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
+
+                //// Added by Pratik Chauhan for functional review points
+
+                Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = null;
+                Plan_Campaign_Program objPlan_Campaign_Program = null;
+                Plan_Campaign objPlan_Campaign = null;
+                int planId = 0;
+
+                if (Convert.ToString(section) != "")
+                {
+                    if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
+                    {
+                        objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
+                        planId = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(objPlan_Campaign_Program_Tactic.PlanProgramId)).Select(r => r.PlanCampaignId).FirstOrDefault())).Select(r => r.PlanId).FirstOrDefault();
+                    }
+                    else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
+                    {
+                        objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
+                        planId = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(objPlan_Campaign_Program.PlanCampaignId)).Select(r => r.PlanId).FirstOrDefault();
+                    }
+                    else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
+                    {
+                        objPlan_Campaign = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
+                        planId = objPlan_Campaign.PlanId;
+                    }
+                    else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    {
+                        planId = Sessions.PlanId;
+                    }
+                }
+
+                var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == planId);
                 bool IsPlanEditable = false;
                 bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 if (IsBusinessUnitEditable)
@@ -2776,7 +2807,7 @@ namespace RevenuePlanner.Controllers
                     string GeographyId = string.Empty;
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
-                        Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).SingleOrDefault();
+                        //Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).SingleOrDefault();
                         verticalId = objPlan_Campaign_Program_Tactic.VerticalId.ToString();
                         GeographyId = objPlan_Campaign_Program_Tactic.GeographyId.ToString();
                         DateTime todaydate = DateTime.Now;
@@ -2797,8 +2828,8 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
-                        Plan_Campaign_Program objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).SingleOrDefault();
-                        verticalId = objPlan_Campaign_Program.VerticalId == null ? string.Empty : objPlan_Campaign_Program.VerticalId.ToString();
+                        //Plan_Campaign_Program objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).SingleOrDefault();
+                        //verticalId = objPlan_Campaign_Program.VerticalId == null ? string.Empty : objPlan_Campaign_Program.VerticalId.ToString();
                         GeographyId = objPlan_Campaign_Program.GeographyId == null ? string.Empty : objPlan_Campaign_Program.GeographyId.ToString();
                         DateTime todaydate = DateTime.Now;
                         if (Common.CheckAfterApprovedStatus(objPlan_Campaign_Program.Status))
@@ -2818,8 +2849,8 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
-                        Plan_Campaign objPlan_Campaign = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).SingleOrDefault();
-                        verticalId = objPlan_Campaign.VerticalId == null ? string.Empty : objPlan_Campaign.VerticalId.ToString();
+                        //Plan_Campaign objPlan_Campaign = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).SingleOrDefault();
+                        //verticalId = objPlan_Campaign.VerticalId == null ? string.Empty : objPlan_Campaign.VerticalId.ToString();
                         GeographyId = objPlan_Campaign.GeographyId == null ? string.Empty : objPlan_Campaign.GeographyId.ToString();
                         DateTime todaydate = DateTime.Now;
                         if (Common.CheckAfterApprovedStatus(objPlan_Campaign.Status))
@@ -3226,9 +3257,11 @@ namespace RevenuePlanner.Controllers
 
                     if (isStatusChange)     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                     {
-                        int cntSumbitTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
-                        int cntApproveTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
-                        int cntDeclineTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
+                        var tacticobjList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false).ToList();
+                        int cntSumbitTacticStatus = tacticobjList.Where(pcpt => !pcpt.Status.Equals(statussubmit)).Count();
+                        int cntApproveTacticStatus = tacticobjList.Where(pcpt => (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
+                        int cntDeclineTacticStatus = tacticobjList.Where(pcpt => !pcpt.Status.Equals(statusdecline)).Count();
+
                         if (cntSumbitTacticStatus == 0)
                         {
                             objPlan_Campaign_Program.Status = statussubmit;
@@ -3277,18 +3310,19 @@ namespace RevenuePlanner.Controllers
 
                     if (isStatusChange)     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                     {
+                        var planCampaignProgramObj = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false).ToList();
                         // Number of program with status is not 'Submitted' 
-                        int cntSumbitProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
+                        int cntSumbitProgramStatus = planCampaignProgramObj.Where(pcpt => !pcpt.Status.Equals(statussubmit)).Count();
                         // Number of tactic with status is not 'Submitted'
                         int cntSumbitTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
 
                         // Number of program with status is not 'Approved', 'in-progress', 'complete'
-                        int cntApproveProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
+                        int cntApproveProgramStatus = planCampaignProgramObj.Where(pcpt => (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
                         // Number of tactic with status is not 'Approved', 'in-progress', 'complete'
                         int cntApproveTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
 
                         // Number of program with status is not 'Declained'
-                        int cntDeclineProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
+                        int cntDeclineProgramStatus = planCampaignProgramObj.Where(pcpt => !pcpt.Status.Equals(statusdecline)).Count();
                         // Number of tactic with status is not 'Declained'
                         int cntDeclineTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
 
@@ -4309,13 +4343,16 @@ namespace RevenuePlanner.Controllers
             // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
-            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-            bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+
+
             //Get all subordinates of current user upto n level
             var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             bool IsProgramEditable = false;
             if (IsBusinessUnitEditable)
             {
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+
                 if (im.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     IsProgramEditable = true;

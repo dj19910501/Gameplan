@@ -59,5 +59,12 @@
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $(".selectBox select").selectbox();
+
+          $('form').find(".sbSelector").each(function () {
+              $(this).unbind("click");
+              $(this).removeAttr("href");
+              $(this).prev().unbind("click");
+              $(this).prev().removeAttr("href");
+          });
       });
 </script>

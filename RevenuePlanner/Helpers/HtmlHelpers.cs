@@ -3749,7 +3749,7 @@ namespace RevenuePlanner.Helpers
                     {
                         //When item value contains double quots then it would be replaced 
                         string customFieldEntityValue = item.value != null ? item.value.Replace("\"", "&quot;") : string.Empty;
-                        sb.Append("<input type=\"text\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
+                        sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
 
                         //If custom field is required than add attribute require
                         if (item.isRequired)

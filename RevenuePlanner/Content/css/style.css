@@ -8686,6 +8686,10 @@ max-height:350px;
     font-size: 13px;
 }
 
+.margin-right10 {
+    margin-right: 10px !important;
+}
+
 .paddingleft25px {
 padding-left:25px;
 }
