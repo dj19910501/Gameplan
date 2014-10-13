@@ -3693,7 +3693,8 @@ function ApproveTactic(e, task) {
 
 <script>
     $(document).ready(function () {
-        function toggleChevron(e) {
+     
+       function toggleChevron(e) {
             $(e.target)
 				.prev('.accordion-heading')
 				.find("i.indicator")
@@ -3702,30 +3703,9 @@ function ApproveTactic(e, task) {
         $('.accordion').on('hidden.bs.collapse', toggleChevron);
         $('.accordion').on('shown.bs.collapse', toggleChevron);
 
-        $("#ddlTabViewBy").change(function () {
-            RefreshCurrentTab();
-        });
-
         if ($('#ddlUpComingActivites').val() != 'undefined') {
             Currenttime = $('#ddlUpComingActivites').val();
             isQuater = Currenttime;
         }
-        
-        $("#ddlUpComingActivites").change(function () {
-            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                //filters.SelectedPlans = [];
-                //filters.SelectedPlans.push(CurrentPlanId);
-                PlanIds = CurrentPlanId;
-            }
-            if (filters.SelectedPlans.length > 0) {
-                var PlanIds = filters.SelectedPlans.toString();
-                Currenttime = $('#ddlUpComingActivites').val();
-                isQuater = Currenttime;
-                RefreshCurrentTab();
-                GetHealderData(PlanIds);
-                GetNumberOfActivityPerMonByPlanId(PlanIds, Currenttime);
-            }
         });
-
-    });
 </script>

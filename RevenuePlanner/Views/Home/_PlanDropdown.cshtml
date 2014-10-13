@@ -61,6 +61,8 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".selectBox select").selectbox();
+        var Currenttime = $('#ddlUpComingActivites').val();
+        isQuater = Currenttime;
         onClickPlanTitle();
         SetAttributeData();
         RefreshCurrentTab();
@@ -73,43 +75,27 @@
         }
         var SelectedPlans = filters.SelectedPlans.toString();
         GetHealderData(SelectedPlans);
-        var Currenttime = $('#ddlUpComingActivites').val();
         GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime);
     });
 
-    //$('#ATactics').click(function () {
-    //    GetTactics();
-    //    arrClosedTask = [];
-    //});
+    $("#ddlTabViewBy").change(function () {
+        RefreshCurrentTab();
+    });
 
-    ////// Get tactic on click of vertical tab.
-    //$('#AVertical').click(function () {
-    //    GetVertical();
-    //    arrClosedTask = [];
-    //});
 
-    ////// Get tactic on click of audience tab.
-    //$('#AAudience').click(function () {
-    //    GetAudience();
-    //    arrClosedTask = [];
-    //});
+    $("#ddlUpComingActivites").change(function () {
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            PlanIds = CurrentPlanId;
+        }
+        if (filters.SelectedPlans.length > 0) {
+            var PlanIds = filters.SelectedPlans.toString();
+            Currenttime = $('#ddlUpComingActivites').val();
+            isQuater = Currenttime;
+            RefreshCurrentTab();
+            GetHealderData(PlanIds);
+            GetNumberOfActivityPerMonByPlanId(PlanIds, Currenttime);
+        }
+    });
 
-    ////// Get tactic on click of business unit tab.
-    //$('#ABusinessUnit').click(function () {
-    //    GetBusinessUnit();
-    //    arrClosedTask = [];
-    //});
-
-    ////// Get tactic on click of stage tab.
-    //$('#AStage').click(function () {
-    //    GetStage();
-    //    arrClosedTask = [];
-    //});
-
-    ////// Get tactic on click of request tab.
-    //$('#ARequest').click(function () {
-    //    GetRequest();
-    //    arrClosedTask = [];
-    //});
 </script>
 
