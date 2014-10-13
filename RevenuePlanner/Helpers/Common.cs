@@ -23,6 +23,7 @@ using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Transactions;
 using System.Data;
+using System.Data.Objects.SqlClient;
 
 namespace RevenuePlanner.Helpers
 {
@@ -4239,7 +4240,7 @@ namespace RevenuePlanner.Helpers
 
         #region Plan Gantt Types
 
-        public static List<ViewByModel> GetDefaultGanttTypes(string planIds="")
+        public static List<ViewByModel> GetDefaultGanttTypes(List<int> planTacticIds, string planIds = "")
         {
             MRPEntities db = new MRPEntities();
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
@@ -4253,19 +4254,26 @@ namespace RevenuePlanner.Helpers
             if (!string.IsNullOrEmpty(planIds))
             {
                 List<int> planId = string.IsNullOrWhiteSpace(planIds) ? new List<int>() : planIds.Split(',').Select(plan => int.Parse(plan)).ToList();
-                var tactic = db.Plan_Campaign_Program_Tactic.Where(s => planId.Contains(s.Plan_Campaign_Program.Plan_Campaign.PlanId) && s.IsDeleted == false).Select(t => t);
-                if (tactic != null)
+                
+                if (planTacticIds == null)
                 {
-                    var CustomFields = (from cf in db.CustomFields
-                                        join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                        join t in tactic on cfe.EntityId equals t.PlanTacticId
-                                        where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId
-                                        select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+                    planTacticIds = new List<int>();
+                }
+                
+                var CustomFields = (from cf in db.CustomFields
+                                    join cft in db.CustomFieldTypes on cf.CustomFieldTypeId equals cft.CustomFieldTypeId
+                                    join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
+                                    join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
+                                    join cfoLeft in db.CustomFieldOptions on new { Key1 = cf.CustomFieldId, Key2 = cfe.Value.Trim() } equals
+                                        new { Key1 = cfoLeft.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)cfoLeft.CustomFieldOptionId).Trim() } into cAll
+                                    from cfo in cAll.DefaultIfEmpty()
+                                    where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId
+                                    && planId.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && planTacticIds.Contains(t.PlanTacticId)
+                                    select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
 
-                    foreach (var item in CustomFields)
-                    {
-                        lstViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom", item.CustomFieldId.ToString()) });
-                    }
+                foreach (var item in CustomFields)
+                {
+                    lstViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom", item.CustomFieldId.ToString()) });
                 }
             }
 

@@ -374,7 +374,7 @@ namespace RevenuePlanner.Controllers
             }
             objHomePlan.plans = planList;
 
-            List<ViewByModel> lstViewByTab = Common.GetDefaultGanttTypes(Convert.ToString(currentPlanId));
+            List<ViewByModel> lstViewByTab = Common.GetDefaultGanttTypes(null, Convert.ToString(currentPlanId));
             ViewBag.ViewByTab = lstViewByTab;
 
             List<SelectListItem> lstUpComingActivity = UpComingActivity(Convert.ToString(currentPlanId));
@@ -1071,7 +1071,7 @@ namespace RevenuePlanner.Controllers
                 planYear = planYear,
                 improvementTacticForAccordion = type.Equals(PlanGanttTypes.Custom.ToString(), StringComparison.OrdinalIgnoreCase) ? 0 : improvementTacticForAccordion,
                 improvementTacticTypeForAccordion = type.Equals(PlanGanttTypes.Custom.ToString(), StringComparison.OrdinalIgnoreCase) ? 0 : improvementTacticTypeForAccordion,
-                ViewById = Common.GetDefaultGanttTypes(planId)
+                ViewById = Common.GetDefaultGanttTypes(tactic.ToList().Select(t => t.PlanTacticId).ToList(), planId)
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -1116,7 +1116,7 @@ namespace RevenuePlanner.Controllers
                 planYear = planYear,
                 improvementTacticForAccordion = improvementTacticForAccordion,
                 improvementTacticTypeForAccordion = improvementTacticTypeForAccordion,
-                ViewById = Common.GetDefaultGanttTypes(planId)
+                ViewById = Common.GetDefaultGanttTypes(tactic.ToList().Select(t => t.PlanTacticId).ToList() , planId)
             }, JsonRequestBehavior.AllowGet);
         }
         #endregion
