@@ -1,6 +1,18 @@
-﻿@model RevenuePlanner.Models.FilterDropdownValues
-@using RevenuePlanner.Helpers
+﻿@using RevenuePlanner.Helpers
 @{
+    string SelectedYear = ViewBag.SelectedYear;
+    var ViewBusinessUnitSelectedValue = (List<SelectListItem>)ViewBag.ViewBusinessUnit;
+    var ViewPlanSelectedValue = (List<SelectListItem>)ViewBag.ViewPlan;
+    var ViewGeographySelectedValue = (List<SelectListItem>)ViewBag.ViewGeography;
+    var ViewVerticalSelectedValue = (List<SelectListItem>)ViewBag.ViewVertical;
+    var ViewAudienceSelectedValue = (List<SelectListItem>)ViewBag.ViewAudience;
+    string AudienceLabel = Common.CustomLabelFor(Enums.CustomLabelCode.Audience);
+    string AudienceLabelTitle = string.Empty;
+    if (AudienceLabel.Length > 10)
+    {
+        AudienceLabelTitle = AudienceLabel;
+        AudienceLabel = AudienceLabel.Substring(0, 10) + "...";
+    }
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -21,36 +33,23 @@
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
 <link href="@Url.Content("~/Content/css/jquery.multiselect.css")" rel="stylesheet" type="text/css" />
-
+<style type="text/css">
+    .verticalIdSelectBox .sbHolder {
+        width: 10% !important;
+    }
+</style>
 
 @section Sidebar
 {
     <div class="padding-content padding-bottom0">
         <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
-
-        @*To resolve Bug 312: Report plan selector needs to be moved*@
-        <form class="nl-form-plan-title without-margin report-summry" id="formSideFilter">
-            <span class="report-summry-select" id="nl-ReportSummry">
-                <select id="reportSummry" data-default="0%" class="">
-                </select>
-                <div class="nl-overlay"></div>
-            </span>
-
-            <span class="report-summry-plans" id="nl-ReportSummry2">
-                <select id="reportSummry2" data-default="0%" class="" maxlength="18">
-                </select>
-                <div class="nl-overlay"></div>
-            </span>
-        </form>
-        @*To resolve Bug 312: Report plan selector needs to be moved*@
-
+        <br />
         <div class="wraper-btns cf">
             <div class="span6" id="divAddActual">
                 @if ((bool)ViewBag.TacticActualsAddEdit) // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
                 {
                     <button id="BtnAddActual" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>    
                 }
-                 @*   <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" disabled="disabled" type="button">Add Actuals</button>*@
             </div>
             <div class="span6">
                 <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" id="BtnShareReport">Share Report</button>
@@ -72,202 +71,195 @@
         </li>
     </ul>
 }
-
-<div class="light-blue-chart cf" id="reportHeader" style="display: none;">
-    <div class="white-chart" id="mqlActualDiv">
-        <p class="source-sans-probold">Actual</p>
-        <p class="value source-sans-prolight" id="mqlActual"></p>
-        <h5 id="mqlActualPercentage"></h5>
+<div id="budgetHeader" class="budgetColums budgetReporting" style="display: none">
+    <div class="plannedCost">
+        <h3 class="source-sans-proregular">Today is <span id="SpanTodayDate">08/15/2014</span>. You are in <span id="SpanCurrentQuarter">Q3</span>.<br>
+            So far, you've spent <span id="SpanTotalSpend">$2.5M</span> out of <span id="SpanTotalBudgeted">$4.8M</span>.</h3>
+        <div style="clear: both;"></div>
     </div>
-    <div class="white-chart" id="mqlProjectedDiv">
-        <p class="source-sans-probold">Projected</p>
-        <p class="value source-sans-prolight" id="mqlProjected"></p>
-        @*<a class="ellipsis-block">@Html.LabelForMQL("MQL")</a>*@
-        @*Added By : Kalpesh Sharma 
-        Descirption : Functional & code review points 34*@
-        <p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("MQL")</p>
-
+    <div class="budgetCompare">
+        <h3 class="source-sans-proregular" id="monthCompareTitle"></h3>
+        <div class="budgetCompareInner" id="monthContainer">
     </div>
-    <div class="white-chart" id="RevenueActualDiv">
-        <p class="source-sans-probold">Actual</p>
-        <p class="value source-sans-prolight" id="revenueActual"></p>
-        <h5 id="revenueActualPercentage"></h5>
-    </div>
-    <div class="white-chart" id="RevenueProjectedDiv">
-        <p class="source-sans-probold">Projected</p>
-        <p class="value source-sans-prolight" id="revenueProjected"></p>
-        @*Added By : Kalpesh Sharma 
-        Descirption : Functional & code review points 34*@
-        @*<a class="ellipsis-block">Revenue</a>*@
-        <p class="ellipsis-block FormatingBlock">Revenue</p>
-
-    </div>
-    <div class="wraper-title">
-        <h3 class="source-sans-prolight timeframe "><span id="HeaderTitle">Marketing Revenue</span>
-        <br /></h3>
-    <form id="nl-formAct" class="nl-form-plan-title without-margin">
-        <select id="drpthisyear" data-default="0%" class="">
-        </select>
-        <div class="nl-overlay"></div>
-    </form>
+        <div style="clear: both;"></div>
     </div>
 </div>
 
-<ul class="nav nav-tabs" style="border-bottom: 0px;" id="UlPlanHeader">
-    <li class="source-sans-proregular">
-        <h2 class="title-header plan" id="h2PlanTitle">@ViewBag.PlanTitle</h2>
-    </li>
-</ul>
+<div id="revenueHeader" class="budgetColums budgetReporting" style="display: none">
+    <div class="plannedCost">
+        <h3><span>Marketing Revenue</span>
+            <br />
+        </h3>
+        <div style="clear: both;"></div>
+    </div>
+    <div class="budgetCompare">
+        <div id="RevenueActualDiv" style="width: 45% !important; float: left; border-right: 1px solid #e6e6e6 !important; margin-right: 5%;">
+        <p class="source-sans-probold">Actual</p>
+            <p class="value source-sans-prolight" style="font-size: 30px;" id="revenueActual"></p>
+        <h5 id="revenueActualPercentage"></h5>
+    </div>
+        <div id="RevenueProjectedDiv" style="width: 45% !important; float: left;">
+        <p class="source-sans-probold">Projected</p>
+            <p class="value source-sans-prolight" id="revenueProjected" style="font-size: 30px;"></p>
+        <p class="ellipsis-block FormatingBlock">Revenue</p>
+
+    </div>
+    </div>
+</div>
+
+<div id="conversionHeader" class="budgetColums budgetReporting" style="display: none">
+    <div class="plannedCost">
+        <h3><span>Waterfall Conversion</span>
+            <br />
+        </h3>
+        <div style="clear: both;"></div>
+    </div>
+    <div class="budgetCompare">
+        <div class="white-chart" id="mqlActualDiv" style="width: 45% !important; float: left; border-right: 1px solid #e6e6e6 !important; margin-right: 5%;">
+            <p class="source-sans-probold">Actual</p>
+            <p class="value source-sans-prolight" id="mqlActual" style="font-size: 30px;"></p>
+            <h5 id="mqlActualPercentage"></h5>
+        </div>
+        <div class="white-chart" id="mqlProjectedDiv" style="width: 45% !important; float: left;">
+            <p class="source-sans-probold">Projected</p>
+            <p class="value source-sans-prolight" id="mqlProjected" style="font-size: 30px;"></p>
+            <p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("MQL")</p>
+
+        </div>
+    </div>
+</div>
+
+<!-- Budget Reporting Filter area -->
+<div class="budgetReportFilter-area clearfix">
+    <div class="budgetReportFilter-area-left">
+
+        <!--Start modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
+        <div class="multiselection-area">
+            <span class="selectBox" id="ddlYearSpan" style="width: 115px; line-height: 2.5; padding-right: 7px;">
+                @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text", SelectedYear), new { @class = "ddlStyleReport" })
+            </span>
+            @Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units", style = "display:none" })
+            @Html.DropDownList("ddlPlan", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text", ViewPlanSelectedValue.Where(p => p.Selected).Select(p => p.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans", style = "display:none" })
+            @Html.DropDownList("ddlViewGeography", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewGeography, "Value", "Text", ViewGeographySelectedValue.Where(g => g.Selected).Select(g => g.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewGeography", noneselectedvalue = "Geography", style = "display:none" })
+            @Html.DropDownList("ddlViewVertical", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewVertical, "Value", "Text", ViewVerticalSelectedValue.Where(v => v.Selected).Select(v => v.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewVertical", noneselectedvalue = "Verticals", style = "display:none" })
+            @Html.DropDownList("ddlViewAudience", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewAudience, "Value", "Text", ViewAudienceSelectedValue.Where(a => a.Selected).Select(a => a.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewAudience", noneselectedvalue = @AudienceLabel, style = "display:none" })
+           
+
+        </div>
+        <!--End modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
+        <div class="ActiveFilter">
+            Active Filters
+        </div>
+        <div class="filter-detail">
+            <label>Year:</label>
+            <div class="details" id="yeardetail"></div>
+            <label>Business Units:</label>
+            <div class="details" id="businessunitdetail">All</div>
+            <label>Plans:</label>
+            <div class="details" id="plandetail"></div>
+            <label id="lblGeography">Geography:</label>
+            <div class="details" id="geographydetail">All</div>
+            <label id="lblVerticals">Verticals:</label>
+            <div class="details" id="verticaldetail">All</div>
+            <label id="lblAudience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience):</label>
+            <div class="details" id="audiencedetail">All</div>
+        </div>
+    </div>
+    <div class="budgetReportFilter-area-right">
+        <button id="button-save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" name="button-save">Update</button>
+    </div>
+</div>
+<!-- Budget Reporting Filter area -->
+
 <div id="divMainReportPart">
 </div>
 <div id="DivShareReport">
 </div>
 <script type="text/javascript">
-    $(document).ready(function () {
+
         var SelectedBUId, SelectedPlanId;
         var isBusinessUnit = false;
-        var OptionMain;
+    var OptionMain = $('#ddlYear').val();;
+    var isAllowClick = true;
+    var multiselectPlanId = "ddlPlan";
+    var filterPlanid = "#plandetail";
+    var ddlViewAudience = "ddlViewAudience";
+    var ddlViewVertical = "ddlViewVertical"
+    var ddlViewBusinessUnit = "ddlViewBusinessUnit";
+    var ddlViewGeography = "ddlViewGeography";
 
-
+    var audiencedetail = "#audiencedetail";
+    var verticaldetail = "#verticaldetail";
+    var businessunitdetail = "#businessunitdetail";
+    var geographydetail = "#geographydetail";
         var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
-        ///// Filters logic /////
-        var BU = @Html.Raw(Json.Encode(Model.lstBusinessUnit))
-        populateBU(BU, "reportSummry");
-        function populateBU(items, id) {
-            var $dropdown = $("#" + id);
-            var $html = '';
-            $html += '<option value=' + 0 + ' selected>' + "All Business Units" + '</option>';
-            SelectedBUId = 0;
-            if (items.length > 0) {
-                $.each(items, function (index, BU) {
 
-                    if (BU.Selected) {
-                        $html += '<option value="' + BU.Value + '" selected>' + BU.Text + '</option>';
-                        CurrentBU = BU.Value;
-                        SelectedBUId = CurrentBU;
-                    } else {
-                        $html += '<option value="' + BU.Value + '">' + BU.Text + '</option>';
-                    }
+    $(document).ready(function () {
+
+        $("#ddlYearSpan select").selectbox();
+
+        ///Start Modified by Mitesh Vaishnav for PL ticket #727
+        $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
+            $(this).multiselect({ noneSelectedText: $(this).attr('noneselectedvalue') }).multiselectfilter();
                 });
-            }
-            $dropdown.append($html);
-            nlform = new NLForm(document.getElementById('nl-ReportSummry'));
-        }
 
-        var plans = @Html.Raw(Json.Encode(Model.lstAllPlans))
-        populateNF(plans, "reportSummry2");
+        $(".sbSelector").css("color", "#6D6D6D");
+        $(".sbToggle").css("border-top-color", "#6D6D6D");
 
-        function populateNF(items, id) {
-            var $dropdown = $("#" + id);
-            $('#nl-ReportSummry2 > div[class="nl-field nl-dd"]').children().empty();
-            $('#reportSummry2').empty();
-            var $html = '';
-            $html += '<option value=' + 0 + ' selected>' + "All Plans" + '</option>';
-            $('#h2PlanTitle').html("All Plans");
-            SelectedPlanId = 0;
-            if (items.length > 0) {
-                $.each(items, function (index, Plan) {
+        $("#yeardetail").html("FY " + $('#ddlYear').val());
+        $("#ddlViewAudience").next().attr('title', '@AudienceLabelTitle');
+        LoadCheckBoxValue(multiselectPlanId, filterPlanid);
+        LoadCheckBoxValue(ddlViewAudience, audiencedetail);
+        LoadCheckBoxValue(ddlViewVertical, verticaldetail);
+        LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
+        LoadCheckBoxValue(ddlViewGeography, geographydetail);
+        
+        loadBasedOnPlan();
+        $("#DivShareReport").hide();
 
-                    if (Plan.Selected) {
-                        $html += '<option value="' + Plan.Value + '" selected>' + Plan.Text + '</option>';
-                        CurrentBU = Plan.Value;
-                        SelectedPlanId = Plan.Value;
-                        $('#h2PlanTitle').html(Plan.Text);
-                    } else {
-                        $html += '<option value="' + Plan.Value + '">' + Plan.Text + '</option>';
-                    }
                 });
+
+    // <--- End document.ready Event --->
+
+    function LoadCheckBoxValue(multiselectId, filterid) {
+        var finalValue = "";
+        var isAll = true;
+        $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+            if (this.checked) {
+                finalValue += $(this).parent().find('span').eq(0).html() + ",  ";
             }
-            $dropdown.append($html);
-            nlform = new NLForm(document.getElementById('nl-ReportSummry2'));
-          
-            loadBasedOnPlan();
-        }
-
-        onClickActivity();
-
-        function onClickActivity() {
-            $('#nl-ReportSummry > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-                var Title = $(this).text();
-                var option = $.grep($('#reportSummry option'), function (value) { return $(value).text() == Title; })
-                SelectedBUId = $(option[0]).val();
-                loadTimeframeAndPlan();
+            else {
+                isAll = false;
+            }
             });
-
-            $('#nl-ReportSummry2').on('click', 'div[class="nl-field nl-dd"] li', function (e) {
-                var BUTitle = $('#nl-ReportSummry .nl-field-toggle').text();
-                var BUOption = $.grep($('#reportSummry option'), function (value) { return $(value).text() == BUTitle; });
-                SelectedBUId = $(BUOption[0]).val();
-
-                var PlanTitle = $(this).attr('originalValue');
-                var PlanOption = $.grep($('#reportSummry2 option'), function (value) { return $(value).text() == PlanTitle; });
-                SelectedPlanId = $(PlanOption[0]).val();
-                $('#h2PlanTitle').html(PlanTitle);
-                loadBasedOnPlan();
-                // LoadSummaryDataForPlan(SelectedBUId, SelectedPlanId);
-            });
+        finalValue = finalValue.slice(0, -3);
+        if (finalValue == '') {
+            finalValue = 'None';
         }
-
-        function loadPlanFromBusinessUnit() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/GetPlansListFromBusinessUnitId/")',
-                data: {
-                    BusinessUnitId: SelectedBUId,
-                    isBusinessUnit: isBusinessUnit
-                },
-                success: function (r) {
-                    populateNF(r.lstPlan, "reportSummry2");
-                    if (SelectedPlanId == 0) {
-                    $('#h2PlanTitle').html("All Plans");
-                    }
-                    $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
-                }
-            });
+        if (isAll) {
+            finalValue = 'All';
         }
-
-        function loadTimeframeAndPlan() {
-            isBusinessUnit = false;
-            if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
-                isBusinessUnit = true;
-                loadPlanFromBusinessUnit();
-            }
-            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
-                isBusinessUnit = true;
-                FillTimeFrameDropDown();
-            }
-            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
-                isBusinessUnit = true;
-                FillTimeFrameDropDown();
-            }
+        $(filterid).html(finalValue);
     }
 
-        function populateNFActivity(items, id) {
-            var $dropdown = $("#" + id);
-            $('#nl-formAct .nl-field').empty();
-            $dropdown.empty();
-            var $html = '';
-            if (items.length > 0) {
-                $.each(items, function (index, time) {
-                    if (time.Selected) {
-                        $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
-                        OptionMain = time.Value;
-                    } else {
-                        $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
-                    }
-                });
-            }
-            $dropdown.append($html);
-            nlform = new NLForm(document.getElementById('nl-formAct'));
-            // onClickActivity();
-            // LoadHeaderData();
+    function LoadPlanData() {
+        var strYear=OptionMain;
+        if (OptionMain == 'thisquarter') {
+            strYear = new Date().getFullYear();
+        }
+            $.ajax({
+                type: 'POST',
+            url: '@Url.Content("~/Report/GetBudgetPlanBasedOnYear/")',
+                data: {
+                Year: strYear
+                },
+                success: function (r) {
+                
+                //   alert(JSON.stringify(r));
+                populatePlan(r, "ddlPlan");
 
-          //  if (isBusinessUnit) {
-                GetPlanBasedOnTimeFilter();
-          //  }
-          //  else {
-          //      LoadRespectiveData();
-          //  }
+                }
+            });
         }
 
         function RemoveAllActiveItem() {
@@ -277,57 +269,6 @@
                 }
             });
         }
-        var isAllowClick = true;
-        $('#liSummary').click(function () {
-            if (isAllowClick) {
-                isAllowClick = false;
-                leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
-                RemoveAllActiveItem();
-                $(this).addClass('active');
-                isBusinessUnit = false;
-                    loadPlanFromBusinessUnit();
-                //if (SelectedPlanId == 0) {
-                    
-                //}
-                //else {
-                //    LoadSummary();
-                //}
-            }
-        });
-
-        $('#liRevenue').click(function () {
-            if (isAllowClick) {
-                isAllowClick = false;
-                leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
-                RemoveAllActiveItem();
-                $(this).addClass('active');
-                isBusinessUnit = false;
-                LoadRevenueView();
-                FillTimeFrameDropDown();
-            }
-        });
-
-        $('#liConversion').click(function () {
-            if (isAllowClick) {
-                isAllowClick = false;
-                leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
-                RemoveAllActiveItem();
-                $(this).addClass('active');
-                isBusinessUnit = false;
-                LoadConversionView();
-                FillTimeFrameDropDown();
-            }
-        });
-
-        $('#liBudget').click(function () {
-            if (isAllowClick) {
-                isAllowClick = false;
-                leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
-                RemoveAllActiveItem();
-                $(this).addClass('active');
-                LoadBudgetView();
-            }
-        });
 
         function LoadRespectiveData() {
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
@@ -337,17 +278,44 @@
                 LoadConversionData();
             }
         }
-
+    ///Added by Mitesh Vaishnav for PL ticket #846
+    ///If running tab is summary or Revenue or conversion than hide specific filters
+    function HideFilters() {
+        $('#btnMultiselect_ddlViewGeography').css('display', 'none');
+        $('#btnMultiselect_ddlViewVertical').css('display', 'none');
+        $('#btnMultiselect_ddlViewAudience').css('display', 'none');
+        $('#lblGeography').css('display', 'none');
+        $('#geographydetail').css('display', 'none');
+        $('#lblVerticals').css('display', 'none');
+        $('#verticaldetail').css('display', 'none');
+        $('#lblAudience').css('display', 'none');
+        $('#audiencedetail').css('display', 'none');
+    }
+    ///Added by Mitesh Vaishnav for PL ticket #846
+    ///If running tab is budgeting than show specific filters
+    function ShowFilters() {
+        $('#btnMultiselect_ddlViewGeography').css('display', 'initial');
+        $('#btnMultiselect_ddlViewVertical').css('display', 'initial');
+        $('#btnMultiselect_ddlViewAudience').css('display', 'initial');
+        $('#lblGeography').css('display', 'initial');
+        $('#geographydetail').css('display', 'initial');
+        $('#lblVerticals').css('display', 'initial');
+        $('#verticaldetail').css('display', 'initial');
+        $('#lblAudience').css('display', 'initial');
+        $('#audiencedetail').css('display', 'initial');
+    }
         function LoadSummary() {
+        HideFilters();
+        $('#budgetHeader').css('display', 'none');
             $('#UlPlanHeader').css('display', 'block');
             $('#formSideFilter').css('display', 'block');
             $("#divAddActual").css("display", "block");
             $('#divMainReportPart').empty();
-            //  $('#BtnAddActual').enabled = true;
-            $('#reportHeader').css('display', 'none');
+        $('#conversionHeader').css('display', 'none');
+        $('#revenueHeader').css('display', 'none');
 
             var url = '@Url.Content("~/Report/GetSummaryData/")';
-            $('#divMainReportPart').load(url + '?BusinessUnitId=' + SelectedBUId + '&PlanId=' + SelectedPlanId, function () {
+        $('#divMainReportPart').load(url, function () {
                 isAllowClick = true;
                 myApp.hidePleaseWait();
             });
@@ -355,71 +323,20 @@
         }
 
         function LoadRevenueView() {
-            $('#reportHeader').css('display', 'block');
-            $('#RevenueProjectedDiv').css('display', 'block');
-            $('#RevenueActualDiv').css('display', 'block');
-            $('#mqlActualDiv').css('display', 'none');
-            $('#mqlProjectedDiv').css('display', 'none');
-            $('#HeaderTitle').html('Marketing Revenue');
-            // $('#BtnAddActual').disabled = true;
+        HideFilters();
+        $('#conversionHeader').css('display', 'none');
+        $('#revenueHeader').css('display', 'block');
         }
 
         function LoadConversionView() {
-            $('#reportHeader').css('display', 'block');
-            $('#RevenueProjectedDiv').css('display', 'none');
-            $('#RevenueActualDiv').css('display', 'none');
-            $('#mqlActualDiv').css('display', 'block');
-            $('#mqlProjectedDiv').css('display', 'block');
-            $('#HeaderTitle').html('Waterfall Conversion ');
-            //  $('#BtnAddActual').enabled = true;
-        }
-
-        function FillTimeFrameDropDown() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/GetTimeFrameValues/")',
-                data: {
-                    BusinessUnitId: SelectedBUId,
-                    isBusinessUnit: isBusinessUnit
-                },
-                success: function (r) {
-                    populateNFActivity(r, "drpthisyear");
-                    
-                    onClickActivityForTimeFrame();
-                }
-            });
-        }
-
-
-        function onClickActivityForTimeFrame() {
-            $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-                var Title = $(this).text();
-                var option = $.grep($('#drpthisyear option'), function (value) { return $(value).text() == Title; })
-                Currenttime = $(option[0]).val();
-                OptionMain = Currenttime;
-                GetPlanBasedOnTimeFilter();
-            });
-        }
-
-        function GetPlanBasedOnTimeFilter() {
-            
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/GetPlansListFromTimeFrame/")',
-                data: {
-                    timeFrameOption: OptionMain,
-                },
-                success: function (r) {
-                    populateNF(r.lstPlan, "reportSummry2");
-                    $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
-                }
-            });
+        HideFilters();
+        $('#conversionHeader').css('display', 'block');
+        $('#revenueHeader').css('display', 'none');
         }
 
         function loadBasedOnPlan() {	   
 			 var isActualVisible = "@ViewBag.TacticActualsAddEdit"
-            if(isActualVisible.toString().toLowerCase() == 'true')
-            {
+            if (isActualVisible.toString().toLowerCase() == 'true') {
                 if (SelectedPlanId == 0) {
                    $("#BtnAddActual").attr("disabled", "disabled");
                 }
@@ -440,32 +357,37 @@
     }
 
         function LoadRevenueData() {
+        $('#budgetHeader').css('display', 'none');
             $('#UlPlanHeader').css('display', 'block');
             $('#formSideFilter').css('display', 'block');
             $("#divAddActual").css("display", "block");
             $('#divMainReportPart').empty();
 
             var url = '@Url.Content("~/Report/GetRevenueData/")';
-            $('#divMainReportPart').load(url + '?BusinessUnitId=' + SelectedBUId + '&PlanId=' + SelectedPlanId + '&timeFrameOption=' + OptionMain, function () {
+        $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain, function () {
                 isAllowClick = true;
                 myApp.hidePleaseWait();
             });
         }
 
         function LoadConversionData() {
+        $('#budgetHeader').css('display', 'none');
             $('#UlPlanHeader').css('display', 'block');
             $('#formSideFilter').css('display', 'block');
             $("#divAddActual").css("display", "block");
             $('#divMainReportPart').empty();
             var url = '@Url.Content("~/Report/GetConversionData/")';
-            $('#divMainReportPart').load(url + '?BusinessUnitId=' + SelectedBUId + '&PlanId=' + SelectedPlanId + '&timeFrameOption=' + OptionMain, function () {
+        $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain, function () {
                 isAllowClick = true;
                 myApp.hidePleaseWait();
             });
         }
 
         function LoadBudgetView() {
-            $('#reportHeader').css('display', 'none');
+        ShowFilters();
+        $('#budgetHeader').css('display', 'block');
+        $('#conversionHeader').css('display', 'none');
+        $('#revenueHeader').css('display', 'none');
             $('#UlPlanHeader').css('display', 'none');
             $('#formSideFilter').css('display', 'none');
             
@@ -476,12 +398,78 @@
             });
         }
         
-
-        $("#DivShareReport").hide();
-
-        $("#BtnShareReport").click(function () {
-            ShowShareReport();
+        function GetFilterIdForPlan(multiselectId) {
+            var finalValue = "";
+            var isShowAddActual = 0;
+            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                if (this.checked) {
+                    isShowAddActual++;
+                    var splitvalue = $(this).val().split("_");
+                    finalValue += splitvalue[0] + ",";
+                }
         });
+
+            finalValue = finalValue.slice(0, -1);
+            if (finalValue == '') {
+                finalValue = '';
+            }
+            if (isShowAddActual == 1) {
+                $("#divAddActual").css("display", "block");
+            }
+            else {
+                $("#divAddActual").css("display", "none");
+            }
+
+            return finalValue;
+
+        }
+        function GetFilterId(multiselectId) {
+            var finalValue = "";
+            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                if (this.checked) {
+                    finalValue += $(this).val() + ",";
+                }
+            });
+
+            finalValue = finalValue.slice(0, -1);
+            if (finalValue == '') {
+                finalValue = '';
+            }
+            return finalValue;
+
+        }
+        function LoadBudgetData() {
+            if (isByAllocated) {
+                $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?GeographyIds=' + GeographyIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + OptionMain + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId);
+        }
+    }
+
+    function populatePlan(items, id) {
+        var $dropdown = $("#" + id);
+        $dropdown.empty();
+        var $html = '';
+        if (items.length > 0) {
+
+            $.each(items, function (index, planobj) {
+                if (planobj.Selected) {
+                    $html += '<option value="' + planobj.Value + '" selected>' + planobj.Text + '</option>';
+                } else {
+                    $html += '<option value="' + planobj.Value + '">' + planobj.Text + '</option>';
+                }
+            });
+        }
+        // alert($html);
+        $dropdown.append($html);
+
+        //start Added by Mitesh Vaishnav for PL ticket #727
+        //update multiselect box as its related dropdownlist's option will be changed
+        // var updatedOption = $("#ddlPlan").find('option');
+
+        //End Added by Mitesh Vaishnav for PL ticket #727
+        $("#multipleselect_ddlPlan").find("input[type='search']").val('');
+        $('#ddlPlan').multiselect("refresh");
+        LoadCheckBoxValue(multiselectPlanId, filterPlanid);
+    }
 
         function ShowShareReport() {
             var url = '@Url.Content("~/Report/ShowShareReport/")';
@@ -490,5 +478,114 @@
                                        .show();
         }
 
+    $(".sbSelector").click(function () {
+        $(".ui-multiselect-menu").each(function () {
+            $(this).css("display", "none");
+        });
+    });
+
+    $('#button-save').click(function () {
+        OptionMain = $('#ddlYear').val();
+        $("#yeardetail").html("FY " + $('#ddlYear').val());
+        LoadCheckBoxValue(multiselectPlanId, filterPlanid);
+        LoadCheckBoxValue(ddlViewAudience, audiencedetail);
+        LoadCheckBoxValue(ddlViewVertical, verticaldetail);
+        LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
+        LoadCheckBoxValue(ddlViewGeography, geographydetail);
+        PlanIds = GetFilterIdForPlan(multiselectPlanId);
+        VerticalIds = GetFilterId(ddlViewVertical);
+        GeographyIds = GetFilterId(ddlViewGeography);
+        BusinessUnitIds = GetFilterId(ddlViewBusinessUnit);
+        AudienceIds = GetFilterId(ddlViewAudience);
+        SortingId = '';
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/SetReportData/")',
+            data: {
+                businessUnitIds: BusinessUnitIds,
+                planIds: PlanIds
+            },
+            success: function (data) {
+                if (data.status) {
+                    if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+                        LoadSummary();
+                    }
+                    else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
+                        LoadRevenueData();
+                    }
+                    else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+                            LoadConversionData();
+                        }
+                        else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+                            LoadBudgetData();
+                        }
+            }
+
+
+            }
+        });
+    });
+
+$("#ddlYear").change(function () {
+    OptionMain = $('#ddlYear').val();
+    LoadPlanData();
+});
+
+$('#liSummary').click(function () {
+    if (isAllowClick) {
+        isAllowClick = false;
+        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
+        RemoveAllActiveItem();
+        $(this).addClass('active');
+        isBusinessUnit = false;
+        loadBasedOnPlan();
+        //loadPlanFromBusinessUnit();
+        //if (SelectedPlanId == 0) {
+
+        //}
+        //else {
+        //    LoadSummary();
+        //}
+    }
+});
+
+    $('#liRevenue').click(function () {
+    if (isAllowClick) {
+        isAllowClick = false;
+        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
+        RemoveAllActiveItem();
+        $(this).addClass('active');
+        isBusinessUnit = false;
+        LoadRevenueView();
+        loadBasedOnPlan();
+        //FillTimeFrameDropDown();
+    }
+});
+
+    $('#liConversion').click(function () {
+
+    if (isAllowClick) {
+        isAllowClick = false;
+        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
+                RemoveAllActiveItem();
+                $(this).addClass('active');
+                isBusinessUnit = false;
+                LoadConversionView();
+                loadBasedOnPlan();
+                //FillTimeFrameDropDown();
+            }
+        });
+
+        $('#liBudget').click(function () {
+            if (isAllowClick) {
+                isAllowClick = false;
+                leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
+                RemoveAllActiveItem();
+                $(this).addClass('active');
+                LoadBudgetView();
+            }
+        });
+        $("#BtnShareReport").click(function () {
+            ShowShareReport();
     });
 </script>

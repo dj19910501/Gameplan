@@ -39,7 +39,9 @@
       autoOpen: false,
       multiple: true,
       position: {},
-      appendTo: "body"
+      appendTo: "body",
+        ////Added by Mitesh Vaishnav - Additional perameter to identify customfields Ids
+        CustomName:"Custom"
     },
 
     _create: function() {
@@ -54,7 +56,7 @@
       // jQuery UI 1.9+, and otherwise fallback to a custom string.
       this._namespaceID = this.eventNamespace || ('multiselect' + multiselectID);
       
-      var button = (this.button = $('<button type="button"><span class="ui-icon ui-icon-triangle-1-s"></span></button>'))
+      var button = (this.button = $('<button type="button" id="btnMultiselect_'+id+'"><span class="ui-icon ui-icon-triangle-1-s"></span></button>'))
         .addClass('ui-multiselect ui-widget ui-state-default ui-corner-all')
         .addClass(o.classes)
         .attr({ 'title':el.attr('title'), 'aria-haspopup':true, 'tabIndex':el.attr('tabIndex') })
@@ -135,7 +137,7 @@
       var optgroups = [];
       var html = "";
       var id = el.attr('id') || multiselectID++; // unique ID for the label & option tags
-
+      var isCustomField = false;
       // build items
       el.find('option').each(function(i) {
         var $this = $(this);
@@ -149,7 +151,17 @@
         var labelClasses = [ 'ui-corner-all' ];
         var liClasses = (isDisabled ? 'ui-multiselect-disabled ' : ' ') + this.className;
         var optLabel;
-
+          ////start Added by Mitesh for creating border between custom fields and other 
+        var borderTopClass = "";
+        if (o.CustomName != '') {
+            if (!isCustomField) {
+                if (value.substring(0, o.CustomName.length) == o.CustomName) {
+                    borderTopClass = "borderTop1px";
+                    isCustomField = true;
+                }
+            }
+        }
+          ////End Added by Mitesh for creating border between custom fields and other 
         // is this an optgroup?
         if(parent.tagName === 'OPTGROUP') {
           optLabel = parent.getAttribute('label');
@@ -171,7 +183,7 @@
           labelClasses.push('ui-state-active');
         }
 
-        html += '<li class="' + liClasses + '">';
+        html += '<li class="' + liClasses + ' '+borderTopClass+'">';
 
         // create the label
         html += '<label for="' + inputID + '" title="' + title + '" class="' + labelClasses.join(' ') + '">';

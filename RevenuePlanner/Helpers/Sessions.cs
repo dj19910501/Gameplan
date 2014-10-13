@@ -343,5 +343,48 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["RedirectToSetSecurityQuestion"] = value;
             }
         }
+
+        /// <summary>
+        /// Added By: Mitesh Vaishnav for PL ticket #846
+        /// Date: 08/10/2014
+        /// Store multiple selected plan's Ids 
+        /// </summary>
+        public static List<int> ReportPlanIds
+        {
+            get
+            {
+                if (HttpContext.Current.Session["ReportPlanIds"] != null)
+                {
+                    return (List<int>)HttpContext.Current.Session["ReportPlanIds"];
+                }
+                return null;
+            }
+            set
+            {
+                HttpContext.Current.Session["ReportPlanIds"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Added By: Mitesh Vaishnav for PL ticket #846
+        /// Date: 08/10/2014
+        /// Store multiple selected Business Unit's Ids 
+        /// </summary>
+        public static List<Guid> ReportBusinessUnitIds
+        {
+            get
+            {
+                if (HttpContext.Current.Session["ReportBusinessUnitIds"] != null)
+                {
+                    return (List<Guid>)HttpContext.Current.Session["ReportBusinessUnitIds"];
+                }
+                return null;
+            }
+            set
+            {
+                HttpContext.Current.Session["ReportBusinessUnitIds"] = value;
+            }
+        }
+
     }
 }
