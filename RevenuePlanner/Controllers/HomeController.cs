@@ -444,19 +444,7 @@ namespace RevenuePlanner.Controllers
             int year;
             bool isNumeric = int.TryParse(isQuarter, out year);
 
-            if (isQuarter == Enums.UpcomingActivities.planYear.ToString() && planIds.Count == 1)
-            {
-                planYear = plans.Select(p => p.Year).FirstOrDefault();
-            }
-            else if (isQuarter == Enums.UpcomingActivities.nextyear.ToString())
-            {
-                planYear = DateTime.Now.AddYears(1).Year.ToString();
-            }
-            else if (isQuarter == Enums.UpcomingActivities.lastyear.ToString())
-            {
-                planYear = DateTime.Now.AddYears(-1).Year.ToString();
-            }
-            else if (isNumeric)
+            if (isNumeric)
             {
                 planYear = Convert.ToString(year);
             }
@@ -602,9 +590,9 @@ namespace RevenuePlanner.Controllers
         private JsonResult PrepareCustomFieldResult(string type, List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, string planId)
         {
             int CustomTypeId = 0;
-            if (type.Contains("Custom-"))
+            if (type.Contains("Custom"))
             {
-                CustomTypeId = Convert.ToInt32(type.Replace("Custom-", ""));
+                CustomTypeId = Convert.ToInt32(type.Replace("Custom", ""));
                 type = PlanGanttTypes.Custom.ToString();
             }
 
@@ -5363,19 +5351,7 @@ namespace RevenuePlanner.Controllers
                     int tempYear;
                     bool isNumeric = int.TryParse(strparam, out tempYear);
 
-                    if (strparam == Enums.UpcomingActivities.planYear.ToString() || strparam == "")
-                    {
-                        year = Convert.ToInt32(objPlan_Campaign_Program_Tactic[0].Plan_Campaign_Program.Plan_Campaign.Plan.Year);
-                    }
-                    else if (strparam == Enums.UpcomingActivities.thisyear.ToString())
-                    {
-                        year = DateTime.Now.Year;
-                    }
-                    else if (strparam == Enums.UpcomingActivities.nextyear.ToString())
-                    {
-                        year = DateTime.Now.Year + 1;
-                    }
-                    else if (isNumeric)
+                    if (isNumeric)
                     {
                         year = tempYear;
                     }
@@ -5613,19 +5589,7 @@ namespace RevenuePlanner.Controllers
              int Planyear;
              bool isNumeric = int.TryParse(strparam, out Planyear);
 
-            if (strparam == Enums.UpcomingActivities.planYear.ToString() && planIds.Count == 1)
-            {
-                planYear = filteredPlans.Select(p => p.Year).FirstOrDefault();
-            }
-            else if (strparam == Enums.UpcomingActivities.nextyear.ToString())
-            {
-                planYear = DateTime.Now.AddYears(1).Year.ToString();
-            }
-            else if (strparam == Enums.UpcomingActivities.lastyear.ToString())
-            {
-                planYear = DateTime.Now.AddYears(-1).Year.ToString();
-            }
-            else if (isNumeric)
+            if (isNumeric)
             {
                 planYear = Convert.ToString(Planyear);
             }
@@ -5683,19 +5647,7 @@ namespace RevenuePlanner.Controllers
                 int year = 0;
                 if (strparam != null)
                 {
-                    if (strparam == Enums.UpcomingActivities.planYear.ToString() || strparam == "")
-                    {
-                        year = Convert.ToInt32(objPlan_Campaign_Program_Tactic[0].Plan_Campaign_Program.Plan_Campaign.Plan.Year);
-                    }
-                    else if (strparam == Enums.UpcomingActivities.thisyear.ToString())
-                    {
-                        year = DateTime.Now.Year;
-                    }
-                    else if (strparam == Enums.UpcomingActivities.nextyear.ToString())
-                    {
-                        year = DateTime.Now.Year + 1;
-                    }
-                    else if (isNumeric)
+                    if (isNumeric)
                     {
                         year = Planyear;
                     }
@@ -6963,7 +6915,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    UpcomingActivityList.Add(new SelectListItem { Text = DateTime.Now.Year.ToString(), Value = DateTime.Now.Year.ToString(), Selected = false });
+                    UpcomingActivityList.Add(new SelectListItem { Text = DateTime.Now.Year.ToString(), Value = DateTime.Now.Year.ToString(), Selected = true });
                 }
             }
 
@@ -6971,7 +6923,6 @@ namespace RevenuePlanner.Controllers
             yearlistPrevious.ForEach(p => UpcomingActivityList.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
             var yearlistAfter = activePlan.Where(p => p.Year != DateTime.Now.Year.ToString() && p.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(p.Year) > DateTime.Now.Year).Select(p => p.Year).Distinct().OrderBy(p => p).ToList();
             yearlistAfter.ForEach(p => UpcomingActivityList.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
-
             return UpcomingActivityList;
         }
     }

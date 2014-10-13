@@ -92,9 +92,6 @@
                     break;
             }
             $("#modalMainContainer").hide();
-            //onClickPlanTitle();
-            onClickActivity();
-            //  onClickBusinessUnit();//Added by Nirav for Custom Dropdown - 388
 
             if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
                 //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
@@ -184,27 +181,6 @@
             }
             $dropdown.append($html);
         }
-
-        function onClickActivity() {
-           @* $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-                alert("called");
-                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                    filters.SelectedPlans = [];
-                    filters.SelectedPlans.push(CurrentPlanId);
-                }
-                if (filters.SelectedPlans.length > 0) {
-                    var PlanIds = filters.SelectedPlans.toString();
-                    var Title = $(this).text();
-                    var option = $.grep($('#drpthisyear option'), function (value) { return $(value).text() == Title; })
-                    Currenttime = $(option[0]).val();
-                    isQuater = Currenttime;
-                    RefreshCurrentTab();
-                    GetHealderData(PlanIds);
-                    GetNumberOfActivityPerMonByPlanId(PlanIds, Currenttime);
-
-                }
-            });*@
-            }
 
             function onClickBusinessUnit() {
                 $('#dropdown-business-unit').find('a#option').click(function (e) {
@@ -683,7 +659,6 @@
                     RefreshCurrentTab();
                     GetHealderData(SelectedPlanIds);
                     GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
-                    onClickActivity();
                 }
             }
         });
@@ -950,11 +925,6 @@
             $('#pbudget').show();
             $('#pMQLs').show();
             $('.changes').show();
-            //// Modified By Maninder Singh Wadhva to Address PL#203
-            //RefreshCurrentTab();
-            //var SelectedPlans = filters.SelectedPlans.toString();
-            //GetHealderData(SelectedPlans);
-            //GetNumberOfActivityPerMonByPlanId(SelectedPlans, "planYear");
             $('#Notabcontent').hide();
         }
         else {
@@ -978,18 +948,6 @@
         filters.PlanTitles = [];
         filters.PlanIDs = [];
         filters.SelectedPlans = [];
-        //filters.geographyIds = [];
-        //filters.VerticalId = [];
-        //filters.VerticalTitle = [];
-        //filters.geographyTitle = [];
-        //filters.AudienceIds = [];
-        //filters.AudienceTitle = [];
-        //$('#ulSelectedGeography').html('');
-        //$('#ulSelectedVertical').html('');
-        //$('#ulSelectedAudience').html('');
-        //$("#GeographyAllModule").css("display", "none");
-        //$("#ulVerticalAllModule").css("display", "none");
-        //$("#ulAudienceAllModule").css("display", "none");
     }
 
     function BindPlanBySelectedBusniessUnit() {
@@ -1037,9 +995,6 @@
                     }
                 }
                 else {
-                    //$("#NoGeographyFound").show();
-                    //$("#NoVerticalFound").show();
-                    //$("#NoAudienceFound").show();
                     $("#NoPlanFound").show();
                     $("#PlanAllModule").css("display", "none");
                 }
@@ -1302,7 +1257,6 @@
         PagePostRequest = false;
         $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val());
         BindUpcomingActivites(CurrentPlanId);
-        // BindOtherAttributes();
 
     });
     /*end Nirav*/
@@ -1408,7 +1362,7 @@
             //functions added to show campagin and program popup from email url link click when email sent to user when comapign or program shared
             ShowInspectForPlanCampaignId();
             ShowInspectForPlanProgramId();
-            if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+            if (activeMenu.toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 SetBusinessUnitSection();
             }
             //else {
@@ -1654,34 +1608,6 @@
             });
         }
 
-        ////// Modified By Maninder Singh Wadhva PL Ticket#47
-        ////// Function to create stage view control.
-        //function AddAccordionToggleAndInnerStage(data) {
-        //    var accordionDiv = $('#DivAccordionMarketingActivities');
-        //    accordionDiv.empty();
-        //    $.each(data.stage, function (index1, objStage) {
-        //        var colorCode = objStage.ColorCode;
-        //        var stageId = objStage.StageId;
-
-        //        var filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
-        //        AddMarketingActivities(colorCode, objStage.Title, stageId, filteredStage);
-        //    });
-        //}
-
-        ////// Modified By Maninder Singh Wadhva PL Ticket#47
-        ////// Function to create business unit view control.
-        //function AddAccordionToggleAndInnerBusinessUnit(data) {
-        //    var accordionDiv = $('#DivAccordionMarketingActivities');
-        //    accordionDiv.empty();
-        //    $.each(data.businessUnit, function (index1, objBusinessUnit) {
-        //        var colorCode = objBusinessUnit.ColorCode;
-        //        var businessUnitId = objBusinessUnit.BusinessUnitId;
-
-        //        var filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
-        //        AddMarketingActivities(colorCode, objBusinessUnit.Title, businessUnitId, filteredBusinessUnit);
-        //    });
-        //}
-
         //// Function to create request view control.
         var activities = { data: '' };
         function AddAccordionToggleAndInnerRequest(data) {
@@ -1742,6 +1668,7 @@
               dataType: "json",
               success: function (data) {
                   BindViewSelections(data.ViewById);
+                  $('#ddlTabViewBy').val(type.toString());
                   $('#RequestCount').html(data.requestCount);
                   planYear = parseInt(data.planYear);
                   var isDataExistForTacticTable = false;
@@ -1827,14 +1754,14 @@
 
 
     function BindViewSelections(data)
-        {
+    {
         var $dropdown = $("#ddlTabViewBy");
         $dropdown.html('');
         var $html = '';
         if (data.length > 0) {
             $.each(data, function (index, time) {
 
-                if (type == time.Text) {
+                if (type == time.Value) {
                     $html += '<option value="' + time.Value + '" selected="selected">' + time.Text + '</option>';
                 } else {
                     $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
@@ -2044,41 +1971,7 @@
                       return getCSSForTask(task);
                   };
                   gantt.parse(filteredTasks);
-              } else if (isQuater == "thisyear") {
-                  gantt.config.scale_unit = "year";
-                  gantt.config.step = 1;
-                  gantt.config.date_scale = "%Y";
-                  gantt.config.scale_height = 60;
-                  gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-                  gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-                  var date = new Date();
-                  gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
-                  gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
-                  gantt.init("gantt_here");
-
-                  var json_length = tasks.data.length;
-                  var gantt_div = document.getElementById("gantt_here");
-                  ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-                  //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-                  //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-                  //}
-                  //else {
-                  //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-                  //}
-                  ////
-
-                  // Added by KAPIL - #454 - to resolve extra space
-                  CalGanntHeight();
-
-                  //// Function to add class to each task bar.
-                  ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-                  gantt.templates.task_class = function (start, end, task) {
-                      return getCSSForTask(task);
-                  };
-
-                  gantt.parse(tasks);
-              }
+              } 
               else if (isQuater == "thismonth") {
                   gantt.config.scale_unit = "month";
                   gantt.config.step = 12;
@@ -2105,15 +1998,7 @@
 
                   var json_length = tasks.data.length;
                   var gantt_div = document.getElementById("gantt_here");
-                  ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-                  //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-                  //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-                  //}
-                  //else {
-                  //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-                  //}
-                  ////
-
+                  
                   // Added by KAPIL - #454 - to resolve extra space
                   CalGanntHeight();
 
@@ -2125,76 +2010,6 @@
 
                   gantt.parse(filteredTasks);//Modified by Mitesh Vaishnav on 04/08/2014 for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)
 
-              }
-              else if (isQuater == "nextyear") {
-
-                  gantt.config.scale_unit = "year";
-                  gantt.config.step = 1;
-                  gantt.config.date_scale = "%Y";
-                  gantt.config.scale_height = 60;
-                  gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-                  gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-                  var date = new Date();
-                  gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
-                  gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
-                  gantt.init("gantt_here");
-
-                  var json_length = tasks.data.length;
-                  var gantt_div = document.getElementById("gantt_here");
-                  ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-                  //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-                  //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-                  //}
-                  //else {
-                  //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-                  //}
-                  ////
-
-                  // Added by KAPIL - #454 - to resolve extra space
-                  CalGanntHeight();
-
-                  //// Function to add class to each task bar.
-                  ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-                  gantt.templates.task_class = function (start, end, task) {
-                      return getCSSForTask(task);
-                  };
-
-                  gantt.parse(tasks);
-              } else if (isQuater == "planYear") {
-                  // Edited to add PlanYear option.
-                  gantt.config.scale_unit = "year";
-                  gantt.config.step = 1;
-                  gantt.config.date_scale = "%Y";
-                  gantt.config.scale_height = 60;
-                  gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-                  gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-                  gantt.config.start_date = new Date(planYear, 00, 01);
-                  gantt.config.end_date = new Date(planYear + 1, 00, 01);
-                  gantt.init("gantt_here");
-
-                  var json_length = tasks.data.length;
-                  var gantt_div = document.getElementById("gantt_here");
-                  ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-                  //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-                  //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-                  //}
-                  //else {
-                  //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-                  //}
-                  ////
-
-                  // Added by KAPIL - #454 - to resolve extra space
-                  CalGanntHeight();
-
-                  //// Function to add class to each task bar.
-                  ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-                  gantt.templates.task_class = function (start, end, task) {
-                      return getCSSForTask(task);
-                  };
-
-                  gantt.parse(tasks);
               }
               else if ($.isNumeric(isQuater)) {
                   gantt.config.scale_unit = "year";
@@ -2232,17 +2047,7 @@
                   //modSampleHeight();
 
                   var gantt_div1 = document.getElementById("gantt_here");
-                  ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-                  //var totalRecords = tasks.data.length;
-                  //if (totalRecords.toString() == "0" || parseInt(totalRecords.toString()) <= 9) {
-                  //gantt_div1.style.height = ((totalRecords * 35) + 94) + "px";
-                  //$(".shadow-scroll-gantt").addClass("full-width");
-                  //}
-                  //else {
-                  //gantt_div1.style.height = "409px";
-                  //$(".shadow-scroll-gantt").removeClass("full-width");
-                  //}
-
+                 
                   // Added by KAPIL - #454 - to resolve extra space
                   CalGanntHeight();
 

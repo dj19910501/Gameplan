@@ -7858,6 +7858,7 @@ footer {
     position:fixed;
     bottom:0;
     width:100%;
+    z-index: 999;
     /*End #832*/
 }
 footer > span {
@@ -8728,5 +8729,13 @@ padding-left:25px;
 }
 
 .nav-tabs #ddlUpComingActivitesSelectBox li a:hover {
+    color: white !important;
+}
+
+.nav-tabs #ddlUpComingActivitesSelectBox li a.sbFocus {
+    color: white !important;
+}
+
+.nav-tabs #ddlTabSelectBox li a.sbFocus {
     color: white !important;
 }

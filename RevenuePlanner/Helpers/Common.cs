@@ -1086,13 +1086,7 @@ namespace RevenuePlanner.Helpers
             int year;
             bool isNumeric = int.TryParse(currentView, out year);
 
-            if (currentView == Enums.UpcomingActivities.thisyear.ToString())
-            {
-                //// Plan
-                startDate = new DateTime(System.DateTime.Now.Year, 1, 1);
-                endDate = new DateTime(System.DateTime.Now.Year + 1, 1, 1).AddTicks(-1);
-            }
-            else if (currentView == Enums.UpcomingActivities.thisquarter.ToString())
+            if (currentView == Enums.UpcomingActivities.thisquarter.ToString())
             {
                 int currentQuarter = ((startDate.Month - 1) / 3) + 1;
                 startDate = new DateTime(startDate.Year, (currentQuarter - 1) * 3 + 1, 1);
@@ -1104,24 +1098,6 @@ namespace RevenuePlanner.Helpers
                 int month = System.DateTime.Now.Month;
                 startDate = new DateTime(startDate.Year, month, 1);
                 endDate = startDate.AddMonths(month).AddTicks(-1);
-            }
-            else if (currentView == Enums.UpcomingActivities.nextyear.ToString())
-            {
-                //// Plan
-                startDate = new DateTime(System.DateTime.Now.Year + 1, 1, 1);
-                endDate = new DateTime(System.DateTime.Now.Year + 2, 1, 1).AddTicks(-1);
-            }
-            else if (currentView == Enums.UpcomingActivities.planYear.ToString())
-            {
-                //// Plan
-                startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
-                endDate = new DateTime(Convert.ToInt32(planYear) + 1, 1, 1).AddTicks(-1);
-            }
-            else if (currentView == Enums.UpcomingActivities.lastyear.ToString())
-            {
-                //// Plan
-                startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
-                endDate = new DateTime(Convert.ToInt32(planYear) + 1, 1, 1).AddTicks(-1);
             }
             else if(isNumeric)
             {
@@ -4288,7 +4264,7 @@ namespace RevenuePlanner.Helpers
 
                     foreach (var item in CustomFields)
                     {
-                        lstViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom-", item.CustomFieldId.ToString()) });
+                        lstViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom", item.CustomFieldId.ToString()) });
                     }
                 }
             }
