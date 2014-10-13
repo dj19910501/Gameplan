@@ -2611,26 +2611,31 @@
                 //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
                 modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
-                  
                 $('.modal-backdrop').addClass('modalFull-backdrop');
                 $('.modal-backdrop').attr("style", "display:none !important;");
                   $("#successMessage").css("display", "none");
                   $("#errorMessage").css("display", "none");
 				  $("#modal-container-186470").modal('show');
+                 
+                
                   loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
+                  modalBackdropDisplayNone();
             }
                 //// Checking whether current task is tactic or not.
             else if (typeof planTacticId != 'undefined' && planTacticId != 0) {
                 //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
                 modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
-                
                 $('.modal-backdrop').addClass('modalFull-backdrop');
                 $('.modal-backdrop').attr("style", "display:none !important;");
                 $("#successMessage").css("display", "none");
                 $("#errorMessage").css("display", "none");
 				$("#modal-container-186470").modal('show');
+               
                 loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
+                modalBackdropDisplayNone();
+
+               
             }
 
                 //// Checking whether current task is tactic or not.
@@ -2638,13 +2643,15 @@
                 // modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
                 modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
-                
                 $('.modal-backdrop').addClass('modalFull-backdrop');
                 $('.modal-backdrop').attr("style", "display:none !important;");
                 $("#successMessage").css("display", "none");
                 $("#errorMessage").css("display", "none");
 				$("#modal-container-186470").modal('show');
+                
+                
                 loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup");
+                modalBackdropDisplayNone();
             }
 
                 //// Checking whether current task is tactic or not.
@@ -2652,13 +2659,15 @@
                 //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
                 modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
-                
                 $('.modal-backdrop').addClass('modalFull-backdrop');
                 $('.modal-backdrop').attr("style", "display:none !important;");
                 $("#successMessage").css("display", "none");
                 $("#errorMessage").css("display", "none");
 				$("#modal-container-186470").modal('show');
+                
+               
                 loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup");
+                modalBackdropDisplayNone();
             }
 }
 
@@ -3613,6 +3622,16 @@ function ApproveTactic(e, task) {
                 spanId.text(TotalCount - cnt);
             }
         }
+    };
+
+    function modalBackdropDisplayNone() {
+        setTimeout(function () {
+            $('.modal-backdrop').each(function () {
+                if (typeof ($(this).attr('id')) == 'undefined') {
+                    $(this).attr("style", "display:none !important;");
+                }
+            });
+        }, 500);
     };
 
     gantt.attachEvent("onTaskClick", function (id, e) {
