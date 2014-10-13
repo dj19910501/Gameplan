@@ -202,4 +202,31 @@ namespace RevenuePlanner.Models
         public string Month { get; set; }
         public string Color { get; set; }
     }
+
+    public class ImprovementTaskDetail
+    {
+        public string MainParentId { get; set; }
+        public DateTime MinStartDate { get; set; }
+        public int ImprovePlanId { get; set; }
+        public Plan_Improvement_Campaign_Program_Tactic ImprovementTactic { get; set; }
+    }
+
+    public class CustomFields
+    {
+        public string CustomFieldId { get; set; }
+        public string Title { get; set; }
+        public string ColorCode { get; set; }
+    }
+
+    public class TacticTaskList
+    {
+        public Plan_Campaign_Program_Tactic Tactic { get; set; }
+        public string CustomFieldType { get; set; }
+        public string CustomFieldId { get; set; }
+        public string CustomFieldTitle { get; set; }
+        public string TaskId { get; set; }
+        public string ColorCode { get; set; }
+        public string StartDate { get; set; }
+        public double Duration { get; set; }
+    }
 }

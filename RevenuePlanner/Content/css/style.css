@@ -8168,7 +8168,13 @@ footer a {
 }
 #lblViewBy
 {
-    display: inline-block;
+    float: left;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 28px;
+    margin-bottom: 0;
+    padding-right: 7px;
+    text-align: center;
 }
 
 .report-budget-months
@@ -8700,4 +8706,27 @@ padding-left:25px;
 }
 #modal-container-186470 {
     padding-bottom: 150px !important;
+}
+
+.nav-tabs #ddlTabSelectBox li a:hover {
+    color: white !important;
+}
+
+#lblUpcoming_Activies {
+    float: left;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 28px;
+    margin-bottom: 0;
+    padding-right: 7px;
+    text-align: center;
+}
+
+#ddlUpComingActivitesSelectBox
+{
+    float:left;
+}
+
+.nav-tabs #ddlUpComingActivitesSelectBox li a:hover {
+    color: white !important;
 }

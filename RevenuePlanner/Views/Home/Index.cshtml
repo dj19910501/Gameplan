@@ -54,9 +54,11 @@
     <script type="text/javascript">
 
         // Edited to add PlanYear option.
-        var Currenttime = "planYear";
+        var Currenttime = "thisquarter";
         $(document).ready(function () {
+
             var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
+            $("#nl-form2").hide();
             //Added by Nirav for Custom Dropdown - 388
             var showBid = $('#showBid').val();
             filters.BUId.push('@Sessions.BusinessUnitId');
@@ -132,10 +134,14 @@
                 if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                     GetCollaborators(CurrentPlanId);
                 }
+                PagePostRequest = false;
                 RefreshCurrentTab();
+                BindUpcomingActivites(CurrentPlanId);
                 var selectedPlanIds = filters.SelectedPlans.toString();
                 GetHealderData(CurrentPlanId);
-                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, "planYear");
+                Currenttime = $('#ddlUpComingActivites').val();
+                isQuater = Currenttime;
+                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
                 arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable on plan change.
             });
         }
@@ -180,7 +186,8 @@
         }
 
         function onClickActivity() {
-            $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+           @* $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                alert("called");
                 if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                     filters.SelectedPlans = [];
                     filters.SelectedPlans.push(CurrentPlanId);
@@ -196,7 +203,7 @@
                     GetNumberOfActivityPerMonByPlanId(PlanIds, Currenttime);
 
                 }
-            });
+            });*@
             }
 
             function onClickBusinessUnit() {
@@ -618,6 +625,7 @@
 
     var SelectedBusinessUnitTitle = "";
     var SelectedPlanTitle = "";
+    var PagePostRequest = true;
 
     var filters = {
         geographyIds: [],
@@ -645,6 +653,7 @@
 
     function UpdateResult() {
         var SelectedPlanIds;
+        PagePostRequest = false;
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 SelectedPlanIds = filters.SelectedPlans.toString();
             }
@@ -1028,9 +1037,9 @@
                     }
                 }
                 else {
-                    $("#NoGeographyFound").show();
-                    $("#NoVerticalFound").show();
-                    $("#NoAudienceFound").show();
+                    //$("#NoGeographyFound").show();
+                    //$("#NoVerticalFound").show();
+                    //$("#NoAudienceFound").show();
                     $("#NoPlanFound").show();
                     $("#PlanAllModule").css("display", "none");
                 }
@@ -1136,16 +1145,33 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Home/BindUpcomingActivitesValues/")',
-            dataType: "html",
             async: false,
             data: {
                 planids: SelectedPlanIds,
                 CurrentTime: Currenttime
             },
             success: function (data) {
-                $("#planHeader").html(data);
+                BindUpcomingActivies(data);
             }
         });
+    }
+
+    function BindUpcomingActivies(items) {
+        var $dropdown = $("#ddlUpComingActivites");
+        $dropdown.html('');
+        var $html = '';
+        if (items.length > 0) {
+            $.each(items, function (index, pvalues) {
+                if (pvalues.Selected) {
+                    $html += '<option value="' + pvalues.Value + '" selected="selected">' + pvalues.Text + '</option>';
+                } else {
+                    $html += '<option value="' + pvalues.Value + '">' + pvalues.Text + '</option>';
+                }
+            });
+        }
+        $dropdown.append($html);
+        $("#ddlUpComingActivites").selectbox('detach');
+        $("#ddlUpComingActivites").selectbox("attach");
     }
 
     function BulkBUOperation(selection) {
@@ -1273,7 +1299,9 @@
         SelectedBusinessUnitTitle = ($("#dropdown-business-unit .sbSelector").html());
         CurrentPlanId = $('#PlanId').val();
         $("#CurrentPlanId").val(CurrentPlanId);
+        PagePostRequest = false;
         $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val());
+        BindUpcomingActivites(CurrentPlanId);
         // BindOtherAttributes();
 
     });
@@ -1292,34 +1320,13 @@
     var isQuater = Currenttime;//false;
 
     //// Global variable to hold current tab.
-    var type = GanttTabs.Tactic;
+    var type = '@PlanGanttTypes.Tactic.ToString()';
     var showTacticStatus = false;   //// Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
 
     //// Function to refresh current tab.
     function RefreshCurrentTab() {
-        switch (type) {
-            case GanttTabs.Tactic:
-                GetTactics();
-                break;
-            case GanttTabs.Vertical:
-                GetVertical();
-                break;
-            case GanttTabs.Stage:
-                GetStage();
-                break;
-            case GanttTabs.Audience:
-                GetAudience();
-                break;
-            case GanttTabs.BusinessUnit:
-                GetBusinessUnit();
-                break;
-            case GanttTabs.Request:
-                GetRequest();
-                break;
-            default:
-                alert('No match');
-                break;
-        }
+        type = $('#ddlTabViewBy').val();
+        AjaxRequest();
     }
     /// Script End
     /// Added By: Maninder Singh Wadhva.
@@ -1486,53 +1493,6 @@
             RefreshCurrentTab();
         }
 
-        //// Function to get tactic.
-        function GetTactics() {
-            $('.pull-right').removeClass('active');
-            $('#ATactics').closest('li').addClass('active');
-            type = GanttTabs.Tactic;
-            AjaxRequest();
-        }
-
-        //// Function to get audience.
-        function GetAudience() {
-            $('.pull-right').removeClass('active');
-            $('#AAudience').closest('li').addClass('active');
-            type = GanttTabs.Audience;
-            AjaxRequest();
-        }
-
-        //// Function to get vertical.
-        function GetVertical() {
-            $('.pull-right').removeClass('active');
-            $('#AVertical').closest('li').addClass('active');
-            type = GanttTabs.Vertical;
-            AjaxRequest();
-        }
-
-        //// Function to get business unit.
-        function GetBusinessUnit() {
-            $('.pull-right').removeClass('active');
-            $('#ABusinessUnit').closest('li').addClass('active');
-            type = GanttTabs.BusinessUnit;
-            AjaxRequest();
-        }
-
-        //// Function to get stage.
-        function GetStage() {
-            $('.pull-right').removeClass('active');
-            $('#AStage').closest('li').addClass('active');
-            type = GanttTabs.Stage;
-            AjaxRequest();
-        }
-
-        //// Function to get request.
-        function GetRequest() {
-            $('.pull-right').removeClass('active');
-            $('#ARequest').closest('li').addClass('active');
-            type = GanttTabs.Request;
-            AjaxRequest();
-        }
 
         //// Modified By Maninder Singh Wadhva PL Ticket#47
         //// Function to add html for improvement activities.
@@ -1618,7 +1578,7 @@
 
             if (flag == false) {
 
-                if (type.toString() == "0" || type.toString() == "5") {
+                if (type.toString() == '@PlanGanttTypes.Tactic.ToString()' || type.toString() == '@PlanGanttTypes.Request.ToString()' || taskId.substring(0, 1) == "Z") {
                     GanttOpenTaskInCalender(taskId);
                 }
                 else {
@@ -1666,61 +1626,61 @@
             isRender = false;
         }
 
-        //// Modified By Maninder Singh Wadhva PL Ticket#47
-        //// Function to create audience view control.
-        function AddAccordionToggleAndInnerAudience(data) {
-            var accordionDiv = $('#DivAccordionMarketingActivities');
-            accordionDiv.empty();
-            $.each(data.audience, function (index1, objAudience) {
-                var colorCode = objAudience.ColorCode;
-                var audienceId = objAudience.AudienceId;
+        ////// Modified By Maninder Singh Wadhva PL Ticket#47
+        ////// Function to create audience view control.
+        //function AddAccordionToggleAndInnerAudience(data) {
+        //    var accordionDiv = $('#DivAccordionMarketingActivities');
+        //    accordionDiv.empty();
+        //    $.each(data.audience, function (index1, objAudience) {
+        //        var colorCode = objAudience.ColorCode;
+        //        var audienceId = objAudience.AudienceId;
 
-                var filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
-                AddMarketingActivities(colorCode, objAudience.Title, audienceId, filteredAudience);
-            })
-        }
+        //        var filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
+        //        AddMarketingActivities(colorCode, objAudience.Title, audienceId, filteredAudience);
+        //    })
+        //}
 
         //// Modified By Maninder Singh Wadhva PL Ticket#47
         //// Function to create vertical view control.
-        function AddAccordionToggleAndInnerVertical(data) {
+        function AddAccordionToggleAndInnerCustomFields(data) {
             var accordionDiv = $('#DivAccordionMarketingActivities');
             accordionDiv.empty();
 
-            $.each(data.vertical, function (index1, objVertical) {
+            $.each(data.customFields, function (index1, objVertical) {
                 var colorCode = objVertical.ColorCode;
-                var verticalId = objVertical.VerticalId;
-                var filteredVertical = $.grep(data.verticalTactic, function (value) { return value.VerticalId == verticalId; }).sort(SortAlphabetically);
+                var verticalId = objVertical.CustomFieldId;
+                var filteredVertical = $.grep(data.customFieldTactics, function (value) { return value.CustomFieldId == verticalId; }).sort(SortAlphabetically);
                 AddMarketingActivities(colorCode, objVertical.Title, verticalId, filteredVertical);
             });
         }
 
-        //// Modified By Maninder Singh Wadhva PL Ticket#47
-        //// Function to create stage view control.
-        function AddAccordionToggleAndInnerStage(data) {
-            var accordionDiv = $('#DivAccordionMarketingActivities');
-            accordionDiv.empty();
-            $.each(data.stage, function (index1, objStage) {
-                var colorCode = objStage.ColorCode;
-                var stageId = objStage.StageId;
+        ////// Modified By Maninder Singh Wadhva PL Ticket#47
+        ////// Function to create stage view control.
+        //function AddAccordionToggleAndInnerStage(data) {
+        //    var accordionDiv = $('#DivAccordionMarketingActivities');
+        //    accordionDiv.empty();
+        //    $.each(data.stage, function (index1, objStage) {
+        //        var colorCode = objStage.ColorCode;
+        //        var stageId = objStage.StageId;
 
-                var filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
-                AddMarketingActivities(colorCode, objStage.Title, stageId, filteredStage);
-            });
-        }
+        //        var filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
+        //        AddMarketingActivities(colorCode, objStage.Title, stageId, filteredStage);
+        //    });
+        //}
 
-        //// Modified By Maninder Singh Wadhva PL Ticket#47
-        //// Function to create business unit view control.
-        function AddAccordionToggleAndInnerBusinessUnit(data) {
-            var accordionDiv = $('#DivAccordionMarketingActivities');
-            accordionDiv.empty();
-            $.each(data.businessUnit, function (index1, objBusinessUnit) {
-                var colorCode = objBusinessUnit.ColorCode;
-                var businessUnitId = objBusinessUnit.BusinessUnitId;
+        ////// Modified By Maninder Singh Wadhva PL Ticket#47
+        ////// Function to create business unit view control.
+        //function AddAccordionToggleAndInnerBusinessUnit(data) {
+        //    var accordionDiv = $('#DivAccordionMarketingActivities');
+        //    accordionDiv.empty();
+        //    $.each(data.businessUnit, function (index1, objBusinessUnit) {
+        //        var colorCode = objBusinessUnit.ColorCode;
+        //        var businessUnitId = objBusinessUnit.BusinessUnitId;
 
-                var filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
-                AddMarketingActivities(colorCode, objBusinessUnit.Title, businessUnitId, filteredBusinessUnit);
-            });
-        }
+        //        var filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
+        //        AddMarketingActivities(colorCode, objBusinessUnit.Title, businessUnitId, filteredBusinessUnit);
+        //    });
+        //}
 
         //// Function to create request view control.
         var activities = { data: '' };
@@ -1758,8 +1718,9 @@
             }
         }
         else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            Planid.push(CurrentPlanId);
-            BUId.push($('#ddlBusinessUnit').val());
+            // #838 Showing Multiple Plans on Plan Page : Kalpesh Sharma
+            Planid= CurrentPlanId;
+            BUId = ($('#ddlBusinessUnit').val());
             GetSelectedPlanNo = 1;
         }
 
@@ -1780,9 +1741,9 @@
               },
               dataType: "json",
               success: function (data) {
+                  BindViewSelections(data.ViewById);
                   $('#RequestCount').html(data.requestCount);
                   planYear = parseInt(data.planYear);
-
                   var isDataExistForTacticTable = false;
                   //// Modified By Maninder Singh Wadhva PL Ticket#47
                   if (typeof data.improvementTacticTypeForAccordion != 'undefined' &&
@@ -1812,27 +1773,23 @@
                   if (filteredNonImprovementData.length > 0) {
                       isDataExistForTacticTable = true;
                       $('#marketing-activities').show();
+
                       switch (type) {
-                          case GanttTabs.Tactic:
+                          case '@PlanGanttTypes.Tactic.ToString()':
                               AddAccordionToggleAndInnerTactic(data);
                               break;
-                          case GanttTabs.Vertical:
-                              AddAccordionToggleAndInnerVertical(data);
+                          case '@PlanGanttTypes.Vertical.ToString()':
+                          case '@PlanGanttTypes.Stage.ToString()':
+                          case '@PlanGanttTypes.Audience.ToString()':
+                          case '@PlanGanttTypes.BusinessUnit.ToString()':
+                              AddAccordionToggleAndInnerCustomFields(data);
                               break;
-                          case GanttTabs.Stage:
-                              AddAccordionToggleAndInnerStage(data);
-                              break;
-                          case GanttTabs.Audience:
-                              AddAccordionToggleAndInnerAudience(data);
-                              break;
-                          case GanttTabs.BusinessUnit:
-                              AddAccordionToggleAndInnerBusinessUnit(data);
-                              break;
-                          case GanttTabs.Request:
+                          case '@PlanGanttTypes.Request.ToString()':
                               AddAccordionToggleAndInnerRequest(data);
                               break;
                           default:
-                              alert('No match');
+                              //alert('No match');
+                              $('#marketing-activities').hide();
                               break;
                       }
 
@@ -1844,7 +1801,7 @@
 
                   renderGantt(data.taskData);
                   //// Hide/Show Tabulated data shown below gantt of request tab.
-                  if (GanttTabs.Request == type) {
+                  if ('@PlanGanttTypes.Request.ToString()' == type) {
                       $(".shadow-scroll-gantt").show();
                       $("#table_activities").show();
                       FillTacticTableForRequest(data);
@@ -1867,6 +1824,30 @@
               }
           });
       }
+
+
+    function BindViewSelections(data)
+        {
+        var $dropdown = $("#ddlTabViewBy");
+        $dropdown.html('');
+        var $html = '';
+        if (data.length > 0) {
+            $.each(data, function (index, time) {
+
+                if (type == time.Text) {
+                    $html += '<option value="' + time.Value + '" selected="selected">' + time.Text + '</option>';
+                } else {
+                    $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                }
+            });
+        }
+        $dropdown.append($html);
+        if (!PagePostRequest) {
+            $(".selectBox select").selectbox('detach');
+            $(".selectBox select").selectbox("attach");
+            PagePostRequest = true;
+        }
+        }
 
       //Function to get current plan edit permission, PL #538
       function GetCurrentPlanPermissionDetail() {
@@ -2215,9 +2196,36 @@
 
                   gantt.parse(tasks);
               }
+              else if ($.isNumeric(isQuater)) {
+                  gantt.config.scale_unit = "year";
+                  gantt.config.step = 1;
+                  gantt.config.date_scale = "%Y";
+                  gantt.config.scale_height = 60;
+                  gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+                  gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+                  var date = new Date();
+                  gantt.config.start_date = new Date(planYear, 00, 01);
+                  gantt.config.end_date = new Date(planYear + 1, 00, 01);
+                  gantt.init("gantt_here");
+
+                  var json_length = tasks.data.length;
+                  var gantt_div = document.getElementById("gantt_here");
+                  
+                  // Added by KAPIL - #454 - to resolve extra space
+                  CalGanntHeight();
+
+                  //// Function to add class to each task bar.
+                  ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+                  gantt.templates.task_class = function (start, end, task) {
+                      return getCSSForTask(task);
+                  };
+
+                  gantt.parse(tasks);
+              }
 
               //// Hide/Show Tabulated data shown below gantt of request tab.
-              if (GanttTabs.Request == type) {
+              if ('@PlanGanttTypes.Request.ToString()' == type) {
 
                   // Below function commented by dharmraj coz with below function gantt_chart shows lines.
                   //// Calculating height for grid
@@ -2308,7 +2316,7 @@
                       }
                   });
               }
-              else if ((leftNavTaskID.substring(0, 1) == "B" || leftNavTaskID.substring(0, 1) == "A" || leftNavTaskID.substring(0, 1) == "S" || leftNavTaskID.substring(0, 1) == "V") && leftNavTaskID.indexOf("M") > 0) {
+              else if ((leftNavTaskID.substring(0, 1) == "Z") && leftNavTaskID.indexOf("M") > 0) {
                   $("#DivAccordionImprovementActivities").find('span[id^="spnimprovement_"]').each(function (index1) {
                       var tid = this.id.substring(this.id.indexOf('_') + 1);
                       var cnt = 0;
@@ -2376,7 +2384,7 @@
           function getCSSForTask(task) {
               var isImprovement = false;
               if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
-                  var cssClass = task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+                  var cssClass = task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                   if (typeof task.isImprovement != 'undefined' && task.isImprovement == true &&
                       typeof task.ImprovementPlanTacticId != 'undefined') {
                       cssClass += ' improvement border-top';
@@ -2444,7 +2452,7 @@
               //// Function to add class to each task bar.
               gantt.templates.task_class = function (start, end, task) {
                   if (typeof task.plantacticid != 'undefined') {
-                      return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+                      return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                   } else {
                       return task.color;
                   }
@@ -2471,7 +2479,7 @@
               //// Function to add class to each task bar.
               gantt.templates.task_class = function (start, end, task) {
                   if (typeof task.plantacticid != 'undefined') {
-                      return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+                      return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                   } else {
                       return task.color;
                   }
@@ -2514,7 +2522,7 @@
               //// Function to add class to each task bar.
               gantt.templates.task_class = function (start, end, task) {
                   if (typeof task.plantacticid != 'undefined') {
-                      return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+                      return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                   } else {
                       return task.color;
                   }
@@ -2541,7 +2549,7 @@
               //// Function to add class to each task bar.
               gantt.templates.task_class = function (start, end, task) {
                   if (typeof task.plantacticid != 'undefined') {
-                      return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+                      return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                   } else {
                       return task.color;
                   }
@@ -2603,12 +2611,12 @@
                 //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
                 modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
+                  
                 $('.modal-backdrop').addClass('modalFull-backdrop');
                 $('.modal-backdrop').attr("style", "display:none !important;");
                   $("#successMessage").css("display", "none");
                   $("#errorMessage").css("display", "none");
-                  $("#modal-container-186470").modal('show');
-                
+				  $("#modal-container-186470").modal('show');
                   loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
             }
                 //// Checking whether current task is tactic or not.
@@ -2616,12 +2624,12 @@
                 //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
                 modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
+                
                 $('.modal-backdrop').addClass('modalFull-backdrop');
                 $('.modal-backdrop').attr("style", "display:none !important;");
                 $("#successMessage").css("display", "none");
                 $("#errorMessage").css("display", "none");
-                $("#modal-container-186470").modal('show');
-                
+				$("#modal-container-186470").modal('show');
                 loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
             }
 
@@ -2630,12 +2638,12 @@
                 // modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
                 modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
+                
                 $('.modal-backdrop').addClass('modalFull-backdrop');
                 $('.modal-backdrop').attr("style", "display:none !important;");
                 $("#successMessage").css("display", "none");
                 $("#errorMessage").css("display", "none");
-                $("#modal-container-186470").modal('show');
-                
+				$("#modal-container-186470").modal('show');
                 loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup");
             }
 
@@ -2644,12 +2652,12 @@
                 //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
                 modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
+                
                 $('.modal-backdrop').addClass('modalFull-backdrop');
                 $('.modal-backdrop').attr("style", "display:none !important;");
                 $("#successMessage").css("display", "none");
                 $("#errorMessage").css("display", "none");
-                $("#modal-container-186470").modal('show');
-               
+				$("#modal-container-186470").modal('show');
                 loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup");
             }
 }
@@ -3022,7 +3030,7 @@ function ApproveTactic(e, task) {
     }
 
     function iterateMarketingActivitesOnExpand(id) {
-        if (id.substring(0, 1) == "C" || id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V" || (id.substring(0, 1) == "L" && id.indexOf("M") <= 0)) {
+        if (id.substring(0, 1) == "C" || id.substring(0, 1) == "Z" || (id.substring(0, 1) == "L" && id.indexOf("M") <= 0)) {
             var intid = 0;
             if (id.indexOf("P") >= 0) {
                 intid = id.substring(id.indexOf('P') + 1);
@@ -3091,7 +3099,7 @@ function ApproveTactic(e, task) {
                     });
                 }
                 //// Three levels Exapnding tabs for Improvement Activities in BusinessUnit, Audience, Stage or Vertical
-                if ((id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") && (id.indexOf("L") > 0 && id.indexOf("M") > 0)) {
+                if ((id.substring(0, 1) == "Z") && (id.indexOf("L") > 0 && id.indexOf("M") > 0)) {
                     $("#DivAccordionImprovementActivities").find('span[id^="spnimprovement_"]').each(function (index1) {
                         var tid = this.id.substring(this.id.indexOf('_') + 1);
                         var cnt = 0;
@@ -3111,7 +3119,7 @@ function ApproveTactic(e, task) {
                     });
                 }
                     //// Five levels Expanding tabs for BusinessUnit, Audience, Stage or Vertical
-                else if ((id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") && (id.indexOf("L") <= 0 && id.indexOf("M") <= 0)) {
+                else if ((id.substring(0, 1) == "Z") && (id.indexOf("L") <= 0 && id.indexOf("M") <= 0)) {
                     $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index0) {
                         var tid = this.id.substring(this.id.indexOf('_') + 1);
                         var cnt = 0;
@@ -3164,7 +3172,7 @@ function ApproveTactic(e, task) {
                     iterateImprovementActivitiesOnExpand(id);
                 }
                     //// Four levels Exapnding tabs for Plan
-                else if ((id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V" || id.substring(0, 1) == "L") && id.indexOf("M") <= 0) {
+                else if ((id.substring(0, 1) == "Z" || id.substring(0, 1) == "L") && id.indexOf("M") <= 0) {
                     $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index0) {
                         var tid = this.id.substring(this.id.indexOf('_') + 1);
                         var cnt = 0;
@@ -3250,7 +3258,7 @@ function ApproveTactic(e, task) {
                             $("#accordion-element-improvement-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                                 var taskid = $(this).attr('taskid');
                                 $.each(a, function (index, value) {
-                                    if (id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") {
+                                    if (id.substring(0, 1) == "Z") {
                                         if (value.indexOf(taskid) > 0) {
                                             cnt = cnt + 1;
                                         }
@@ -3265,7 +3273,7 @@ function ApproveTactic(e, task) {
                         }
                     }
                 }
-                if (id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") {
+                if (id.substring(0, 1) == "Z") {
                     var child1Visible = gantt.getTask(value1).$open;
                     if (typeof child1Visible != undefined) {
                         if (child1Visible == true) {
@@ -3329,7 +3337,7 @@ function ApproveTactic(e, task) {
     }
 
     function iterateMarketingActivitesOnCollapse(id) {
-        if (id.substring(0, 1) == "C" || id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V" || (id.substring(0, 1) == "L" && id.indexOf("M") <= 0)) {
+        if (id.substring(0, 1) == "C" || id.substring(0, 1) == "Z" || (id.substring(0, 1) == "L" && id.indexOf("M") <= 0)) {
             var intid = 0;
             if (id.indexOf("P") >= 0) {
                 intid = id.substring(id.indexOf('P') + 1);
@@ -3382,7 +3390,7 @@ function ApproveTactic(e, task) {
                     });
                 }
                 //// Three levels Collapsing tabs for Improvement Activities in BusinessUnit, Audience, Stage or Verticals
-                if ((id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") && (id.indexOf("L") > 0 && id.indexOf("M") > 0)) {
+                if ((id.substring(0, 1) == "Z") && (id.indexOf("L") > 0 && id.indexOf("M") > 0)) {
                     $("#DivAccordionImprovementActivities").find('span[id^="spnimprovement_"]').each(function (index1) {
                         var tid = this.id.substring(this.id.indexOf('_') + 1);
                         var cnt = 0;
@@ -3405,7 +3413,7 @@ function ApproveTactic(e, task) {
                     });
                 }
                     //// Five levels Expanding tabs for BusinessUnit, Audience, Stage or Vertical 
-                else if ((id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") && (id.indexOf("L") <= 0 && id.indexOf("M") <= 0)) {
+                else if ((id.substring(0, 1) == "Z") && (id.indexOf("L") <= 0 && id.indexOf("M") <= 0)) {
                     $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index0) {
                         var tid = this.id.substring(this.id.indexOf('_') + 1);
                         var cnt = 0;
@@ -3456,7 +3464,7 @@ function ApproveTactic(e, task) {
                     iterateImprovementActivitiesOnCollapse(id);
                 }
                     //// Four levels Collapsing tabs tabs for Plan
-                else if ((id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V" || id.substring(0, 1) == "L") && id.indexOf("M") <= 0) {
+                else if ((id.substring(0, 1) == "Z" || id.substring(0, 1) == "L") && id.indexOf("M") <= 0) {
                     $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index0) {
                         var tid = this.id.substring(this.id.indexOf('_') + 1);
                         var cnt = 0;
@@ -3542,7 +3550,7 @@ function ApproveTactic(e, task) {
                             $("#accordion-element-improvement-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                                 var taskid = $(this).attr('taskid');
                                 $.each(a, function (index, value) {
-                                    if (id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") {
+                                    if (id.substring(0, 1) == "Z") {
                                         if (value.indexOf(taskid) > 0) {
                                             cnt = cnt + 1;
                                         }
@@ -3557,7 +3565,7 @@ function ApproveTactic(e, task) {
                         }
                     }
                 }
-                if (id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") {
+                if (id.substring(0, 1) == "Z") {
                     var child1Visible = gantt.getTask(value1).$open;
                     if (typeof child1Visible != undefined) {
                         if (child1Visible == true) {
@@ -3666,13 +3674,6 @@ function ApproveTactic(e, task) {
 
 <script>
     $(document).ready(function () {
-        //var r = $('#content_wraper').height() - 170;
-        //$('.scroll-section').css('height', r);
-
-        //$(function () {
-        //    $('.sidebar-section .accordion-body .scroll-list,.scroll-section,.sidebar').slimScroll();
-        //});
-
         function toggleChevron(e) {
             $(e.target)
 				.prev('.accordion-heading')
@@ -3681,5 +3682,31 @@ function ApproveTactic(e, task) {
         }
         $('.accordion').on('hidden.bs.collapse', toggleChevron);
         $('.accordion').on('shown.bs.collapse', toggleChevron);
+
+        $("#ddlTabViewBy").change(function () {
+            RefreshCurrentTab();
+        });
+
+        if ($('#ddlUpComingActivites').val() != 'undefined') {
+            Currenttime = $('#ddlUpComingActivites').val();
+            isQuater = Currenttime;
+        }
+        
+        $("#ddlUpComingActivites").change(function () {
+            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                //filters.SelectedPlans = [];
+                //filters.SelectedPlans.push(CurrentPlanId);
+                PlanIds = CurrentPlanId;
+            }
+            if (filters.SelectedPlans.length > 0) {
+                var PlanIds = filters.SelectedPlans.toString();
+                Currenttime = $('#ddlUpComingActivites').val();
+                isQuater = Currenttime;
+                RefreshCurrentTab();
+                GetHealderData(PlanIds);
+                GetNumberOfActivityPerMonByPlanId(PlanIds, Currenttime);
+            }
+        });
+
     });
 </script>

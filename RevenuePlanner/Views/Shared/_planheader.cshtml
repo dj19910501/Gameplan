@@ -27,7 +27,7 @@
     <p id="pMQLImproved" class="small-value source-sans-prosemibold">@Html.DisplayFor(model => model.PercentageMQLImproved)</p>
 </div>
 
-<div class="wraper-title">
+@*<div class="wraper-title" style="display:none;">
     <h3 class="source-sans-prolight timeframe ">@Html.Raw("Upcoming activities ")
         <br />
     </h3>
@@ -38,14 +38,18 @@
                 populateNFActivity(time, "drpthisyear");
             </script>
         </select>
-     @*   <span class="arrow-down-white"></span>*@
         <div class="nl-overlay"></div>
         <script>
             nlform = new NLForm(document.getElementById('nl-formAct'));
         </script>
         
     </form>
+</div>*@
+
+<div >
+    <h2 style="color:white;font-weight:normal;font-size: 28.5px;">@Html.Raw("Marketing Summary")</h2>
 </div>
+
 <script type="text/javascript">
     SetBudget("#pbudget");
     SetPriceValue("#pMQLs");

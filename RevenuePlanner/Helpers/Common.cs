@@ -1083,6 +1083,9 @@ namespace RevenuePlanner.Helpers
         /// <param name="endDate">End date of calendar.</param>
         public static void GetPlanGanttStartEndDate(string planYear, string currentView, ref DateTime startDate, ref DateTime endDate)
         {
+            int year;
+            bool isNumeric = int.TryParse(currentView, out year);
+
             if (currentView == Enums.UpcomingActivities.thisyear.ToString())
             {
                 //// Plan
@@ -1111,6 +1114,17 @@ namespace RevenuePlanner.Helpers
             else if (currentView == Enums.UpcomingActivities.planYear.ToString())
             {
                 //// Plan
+                startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
+                endDate = new DateTime(Convert.ToInt32(planYear) + 1, 1, 1).AddTicks(-1);
+            }
+            else if (currentView == Enums.UpcomingActivities.lastyear.ToString())
+            {
+                //// Plan
+                startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
+                endDate = new DateTime(Convert.ToInt32(planYear) + 1, 1, 1).AddTicks(-1);
+            }
+            else if(isNumeric)
+            {
                 startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
                 endDate = new DateTime(Convert.ToInt32(planYear) + 1, 1, 1).AddTicks(-1);
             }
@@ -4247,6 +4261,42 @@ namespace RevenuePlanner.Helpers
 
         #endregion
 
+        #region Plan Gantt Types
+
+        public static List<ViewByModel> GetDefaultGanttTypes(string planIds="")
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstViewByTab = new List<ViewByModel>();
+            lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Vertical.ToString(), Value = PlanGanttTypes.Vertical.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Request.ToString(), Value = PlanGanttTypes.Request.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.BusinessUnit.ToString(), Value = PlanGanttTypes.BusinessUnit.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = PlanGanttTypes.Audience.ToString() });
+
+            if (!string.IsNullOrEmpty(planIds))
+            {
+                List<int> planId = string.IsNullOrWhiteSpace(planIds) ? new List<int>() : planIds.Split(',').Select(plan => int.Parse(plan)).ToList();
+                var tactic = db.Plan_Campaign_Program_Tactic.Where(s => planId.Contains(s.Plan_Campaign_Program.Plan_Campaign.PlanId) && s.IsDeleted == false).Select(t => t);
+                if (tactic != null)
+                {
+                    var CustomFields = (from cf in db.CustomFields
+                                        join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
+                                        join t in tactic on cfe.EntityId equals t.PlanTacticId
+                                        where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId
+                                        select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+
+                    foreach (var item in CustomFields)
+                    {
+                        lstViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom-", item.CustomFieldId.ToString()) });
+                    }
+                }
+            }
+
+            return lstViewByTab;
+        }
+
+        #endregion
     }
 
     ////Start Manoj PL #490 Date:27May2014

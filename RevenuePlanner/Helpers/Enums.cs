@@ -839,6 +839,19 @@ namespace RevenuePlanner.Helpers
         BusinessUnit = 4,
         Request = 5
     }
+
+
+    public enum PlanGanttTypes
+    {
+        Tactic,
+        Vertical,
+        Stage,
+        Audience,
+        BusinessUnit,
+        Request,
+        Custom
+    }
+
     #endregion
 
     /// <summary>
@@ -890,5 +903,6 @@ namespace RevenuePlanner.Helpers
         public const string Geography = "Geography";
         public const string Vertical = "Vertical";
     }
+
 
 }
