@@ -102,6 +102,7 @@ body {
     min-width: 1000px !important;
     /*position: absolute;*/ /* removed by kapil - #139 - to resolve popup issue */
     float: left; /* added by kapil - #139 - to resolve popup issue */
+    margin-bottom: 10px;
 }
 /* changed by Nirav shah  on 10 feb 2014 for  Inspect screen : css changes as per new HTML*/
 /*#content_wraper
@@ -9113,6 +9114,7 @@ div.sub {
     margin-left: 70px;
     border: 1px solid #cccccc;
     border-radius: 8px;
+    margin-bottom: 50px;
 }
 
 .integrationAccordion .accordion-heading {
