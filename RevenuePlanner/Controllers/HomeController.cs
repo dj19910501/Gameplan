@@ -3960,7 +3960,8 @@ namespace RevenuePlanner.Controllers
                                   StageId = pcpt.StageId,
                                   StageTitle = pcpt.Stage.Title,
                                   StageLevel = pcpt.Stage.Level,
-                                  ProjectedStageValue = pcpt.ProjectedStageValue
+                                  ProjectedStageValue = pcpt.ProjectedStageValue,
+                                  GeographyTitle = pcpt.Geography.Title
 
                               }).SingleOrDefault();
 

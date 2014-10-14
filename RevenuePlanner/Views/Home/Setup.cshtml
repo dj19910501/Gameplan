@@ -51,8 +51,16 @@
             <p>Business Unit</p>
             @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
         </div>
+        <div class="span3 margin-top10 paddingleft25px">
+            <p>Vertical</p>
+             @Html.TextBoxFor(model => model.VerticalTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.VerticalTitle })
+        </div>
+        <div class="span3 margin-top10 paddingleft25px">
+            <p>Geography</p>
+            @Html.TextBoxFor(model => model.GeographyTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.GeographyTitle })
+        </div>
         
-         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(tactic.PlanTacticId, Enums.EntityType.Tactic.ToString(),2)
+         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(tactic.PlanTacticId, Enums.EntityType.Tactic.ToString(),4)
     </div>
    
                                         

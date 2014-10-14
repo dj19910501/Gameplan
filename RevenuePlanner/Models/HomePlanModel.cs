@@ -144,6 +144,8 @@ namespace RevenuePlanner.Models
         public double? ProjectedStageValue { get; set; }
 
         public double? ProjectedStageValueActual { get; set; }
+
+        public string GeographyTitle { get; set; }
     }
 
     public class InspectReviewModel
