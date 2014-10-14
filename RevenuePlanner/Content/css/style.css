@@ -62,6 +62,10 @@ body.gradient {
     background: url("../images/gradient-body.jpg") repeat-x #fff;
 }
 
+body {
+    -ms-overflow-style: scrollbar;
+}
+
 /* Edited by Kapil - Header V2.2 - #637 */
 #header {
      background:none #2384b8;
