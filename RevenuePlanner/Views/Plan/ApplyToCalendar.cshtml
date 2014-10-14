@@ -274,7 +274,8 @@
 @{
     if (showBid == true)
     {
-    <span class="selectBox dropdown-businessUnit" id="dropdown-business-unit">
+        //Modified By : Kalpesh Sharma #859 Different Business Unit Drop Down List on Plan Pages
+        <span class="selectBox" id="dropdown-business-unit" style="width: 158px;">
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
         {
             @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", @RevenuePlanner.Helpers.Sessions.BusinessUnitId))
