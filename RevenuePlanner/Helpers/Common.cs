@@ -3815,7 +3815,7 @@ namespace RevenuePlanner.Helpers
                         // Calculate Revenue
                         cwStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
-                        double RevenueValue = (INQValue) * (modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize;
+                        double RevenueValue = (inputValue) * (modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize; // Modified by Maninder Singh Wadhva on 10/14/2014 for PL ticket #775
                         objBudgetAllocationModel.RevenueValue = RevenueValue;
 
                     }
