@@ -28,7 +28,7 @@
 <div class="modal-popup-summary">
     <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
     <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
-        I'm running a
+        I'm running 
             <span id="tactic-type" class="source-sans-prosemibold color5693B3">@*Email*@ @tacticMaster.TacticTypeTitle</span>
         tactic called 
             <span id="tactic-name" class="source-sans-prosemibold color5693B3">@tacticMaster.TacticTitle</span>
@@ -109,7 +109,7 @@
           loadReview(planTacticId, tabtext);
 
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $("#InspectTab li").on("click", function () {
+          $("#liSetup,#liReview,#liActuals").on("click", function () {
               var activeTab = $("#InspectTab li.active a").text();
               if (activeTab == 'Actuals') {
                   var tabtext = ($(this).children('a').text());

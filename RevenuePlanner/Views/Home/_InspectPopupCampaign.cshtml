@@ -98,7 +98,7 @@
           loadReview(planCampaignId, tabtext);
 
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $("#InspectTab li").on("click", function () {
+          $("#liSetup,#liReview").on("click", function () {
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");
