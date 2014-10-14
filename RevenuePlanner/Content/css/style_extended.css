@@ -2746,6 +2746,7 @@ label {
 /* Manage Roles  added by uday for user roles screens*/
 .manage-roles {
     padding-left: 69px;
+    margin-bottom:40px;
 }
 
     .manage-roles h4 {
@@ -3146,6 +3147,7 @@ label {
 /* User Permissions */
 .user-permissions {
     padding-left: 69px;
+    margin-bottom: 20px;
 }
 
     .user-permissions h4 {

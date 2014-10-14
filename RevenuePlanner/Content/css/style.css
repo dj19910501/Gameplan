@@ -10427,3 +10427,9 @@ li.close-list {
 .inspect-column-parent div .selectBox .sbHolder .sbSelector {
     cursor: default !important;
 }
+
+
+#grayImprovementContainer
+{
+    margin-bottom:50px;
+}
