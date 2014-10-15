@@ -15,21 +15,6 @@ margin-left:20px !important;
     <li class="source-sans-proregular">
         <h2 class="title-header">Revenue Summary</h2>
     </li>
-    @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
-    {
-        <li class="pull-right"  style="display:none;">
-            <a>@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
-        </li>
-    }
-    <li class="pull-right"  style="display:none;">
-        <a>@RevenuePlanner.Helpers.Common.RevenueGeography</a>
-    </li>
-    @if (RevenuePlanner.Helpers.Sessions.ReportPlanId == 0)
-    {
-        <li class="pull-right"  style="display:none;">
-            <a>@RevenuePlanner.Helpers.Common.RevenuePlans</a>
-        </li>
-    }
 </ul>
  <div class="summary-btns">
         <p>View By</p>
@@ -45,8 +30,6 @@ margin-left:20px !important;
             </button>*@
     </div>
     </div>
-<ul class="nav nav-tabs nav-bars-table" id="ChildULRevenueSummary" style="clear:both;">
-</ul>
 
 
 <div id="DivHtmlContent" class="padding-content cf source-sans-proregular">
@@ -74,26 +57,6 @@ margin-left:20px !important;
         <li class="source-sans-proregular">
             <h4 class="title-header">Revenue to Plan</h4>
         </li>
-        <li class="active pull-right" style="display:none;">
-            <a tabName="@RevenuePlanner.Helpers.Common.RevenueOrganization">@RevenuePlanner.Helpers.Common.RevenueOrganization</a>
-        </li>
-        <li class="pull-right"  style="display:none;">
-            <a tabName="@RevenuePlanner.Helpers.Common.RevenueVertical">@RevenuePlanner.Helpers.Common.RevenueVertical</a>
-        </li>
-        <li class="pull-right"  style="display:none;">
-            <a tabName="@RevenuePlanner.Helpers.Common.RevenueGeography">@RevenuePlanner.Helpers.Common.RevenueGeography</a>
-        </li>
-        <li class="pull-right"  style="display:none;">
-            @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
-            @*<a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>*@
-            <a tabName="@RevenuePlanner.Helpers.Common.Audience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</a>
-        </li>
-        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
-        {
-            <li class="pull-right">
-                <a tabName="@RevenuePlanner.Helpers.Common.RevenueBusinessUnit">@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
-            </li>
-        }
     </ul>
 
   <div class="summary-btns">
@@ -108,9 +71,6 @@ margin-left:20px !important;
     </div>
 
         </div>
-
-    <ul class="nav nav-tabs nav-bars-table" id="ChildULRevenueToPlan">
-    </ul>
     <br />
     <div class="chart_table_wrapper" id="chartDiv3Parent">
         <div id="chartDiv3" class="report-chart3"></div>
@@ -142,9 +102,9 @@ margin-left:20px !important;
         <h4>Revenue Realization</h4>
         <div>
             <span class="selectBox" id="ddlBusinessUnitSelectBox">
-                @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
+                @if (RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds != null && RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.Count == 1)
                 {
-                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title", @RevenuePlanner.Helpers.Sessions.BusinessUnitId), new { @class = "ddlStyleReport", @disabled = "disabled" })
+                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title", @RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.FirstOrDefault()), new { @class = "ddlStyleReport", @disabled = "disabled" })
                     @Html.Hidden("hdnBusinessUnitId", true);
                 }
                 else
@@ -224,26 +184,6 @@ margin-left:20px !important;
         <li class="source-sans-proregular">
             <h4 class="title-header">Revenue Contribution</h4>
         </li>
-        <li class="active pull-right" style="display:none;">
-            <a tabName="@RevenuePlanner.Helpers.Common.RevenueCampaign">@RevenuePlanner.Helpers.Common.RevenueCampaign</a>
-        </li>
-        <li class="pull-right" style="display:none;">
-            <a tabName="@RevenuePlanner.Helpers.Common.RevenueVertical">@RevenuePlanner.Helpers.Common.RevenueVertical</a>
-        </li>
-        <li class="pull-right" style="display:none;">
-            <a tabName="@RevenuePlanner.Helpers.Common.RevenueGeography">@RevenuePlanner.Helpers.Common.RevenueGeography</a>
-        </li>
-        <li class="pull-right" style="display:none;">
-            @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
-            @*<a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>*@
-            <a tabName="@RevenuePlanner.Helpers.Common.RevenueAudience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</a>
-        </li>
-        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
-        {
-            <li class="pull-right">
-                <a tabName="@RevenuePlanner.Helpers.Common.RevenueBusinessUnit">@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
-            </li>
-        }
     </ul>
     <div class="summary-btns">
         <p>View By</p>
@@ -271,7 +211,7 @@ margin-left:20px !important;
                 <th class="width53 main_table_header"></th>
             </tr>
             <tr>
-                @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+                @if (RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds != null && RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.Count > 1)
                 {
                     <th class="border-r table_header">
                         <span class="selectBox" id="ddlBusinessSelectBox">
@@ -334,9 +274,9 @@ margin-left:20px !important;
             var selectedOption = $(this).val();
             loadChildListData(selectedOption, ddlChildRevenueToPlanId);
         });
-        loadChildListData('@Common.RevenueGeography', ddlChildRevenueSummeryId);
-        loadChildListData('@Common.RevenueOrganization', ddlChildRevenueToPlanId);
-        function loadChildListData(parentOption,id) {
+        loadChildListData($('#ddlParentRevenueSummery').val(), ddlChildRevenueSummeryId, true);
+        loadChildListData($('#ddlParentRevenueToPlan').val(), ddlChildRevenueToPlanId, false);
+        function loadChildListData(parentOption,id, isRevenueSummary) {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetChildLabelData/")',
@@ -346,12 +286,17 @@ margin-left:20px !important;
                 },
                 success: function (r) {
                     PopulateRevenueSummeryChildDDL(r, id);
+                    if (isRevenueSummary) {
+                        LoadData($('#ddlChildRevenueSummery').val());
+                    }
+                    else {
+                        FillRevenueToPlan($('#ddlChildRevenueToPlan').val());
+                    }
                 }
                });
         }
 
         function PopulateRevenueSummeryChildDDL(items, id) {
-            debugger;
             var $dropdown = $("#"+id);
             $dropdown.empty();
             var $html = '';
@@ -375,6 +320,14 @@ margin-left:20px !important;
             $('#'+id).multiselect("refresh");
         }
 
+        $('#ddlChildRevenueSummery').bind('change', function () {
+            var id = $(this).val();
+            LoadData(id);
+        });
+        $('#ddlChildRevenueToPlan').bind('change', function () {
+            var id = $(this).val();
+            FillRevenueToPlan(id);
+        });
         LoadHeaderData();
         fillCampaignDropdown();
         function LoadHeaderData() {
@@ -434,85 +387,15 @@ margin-left:20px !important;
 
         /* First Revenue Summary */
         var reportTableInfo;
-        $('#ParentULRevenueSummary').find('li:nth-child(2)').addClass('active');
-        var parentLabel = $('#ParentULRevenueSummary').find('li:nth-child(2)').children().text();
-        LoadChildData();
-        $("#ParentULRevenueSummary li").click(function () {
-            var selectParent = $(this).children().text();
-            if (selectParent != "Revenue Summary") {
-                RemoveTabClassParentULRevenueSummary();
-                $(this).addClass("active");
-                parentLabel = selectParent;
-                LoadChildData();
-            }
-        });
-
-        function RemoveTabClassParentULRevenueSummary() {
-            $('#ParentULRevenueSummary').children().each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");
-                }
-            });
-        }
-
-        function LoadChildData() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/GetChildLabelData/")',
-                data: {
-                    ParentLabel: parentLabel,
-                    selectOption: selectOption
-                },
-                success: function (r) {
-                    BindChildLabel(r);
-                    if (r.length > 0) {
-                        LoadChildClick();
-                    }
-                }
-            });
-        }
-
-        function BindChildLabel(childLabel) {
-            if (typeof childLabel != 'undefined') {
-                $("#ChildULRevenueSummary").empty();
-                if (childLabel.length) {
-                    for (i in childLabel) {
-                        $("#ChildULRevenueSummary").append('<li class="pull-left" id="' + childLabel[i].id + '" style="display:none;"><a>' + childLabel[i].title + '</a></li>');
-                    }
-                    $("#ChildULRevenueSummary").find('li:first').addClass("active");
-                }
-                else {
-                    $("#ChildULRevenueSummary").append('No Records found for This Selection.');
-                }
-            }
-        }
-
-        function LoadChildClick() {
-            $("#ChildULRevenueSummary li").click(function () {
-                RemoveTabClassChildULRevenueSummary();
-                $(this).addClass("active");
-                var selectParent = $(this).children().text();
-                var selectId = $(this).attr("id");
-                LoadData(selectId);
-            });
-
-            var Childid = $("#ChildULRevenueSummary").find('li:first').attr("id");
-            LoadData(Childid);
-        }
-
-        function RemoveTabClassChildULRevenueSummary() {
-            $('#ChildULRevenueSummary').children().each(function () {
-                $(this).removeClass("active");
-            });
-        }
 
         function LoadData(Id) {
-
+            alert($('#ddlParentRevenueSummery').val());
+            alert(Id);
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetRevenueSummaryDataRevenueReport/")',
                 data: {
-                    ParentLabel: parentLabel,
+                    ParentLabel: $('#ddlParentRevenueSummery').val(),
                     id: Id.toString(),
                     selectOption: selectOption,
                 },
@@ -804,92 +687,16 @@ margin-left:20px !important;
 
         var reportTableInfo2;
         var dataset;
-        var parentLabelRevenueToPLan = "@RevenuePlanner.Helpers.Common.RevenueOrganization";
         var TempreportTableInfo2;
         var Tempdataset;
         var tempreportDataPrevious;
         var tempDataSetPrevious;
 
-        LoadChildDataRevenueToPlan();
 
-        function LoadChildDataRevenueToPlan() {
-            if (parentLabelRevenueToPLan != "@RevenuePlanner.Helpers.Common.RevenueOrganization") {
-                $('#ChildULRevenueToPlan').show();
-
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Report/GetChildLabelData/")',
-                data: {
-                    ParentLabel: parentLabelRevenueToPLan
-                },
-                success: function (r) {
-                    BindChildLabelRevenueToPlan(r);
-                    LoadChildClickRevenueToPlan();
-                }
-            });
-        } else {
-            $('#ChildULRevenueToPlan').hide();
-            LoadChildClickRevenueToPlan();
-        }
-    }
-
-        $("#ParentULRevenueToPlan li").click(function () {
-            var selectParent = $(this).children().attr('tabName');
-            if (selectParent != "Revenue to Plan") {
-                RemoveTabClassParentULRevenueToPlan();
-                $(this).addClass("active");
-                parentLabelRevenueToPLan = selectParent;
-                LoadChildDataRevenueToPlan();
-            }
-        });
-
-        function LoadChildClickRevenueToPlan() {
-            $("#ChildULRevenueToPlan li").click(function () {
-                RemoveTabClassChildULRevenueToPlan();
-                $(this).addClass("active");
-                var selectParent = $(this).children().text();
-                var selectId = $(this).attr("id");
-                FillRevenueToPlan(selectId);
-            });
-
-            var Childid = 0;
-            if (parentLabelRevenueToPLan != "@RevenuePlanner.Helpers.Common.RevenueOrganization") {
-                Childid = $("#ChildULRevenueToPlan").find('li:first').attr("id");
-            }
-            FillRevenueToPlan(Childid);
-        }
-
-        function RemoveTabClassParentULRevenueToPlan() {
-            $('#ParentULRevenueToPlan').children().each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");
-                }
-            });
-        }
-
-        function RemoveTabClassChildULRevenueToPlan() {
-            $('#ChildULRevenueToPlan').children().each(function () {
-                $(this).removeClass("active");
-            });
-        }
-
-        function BindChildLabelRevenueToPlan(childLabel) {
-            if (typeof childLabel != 'undefined') {
-                $("#ChildULRevenueToPlan").empty();
-                if (childLabel.length) {
-                    for (i in childLabel) {
-                        $("#ChildULRevenueToPlan").append('<li class="pull-left" id="' + childLabel[i].id + '"><a>' + childLabel[i].title + '</a></li>');
-                    }
-                    $("#ChildULRevenueToPlan").find('li:first').addClass("active");
-                }
-                else {
-                    $("#ChildULRevenueToPlan").append('No Records found for This Selection.');
-                }
-            }
-        }
 
         function FillRevenueToPlan(Id) {
             var isreturn = false;
+            var parentLabelRevenueToPLan = $('#ddlParentRevenueToPlan').val();
             var cQuarter = "@Common.GetCurrentQuarter()"
             //var quarter = ((n - 1) / 3) + 1;
             var quarter = parseInt(cQuarter);
@@ -1924,34 +1731,24 @@ margin-left:20px !important;
         }
         BindSelectBoxes();
 
-        var parentLabelContribution = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
         $('#ddlBusinessUnitContribution').change(function () {
             LoadRevenueContributionData();
         });
-        $("#ParentULRevenueContribution li").click(function () {
-            var selectParent = $(this).children().attr('tabName');
-            if (selectParent != "Revenue Contribution") {
-                RemoveTabClassParentULRevenueContribution();
-                $(this).addClass("active");
-                parentLabelContribution = selectParent;
-                if (parentLabelContribution == "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
+        $('#ddlParentRevenueContribution').bind('change', function () {
+            var id = $(this).val();
+            if (id == "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
                     $("#ddlBusinessUnitContribution").css("display", "none");
                     $("#ddlBusinessUnitContribution").next().hide();
+                LoadRevenueContributionData();
                 }
                 else {
                     $("#ddlBusinessUnitContribution").css("display", "block");
                     $("#ddlBusinessUnitContribution").next().show();
-                }
                 addHeaderPart();
             }
+            
         });
-        function RemoveTabClassParentULRevenueContribution() {
-            $("#ParentULRevenueContribution").children().each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");
-                }
-            });
-        }
+        
         addHeaderPart();
         function LoadRevenueContributionData() {
             var buid = 0;
@@ -1966,7 +1763,7 @@ margin-left:20px !important;
                 type: 'POST',
                 url: '@Url.Content("~/Report/LoadRevenueContribution/")',
                 data: {
-                    parentlabel: parentLabelContribution,
+                    parentlabel: $('#ddlParentRevenueContribution').val(),
                     businessUnitId: buid,
                     isBusinessUnit: isBusiness,
                     selectOption: selectOption

@@ -1069,7 +1069,7 @@ namespace RevenuePlanner.Controllers
         {
             if (ParentLabel == Common.RevenueBusinessUnit)
             {
-                var returnData = (db.BusinessUnits.Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false)).Select(b => new
+                var returnData = (db.BusinessUnits.Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false) && (Sessions.ReportBusinessUnitIds.Contains(bu.BusinessUnitId))).Select(b => new
                 {
                     id = b.BusinessUnitId,
                     title = b.Title
@@ -1111,10 +1111,6 @@ namespace RevenuePlanner.Controllers
             {
                 string year = selectOption;
                 var plans = db.Plans.Where(p => p.Model.BusinessUnit.ClientId.Equals(Sessions.User.ClientId) && p.IsDeleted.Equals(false) && p.Status == PublishedPlan).ToList();
-                if (Sessions.BusinessUnitId != Guid.Empty)
-                {
-                    plans = plans.Where(p => p.Model.BusinessUnitId == Sessions.BusinessUnitId).ToList();
-                }
                 if (selectOption == Enums.UpcomingActivities.thisquarter.ToString())
                 {
                     year = DateTime.Now.Year.ToString();
@@ -1130,12 +1126,34 @@ namespace RevenuePlanner.Controllers
             }
             else if (ParentLabel.Contains("Custom"))
             {
-                var returnData = new List<string>() { ParentLabel }.Select(p => new
+                
+                int customfieldId = Convert.ToInt32(ParentLabel.Replace("Custom", ""));
+                string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                
+                if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                 {
-                    id = p,
-                    title = p
+                    var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
+                    var returnData = optionlist.Select(p => new
+                    {
+                        id = p.CustomFieldOptionId,
+                        title = p.Value
                 }).Select(b => b).Distinct().OrderBy(b => b.title).ToList();
                 return Json(returnData, JsonRequestBehavior.AllowGet);
+                }
+                else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                {
+                    List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting(selectOption);
+                    List<int> entityids = tacticlist.Select(t => t.PlanTacticId).ToList();
+                    var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                    var returnData = cusomfieldEntity.Select(p => new
+                    {
+                        id = p.Value,
+                        title = p.Value
+                    }).Select(b => b).Distinct().OrderBy(b => b.title).ToList();
+                    return Json(returnData, JsonRequestBehavior.AllowGet);
+                }
+                var returnDatamain = new List<string>();
+                return Json(returnDatamain, JsonRequestBehavior.AllowGet);
                 
             }
 
@@ -1881,7 +1899,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
             ViewBag.SelectOption = timeFrameOption;
 
-            ViewBag.BusinessUnit = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).OrderBy(b => b.Title);//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+            ViewBag.BusinessUnit = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false && Sessions.ReportBusinessUnitIds.Contains(b.BusinessUnitId)).OrderBy(b => b.Title);//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting(timeFrameOption);
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist);
 
@@ -1889,7 +1907,16 @@ namespace RevenuePlanner.Controllers
 
             List<ViewByModel> lstParentRevenueSummery = new List<ViewByModel>();
             lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
+            lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
+            lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count != 1)
+            {
             lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenuePlans, Value = Common.RevenuePlans });
+            }
+            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
+            {
+                lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
+            }
             lstParentRevenueSummery = lstParentRevenueSummery.Concat(lstCustomFieldsTactics).ToList();
             ViewBag.parentRevenueSummery = lstParentRevenueSummery;
 
@@ -1897,7 +1924,12 @@ namespace RevenuePlanner.Controllers
             lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueOrganization, Value = Common.RevenueOrganization });
             lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
             lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
-            lstParentRevenueToPlan = lstParentRevenueToPlan.Concat(lstParentRevenueSummery).ToList();
+            lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
+            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
+            {
+                lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
+            }
+            lstParentRevenueToPlan = lstParentRevenueToPlan.Concat(lstCustomFieldsTactics).ToList();
             ViewBag.parentRevenueToPlan = lstParentRevenueToPlan;
 
             List<ViewByModel> lstParentRevenueContribution = new List<ViewByModel>();
@@ -1905,6 +1937,11 @@ namespace RevenuePlanner.Controllers
             lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
             lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
             lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
+            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
+            {
+                lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
+            }
+            lstParentRevenueContribution = lstParentRevenueContribution.Concat(lstCustomFieldsTactics).ToList();
             ViewBag.parentRevenueContribution = lstParentRevenueContribution;
             
 
@@ -1939,10 +1976,21 @@ namespace RevenuePlanner.Controllers
 
             List<string> includeYearList = GetYearListForReport(selectOption);
             List<string> includeMonth = GetMonthListForReport(selectOption);
-
+            //Custom
+            List<int> entityids = new List<int>();
+            if (ParentLabel.Contains("Custom"))
+            {
+                int customfieldId = Convert.ToInt32(ParentLabel.Replace("Custom", ""));
+                string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                entityids = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == id).Select(c => c.EntityId).ToList();
+            }
             Tacticdata = Tacticdata.Where(pcpt => ((ParentLabel == Common.RevenueBusinessUnit && pcpt.TacticObj.BusinessUnitId == new Guid(id)) ||
                 (ParentLabel == Common.RevenueGeography && pcpt.TacticObj.GeographyId == new Guid(id)) ||
-                (ParentLabel == Common.RevenuePlans && pcpt.TacticObj.Plan_Campaign_Program.Plan_Campaign.PlanId == Convert.ToInt32(id)))).ToList();
+                (ParentLabel == Common.RevenueAudience && pcpt.TacticObj.AudienceId == Convert.ToInt32(id)) ||
+                (ParentLabel == Common.RevenueVertical && pcpt.TacticObj.VerticalId == Convert.ToInt32(id)) ||
+                (ParentLabel == Common.RevenuePlans && pcpt.TacticObj.Plan_Campaign_Program.Plan_Campaign.PlanId == Convert.ToInt32(id)) ||
+                (ParentLabel.Contains("Custom") && entityids.Contains(pcpt.TacticObj.PlanTacticId))
+                )).ToList();
             List<int> tacticIdList = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
 
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
@@ -2211,12 +2259,16 @@ namespace RevenuePlanner.Controllers
                 {
                     buid = new Guid(businessUnitId);
                 }
-                else if (Sessions.BusinessUnitId != Guid.Empty)
-                {
-                    buid = Sessions.BusinessUnitId;
-                }
             }
-
+            //Custom
+            if (parentlabel.Contains("Custom"))
+            {
+                int customfieldId = Convert.ToInt32(parentlabel.Replace("Custom", ""));
+                List<int> entityids = db.CustomField_Entity.Where(e => e.CustomFieldId == customfieldId).Select(e => e.EntityId).ToList();
+                Tacticdata = Tacticdata.Where(t => entityids.Contains(t.TacticObj.PlanTacticId)).ToList();
+            }
+            else
+            {
             Tacticdata = Tacticdata.Where(pcpt =>
                 ((parentlabel == Common.RevenueBusinessUnit && pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId) ||
                 (parentlabel == Common.RevenueAudience && pcpt.TacticObj.Audience.ClientId == Sessions.User.ClientId) ||
@@ -2224,18 +2276,23 @@ namespace RevenuePlanner.Controllers
                 (parentlabel == Common.RevenueVertical && pcpt.TacticObj.Vertical.ClientId == Sessions.User.ClientId) ||
                 (parentlabel == Common.RevenueCampaign))
                 ).ToList();
+            }
             if (isBusinessUnit)
             {
                 Tacticdata = Tacticdata.Where(c => c.TacticObj.BusinessUnitId == buid).ToList();
             }
-            var campaignList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pc =>
+            var campaignList = new List<RevenueContrinutionData>();
+        
+            if (parentlabel == Common.RevenueCampaign)
+            {
+                campaignList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pc =>
                      new RevenueContrinutionData
                      {
                          Title = pc.Key.title,
                          planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
                      }).ToList();
-
-            if (parentlabel == Common.RevenueVertical)
+            }
+            else if (parentlabel == Common.RevenueVertical)
             {
                 campaignList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Vertical.Title }).Select(pc =>
                          new RevenueContrinutionData
@@ -2270,6 +2327,35 @@ namespace RevenuePlanner.Controllers
                              Title = pc.Key.title,
                              planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
                          }).ToList();
+            }
+            else if(parentlabel.Contains("Custom"))
+            {
+                int customfieldId = Convert.ToInt32(parentlabel.Replace("Custom", ""));
+                List<int> entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
+                string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                {
+                    var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
+                    campaignList = (from cfo in db.CustomFieldOptions
+                                     where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId)
+                                     select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
+                                  new RevenueContrinutionData
+                                  {
+                                      Title = pc.Key.title,
+                                      planTacticList = cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList()
+                                  }).ToList();
+
+                }
+                else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                {
+                    campaignList = cusomfieldEntity.GroupBy(pc => new { title = pc.Value }).Select(pc =>
+                                new RevenueContrinutionData
+                                {
+                                    Title = pc.Key.title,
+                                    planTacticList = pc.Select(c => c.EntityId).ToList()
+                                }).ToList();
+                }
             }
 
             if (campaignList.Count() > 0)
@@ -2429,11 +2515,20 @@ namespace RevenuePlanner.Controllers
 
             List<string> includeYearList = GetYearListForReport(selectOption);
             List<string> includeMonth = GetMonthListForReport(selectOption, true);
+            //Custom
+            List<int> entityids = new List<int>();
+            if (ParentLabel.Contains("Custom"))
+            {
+                int customfieldId = Convert.ToInt32(ParentLabel.Replace("Custom", ""));
+                string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                entityids = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == id).Select(c => c.EntityId).ToList();
+            }
             Tacticdata = Tacticdata.Where(pcpt => ((ParentLabel == Common.RevenueBusinessUnit && pcpt.TacticObj.BusinessUnitId == new Guid(id)) ||
                                                                 (ParentLabel == Common.RevenueAudience && pcpt.TacticObj.AudienceId == Convert.ToInt32(id)) ||
                                                                 (ParentLabel == Common.RevenueGeography && pcpt.TacticObj.GeographyId == new Guid(id)) ||
                                                                 (ParentLabel == Common.RevenueVertical && pcpt.TacticObj.VerticalId == Convert.ToInt32(id) ||
-                                                                (ParentLabel == Common.RevenueOrganization)
+                                                                (ParentLabel == Common.RevenueOrganization) ||
+                                                                (ParentLabel.Contains("Custom") && entityids.Contains(pcpt.TacticObj.PlanTacticId))
                                                                 ))).ToList();
             // List<int> TacticIdList = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
             string stageTitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
