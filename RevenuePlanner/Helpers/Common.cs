@@ -4242,7 +4242,6 @@ namespace RevenuePlanner.Helpers
 
         public static List<ViewByModel> GetDefaultGanttTypes(List<int> planTacticIds, string planIds = "")
         {
-            MRPEntities db = new MRPEntities();
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Vertical.ToString(), Value = PlanGanttTypes.Vertical.ToString() });
@@ -4251,10 +4250,16 @@ namespace RevenuePlanner.Helpers
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.BusinessUnit.ToString(), Value = PlanGanttTypes.BusinessUnit.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = PlanGanttTypes.Audience.ToString() });
 
-            if (!string.IsNullOrEmpty(planIds))
+            var lstCustomFields = GetTacticsCustomFields(planTacticIds);
+            lstViewByTab = lstViewByTab.Concat(lstCustomFields).ToList();
+            return lstViewByTab;
+        }
+
+
+        public static List<ViewByModel> GetTacticsCustomFields(List<int> planTacticIds)
             {
-                List<int> planId = string.IsNullOrWhiteSpace(planIds) ? new List<int>() : planIds.Split(',').Select(plan => int.Parse(plan)).ToList();
-                
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
                 if (planTacticIds == null)
                 {
                     planTacticIds = new List<int>();
@@ -4268,16 +4273,14 @@ namespace RevenuePlanner.Helpers
                                         new { Key1 = cfoLeft.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)cfoLeft.CustomFieldOptionId).Trim() } into cAll
                                     from cfo in cAll.DefaultIfEmpty()
                                     where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId
-                                    && planId.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && planTacticIds.Contains(t.PlanTacticId)
+                                && planTacticIds.Contains(t.PlanTacticId)
                                     select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
 
                 foreach (var item in CustomFields)
                 {
-                    lstViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom", item.CustomFieldId.ToString()) });
-                }
+                lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom", item.CustomFieldId.ToString()) });
             }
-
-            return lstViewByTab;
+            return lstCustomFieldsViewByTab;
         }
 
         #endregion

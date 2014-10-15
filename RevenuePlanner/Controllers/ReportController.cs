@@ -1127,6 +1127,16 @@ namespace RevenuePlanner.Controllers
 
                 return Json(returnData, JsonRequestBehavior.AllowGet);
             }
+            else if (ParentLabel.Contains("Custom"))
+            {
+                var returnData = new List<string>() { ParentLabel }.Select(p => new
+                {
+                    id = p,
+                    title = p
+                }).Select(b => b).Distinct().OrderBy(b => b.title).ToList();
+                return Json(returnData, JsonRequestBehavior.AllowGet);
+                
+            }
 
             return Json("", JsonRequestBehavior.AllowGet);
         }
@@ -1873,6 +1883,30 @@ namespace RevenuePlanner.Controllers
             ViewBag.BusinessUnit = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).OrderBy(b => b.Title);//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting(timeFrameOption);
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist);
+
+            var lstCustomFieldsTactics = Common.GetTacticsCustomFields(tacticlist.Select(a => a.PlanTacticId).ToList());
+
+            List<ViewByModel> lstParentRevenueSummery = new List<ViewByModel>();
+            lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
+            lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenuePlans, Value = Common.RevenuePlans });
+            lstParentRevenueSummery = lstParentRevenueSummery.Concat(lstCustomFieldsTactics).ToList();
+            ViewBag.parentRevenueSummery = lstParentRevenueSummery;
+
+            List<ViewByModel> lstParentRevenueToPlan = new List<ViewByModel>();
+            lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueOrganization, Value = Common.RevenueOrganization });
+            lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
+            lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
+            lstParentRevenueToPlan = lstParentRevenueToPlan.Concat(lstParentRevenueSummery).ToList();
+            ViewBag.parentRevenueToPlan = lstParentRevenueToPlan;
+
+            List<ViewByModel> lstParentRevenueContribution = new List<ViewByModel>();
+            lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
+            lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
+            lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
+            lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
+            ViewBag.parentRevenueContribution = lstParentRevenueContribution;
+            
+
             TempData["ReportData"] = tacticStageList;
 
             return PartialView("Revenue");
