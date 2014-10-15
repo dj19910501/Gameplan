@@ -336,7 +336,12 @@ namespace RevenuePlanner.Controllers
                     ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
                 }
             }
-            BDSService.Menu currentMenuOfUrl = (BDSService.Menu)AppMenus.Single(am => am.ControllerName.ToLower().Equals(controllerName));
+
+            // Modified by Viral Kadiya on 10/15/14 for #795 Cannot Log In After Session Expiration.
+            BDSService.Menu currentMenuOfUrl = (BDSService.Menu)AppMenus.Where(am => am.ControllerName.ToLower().Equals(controllerName)).FirstOrDefault();
+            if (currentMenuOfUrl == null)
+                return RedirectToAction("Index", "Home");
+
             Enums.ActiveMenu activeMenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, controllerName);
             switch (activeMenu)
             {
