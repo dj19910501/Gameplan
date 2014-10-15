@@ -123,17 +123,22 @@
                 CurrentPlanId = $(this).attr('value');
                 $("#CurrentPlanId").val(CurrentPlanId);
                 SelectedPlanTitle = $(this).text();
-                //// Modified By Maninder Singh Wadhva to Address PL#203
-                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                    GetCollaborators(CurrentPlanId);
-                }
-                RefreshCurrentTab();
                 BindUpcomingActivites(CurrentPlanId);
-                var selectedPlanIds = filters.SelectedPlans.toString();
-                GetHealderData(CurrentPlanId);
                 Currenttime = $('#ddlUpComingActivites').val();
                 isQuater = Currenttime;
+
+                //// Modified By Maninder Singh Wadhva to Address PL#203
+                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                    if (CurrentPlanId > 0) {
+                        GetCollaborators(CurrentPlanId);
+                    }
+                }
+                PagePostRequest = false;
+                RefreshCurrentTab();
+                if (CurrentPlanId > 0) {
+                    GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+                }
                 arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable on plan change.
                 GetOwnerListForFilter(CurrentPlanId);
             });
@@ -928,7 +933,7 @@
     }
 
     function GetCollaborators(planId) {
-        if (planId != null) {
+        if (planId != null && planId > 0) {
             planId = parseInt(planId);
             $.ajax(
            {
@@ -1346,8 +1351,10 @@
         SelectedBusinessUnitTitle = ($("#dropdown-business-unit .sbSelector").html());
         CurrentPlanId = $('#PlanId').val();
         $("#CurrentPlanId").val(CurrentPlanId);
+        if (CurrentPlanId > 0) {
         $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val());
         BindUpcomingActivites(CurrentPlanId);
+        }
 
     });
     /*end Nirav*/
@@ -1743,7 +1750,7 @@
             BUId = ($('#ddlBusinessUnit').val());
             GetSelectedPlanNo = 1;
         }
-
+            if (Planid != 0) {
         $.ajax(
           {
               type: "GET",
@@ -1845,7 +1852,20 @@
                   //gantt.render();     ////Added by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
               }
           });
-      }
+      }	 
+ else {
+                $('#DivloadPlan').hide();
+                $('.tab-content').hide();
+                //$('#ptacticcount').hide();
+                $('#chart2').hide();
+                $('#pbudget').attr("original-title","$0");
+                $('.changes').hide();
+                $('#Notabcontent').show();
+                // Start - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #63
+                $('#marketing-activities').hide();
+                $('#improvements').hide();
+            }
+  }
 
 
       function BindViewSelections(data) {
@@ -2864,8 +2884,10 @@ function ApproveTactic(e, task) {
                 newUrl = '@Url.Action("GetNumberOfActivityPerMonthByMultiplePlanId", "Home")';
             }
             else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            if (CurrentPlanId > 0) {
                 newUrl = '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")';
                 selectedPlanIds = parseInt(CurrentPlanId);
+            }
             }
         $.ajax(
         {

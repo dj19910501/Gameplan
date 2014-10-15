@@ -1272,74 +1272,77 @@ namespace RevenuePlanner.Helpers
         /// <returns>Return collaborator image.</returns>
         public static JsonResult GetCollaboratorImage(int planId)
         {
-            MRPEntities db = new MRPEntities();
-            List<string> newCollaboratorId = new List<string>();
-            List<object> data = new List<object>();
-            {
-                List<string> collaboratorIds = Common.GetCollaboratorId(planId).Distinct().ToList();
-                foreach (string userId in collaboratorIds)
-                {
-                    if (System.Web.HttpContext.Current.Cache[userId + "_photo"] != null)
-                    {
-                        var userData = new { imageBytes = System.Web.HttpContext.Current.Cache[userId + "_photo"], name = System.Web.HttpContext.Current.Cache[userId + "_name"], businessUnit = System.Web.HttpContext.Current.Cache[userId + "_bu"], jobTitle = System.Web.HttpContext.Current.Cache[userId + "_jtitle"] }; //uday #416
-                        data.Add(userData);
-                    }
-                    else
-                    {
-                        newCollaboratorId.Add(userId);
-                    }
-                }
-            }
-
-            byte[] imageBytesUserImageNotFound = Common.ReadFile(HttpContext.Current.Server.MapPath("~") + "/content/images/user_image_not_found.png");
-            BDSServiceClient objBDSUserRepository = new BDSServiceClient();
-            List<User> users = objBDSUserRepository.GetMultipleTeamMemberDetails(string.Join(",", newCollaboratorId), Sessions.ApplicationId);
-
-            var userlist = users.Select(u => u.BusinessUnitId).ToList();
-            var businesslist = db.BusinessUnits.Where(bui => userlist.Contains(bui.BusinessUnitId)).ToList();//#416
-
-            foreach (User user in users)
-            {
-                byte[] imageBytes = null;
-                if (user != null)
-                {
-                    if (user.ProfilePhoto != null)
-                    {
-                        imageBytes = user.ProfilePhoto;
-                    }
-                    else
-                    {
-                        imageBytes = imageBytesUserImageNotFound;
-                    }
-                }
-
-                if (imageBytes != null)
-                {
-                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-                    {
-                        ms.Write(imageBytes, 0, imageBytes.Length);
-                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                        image = Common.ImageResize(image, 30, 30, true, false);
-                        imageBytes = Common.ImageToByteArray(image);
-                    }
-                }
-
-                var busititle = businesslist.Single(bui => bui.BusinessUnitId == user.BusinessUnitId).Title;//#416
-                string imageBytesBase64String = Convert.ToBase64String(imageBytes);
-                System.Web.HttpContext.Current.Cache[user.UserId + "_photo"] = imageBytesBase64String;
-                System.Web.HttpContext.Current.Cache[user.UserId + "_name"] = user.FirstName + " " + user.LastName;
-                System.Web.HttpContext.Current.Cache[user.UserId + "_bu"] = busititle;//uday #416
-                System.Web.HttpContext.Current.Cache[user.UserId + "_jtitle"] = user.JobTitle;//uday #416
-                var userData = new { imageBytes = imageBytesBase64String, name = user.FirstName + " " + user.LastName, businessUnit = busititle, jobTitle = user.JobTitle };//added by uday buid & title #416 };
-                data.Add(userData);
-            }
-
             JsonResult jsonResult = new JsonResult();
-            jsonResult.Data = data;
+
+            if (planId > 0)
+            {
+
+                MRPEntities db = new MRPEntities();
+                List<string> newCollaboratorId = new List<string>();
+                List<object> data = new List<object>();
+                {
+                    List<string> collaboratorIds = Common.GetCollaboratorId(planId).Distinct().ToList();
+                    foreach (string userId in collaboratorIds)
+                    {
+                        if (System.Web.HttpContext.Current.Cache[userId + "_photo"] != null)
+                        {
+                            var userData = new { imageBytes = System.Web.HttpContext.Current.Cache[userId + "_photo"], name = System.Web.HttpContext.Current.Cache[userId + "_name"], businessUnit = System.Web.HttpContext.Current.Cache[userId + "_bu"], jobTitle = System.Web.HttpContext.Current.Cache[userId + "_jtitle"] }; //uday #416
+                            data.Add(userData);
+                        }
+                        else
+                        {
+                            newCollaboratorId.Add(userId);
+                        }
+                    }
+                }
+
+                byte[] imageBytesUserImageNotFound = Common.ReadFile(HttpContext.Current.Server.MapPath("~") + "/content/images/user_image_not_found.png");
+                BDSServiceClient objBDSUserRepository = new BDSServiceClient();
+                List<User> users = objBDSUserRepository.GetMultipleTeamMemberDetails(string.Join(",", newCollaboratorId), Sessions.ApplicationId);
+
+                var userlist = users.Select(u => u.BusinessUnitId).ToList();
+                var businesslist = db.BusinessUnits.Where(bui => userlist.Contains(bui.BusinessUnitId)).ToList();//#416
+
+                foreach (User user in users)
+                {
+                    byte[] imageBytes = null;
+                    if (user != null)
+                    {
+                        if (user.ProfilePhoto != null)
+                        {
+                            imageBytes = user.ProfilePhoto;
+                        }
+                        else
+                        {
+                            imageBytes = imageBytesUserImageNotFound;
+                        }
+                    }
+
+                    if (imageBytes != null)
+                    {
+                        using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                        {
+                            ms.Write(imageBytes, 0, imageBytes.Length);
+                            System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                            image = Common.ImageResize(image, 30, 30, true, false);
+                            imageBytes = Common.ImageToByteArray(image);
+                        }
+                    }
+
+                    var busititle = businesslist.Single(bui => bui.BusinessUnitId == user.BusinessUnitId).Title;//#416
+                    string imageBytesBase64String = Convert.ToBase64String(imageBytes);
+                    System.Web.HttpContext.Current.Cache[user.UserId + "_photo"] = imageBytesBase64String;
+                    System.Web.HttpContext.Current.Cache[user.UserId + "_name"] = user.FirstName + " " + user.LastName;
+                    System.Web.HttpContext.Current.Cache[user.UserId + "_bu"] = busititle;//uday #416
+                    System.Web.HttpContext.Current.Cache[user.UserId + "_jtitle"] = user.JobTitle;//uday #416
+                    var userData = new { imageBytes = imageBytesBase64String, name = user.FirstName + " " + user.LastName, businessUnit = busititle, jobTitle = user.JobTitle };//added by uday buid & title #416 };
+                    data.Add(userData);
+                }
+                jsonResult.Data = data;
+            }
             jsonResult.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return jsonResult;
         }
-
         #endregion
 
         #region Change log related functions
