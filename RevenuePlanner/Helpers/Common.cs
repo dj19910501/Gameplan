@@ -4255,7 +4255,6 @@ namespace RevenuePlanner.Helpers
             return lstViewByTab;
         }
 
-
         public static List<ViewByModel> GetTacticsCustomFields(List<int> planTacticIds)
             {
             MRPEntities db = new MRPEntities();
@@ -4281,6 +4280,18 @@ namespace RevenuePlanner.Helpers
                 lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom", item.CustomFieldId.ToString()) });
             }
             return lstCustomFieldsViewByTab;
+        }
+
+        public static List<int> GetTacticByPlanIDs(string strPlanIds)
+        {
+            List<int> PlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
+            MRPEntities db = new MRPEntities();
+            List<int> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic =>
+                              PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
+                              && tactic.IsDeleted.Equals(false)
+                              ).Select(t => t.PlanTacticId).ToList();
+
+            return tacticList;
         }
 
         #endregion
