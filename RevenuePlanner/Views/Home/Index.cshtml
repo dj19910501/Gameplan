@@ -52,11 +52,9 @@
 @Html.HiddenFor(m => m.PlanId)
 @section Sidebar{
     <script type="text/javascript">
-
         // Edited to add PlanYear option.
         var Currenttime = "thisquarter";
         $(document).ready(function () {
-
             var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
             $("#nl-form2").hide();
             //Added by Nirav for Custom Dropdown - 388
@@ -73,8 +71,7 @@
                     $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
                 }
             }
-            else
-            {
+            else {
                 $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + filters.BUId.toString() + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
             }
 
@@ -126,7 +123,6 @@
                 CurrentPlanId = $(this).attr('value');
                 $("#CurrentPlanId").val(CurrentPlanId);
                 SelectedPlanTitle = $(this).text();
-                //BindOtherAttributes();
                 //// Modified By Maninder Singh Wadhva to Address PL#203
                 if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                     GetCollaborators(CurrentPlanId);
@@ -140,6 +136,50 @@
                 isQuater = Currenttime;
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
                 arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable on plan change.
+                GetOwnerListForFilter(CurrentPlanId);
+            });
+        }
+
+        function GetOwnerListForFilter(CurrentPlanId) {
+
+            $('#ulSelectedOwner').html('');
+            filters.OwnerTitles = [];
+            filters.OwnerIds = [];
+
+            $.ajax({
+                type: "GET",
+                cache: false,
+                url: '@Url.Action("GetOwnerListForFilter", "Home")',
+                data: {
+                    PlanId: CurrentPlanId.toString(),
+                    ViewBy: type,
+                    ActiveMenu: $('#ActiveMenu').val()
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.isSuccess == true) {
+                        if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
+                            OwnerCount = data.AllowedOwner.length;
+                            if (OwnerCount > 0) {
+                                $("#ulOwnerAllModule").css("display", "block");
+                                $("#NoOwnerFound").hide();
+                                $.each(data.AllowedOwner, function (i, OwnerItem) {
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner close-list" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><a OwnerTitle="' + OwnerItem.Title + '" onclick="toggleOwner(this.id)" id="' + OwnerItem.OwnerId + '"></a></li>');
+                                    filters.OwnerIds.push(OwnerItem.OwnerId);
+                                    filters.OwnerTitles.push(OwnerItem.Title);
+                                });
+                            }
+                            else {
+                                $("#ulOwnerAllModule").css("display", "none");
+                                $("#NoOwnerFound").show();
+                            }
+                        }
+                        else {
+                            $("#ulOwnerAllModule").css("display", "none");
+                            $("#NoOwnerFound").show();
+                        }
+                    }
+                }
             });
         }
 
@@ -411,6 +451,25 @@
                     </div>
                 </div>
             </div>
+            <div id="accordion-6" class="dropdown-section accordion">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-6" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                    </div>
+                    <div id="accordion-element-Owner" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulSelectedOwner">
+                        </ul>
+                        <div class="list-tab">
+                            <ul id="ulOwnerAllModule">
+                                <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
+                            </ul>
+                            <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
@@ -504,9 +563,13 @@
                     <label>Vertical:</label>
                     <div id="verticaldetail" class="details">All</div>
                 </div>
-                <div class="filter-details last">
+                <div class="filter-details">
                     <label>@Html.CustomLabelFor(Enums.CustomLabelCode.Audience):</label>
                     <div id="audiencedetail" class="details">All</div>
+                </div>
+                <div class="filter-details last">
+                    <label>Owner:</label>
+                    <div id="ownerdetail" class="details">All</div>
                 </div>
             </div>
         </div>
@@ -599,11 +662,9 @@
 
 <script type="text/javascript">
 
-
     var SelectedBusinessUnitTitle = "";
     var SelectedPlanTitle = "";
     var PagePostRequest = true;
-
     var filters = {
         geographyIds: [],
         BUId: [],
@@ -615,10 +676,12 @@
         VerticalTitle: [],
         geographyTitle: [],
         AudienceIds: [],
-        AudienceTitle: []
+        AudienceTitle: [],
+        OwnerIds: [],
+        OwnerTitles: []
     };
 
-    var geographyCount = 0, PlanCount = 0, VerticalCount = 0, AudienceCount = 0;
+    var geographyCount = 0, PlanCount = 0, VerticalCount = 0, AudienceCount = 0, OwnerCount = 0;
 
     var isFirstCall = true;
 
@@ -634,8 +697,7 @@
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 SelectedPlanIds = filters.SelectedPlans.toString();
             }
-          else
-             {
+        else {
                 SelectedPlanIds = CurrentPlanId;
              }
 
@@ -693,22 +755,6 @@
         else {
             $('#plandetail').html(None);
         }
-            @*}
-        else {
-		    if (SelectedBusinessUnitTitle == "") {
-            $('#businessunitdetail').html('@ViewBag.BusinessUnitTitle');
-		    }
-		    else {
-		        $('#businessunitdetail').html(SelectedBusinessUnitTitle);
-		    }
-            
-		    if (SelectedPlanTitle == "") {
-            $('#plandetail').html('@Model.PlanTitle.ToString()');
-		    }
-		    else {
-		        $('#plandetail').html(SelectedPlanTitle);
-		    }
-        }*@
 
 		    if (filters.geographyTitle.length > 0) {
 		        if (geographyCount == filters.geographyTitle.length) {
@@ -745,6 +791,18 @@
 		    else {
 		        $('#audiencedetail').html(None);
 		    }
+
+            if (filters.OwnerTitles.length > 0) {
+                if (OwnerCount == filters.OwnerTitles.length) {
+                    $('#ownerdetail').html(All);
+                }
+                else {
+                    $('#ownerdetail').html(filters.OwnerTitles.join(textDelimiter).toString());
+                }
+            }
+            else {
+                $('#ownerdetail').html(None);
+            }
 		}
     }
 
@@ -787,6 +845,7 @@
             $("#" + event).html('Select');
             removeByValue(filters.SelectedPlans, event);
             removeByValue(filters.PlanTitles, ($("#" + event).attr("plantitle")));
+            GetOwnerListForFilter(filters.SelectedPlans);
 
         }
         else {
@@ -794,6 +853,7 @@
             $("#" + event).html('');
             filters.SelectedPlans.push(event);
             filters.PlanTitles.push($("#" + event).attr("plantitle"));
+            GetOwnerListForFilter(filters.SelectedPlans);
         }
 
         if (filters.SelectedPlans.length == 0) {
@@ -806,6 +866,7 @@
         }
 
         //   BindOtherAttributes();
+
     }
 
     function toggleGeography(event) {
@@ -823,7 +884,6 @@
             filters.geographyTitle.push($("#" + event).attr("geotitle"));
         }
     }
-
 
     function toggleVertical(event) {
         if ($("#liVertical" + event).hasClass("close-list")) {
@@ -852,6 +912,21 @@
             $("#" + event).html('');
             filters.AudienceIds.push(event);
             filters.AudienceTitle.push(($("#" + event).attr("AudienceTitle")));
+        }
+    }
+
+    function toggleOwner(event) {
+        if ($("#liOwner" + event).hasClass("close-list")) {
+            $("#liOwner" + event).removeClass("close-list");
+            $("#" + event).html('Select');
+            removeByValue(filters.OwnerIds, event);
+            removeByValue(filters.OwnerTitles, ($("#" + event).attr("OwnerTitle")));
+        }
+        else {
+            $("#liOwner" + event).addClass("close-list");
+            $("#" + event).html('');
+            filters.OwnerIds.push(event);
+            filters.OwnerTitles.push(($("#" + event).attr("OwnerTitle")));
         }
     }
 
@@ -909,8 +984,7 @@
 
    function SetAttributeData() {
        var planIds = 0;
-       if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()')
-        {
+       if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             filters.SelectedPlans = [];
             filters.SelectedPlans.push(CurrentPlanId);
         }
@@ -1010,9 +1084,12 @@
         filters.geographyTitle = [];
         filters.AudienceIds = [];
         filters.AudienceTitle = [];
+        filters.OwnerIds = [];
+        filters.OwnerTitles = [];
         $('#ulSelectedGeography').html('');
         $('#ulSelectedVertical').html('');
         $('#ulSelectedAudience').html('');
+        $('#ulSelectedOwner').html('');
     }
 
     function BindOtherAttributes() {
@@ -1022,9 +1099,6 @@
                 url: '@Url.Content("~/Home/GetCustomAttributes/")',
                 dataType: "json",
                 async: false,
-                data: {
-
-                },
                 success: function (data) {
                     if (data.isSuccess == true) {
                         if (data.AllowedGeography != 'undefined' && data.AllowedGeography != null) {
@@ -1162,6 +1236,7 @@
                 filters.SelectedPlans.push($(this).find("a").attr("id"));
                 filters.PlanTitles.push($(this).find("a").attr("planTitle"));
             });
+                GetOwnerListForFilter(filters.SelectedPlans);
         }
         else {
             $("#ulSelectedPlans li").each(function (i) {
@@ -1234,6 +1309,25 @@
             });
         }
     }
+
+        function BulkOwnerOperation(selection) {
+            filters.OwnerIds = [];
+            filters.OwnerTitles = [];
+            if (selection) {
+                $("#ulSelectedOwner li").each(function (i) {
+                    $(this).addClass("close-list");
+                    $(this).find("a").html('');
+                    filters.OwnerIds.push($(this).find("a").attr("id"));
+                    filters.OwnerTitles.push($(this).find("a").attr("OwnerTitle"));
+                });
+            }
+            else {
+                $("#ulSelectedOwner li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    $(this).find("a").html('Select');
+                });
+            }
+        }
 
     // Added by KAPIL - #454 - to resolve extra space
     function CalGanntHeight() {
@@ -1366,9 +1460,11 @@
             if (activeMenu.toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 SetBusinessUnitSection();
             }
-            //else {
             BindOtherAttributes();
-            //}
+            GetOwnerListForFilter(CurrentPlanId);
+            if (filters.OwnerTitles.length <= 0) {
+                $('#ownerdetail').html("None");
+            }
         });
 
         function SetBusinessUnitSection() {
@@ -1633,6 +1729,7 @@
             var GeoId = filters.geographyIds;
             var VerticalId = filters.VerticalId;
             var AudienceId = filters.AudienceIds;
+        var OwnerIds = filters.OwnerIds;
 
             var GetSelectedPlanNo = filters.SelectedPlans.length;
 
@@ -1657,13 +1754,14 @@
               cache: false,
               url: '@Url.Action("GetViewControlDetail", "Home")',
               data: {
-                  Type: type,
+                  viewBy: type,
                   PlanId: Planid.toString(),
                   IsQuarter: isQuater,
                   businessunitIds: BUId.toString(),
                   geographyIds: GeoId.toString(),
                   verticalIds: VerticalId.toString(),
                   audienceIds: AudienceId.toString(),
+                  ownerIds: OwnerIds.toString(),
                   activeMenu: $('#ActiveMenu').val()
               },
               dataType: "json",
@@ -1754,8 +1852,7 @@
       }
 
 
-    function BindViewSelections(data)
-    {
+      function BindViewSelections(data) {
         var $dropdown = $("#ddlTabViewBy");
         $dropdown.html('');
         var $html = '';

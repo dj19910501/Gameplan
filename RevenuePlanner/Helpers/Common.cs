@@ -1208,7 +1208,7 @@ namespace RevenuePlanner.Helpers
         public static List<string> GetCollaboratorId(int planId)
         {
             MRPEntities db = new MRPEntities();
-            var plan = db.Plans.Single(p => p.PlanId.Equals(planId));
+            var plan = db.Plans.Single(p => p.PlanId.Equals(planId) && p.IsDeleted.Equals(false));
 
             List<string> collaboratorId = new List<string>();
             if (plan.ModifiedBy != null)
@@ -1221,7 +1221,7 @@ namespace RevenuePlanner.Helpers
                 collaboratorId.Add(plan.CreatedBy.ToString());
             }
 
-            var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId)).Select(t => t);
+            var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) && t.IsDeleted.Equals(false)).Select(t => t);
 
             var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
             var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
