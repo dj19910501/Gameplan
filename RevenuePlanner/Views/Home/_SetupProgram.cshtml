@@ -14,7 +14,7 @@
             <p>@Html.Raw("Parent Campaign")</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(program.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = program.CampaignTitle })
             <p>@Html.Raw("Description")</p>
-            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
+            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;", @readonly = "true" })
             <div style="clear: both; width: 250%;">
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>

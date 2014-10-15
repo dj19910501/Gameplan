@@ -17,7 +17,7 @@
             <p>Parent Program</p>
             @Html.TextBox("txtProgram", HttpUtility.HtmlDecode(tactic.ProgramTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.ProgramTitle })
             <p>Description</p>
-            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
+            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;", @readonly = "true" })
         </div>
         <div class="span3" id="inspect-modal-left-column2">
             <p>Tactic Type</p>

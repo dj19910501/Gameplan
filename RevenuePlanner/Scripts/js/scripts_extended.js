@@ -98,7 +98,7 @@ function FormatCommas(amount, showDecimals) {
     var i = parseInt(a[0]);
     if (isNaN(i)) { return ''; }
     var minus = '';
-    if (i < 0) { minus = '-'; }
+    if (i < 0 || (amount < 0 && amount > -1)) { minus = '-'; }
     i = Math.abs(i);
     var n = new String(i);
     var a = [];

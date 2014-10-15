@@ -12,7 +12,7 @@
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
-            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;height:92px;", @readonly = "true" })
+            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;height:92px;", @readonly = "true" })
             <p style="width: 110%;">@Html.Raw("Deployed to Integration")</p>
             @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
             <div style="clear: both; width: 250%;">

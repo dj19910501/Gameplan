@@ -15,7 +15,7 @@
      @*   <p>Parent Program</p>
             @Html.TextBox("txtProgram", tactic.ProgramTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.ProgramTitle })*@
         <p>Description</p>
-            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;height:93px;", @readonly = "true" })
+            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;height:93px;", @readonly = "true" })
         
         <div style="clear: both; width: 100%;">
             <label style="color: #808080">This improvement tactics boosts @ViewBag.NoOfTacticBoosts activities.</label> 

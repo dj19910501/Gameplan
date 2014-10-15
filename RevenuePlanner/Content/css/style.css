@@ -10181,6 +10181,7 @@ li.close-list {
     font-size: 14px;
     margin-bottom: 24px;
     padding-bottom: 25px;
+    padding-top:5px;
     width: 100%;
 }
 
@@ -10424,7 +10425,7 @@ li.close-list {
     Font-family: "source_sans_proregular",Arial,"sans-serif" !important;
 }
 
-.inspect-column-parent div .selectBox .sbHolder .sbSelector {
+.inspect-column-parent div .selectBox .sbHolder {
     cursor: default !important;
 }
 

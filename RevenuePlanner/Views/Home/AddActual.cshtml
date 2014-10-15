@@ -670,7 +670,7 @@
                 if (pcost != 0 && !isNaN(pcost)) {
                     var prevenue = $("#hdnProjectedlblValueRevenue" + id).val();    // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
                     var roip = (prevenue - pcost) / pcost;
-                    $("#ProjectedROI" + id).text(roip.toFixed(2));
+                    $("#ProjectedROI" + id).text(FormatCommas(roip.toFixed(2).toString()));
                 }
 
                 //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
@@ -678,7 +678,7 @@
                 if (pcost != 0 && !isNaN(pcost)) {
                     var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).attr("orignal-value")));
                     var roiT = (prevenue - pcost) / pcost;
-                    $("#ActualROI" + id).text(roiT.toFixed(2));
+                    $("#ActualROI" + id).text(FormatCommas(roiT.toFixed(2).toString()));
                 }
             }
 
