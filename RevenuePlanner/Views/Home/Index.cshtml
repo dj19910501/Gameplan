@@ -127,7 +127,6 @@
                 if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                     GetCollaborators(CurrentPlanId);
                 }
-                PagePostRequest = false;
                 RefreshCurrentTab();
                 BindUpcomingActivites(CurrentPlanId);
                 var selectedPlanIds = filters.SelectedPlans.toString();
@@ -664,7 +663,6 @@
 
     var SelectedBusinessUnitTitle = "";
     var SelectedPlanTitle = "";
-    var PagePostRequest = true;
     var filters = {
         geographyIds: [],
         BUId: [],
@@ -693,7 +691,6 @@
 
     function UpdateResult() {
         var SelectedPlanIds;
-        PagePostRequest = false;
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 SelectedPlanIds = filters.SelectedPlans.toString();
             }
@@ -1349,7 +1346,6 @@
         SelectedBusinessUnitTitle = ($("#dropdown-business-unit .sbSelector").html());
         CurrentPlanId = $('#PlanId').val();
         $("#CurrentPlanId").val(CurrentPlanId);
-        PagePostRequest = false;
         $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val());
         BindUpcomingActivites(CurrentPlanId);
 
@@ -1866,12 +1862,9 @@
                 }
             });
         }
-        $dropdown.append($html);
-        if (!PagePostRequest) {
+            $dropdown.append($html);
             $(".selectBox select").selectbox('detach');
             $(".selectBox select").selectbox("attach");
-            PagePostRequest = true;
-        }
         }
 
       //Function to get current plan edit permission, PL #538

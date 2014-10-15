@@ -1086,8 +1086,14 @@ namespace RevenuePlanner.Helpers
         {
             int year;
             bool isNumeric = int.TryParse(currentView, out year);
-
-            if (currentView == Enums.UpcomingActivities.thisquarter.ToString())
+            
+            if (currentView == Enums.UpcomingActivities.thisyear.ToString())
+            {
+                //// Plan
+                startDate = new DateTime(System.DateTime.Now.Year, 1, 1);
+                endDate = new DateTime(System.DateTime.Now.Year + 1, 1, 1).AddTicks(-1);
+            }
+            else if (currentView == Enums.UpcomingActivities.thisquarter.ToString())
             {
                 int currentQuarter = ((startDate.Month - 1) / 3) + 1;
                 startDate = new DateTime(startDate.Year, (currentQuarter - 1) * 3 + 1, 1);
@@ -1100,7 +1106,19 @@ namespace RevenuePlanner.Helpers
                 startDate = new DateTime(startDate.Year, month, 1);
                 endDate = startDate.AddMonths(month).AddTicks(-1);
             }
-            else if(isNumeric)
+            else if (currentView == Enums.UpcomingActivities.nextyear.ToString())
+            {
+                //// Plan
+                startDate = new DateTime(System.DateTime.Now.Year + 1, 1, 1);
+                endDate = new DateTime(System.DateTime.Now.Year + 2, 1, 1).AddTicks(-1);
+            }
+            else if (currentView == Enums.UpcomingActivities.planYear.ToString())
+            {
+                //// Plan
+                startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
+                endDate = new DateTime(Convert.ToInt32(planYear) + 1, 1, 1).AddTicks(-1);
+            }
+            else if (isNumeric)
             {
                 startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
                 endDate = new DateTime(Convert.ToInt32(planYear) + 1, 1, 1).AddTicks(-1);
@@ -1889,13 +1907,13 @@ namespace RevenuePlanner.Helpers
         /// <param name="calendarEndDate">Calendar end date.</param>
         /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
         /// <returns>Returns task data after appending improvement task data.</returns>
-        public static List<object> AppendImprovementTaskData(List<object> taskData, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar, bool IsPlanTabContainer = false)
+        public static List<object> AppendImprovementTaskData(List<object> taskData, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
         {
-            var improvementTacticTaskData = GetImprovementTacticTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar, IsPlanTabContainer);
+            var improvementTacticTaskData = GetImprovementTacticTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar);
             if (improvementTacticTaskData.Count() > 0)
             {
                 taskData = improvementTacticTaskData.Concat<object>(taskData).ToList<object>();
-                var improvementActivityTaskData = GetImprovementActivityTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar, IsPlanTabContainer);
+                var improvementActivityTaskData = GetImprovementActivityTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar);
                 taskData.Insert(0, improvementActivityTaskData);
             }
 
@@ -1910,7 +1928,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="calendarEndDate">Calendar end date.</param>
         /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
         /// <returns>Return list of object containing improvement tactic task data.</returns>
-        private static List<object> GetImprovementTacticTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar, bool IsPlanTabContainer = false)
+        private static List<object> GetImprovementTacticTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
         {
             //// Modified By: Maninder Singh Wadhva to address Ticket 395
             MRPEntities db = new MRPEntities();
@@ -1928,7 +1946,7 @@ namespace RevenuePlanner.Helpers
             //// Modified By Maninder Singh Wadhva PL Ticket#47, 337
             var taskDataImprovementTactic = improvementTactics.Select(improvementTactic => new
             {
-                id = IsPlanTabContainer ? string.Format("PL{0}_M{1}_I{2}_Y{3}", improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementPlanCampaignId, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId) : string.Format("M{0}_I{1}_Y{2}", improvementPlanCampaignId, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId),
+                id = string.Format("M{0}_I{1}_Y{2}", improvementPlanCampaignId, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId),
                 text = improvementTactic.Title,
                 start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, improvementTactic.EffectiveDate),
                 duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
@@ -1937,7 +1955,7 @@ namespace RevenuePlanner.Helpers
                                                           calendarEndDate) - 1,
                 progress = 0,
                 open = true,
-                parent = IsPlanTabContainer ? string.Format("PL{0}_M{1}", improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementPlanCampaignId) : string.Format("M{0}", improvementPlanCampaignId),
+                parent = string.Format("M{0}", improvementPlanCampaignId),
                 color = (isApplyTocalendar ? Common.COLORC6EBF3_WITH_BORDER_IMPROVEMENT : string.Concat(GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, improvementTactic.ImprovementTacticType.ColorCode.ToLower())),
                 isSubmitted = improvementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = improvementTactic.Status.Equals(tacticStatusDeclined),
@@ -1963,7 +1981,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="calendarEndDate">Calendar end date.</param>
         /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
         /// <returns>Return improvement activity task data.</returns>
-        private static object GetImprovementActivityTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar, bool IsPlanTabContainer = false)
+        private static object GetImprovementActivityTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
         {
             //// Modified By: Maninder Singh Wadhva to address Ticket 395
             MRPEntities db = new MRPEntities();
@@ -1977,7 +1995,7 @@ namespace RevenuePlanner.Helpers
             //// Creating task Data for the only parent of all plan improvement tactic.
             var taskDataImprovementActivity = new
             {
-                id = IsPlanTabContainer ? string.Format("PL{0}_M{1}", improvementCampaign.Plan.PlanId, improvementCampaign.ImprovementPlanCampaignId) : string.Format("M{0}", improvementCampaign.ImprovementPlanCampaignId),
+                id = string.Format("M{0}", improvementCampaign.ImprovementPlanCampaignId),
                 text = improvementCampaign.Title,
                 start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, startDate),
                 duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
@@ -1991,7 +2009,6 @@ namespace RevenuePlanner.Helpers
                 isImprovement = true,
                 IsHideDragHandleLeft = startDate < calendarStartDate,
                 IsHideDragHandleRight = true,
-                parent = IsPlanTabContainer ? string.Format("PL{0}", improvementCampaign.Plan.PlanId) : string.Empty,
                 Status = improvementTactics[0].Status   //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen
             };
 
@@ -3288,7 +3305,7 @@ namespace RevenuePlanner.Helpers
         public static List<TacticStageValue> GetTacticStageValueListForImprovement(List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
         {
             MRPEntities dbStage = new MRPEntities();
-            
+
             List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
             List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
             string stageINQ = Enums.Stage.INQ.ToString();
@@ -3583,7 +3600,7 @@ namespace RevenuePlanner.Helpers
         public static List<UserCustomRestrictionModel> GetUserCustomRestriction()
         {
             BDSService.BDSServiceClient objBDSServiceClient = new BDSServiceClient();
-            var listCustomRestriction= objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId).Select(c => new UserCustomRestrictionModel
+            var listCustomRestriction = objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId).Select(c => new UserCustomRestrictionModel
                                                                                                                         {
                                                                                                                             CustomField = c.CustomField,
                                                                                                                             CustomFieldId = c.CustomFieldId,
@@ -3596,7 +3613,7 @@ namespace RevenuePlanner.Helpers
                 UserCustomRestrictionModel objUserCustomRestriction = new UserCustomRestrictionModel();
                 objUserCustomRestriction.CustomField = Enums.CustomRestrictionType.BusinessUnit.ToString();
                 objUserCustomRestriction.CustomFieldId = Sessions.User.BusinessUnitId.ToString();
-                objUserCustomRestriction.Permission=(int)Enums.CustomRestrictionPermission.ViewEdit;
+                objUserCustomRestriction.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                 listCustomRestriction.Add(objUserCustomRestriction);
             }
             return listCustomRestriction;
@@ -3985,7 +4002,7 @@ namespace RevenuePlanner.Helpers
                             var campaign_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
                             campaign_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
-                            var programIds=Plan_Campaign_ProgramList.Select(a=>a.PlanProgramId).ToList();
+                            var programIds = Plan_Campaign_ProgramList.Select(a => a.PlanProgramId).ToList();
                             string sectionProgram = Enums.EntityType.Program.ToString();
                             var program_customFieldList = db.CustomField_Entity.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionProgram).ToList();
                             program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
@@ -4015,7 +4032,7 @@ namespace RevenuePlanner.Helpers
 
                             ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
                             //// when program deleted then custom field's value for this program and custom field's value of appropriate tactic will be deleted
-                            var program_customFieldList = db.CustomField_Entity.Where(a => a.EntityId==id && a.CustomField.EntityType == section).ToList();
+                            var program_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
                             program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
                             var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
@@ -4039,7 +4056,7 @@ namespace RevenuePlanner.Helpers
 
                             ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactics
                             //// when tactic deleted then custom field's value for this tactic will be deleted 
-                            var tactic_customFieldList = db.CustomField_Entity.Where(a => a.EntityId==id && a.CustomField.EntityType == section).ToList();
+                            var tactic_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
                             tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                             ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactic
                         }
@@ -4250,33 +4267,35 @@ namespace RevenuePlanner.Helpers
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.BusinessUnit.ToString(), Value = PlanGanttTypes.BusinessUnit.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = PlanGanttTypes.Audience.ToString() });
 
-            var lstCustomFields = GetTacticsCustomFields(planTacticIds);
-            lstViewByTab = lstViewByTab.Concat(lstCustomFields).ToList();
+            if (planTacticIds != null)
+            {
+                if (planTacticIds.Count > 0)
+                {
+                    var lstCustomFields = GetTacticsCustomFields(planTacticIds);
+                    lstViewByTab = lstViewByTab.Concat(lstCustomFields).ToList();
+                }
+            }
+
             return lstViewByTab;
         }
 
         public static List<ViewByModel> GetTacticsCustomFields(List<int> planTacticIds)
-            {
+        {
             MRPEntities db = new MRPEntities();
             List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
-                if (planTacticIds == null)
-                {
-                    planTacticIds = new List<int>();
-                }
-                
-                var CustomFields = (from cf in db.CustomFields
-                                    join cft in db.CustomFieldTypes on cf.CustomFieldTypeId equals cft.CustomFieldTypeId
-                                    join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                    join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
-                                    join cfoLeft in db.CustomFieldOptions on new { Key1 = cf.CustomFieldId, Key2 = cfe.Value.Trim() } equals
-                                        new { Key1 = cfoLeft.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)cfoLeft.CustomFieldOptionId).Trim() } into cAll
-                                    from cfo in cAll.DefaultIfEmpty()
-                                    where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId
-                                && planTacticIds.Contains(t.PlanTacticId)
-                                    select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+            if (planTacticIds == null)
+            {
+                planTacticIds = new List<int>();
+            }
 
-                foreach (var item in CustomFields)
-                {
+            var CustomFields = (from cf in db.CustomFields
+                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
+                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
+                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId && planTacticIds.Contains(t.PlanTacticId)
+                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+
+            foreach (var item in CustomFields)
+            {
                 lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom", item.CustomFieldId.ToString()) });
             }
             return lstCustomFieldsViewByTab;
@@ -4296,70 +4315,4 @@ namespace RevenuePlanner.Helpers
 
         #endregion
     }
-
-    ////Start Manoj PL #490 Date:27May2014
-    ///// <summary>
-    ///// Class to maintain the session
-    ///// </summary>
-    //public class LoginSession
-    //{
-    //    public string SessionId { get; set; }
-    //    public string UserId { get; set; }
-
-    //    /// <summary>
-    //    /// Add current session details
-    //    /// </summary>
-    //    /// <param name="SessionId"></param>
-    //    /// <param name="UserId"></param>
-    //    /// <returns></returns>
-    //    public bool AddSession(string SessionId, string UserId)
-    //    {
-    //        bool isSessionExist = false;
-    //        List<LoginSession> a = (List<LoginSession>)HttpContext.Current.Application["CurrentSession"];
-    //        if (a == null || a.Count <= 0)
-    //        {
-    //            a = new List<LoginSession>();
-    //        }
-    //        LoginSession l = new LoginSession();
-    //        l.SessionId = SessionId;
-    //        l.UserId = UserId;
-    //        if (a.Count > 0)
-    //        {
-    //            if (a.Find(l1 => l1.SessionId == SessionId) == null)
-    //            {
-    //                a.Add(l);
-    //            }
-    //            else
-    //            {
-    //                isSessionExist = true;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            a.Add(l);
-    //        }
-    //        HttpContext.Current.Application["CurrentSession"] = a;
-    //        return isSessionExist;
-    //    }
-
-    //    /// <summary>
-    //    /// Remove session details
-    //    /// </summary>
-    //    /// <param name="SessionId"></param>
-    //    /// <param name="UserId"></param>
-    //    public void RemoveSession(string SessionId, string UserId)
-    //    {
-    //        List<LoginSession> a = (List<LoginSession>)HttpContext.Current.Application["CurrentSession"];
-    //        if (a != null)
-    //        {
-    //            if (a.Find(l1 => l1.SessionId == SessionId) != null)
-    //            {
-    //                a.Remove(a.Find(l1 => l1.SessionId == SessionId));
-    //                HttpContext.Current.Application["CurrentSession"] = a;
-    //            }
-    //        }
-
-    //    }
-    //}
-    ////End Manoj PL #490 Date:27May2014
 }

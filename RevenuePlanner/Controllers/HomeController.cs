@@ -2583,63 +2583,70 @@ namespace RevenuePlanner.Controllers
                 planid = c.planid
             });
 
-            #region Improvement Activities & Tactics
-            var improvemntTacticList = improvementTactic.Select(it => new
+            if (NewTaskDataTactic.Count() > 0)
             {
-                ImprovementTactic = it,
-                //// Getting start date for improvement activity task.
-                minStartDate = improvementTactic.Where(impt => impt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impt => impt.EffectiveDate).Min(),
-            }).Select(a => a).ToList().Distinct().ToList();
+                #region Improvement Activities & Tactics
+                var improvemntTacticList = improvementTactic.Select(it => new
+                {
+                    ImprovementTactic = it,
+                    //// Getting start date for improvement activity task.
+                    minStartDate = improvementTactic.Where(impt => impt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impt => impt.EffectiveDate).Min(),
+                }).Select(a => a).ToList().Distinct().ToList();
 
-            //// Improvement Activities
-            var taskDataImprovementActivity = improvemntTacticList.Select(ita => new
+                //// Improvement Activities
+                var taskDataImprovementActivity = improvemntTacticList.Select(ita => new
+                {
+                    id = string.Format("L{0}_M{1}", ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, ita.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId),
+                    text = ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, ita.minStartDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                              CalendarEndDate,
+                                                              ita.minStartDate,
+                                                              CalendarEndDate) - 1,
+                    progress = 0,
+                    open = true,
+                    color = GetColorBasedOnImprovementActivity(improvementTactic, ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                    ImprovementActivityId = ita.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
+                    isImprovement = true,
+                    IsHideDragHandleLeft = ita.minStartDate < CalendarStartDate,
+                    IsHideDragHandleRight = true,
+                    parent = string.Format("L{0}", ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                }).Select(i => i).Distinct().ToList();
+
+                var taskDataImprovementTactic = improvemntTacticList.Select(it => new
+                {
+                    id = string.Format("L{0}_M{1}_I{2}_Y{3}", it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId, it.ImprovementTactic.ImprovementPlanTacticId, it.ImprovementTactic.ImprovementTacticTypeId),
+                    text = it.ImprovementTactic.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, it.ImprovementTactic.EffectiveDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                              CalendarEndDate,
+                                                              it.ImprovementTactic.EffectiveDate,
+                                                              CalendarEndDate) - 1,
+                    progress = 0,
+                    open = true,
+                    parent = string.Format("L{0}_M{1}", it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
+                    color = string.Concat(Common.GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, it.ImprovementTactic.ImprovementTacticType.ColorCode.ToLower()),
+                    isSubmitted = it.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
+                    isDeclined = it.ImprovementTactic.Status.Equals(tacticStatusDeclined),
+                    inqs = 0,
+                    mqls = 0,
+                    cost = it.ImprovementTactic.Cost,
+                    cws = 0,
+                    it.ImprovementTactic.ImprovementPlanTacticId,
+                    isImprovement = true,
+                    IsHideDragHandleLeft = it.ImprovementTactic.EffectiveDate < CalendarStartDate,
+                    IsHideDragHandleRight = true,
+                    Status = it.ImprovementTactic.Status
+                }).OrderBy(t => t.text);
+                #endregion
+
+                //return taskDataCampaign.Concat<object>(taskDataTactic).Concat<object>(taskDataProgram).ToList<object>();
+                return newTaskDataPlan.Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic).Concat<object>(newTaskDataCampaign).Concat<object>(NewTaskDataTactic).Concat<object>(newTaskDataProgram).ToList<object>();
+            }
+            else
             {
-                id = string.Format("L{0}_M{1}", ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, ita.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId),
-                text = ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, ita.minStartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                          CalendarEndDate,
-                                                          ita.minStartDate,
-                                                          CalendarEndDate) - 1,
-                progress = 0,
-                open = true,
-                color = GetColorBasedOnImprovementActivity(improvementTactic, ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
-                ImprovementActivityId = ita.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
-                isImprovement = true,
-                IsHideDragHandleLeft = ita.minStartDate < CalendarStartDate,
-                IsHideDragHandleRight = true,
-                parent = string.Format("L{0}", ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
-            }).Select(i => i).Distinct().ToList();
-
-            var taskDataImprovementTactic = improvemntTacticList.Select(it => new
-            {
-                id = string.Format("L{0}_M{1}_I{2}_Y{3}", it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId, it.ImprovementTactic.ImprovementPlanTacticId, it.ImprovementTactic.ImprovementTacticTypeId),
-                text = it.ImprovementTactic.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, it.ImprovementTactic.EffectiveDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                          CalendarEndDate,
-                                                          it.ImprovementTactic.EffectiveDate,
-                                                          CalendarEndDate) - 1,
-                progress = 0,
-                open = true,
-                parent = string.Format("L{0}_M{1}", it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
-                color = string.Concat(Common.GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, it.ImprovementTactic.ImprovementTacticType.ColorCode.ToLower()),
-                isSubmitted = it.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
-                isDeclined = it.ImprovementTactic.Status.Equals(tacticStatusDeclined),
-                inqs = 0,
-                mqls = 0,
-                cost = it.ImprovementTactic.Cost,
-                cws = 0,
-                it.ImprovementTactic.ImprovementPlanTacticId,
-                isImprovement = true,
-                IsHideDragHandleLeft = it.ImprovementTactic.EffectiveDate < CalendarStartDate,
-                IsHideDragHandleRight = true,
-                Status = it.ImprovementTactic.Status
-            }).OrderBy(t => t.text);
-            #endregion
-
-            //return taskDataCampaign.Concat<object>(taskDataTactic).Concat<object>(taskDataProgram).ToList<object>();
-            return newTaskDataPlan.Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic).Concat<object>(newTaskDataCampaign).Concat<object>(NewTaskDataTactic).Concat<object>(newTaskDataProgram).ToList<object>();
+                return newTaskDataPlan.Concat<object>(newTaskDataCampaign).Concat<object>(NewTaskDataTactic).Concat<object>(newTaskDataProgram).ToList<object>();
+            }
         }
 
         /// <summary>
@@ -2657,7 +2664,7 @@ namespace RevenuePlanner.Controllers
 
                 DateTime tacticStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgramTactic.StartDate)); // start Date of tactic
 
-                if (tacticStartDate > minDate) // If any tactic affected by at least one improvement tactic.
+                if (tacticStartDate >= minDate) // If any tactic affected by at least one improvement tactic.
                 {
                     return 1;
                 }
