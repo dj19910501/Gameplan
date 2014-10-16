@@ -3254,9 +3254,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                List<int> lstCustomTypeEntityId = new List<int>();
-                List<int> lstCustomFieldId = new List<int>();
-
+                int customfieldId = 0;
                 List<BudgetReportTab> planobj = new List<BudgetReportTab>();
                 if (Tab == ReportTabType.Audience.ToString())
                 {
@@ -3274,34 +3272,31 @@ namespace RevenuePlanner.Controllers
                 {
                     planobj = db.Verticals.Where(a => VerticalIdsInner.Contains(a.VerticalId)).ToList().Select(a => new BudgetReportTab { Id = a.VerticalId.ToString(), Title = a.Title }).ToList();
                 }
-                else if (Tab.Contains("Custom")){ 
-                    int CustomFieldId = Convert.ToInt32(Tab.Replace("Custom",""));
-                    List<int> TacticID = tacticList.Select(t => t.PlanTacticId).ToList();
-                    var CustomFields = (from cf in db.CustomFields
-                                        join cft in db.CustomFieldTypes on cf.CustomFieldTypeId equals cft.CustomFieldTypeId
-                                        join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                        join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
-                                        join cfoLeft in db.CustomFieldOptions on new { Key1 = cf.CustomFieldId, Key2 = cfe.Value.Trim() } equals
-                                        new { Key1 = cfoLeft.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)cfoLeft.CustomFieldOptionId).Trim() } into cAll
-                                        from cfo in cAll.DefaultIfEmpty()
-                                        where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId
-                                        && cf.CustomFieldId == CustomFieldId && TacticID.Contains(t.PlanTacticId)
-                                        select new
-                                        {
-                                            cf,
-                                            t,
-                                            cfe,
-                                            Id = cft.Name == "DropDownList" ? (cfo.CustomFieldOptionId == null ? 0 : cfo.CustomFieldOptionId) : cf.CustomFieldId,
-                                            Title = cft.Name == "DropDownList" ? cfo.Value : cfe.Value,
-                                        }).ToList().Distinct().ToList()
-                                    .OrderBy(cf => cf.cf.Name).ToList();
+                else if (Tab.Contains("Custom"))
+                {
+                    customfieldId = Convert.ToInt32(Tab.Replace("Custom", ""));
+                    string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
 
-                    lstCustomTypeEntityId = CustomFields.Select(c => c.cfe.EntityId).ToList();
-                    lstCustomFieldId =  CustomFields.Select(c => c.Id).ToList();
+                    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                    {
+                        var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
+                        planobj = optionlist.Select(p => new BudgetReportTab
+                        {
+                            Id = p.CustomFieldOptionId.ToString(),
+                            Title = p.Value
+                        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
+                    }
+                    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                    {
+                        List<int> entityids = tacticList.Select(t => t.PlanTacticId).ToList();
+                        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                        planobj = cusomfieldEntity.Select(p => new BudgetReportTab
+                        {
+                            Id = p.Value,
+                            Title = p.Value
+                        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
+                    }
 
-                    tacticList = CustomFields.Select(t => t.t).ToList();
-
-                    planobj = CustomFields.Select(a => new BudgetReportTab { Id = a.Id.ToString(), Title = a.Title}).ToList();
                 }
 
                 
@@ -3342,7 +3337,9 @@ namespace RevenuePlanner.Controllers
                         }
                          else if (Tab.Contains("Custom"))
                         {
-                            TacticListInner = tacticList.Where(tactic => lstCustomTypeEntityId.Contains(tactic.PlanTacticId) && lstCustomFieldId.Contains(Convert.ToInt32(p.Id))).ToList();
+                            var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == p.Id).ToList();
+                            List<int> entityids = cusomfieldEntity.Select(e => e.EntityId).ToList();
+                            TacticListInner = tacticList.Where(tactic => entityids.Contains(tactic.PlanTacticId)).ToList();
                         }
                         var ProgramListInner = ProgramList.Where(program => TacticListInner.Select(t => t.PlanProgramId).Contains(program.PlanProgramId)).ToList();
                         var campaignObj = CampaignList.Where(campaign => ProgramListInner.Select(program => program.PlanCampaignId).Contains(campaign.PlanCampaignId)).ToList();
