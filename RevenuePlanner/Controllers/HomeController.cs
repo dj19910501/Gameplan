@@ -6703,7 +6703,8 @@ namespace RevenuePlanner.Controllers
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
             //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, ActiveMenu.ToLower());
-            List<string> status = GetStatusAsPerSelectedType(ViewBy, objactivemenu);
+            List<string> status = Common.GetStatusListAfterApproved(); //GetStatusAsPerSelectedType(ViewBy, objactivemenu);
+            status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
             ////
 
             //// Custom Restrictions

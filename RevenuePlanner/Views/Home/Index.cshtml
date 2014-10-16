@@ -140,22 +140,22 @@
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
                 }
                 arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable on plan change.
-                GetOwnerListForFilter(CurrentPlanId);
+                //GetOwnerListForFilter(CurrentPlanId);
             });
         }
 
-        function GetOwnerListForFilter(CurrentPlanId) {
+        function GetOwnerListForFilter(Planids) {
 
             $('#ulSelectedOwner').html('');
             filters.OwnerTitles = [];
             filters.OwnerIds = [];
-
             $.ajax({
                 type: "GET",
+                async:false,
                 cache: false,
                 url: '@Url.Action("GetOwnerListForFilter", "Home")',
                 data: {
-                    PlanId: CurrentPlanId.toString(),
+                    PlanId: Planids.toString(),
                     ViewBy: type,
                     ActiveMenu: $('#ActiveMenu').val()
                 },
@@ -849,7 +849,7 @@
             $("#" + event).html('Select');
             removeByValue(filters.SelectedPlans, event);
             removeByValue(filters.PlanTitles, ($("#" + event).attr("plantitle")));
-            GetOwnerListForFilter(filters.SelectedPlans);
+            //GetOwnerListForFilter(filters.SelectedPlans);
 
         }
         else {
@@ -857,7 +857,7 @@
             $("#" + event).html('');
             filters.SelectedPlans.push(event);
             filters.PlanTitles.push($("#" + event).attr("plantitle"));
-            GetOwnerListForFilter(filters.SelectedPlans);
+           // GetOwnerListForFilter(filters.SelectedPlans);
         }
 
         if (filters.SelectedPlans.length == 0) {
@@ -1354,8 +1354,8 @@
         CurrentPlanId = $('#PlanId').val();
         $("#CurrentPlanId").val(CurrentPlanId);
         if (CurrentPlanId > 0) {
-        $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val());
-        BindUpcomingActivites(CurrentPlanId);
+            BindUpcomingActivites(CurrentPlanId);
+            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val());
         }
 
     });
@@ -1457,6 +1457,7 @@
             SetPlanButtons();
             var flg = false;
             var strflg = "";
+            var PlanIdsCustom;
             SetGantt();
             ShowInspectForPlanTacticId();
             //functions added to show campagin and program popup from email url link click when email sent to user when comapign or program shared
@@ -1464,9 +1465,14 @@
             ShowInspectForPlanProgramId();
             if (activeMenu.toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 SetBusinessUnitSection();
+                PlanIdsCustom = filters.SelectedPlans.toString();
             }
+            else {
+                PlanIdsCustom = CurrentPlanId;
+            }
+
             BindOtherAttributes();
-            GetOwnerListForFilter(CurrentPlanId);
+            GetOwnerListForFilter(PlanIdsCustom); 
             if (filters.OwnerTitles.length <= 0) {
                 $('#ownerdetail').html("None");
             }
