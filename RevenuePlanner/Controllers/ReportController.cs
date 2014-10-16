@@ -146,7 +146,7 @@ namespace RevenuePlanner.Controllers
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
             plans = plans.Where(p => p.Status.Equals(planPublishedStatus)).Select(p => p).ToList();
             //Filter to filter out the plan based on the Selected businessunit and PlanId
-            if (Sessions.ReportPlanIds != null)
+            if (Sessions.ReportPlanIds != null &&  Sessions.ReportPlanIds.Count>0)
             {
                 plans = plans.Where(p => Sessions.ReportPlanIds.Contains(p.PlanId)).ToList();
             }
@@ -155,7 +155,7 @@ namespace RevenuePlanner.Controllers
                 plans.Clear();
             }
 
-            if (Sessions.ReportBusinessUnitIds!=null)
+            if (Sessions.ReportBusinessUnitIds!=null && Sessions.ReportBusinessUnitIds.Count>0)
             {
                 plans = plans.Where(pl =>Sessions.ReportBusinessUnitIds.Contains(pl.Model.BusinessUnitId)).ToList();
             }
@@ -461,7 +461,7 @@ namespace RevenuePlanner.Controllers
         {
             //// Getting current year's all published plan for all business unit of clientid of director.
             List<Plan> plans = Common.GetPlan().Where(p => p.Status.Equals(PublishedPlan)).ToList();
-            if (Sessions.ReportPlanIds != null)
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count>0)
             {
                 plans = plans.Where(gp => Sessions.ReportPlanIds.Contains(gp.PlanId)).ToList();
             }
@@ -469,7 +469,7 @@ namespace RevenuePlanner.Controllers
             {
                 plans.Clear();
             }
-            if (Sessions.ReportBusinessUnitIds != null)
+            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count>0)
             {
                 plans = plans.Where(gp => Sessions.ReportBusinessUnitIds.Contains(gp.Model.BusinessUnitId)).ToList();
             }
@@ -1760,8 +1760,16 @@ namespace RevenuePlanner.Controllers
         {
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
             ViewBag.SelectOption = timeFrameOption;
+            var lstBusinessunits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false && Sessions.ReportBusinessUnitIds.Contains(b.BusinessUnitId)).OrderBy(b => b.Title).ToList();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+            if (lstBusinessunits.Count==0)
+            {
+                BusinessUnit objBusinessUnit=new BusinessUnit ();
+                objBusinessUnit.BusinessUnitId=Guid.Empty;
+                objBusinessUnit.Title="None";
+                lstBusinessunits.Add(objBusinessUnit);
 
-            ViewBag.BusinessUnit = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false && Sessions.ReportBusinessUnitIds.Contains(b.BusinessUnitId)).OrderBy(b => b.Title);//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+            }
+            ViewBag.BusinessUnit = lstBusinessunits;
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting(timeFrameOption);
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist);
 
@@ -3139,7 +3147,7 @@ namespace RevenuePlanner.Controllers
                 Year = DateTime.Now.Year.ToString();
             }
             List<int> PlanIdList = new List<int>();
-            if (Sessions.ReportPlanIds != null)
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count>0)
             {
                 PlanIdList = Sessions.ReportPlanIds;
             }
@@ -3157,7 +3165,7 @@ namespace RevenuePlanner.Controllers
             }
 
             List<Guid> BusinessUnitIdList = new List<Guid>();
-            if (Sessions.ReportBusinessUnitIds != null)
+            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count>0)
             {
                 BusinessUnitIdList = Sessions.ReportBusinessUnitIds;
             }
@@ -4168,7 +4176,7 @@ namespace RevenuePlanner.Controllers
                  }
                  else
                  {
-                     Sessions.ReportBusinessUnitIds = null;
+                     Sessions.ReportBusinessUnitIds = lstBusinessUnitIds;
                  }
                  if (planIds != string.Empty)
                  {
@@ -4188,7 +4196,7 @@ namespace RevenuePlanner.Controllers
                  }
                  else
                  {
-                     Sessions.ReportPlanIds = null;
+                     Sessions.ReportPlanIds = lstPlanIds;
                  }
                  return Json(new { status = true });
              }
