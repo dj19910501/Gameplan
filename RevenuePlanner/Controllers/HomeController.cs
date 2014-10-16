@@ -589,9 +589,9 @@ namespace RevenuePlanner.Controllers
         private JsonResult PrepareCustomFieldResult(string viewBy, List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, string planId)
         {
             int CustomTypeId = 0;
-            if (viewBy.Contains("Custom"))
+            if (viewBy.Contains(Common.CustomTitle))
             {
-                CustomTypeId = Convert.ToInt32(viewBy.Replace("Custom", ""));
+                CustomTypeId = Convert.ToInt32(viewBy.Replace(Common.CustomTitle, ""));
                 viewBy = PlanGanttTypes.Custom.ToString();
             }
 

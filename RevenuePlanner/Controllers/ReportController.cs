@@ -950,10 +950,10 @@ namespace RevenuePlanner.Controllers
 
                 return Json(returnData, JsonRequestBehavior.AllowGet);
             }
-            else if (ParentLabel.Contains("Custom"))
+            else if (ParentLabel.Contains(Common.CustomTitle))
             {
-                
-                int customfieldId = Convert.ToInt32(ParentLabel.Replace("Custom", ""));
+
+                int customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CustomTitle, ""));
                 string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 
                 if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
@@ -1154,10 +1154,10 @@ namespace RevenuePlanner.Controllers
                 int verticalid = Convert.ToInt32(Id);
                 Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.VerticalId == verticalid).ToList();
             }
-            else if (ParentTab.Contains("Custom"))
+            else if (ParentTab.Contains(Common.CustomTitle))
             {
                 List<int> entityids = new List<int>();
-                int customfieldId = Convert.ToInt32(ParentTab.Replace("Custom", ""));
+                int customfieldId = Convert.ToInt32(ParentTab.Replace(Common.CustomTitle, ""));
                 string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 entityids = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == Id).Select(c => c.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(pcpt => entityids.Contains(pcpt.TacticObj.PlanTacticId)).ToList();
@@ -1565,9 +1565,9 @@ namespace RevenuePlanner.Controllers
             TempData["ReportData"] = TempData["ReportData"];
 
              //Custom
-            if (ParentConversionSummaryTab.Contains("Custom"))
+            if (ParentConversionSummaryTab.Contains(Common.CustomTitle))
             {
-                int customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace("Custom", ""));
+                int customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.CustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(e => e.CustomFieldId == customfieldId).Select(e => e.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(t => entityids.Contains(t.TacticObj.PlanTacticId)).ToList();
             }
@@ -1620,7 +1620,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                int customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace("Custom", ""));
+                int customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.CustomTitle, ""));
                 List<int> entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
                 string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
@@ -1840,9 +1840,9 @@ namespace RevenuePlanner.Controllers
             List<string> includeMonth = GetMonthListForReport(selectOption);
             //Custom
             List<int> entityids = new List<int>();
-            if (ParentLabel.Contains("Custom"))
+            if (ParentLabel.Contains(Common.CustomTitle))
             {
-                int customfieldId = Convert.ToInt32(ParentLabel.Replace("Custom", ""));
+                int customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CustomTitle, ""));
                 string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 entityids = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == id).Select(c => c.EntityId).ToList();
             }
@@ -1851,7 +1851,7 @@ namespace RevenuePlanner.Controllers
                 (ParentLabel == Common.RevenueAudience && pcpt.TacticObj.AudienceId == Convert.ToInt32(id)) ||
                 (ParentLabel == Common.RevenueVertical && pcpt.TacticObj.VerticalId == Convert.ToInt32(id)) ||
                 (ParentLabel == Common.RevenuePlans && pcpt.TacticObj.Plan_Campaign_Program.Plan_Campaign.PlanId == Convert.ToInt32(id)) ||
-                (ParentLabel.Contains("Custom") && entityids.Contains(pcpt.TacticObj.PlanTacticId))
+                (ParentLabel.Contains(Common.CustomTitle) && entityids.Contains(pcpt.TacticObj.PlanTacticId))
                 )).ToList();
             List<int> tacticIdList = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
 
@@ -2123,9 +2123,9 @@ namespace RevenuePlanner.Controllers
                 }
             }
             //Custom
-            if (parentlabel.Contains("Custom"))
+            if (parentlabel.Contains(Common.CustomTitle))
             {
-                int customfieldId = Convert.ToInt32(parentlabel.Replace("Custom", ""));
+                int customfieldId = Convert.ToInt32(parentlabel.Replace(Common.CustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(e => e.CustomFieldId == customfieldId).Select(e => e.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(t => entityids.Contains(t.TacticObj.PlanTacticId)).ToList();
             }
@@ -2190,9 +2190,9 @@ namespace RevenuePlanner.Controllers
                              planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
                          }).ToList();
             }
-            else if(parentlabel.Contains("Custom"))
+            else if (parentlabel.Contains(Common.CustomTitle))
             {
-                int customfieldId = Convert.ToInt32(parentlabel.Replace("Custom", ""));
+                int customfieldId = Convert.ToInt32(parentlabel.Replace(Common.CustomTitle, ""));
                 List<int> entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
                 string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
@@ -2379,9 +2379,9 @@ namespace RevenuePlanner.Controllers
             List<string> includeMonth = GetMonthListForReport(selectOption, true);
             //Custom
             List<int> entityids = new List<int>();
-            if (ParentLabel.Contains("Custom"))
+            if (ParentLabel.Contains(Common.CustomTitle))
             {
-                int customfieldId = Convert.ToInt32(ParentLabel.Replace("Custom", ""));
+                int customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CustomTitle, ""));
                 string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 entityids = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == id).Select(c => c.EntityId).ToList();
             }
@@ -2390,7 +2390,7 @@ namespace RevenuePlanner.Controllers
                                                                 (ParentLabel == Common.RevenueGeography && pcpt.TacticObj.GeographyId == new Guid(id)) ||
                                                                 (ParentLabel == Common.RevenueVertical && pcpt.TacticObj.VerticalId == Convert.ToInt32(id) ||
                                                                 (ParentLabel == Common.RevenueOrganization) ||
-                                                                (ParentLabel.Contains("Custom") && entityids.Contains(pcpt.TacticObj.PlanTacticId))
+                                                                (ParentLabel.Contains(Common.CustomTitle) && entityids.Contains(pcpt.TacticObj.PlanTacticId))
                                                                 ))).ToList();
             // List<int> TacticIdList = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
             string stageTitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
@@ -3328,9 +3328,9 @@ namespace RevenuePlanner.Controllers
                 {
                     planobj = db.Verticals.Where(a => VerticalIdsInner.Contains(a.VerticalId)).ToList().Select(a => new BudgetReportTab { Id = a.VerticalId.ToString(), Title = a.Title }).ToList();
                 }
-                else if (Tab.Contains("Custom"))
+                else if (Tab.Contains(Common.CustomTitle))
                 {
-                    customfieldId = Convert.ToInt32(Tab.Replace("Custom", ""));
+                    customfieldId = Convert.ToInt32(Tab.Replace(Common.CustomTitle, ""));
                     string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
 
                     if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
@@ -3391,7 +3391,7 @@ namespace RevenuePlanner.Controllers
                         {
                             TacticListInner = tacticList.Where(tactic => tactic.VerticalId.ToString() == p.Id).ToList();
                         }
-                         else if (Tab.Contains("Custom"))
+                        else if (Tab.Contains(Common.CustomTitle))
                         {
                             var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == p.Id).ToList();
                             List<int> entityids = cusomfieldEntity.Select(e => e.EntityId).ToList();

@@ -142,6 +142,9 @@ namespace RevenuePlanner.Helpers
         public static string DateFormatForModelIntegrationLastSync = "MM/dd/yyyy hh:mm tt";
         private const string GameplanIntegrationService = "Gameplan Integration Service";
         public static string DateFormateForInspectPopupDescription = "MMMM dd";
+
+        //Added By Kalpesh Sharma
+        public const string CustomTitle = "Custom";
         #endregion
 
         //#region Enums
@@ -4325,7 +4328,7 @@ namespace RevenuePlanner.Helpers
             //ittrate the custom fields and insert into the temp list
             foreach (var item in CustomFields)
             {
-                lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom", item.CustomFieldId.ToString()) });
+                lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", CustomTitle, item.CustomFieldId.ToString()) });
             }
             return lstCustomFieldsViewByTab;
         }
