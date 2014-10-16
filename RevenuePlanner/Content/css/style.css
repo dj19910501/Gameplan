@@ -10515,3 +10515,16 @@ float:left;
     border-top:1px solid #ccc !important;
     padding-top:10px;
     }
+
+/*Internal Review Point : Apply ellipsis on Dropdown control : Kalpesh Sharma*/
+.ui-multiselect.ui-widget.ui-state-default.ui-corner-all span{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 90%;
+    margin-left:10px;
+}
+
+.ui-multiselect.ui-widget.ui-state-default.ui-corner-all span[class] {
+    width: 0px;
+}
