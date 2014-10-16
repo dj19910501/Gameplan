@@ -1356,32 +1356,12 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Added By Maninder Singh Wadhva PL Ticket#47
+        /// Added By Sohel #866
         /// Modified By Dharmraj PL Ticket#364 & Ticket#365 & Ticket#366
         /// Function to get status as per tab.
         /// </summary>
         /// <param name="currentTab">Current Tab.</param>
         /// <returns>Returns list of status as per tab.</returns>
-        private List<string> GetStatusAsPerTab(GanttTabs currentTab, Enums.ActiveMenu objactivemenu)
-        {
-            List<string> status = new List<string>();
-
-            if (currentTab.Equals(GanttTabs.Request))
-            {
-                status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            }
-            else
-            {
-                status = Common.GetStatusListAfterApproved();
-                if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
-                {
-                    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-                }
-            }
-
-            return status;
-        }
-
         private List<string> GetStatusAsPerSelectedType(string currentTab, Enums.ActiveMenu objactivemenu)
         {
             List<string> status = new List<string>();
@@ -2890,12 +2870,12 @@ namespace RevenuePlanner.Controllers
         /// Date :- 09/10/2014
         /// Description :- To get minimum start date for custom field
         /// </summary>
-        /// <param name="currentGanttTab"></param>
-        /// <param name="typeId"></param>
-        /// <param name="campaign"></param>
-        /// <param name="program"></param>
-        /// <param name="tactic"></param>
-        /// <returns></returns>
+        /// <param name="currentGanttTab">Selected Plan Gantt Type (Tactic , Vertical and so on)</param>
+        /// <param name="typeId">Id</param>
+        /// <param name="campaign">List of campaign </param>
+        /// <param name="program">List of Program</param>
+        /// <param name="tactic">List of Tactic</param>
+        /// <returns>Return the min start date fo program and Campaign</returns>
         public DateTime GetMinStartDateForCustomField(PlanGanttTypes currentGanttTab, int typeId, List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic)
         {
             var queryPlanProgramId = new List<int>();
@@ -2903,14 +2883,17 @@ namespace RevenuePlanner.Controllers
             DateTime minDateTactic = DateTime.Now;
             switch (currentGanttTab)
             {
+                //If selected plan Gantt type is Vertical at that time we will extract tactic based on vertical id
                 case PlanGanttTypes.Vertical:
                     queryPlanProgramId = tactic.Where(t => t.VerticalId == typeId).Select(t => t.PlanProgramId).ToList<int>();
                     minDateTactic = tactic.Where(t => t.VerticalId == typeId).Select(t => t.StartDate).Min();
                     break;
+                //If selected plan Gantt type is Audience at that time we will extract tactic based on Audience id
                 case PlanGanttTypes.Audience:
                     queryPlanProgramId = tactic.Where(t => t.AudienceId == typeId).Select(t => t.PlanProgramId).ToList<int>();
                     minDateTactic = tactic.Where(t => t.AudienceId == typeId).Select(t => t.StartDate).Min();
                     break;
+                //If selected plan Gantt type is Custom at that time we will extract tactic based on Custom id
                 case PlanGanttTypes.Custom:
                     queryPlanProgramId = tactic.Where(t => t.PlanTacticId == typeId).Select(t => t.PlanProgramId).ToList<int>();
                     minDateTactic = tactic.Where(t => t.PlanTacticId == typeId).Select(t => t.StartDate).Min();
@@ -2919,6 +2902,7 @@ namespace RevenuePlanner.Controllers
                     break;
             }
 
+            //Get the min start date of Program and Campaign.
             var queryPlanCampaignId = program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.PlanCampaignId).ToList<int>();
             DateTime minDateProgram = program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.StartDate).Min();
 
@@ -2930,18 +2914,19 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Get min start date using planID
         /// </summary>
-        /// <param name="currentGanttTab"></param>
-        /// <param name="typeId"></param>
-        /// <param name="planId"></param>
-        /// <param name="campaign"></param>
-        /// <param name="program"></param>
-        /// <param name="tactic"></param>
-        /// <returns></returns>
+        /// <param name="currentGanttTab">Selected Plan Gantt Type (Tactic , Vertical and so on)</param>
+        /// <param name="typeId">Selected Id</param>
+        /// /// <param name="planid">Planid</param>
+        /// <param name="campaign">List of campaign </param>
+        /// <param name="program">List of Program</param>
+        /// <param name="tactic">List of Tactic</param>
+        /// <returns>Return the min start date fo program and Campaign</returns>
         public DateTime GetMinStartDateForPlan(GanttTabs currentGanttTab, int typeId, int planId, List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic)
         {
             var queryPlanProgramId = new List<int>();
 
             DateTime minDateTactic = DateTime.Now;
+            //Check the case with selected plan gantt type and if it's match then extract the min date from tactic list 
             switch (currentGanttTab)
             {
                 case GanttTabs.Vertical:
@@ -2969,6 +2954,7 @@ namespace RevenuePlanner.Controllers
                     break;
             }
 
+            //Get the min start date of Program and Campaign.
             var queryPlanCampaignId = program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.PlanCampaignId).ToList<int>();
             DateTime minDateProgram = program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.StartDate).Min();
 
@@ -2980,18 +2966,19 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Get min start date using planID
         /// </summary>
-        /// <param name="currentGanttTab"></param>
-        /// <param name="typeId"></param>
-        /// <param name="planId"></param>
-        /// <param name="campaign"></param>
-        /// <param name="program"></param>
-        /// <param name="tactic"></param>
-        /// <returns></returns>
+        /// <param name="currentGanttTab">Selected Plan Gantt Type (Tactic , Vertical and so on)</param>
+        /// <param name="typeId">Selected Id</param>
+        /// /// <param name="planid">Planid</param>
+        /// <param name="campaign">List of campaign </param>
+        /// <param name="program">List of Program</param>
+        /// <param name="tactic">List of Tactic</param>
+        /// <returns>Return the min start date fo program and Campaign</returns>
         public DateTime GetMinStartDateForPlanNew(string currentGanttTab, int typeId, int planId, List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic)
         {
             var queryPlanProgramId = new List<int>();
             DateTime minDateTactic = DateTime.Now;
             PlanGanttTypes objPlanGanttTypes = (PlanGanttTypes)Enum.Parse(typeof(PlanGanttTypes), currentGanttTab, true);
+            //Check the case with selected plan gantt type and if it's match then extract the min date from tactic list
             switch (objPlanGanttTypes)
             {
                 case PlanGanttTypes.Vertical:
@@ -6890,10 +6877,15 @@ namespace RevenuePlanner.Controllers
         }
 
         //New parameter activeMenu added to check whether this method is called from Home or Plan
-        [HttpPost]
+        /// <summary>
+        /// Fetch the up comming activites value and select it again true. 
+        /// </summary>
+        /// <param name="planids">Plan id's with comma sepreated</param>
+        /// <param name="CurrentTime">Current Time</param>
+        /// <returns></returns>
         public JsonResult BindUpcomingActivitesValues(string planids, string CurrentTime)
         {
-            
+            //Fetch the list of Upcoming Activity
             List<SelectListItem> objUpcomingActivity = UpComingActivity(planids);
 
             bool IsItemExists = objUpcomingActivity.Where(s => s.Value == CurrentTime).Any();
@@ -6903,7 +6895,7 @@ namespace RevenuePlanner.Controllers
                 foreach (SelectListItem item in objUpcomingActivity)
                 {
                     item.Selected = false;
-
+                    //Set it Selected ture if we found current time value in the list.
                     if (CurrentTime == item.Value)
                     {
                         item.Selected = true;
@@ -6914,6 +6906,11 @@ namespace RevenuePlanner.Controllers
             return Json(objUpcomingActivity.ToList(), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Set the selected plans in Session planid
+        /// </summary>
+        /// <param name="planids">Plan id's with comma sepreated string</param>
+        /// <returns>Json Result with Sucess value and Plan Id</returns>
         public JsonResult SetSessionPlan(string planids)
         {
             List<int> filterplanIds = string.IsNullOrWhiteSpace(planids) ? new List<int>() : planids.Split(',').Select(p => int.Parse(p)).ToList();
@@ -6924,34 +6921,39 @@ namespace RevenuePlanner.Controllers
             return Json(new { isSuccess = true, id = Sessions.PlanId }, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Process and fetch the Upcoming Activity  
+        /// </summary>
+        /// <param name="PlanIds">Plan id's with comma sepreated string</param>
+        /// <returns>List fo SelectListItem of Upcoming activity</returns>
         public List<SelectListItem> UpComingActivity(string PlanIds)
         {
             List<int> planIds = string.IsNullOrWhiteSpace(PlanIds) ? new List<int>() : PlanIds.Split(',').Select(p => int.Parse(p)).ToList();
-
+            
+            //Fetch the active plan based of plan ids
             List<Plan> activePlan = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
 
+            //Get the Current year and Pre define Upcoming Activites.
             string currentYear = DateTime.Now.Year.ToString();
-
             List<SelectListItem> UpcomingActivityList = Common.GetUpcomingActivity().Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString(), Selected = p.Selected }).ToList();
-            UpcomingActivityList.Remove(UpcomingActivityList.Single(x => x.Value == Enums.UpcomingActivities.thisyear.ToString()));
-            UpcomingActivityList.Remove(UpcomingActivityList.Single(x => x.Value == Enums.UpcomingActivities.planYear.ToString()));
-            UpcomingActivityList.Remove(UpcomingActivityList.Single(x => x.Value == Enums.UpcomingActivities.nextyear.ToString()));
+            UpcomingActivityList.RemoveAll(s => s.Value == Enums.UpcomingActivities.thisyear.ToString() || s.Value == Enums.UpcomingActivities.planYear.ToString() ||
+                s.Value == Enums.UpcomingActivities.nextyear.ToString());
 
+            //If active plan dosen't have any current plan at that time we have to remove this month and thisquater option
             if (activePlan.Count > 0)
             {
                 if (activePlan.Where(s => s.Year == currentYear).Count() == 0)
                 {
-                    string thismonth = Convert.ToString(Enums.UpcomingActivities.thismonth);
-                    string thisquarter = Convert.ToString(Enums.UpcomingActivities.thisquarter);
-                    UpcomingActivityList.Remove(UpcomingActivityList.Single(x => x.Value == thismonth));
-                    UpcomingActivityList.Remove(UpcomingActivityList.Single(x => x.Value == thisquarter));
+                    UpcomingActivityList.RemoveAll(s => s.Value == Enums.UpcomingActivities.thismonth.ToString() || s.Value == Enums.UpcomingActivities.thisquarter.ToString());
                 }
                 else
                 {
+                    //Add current year into the list
                     UpcomingActivityList.Add(new SelectListItem { Text = DateTime.Now.Year.ToString(), Value = DateTime.Now.Year.ToString(), Selected = true });
                 }
             }
-
+           
+            //Fetch the pervious year and future year list and insert into the list object
             var yearlistPrevious = activePlan.Where(p => p.Year != DateTime.Now.Year.ToString() && p.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(p.Year) < DateTime.Now.AddYears(-1).Year ).Select(p => p.Year).Distinct().OrderBy(p => p).ToList();
             yearlistPrevious.ForEach(p => UpcomingActivityList.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
             var yearlistAfter = activePlan.Where(p => p.Year != DateTime.Now.Year.ToString() && p.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(p.Year) > DateTime.Now.Year).Select(p => p.Year).Distinct().OrderBy(p => p).ToList();

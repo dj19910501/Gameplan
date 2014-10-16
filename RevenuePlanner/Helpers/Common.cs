@@ -2844,11 +2844,20 @@ namespace RevenuePlanner.Helpers
 
         #region CustomizedStage
 
+        /// <summary>
+        /// Get values of tactic stages
+        /// Created By : Kalpesh Sharma 
+        /// </summary>
+        /// <param name="tlist">List collection of tactics</param>
+        /// <param name="isIncludeImprovement">boolean flag that indicate tactic included imporvement sections</param>
+        /// <returns></returns>
         public static List<TacticStageValue> GetTacticStageRelation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true)
         {
             MRPEntities dbStage = new MRPEntities();
+            //Compute the tactic relation list
             List<TacticStageValueRelation> tacticValueRelationList = GetCalculation(tlist, isIncludeImprovement);
             List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            //fetch the tactic stages and it's value
             List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
             string stageINQ = Enums.Stage.INQ.ToString();
             int levelINQ = stageList.Single(s => s.Code.Equals(stageINQ)).Level.Value;
@@ -2860,7 +2869,7 @@ namespace RevenuePlanner.Helpers
             List<int> mqlStagelist = new List<int>();
             List<int> cwStagelist = new List<int>();
             List<int> revenueStagelist = new List<int>();
-
+            //Select the pre defined tactic stages from the stageList list
             List<int> inqVelocityStagelist = stageList.Where(s => s.Level >= 1 && s.Level < levelINQ).Select(s => s.StageId).ToList();
             List<int> mqlVelocityStagelist = stageList.Where(s => s.Level >= levelINQ && s.Level < levelMQL).Select(s => s.StageId).ToList();
             List<int> cwVelocityStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
@@ -2870,6 +2879,7 @@ namespace RevenuePlanner.Helpers
             string Size = Enums.StageType.Size.ToString();
             List<int> TacticIds = tlist.Select(t => t.PlanTacticId).ToList();
             List<Plan_Campaign_Program_Tactic_Actual> actualTacticList = dbStage.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
+            //Ittrate the Plan_Campaign_Program_Tactic list and Assign it to TacticStageValue 
             foreach (Plan_Campaign_Program_Tactic tactic in tlist)
             {
                 List<StageRelation> stageRelation = tacticValueRelationList.Single(t => t.TacticObj.PlanTacticId == tactic.PlanTacticId).StageValueList;
@@ -2894,6 +2904,7 @@ namespace RevenuePlanner.Helpers
 
                 tacticStageList.Add(tacticStageValueObj);
             }
+            //Return finalized TacticStageValue list to the Parent method 
             return tacticStageList;
         }
 
@@ -4259,22 +4270,30 @@ namespace RevenuePlanner.Helpers
         #endregion
 
         #region Plan Gantt Types
-
+        /// <summary>
+        /// Fetch the default Plan Gantt Types
+        /// </summary>
+        /// <param name="planTacticIds">List of PlanTactic Id's</param>
+        /// <param name="planIds">list of planids with comma Sepreated</param>
+        /// <returns>List of ViewByModel</returns>
         public static List<ViewByModel> GetDefaultGanttTypes(List<int> planTacticIds, string planIds = "")
         {
+            //Initialize the default Plan Gantt Types
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Vertical.ToString(), Value = PlanGanttTypes.Vertical.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Request.ToString(), Value = PlanGanttTypes.Request.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.BusinessUnit.ToString(), Value = PlanGanttTypes.BusinessUnit.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = BusinessUnit.ToString(), Value = PlanGanttTypes.BusinessUnit.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = PlanGanttTypes.Audience.ToString() });
 
+            //Check that if PlanTactic is not null then we are going to fetch the Custom Fields
             if (planTacticIds != null)
             {
                 if (planTacticIds.Count > 0)
                 {
                     var lstCustomFields = GetTacticsCustomFields(planTacticIds);
+                    //Concat the Default list with newly fetched custom fields. 
                     lstViewByTab = lstViewByTab.Concat(lstCustomFields).ToList();
                 }
             }
@@ -4282,6 +4301,11 @@ namespace RevenuePlanner.Helpers
             return lstViewByTab;
         }
 
+        /// <summary>
+        /// Fetch the Custom fields based upon it's PlanTactic id
+        /// </summary>
+        /// <param name="planTacticIds">List of Plan Tactic id</param>
+        /// <returns>List of ViewbyModel</returns>
         public static List<ViewByModel> GetTacticsCustomFields(List<int> planTacticIds)
         {
             MRPEntities db = new MRPEntities();
@@ -4291,12 +4315,14 @@ namespace RevenuePlanner.Helpers
                 planTacticIds = new List<int>();
             }
 
+            //Process and fetch the Custom Fields with EntityType is Tactic and PlanTactic id.
             var CustomFields = (from cf in db.CustomFields
                                 join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
                                 join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
                                 where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId && planTacticIds.Contains(t.PlanTacticId)
                                 select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
 
+            //ittrate the custom fields and insert into the temp list
             foreach (var item in CustomFields)
             {
                 lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", "Custom", item.CustomFieldId.ToString()) });
@@ -4304,6 +4330,11 @@ namespace RevenuePlanner.Helpers
             return lstCustomFieldsViewByTab;
         }
 
+        /// <summary>
+        /// Get the list of Tactic by passing the multiple Plan Ids
+        /// </summary>
+        /// <param name="strPlanIds">String with comma Sepreated plan id's</param>
+        /// <returns>Return the list of PlanTactic id's</returns>
         public static List<int> GetTacticByPlanIDs(string strPlanIds)
         {
             List<int> PlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
