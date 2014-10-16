@@ -41,7 +41,7 @@
       position: {},
       appendTo: "body",
         ////Added by Mitesh Vaishnav - Additional perameter to identify customfields Ids
-        CustomName:"Custom"
+        CustomName:""
     },
 
     _create: function() {

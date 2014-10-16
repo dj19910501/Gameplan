@@ -141,7 +141,6 @@ namespace RevenuePlanner.Controllers
         public ActionResult GetSummaryData()
         {
             SummaryReportModel objSummaryReportModel = new SummaryReportModel();
-            //SetReportParameter(BusinessUnitId, PlanId);
             //// Getting current year's all published plan for all business unit of clientid of director.
             var plans = Common.GetPlan();
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
@@ -451,75 +450,6 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return dt;
-        }
-
-
-        /// <summary>
-        /// Set Report Parameter : Update by Bhavesh
-        /// </summary>
-        /// <param name="BusinessUnitId"></param>
-        /// <param name="PlanId"></param>
-        public void SetReportParameter(string BusinessUnitId = "", string PlanId = "")
-        {
-            ViewBag.IsPlanExistToShowReport = false;
-
-            //Filter to filter out the plan based on the Selected businessunit and PlanId
-            if (!string.IsNullOrEmpty(PlanId) && PlanId != "0")
-            {
-                int int_PlanId = Convert.ToInt32(PlanId);
-                Sessions.ReportPlanId = int_PlanId;
-                Sessions.PlanId = int_PlanId;
-            }
-            else if (PlanId == "0" || PlanId == "") // This means all plans are selected
-            {
-                Sessions.ReportPlanId = 0;
-                Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
-                Sessions.PublishedPlanId = 0;
-            }
-
-            if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))
-            {
-                Guid BusinessUnitGuid = new Guid(BusinessUnitId);
-                Sessions.BusinessUnitId = BusinessUnitGuid;
-            }
-            else if (BusinessUnitId == "0" && BusinessUnitId == Convert.ToString(Guid.Empty))
-            {
-                Sessions.BusinessUnitId = Guid.Empty;
-            }
-        }
-
-        /// <summary>
-        /// This method returns the list of Plan for given BusinessUnit Id (This will return only Published plan for Current year)
-        /// </summary>
-        /// <param name="BusinessUnitId"></param>
-        /// <returns></returns>
-        public JsonResult GetPlansListFromBusinessUnitId(string BusinessUnitId, bool isBusinessUnit = false)
-        {
-            List<SelectListItem> lstPlan = new List<SelectListItem>();
-            string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-            string currentYear = DateTime.Now.Year.ToString();
-            if (!string.IsNullOrEmpty(BusinessUnitId))
-            {
-                if (BusinessUnitId == "0") // All Business Units is selected
-                {
-                    lstPlan = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
-                    Sessions.BusinessUnitId = Guid.Empty;
-                }
-                else
-                {
-                    Guid BUId = new Guid(BusinessUnitId);
-                    lstPlan = Common.GetPlan().Where(pl => pl.Model.BusinessUnitId == BUId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
-                    Sessions.BusinessUnitId = BUId;
-                }
-                if (!isBusinessUnit)
-                {
-                if (Sessions.ReportPlanId != 0)
-                {
-                    lstPlan.Where(lp => Convert.ToString(lp.Value) == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
-                    }
-                }
-            }
-            return Json(new { lstPlan }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -957,110 +887,6 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Get Upcoming Activity for Report Header.
-        /// </summary>
-        /// <returns></returns>
-        public List<SelectListItem> GetUpcomingActivityForReport(bool isBusinessUnit = false)
-        {
-            List<SelectListItem> items = new List<SelectListItem>();
-
-            string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-            var plans = Common.GetPlan();
-            if (Sessions.BusinessUnitId != Guid.Empty)
-            {
-                plans = plans.Where(p => p.Model.BusinessUnitId == Sessions.BusinessUnitId).ToList();
-            }
-            var yearlistPrevious = plans.Where(p => p.Year != DateTime.Now.Year.ToString() && p.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(p.Year) < DateTime.Now.AddYears(-1).Year && p.Status.Equals(planPublishedStatus)).Select(p => p.Year).Distinct().OrderBy(p => p).ToList();
-            var yearlistAfter = plans.Where(p => p.Year != DateTime.Now.Year.ToString() && p.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(p.Year) > DateTime.Now.Year && p.Status.Equals(planPublishedStatus)).Select(p => p.Year).Distinct().OrderBy(p => p).ToList();
-
-            yearlistPrevious.ForEach(p => items.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
-
-            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.lastyear.ToString()].ToString(), Value = DateTime.Now.AddYears(-1).Year.ToString(), Selected = false });
-            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisyear.ToString()].ToString(), Value = DateTime.Now.Year.ToString(), Selected = false });
-            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString(), Selected = false });
-
-            yearlistAfter.ForEach(p => items.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
-            //if (!isBusinessUnit && Sessions.ReportPlanId != 0)
-            if (Sessions.BusinessUnitId != Guid.Empty && Sessions.ReportPlanId != 0)
-            {
-                string year = plans.Single(p => p.PlanId == Sessions.ReportPlanId).Year;
-                items.Where(lp => Convert.ToString(lp.Value) == year).ToList().ForEach(lp => lp.Selected = true);
-            }
-            else
-            {
-                items.Where(lp => Convert.ToString(lp.Value) == DateTime.Now.Year.ToString()).ToList().ForEach(lp => lp.Selected = true);
-            }
-
-
-            return items;
-        }
-
-        /// <summary>
-        /// Load TimeFrame values
-        /// </summary>
-        /// <param name="BusinessUnitId"></param>
-        /// <param name="isBusinessUnit"></param>
-        /// <returns></returns>
-        public JsonResult GetTimeFrameValues(string BusinessUnitId = "", bool isBusinessUnit = false)
-        {
-            if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))
-            {
-                Guid BusinessUnitGuid = new Guid(BusinessUnitId);
-                if (Sessions.BusinessUnitId != BusinessUnitGuid)
-                {
-                Sessions.BusinessUnitId = BusinessUnitGuid;
-                    Sessions.ReportPlanId = 0;
-                }
-            }
-            else if (BusinessUnitId == "0" || BusinessUnitId == Convert.ToString(Guid.Empty))
-            {
-                Sessions.BusinessUnitId = Guid.Empty;
-                if (isBusinessUnit)
-                {
-                    Sessions.ReportPlanId = 0;
-                }
-            }
-
-            var upcomingList = GetUpcomingActivityForReport(isBusinessUnit).Select(p => new
-            {
-                Text = p.Text,
-                Value = p.Value.ToString(),
-                Selected = p.Selected
-            }).ToList();
-
-            return Json(upcomingList, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// This method returns the list of Plan for given BusinessUnit Id (This will return only Published plan for Current year)
-        /// </summary>
-        /// <returns></returns>
-        public JsonResult GetPlansListFromTimeFrame(string timeFrameOption)
-        {
-            string filterYear = timeFrameOption;
-            if (timeFrameOption == Enums.UpcomingActivities.thisquarter.ToString())
-            {
-                filterYear = DateTime.Now.Year.ToString();
-            }
-            string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-            var plans = Common.GetPlan().Where(p => p.Year == filterYear && p.Status.Equals(planPublishedStatus)).ToList();
-            if (Sessions.BusinessUnitId != Guid.Empty)
-            {
-                plans = plans.Where(p => p.Model.BusinessUnitId == Sessions.BusinessUnitId).ToList();
-            }
-
-            List<SelectListItem> lstPlan = new List<SelectListItem>();
-            lstPlan = plans.Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
-
-            if (Sessions.ReportPlanId != 0)
-            {
-                lstPlan.Where(lp => Convert.ToString(lp.Value) == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
-            }   
-
-            return Json(new { lstPlan }, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
         /// Get Child Tab Title As per Selection.
         /// </summary>
         /// <param name="ParentLabel">ParentLabel.</param>
@@ -1110,7 +936,7 @@ namespace RevenuePlanner.Controllers
             else if (ParentLabel == Common.RevenuePlans)
             {
                 string year = selectOption;
-                var plans = db.Plans.Where(p => p.Model.BusinessUnit.ClientId.Equals(Sessions.User.ClientId) && p.IsDeleted.Equals(false) && p.Status == PublishedPlan).ToList();
+                var plans = db.Plans.Where(p => p.Model.BusinessUnit.ClientId.Equals(Sessions.User.ClientId) && p.IsDeleted.Equals(false) && p.Status == PublishedPlan && Sessions.ReportPlanIds.Contains(p.PlanId)).ToList();
                 if (selectOption == Enums.UpcomingActivities.thisquarter.ToString())
                 {
                     year = DateTime.Now.Year.ToString();
@@ -1262,29 +1088,27 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult GetConversionData(string timeFrameOption = "thisquarter")
         {
-            //if (Sessions.RolePermission != null)
-            //{
-            //    Common.Permission permission = Common.GetPermission(ActionItem.Report);
-            //    switch (permission)
-            //    {
-            //        case Common.Permission.FullAccess:
-            //            break;
-            //        case Common.Permission.NoAccess:
-            //            return RedirectToAction("Index", "NoAccess");
-            //        case Common.Permission.NotAnEntity:
-            //            break;
-            //        case Common.Permission.ViewOnly:
-            //            ViewBag.IsViewOnly = "true";
-            //            break;
-            //    }
-            //}
 
-            //SetReportParameter(BusinessUnitId, PlanId);
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
             ViewBag.SelectOption = timeFrameOption;
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting(timeFrameOption);
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist);
             TempData["ReportData"] = tacticStageList;
+
+            var lstCustomFieldsTactics = Common.GetTacticsCustomFields(tacticlist.Select(a => a.PlanTacticId).ToList());
+
+            List<ViewByModel> lstParentConversionSummery = new List<ViewByModel>();
+            lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
+            lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
+            lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
+            lstParentConversionSummery = lstParentConversionSummery.Concat(lstCustomFieldsTactics).ToList();
+            ViewBag.parentConvertionSummery = lstParentConversionSummery;
+
+            List<ViewByModel> lstParentConversionPerformance = new List<ViewByModel>();
+            lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Plan, Value = Common.Plan });
+            lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Trend, Value = Common.Trend });
+            lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Actuals, Value = Common.Actuals });
+            ViewBag.parentConvertionPerformance = lstParentConversionPerformance;
 
             return PartialView("Conversion");
         }
@@ -1878,24 +1702,6 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult GetRevenueData(string timeFrameOption = "thisquarter")
         {
-            //if (Sessions.RolePermission != null)
-            //{
-            //    Common.Permission permission = Common.GetPermission(ActionItem.Report);
-            //    switch (permission)
-            //    {
-            //        case Common.Permission.FullAccess:
-            //            break;
-            //        case Common.Permission.NoAccess:
-            //            return RedirectToAction("Index", "NoAccess");
-            //        case Common.Permission.NotAnEntity:
-            //            break;
-            //        case Common.Permission.ViewOnly:
-            //            ViewBag.IsViewOnly = "true";
-            //            break;
-            //    }
-            //}
-
-            //SetReportParameter(BusinessUnitId, PlanId);
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
             ViewBag.SelectOption = timeFrameOption;
 
@@ -2052,9 +1858,9 @@ namespace RevenuePlanner.Controllers
         public JsonResult LoadCampaignDropDown(Guid id, string selectOption = "")
         {
             List<string> includeYearList = GetYearListForReport(selectOption);
-            if (Sessions.ReportPlanId > 0)
+            if (Sessions.ReportPlanIds!=null && Sessions.ReportPlanIds.Count > 0)
             {
-                var campaignList = db.Plan_Campaign.Where(pc => pc.Plan.Model.BusinessUnitId.Equals(id) && pc.Plan.IsDeleted == false && pc.Plan.Status == PublishedPlan && includeYearList.Contains(pc.Plan.Year) && pc.IsDeleted == false && pc.PlanId == Sessions.ReportPlanId)
+                var campaignList = db.Plan_Campaign.Where(pc => pc.Plan.Model.BusinessUnitId.Equals(id) && pc.Plan.IsDeleted == false && pc.Plan.Status == PublishedPlan && includeYearList.Contains(pc.Plan.Year) && pc.IsDeleted == false && Sessions.ReportPlanIds.Contains(pc.PlanId))
                     .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
                     .OrderBy(pcp => pcp.Title);
                 if (campaignList == null)
@@ -3229,7 +3035,7 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> lstPlanList = new List<SelectListItem>();
             string planyear = DateTime.Now.Year.ToString();
            
-            lstPlanList = lstPlan.Where(p => p.Year == planyear).Select(p => new SelectListItem { Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy), Value = p.PlanId.ToString() + "_" + p.AllocatedBy, Selected = (p.PlanId == Sessions.ReportPlanId ? true : false) }).ToList();
+            lstPlanList = lstPlan.Where(p => p.Year == planyear).Select(p => new SelectListItem { Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy), Value = p.PlanId.ToString() + "_" + p.AllocatedBy, Selected = ( Sessions.ReportPlanIds.Contains(p.PlanId) ? true : false) }).ToList();
             ViewBag.ViewPlan = lstPlanList;
             ViewBag.ViewYear = lstYear;
             ViewBag.SelectedYear = planyear;

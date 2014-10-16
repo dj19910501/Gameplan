@@ -1,26 +1,21 @@
 ﻿@using RevenuePlanner.Helpers
+@{
+    List<RevenuePlanner.Models.ViewByModel> ChildEmptyList = new List<RevenuePlanner.Models.ViewByModel>();
+}
+<div class="block-summary">
 <ul class="nav nav-tabs" id="ParentULConversionSummary">
     <li class="source-sans-proregular">
         <h2 class="title-header">Conversion Summary</h2>
     </li>
-    <li class="pull-right">
-        <a tabName="@RevenuePlanner.Helpers.Common.Vertical">@RevenuePlanner.Helpers.Common.Vertical</a>@*#585*@
-    </li>
-    <li class="pull-right">
-        <a tabName="@RevenuePlanner.Helpers.Common.Geography">@RevenuePlanner.Helpers.Common.Geography</a>@*#585*@
-    </li>
-    <li class="pull-right">
-        @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
-        @*<a>@RevenuePlanner.Helpers.Common.Audience</a>#585*@
-        <a  tabName="@RevenuePlanner.Helpers.Common.Audience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</a>
-    </li>
-    @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
-    {
-        <li class="active pull-right">
-            <a tabName="@RevenuePlanner.Helpers.Common.BusinessUnit">@RevenuePlanner.Helpers.Common.BusinessUnit</a>
-        </li>
-    }
 </ul>
+ <div class="summary-btns">
+        <p>View By</p>
+            <span class="margin-left20px">
+             @Html.DropDownList("ddlParentConversionSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text", Common.RevenueVertical.ToString()))
+         </span>
+         
+    </div>
+    </div>
 @*<ul class="nav nav-tabs nav-bars-table" id="ChildULConversionSummary">
 </ul>*@
 
@@ -51,35 +46,31 @@
             <!--tr elements are added dinamically with javascript (view script.js file)-->
         </tbody>
     </table>
+    <div class="block-summary">
     <ul class="nav nav-tabs" id="ParentULMQLConversion">
         <!-- ParentULRevenueSummary -->
         <li class="source-sans-proregular">
             <h4 class="title-header">@Html.LabelForMQL("MQL") Conversion Plan</h4>
         </li>
-        <li class="pull-right" id="@RevenuePlanner.Helpers.Common.Vertical">@*#585*@
-            <a tabName="@RevenuePlanner.Helpers.Common.Vertical">@RevenuePlanner.Helpers.Common.Vertical</a>
-        </li>
-        <li class="pull-right" id="@RevenuePlanner.Helpers.Common.Geography">@*#585*@
-            <a tabName="@RevenuePlanner.Helpers.Common.Geography">@RevenuePlanner.Helpers.Common.Geography</a>
-        </li>
-        <li class="pull-right" id="@RevenuePlanner.Helpers.Common.Audience">@*#585*@
-            @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
-            @*<a>@RevenuePlanner.Helpers.Common.Audience</a>#585*@
-            <a tabName="@RevenuePlanner.Helpers.Common.Audience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</a>
-        </li>
-        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
-        {
-            <li class="active pull-right" id="@RevenuePlanner.Helpers.Common.BusinessUnit">
-                <a  tabName="@RevenuePlanner.Helpers.Common.BusinessUnit">@RevenuePlanner.Helpers.Common.BusinessUnit</a>
-            </li>
-        }
     </ul>
-    <ul class="nav nav-tabs nav-bars-table" id="ChildULMQLConversion"></ul>
+
+      <div class="summary-btns">
+        <p>View By</p>
+           <span class="margin-left20px">
+             @Html.DropDownList("ddlParentConversionPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text", Common.RevenueAudience.ToString()))
+         </span>
+          <span class="margin-left20px">
+             @Html.DropDownList("ddlChildConversionPlan",new SelectList((System.Collections.IEnumerable)ChildEmptyList, "Value", "Text"))
+         </span>
+    </div>
+        </div>
+
+    <ul class="nav nav-tabs nav-bars-table" id="ChildULMQLConversion" style="clear:both;"></ul>
     <!-- ChildULRevenueSummary -->
 
     <table id="table_reports5" class="table table-striped2">
         <thead>
-            <tr>
+            <tr class="border-top-bottom">
                 <th class="width100px large-border-bottom"></th>
                 @foreach (string s in (List<string>)ViewBag.MonthTitle)
                 {
@@ -92,20 +83,20 @@
             <!--tr elements are added dinamically with javascript-->
         </tbody>
     </table>
+     <div class="block-summary">
     <ul class="nav nav-tabs" @* id="sub_nav_tabs" *@ id="MQLPerformance">
         <li class="source-sans-proregular">
             <h4 class="title-header">@Html.LabelForMQL("MQL") Performance</h4>
         </li>
-        <li class="active pull-right">
-            <a  id="@RevenuePlanner.Helpers.Common.Actuals">@RevenuePlanner.Helpers.Common.Actuals</a>
-        </li>
-        <li class="pull-right">
-            <a  id="@RevenuePlanner.Helpers.Common.Trend">@RevenuePlanner.Helpers.Common.Trend</a>
-        </li>
-        <li class="pull-right">
-            <a  id="@RevenuePlanner.Helpers.Common.Plan">@RevenuePlanner.Helpers.Common.Plan</a>
-        </li>
     </ul>
+     <div class="summary-btns">
+        <p>View By</p>
+            <span class="margin-left20px">
+             @Html.DropDownList("ddlParentConversionPerformance", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionPerformance, "Value", "Text", Common.Actuals.ToString()))
+         </span>
+        
+    </div>
+         </div>
     <div class="report-gray-container">
         <div class="report-chart-group">
             <div class="report-chart" id="chartDiv1Parent">
@@ -126,17 +117,88 @@
 </div>
 
 <script type="text/javascript">
-    var selectOption = "@ViewBag.SelectOption"
+    //var selectOption = "@ViewBag.SelectOption"
     var TempreportTableInfo2; var Tempdataset;
     var tempreportDataPrevious; var tempDataSetPrevious;
+    var ddlChildConversionPlanId = 'ddlChildConversionPlan';
+    var parentSummaryTab;
     $(document).ready(function () {
+
+        $('.summary-btns').find('select').each(function () {
+            $(this).multiselect({
+                multiple: false,
+                noneSelectedText: "Please Select",
+                selectedList: 1,
+                CustomName: "Custom"
+            }).multiselectfilter();
+        });
+
+        parentSummaryTab = $('#ddlParentConversionSummery').val();
+       
+
+        $('#ddlParentConversionPlan').bind('change', function () {
+            var selectedOption = $(this).val();
+            loadChildListData(selectedOption, ddlChildConversionPlanId);
+          
+            LoadData();
+        });
+
+        $('#ddlParentConversionSummery').bind('change', function () {
+            parentSummaryTab = $(this).val();
+            LoadConversionSummaryData();
+        });
+        $('#ddlChildConversionPlan').bind('change', function () {
+            LoadData();
+        });
+        
+        $('#ddlParentConversionPerformance').bind('change', function () {
+            LoadPerformanceData();
+        });
+
+        loadChildListData($('#ddlParentConversionPlan').val(), ddlChildConversionPlanId);
+        
+        
+
+
+        function loadChildListData(parentOption, id) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetChildLabelData/")',
+                data: {
+                    ParentLabel: parentOption,
+                    selectOption: OptionMain////This variable globally declare in parent view "Index"
+                },
+                success: function (r) {
+                    PopulateConversionChildDDL(r, id);
+                }
+            });
+        }
+
+        function PopulateConversionChildDDL(items, id) {
+            var $dropdown = $("#" + id);
+            $dropdown.empty();
+            var $html = '';
+            if (items.length > 0) {
+
+                $.each(items, function (index, planobj) {
+
+                    $html += '<option value="' + planobj.id + '">' + planobj.title + '</option>';
+
+                });
+            }
+            $dropdown.append($html);
+            $("#multipleselect_" + id).find("input[type='search']").val('');
+            $('#' + id).multiselect("refresh");
+        }
+
+
         LoadHeaderData();
         function LoadHeaderData() {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetReportHeader/")',
                 data: {
-                    option: selectOption,
+                    option: OptionMain,////This variable globally declare in parent view "Index"
                     isRevenue: false
                 },
                 success: function (data) {
@@ -185,32 +247,7 @@
 
         }
 
-        $("#ParentULMQLConversion").find('li:last').addClass('active'); // this will add active class to first tab in MQL conversion plan report@*#585*@
-        $('#ParentULConversionSummary').find('li:last').addClass('active'); // this will add active class to first tab in MQL conversion plan report@*#585*@
-
-        //---------------- Code related to Conversion summary child tab --------------------//
-        //var parentSummaryTab = $('#ParentULConversionSummary li.active').children().text();
-        var parentSummaryTab = $('#ParentULConversionSummary li.active').children().attr('tabName');
         LoadConversionSummaryData(); // this will load default data for conversion summary
-
-        $("#ParentULConversionSummary li").click(function () {
-            var selectParent = $(this).children().attr('tabName');
-            if (selectParent != "Conversion Summary") {
-                $('#ActivityName').html($(this).children().text());
-                RemoveTabClassParentULConversionSummary();
-                $(this).addClass("active");@*#585*@
-                parentSummaryTab = selectParent;
-                LoadConversionSummaryData();
-            }
-        });
-
-        function RemoveTabClassParentULConversionSummary() {
-            $('#ParentULConversionSummary').children().each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");@*#585*@
-                }
-            });
-        }
 
         function LoadConversionSummaryData() {
             $.ajax({
@@ -218,7 +255,7 @@
                 url: '@Url.Content("~/Report/GetConversionSummary/")',
                 data: {
                     ParentConversionSummaryTab: parentSummaryTab,
-                    selectOption: selectOption
+                    selectOption: OptionMain////This variable globally declare in parent view "Index"
                 },
                 dataType: "json",
                 async: false,
@@ -241,84 +278,18 @@
         var ColMQLActual = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         var ColMQLDifference = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         var ColTotalMQL = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        var parentTab = $('#ParentULMQLConversion li.active').children().attr('tabName');
-        LoadChildData();
-
-        $("#ParentULMQLConversion li").click(function () {
-            var selectParent = $(this).children().attr('tabName');
-            if (selectParent != "MQL Conversion Plan") {
-                RemoveTabClassParentULMQLConversion();
-                $(this).addClass("active");@*#585*@
-                parentTab = selectParent;
-                LoadChildData();
-            }
-        });
-
-        function RemoveTabClassParentULMQLConversion() {
-            $('#ParentULMQLConversion').children().each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");//removed disabled class everywherefor PL Ticket@*#585*@
-                }
-            });
-        }
-
-        function RemoveTabClassChildULMQLConversion() {
-            $('#ChildULMQLConversion').children().each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");
-                }
-            });
-        }
-
-        function LoadChildData() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/GetChildTab/")',
-                data: {
-                    ParentTab: parentTab
-                },
-                success: function (r) {
-                    BindChildLabel(r);
-                    LoadChildClick();
-                }
-            });
-        }
-
-        function BindChildLabel(childLabel) {
-            if (typeof childLabel != 'undefined') {
-                $("#ChildULMQLConversion").empty();
-                if (childLabel.length) {
-                    for (i in childLabel) {
-                        $("#ChildULMQLConversion").append('<li class="pull-left" id="' + childLabel[i].id + '"><a >' + childLabel[i].title + '</a></li>');//#585
-                    }
-                    $("#ChildULMQLConversion").find('li:first').addClass("active");
-                }
-                else {
-                    $("#ChildULMQLConversion").append('No Records found for This Selection.');
-                }
-            }
-        }
-
-        function LoadChildClick() {
-            $("#ChildULMQLConversion li").click(function () {
-                RemoveTabClassChildULMQLConversion();
-                $(this).addClass("active");
-                var selectParent = $(this).children().text();
-                var selectId = $(this).attr("id");
-                LoadData(selectId);
-            });
-            var Childid = $("#ChildULMQLConversion").find('li:first').attr("id");
-            LoadData(Childid);
-        }
-
-        function LoadData(Id) {
+        
+        
+        LoadData();
+        
+        function LoadData() {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetMQLConversionPlanData/")',
                 data: {
-                    ParentTab: parentTab,
-                    Id: Id,
-                    selectOption: selectOption
+                    ParentTab: $('#ddlParentConversionPlan').val(),
+                    Id: $('#ddlChildConversionPlan').val(),
+                    selectOption: OptionMain////This variable globally declare in parent view "Index"
                 },
                 dataType: "json",
                 async: false,
@@ -560,41 +531,18 @@
             }
         }
 
-
-
-
-        var filter = "@RevenuePlanner.Helpers.Common.Actuals";
-        LoadPerformanceData(filter); //default tab loading
-
-        $("#MQLPerformance li").click(function () {
-            var selectParent = $(this).children().text();
-            if (selectParent != "MQL Performance") {
-                RemoveTabClassMQLPerformance();
-                $(this).addClass("active");
-                parentTab = selectParent;
-                LoadPerformanceData(parentTab);
-            }
-        });
-
-        function RemoveTabClassMQLPerformance() {
-            $('#MQLPerformance').children().each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");
-                }
-            });
-        }
-
+        LoadPerformanceData(); //default tab loading
 
         // Function to load MQL performance report
-        function LoadPerformanceData(filter) {
+        function LoadPerformanceData() {
             $.ajax(
                  {
                      type: "GET",
                      cache: false,
                      url: '@Url.Action("GetMQLPerformance", "Report")',
                      data: {
-                         filter: filter,
-                         selectOption: selectOption
+                         filter: $('#ddlParentConversionPerformance').val(),
+                         selectOption: OptionMain////This variable globally declare in parent view "Index"
                      },
                      dataType: "json",
                      success: function (data) {

@@ -3,14 +3,6 @@
     List<RevenuePlanner.Models.ViewByModel> ChildEmptyList = new List<RevenuePlanner.Models.ViewByModel>();
 }
 <div class="block-summary">
-<style type="text/css">
-        .ui-multiselect ui-widget ui-state-default ui-corner-all {
-margin-left:20px !important;
-}
-
-    </style>
-
-    
 <ul class="nav nav-tabs" id="ParentULRevenueSummary">
     <li class="source-sans-proregular">
         <h2 class="title-header">Revenue Summary</h2>
@@ -196,7 +188,7 @@ margin-left:20px !important;
 
     <table id="table_reports4" class="table table-striped" style="clear:both;">
         <thead>
-            <tr>
+            <tr class="border-top-bottom" style="border-bottom:none;">
                 <th class="width130 border-r main_table_header">BUSINESS UNIT</th>
                 <th class="width53 main_table_header">REVENUE</th>
                 <th class="width53 main_table_header"></th>
@@ -270,7 +262,6 @@ margin-left:20px !important;
             loadChildListData(selectedOption, ddlChildRevenueSummeryId);
         });
         $('#ddlParentRevenueToPlan').bind('change', function () {
-            debugger;
             var selectedOption = $(this).val();
             loadChildListData(selectedOption, ddlChildRevenueToPlanId);
         });
@@ -308,7 +299,6 @@ margin-left:20px !important;
                     
                 });
             }
-            // alert($html);
             $dropdown.append($html);
 
             //start Added by Mitesh Vaishnav for PL ticket #727
@@ -389,8 +379,6 @@ margin-left:20px !important;
         var reportTableInfo;
 
         function LoadData(Id) {
-            alert($('#ddlParentRevenueSummery').val());
-            alert(Id);
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetRevenueSummaryDataRevenueReport/")',
@@ -641,10 +629,7 @@ margin-left:20px !important;
                             var pid = "#divp" + cid + (count + 1).toString();
                             text1 = $(aid).attr("avalue");
                             text2 = $(pid).attr("avalue");
-                            // alert(text1);
-                            // alert(text2);
-                            //text1 = $(this).find(aid).text();
-                            //text2 = $(this).find(pid).text();
+
                             if (text1 == "---" || text1 == "undefined" || text1 == "") {
                                 blueMql1 = blueMql1 + 0;
                                 sumCol[i] = sumCol[i] + 0;

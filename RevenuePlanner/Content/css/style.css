@@ -10512,5 +10512,6 @@ float:left;
 }
 
 .borderTop1px {
-    border-top:1px solid #144d6b !important;
+    border-top:1px solid #ccc !important;
+    padding-top:10px;
     }
