@@ -24,15 +24,7 @@
         <thead>
             <tr>
                 <th></th>
-                @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
-                {
-                    <th class="width275" id="ActivityName">Business Unit</th>
-                }
-                else
-                {
-                    @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
-                    <th class="width275" id="ActivityName">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</th>
-                }
+                <th class="width275" id="ActivityName"></th>
                 <th class="width83">New @Html.LabelForINQ("INQ")</th>
                 @* Comment line as per Pl Ticket 356. *@
                 @*<th class="width83">@Html.LabelForINQ("INQ")→@Html.LabelForMQL("MQL")</th>*@
@@ -64,9 +56,6 @@
          </span>
     </div>
         </div>
-
-    <ul class="nav nav-tabs nav-bars-table" id="ChildULMQLConversion" style="clear:both;"></ul>
-    <!-- ChildULRevenueSummary -->
 
     <table id="table_reports5" class="table table-striped2">
         <thead>
@@ -123,6 +112,14 @@
     var ddlChildConversionPlanId = 'ddlChildConversionPlan';
     var parentSummaryTab;
     $(document).ready(function () {
+        //------------------ Functions related to load the child tabs for MQL conversion plan --------------------//
+        var ColINQProjected = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColINQActual = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColINQDifference = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColMQLProjected = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColMQLActual = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColMQLDifference = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColTotalMQL = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         $('.summary-btns').find('select').each(function () {
             $(this).multiselect({
@@ -134,17 +131,19 @@
         });
 
         parentSummaryTab = $('#ddlParentConversionSummery').val();
+        $("#ActivityName").html($("#ddlParentConversionSummery option[value='" + parentSummaryTab + "']").text());
        
 
         $('#ddlParentConversionPlan').bind('change', function () {
             var selectedOption = $(this).val();
             loadChildListData(selectedOption, ddlChildConversionPlanId);
           
-            LoadData();
+            
         });
 
         $('#ddlParentConversionSummery').bind('change', function () {
             parentSummaryTab = $(this).val();
+            $("#ActivityName").html($("#ddlParentConversionSummery option[value='" + parentSummaryTab + "']").text());
             LoadConversionSummaryData();
         });
         $('#ddlChildConversionPlan').bind('change', function () {
@@ -170,6 +169,7 @@
                 },
                 success: function (r) {
                     PopulateConversionChildDDL(r, id);
+                    LoadData();
                 }
             });
         }
@@ -189,6 +189,7 @@
             $dropdown.append($html);
             $("#multipleselect_" + id).find("input[type='search']").val('');
             $('#' + id).multiselect("refresh");
+            
         }
 
 
@@ -269,18 +270,6 @@
         }
 
         //--------------- functions related to child tab for conversion summary report ends here ------------------//
-
-        //------------------ Functions related to load the child tabs for MQL conversion plan --------------------//
-        var ColINQProjected = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        var ColINQActual = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        var ColINQDifference = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        var ColMQLProjected = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        var ColMQLActual = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        var ColMQLDifference = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        var ColTotalMQL = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        
-        
-        LoadData();
         
         function LoadData() {
             $.ajax({

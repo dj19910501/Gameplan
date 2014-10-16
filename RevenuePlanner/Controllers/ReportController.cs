@@ -1101,6 +1101,10 @@ namespace RevenuePlanner.Controllers
             lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
             lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
             lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
+            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
+            {
+                lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
+            }
             lstParentConversionSummery = lstParentConversionSummery.Concat(lstCustomFieldsTactics).ToList();
             ViewBag.parentConvertionSummery = lstParentConversionSummery;
 
@@ -1150,6 +1154,15 @@ namespace RevenuePlanner.Controllers
                 int verticalid = Convert.ToInt32(Id);
                 Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.VerticalId == verticalid).ToList();
             }
+            else if (ParentTab.Contains("Custom"))
+            {
+                List<int> entityids = new List<int>();
+                int customfieldId = Convert.ToInt32(ParentTab.Replace("Custom", ""));
+                string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                entityids = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == Id).Select(c => c.EntityId).ToList();
+                Tacticdata = Tacticdata.Where(pcpt => entityids.Contains(pcpt.TacticObj.PlanTacticId)).ToList();
+            }
+
             string inq = Enums.Stage.INQ.ToString();
             int INQStageId = db.Stages.Single(s => s.ClientId == Sessions.User.ClientId && s.Code == inq).StageId;
             if (Tacticdata.Count() > 0)
@@ -1551,21 +1564,34 @@ namespace RevenuePlanner.Controllers
             List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
             TempData["ReportData"] = TempData["ReportData"];
 
+             //Custom
+            if (ParentConversionSummaryTab.Contains("Custom"))
+            {
+                int customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace("Custom", ""));
+                List<int> entityids = db.CustomField_Entity.Where(e => e.CustomFieldId == customfieldId).Select(e => e.EntityId).ToList();
+                Tacticdata = Tacticdata.Where(t => entityids.Contains(t.TacticObj.PlanTacticId)).ToList();
+            }
+            else
+            {
             Tacticdata = Tacticdata.Where(pcpt =>
                 ((ParentConversionSummaryTab == Common.BusinessUnit && pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId) ||
                 (ParentConversionSummaryTab == Common.Audience && pcpt.TacticObj.Audience.ClientId == Sessions.User.ClientId) ||
                 (ParentConversionSummaryTab == Common.Geography && pcpt.TacticObj.Geography.ClientId == Sessions.User.ClientId) ||
                 (ParentConversionSummaryTab == Common.Vertical && pcpt.TacticObj.Vertical.ClientId == Sessions.User.ClientId))
                 ).ToList();
+            }
+            var DataTitleList = new List<RevenueContrinutionData>();
 
-            var DataTitleList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.BusinessUnit.Title }).Select(pc =>
+            if (ParentConversionSummaryTab == Common.RevenueBusinessUnit)
+            {
+                DataTitleList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.BusinessUnit.Title }).Select(pc =>
                          new RevenueContrinutionData
                          {
                              Title = pc.Key.title,
                              planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
                          }).ToList();
-
-            if (ParentConversionSummaryTab == Common.RevenueVertical)
+            }
+            else if (ParentConversionSummaryTab == Common.RevenueVertical)
             {
                 DataTitleList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Vertical.Title }).Select(pc =>
                          new RevenueContrinutionData
@@ -1592,6 +1618,36 @@ namespace RevenuePlanner.Controllers
                              planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
                          }).ToList();
             }
+            else
+            {
+                int customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace("Custom", ""));
+                List<int> entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
+                string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                {
+                    var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
+                    DataTitleList = (from cfo in db.CustomFieldOptions
+                                     where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId)
+                                     select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
+                                  new RevenueContrinutionData
+                                  {
+                                      Title = pc.Key.title,
+                                      planTacticList = cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList()
+                                  }).ToList();
+
+                }
+                else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                {
+                    DataTitleList = cusomfieldEntity.GroupBy(pc => new { title = pc.Value }).Select(pc =>
+                                new RevenueContrinutionData
+                                {
+                                    Title = pc.Key.title,
+                                    planTacticList = pc.Select(c => c.EntityId).ToList()
+                                }).ToList();
+                }
+            }
+
             List<string> includeMonth = GetMonthListForReport(selectOption, true);
             string stageTitleINQ = Enums.InspectStage.INQ.ToString();
             string stageTitleMQL = Enums.InspectStage.MQL.ToString();
