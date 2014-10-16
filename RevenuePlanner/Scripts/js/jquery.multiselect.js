@@ -698,7 +698,14 @@
 
         // otherwise fallback to custom positioning
       } else {
+          var windowWidth = $(window).width();
+          var popupLeftPosition = this.menu.width();
         var pos = this.button.offset();
+
+          popupLeftPosition += pos.left;
+          if (popupLeftPosition > windowWidth) {
+              pos.left = (pos.left + this.button.width()) - (this.menu.width());
+          }
 
         this.menu.css({
           top: pos.top + this.button.outerHeight(),
