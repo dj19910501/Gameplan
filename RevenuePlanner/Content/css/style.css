@@ -10416,7 +10416,7 @@ li.close-list {
 
 .inspect-column-parent .span6 textarea, .inspect-column-parent .span3 textarea
 {
-    overflow-y: auto !important;
+    /*overflow-y: auto !important;*/
 }
 
 .inspect-column-parent .span6 p, .inspect-column-parent .span3 p {

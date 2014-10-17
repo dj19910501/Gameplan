@@ -374,6 +374,8 @@ namespace RevenuePlanner.Controllers
                 }
 
             }
+            if(planList != null)
+                planList = planList.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             objHomePlan.plans = planList;
 
             List<ViewByModel> lstViewByTab = Common.GetDefaultGanttTypes(null, Convert.ToString(currentPlanId));

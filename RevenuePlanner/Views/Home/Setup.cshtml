@@ -19,7 +19,7 @@
             <p>Description</p>
             @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;", @readonly = "true" })
         </div>
-        <div class="span3" id="inspect-modal-left-column2">
+        <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
             <p>Tactic Type</p>
             @Html.TextBoxFor(model => model.TacticTypeTitle, new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.TacticTypeTitle })
             <p>Cost</p>

@@ -19,7 +19,7 @@
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
         </div>
-        <div class="span3" id="inspect-modal-left-column2">
+        <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
             <p>@Html.Raw("Owner")</p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = program.Owner })
             <p>@Html.Raw("Cost")</p>
