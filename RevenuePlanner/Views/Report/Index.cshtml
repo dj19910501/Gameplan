@@ -179,6 +179,7 @@
 
         var SelectedBUId, SelectedPlanId;
         var isBusinessUnit = false;
+        var IsCallFromYearDropdown = true;
     var OptionMain = $('#ddlYear').val();;
     var isAllowClick = true;
     var multiselectPlanId = "ddlPlan";
@@ -528,13 +529,56 @@
 
 $("#ddlYear").change(function () {
     OptionMain = $('#ddlYear').val();
+    if (IsCallFromYearDropdown) {
     LoadPlanData();
+    }
 });
+LoadYearDropdown();
+function LoadYearDropdown() {
+    var isClick = false;
+    $("#ddlYear").next().find('ul li a').each(function () {
+        var selectedvalue = $(this).attr('rel');
+        if (selectedvalue == 'thisquarter') {
+            if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+                isClick = true;
+            }
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
+                isClick = false;
+            }
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+                isClick = false;
+            }
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+                isClick = true;
+            }
+
+            if (isClick == true) {
+                $(this).parent().css('display', 'none');
+            }
+            else
+            {
+                $(this).parent().css('display', 'block');
+            }
+        }
+    });
+    $("#ddlYear").next().find('ul li a').each(function () {
+        if (isClick == true)
+        {
+            var selectedvalue = $(this).attr('rel');
+            if (selectedvalue == '@RevenuePlanner.Helpers.Common.GetCurrentYear()') {
+                IsCallFromYearDropdown = false;
+                $(this).click();
+                IsCallFromYearDropdown = true;
+            }
+        }
+    });
+}
 
 $('#liSummary').click(function () {
     if (isAllowClick) {
         isAllowClick = false;
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
+        LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
         isBusinessUnit = false;
@@ -553,6 +597,7 @@ $('#liSummary').click(function () {
     if (isAllowClick) {
         isAllowClick = false;
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
+        LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
         isBusinessUnit = false;
@@ -567,6 +612,7 @@ $('#liSummary').click(function () {
     if (isAllowClick) {
         isAllowClick = false;
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
+        LoadYearDropdown(leftPaneOption);
                 RemoveAllActiveItem();
                 $(this).addClass('active');
                 isBusinessUnit = false;
@@ -580,6 +626,7 @@ $('#liSummary').click(function () {
             if (isAllowClick) {
                 isAllowClick = false;
                 leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
+                LoadYearDropdown(leftPaneOption);
                 RemoveAllActiveItem();
                 $(this).addClass('active');
                 LoadBudgetView();

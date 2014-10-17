@@ -2355,6 +2355,15 @@ namespace RevenuePlanner.Helpers
             return DateTime.Now.Month;
         }
 
+        /// <summary>
+        /// Get Current Quarter based on system datetime.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetCurrentYear()
+        {
+            return DateTime.Now.Year.ToString();
+        }
+
         #endregion
 
         #region Datetime
