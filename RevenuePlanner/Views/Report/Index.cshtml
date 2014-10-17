@@ -77,7 +77,7 @@
             So far, you've spent <span id="SpanTotalSpend">$2.5M</span> out of <span id="SpanTotalBudgeted">$4.8M</span>.</h3>
         <div style="clear: both;"></div>
     </div>
-    <div class="budgetCompare">
+    <div class="budgetCompare monthContainerBudget">
         <h3 class="source-sans-proregular" id="monthCompareTitle"></h3>
         <div class="budgetCompareInner" id="monthContainer">
     </div>
@@ -115,12 +115,12 @@
         <div style="clear: both;"></div>
     </div>
     <div class="budgetCompare">
-        <div class="white-chart" id="mqlActualDiv" style="width: 45% !important; float: left; border-right: 1px solid #e6e6e6 !important; margin-right: 5%;">
+        <div  id="mqlActualDiv" class="header-right-blocks">
             <p class="source-sans-probold">Actual</p>
             <p class="value source-sans-prolight" id="mqlActual" style="font-size: 30px;"></p>
             <h5 id="mqlActualPercentage"></h5>
         </div>
-        <div class="white-chart" id="mqlProjectedDiv" style="width: 45% !important; float: left;">
+        <div id="mqlProjectedDiv" class="header-right-blocks block-last"> 
             <p class="source-sans-probold">Projected</p>
             <p class="value source-sans-prolight" id="mqlProjected" style="font-size: 30px;"></p>
             <p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("MQL")</p>
