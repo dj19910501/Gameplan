@@ -122,14 +122,18 @@
         var ColTotalMQL = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         $('.summary-btns').find('select').each(function () {
+            if ($(this).attr('id') != ddlChildConversionPlanId && $(this).attr('id') != 'ddlParentConversionPerformance') {
             $(this).multiselect({
                 multiple: false,
                 noneSelectedText: "Please Select",
                 selectedList: 1,
                 CustomName: '@Common.CustomTitle'
             }).multiselectfilter();
+            }
         });
 
+        GenerateCustomizeMultiselect(ddlChildConversionPlanId, true, false, false);
+        GenerateCustomizeMultiselect('ddlParentConversionPerformance', false, false, false);
         parentSummaryTab = $('#ddlParentConversionSummery').val();
         $("#ActivityName").html($("#ddlParentConversionSummery option[value='" + parentSummaryTab + "']").text());
        

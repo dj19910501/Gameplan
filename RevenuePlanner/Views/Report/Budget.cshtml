@@ -13,12 +13,12 @@
         <div class="title-header source-sans-proregular bold budget-title">
             <div style="float: right;">
                 @Html.Label("View By:", new { id = "lblViewBy" })
-                <span class="selectBox" id="ddlTabSelectBox" style="width: 158px;">
+               
                     @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.ReportTabType.Plan.ToString()), new { @class = "ddlStyleReport" })
-                </span>
-                <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;">
+               
+               
                     @Html.DropDownList("ddlAllocateViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport" })
-                </span>
+               
             </div>
             <h2>Budget Summary</h2>
         </div>
@@ -57,18 +57,19 @@
             horizontalScroll: true,
             advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
         });
-
-        $(".selectBox select").selectbox();
-
-        @*$("#ddlViewAudience").next().attr('title', '@AudienceLabelTitle');*@
-
-        $(".sbSelector").css("color", "#6D6D6D");
-        $(".sbToggle").css("border-top-color", "#6D6D6D");
+        GenerateCustomizeMultiselect('ddlTabViewBy', true, true, false);
+        GenerateCustomizeMultiselect('ddlAllocateViewBy', false, false, false);
         $(".sbSelector").click(function () {
             $(".ui-multiselect-menu").each(function () {
                 $(this).css("display", "none");
             });
         });
+
+
+        @*$("#ddlViewAudience").next().attr('title', '@AudienceLabelTitle');*@
+
+       
+       
 
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         VerticalIds = GetFilterId(ddlViewVertical);

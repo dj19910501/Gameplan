@@ -214,9 +214,10 @@
         LoadCheckBoxValue(ddlViewVertical, verticaldetail);
         LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
         LoadCheckBoxValue(ddlViewGeography, geographydetail);
-        
+        LoadYearDropdown();
         loadBasedOnPlan();
         $("#DivShareReport").hide();
+
 
                 });
 
@@ -533,7 +534,7 @@ $("#ddlYear").change(function () {
     LoadPlanData();
     }
 });
-LoadYearDropdown();
+
 function LoadYearDropdown() {
     var isClick = false;
     $("#ddlYear").next().find('ul li a').each(function () {
@@ -608,7 +609,6 @@ $('#liSummary').click(function () {
 });
 
     $('#liConversion').click(function () {
-
     if (isAllowClick) {
         isAllowClick = false;
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
@@ -635,4 +635,26 @@ $('#liSummary').click(function () {
         $("#BtnShareReport").click(function () {
             ShowShareReport();
     });
+        ///Added by Mitesh Vaishnav for generate multiselect dropdownlist with no filter or no custom border
+        function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, isMultiple) {
+            var custom="";
+            if (isCustomBorderApply) {
+                custom = '@Common.CustomTitle';
+            }
+           
+            if (isFilterApply) {
+                $("#" + id).multiselect({
+                    multiple: isMultiple,
+                    CustomName: custom,
+                    selectedList: 1
+                }).multiselectfilter();
+            }
+            else {
+                $("#" + id).multiselect({
+                    multiple: isMultiple,
+                    selectedList: 1,
+                    CustomName: custom
+                });
+            }
+            };
 </script>

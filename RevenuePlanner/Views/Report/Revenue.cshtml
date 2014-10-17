@@ -250,20 +250,25 @@
     $(document).ready(function () {
 
         $('.summary-btns').find('select').each(function(){
+            if ($(this).attr('id') != ddlChildRevenueSummeryId && $(this).attr('id') != ddlChildRevenueToPlanId){
             $(this).multiselect({
                 multiple: false,
                 noneSelectedText: "Please Select",
                 selectedList: 1,
                 CustomName: '@Common.CustomTitle'
-            }).multiselectfilter();
+            }).multiselectfilter();	   
+          }
         });
+
+        GenerateCustomizeMultiselect(ddlChildRevenueToPlanId, true, false, false);
+        GenerateCustomizeMultiselect(ddlChildRevenueSummeryId, true, false, false);
         $('#ddlParentRevenueSummery').bind('change', function () {
             var selectedOption = $(this).val();
-            loadChildListData(selectedOption, ddlChildRevenueSummeryId, true);
+            loadChildListData(selectedOption, ddlChildRevenueSummeryId);
         });
         $('#ddlParentRevenueToPlan').bind('change', function () {
             var selectedOption = $(this).val();
-            loadChildListData(selectedOption, ddlChildRevenueToPlanId, false);
+            loadChildListData(selectedOption, ddlChildRevenueToPlanId);
         });
         loadChildListData($('#ddlParentRevenueSummery').val(), ddlChildRevenueSummeryId, true);
         loadChildListData($('#ddlParentRevenueToPlan').val(), ddlChildRevenueToPlanId, false);
@@ -298,6 +303,14 @@
                     $html += '<option value="' + planobj.id + '">' + planobj.title + '</option>';
                     
                 });
+                $('#btnMultiselect_' + id).attr('style', 'display:block;');
+                if ($('#btnMultiselect_' + id).parent().parent().hasClass('margin-rigthminus20px')) {
+                    $('#btnMultiselect_' + id).parent().parent().removeClass('margin-rigthminus20px');
+                }
+            }
+            else {
+                $('#btnMultiselect_' + id).attr('style', 'display:none;');
+                $('#btnMultiselect_' + id).parent().parent().addClass('margin-rigthminus20px');
             }
             $dropdown.append($html);
 
