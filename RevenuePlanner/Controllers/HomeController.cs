@@ -4046,7 +4046,10 @@ namespace RevenuePlanner.Controllers
                                   PlanProgramId = pcpt.PlanProgramId,
                                   OwnerId = pcpt.CreatedBy,
                                   BusinessUnitId = pcpt.BusinessUnitId,
-                                  Cost = pcpt.Cost,
+                                  //Modified By : Kalpesh Sharma #864 Add Actuals: Unable to update actuals % 864_Actuals.jpg %
+                                  // If tactic has a line item at that time we have consider Project cost as sum of all the active line items
+                                  Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId  && s.IsDeleted == false)).Count() > 0 ?
+                                            (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost) : pcpt.Cost,
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,
                                   VerticalTitle = pcpt.Vertical.Title,
