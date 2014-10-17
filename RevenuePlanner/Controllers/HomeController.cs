@@ -845,7 +845,7 @@ namespace RevenuePlanner.Controllers
                 CustomFieldOption objCustomFieldOption = new CustomFieldOption();
                 objCustomFieldOption.CustomFieldOptionId = 0;
 
-                var newtactic = (from cf in db.CustomFields
+                var tempTactic = (from cf in db.CustomFields
                                  join cft in db.CustomFieldTypes on cf.CustomFieldTypeId equals cft.CustomFieldTypeId
                                  join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
                                  join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
@@ -862,6 +862,14 @@ namespace RevenuePlanner.Controllers
                                      customFieldTitle = cft.Name == "DropDownList" ? cfo.Value : cfe.Value,
                                  }).ToList().Distinct().ToList().ToList();
 
+                var newtactic = tempTactic.Select(t => new
+                {
+                    tactic = t.tactic,
+                    masterCustomFieldId = t.masterCustomFieldId,
+                    customFieldId = tempTactic.Where(tt => tt.masterCustomFieldId == t.masterCustomFieldId && tt.customFieldTitle.Trim() == t.customFieldTitle.Trim()).Select(tt => tt.customFieldId).First(),// t.customFieldId,
+                    customFieldTitle = t.customFieldTitle,
+                }).ToList();
+
                 foreach (var item in newtactic)
                 {
                     lstTacticTaskList.Add(new TacticTaskList()
@@ -870,29 +878,29 @@ namespace RevenuePlanner.Controllers
                         CustomFieldId = item.customFieldId.ToString(),
                         CustomFieldTitle = item.customFieldTitle,
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", item.customFieldId, item.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, item.tactic.Plan_Campaign_Program.PlanCampaignId, item.tactic.PlanProgramId, item.tactic.PlanTacticId),
-                        ColorCode = item.tactic.Audience.ColorCode,
+                        ColorCode = Common.ColorCodeForCustomField,
                         StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForCustomField(PlanGanttTypes.Custom, item.tactic.PlanTacticId, campaign, program, tactic)),
                         Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
                                                           GetMinStartDateForCustomField(PlanGanttTypes.Custom, item.tactic.PlanTacticId, campaign, program, tactic),
                                                           GetMaxEndDateForCustomField(PlanGanttTypes.Custom, item.tactic.PlanTacticId, campaign, program, tactic)),
-                        CampaignProgress = GetCampaignProgress(tactic.Where(t => t.PlanProgramId == item.tactic.PlanProgramId).Select(t => t).ToList(), 
+                        CampaignProgress = GetCampaignProgress(tactic.Where(t => t.PlanTacticId == item.tactic.PlanTacticId).Select(t => t).ToList(), 
                                                                 item.tactic.Plan_Campaign_Program.Plan_Campaign, 
                                                                 improvementTactic, 
                                                                 item.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId),
-                        ProgramProgress = GetProgramProgress(tactic.Where(t => t.PlanProgramId == item.tactic.PlanProgramId).Select(t => t).ToList(), 
+                        ProgramProgress = GetProgramProgress(tactic.Where(t => t.PlanTacticId == item.tactic.PlanTacticId).Select(t => t).ToList(), 
                                                                 item.tactic.Plan_Campaign_Program, 
                                                                 improvementTactic, 
                                                                 item.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId),
                         PlanProgrss = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlanNew(viewBy,
                                                                 item.tactic.PlanTacticId, item.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, campaign, program,
-                                                                tactic.Where(t => t.PlanProgramId == item.tactic.PlanProgramId).Select(t => t).ToList())),
+                                                                tactic.Where(t => t.PlanTacticId == item.tactic.PlanTacticId).Select(t => t).ToList())),
                                                              Common.GetEndDateAsPerCalendar(CalendarStartDate,
                                                                 CalendarEndDate,
                                                                 GetMinStartDateForPlanNew(viewBy, item.tactic.PlanTacticId, item.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, campaign, program,
-                                                                tactic.Where(t => t.PlanProgramId == item.tactic.PlanProgramId).Select(t => t).ToList()),
+                                                                tactic.Where(t => t.PlanTacticId == item.tactic.PlanTacticId).Select(t => t).ToList()),
                                                                 GetMaxEndDateForPlanNew(viewBy, item.tactic.PlanTacticId,
                                                                 item.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, campaign, program,
-                                                                tactic.Where(t => t.PlanProgramId == item.tactic.PlanProgramId).Select(t => t).ToList()
+                                                                tactic.Where(t => t.PlanTacticId == item.tactic.PlanTacticId).Select(t => t).ToList()
                                                                 )),
                                                             tactic.Where(t => t.PlanTacticId == item.tactic.PlanTacticId).Select(t => t).ToList()
                                                             , improvementTactic, item.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId),
@@ -1013,12 +1021,12 @@ namespace RevenuePlanner.Controllers
                 text = c.text,
                 start_date = c.start_date,
                 duration = c.duration,
-                progress = c.progress,
+                progress = taskDataPlan.Where(p => p.id == c.id).Select(p => p.progress).Min(),
                 open = c.open,
                 parent = c.parent,
                 color = c.color + (c.progress > 0 ? "stripe" : ""),
                 planid = c.planid
-            });
+            }).ToList().Distinct().ToList();
             #endregion
 
             #region Campaign
@@ -1042,13 +1050,13 @@ namespace RevenuePlanner.Controllers
                 text = c.text,
                 start_date = c.start_date,
                 duration = c.duration,
-                progress = c.progress,
+                progress = taskDataCampaign.Where(p => p.id == c.id).Select(p => p.progress).Min(),
                 open = c.open,
                 parent = c.parent,
                 color = c.color + (c.progress == 1 ? " stripe" : (c.progress > 0 ? "stripe" : "")),
                 plancampaignid = c.plancampaignid,
                 Status = c.Status
-            });
+            }).ToList().Distinct().ToList();
             #endregion
 
             #region Program
@@ -1072,13 +1080,13 @@ namespace RevenuePlanner.Controllers
                 text = p.text,
                 start_date = p.start_date,
                 duration = p.duration,
-                progress = p.progress,
+                progress = taskDataProgram.Where(c => c.id == p.id).Select(c => c.progress).Min(),
                 open = p.open,
                 parent = p.parent,
                 color = (p.progress == 1 ? " stripe stripe-no-border " : (p.progress > 0 ? "partialStripe" : "")),
                 planprogramid = p.planprogramid,
                 Status = p.Status
-            });
+            }).ToList().Distinct().ToList();
             #endregion
 
             #region Tactic

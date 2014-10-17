@@ -634,7 +634,15 @@
     </div>
 </div>
 <div id="Notabcontent" style="display: none;">
-    <span class="pull-left margin_t30 bold " style="margin-left: 20px;">No Plan exists.</span> @* Modified by Sohel Pathan on 29/09/2014 for PL ticket #787 *@
+    @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+    {
+        <span class="pull-left bold " style="margin-left: 20px;">No Plan exists.</span> @* Modified by Sohel Pathan on 29/09/2014 for PL ticket #787 *@
+    }
+    else
+    {
+        <span class="pull-left margin_t30 bold " style="margin-left: 20px;">No Plan exists.</span> @* Modified by Sohel Pathan on 29/09/2014 for PL ticket #787 *@ 
+    }
+    
 </div>
 @*// Inspect Popup Div 
     // Added By Bhavesh
@@ -849,7 +857,7 @@
             $("#" + event).html('Select');
             removeByValue(filters.SelectedPlans, event);
             removeByValue(filters.PlanTitles, ($("#" + event).attr("plantitle")));
-            //GetOwnerListForFilter(filters.SelectedPlans);
+            GetOwnerListForFilter(filters.SelectedPlans);
 
         }
         else {
@@ -857,7 +865,7 @@
             $("#" + event).html('');
             filters.SelectedPlans.push(event);
             filters.PlanTitles.push($("#" + event).attr("plantitle"));
-           // GetOwnerListForFilter(filters.SelectedPlans);
+            GetOwnerListForFilter(filters.SelectedPlans);
         }
 
         if (filters.SelectedPlans.length == 0) {
@@ -1071,11 +1079,21 @@
                     else {
                         $("#PlanAllModule").css("display", "none");
                         $("#NoPlanFound").show();
+                        $('#ulSelectedOwner').html('');
+                        $("#ulOwnerAllModule").css("display", "none");
+                        $("#NoOwnerFound").show();
+                        filters.OwnerTitles = [];
+                        filters.OwnerIds = [];
                     }
                 }
                 else {
                     $("#NoPlanFound").show();
                     $("#PlanAllModule").css("display", "none");
+                    $('#ulSelectedOwner').html('');
+                    $("#ulOwnerAllModule").css("display", "none");
+                    $("#NoOwnerFound").show();
+                    filters.OwnerTitles = [];
+                    filters.OwnerIds = [];
                 }
             }
         });
@@ -1240,7 +1258,6 @@
                 filters.SelectedPlans.push($(this).find("a").attr("id"));
                 filters.PlanTitles.push($(this).find("a").attr("planTitle"));
             });
-                GetOwnerListForFilter(filters.SelectedPlans);
         }
         else {
             $("#ulSelectedPlans li").each(function (i) {
@@ -1252,7 +1269,7 @@
         if (filters.SelectedPlans.length == 0) {
             isFirstCall = false;
         }
-
+        GetOwnerListForFilter(filters.SelectedPlans);
         //  BindOtherAttributes();
     }
 
@@ -1314,24 +1331,24 @@
         }
     }
 
-        function BulkOwnerOperation(selection) {
-            filters.OwnerIds = [];
-            filters.OwnerTitles = [];
-            if (selection) {
-                $("#ulSelectedOwner li").each(function (i) {
-                    $(this).addClass("close-list");
-                    $(this).find("a").html('');
-                    filters.OwnerIds.push($(this).find("a").attr("id"));
-                    filters.OwnerTitles.push($(this).find("a").attr("OwnerTitle"));
-                });
-            }
-            else {
-                $("#ulSelectedOwner li").each(function (i) {
-                    $(this).removeClass("close-list");
-                    $(this).find("a").html('Select');
-                });
-            }
+    function BulkOwnerOperation(selection) {
+        filters.OwnerIds = [];
+        filters.OwnerTitles = [];
+        if (selection) {
+            $("#ulSelectedOwner li").each(function (i) {
+                $(this).addClass("close-list");
+                $(this).find("a").html('');
+                filters.OwnerIds.push($(this).find("a").attr("id"));
+                filters.OwnerTitles.push($(this).find("a").attr("OwnerTitle"));
+            });
         }
+        else {
+            $("#ulSelectedOwner li").each(function (i) {
+                $(this).removeClass("close-list");
+                $(this).find("a").html('Select');
+            });
+        }
+    }
 
     // Added by KAPIL - #454 - to resolve extra space
     function CalGanntHeight() {
@@ -1786,7 +1803,8 @@
                   if (typeof data.improvementTacticTypeForAccordion != 'undefined' &&
                       typeof data.improvementTacticForAccordion != 'undefined' &&
                       data.improvementTacticForAccordion.length > 0 &&
-                      data.improvementTacticTypeForAccordion.length > 0) {
+                      data.improvementTacticTypeForAccordion.length > 0 &&
+                      data.taskData.length > 0) {
                       $('#improvements').show();
                       AddAccordionToggleAndInnerImprovementTactic(data.improvementTacticTypeForAccordion, data.improvementTacticForAccordion);
                       isDataExistForTacticTable = true;

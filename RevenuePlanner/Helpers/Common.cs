@@ -145,6 +145,10 @@ namespace RevenuePlanner.Helpers
 
         //Added By Kalpesh Sharma
         public const string CustomTitle = "Custom";
+
+        //Added By Sohel Pathan
+        public static string ColorCodeForCustomField = "";
+
         #endregion
 
         //#region Enums
