@@ -230,5 +230,8 @@ namespace RevenuePlanner.Models
         public string ColorCode { get; set; }
         public string StartDate { get; set; }
         public double Duration { get; set; }
+        public double PlanProgrss { get; set; } 
+        public double CampaignProgress { get; set; }
+        public double ProgramProgress { get; set; }
     }
 }

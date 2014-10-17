@@ -1569,7 +1569,7 @@
                                 </div>");
 
             $.each(filteredData, function (index2, objfilteredData) {
-                $("#accordion-element-improvement-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' href='#' class='accordion-inner item-" + colorCode + "'>" + objfilteredData.Title + "</a>")
+                $("#accordion-element-improvement-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' class='accordion-inner item-" + colorCode + " cursor-pointer'>" + objfilteredData.Title + "</a>")
                 $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
                     GanttOpenBranch($(this).attr('taskid'));
                 });
@@ -1589,7 +1589,7 @@
                                 </div>");
 
             $.each(filteredData, function (index2, objfilteredData) {
-                $("#accordion-element-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' href='#' class='accordion-inner item-" + colorCode + "'>" + objfilteredData.Title + "</a>")
+                $("#accordion-element-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' class='accordion-inner item-" + colorCode + " cursor-pointer'>" + objfilteredData.Title + "</a>")
                 $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
                     GanttOpenBranch($(this).attr('taskid'));
                 });
