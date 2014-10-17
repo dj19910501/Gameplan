@@ -4349,7 +4349,7 @@ namespace RevenuePlanner.Helpers
         /// <returns>Return the list of PlanTactic id's</returns>
         public static List<int> GetTacticByPlanIDs(string strPlanIds)
         {
-            List<int> PlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
+            List<int> PlanIds = (strPlanIds != "" && strPlanIds != null) ? strPlanIds.Split(',').Select(int.Parse).ToList() : new List<int>();
             MRPEntities db = new MRPEntities();
             List<int> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic =>
                               PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
