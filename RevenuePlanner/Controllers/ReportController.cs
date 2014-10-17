@@ -80,37 +80,39 @@ namespace RevenuePlanner.Controllers
             lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Geography.ToString(), Value = ReportTabType.Geography.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = ReportTabType.Audience.ToString() });
+            lstViewByTab = lstViewByTab.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewByTab = lstViewByTab;
 
             List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
             lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
             lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
+            lstViewByAllocated = lstViewByAllocated.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewByAllocated = lstViewByAllocated;
 
             List<SelectListItem> lstGeography = new List<SelectListItem>();
             lstGeography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList().Select(g => new SelectListItem { Text = g.Title, Value = g.GeographyId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewGeography = lstGeography;
+            ViewBag.ViewGeography = lstGeography.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             List<SelectListItem> lstBusinessUnit = new List<SelectListItem>();
-            lstBusinessUnit = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList().Select(b => new SelectListItem { Text = b.Title, Value = b.BusinessUnitId.ToString(), Selected = (b.BusinessUnitId==reportBusinessUnitId? true:false) }).ToList();
-            ViewBag.ViewBusinessUnit = lstBusinessUnit;
+            lstBusinessUnit = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList().Select(b => new SelectListItem { Text = b.Title, Value = b.BusinessUnitId.ToString(), Selected = (b.BusinessUnitId == reportBusinessUnitId ? true : false) }).ToList();
+            ViewBag.ViewBusinessUnit = lstBusinessUnit.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             List<SelectListItem> lstVertical = new List<SelectListItem>();
             lstVertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList().Select(v => new SelectListItem { Text = v.Title, Value = v.VerticalId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewVertical = lstVertical;
+            ViewBag.ViewVertical = lstVertical.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             List<SelectListItem> lstAudience = new List<SelectListItem>();
             lstAudience = db.Audiences.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).ToList().Select(a => new SelectListItem { Text = a.Title, Value = a.AudienceId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewAudience = lstAudience;
+            ViewBag.ViewAudience = lstAudience.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             string published = Enums.PlanStatus.Published.ToString();
             List<SelectListItem> lstYear = new List<SelectListItem>();
             var lstPlan = db.Plans.Where(p => p.IsDeleted == false && p.Status == published && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList();
             var yearlist = lstPlan.OrderBy(p => p.Year).Select(p => p.Year).Distinct().ToList();
             yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year }));
-            SelectListItem thisQuarter=new SelectListItem {Text="this quarter",Value="thisquarter"};
+            SelectListItem thisQuarter = new SelectListItem { Text = "this quarter", Value = "thisquarter" };
             lstYear.Add(thisQuarter);
-           
+
             string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
             string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
 
@@ -118,8 +120,8 @@ namespace RevenuePlanner.Controllers
             string planyear = DateTime.Now.Year.ToString();
 
             lstPlanList = lstPlan.Where(p => p.Year == planyear).Select(p => new SelectListItem { Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy), Value = p.PlanId.ToString() + "_" + p.AllocatedBy, Selected = (p.PlanId == Sessions.PlanId ? true : false) }).ToList();
-            ViewBag.ViewPlan = lstPlanList;
-            ViewBag.ViewYear = lstYear;
+            ViewBag.ViewPlan = lstPlanList.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            ViewBag.ViewYear = lstYear.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             ViewBag.SelectedYear = planyear;
             //End Added by Mitesh Vaishnav for PL ticket #846
 
@@ -146,7 +148,7 @@ namespace RevenuePlanner.Controllers
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
             plans = plans.Where(p => p.Status.Equals(planPublishedStatus)).Select(p => p).ToList();
             //Filter to filter out the plan based on the Selected businessunit and PlanId
-            if (Sessions.ReportPlanIds != null &&  Sessions.ReportPlanIds.Count>0)
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
                 plans = plans.Where(p => Sessions.ReportPlanIds.Contains(p.PlanId)).ToList();
             }
@@ -155,9 +157,9 @@ namespace RevenuePlanner.Controllers
                 plans.Clear();
             }
 
-            if (Sessions.ReportBusinessUnitIds!=null && Sessions.ReportBusinessUnitIds.Count>0)
+            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count > 0)
             {
-                plans = plans.Where(pl =>Sessions.ReportBusinessUnitIds.Contains(pl.Model.BusinessUnitId)).ToList();
+                plans = plans.Where(pl => Sessions.ReportBusinessUnitIds.Contains(pl.Model.BusinessUnitId)).ToList();
             }
             else
             {
@@ -461,7 +463,7 @@ namespace RevenuePlanner.Controllers
         {
             //// Getting current year's all published plan for all business unit of clientid of director.
             List<Plan> plans = Common.GetPlan().Where(p => p.Status.Equals(PublishedPlan)).ToList();
-            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count>0)
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
                 plans = plans.Where(gp => Sessions.ReportPlanIds.Contains(gp.PlanId)).ToList();
             }
@@ -469,7 +471,7 @@ namespace RevenuePlanner.Controllers
             {
                 plans.Clear();
             }
-            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count>0)
+            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count > 0)
             {
                 plans = plans.Where(gp => Sessions.ReportBusinessUnitIds.Contains(gp.Model.BusinessUnitId)).ToList();
             }
@@ -900,7 +902,7 @@ namespace RevenuePlanner.Controllers
                     id = b.BusinessUnitId,
                     title = b.Title
                 }).Select(b => b).Distinct().OrderBy(b => b.title)).ToList();
-
+                returnData = returnData.Where(s => !string.IsNullOrEmpty(s.title)).OrderBy(s => s.title, new AlphaNumericComparer()).ToList();
                 return Json(returnData, JsonRequestBehavior.AllowGet);
             }
             else if (ParentLabel == Common.RevenueAudience)
@@ -910,7 +912,7 @@ namespace RevenuePlanner.Controllers
                     id = a.AudienceId,
                     title = a.Title
                 }).Select(a => a).Distinct().OrderBy(a => a.title)).ToList();
-
+                returnData = returnData.Where(s => !string.IsNullOrEmpty(s.title)).OrderBy(s => s.title, new AlphaNumericComparer()).ToList();
                 return Json(returnData, JsonRequestBehavior.AllowGet);
             }
             else if (ParentLabel == Common.RevenueGeography)
@@ -920,7 +922,7 @@ namespace RevenuePlanner.Controllers
                     id = g.GeographyId,
                     title = g.Title
                 }).Select(g => g).Distinct().OrderBy(g => g.title)).ToList();
-
+                returnData = returnData.Where(s => !string.IsNullOrEmpty(s.title)).OrderBy(s => s.title, new AlphaNumericComparer()).ToList();
                 return Json(returnData, JsonRequestBehavior.AllowGet);
             }
             else if (ParentLabel == Common.RevenueVertical)
@@ -930,7 +932,7 @@ namespace RevenuePlanner.Controllers
                     id = v.VerticalId,
                     title = v.Title
                 }).Select(v => v).Distinct().OrderBy(v => v.title)).ToList();
-
+                returnData = returnData.Where(s => !string.IsNullOrEmpty(s.title)).OrderBy(s => s.title, new AlphaNumericComparer()).ToList();
                 return Json(returnData, JsonRequestBehavior.AllowGet);
             }
             else if (ParentLabel == Common.RevenuePlans)
@@ -947,7 +949,7 @@ namespace RevenuePlanner.Controllers
                     id = p.PlanId,
                     title = p.Title
                 }).Select(b => b).Distinct().OrderBy(b => b.title).ToList();
-
+                returnData = returnData.Where(s => !string.IsNullOrEmpty(s.title)).OrderBy(s => s.title, new AlphaNumericComparer()).ToList();
                 return Json(returnData, JsonRequestBehavior.AllowGet);
             }
             else if (ParentLabel.Contains(Common.CustomTitle))
@@ -955,7 +957,7 @@ namespace RevenuePlanner.Controllers
 
                 int customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CustomTitle, ""));
                 string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                
+
                 if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                 {
                     var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
@@ -963,8 +965,9 @@ namespace RevenuePlanner.Controllers
                     {
                         id = p.CustomFieldOptionId,
                         title = p.Value
-                }).Select(b => b).Distinct().OrderBy(b => b.title).ToList();
-                return Json(returnData, JsonRequestBehavior.AllowGet);
+                    }).Select(b => b).Distinct().OrderBy(b => b.title).ToList();
+                    returnData = returnData.Where(s => !string.IsNullOrEmpty(s.title)).OrderBy(s => s.title, new AlphaNumericComparer()).ToList();
+                    return Json(returnData, JsonRequestBehavior.AllowGet);
                 }
                 else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
                 {
@@ -976,11 +979,12 @@ namespace RevenuePlanner.Controllers
                         id = p.Value,
                         title = p.Value
                     }).Select(b => b).Distinct().OrderBy(b => b.title).ToList();
+                    returnData = returnData.Where(s => !string.IsNullOrEmpty(s.title)).OrderBy(s => s.title, new AlphaNumericComparer()).ToList();
                     return Json(returnData, JsonRequestBehavior.AllowGet);
                 }
                 var returnDatamain = new List<string>();
                 return Json(returnDatamain, JsonRequestBehavior.AllowGet);
-                
+
             }
 
             return Json("", JsonRequestBehavior.AllowGet);
@@ -1105,6 +1109,8 @@ namespace RevenuePlanner.Controllers
             {
                 lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
             }
+            lstParentConversionSummery = lstParentConversionSummery.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            lstCustomFieldsTactics = lstCustomFieldsTactics.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             lstParentConversionSummery = lstParentConversionSummery.Concat(lstCustomFieldsTactics).ToList();
             ViewBag.parentConvertionSummery = lstParentConversionSummery;
 
@@ -1112,6 +1118,7 @@ namespace RevenuePlanner.Controllers
             lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Plan, Value = Common.Plan });
             lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Trend, Value = Common.Trend });
             lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Actuals, Value = Common.Actuals });
+            lstParentConversionPerformance = lstParentConversionPerformance.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             ViewBag.parentConvertionPerformance = lstParentConversionPerformance;
 
             return PartialView("Conversion");
@@ -1378,7 +1385,7 @@ namespace RevenuePlanner.Controllers
                                 Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
                             });
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted==false).ToList()
+            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
                                            .Select(b => new
                                            {
                                                Title = b.Title,
@@ -1386,7 +1393,7 @@ namespace RevenuePlanner.Controllers
                                                Value = tacticTrenBusinessUnit.Any(bu => bu.BusinessUnitId.Equals(b.BusinessUnitId)) ? tacticTrenBusinessUnit.Where(bu => bu.BusinessUnitId.Equals(b.BusinessUnitId)).First().Trend : 0
 
                                            });
-            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted==false).ToList()
+            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
@@ -1394,7 +1401,7 @@ namespace RevenuePlanner.Controllers
                                                     Value = tacticTrendVertical.Any(ve => ve.VerticalId.Equals(v.VerticalId)) ? tacticTrendVertical.Where(ve => ve.VerticalId.Equals(v.VerticalId)).First().Trend : 0
                                                 });
 
-            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted==false).ToList()
+            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
@@ -1430,7 +1437,7 @@ namespace RevenuePlanner.Controllers
 
             //List<Plan_Campaign_Program_Tactic_Actual> planTacticActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId)).ToList();
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted==false).ToList()
+            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
                                                 .Select(b => new
                                                 {
                                                     Title = b.Title,
@@ -1443,7 +1450,7 @@ namespace RevenuePlanner.Controllers
                                                                              .Sum(ta => ta.Actualvalue) :
                                                                              0
                                                 });
-            var vertical = db.Verticals.ToList().Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted==false).ToList()
+            var vertical = db.Verticals.ToList().Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
@@ -1457,7 +1464,7 @@ namespace RevenuePlanner.Controllers
                                                                              0
                                                 });
 
-            var geography = db.Geographies.ToList().Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted==false).ToList()
+            var geography = db.Geographies.ToList().Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
@@ -1493,7 +1500,7 @@ namespace RevenuePlanner.Controllers
             TempData["ReportData"] = TempData["ReportData"];
             //// Applying filters i.e. bussiness unit, audience, vertical or geography.
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted==false).ToList()
+            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
                                                 .Select(b => new
                                                 {
                                                     Title = b.Title,
@@ -1510,7 +1517,7 @@ namespace RevenuePlanner.Controllers
 
 
 
-            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted==false).ToList()
+            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
@@ -1525,7 +1532,7 @@ namespace RevenuePlanner.Controllers
                                                                                        0
                                                 });
 
-            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted==false).ToList()
+            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
@@ -1564,7 +1571,7 @@ namespace RevenuePlanner.Controllers
             List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
             TempData["ReportData"] = TempData["ReportData"];
 
-             //Custom
+            //Custom
             if (ParentConversionSummaryTab.Contains(Common.CustomTitle))
             {
                 int customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.CustomTitle, ""));
@@ -1573,12 +1580,12 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-            Tacticdata = Tacticdata.Where(pcpt =>
-                ((ParentConversionSummaryTab == Common.BusinessUnit && pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId) ||
-                (ParentConversionSummaryTab == Common.Audience && pcpt.TacticObj.Audience.ClientId == Sessions.User.ClientId) ||
-                (ParentConversionSummaryTab == Common.Geography && pcpt.TacticObj.Geography.ClientId == Sessions.User.ClientId) ||
-                (ParentConversionSummaryTab == Common.Vertical && pcpt.TacticObj.Vertical.ClientId == Sessions.User.ClientId))
-                ).ToList();
+                Tacticdata = Tacticdata.Where(pcpt =>
+                    ((ParentConversionSummaryTab == Common.BusinessUnit && pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId) ||
+                    (ParentConversionSummaryTab == Common.Audience && pcpt.TacticObj.Audience.ClientId == Sessions.User.ClientId) ||
+                    (ParentConversionSummaryTab == Common.Geography && pcpt.TacticObj.Geography.ClientId == Sessions.User.ClientId) ||
+                    (ParentConversionSummaryTab == Common.Vertical && pcpt.TacticObj.Vertical.ClientId == Sessions.User.ClientId))
+                    ).ToList();
             }
             var DataTitleList = new List<RevenueContrinutionData>();
 
@@ -1761,14 +1768,15 @@ namespace RevenuePlanner.Controllers
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
             ViewBag.SelectOption = timeFrameOption;
             var lstBusinessunits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false && Sessions.ReportBusinessUnitIds.Contains(b.BusinessUnitId)).OrderBy(b => b.Title).ToList();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            if (lstBusinessunits.Count==0)
+            if (lstBusinessunits.Count == 0)
             {
-                BusinessUnit objBusinessUnit=new BusinessUnit ();
-                objBusinessUnit.BusinessUnitId=Guid.Empty;
-                objBusinessUnit.Title="None";
+                BusinessUnit objBusinessUnit = new BusinessUnit();
+                objBusinessUnit.BusinessUnitId = Guid.Empty;
+                objBusinessUnit.Title = "None";
                 lstBusinessunits.Add(objBusinessUnit);
 
             }
+            lstBusinessunits = lstBusinessunits.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
             ViewBag.BusinessUnit = lstBusinessunits;
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting(timeFrameOption);
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist);
@@ -1781,12 +1789,14 @@ namespace RevenuePlanner.Controllers
             lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count != 1)
             {
-            lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenuePlans, Value = Common.RevenuePlans });
+                lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenuePlans, Value = Common.RevenuePlans });
             }
             if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
             {
                 lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
             }
+            lstParentRevenueSummery = lstParentRevenueSummery.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            lstCustomFieldsTactics = lstCustomFieldsTactics.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             lstParentRevenueSummery = lstParentRevenueSummery.Concat(lstCustomFieldsTactics).ToList();
             ViewBag.parentRevenueSummery = lstParentRevenueSummery;
 
@@ -1799,6 +1809,8 @@ namespace RevenuePlanner.Controllers
             {
                 lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
             }
+            lstParentRevenueToPlan = lstParentRevenueToPlan.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            lstCustomFieldsTactics = lstCustomFieldsTactics.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             lstParentRevenueToPlan = lstParentRevenueToPlan.Concat(lstCustomFieldsTactics).ToList();
             ViewBag.parentRevenueToPlan = lstParentRevenueToPlan;
 
@@ -1811,9 +1823,11 @@ namespace RevenuePlanner.Controllers
             {
                 lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
             }
+            lstParentRevenueContribution = lstParentRevenueContribution.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            lstCustomFieldsTactics = lstCustomFieldsTactics.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             lstParentRevenueContribution = lstParentRevenueContribution.Concat(lstCustomFieldsTactics).ToList();
             ViewBag.parentRevenueContribution = lstParentRevenueContribution;
-            
+
 
             TempData["ReportData"] = tacticStageList;
 
@@ -1925,10 +1939,11 @@ namespace RevenuePlanner.Controllers
             List<int> campaignIds = TacticList.Where(t => t.BusinessUnitId == id).Select(t => t.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
             var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
                     .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
-                    .OrderBy(pcp => pcp.Title);
-                if (campaignList == null)
-                    return Json(new { });
-                return Json(campaignList, JsonRequestBehavior.AllowGet);
+                    .OrderBy(pcp => pcp.Title).ToList();
+            if (campaignList == null)
+                return Json(new { });
+            campaignList = campaignList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
+            return Json(campaignList, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -1941,7 +1956,7 @@ namespace RevenuePlanner.Controllers
         {
             List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting(selectOption);
             List<int> programIds = new List<int>();
-           
+
             if (type == Common.RevenueBusinessUnit)
             {
                 Guid businessunitid = new Guid(id);
@@ -1954,12 +1969,12 @@ namespace RevenuePlanner.Controllers
             }
             var programList = db.Plan_Campaign_Program.Where(pc => programIds.Contains(pc.PlanProgramId))
                     .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title })
-                    .OrderBy(pcp => pcp.Title);
-                if (programList == null)
-                    return Json(new { });
+                    .OrderBy(pcp => pcp.Title).ToList();
+            if (programList == null)
+                return Json(new { });
+            programList = programList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
+            return Json(programList, JsonRequestBehavior.AllowGet);
 
-                return Json(programList, JsonRequestBehavior.AllowGet);
-            
         }
 
         /// <summary>
@@ -1976,9 +1991,10 @@ namespace RevenuePlanner.Controllers
                 Guid businessunitid = new Guid(id);
                 var tacticListinner = TacticList.Where(t => t.BusinessUnitId == businessunitid)
                     .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
-                    .OrderBy(pcp => pcp.Title);
+                    .OrderBy(pcp => pcp.Title).ToList();
                 if (tacticListinner == null)
                     return Json(new { });
+                tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 return Json(tacticListinner, JsonRequestBehavior.AllowGet);
             }
             else if (type == Common.RevenueCampaign)
@@ -1986,19 +2002,21 @@ namespace RevenuePlanner.Controllers
                 int campaignid = Convert.ToInt32(id);
                 var tacticListinner = TacticList.Where(t => t.Plan_Campaign_Program.PlanCampaignId == campaignid)
                     .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
-                    .OrderBy(pcp => pcp.Title);
+                    .OrderBy(pcp => pcp.Title).ToList();
                 if (tacticListinner == null)
                     return Json(new { });
+                tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 return Json(tacticListinner, JsonRequestBehavior.AllowGet);
             }
             else
             {
-            int programid = Convert.ToInt32(id);
+                int programid = Convert.ToInt32(id);
                 var tacticListinner = TacticList.Where(t => t.PlanProgramId == programid)
                 .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
-                .OrderBy(pcp => pcp.Title);
+                .OrderBy(pcp => pcp.Title).ToList();
                 if (tacticListinner == null)
-                return Json(new { });
+                    return Json(new { });
+                tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 return Json(tacticListinner, JsonRequestBehavior.AllowGet);
             }
             return Json(new { });
@@ -2130,20 +2148,20 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-            Tacticdata = Tacticdata.Where(pcpt =>
-                ((parentlabel == Common.RevenueBusinessUnit && pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId) ||
-                (parentlabel == Common.RevenueAudience && pcpt.TacticObj.Audience.ClientId == Sessions.User.ClientId) ||
-                (parentlabel == Common.RevenueGeography && pcpt.TacticObj.Geography.ClientId == Sessions.User.ClientId) ||
-                (parentlabel == Common.RevenueVertical && pcpt.TacticObj.Vertical.ClientId == Sessions.User.ClientId) ||
-                (parentlabel == Common.RevenueCampaign))
-                ).ToList();
+                Tacticdata = Tacticdata.Where(pcpt =>
+                    ((parentlabel == Common.RevenueBusinessUnit && pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId) ||
+                    (parentlabel == Common.RevenueAudience && pcpt.TacticObj.Audience.ClientId == Sessions.User.ClientId) ||
+                    (parentlabel == Common.RevenueGeography && pcpt.TacticObj.Geography.ClientId == Sessions.User.ClientId) ||
+                    (parentlabel == Common.RevenueVertical && pcpt.TacticObj.Vertical.ClientId == Sessions.User.ClientId) ||
+                    (parentlabel == Common.RevenueCampaign))
+                    ).ToList();
             }
             if (isBusinessUnit)
             {
                 Tacticdata = Tacticdata.Where(c => c.TacticObj.BusinessUnitId == buid).ToList();
             }
             var campaignList = new List<RevenueContrinutionData>();
-        
+
             if (parentlabel == Common.RevenueCampaign)
             {
                 campaignList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pc =>
@@ -2199,8 +2217,8 @@ namespace RevenuePlanner.Controllers
                 {
                     var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
                     campaignList = (from cfo in db.CustomFieldOptions
-                                     where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId)
-                                     select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
+                                    where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId)
+                                    select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
                                   new RevenueContrinutionData
                                   {
                                       Title = pc.Key.title,
@@ -2288,7 +2306,7 @@ namespace RevenuePlanner.Controllers
                     innerTacticActualList.ForEach(innerTactic => dt.Rows.Add(id, t.TacticYear + innerTactic.Period, innerTactic.Actualvalue));
                 }
             }
-          
+
             return dt;
         }
 
@@ -2301,14 +2319,16 @@ namespace RevenuePlanner.Controllers
         {
             List<TacticDataTable> tacticdata = new List<TacticDataTable>();
             tacticdata = tacticDataList.Select(
-                td => new TacticDataTable {
+                td => new TacticDataTable
+                {
                     TacticId = td.TacticObj.PlanTacticId,
-                    Value = td.TacticObj.Cost , 
+                    Value = td.TacticObj.Cost,
                     StartMonth = td.TacticObj.StartDate.Month,
                     EndMonth = td.TacticObj.EndDate.Month,
                     StartYear = td.TacticObj.StartDate.Year,
-                    EndYear = td.TacticObj.EndDate.Year }).ToList();
-            
+                    EndYear = td.TacticObj.EndDate.Year
+                }).ToList();
+
             return GetDatatable(tacticdata);
         }
 
@@ -2331,7 +2351,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
-        public double GetRevenueVSSpendContribution(DataTable ActualDT,List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthWithYearList, List<string> monthList, string revenue)
+        public double GetRevenueVSSpendContribution(DataTable ActualDT, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthWithYearList, List<string> monthList, string revenue)
         {
             double costTotal = ActualDT.AsEnumerable().AsQueryable().Where(c => planTacticList.Contains(c.Field<int>(ColumnId)) && monthWithYearList.Contains(c.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
 
@@ -2770,7 +2790,7 @@ namespace RevenuePlanner.Controllers
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
                                                     Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.BusinessUnitId.Equals(b.BusinessUnitId)).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
                                                 }).OrderBy(b => b.Title);
-            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted==false).ToList()
+            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
@@ -2778,7 +2798,7 @@ namespace RevenuePlanner.Controllers
                                                     Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.VerticalId.Equals(v.VerticalId)).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
                                                 }).OrderBy(v => v.Title);
 
-            var geography = db.Geographies.Where(g => g.ClientId.Equals(Sessions.User.ClientId) && g.IsDeleted==false).ToList()
+            var geography = db.Geographies.Where(g => g.ClientId.Equals(Sessions.User.ClientId) && g.IsDeleted == false).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
@@ -2816,7 +2836,7 @@ namespace RevenuePlanner.Controllers
                 ////Start - Modified by Mitesh Vaishnav for PL ticket #611 Source Performance Graphs dont show anything
                 if (projectedRevenueValue != 0)
                 {
-                    percentageValue = Math.Round((actualRevenueValue  / projectedRevenueValue) * 100, 2);
+                    percentageValue = Math.Round((actualRevenueValue / projectedRevenueValue) * 100, 2);
                 }
                 ////End - Modified by Mitesh Vaishnav for PL ticket #611 Source Performance Graphs dont show anything
             }
@@ -2959,17 +2979,17 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return html string with CSS and Javascript.</returns>
         private string AddCSSAndJS(string htmlOfCurrentView, string reportType)
         {
-       
+
             string html = "<html>";
-            html +=  "<head>";
-            html +=  string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
-            html +=  string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
-            html +=  string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
+            html += "<head>";
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/datepicker.css"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style_extended.css"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/tipsy.css"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/DHTMLX/dhtmlxgantt.css"));
-            
+
             html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/DHTMLX/dhtmlxgantt.js"));
             html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.min.js"));
             html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery-migrate-1.2.1.min.js"));
@@ -2991,7 +3011,7 @@ namespace RevenuePlanner.Controllers
 
             html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/dhtmlxchart.js"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/dhtmlxchart.css"));
-            
+
             html += "</head>";
             html += "<body style='background: none repeat scroll 0 0 #FFFFFF; font-size: 14px;'>";
             //style='background: none repeat scroll 0 0 #FFFFFF; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px;'
@@ -3012,7 +3032,7 @@ namespace RevenuePlanner.Controllers
                 html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportConversion.js"));
             }
 
-            
+
 
             return html;
         }
@@ -3051,48 +3071,51 @@ namespace RevenuePlanner.Controllers
             lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Geography.ToString(), Value = ReportTabType.Geography.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = ReportTabType.Audience.ToString() });
-           
+
             var lstCustomFields = Common.GetTacticsCustomFields(TacticId);
+            lstViewByTab = lstViewByTab.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            lstCustomFields = lstCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             lstViewByTab = lstViewByTab.Concat(lstCustomFields).ToList();
             ViewBag.ViewByTab = lstViewByTab;
 
             List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
             lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
             lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
+            lstViewByAllocated = lstViewByAllocated.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewByAllocated = lstViewByAllocated;
 
             List<SelectListItem> lstGeography = new List<SelectListItem>();
             lstGeography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList().Select(g => new SelectListItem { Text = g.Title, Value = g.GeographyId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewGeography = lstGeography;
+            ViewBag.ViewGeography = lstGeography.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             List<SelectListItem> lstBusinessUnit = new List<SelectListItem>();
             lstBusinessUnit = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList().Select(b => new SelectListItem { Text = b.Title, Value = b.BusinessUnitId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewBusinessUnit = lstBusinessUnit;
+            ViewBag.ViewBusinessUnit = lstBusinessUnit.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             List<SelectListItem> lstVertical = new List<SelectListItem>();
             lstVertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList().Select(v => new SelectListItem { Text = v.Title, Value = v.VerticalId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewVertical = lstVertical;
+            ViewBag.ViewVertical = lstVertical.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             List<SelectListItem> lstAudience = new List<SelectListItem>();
             lstAudience = db.Audiences.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).ToList().Select(a => new SelectListItem { Text = a.Title, Value = a.AudienceId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewAudience = lstAudience;
+            ViewBag.ViewAudience = lstAudience.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             string published = Enums.PlanStatus.Published.ToString();
             List<SelectListItem> lstYear = new List<SelectListItem>();
             var lstPlan = db.Plans.Where(p => p.IsDeleted == false && p.Status == published && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList();
             var yearlist = lstPlan.OrderBy(p => p.Year).Select(p => p.Year).Distinct().ToList();
             yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year }));
-            
+
 
             string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
             string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
 
             List<SelectListItem> lstPlanList = new List<SelectListItem>();
             string planyear = DateTime.Now.Year.ToString();
-           
-            lstPlanList = lstPlan.Where(p => p.Year == planyear).Select(p => new SelectListItem { Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy), Value = p.PlanId.ToString() + "_" + p.AllocatedBy, Selected = ( Sessions.ReportPlanIds.Contains(p.PlanId) ? true : false) }).ToList();
-            ViewBag.ViewPlan = lstPlanList;
-            ViewBag.ViewYear = lstYear;
+
+            lstPlanList = lstPlan.Where(p => p.Year == planyear).Select(p => new SelectListItem { Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy), Value = p.PlanId.ToString() + "_" + p.AllocatedBy, Selected = (Sessions.ReportPlanIds.Contains(p.PlanId) ? true : false) }).ToList();
+            ViewBag.ViewPlan = lstPlanList.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            ViewBag.ViewYear = lstYear.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             ViewBag.SelectedYear = planyear;
 
             return PartialView("Budget");
@@ -3138,7 +3161,7 @@ namespace RevenuePlanner.Controllers
                 Year = DateTime.Now.Year.ToString();
             }
             List<int> PlanIdList = new List<int>();
-            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count>0)
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
                 PlanIdList = Sessions.ReportPlanIds;
             }
@@ -3156,7 +3179,7 @@ namespace RevenuePlanner.Controllers
             }
 
             List<Guid> BusinessUnitIdList = new List<Guid>();
-            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count>0)
+            if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count > 0)
             {
                 BusinessUnitIdList = Sessions.ReportBusinessUnitIds;
             }
@@ -3170,11 +3193,11 @@ namespace RevenuePlanner.Controllers
 
             //int PlanId = 3533;
             // Apply filter on tactic
-            var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => 
-                            PlanIdList.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) 
-                            && BusinessUnitIdList.Contains(tactic.BusinessUnitId) 
-                            && GeographyIdList.Contains(tactic.GeographyId) 
-                            && VerticalIdList.Contains(tactic.VerticalId) 
+            var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic =>
+                            PlanIdList.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
+                            && BusinessUnitIdList.Contains(tactic.BusinessUnitId)
+                            && GeographyIdList.Contains(tactic.GeographyId)
+                            && VerticalIdList.Contains(tactic.VerticalId)
                             && AudienceIdList.Contains(tactic.AudienceId)
                             && tactic.IsDeleted.Equals(false)
                             ).ToList();
@@ -3354,7 +3377,7 @@ namespace RevenuePlanner.Controllers
 
                 }
 
-                
+
                 if (planobj != null)
                 {
                     foreach (var p in planobj)
@@ -3427,14 +3450,14 @@ namespace RevenuePlanner.Controllers
                                 obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                                 obj = GetMonthWiseDataReport(obj, pr.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
                                 model.Add(obj);
-                                parentProgramId = "cp_" + p.Id +  pr.PlanProgramId.ToString();
+                                parentProgramId = "cp_" + p.Id + pr.PlanProgramId.ToString();
 
                                 var TacticObj = TacticListInner.Where(t => t.PlanProgramId == pr.PlanProgramId).ToList();
                                 foreach (var t in TacticObj)
                                 {
                                     obj = new BudgetModelReport();
                                     obj.Id = t.PlanTacticId.ToString();
-                                    obj.ActivityId = "cpt_"  + p.Id + t.PlanTacticId.ToString();
+                                    obj.ActivityId = "cpt_" + p.Id + t.PlanTacticId.ToString();
                                     obj.ActivityName = t.Title;
                                     obj.ActivityType = ActivityType.ActivityTactic;
                                     obj.ParentActivityId = parentProgramId;
@@ -3470,13 +3493,13 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            
+
 
             //Threre is no need to manage lines for actuals
             //if (Tab == ReportTabType.Plan.ToString())
             //{
-                model = ManageLineItems(model);
-           // }
+            model = ManageLineItems(model);
+            // }
 
             //Set actual for quarters
             if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
@@ -3913,178 +3936,178 @@ namespace RevenuePlanner.Controllers
             return emptyList;
         }
 
-         /// <summary>
-         /// set monthly data for the object
-         /// </summary>
-         /// <param name="obj"></param>
-         /// <param name="lst"></param>
-         /// <returns></returns>
-         private BudgetModelReport GetMonthWiseDataReport(BudgetModelReport obj, List<BudgetedValue> lst, string columnType)
-         {
-             BudgetMonth month = new BudgetMonth();
-             month.Jan = lst.Where(v => v.Period.ToUpper() == Jan).Select(v => v.Value).SingleOrDefault();
-             month.Feb = lst.Where(v => v.Period.ToUpper() == Feb).Select(v => v.Value).SingleOrDefault();
-             month.Mar = lst.Where(v => v.Period.ToUpper() == Mar).Select(v => v.Value).SingleOrDefault();
-             month.Apr = lst.Where(v => v.Period.ToUpper() == Apr).Select(v => v.Value).SingleOrDefault();
-             month.May = lst.Where(v => v.Period.ToUpper() == May).Select(v => v.Value).SingleOrDefault();
-             month.Jun = lst.Where(v => v.Period.ToUpper() == Jun).Select(v => v.Value).SingleOrDefault();
-             month.Jul = lst.Where(v => v.Period.ToUpper() == Jul).Select(v => v.Value).SingleOrDefault();
-             month.Aug = lst.Where(v => v.Period.ToUpper() == Aug).Select(v => v.Value).SingleOrDefault();
-             month.Sep = lst.Where(v => v.Period.ToUpper() == Sep).Select(v => v.Value).SingleOrDefault();
-             month.Oct = lst.Where(v => v.Period.ToUpper() == Oct).Select(v => v.Value).SingleOrDefault();
-             month.Nov = lst.Where(v => v.Period.ToUpper() == Nov).Select(v => v.Value).SingleOrDefault();
-             month.Dec = lst.Where(v => v.Period.ToUpper() == Dec).Select(v => v.Value).SingleOrDefault();
-             
-             if(columnType.ToString() == ReportColumnType.Planned.ToString())
-             {
-                 obj.MonthPlanned = month;
-                 obj.ParentMonthPlanned = month;
-                 obj.Planned = lst.Sum(v => v.Value);
-             }
-             else if (columnType.ToString() == ReportColumnType.Actual.ToString())
-             {
-                 obj.MonthActual = month;
-                 obj.ParentMonthActual = month;
-                 obj.Actual = lst.Sum(v => v.Value);
-             }
-             else
-             {
-                 obj.MonthAllocated = month;
-                 obj.ChildMonthAllocated = month;
-                 obj.Allocated = lst.Sum(v => v.Value);
-             }
+        /// <summary>
+        /// set monthly data for the object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="lst"></param>
+        /// <returns></returns>
+        private BudgetModelReport GetMonthWiseDataReport(BudgetModelReport obj, List<BudgetedValue> lst, string columnType)
+        {
+            BudgetMonth month = new BudgetMonth();
+            month.Jan = lst.Where(v => v.Period.ToUpper() == Jan).Select(v => v.Value).SingleOrDefault();
+            month.Feb = lst.Where(v => v.Period.ToUpper() == Feb).Select(v => v.Value).SingleOrDefault();
+            month.Mar = lst.Where(v => v.Period.ToUpper() == Mar).Select(v => v.Value).SingleOrDefault();
+            month.Apr = lst.Where(v => v.Period.ToUpper() == Apr).Select(v => v.Value).SingleOrDefault();
+            month.May = lst.Where(v => v.Period.ToUpper() == May).Select(v => v.Value).SingleOrDefault();
+            month.Jun = lst.Where(v => v.Period.ToUpper() == Jun).Select(v => v.Value).SingleOrDefault();
+            month.Jul = lst.Where(v => v.Period.ToUpper() == Jul).Select(v => v.Value).SingleOrDefault();
+            month.Aug = lst.Where(v => v.Period.ToUpper() == Aug).Select(v => v.Value).SingleOrDefault();
+            month.Sep = lst.Where(v => v.Period.ToUpper() == Sep).Select(v => v.Value).SingleOrDefault();
+            month.Oct = lst.Where(v => v.Period.ToUpper() == Oct).Select(v => v.Value).SingleOrDefault();
+            month.Nov = lst.Where(v => v.Period.ToUpper() == Nov).Select(v => v.Value).SingleOrDefault();
+            month.Dec = lst.Where(v => v.Period.ToUpper() == Dec).Select(v => v.Value).SingleOrDefault();
 
-             return obj;
-         }
+            if (columnType.ToString() == ReportColumnType.Planned.ToString())
+            {
+                obj.MonthPlanned = month;
+                obj.ParentMonthPlanned = month;
+                obj.Planned = lst.Sum(v => v.Value);
+            }
+            else if (columnType.ToString() == ReportColumnType.Actual.ToString())
+            {
+                obj.MonthActual = month;
+                obj.ParentMonthActual = month;
+                obj.Actual = lst.Sum(v => v.Value);
+            }
+            else
+            {
+                obj.MonthAllocated = month;
+                obj.ChildMonthAllocated = month;
+                obj.Allocated = lst.Sum(v => v.Value);
+            }
 
-         /// <summary>
-         /// Calculate the bottom up planeed cost
-         /// </summary>
-         /// <param name="model"></param>
-         /// <param name="ParentActivityType"></param>
-         /// <param name="ChildActivityType"></param>
-         /// <returns></returns>
-         public List<BudgetModelReport> CalculateBottomUpReport(List<BudgetModelReport> model, string ParentActivityType, string ChildActivityType)
-         {
-             if (ParentActivityType == ActivityType.ActivityTactic)
-             {
-                 foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ParentActivityType))
-                 {
-                     List<BudgetModelReport> LineCheck = model.Where(lines => lines.ParentActivityId == l.ActivityId && lines.ActivityType == ActivityType.ActivityLineItem).ToList();
-                     if (LineCheck.Count() > 0)
-                     {
-                         BudgetMonth parent = new BudgetMonth();
-                         parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jan) ?? 0;
-                         parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Feb) ?? 0;
-                         parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Mar) ?? 0;
-                         parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Apr) ?? 0;
-                         parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.May) ?? 0;
-                         parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jun) ?? 0;
-                         parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jul) ?? 0;
-                         parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Aug) ?? 0;
-                         parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Sep) ?? 0;
-                         parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Oct) ?? 0;
-                         parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Nov) ?? 0;
-                         parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Dec) ?? 0;
-                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
-                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
+            return obj;
+        }
 
-                         BudgetMonth parentActual = new BudgetMonth();
-                         parentActual.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jan) ?? 0;
-                         parentActual.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Feb) ?? 0;
-                         parentActual.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Mar) ?? 0;
-                         parentActual.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Apr) ?? 0;
-                         parentActual.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.May) ?? 0;
-                         parentActual.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jun) ?? 0;
-                         parentActual.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jul) ?? 0;
-                         parentActual.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Aug) ?? 0;
-                         parentActual.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Sep) ?? 0;
-                         parentActual.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Oct) ?? 0;
-                         parentActual.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Nov) ?? 0;
-                         parentActual.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Dec) ?? 0;
-                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
-                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual = parentActual;
-                     }
-                     else
-                     {
-                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
-                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
-                     }
-                 }
-             }
-             else
-             {
-                 foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ParentActivityType))
-                 {
-                     BudgetMonth parent = new BudgetMonth();
-                     parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jan) ?? 0;
-                     parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Feb) ?? 0;
-                     parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Mar) ?? 0;
-                     parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Apr) ?? 0;
-                     parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.May) ?? 0;
-                     parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jun) ?? 0;
-                     parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jul) ?? 0;
-                     parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Aug) ?? 0;
-                     parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Sep) ?? 0;
-                     parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Oct) ?? 0;
-                     parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Nov) ?? 0;
-                     parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Dec) ?? 0;
-                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
-                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
-                     //l.ParentMonth = parent;
+        /// <summary>
+        /// Calculate the bottom up planeed cost
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="ParentActivityType"></param>
+        /// <param name="ChildActivityType"></param>
+        /// <returns></returns>
+        public List<BudgetModelReport> CalculateBottomUpReport(List<BudgetModelReport> model, string ParentActivityType, string ChildActivityType)
+        {
+            if (ParentActivityType == ActivityType.ActivityTactic)
+            {
+                foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ParentActivityType))
+                {
+                    List<BudgetModelReport> LineCheck = model.Where(lines => lines.ParentActivityId == l.ActivityId && lines.ActivityType == ActivityType.ActivityLineItem).ToList();
+                    if (LineCheck.Count() > 0)
+                    {
+                        BudgetMonth parent = new BudgetMonth();
+                        parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jan) ?? 0;
+                        parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Feb) ?? 0;
+                        parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Mar) ?? 0;
+                        parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Apr) ?? 0;
+                        parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.May) ?? 0;
+                        parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jun) ?? 0;
+                        parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jul) ?? 0;
+                        parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Aug) ?? 0;
+                        parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Sep) ?? 0;
+                        parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Oct) ?? 0;
+                        parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Nov) ?? 0;
+                        parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Dec) ?? 0;
+                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
+                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
 
-                     BudgetMonth parentActual = new BudgetMonth();
-                     parentActual.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jan) ?? 0;
-                     parentActual.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Feb) ?? 0;
-                     parentActual.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Mar) ?? 0;
-                     parentActual.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Apr) ?? 0;
-                     parentActual.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.May) ?? 0;
-                     parentActual.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jun) ?? 0;
-                     parentActual.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jul) ?? 0;
-                     parentActual.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Aug) ?? 0;
-                     parentActual.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Sep) ?? 0;
-                     parentActual.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Oct) ?? 0;
-                     parentActual.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Nov) ?? 0;
-                     parentActual.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Dec) ?? 0;
-                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
-                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual = parentActual;
+                        BudgetMonth parentActual = new BudgetMonth();
+                        parentActual.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jan) ?? 0;
+                        parentActual.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Feb) ?? 0;
+                        parentActual.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Mar) ?? 0;
+                        parentActual.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Apr) ?? 0;
+                        parentActual.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.May) ?? 0;
+                        parentActual.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jun) ?? 0;
+                        parentActual.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jul) ?? 0;
+                        parentActual.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Aug) ?? 0;
+                        parentActual.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Sep) ?? 0;
+                        parentActual.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Oct) ?? 0;
+                        parentActual.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Nov) ?? 0;
+                        parentActual.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Dec) ?? 0;
+                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
+                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual = parentActual;
+                    }
+                    else
+                    {
+                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
+                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
+                    }
+                }
+            }
+            else
+            {
+                foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ParentActivityType))
+                {
+                    BudgetMonth parent = new BudgetMonth();
+                    parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jan) ?? 0;
+                    parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Feb) ?? 0;
+                    parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Mar) ?? 0;
+                    parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Apr) ?? 0;
+                    parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.May) ?? 0;
+                    parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jun) ?? 0;
+                    parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jul) ?? 0;
+                    parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Aug) ?? 0;
+                    parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Sep) ?? 0;
+                    parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Oct) ?? 0;
+                    parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Nov) ?? 0;
+                    parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Dec) ?? 0;
+                    model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
+                    model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
+                    //l.ParentMonth = parent;
 
-                     BudgetMonth parentAllocated = new BudgetMonth();
-                     parentAllocated.Jan = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jan) ?? 0;
-                     parentAllocated.Feb = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Feb) ?? 0;
-                     parentAllocated.Mar = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Mar) ?? 0;
-                     parentAllocated.Apr = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Apr) ?? 0;
-                     parentAllocated.May = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.May) ?? 0;
-                     parentAllocated.Jun = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jun) ?? 0;
-                     parentAllocated.Jul = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jul) ?? 0;
-                     parentAllocated.Aug = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Aug) ?? 0;
-                     parentAllocated.Sep = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Sep) ?? 0;
-                     parentAllocated.Oct = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Oct) ?? 0;
-                     parentAllocated.Nov = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Nov) ?? 0;
-                     parentAllocated.Dec = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Dec) ?? 0;
-                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ChildMonthAllocated = parentAllocated;
-                 }
-             }
-             return model;
-         }
+                    BudgetMonth parentActual = new BudgetMonth();
+                    parentActual.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jan) ?? 0;
+                    parentActual.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Feb) ?? 0;
+                    parentActual.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Mar) ?? 0;
+                    parentActual.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Apr) ?? 0;
+                    parentActual.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.May) ?? 0;
+                    parentActual.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jun) ?? 0;
+                    parentActual.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jul) ?? 0;
+                    parentActual.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Aug) ?? 0;
+                    parentActual.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Sep) ?? 0;
+                    parentActual.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Oct) ?? 0;
+                    parentActual.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Nov) ?? 0;
+                    parentActual.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Dec) ?? 0;
+                    model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
+                    model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual = parentActual;
 
-         /// <summary>
-         /// Manage lines items if cost is allocated to other
-         /// </summary>
-         /// <param name="model"></param>
-         /// <returns></returns>
-         private List<BudgetModelReport> ManageLineItems(List<BudgetModelReport> model)
-         {
-             foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ActivityType.ActivityTactic))
-             {
+                    BudgetMonth parentAllocated = new BudgetMonth();
+                    parentAllocated.Jan = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jan) ?? 0;
+                    parentAllocated.Feb = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Feb) ?? 0;
+                    parentAllocated.Mar = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Mar) ?? 0;
+                    parentAllocated.Apr = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Apr) ?? 0;
+                    parentAllocated.May = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.May) ?? 0;
+                    parentAllocated.Jun = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jun) ?? 0;
+                    parentAllocated.Jul = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jul) ?? 0;
+                    parentAllocated.Aug = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Aug) ?? 0;
+                    parentAllocated.Sep = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Sep) ?? 0;
+                    parentAllocated.Oct = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Oct) ?? 0;
+                    parentAllocated.Nov = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Nov) ?? 0;
+                    parentAllocated.Dec = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Dec) ?? 0;
+                    model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ChildMonthAllocated = parentAllocated;
+                }
+            }
+            return model;
+        }
+
+        /// <summary>
+        /// Manage lines items if cost is allocated to other
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private List<BudgetModelReport> ManageLineItems(List<BudgetModelReport> model)
+        {
+            foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ActivityType.ActivityTactic))
+            {
                 BudgetMonth lineDiffPlanned = new BudgetMonth();
-                 List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
-                 BudgetModelReport otherLine = lines.Where(ol => ol.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault();
-                 lines = lines.Where(ol => ol.ActivityName != Common.DefaultLineItemTitle).ToList();
-                 if (otherLine != null)
-                 {
-                     if (lines.Count > 0)
-                     {
+                List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
+                BudgetModelReport otherLine = lines.Where(ol => ol.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault();
+                lines = lines.Where(ol => ol.ActivityName != Common.DefaultLineItemTitle).ToList();
+                if (otherLine != null)
+                {
+                    if (lines.Count > 0)
+                    {
                         lineDiffPlanned.Jan = l.MonthPlanned.Jan - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jan) ?? 0;
                         lineDiffPlanned.Feb = l.MonthPlanned.Feb - lines.Sum(lmon => (double?)lmon.MonthPlanned.Feb) ?? 0;
                         lineDiffPlanned.Mar = l.MonthPlanned.Mar - lines.Sum(lmon => (double?)lmon.MonthPlanned.Mar) ?? 0;
@@ -4117,21 +4140,21 @@ namespace RevenuePlanner.Controllers
                         double planned = l.Planned - lines.Sum(l1 => l1.Planned);
                         planned = planned < 0 ? 0 : planned;
                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Planned = planned;
-                     }
-                     else
-                     {
-                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().MonthPlanned = l.MonthPlanned;
-                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonthPlanned = l.MonthPlanned;
-                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Planned = l.Planned < 0 ? 0 : l.Planned;
-                     }
-                 }
-             }
-             //foreach (BudgetModel l in model.Where(l => l.ActivityType == ActivityLineItem && l.ActivityName == "Other"))
-             //{
-             //    l.Allocated = l.Month.Jan + l.Month.Feb + l.Month.Mar + l.Month.Apr + l.Month.May + l.Month.Jun + l.Month.Jul + l.Month.Aug + l.Month.Sep + l.Month.Oct + l.Month.Nov + l.Month.Dec;
-             //}
-             return model;
-         }
+                    }
+                    else
+                    {
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().MonthPlanned = l.MonthPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonthPlanned = l.MonthPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Planned = l.Planned < 0 ? 0 : l.Planned;
+                    }
+                }
+            }
+            //foreach (BudgetModel l in model.Where(l => l.ActivityType == ActivityLineItem && l.ActivityName == "Other"))
+            //{
+            //    l.Allocated = l.Month.Jan + l.Month.Feb + l.Month.Mar + l.Month.Apr + l.Month.May + l.Month.Jun + l.Month.Jul + l.Month.Aug + l.Month.Sep + l.Month.Oct + l.Month.Nov + l.Month.Dec;
+            //}
+            return model;
+        }
 
         #endregion
 
@@ -4140,62 +4163,62 @@ namespace RevenuePlanner.Controllers
         /// set session for multiple selected plans and business units
         /// </summary>
         /// <param name="businessUnitIds">Comma separated string which contains business unit's Ids</param>
-         /// <param name="planIds">Comma separated string which contains plan's Ids</param>
+        /// <param name="planIds">Comma separated string which contains plan's Ids</param>
         /// <returns>If success than return status 1 else 0</returns>
-         public JsonResult SetReportData(string businessUnitIds, string planIds)
-         {
-             try
-             {
-                 List<Guid> lstBusinessUnitIds = new List<Guid>();
-                 List<int> lstPlanIds = new List<int>();
-                 if (businessUnitIds != string.Empty)
-                 {
-                     string[] arrBusinessUnitIds = businessUnitIds.Split(',');
-                     foreach (string bu in arrBusinessUnitIds)
-                     {
-                         Guid BusinessUnitId;
-                         if (Guid.TryParse(bu, out BusinessUnitId))
-                         {
-                             lstBusinessUnitIds.Add(BusinessUnitId);
-                         }
-                     }
-                     if (lstBusinessUnitIds.Count > 0)
-                     {
-                         Sessions.ReportBusinessUnitIds = lstBusinessUnitIds;
-                     }
+        public JsonResult SetReportData(string businessUnitIds, string planIds)
+        {
+            try
+            {
+                List<Guid> lstBusinessUnitIds = new List<Guid>();
+                List<int> lstPlanIds = new List<int>();
+                if (businessUnitIds != string.Empty)
+                {
+                    string[] arrBusinessUnitIds = businessUnitIds.Split(',');
+                    foreach (string bu in arrBusinessUnitIds)
+                    {
+                        Guid BusinessUnitId;
+                        if (Guid.TryParse(bu, out BusinessUnitId))
+                        {
+                            lstBusinessUnitIds.Add(BusinessUnitId);
+                        }
+                    }
+                    if (lstBusinessUnitIds.Count > 0)
+                    {
+                        Sessions.ReportBusinessUnitIds = lstBusinessUnitIds;
+                    }
 
-                 }
-                 else
-                 {
-                     Sessions.ReportBusinessUnitIds = lstBusinessUnitIds;
-                 }
-                 if (planIds != string.Empty)
-                 {
-                     string[] arrPlanIds = planIds.Split(',');
-                     foreach (string pId in arrPlanIds)
-                     {
-                         int planId;
-                         if (int.TryParse(pId, out planId))
-                         {
-                             lstPlanIds.Add(planId);
-                         }
-                     }
-                     if (lstPlanIds.Count > 0)
-                     {
-                         Sessions.ReportPlanIds = lstPlanIds;
-                     }
-                 }
-                 else
-                 {
-                     Sessions.ReportPlanIds = lstPlanIds;
-                 }
-                 return Json(new { status = true });
-             }
-             catch (Exception e)
-             {
-                 ErrorSignal.FromCurrentContext().Raise(e);
-                 return Json(new { status = false });
-             }
-         }
+                }
+                else
+                {
+                    Sessions.ReportBusinessUnitIds = lstBusinessUnitIds;
+                }
+                if (planIds != string.Empty)
+                {
+                    string[] arrPlanIds = planIds.Split(',');
+                    foreach (string pId in arrPlanIds)
+                    {
+                        int planId;
+                        if (int.TryParse(pId, out planId))
+                        {
+                            lstPlanIds.Add(planId);
+                        }
+                    }
+                    if (lstPlanIds.Count > 0)
+                    {
+                        Sessions.ReportPlanIds = lstPlanIds;
+                    }
+                }
+                else
+                {
+                    Sessions.ReportPlanIds = lstPlanIds;
+                }
+                return Json(new { status = true });
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                return Json(new { status = false });
+            }
+        }
     }
 }

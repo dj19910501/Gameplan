@@ -24,6 +24,7 @@ using System.Web.Mvc;
 using System.Transactions;
 using System.Data;
 using System.Data.Objects.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace RevenuePlanner.Helpers
 {
@@ -4364,5 +4365,35 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Added by Viral Kadiya on 10/17/14 to resolve issue for PL Ticket #833 to Filter values in dropdown should be Alpha sorted.
+    /// </summary>
+    public class AlphaNumericComparer : IComparer<string>
+    {
+        public int Compare(string first, string second)
+        {
+            /* Note: List must does not contains null items on it. */
+            string strRegExpPattern = "^[a-zA-Z0-9- ]*$";
+            int firstNumber, secondNumber;
+
+            // Start - Check whether string starts with special character or not
+            bool first_IsSpecialChar = !Regex.IsMatch(first[0].ToString(), strRegExpPattern, RegexOptions.IgnoreCase);
+            bool second_IsSpecialChar = !Regex.IsMatch(second[0].ToString(), strRegExpPattern, RegexOptions.IgnoreCase);
+            if (first_IsSpecialChar)
+                return second_IsSpecialChar ? first.CompareTo(second) : -1;
+            if (second_IsSpecialChar)
+                return 1;
+            // End
+
+            // Start - Check whether string is numeric or not
+            bool firstIsNumber = int.TryParse(first, out firstNumber);
+            bool secondIsNumber = int.TryParse(second, out secondNumber);
+            if (firstIsNumber)
+                return secondIsNumber ? firstNumber.CompareTo(secondNumber) : -1;
+            return secondIsNumber ? 1 : first.CompareTo(second);
+            // End
+        }
     }
 }
