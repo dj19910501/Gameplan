@@ -259,11 +259,11 @@
         });
         $('#ddlParentRevenueSummery').bind('change', function () {
             var selectedOption = $(this).val();
-            loadChildListData(selectedOption, ddlChildRevenueSummeryId);
+            loadChildListData(selectedOption, ddlChildRevenueSummeryId, true);
         });
         $('#ddlParentRevenueToPlan').bind('change', function () {
             var selectedOption = $(this).val();
-            loadChildListData(selectedOption, ddlChildRevenueToPlanId);
+            loadChildListData(selectedOption, ddlChildRevenueToPlanId, false);
         });
         loadChildListData($('#ddlParentRevenueSummery').val(), ddlChildRevenueSummeryId, true);
         loadChildListData($('#ddlParentRevenueToPlan').val(), ddlChildRevenueToPlanId, false);

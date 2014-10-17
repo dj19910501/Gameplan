@@ -1921,26 +1921,14 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result of Campaign List.</returns>
         public JsonResult LoadCampaignDropDown(Guid id, string selectOption = "")
         {
-            List<string> includeYearList = GetYearListForReport(selectOption);
-            if (Sessions.ReportPlanIds!=null && Sessions.ReportPlanIds.Count > 0)
-            {
-                var campaignList = db.Plan_Campaign.Where(pc => pc.Plan.Model.BusinessUnitId.Equals(id) && pc.Plan.IsDeleted == false && pc.Plan.Status == PublishedPlan && includeYearList.Contains(pc.Plan.Year) && pc.IsDeleted == false && Sessions.ReportPlanIds.Contains(pc.PlanId))
+            List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting(selectOption);
+            List<int> campaignIds = TacticList.Where(t => t.BusinessUnitId == id).Select(t => t.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
+            var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
                     .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
                     .OrderBy(pcp => pcp.Title);
                 if (campaignList == null)
                     return Json(new { });
                 return Json(campaignList, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                var campaignList = db.Plan_Campaign.Where(pc => pc.Plan.Model.BusinessUnitId.Equals(id) && pc.Plan.IsDeleted == false && pc.Plan.Status == PublishedPlan && includeYearList.Contains(pc.Plan.Year) && pc.IsDeleted == false)
-                    .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
-                    .OrderBy(pcp => pcp.Title);
-                if (campaignList == null)
-                    return Json(new { });
-                return Json(campaignList, JsonRequestBehavior.AllowGet);
-            }
-
         }
 
         /// <summary>
@@ -1951,25 +1939,27 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result of Program List.</returns>
         public JsonResult LoadProgramDropDown(string id, string type = "", string selectOption = "")
         {
-            List<string> includeYearList = GetYearListForReport(selectOption);
+            List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting(selectOption);
+            List<int> programIds = new List<int>();
+           
             if (type == Common.RevenueBusinessUnit)
             {
                 Guid businessunitid = new Guid(id);
-                var programList = db.Plan_Campaign_Program.Where(pc => pc.Plan_Campaign.Plan.Model.BusinessUnitId == businessunitid && pc.Plan_Campaign.Plan.IsDeleted == false && pc.IsDeleted == false && pc.Plan_Campaign.Plan.Status == PublishedPlan && includeYearList.Contains(pc.Plan_Campaign.Plan.Year))
+                programIds = TacticList.Where(t => t.BusinessUnitId == businessunitid).Select(t => t.PlanProgramId).Distinct().ToList<int>();
+            }
+            else
+            {
+                int campaignid = Convert.ToInt32(id);
+                programIds = TacticList.Where(t => t.Plan_Campaign_Program.PlanCampaignId == campaignid).Select(t => t.PlanProgramId).Distinct().ToList<int>();
+            }
+            var programList = db.Plan_Campaign_Program.Where(pc => programIds.Contains(pc.PlanProgramId))
                     .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title })
                     .OrderBy(pcp => pcp.Title);
                 if (programList == null)
                     return Json(new { });
 
                 return Json(programList, JsonRequestBehavior.AllowGet);
-            }
-            int campaignid = Convert.ToInt32(id);
-            var programoutList = db.Plan_Campaign_Program.Where(pc => pc.PlanCampaignId == campaignid && pc.IsDeleted == false)
-                 .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title })
-                 .OrderBy(pcp => pcp.Title);
-            if (programoutList == null)
-                return Json(new { });
-            return Json(programoutList, JsonRequestBehavior.AllowGet);
+            
         }
 
         /// <summary>
@@ -1980,37 +1970,38 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result of Tactic List.</returns>
         public JsonResult LoadTacticDropDown(string id, string type = "", string selectOption = "")
         {
-            List<string> tacticStatus = Common.GetStatusListAfterApproved();
-            List<string> includeYearList = GetYearListForReport(selectOption);
+            List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting(selectOption);
             if (type == Common.RevenueBusinessUnit)
             {
                 Guid businessunitid = new Guid(id);
-                var tacticList = db.Plan_Campaign_Program_Tactic.Where(pc => pc.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId == businessunitid && tacticStatus.Contains(pc.Status) && pc.IsDeleted == false && pc.Plan_Campaign_Program.Plan_Campaign.Plan.IsDeleted == false && pc.Plan_Campaign_Program.Plan_Campaign.Plan.Status == PublishedPlan && includeYearList.Contains(pc.Plan_Campaign_Program.Plan_Campaign.Plan.Year))
+                var tacticListinner = TacticList.Where(t => t.BusinessUnitId == businessunitid)
                     .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
                     .OrderBy(pcp => pcp.Title);
-                if (tacticList == null)
+                if (tacticListinner == null)
                     return Json(new { });
-                return Json(tacticList, JsonRequestBehavior.AllowGet);
+                return Json(tacticListinner, JsonRequestBehavior.AllowGet);
             }
             else if (type == Common.RevenueCampaign)
             {
                 int campaignid = Convert.ToInt32(id);
-                var tacticList = db.Plan_Campaign_Program_Tactic.Where(pc => pc.Plan_Campaign_Program.PlanCampaignId == campaignid && tacticStatus.Contains(pc.Status) && pc.IsDeleted == false)
+                var tacticListinner = TacticList.Where(t => t.Plan_Campaign_Program.PlanCampaignId == campaignid)
                     .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
                     .OrderBy(pcp => pcp.Title);
-                if (tacticList == null)
+                if (tacticListinner == null)
                     return Json(new { });
-                return Json(tacticList, JsonRequestBehavior.AllowGet);
+                return Json(tacticListinner, JsonRequestBehavior.AllowGet);
             }
-
+            else
+            {
             int programid = Convert.ToInt32(id);
-            var tacticoutList = db.Plan_Campaign_Program_Tactic.Where(pc => pc.PlanProgramId == programid && tacticStatus.Contains(pc.Status) && pc.IsDeleted == false)
+                var tacticListinner = TacticList.Where(t => t.PlanProgramId == programid)
                 .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
                 .OrderBy(pcp => pcp.Title);
-            if (tacticoutList == null)
+                if (tacticListinner == null)
                 return Json(new { });
-            return Json(tacticoutList, JsonRequestBehavior.AllowGet);
-
+                return Json(tacticListinner, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { });
         }
 
         /// <summary>
