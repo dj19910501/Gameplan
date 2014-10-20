@@ -22,8 +22,8 @@
         <h2 id="lblMarkringActivitiesTitle" style="font-size: 29.5px;display:none;">Marketing Activities</h2>
     </li>
     <li>
-        <div class="icons">
-		     <div class="icon-block"><a href="#"><img src="~/Images/icon-2.png" /></a><span class="counter"></span></div>
+        <div class="request-icons">
+		     <div class="request-icon-block"><a href="#"><img src="~/Images/icon-2.png" /></a><span class="counter"></span></div>
 	    </div>
     </li>
     @*<li>*@
@@ -88,7 +88,7 @@
         RefreshCurrentTab();
     });
 
-    $('.icons').click(function () {
+    $('.request-icons').click(function () {
         $('#ddlTabViewBy').val('@PlanGanttTypes.Request.ToString()');
         RefreshCurrentTab();
     });
