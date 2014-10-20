@@ -201,6 +201,24 @@ function RemoveExtraCharactersFromString(value) {
     return value;
 }
 
+
+//Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+function SetLabelFormaterWithTitle(idName) {
+    var budgetValue = $(idName).html();
+    if (budgetValue) { //Check whether the number is empty or not
+        budgetValue = RemoveExtraCharactersFromString(budgetValue); //Function that remove the special char from the string 
+        var remNumber = '';
+        if (budgetValue.indexOf(".") != -1) {
+            remNumber = budgetValue.substr(budgetValue.indexOf('.'));
+        }
+        //Add tipsy for the current label.
+        $(idName).html(GetAbberiviatedValue(budgetValue));
+        $(idName).attr('title', budgetValue);
+        $(idName).prop('title', "$" + number_format(budgetValue.toString(), 0, '.', ',') + remNumber);
+    }
+
+}
+//End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
 //PL #508 Label formater with tipsy 
 //Added By Kalpesh Sharma 
 function SetLabelFormaterWithTipsy(idName) {
