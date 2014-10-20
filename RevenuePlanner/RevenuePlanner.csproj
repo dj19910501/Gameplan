@@ -516,6 +516,8 @@
     <Content Include="Images\Cancel.jpg" />
     <Content Include="Images\Edit.jpg" />
     <Content Include="Images\favicon.png" />
+    <Content Include="Images\icon-1.png" />
+    <Content Include="Images\icon-2.png" />
     <Content Include="less\accordion.less" />
     <Content Include="less\alerts.less" />
     <Content Include="less\bootstrap.less" />

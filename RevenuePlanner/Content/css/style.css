@@ -10553,3 +10553,14 @@ margin-right:-20px;
     max-width:380px;
     padding-left:15px;
 }
+
+/* Start - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */
+.icons{clear: both; display: block; margin-left: 20px; float:left;}
+.icon-block{float: left; margin-left:10px; position:relative;top:-10px;}
+.counter{background:#ff931e;  height:18px; width:21px; font-size:13px; color:#fff; position:absolute; 
+top:-10px; right:-9px; border-radius:10px; text-align:center; padding-top:2px; left:18px;}
+.icons .icon-block img {
+    height:none;
+    max-width: none;
+}
+/* End - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */

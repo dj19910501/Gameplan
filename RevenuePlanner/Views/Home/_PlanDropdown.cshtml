@@ -21,6 +21,11 @@
         </form>
         <h2 id="lblMarkringActivitiesTitle" style="font-size: 29.5px;display:none;">Marketing Activities</h2>
     </li>
+    <li>
+        <div class="icons">
+		     <div class="icon-block"><a href="#"><img src="~/Images/icon-2.png" /></a><span class="counter"></span></div>
+	    </div>
+    </li>
     @*<li>*@
          <div style="float: right;margin-bottom: 10px;">
                  @Html.Label("Fiscal Year:", new { id = "lblUpcoming_Activies" })
@@ -80,6 +85,11 @@
     });
 
     $("#ddlTabViewBy").change(function () {
+        RefreshCurrentTab();
+    });
+
+    $('.icons').click(function () {
+        $('#ddlTabViewBy').val('@PlanGanttTypes.Request.ToString()');
         RefreshCurrentTab();
     });
 
