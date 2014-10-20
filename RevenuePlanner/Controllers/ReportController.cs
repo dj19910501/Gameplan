@@ -3137,7 +3137,7 @@ namespace RevenuePlanner.Controllers
                 Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy),
                 Value = p.PlanId.ToString() + "_" + p.AllocatedBy
             }).ToList();
-
+			planList = planList.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             return Json(planList, JsonRequestBehavior.AllowGet);
         }
 
