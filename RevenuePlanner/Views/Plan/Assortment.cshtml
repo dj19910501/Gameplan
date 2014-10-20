@@ -1252,7 +1252,7 @@
                         FillGrayImprovementContainerEmpty();
                         LoadClickEvents();
                     }
-                     NumberFormatterTipsy(".tipsyclass", 9);
+                     //NumberFormatterTipsy(".tipsyclass", 9);
                      
                     loadscript();
                 }
@@ -1419,7 +1419,9 @@
                 $('.costAssotment').each(function () {
                     //Added By : Kalpesh Sharma
                     //PL #508 Set format for label in tool tip
-                    SetLabelFormaterWithTipsy($(this));
+                    //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                    SetLabelFormaterWithTitle($(this));
+                    //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
                 });
 
             }
@@ -1697,10 +1699,14 @@
                 addEventTriggerSlidepanel();
 
             //Fetch all the row values from the tables
+
                 $('.Cost_Improvement_Activities').each(function () {
                     //Added By : Kalpesh Sharma
                     //PL #508 Set format for label in tool tip
-                    SetLabelFormaterWithTipsy($(this));
+                    //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                    //SetLabelFormaterWithTipsy($(this));
+                    SetLabelFormaterWithTitle($(this));
+                    //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
                 });
             
         }
@@ -1811,8 +1817,10 @@
 
 
                         //Added by : Kalpesh Sharma
-                        SetLabelFormaterWithTipsyNumbers("#DivImprovementTotal");
-
+                        //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                        //SetLabelFormaterWithTipsyNumbers("#DivImprovementTotal");
+                        SetLabelFormaterWithTitle($("#DivImprovementTotal"));
+                        //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
                         var mqltext = "@ViewBag.MQLLabel"
                         $html += ' ' + mqltext +' yielding <strong>';
                         var cwValue = parseFloat(data.CW);
@@ -1887,8 +1895,12 @@
                         //Fetch all the row values from the tables
                         //Added By : Kalpesh Sharma
                         //PL #508 Set format for label in tool tip
-                        SetLabelFormaterWithTipsy("#spanRevenuecostValue");
-                        SetLabelFormaterWithTipsy("#spanRevenueImpact");
+                        //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                        //SetLabelFormaterWithTipsy("#spanRevenuecostValue");
+                        //SetLabelFormaterWithTipsy("#spanRevenueImpact");
+                        SetLabelFormaterWithTitle($("#spanRevenuecostValue"));
+                        SetLabelFormaterWithTitle($("#spanRevenueImpact"));
+                        //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
 
                     }
 
@@ -1947,7 +1959,10 @@
             $('.SuggestedSection').each(function () {
                 //Added By : Kalpesh Sharma
                 //PL #508 Set format for label in tool tip
-                SetLabelFormaterWithTipsy($(this));
+                //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                //SetLabelFormaterWithTipsy($(this));
+                SetLabelFormaterWithTitle($(this));
+                //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
             });
 
 
@@ -2231,7 +2246,10 @@
             $('.SuggestedSection').each(function () {
                 //Added By : Kalpesh Sharma
                 //PL #508 Set format for label in tool tip
-                SetLabelFormaterWithTipsy($(this));
+                //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                //SetLabelFormaterWithTipsy($(this));
+                SetLabelFormaterWithTitle($(this));
+                //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
             });
 
 
