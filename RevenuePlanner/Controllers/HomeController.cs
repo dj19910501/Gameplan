@@ -850,6 +850,7 @@ namespace RevenuePlanner.Controllers
 
                 CustomFieldOption objCustomFieldOption = new CustomFieldOption();
                 objCustomFieldOption.CustomFieldOptionId = 0;
+                string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
 
                 var tempTactic = (from cf in db.CustomFields
                                   join cft in db.CustomFieldTypes on cf.CustomFieldTypeId equals cft.CustomFieldTypeId
@@ -864,8 +865,8 @@ namespace RevenuePlanner.Controllers
                                   {
                                       tactic = t,
                                       masterCustomFieldId = cf.CustomFieldId,
-                                      customFieldId = cft.Name == "DropDownList" ? (cfo.CustomFieldOptionId == null ? 0 : cfo.CustomFieldOptionId) : cfe.CustomFieldEntityId,
-                                      customFieldTitle = cft.Name == "DropDownList" ? cfo.Value : cfe.Value,
+                                      customFieldId = cft.Name == DropDownList ? (cfo.CustomFieldOptionId == null ? 0 : cfo.CustomFieldOptionId) : cfe.CustomFieldEntityId,
+                                      customFieldTitle = cft.Name == DropDownList ? cfo.Value : cfe.Value,
                                   }).ToList().Distinct().ToList().ToList();
 
                 var newtactic = tempTactic.Select(t => new
