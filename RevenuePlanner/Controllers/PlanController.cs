@@ -5387,41 +5387,13 @@ namespace RevenuePlanner.Controllers
                                 objLineitem.Description = form.Description;
                                 //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
                                 objLineitem.Cost = UpdateBugdetAllocationCost(arrCostInputValues, form.Cost);
-                                objLineitem.StartDate = form.StartDate;
-                                objLineitem.EndDate = form.EndDate;
+                                //Added By :Kalpesh Sharma #890 Line Item Dates need to go away 
+                                objLineitem.StartDate = null;
+                                objLineitem.EndDate = null;
                                 objLineitem.CreatedBy = Sessions.User.UserId;
                                 objLineitem.CreatedDate = DateTime.Now;
                                 db.Entry(objLineitem).State = EntityState.Added;
                                 int result = db.SaveChanges();
-                                var planCampaignProgramTacticDetails = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == objLineitem.PlanTacticId);
-
-                                if (planCampaignProgramTacticDetails.StartDate > objLineitem.StartDate)
-                                {
-                                    planCampaignProgramTacticDetails.StartDate = Convert.ToDateTime(objLineitem.StartDate);
-                                }
-                                if (planCampaignProgramTacticDetails.Plan_Campaign_Program.StartDate > objLineitem.StartDate)
-                                {
-                                    planCampaignProgramTacticDetails.Plan_Campaign_Program.StartDate = Convert.ToDateTime(objLineitem.StartDate);
-                                }
-                                if (planCampaignProgramTacticDetails.Plan_Campaign_Program.Plan_Campaign.StartDate > objLineitem.StartDate)
-                                {
-                                    planCampaignProgramTacticDetails.Plan_Campaign_Program.Plan_Campaign.StartDate = Convert.ToDateTime(objLineitem.StartDate);
-                                }
-
-                                if (objLineitem.EndDate > planCampaignProgramTacticDetails.EndDate)
-                                {
-                                    planCampaignProgramTacticDetails.EndDate = Convert.ToDateTime(objLineitem.EndDate);
-                                }
-                                if (objLineitem.EndDate > planCampaignProgramTacticDetails.Plan_Campaign_Program.EndDate)
-                                {
-                                    planCampaignProgramTacticDetails.Plan_Campaign_Program.EndDate = Convert.ToDateTime(objLineitem.EndDate);
-                                }
-                                if (objLineitem.EndDate > planCampaignProgramTacticDetails.Plan_Campaign_Program.Plan_Campaign.EndDate)
-                                {
-                                    planCampaignProgramTacticDetails.Plan_Campaign_Program.Plan_Campaign.EndDate = Convert.ToDateTime(objLineitem.EndDate);
-                                }
-                                db.Entry(planCampaignProgramTacticDetails).State = EntityState.Modified;
-                                db.SaveChanges();
                                 int lineitemId = objLineitem.PlanLineItemId;
 
                                 var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == form.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
@@ -5559,35 +5531,6 @@ namespace RevenuePlanner.Controllers
                                     objLineitem.LineItemTypeId = form.LineItemTypeId;
                                     //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
                                     objLineitem.Cost = UpdateBugdetAllocationCost(arrCostInputValues, form.Cost);
-                                    objLineitem.StartDate = form.StartDate;
-                                    objLineitem.EndDate = form.EndDate;
-
-                                    if (form.TStartDate > form.StartDate)
-                                    {
-                                        objLineitem.Plan_Campaign_Program_Tactic.StartDate = form.StartDate;
-                                    }
-                                    if (form.EndDate > form.TEndDate)
-                                    {
-                                        objLineitem.Plan_Campaign_Program_Tactic.EndDate = form.EndDate;
-                                    }
-
-                                    if (form.PStartDate > form.StartDate)
-                                    {
-                                        objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.StartDate = form.StartDate;
-                                    }
-                                    if (form.EndDate > form.PEndDate)
-                                    {
-                                        objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.EndDate = form.EndDate;
-                                    }
-
-                                    if (form.CStartDate > form.StartDate)
-                                    {
-                                        objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.StartDate = form.StartDate;
-                                    }
-                                    if (form.EndDate > form.CEndDate)
-                                    {
-                                        objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate = form.EndDate;
-                                    }
                                 }
 
                                 objLineitem.ModifiedBy = Sessions.User.UserId;

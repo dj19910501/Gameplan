@@ -134,25 +134,6 @@
                     }
                 }
 
-                <div class="cf margin-left-4">
-                    <div class="pull-left width50">
-                        <label class="padding-left4">Start Date</label>
-                        <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
-                            @Html.TextBoxFor(model => model.StartDate, new { @class = "span2 black-border-right font-size13", id = "t_startdate" })
-                            <span class="add-on">
-                                <img src="~/Content/images/gray-calendar-icon.png"></span>
-                        </div>
-                    </div>
-
-                    <div class="pull-right width50">
-                        <label class="padding-left4">End Date</label>
-                        <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
-                            @Html.TextBoxFor(model => model.EndDate, new { @class = "span2 black-border-right font-size13", id = "t_enddate" })
-                            <span class="add-on">
-                                <img src="~/Content/images/gray-calendar-icon.png"></span>
-                        </div>
-                    </div>
-                </div>
                 <div class="content-row">
                     <label class="padding-left4" title="Cost">Line Item Cost</label>
                     @Html.TextBoxFor(model => model.Cost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtLineItemCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
@@ -261,15 +242,6 @@
 
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
-
-        if ($("#hdnIsOtherLineItem").val() == "False") {
-            $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
-            $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
-        }
-
-        //if ($("#hdnIsBudgetAllocated").val() == "True" && $("#hdnIsOtherLineItem").val() == "False") {
-        //    $("#lblTotalLineItemCost").html(FormatCommasBudget($("#lblTotalLineItemCost").html(), false,true));
-        //}
 
         $("span.tool-tip").tooltip();
 
@@ -527,28 +499,6 @@
             $(this).datepicker('hide');
         });
 
-        /*hide the other datepicker in input onclick*/
-        $('#t_startdate').click(function () {
-            $('#dp_end').datepicker('hide');
-        });
-
-        $('#t_enddate').click(function () {
-            $('#dp_start').datepicker('hide');
-        });
-
-        //hide the other datepicker in add-on onclick
-        $('#dp_start .add-on').click(function () {
-            $('#dp_start').datepicker('show');
-            $('#dp_end').datepicker('hide');
-
-        });
-
-        $('#dp_end .add-on').click(function () {
-            $('#dp_start').datepicker('hide');
-            $('#dp_end').datepicker('show');
-
-        });
-
         NumberFormatterTipsyTitle(".displaytitle", 31);// uday PL Ticket #550 3-7-2014
 
         $("#txtLineItemCost").keyup(function () {
@@ -736,23 +686,6 @@
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
             return false;
-        }
-
-        var sdate = $('#t_startdate').val();
-        var edate = $('#t_enddate').val();
-
-        if ($("#hdnIsOtherLineItem").val() == "False") {
-            if (!isDate(sdate)) {
-                alert('@Common.objCached.ValidateStartDate');
-                return false;
-            }
-            if (!isDate(edate)) {
-                alert('@Common.objCached.ValidateEndDate');
-                return false;
-            }
-            if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-            if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
-            if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
         }
 
         $("#txtLineItemCost").val(ReplaceCC($("#txtLineItemCost").val()));
