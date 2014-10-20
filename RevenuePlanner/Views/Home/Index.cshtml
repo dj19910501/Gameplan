@@ -41,6 +41,11 @@
         font-family: 'source_sans_prolight',Arial,"sans-serif";
         font-size: 9px;
     }
+
+    .chkbxfilter {
+        float: right;
+        margin: 7px -3px 0 0 !important;
+    }
 </style>
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
@@ -168,7 +173,7 @@
                                 $("#ulOwnerAllModule").css("display", "block");
                                 $("#NoOwnerFound").hide();
                                 $.each(data.AllowedOwner, function (i, OwnerItem) {
-                                    $('#ulSelectedOwner').append('<li class="accordion-inner close-list" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><a OwnerTitle="' + OwnerItem.Title + '" onclick="toggleOwner(this.id)" id="' + OwnerItem.OwnerId + '"></a></li>');
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner close-list" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '" checked="checked"></input></li>');
                                     filters.OwnerIds.push(OwnerItem.OwnerId);
                                     filters.OwnerTitles.push(OwnerItem.Title);
                                 });
@@ -359,11 +364,11 @@
                                     string id = "li" + item.Value;
                                     if (item.Value == Sessions.BusinessUnitId.ToString())
                                     {
-                                    <li class="accordion-inner close-list" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><a BuTitile="@item.Text" id="@item.Value" onclick="toggleBusinessUnit(this.id)"></a></li>
+                                    <li class="accordion-inner close-list" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" BuTitile="@item.Text" id="@item.Value" onchange="toggleBusinessUnit(this)" checked="checked"/></li>
                                     }
                                     else
                                     {
-                                    <li class="accordion-inner" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><a BuTitile="@item.Text" id="@item.Value" onclick="toggleBusinessUnit(this.id)">Select</a></li>
+                                    <li class="accordion-inner" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" BuTitile="@item.Text" id="@item.Value" onchange="toggleBusinessUnit(this)"/></li>
                                     }
                                 }
                             </ul>
@@ -827,18 +832,20 @@
         }
     }
 
-    function toggleBusinessUnit(event) {
-        if ($("#li" + event).hasClass("close-list")) {
-            $("#li" + event).removeClass("close-list");
-            $("#" + event).html('Select');
-            removeByValue(filters.BUId, event);
-            removeByValue(filters.BuTitles, ($("#" + event).attr("BuTitile")));
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+    function toggleBusinessUnit(obj) {
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#li" + id).addClass("close-list");
+            //$("#" + id).html('');
+            filters.BUId.push(id);
+            filters.BuTitles.push($("#" + id).attr("BuTitile"));
         }
         else {
-            $("#li" + event).addClass("close-list");
-            $("#" + event).html('');
-            filters.BUId.push(event);
-            filters.BuTitles.push($("#" + event).attr("BuTitile"));
+            $("#li" + id).removeClass("close-list");
+            //$("#" + id).html('Select');
+            removeByValue(filters.BUId, id);
+            removeByValue(filters.BuTitles, ($("#" + id).attr("BuTitile")));
         }
 
         if (filters.BUId.length == 0) {
@@ -851,20 +858,19 @@
         BindPlanBySelectedBusniessUnit();
     }
 
-    function togglePlan(event) {
-        if ($("#liPlan" + event).hasClass("close-list")) {
-            $("#liPlan" + event).removeClass("close-list");
-            $("#" + event).html('Select');
-            removeByValue(filters.SelectedPlans, event);
-            removeByValue(filters.PlanTitles, ($("#" + event).attr("plantitle")));
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+    function togglePlan(obj) {
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#liPlan" + id).addClass("close-list");
+            filters.SelectedPlans.push(id);
+            filters.PlanTitles.push($("#" + id).attr("plantitle"));
             GetOwnerListForFilter(filters.SelectedPlans);
-
         }
         else {
-            $("#liPlan" + event).addClass("close-list");
-            $("#" + event).html('');
-            filters.SelectedPlans.push(event);
-            filters.PlanTitles.push($("#" + event).attr("plantitle"));
+            $("#liPlan" + id).removeClass("close-list");
+            removeByValue(filters.SelectedPlans, id);
+            removeByValue(filters.PlanTitles, ($("#" + id).attr("plantitle")));
             GetOwnerListForFilter(filters.SelectedPlans);
         }
 
@@ -881,64 +887,71 @@
 
     }
 
-    function toggleGeography(event) {
-        if ($("#liGeography" + event).hasClass("close-list")) {
-            $("#liGeography" + event).removeClass("close-list");
-            $("#" + event).html('Select');
-            removeByValue(filters.geographyIds, event);
-            removeByValue(filters.geographyTitle, ($("#" + event).attr("geotitle")));
-
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+    function toggleGeography(obj) {
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#liGeography" + id).addClass("close-list");
+            // $("#" + event).html('');
+            filters.geographyIds.push(id);
+            filters.geographyTitle.push($("#" + id).attr("geotitle"));
         }
         else {
-            $("#liGeography" + event).addClass("close-list");
-            $("#" + event).html('');
-            filters.geographyIds.push(event);
-            filters.geographyTitle.push($("#" + event).attr("geotitle"));
+            $("#liGeography" + id).removeClass("close-list");
+            //$("#" + id).html('Select');
+            removeByValue(filters.geographyIds, id);
+            removeByValue(filters.geographyTitle, ($("#" + id).attr("geotitle")));
         }
     }
 
-    function toggleVertical(event) {
-        if ($("#liVertical" + event).hasClass("close-list")) {
-            $("#liVertical" + event).removeClass("close-list");
-            $("#" + event).html('Select');
-            removeByValue(filters.VerticalId, event);
-            removeByValue(filters.VerticalTitle, ($("#" + event).attr("verticaltitle")));
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+    function toggleVertical(obj) {
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#liVertical" + id).addClass("close-list");
+            //$("#" + id).html('');
+            filters.VerticalId.push(id);
+            filters.VerticalTitle.push(($("#" + id).attr("verticaltitle")));
         }
         else {
-            $("#liVertical" + event).addClass("close-list");
-            $("#" + event).html('');
-            filters.VerticalId.push(event);
-            filters.VerticalTitle.push(($("#" + event).attr("verticaltitle")));
+            $("#liVertical" + id).removeClass("close-list");
+            //$("#" + id).html('Select');
+            removeByValue(filters.VerticalId, id);
+            removeByValue(filters.VerticalTitle, ($("#" + id).attr("verticaltitle")));
         }
     }
 
-    function toggleAudience(event) {
-        if ($("#liAudience" + event).hasClass("close-list")) {
-            $("#liAudience" + event).removeClass("close-list");
-            $("#" + event).html('Select');
-            removeByValue(filters.AudienceIds, event);
-            removeByValue(filters.AudienceTitle, ($("#" + event).attr("AudienceTitle")));
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+    function toggleAudience(obj) {
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#liAudience" + id).addClass("close-list");
+            //$("#" + id).html('');
+            filters.AudienceIds.push(id);
+            filters.AudienceTitle.push(($("#" + id).attr("AudienceTitle")));
         }
         else {
-            $("#liAudience" + event).addClass("close-list");
-            $("#" + event).html('');
-            filters.AudienceIds.push(event);
-            filters.AudienceTitle.push(($("#" + event).attr("AudienceTitle")));
+            $("#liAudience" + id).removeClass("close-list");
+            //$("#" + id).html('Select');
+            removeByValue(filters.AudienceIds, id);
+            removeByValue(filters.AudienceTitle, ($("#" + id).attr("AudienceTitle")));
         }
     }
 
-    function toggleOwner(event) {
-        if ($("#liOwner" + event).hasClass("close-list")) {
-            $("#liOwner" + event).removeClass("close-list");
-            $("#" + event).html('Select');
-            removeByValue(filters.OwnerIds, event);
-            removeByValue(filters.OwnerTitles, ($("#" + event).attr("OwnerTitle")));
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+    function toggleOwner(obj) {
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#liOwner" + id).addClass("close-list");
+            //$("#" + id).html('');
+            filters.OwnerIds.push(id);
+            filters.OwnerTitles.push(($("#" + id).attr("OwnerTitle")));
         }
         else {
-            $("#liOwner" + event).addClass("close-list");
-            $("#" + event).html('');
-            filters.OwnerIds.push(event);
-            filters.OwnerTitles.push(($("#" + event).attr("OwnerTitle")));
+            $("#liOwner" + id).removeClass("close-list");
+            //$("#" + id).html('Select');
+            removeByValue(filters.OwnerIds, id);
+            removeByValue(filters.OwnerTitles, ($("#" + id).attr("OwnerTitle")));
         }
     }
 
@@ -1059,13 +1072,14 @@
                         $("#NoPlanFound").hide();
                         $.each(data.ActivePlans, function (i, item) {
                             if (item.PlanId == CurrentPlanId && isFirstCall) {
-                                    $('#ulSelectedPlans').append('<li class="accordion-inner close-list" title="' + item.Title + '" id="liPlan' + item.PlanId + '"> <span class="sidebarliwidth">' + item.Title + '</span><a planTitle="' + item.Title + '" onclick="togglePlan(this.id)" id="' + item.PlanId + '"></a></li>');
+                                   //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+                                   $('#ulSelectedPlans').append('<li class="accordion-inner close-list" title="' + item.Title + '" id="liPlan' + item.PlanId + '"> <span class="sidebarliwidth">' + item.Title + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Title + '" onchange="togglePlan(this)" id="' + item.PlanId + '" checked="checked"></input></li>');
                                 filters.SelectedPlans.push(item.PlanId);
                                 $('#plandetail').html(item.Title);
                                 filters.PlanTitles.push(item.Title);
                             }
                             else {
-                                    $('#ulSelectedPlans').append('<li class="accordion-inner" title="' + item.Title + '" id="liPlan' + item.PlanId + '"><span class="sidebarliwidth">' + item.Title + '</span><a planTitle="' + item.Title + '" onclick="togglePlan(this.id)" id="' + item.PlanId + '">Select</a></li>');
+                                   $('#ulSelectedPlans').append('<li class="accordion-inner" title="' + item.Title + '" id="liPlan' + item.PlanId + '"><span class="sidebarliwidth">' + item.Title + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Title + '" onchange="togglePlan(this)" id="' + item.PlanId + '"></input></li>');
                             }
                         });
 
@@ -1129,7 +1143,8 @@
                                 $("#GeographyAllModule").css("display", "block");
                                 $("#NoGeographyFound").hide();
                                 $.each(data.AllowedGeography, function (i, geoitem) {
-                                    $('#ulSelectedGeography').append('<li class="accordion-inner close-list " title="' + geoitem.Title + '" id="liGeography' + geoitem.GeographyId + '"><span class="sidebarliwidth">' + geoitem.Title + '</span><a geoTitle="' + geoitem.Title + '" onclick="toggleGeography(this.id)" id="' + geoitem.GeographyId + '"></a></li>');
+                               //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+                               $('#ulSelectedGeography').append('<li class="accordion-inner close-list " title="' + geoitem.Title + '" id="liGeography' + geoitem.GeographyId + '"><span class="sidebarliwidth">' + geoitem.Title + '</span><input type="checkbox" class="chkbxfilter"  geoTitle="' + geoitem.Title + '" onchange="toggleGeography(this)" id="' + geoitem.GeographyId + '" checked="checked"></input></li>');
                                     filters.geographyIds.push(geoitem.GeographyId);
                                     filters.geographyTitle.push(geoitem.Title);
                                 });
@@ -1151,7 +1166,8 @@
                                 $("#ulVerticalAllModule").css("display", "block");
                                 $("#NoVerticalFound").hide();
                                 $.each(data.AllowedVerticals, function (i, verticlaItem) {
-                                    $('#ulSelectedVertical').append('<li class="accordion-inner close-list" title="' + verticlaItem.Title + '" id="liVertical' + verticlaItem.VerticalId + '"><span class="sidebarliwidth">' + verticlaItem.Title + '</span><a verticalTitle="' + verticlaItem.Title + '" onclick="toggleVertical(this.id)" id="' + verticlaItem.VerticalId + '"></a></li>');
+                               //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+                               $('#ulSelectedVertical').append('<li class="accordion-inner close-list" title="' + verticlaItem.Title + '" id="liVertical' + verticlaItem.VerticalId + '"><span class="sidebarliwidth">' + verticlaItem.Title + '</span><input type="checkbox" class="chkbxfilter" verticalTitle="' + verticlaItem.Title + '" onchange="toggleVertical(this)" id="' + verticlaItem.VerticalId + '" checked="checked"></input></li>');
                                     filters.VerticalId.push(verticlaItem.VerticalId);
                                     filters.VerticalTitle.push(verticlaItem.Title);
                                 });
@@ -1173,7 +1189,8 @@
                                 $("#ulAudienceAllModule").css("display", "block");
                                 $("#NoAudienceFound").hide();
                                 $.each(data.AllowedAudience, function (i, AudienceItem) {
-                                    $('#ulSelectedAudience').append('<li class="accordion-inner close-list" title="' + AudienceItem.Title + '" id="liAudience' + AudienceItem.AudienceId + '"><span class="sidebarliwidth">' + AudienceItem.Title + '</span><a AudienceTitle="' + AudienceItem.Title + '" onclick="toggleAudience(this.id)" id="' + AudienceItem.AudienceId + '"></a></li>');
+                               //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
+                               $('#ulSelectedAudience').append('<li class="accordion-inner close-list" title="' + AudienceItem.Title + '" id="liAudience' + AudienceItem.AudienceId + '"><span class="sidebarliwidth">' + AudienceItem.Title + '</span><input type="checkbox" class="chkbxfilter" AudienceTitle="' + AudienceItem.Title + '" onchange="toggleAudience(this)" id="' + AudienceItem.AudienceId + '" checked="checked"></input></li>');
                                     filters.AudienceIds.push(AudienceItem.AudienceId);
                                     filters.AudienceTitle.push(AudienceItem.Title);
                                 });
@@ -1226,27 +1243,31 @@
         $("#ddlUpComingActivites").selectbox("attach");
     }
 
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkBUOperation(selection) {
         filters.BUId = [];
         filters.BuTitles = [];
         if (selection) {
             $("#ulBusniessUnit li").each(function (i) {
                 $(this).addClass("close-list");
-                $(this).find("a").html('');
-                filters.BUId.push($(this).find("a").attr("id"));
-                filters.BuTitles.push($(this).find("a").attr("BuTitile"));
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).attr("checked", "checked");
+               filters.BUId.push(chkid);
+               filters.BuTitles.push($(this).find("input[type=checkbox]").attr("BuTitile"));
             });
         }
         else {
             $("#ulBusniessUnit li").each(function (i) {
                 $(this).removeClass("close-list");
-                $(this).find("a").html('Select');
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).removeAttr("checked");
             });
         }
 
         BindPlanBySelectedBusniessUnit();
     }
 
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkPlanOperation(selection) {
         filters.SelectedPlans = [];
         filters.PlanTitles = [];
@@ -1254,15 +1275,19 @@
         if (selection) {
             $("#ulSelectedPlans li").each(function (i) {
                 $(this).addClass("close-list");
-                $(this).find("a").html('');
-                filters.SelectedPlans.push($(this).find("a").attr("id"));
-                filters.PlanTitles.push($(this).find("a").attr("planTitle"));
+               //$(this).find("a").html('');
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).attr("checked", "checked");
+               filters.SelectedPlans.push(chkid);
+               filters.PlanTitles.push($(this).find("input[type=checkbox]").attr("planTitle"));
             });
         }
         else {
             $("#ulSelectedPlans li").each(function (i) {
                 $(this).removeClass("close-list");
-                $(this).find("a").html('Select');
+               //$(this).find("a").html('Select');
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).removeAttr("checked");
             });
         }
 
@@ -1273,6 +1298,7 @@
         //  BindOtherAttributes();
     }
 
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkGeoOperation(selection) {
         filters.geographyIds = [];
         filters.geographyTitle = [];
@@ -1280,72 +1306,84 @@
         if (selection) {
             $("#ulSelectedGeography li").each(function (i) {
                 $(this).addClass("close-list");
-                $(this).find("a").html('');
-                filters.geographyIds.push($(this).find("a").attr("id"));
-                filters.geographyTitle.push($(this).find("a").attr("geoTitle"));
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).attr("checked", "checked");
+               //$(this).find("a").html('');
+               filters.geographyIds.push(chkid);
+               filters.geographyTitle.push($(this).find("input[type=checkbox]").attr("geoTitle"));
             });
         }
         else {
             $("#ulSelectedGeography li").each(function (i) {
                 $(this).removeClass("close-list");
-                $(this).find("a").html('Select');
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).removeAttr("checked");
             });
         }
     }
 
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkVerticalOperation(selection) {
         filters.VerticalId = [];
         filters.VerticalTitle = [];
         if (selection) {
             $("#ulSelectedVertical li").each(function (i) {
                 $(this).addClass("close-list");
-                $(this).find("a").html('');
-                filters.VerticalId.push($(this).find("a").attr("id"));
-                filters.VerticalTitle.push($(this).find("a").attr("verticalTitle"));
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).attr("checked", "checked");
+               filters.VerticalId.push(chkid);
+               filters.VerticalTitle.push($(this).find("input[type=checkbox]").attr("verticalTitle"));
             });
         }
         else {
             $("#ulSelectedVertical li").each(function (i) {
                 $(this).removeClass("close-list");
-                $(this).find("a").html('Select');
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).removeAttr("checked");
             });
         }
     }
 
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkAudienceOperation(selection) {
         filters.AudienceIds = [];
         filters.AudienceTitle = [];
         if (selection) {
             $("#ulSelectedAudience li").each(function (i) {
                 $(this).addClass("close-list");
-                $(this).find("a").html('');
-                filters.AudienceIds.push($(this).find("a").attr("id"));
-                filters.AudienceTitle.push($(this).find("a").attr("AudienceTitle"));
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).attr("checked", "checked");
+               filters.AudienceIds.push(chkid);
+               filters.AudienceTitle.push($(this).find("input[type=checkbox]").attr("AudienceTitle"));
             });
         }
         else {
             $("#ulSelectedAudience li").each(function (i) {
                 $(this).removeClass("close-list");
-                $(this).find("a").html('Select');
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).removeAttr("checked");
             });
         }
     }
 
+    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkOwnerOperation(selection) {
         filters.OwnerIds = [];
         filters.OwnerTitles = [];
         if (selection) {
             $("#ulSelectedOwner li").each(function (i) {
                 $(this).addClass("close-list");
-                $(this).find("a").html('');
-                filters.OwnerIds.push($(this).find("a").attr("id"));
-                filters.OwnerTitles.push($(this).find("a").attr("OwnerTitle"));
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).attr("checked", "checked");
+               filters.OwnerIds.push(chkid);
+               filters.OwnerTitles.push($(this).find("input[type=checkbox]").attr("OwnerTitle"));
             });
         }
         else {
             $("#ulSelectedOwner li").each(function (i) {
                 $(this).removeClass("close-list");
-                $(this).find("a").html('Select');
+               var chkid = $(this).find("input[type=checkbox]").attr("id");
+               $("#" + chkid).removeAttr("checked");
             });
         }
     }
