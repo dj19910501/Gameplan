@@ -7,7 +7,7 @@
 <div class="row-fluid calc-height" id="DivShareReportContainer">
     <div class="span12">
         @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
-        <div id="modal-container-186470" class="form-inspect-share hide fade height-auto" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="modal-container-sharereport" class="form-inspect-share hide fade height-auto" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             @*Modified by Sohel on 3rd April 2014 for PL# 398 to display error message on the top of sharing pop-up, below div has been place inside from outside of main div *@ 
         <div id="errorMessageShareReportPopup" class="alert alert-error hide error-over-modal">
             <a class="close">×</a>
@@ -52,17 +52,17 @@
 
     $(document).ready(function () {
         //// Hide parent div container when popup is closed.
-        $("#modal-container-186470").on("hide", function (e) { $("#DivShareReport").hide(); });
+        $("#modal-container-sharereport").on("hide", function (e) { $("#DivShareReport").hide(); });
 
         $('#modal-container-confirmation').on("hide", function (e) { $("#DivShareReport").hide(); });
         $('#modal-container-confirmation').on("show", function (e) { $("#DivShareReport").show(); });
 
         //// Show popup.
-        $("#modal-container-186470").modal('show');
+        $("#modal-container-sharereport").modal('show');
 
         //// Close popup and error message.
         $('#cancel-share-report-button').on("click", function () {
-            $('#modal-container-186470').modal("hide");
+            $('#modal-container-sharereport').modal("hide");
             $(".alert").find(".close").click();
         });
 
@@ -262,7 +262,7 @@
 
         $('#modal-container-confirmation').hide();
         function ShowConfirmation(email) {
-            $('#modal-container-186470').modal("hide");
+            $('#modal-container-sharereport').modal("hide");
             $(".alert").find(".close").click();
             $('#email-confirmation').html(email);
             $('#modal-container-confirmation').modal('show');

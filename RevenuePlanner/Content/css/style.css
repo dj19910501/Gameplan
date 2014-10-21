@@ -10380,9 +10380,9 @@ li.close-list {
 }
 
 /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
-/*#modal-container-186470 {
+#modal-container-186470 {
     padding-bottom: 150px !important;
-}*/
+}
 
 .nav-tabs #ddlTabSelectBox li a:hover {
     color: white !important;
