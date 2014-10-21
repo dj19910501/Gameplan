@@ -44,13 +44,13 @@
     </table>
 
     <!--Revenue To Plan -->
+    <div style="page-break-inside : avoid;">      
     <div class="block-summary border-btm">
     <ul class="nav nav-tabs" id="ParentULRevenueToPlan">
         <li class="source-sans-proregular">
             <h4 class="title-header">Revenue to Plan</h4>
         </li>
     </ul>
-
   <div class="summary-btns">
         <p>View By</p>
             <span class="margin-left20px">
@@ -59,9 +59,7 @@
       <span class="margin-left20px">
              @Html.DropDownList("ddlChildRevenueToPlan",new SelectList((System.Collections.IEnumerable)ChildEmptyList, "Value", "Text"))
          </span>
-         
     </div>
-
         </div>
     <br />
     <div class="chart_table_wrapper" id="chartDiv3Parent">
@@ -88,7 +86,6 @@
             </tbody>
         </table>
     </div>
-
     <!--  Revenue Realization-->
     <div class="title-header-reports border-btm">
         <h4>Revenue Realization</h4>
@@ -138,8 +135,9 @@
             <!--tr elements are added dinamically with javascript-->
         </tbody>
     </table>
-
+    </div>
     <!--  Revenue Source Performance-->
+    <div style="page-break-before:always;"> 
     <ul class="nav nav-tabs" id="ParentULSourcePerformance">
         <li class="source-sans-proregular">
             <h4 class="title-header">Source Performance</h4>
@@ -169,6 +167,7 @@
                 <div id="chartDiv6" class="report-chart6"></div>
             </div>
         </div>
+    </div>
     </div>
     <!--  Revenue Contribution-->
     <div class="block-summary">

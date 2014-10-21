@@ -172,16 +172,12 @@
             }
     }
 
+        /*Modified By Maninder Singh Wadhva on  10/21/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLConversion()
         {
-            //$("#MQLPerformance").before('<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />');
-
-            //+ $('#ChildULConversionSummary').wrap('<p/>').parent().html()
-            var html ='<div><div class="nav nav-tabs" style="border-bottom: 0px;">' + $('#h2PlanTitle').parent().parent().html() + '</div></br>';
-
-            html +='<div>' + $('#ParentULConversionSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
+            var filterHTML = $('.budgetReportFilter-area-left').parent().parent().html();
+            var html = filterHTML;
             var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div></div></div>');
-            //$html.find("#MQLPerformance").before('<div style="width:100%;height:100px;"></div>');
             $html.find('div[id="chartDiv1"]').empty();
             $html.find('div[id="chartDiv2"]').empty();
             $html.find('div[id="chartDiv3"]').empty();
@@ -193,49 +189,67 @@
                 $(this).css("width", "60px");
             });
 
+            $html.find('.multiselection-area').remove();
+            $html.find('.budgetReportFilter-area-right').remove();
+            $html.find('div').removeClass("budgetReportFilter-area-left");
+            $html.find('#DivShareReportContainer').remove();
+            $html.find('#DivShareReportCoknfirmationContainer').remove();
             html = $html.wrap('<p/>').parent().html();
-
             return escape(html);
         }
 
+        /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLRevenue()
         {
-            var html ='<div><div class="nav nav-tabs" style="border-bottom: 0px;">' + $('#h2PlanTitle').parent().parent().html() + '</div></br>';
-            html +='<div>' + $('#ParentULRevenueSummary').wrap('<p/>').parent().html() + $('#ChildULRevenueSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
-            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div></div></div>');
-            $html.find("#ParentULSourcePerformance").before('<div style="width:100%;height:80px;"></div>');
+            var filterHTML = $('.budgetReportFilter-area-left').parent().parent().html();
+            var html = filterHTML;
+            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
             $html.find("#table_reports4").before('<div style="width:100%;height:20px;"></div>');
             $html.find("#table_reports2 thead tr th:nth-child(1)").removeClass("width96px").css("width","60px");
             $html.find("#table_reports2 tbody tr td").each(function () {
                 $(this).css("width","60px");
             });
+
             $html.find("li.disabled > a").each(function(){
                 $(this).parent().removeClass("disabled");
                 $(this).css("background-color","#E0DFDF");
             });
 
-            //$html.find(".title-header-reports").css("page-break-before","always");
-            $html.find(".title-header-reports").before('</br><h4 style="border-bottom: 1px solid #DDDDDD; color: #6B6C6E;font-family: "source_sans_prosemibold",Arial,"sans-serif"; font-size: 22px;">' + $html.find(".title-header-reports h4").html() + '</h4>');
-            $html.find(".title-header-reports").remove();
+            $html.find("a").each(function(){
+                $(this).removeAttr("href");
+            });
             
+            $html.find("#ddlBusinessUnitSelectBox").parent().css("margin-bottom","10px");            
             $html.find('div[id="chartDiv3"]').empty();
             $html.find('div[id="chartDiv4"]').empty();
             $html.find('div[id="chartDiv5"]').empty();
             $html.find('div[id="chartDiv6"]').empty();
+            $html.find('.multiselection-area').remove();
+            $html.find('.budgetReportFilter-area-right').remove();
+            $html.find('div').removeClass("budgetReportFilter-area-left");
+            $html.find('#DivShareReportContainer').remove();
+            $html.find('#DivShareReportCoknfirmationContainer').remove();
+
             html = $html.wrap('<p/>').parent().html();
             return escape(html);
         }
 
+        /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLSummary(){
+            var filterHTML = $('.budgetReportFilter-area-left').parent().parent().html();
             var html  = '';
-            //style="background: none repeat scroll 0 0 #FFFFFF; margin-left: 20px; margin-top: 30px;"
-            html += '<div><div class="nav nav-tabs" style="border-bottom: 0px; margin-left: 20px; margin-top: 0px;">' + $('#h2PlanTitle').parent().parent().html() + '</div></br>';
-            html += '<div>' + $('#htmlContent').wrap('<p/>').parent().html() + '</div>';
-            html += '</div>';
-            var $html = $(html);//$('<div>' + html + '</div>');
+            html += '<div style="margin-left: 100px;"></br>' + filterHTML + '</div>';
+            var $html = $(html);
             $html.find('div[id="chartDiv"]').empty();
             $html.find('#AViewDetailReportRevenue').remove();
             $html.find('#AViewDetailReportConversion').remove();
+
+            $html.find('.multiselection-area').remove();
+            $html.find('.budgetReportFilter-area-right').remove();
+            $html.find('div').removeClass("budgetReportFilter-area-left");
+            $html.find('#DivShareReportContainer').remove();
+            $html.find('#DivShareReportCoknfirmationContainer').remove();
+
             html = $html.html();
             return escape(html);
         }
