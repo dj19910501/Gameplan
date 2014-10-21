@@ -205,22 +205,32 @@ function RemoveExtraCharactersFromString(value) {
 //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
 function SetLabelFormaterWithTitle(idName) {
     var budgetValue = $(idName).html();
-    if(budgetValue)
-    {
+    if (budgetValue) {
+        //alert(budgetValue);
+        var isDollarAmout = false;
+        if (budgetValue.indexOf('$') > -1) {
+            isDollarAmout = true;
+        }
         budgetValue = RemoveExtraCharactersFromString(budgetValue); //Function that remove the special char from the string 
         if (!isNaN(budgetValue)) {
             //Check whether the number is empty or not
-        var remNumber = '';
-        if (budgetValue.indexOf(".") != -1) {
-            remNumber = budgetValue.substr(budgetValue.indexOf('.'));
+            var remNumber = '';
+            if (budgetValue.indexOf(".") != -1) {
+                remNumber = budgetValue.substr(budgetValue.indexOf('.'));
+            }
+            //Add tipsy for the current label.
+            if (isDollarAmout) {
+                $(idName).html('$' + GetAbberiviatedValue(budgetValue));
+                $(idName).prop('title', "$" + number_format(budgetValue.toString(), 0, '.', ',') + remNumber);
+            }
+            else {
+                $(idName).html(GetAbberiviatedValue(budgetValue));
+                $(idName).prop('title', number_format(budgetValue.toString(), 0, '.', ',') + remNumber);
+            }
         }
-        //Add tipsy for the current label.
-        $(idName).html(GetAbberiviatedValue(budgetValue));
-        $(idName).attr('title', budgetValue);
-        $(idName).prop('title', "$" + number_format(budgetValue.toString(), 0, '.', ',') + remNumber);
-    }
     }
 }
+
 //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
 //PL #508 Label formater with tipsy 
 //Added By Kalpesh Sharma 
