@@ -205,8 +205,11 @@ function RemoveExtraCharactersFromString(value) {
 //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
 function SetLabelFormaterWithTitle(idName) {
     var budgetValue = $(idName).html();
-    if (budgetValue) { //Check whether the number is empty or not
+    if(budgetValue)
+    {
         budgetValue = RemoveExtraCharactersFromString(budgetValue); //Function that remove the special char from the string 
+        if (!isNaN(budgetValue)) {
+            //Check whether the number is empty or not
         var remNumber = '';
         if (budgetValue.indexOf(".") != -1) {
             remNumber = budgetValue.substr(budgetValue.indexOf('.'));
@@ -216,7 +219,7 @@ function SetLabelFormaterWithTitle(idName) {
         $(idName).attr('title', budgetValue);
         $(idName).prop('title', "$" + number_format(budgetValue.toString(), 0, '.', ',') + remNumber);
     }
-
+    }
 }
 //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
 //PL #508 Label formater with tipsy 
