@@ -10555,6 +10555,7 @@ margin-right:-20px;
 .monthContainerBudget {
     max-width:380px;
     padding-left:15px;
+    float:none !important;
 }
 
 /* Start - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */

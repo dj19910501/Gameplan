@@ -491,6 +491,9 @@
     });
 
     $('#button-save').click(function () {
+        $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
+            $(this).multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu 
+        });
         OptionMain = $('#ddlYear').val();
         $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
         LoadCheckBoxValue(multiselectPlanId, filterPlanid);
