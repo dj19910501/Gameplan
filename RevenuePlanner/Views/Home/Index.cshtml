@@ -1969,8 +1969,7 @@
             });
         }
             $dropdown.append($html);
-            $(".selectBox select").selectbox('detach');
-            $(".selectBox select").selectbox("attach");
+            $("#ddlTabViewBy").multiselect('refresh');
         }
 
       //Function to get current plan edit permission, PL #538
