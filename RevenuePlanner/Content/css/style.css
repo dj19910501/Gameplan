@@ -9280,10 +9280,10 @@ footer {
     /*#832  Footer should run all the way below the left bar*/
     position: fixed;
     bottom: 0;
-    /*width:100%;*/
-    width: 83%;
+    width:100%;
+    /*width: 83%;*/
     z-index: 1999;
-    margin-left: 280px;
+    /*margin-left: 280px;*/
     /*End #832*/
 }
 
@@ -10254,7 +10254,9 @@ li.close-list {
 
 .close-x-big-icon {
     position: fixed;
-    right: 200px;
+    /*right: 200px;*/
+    /*732 - Actual cost - Design changes to add actuals & inspect popup screen –Kalpesh*/
+    right: 50px;
     top: 40px;
     width: 50px;
     height: 50px;
@@ -10565,3 +10567,11 @@ top:-10px; right:-9px; border-radius:10px; text-align:center; padding-top:0px; l
     max-width: none;
 }
 /* End - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */
+
+/*Added By Kalpesh*/
+#improvements {
+    margin-bottom: 70px !important;
+}
+#change-log {
+    margin-bottom: 50px;
+}

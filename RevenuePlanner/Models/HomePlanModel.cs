@@ -229,6 +229,7 @@ namespace RevenuePlanner.Models
         public string TaskId { get; set; }
         public string ColorCode { get; set; }
         public string StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public double Duration { get; set; }
         public double PlanProgrss { get; set; } 
         public double CampaignProgress { get; set; }

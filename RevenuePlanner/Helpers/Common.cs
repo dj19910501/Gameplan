@@ -1160,6 +1160,18 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
+        /// Added By: Sohel Pathan.
+        /// Function to get End Date as per Calendar.
+        /// </summary>
+        /// <param name="calendarEndDate">Calendar end date.</param>
+        /// <param name="endDate">End date.</param>
+        /// <returns>Returns end date as per calendar.</returns>
+        public static DateTime GetEndDateAsPerCalendarInDateFormat(DateTime calendarEndDate, DateTime endDate)
+        {
+            return endDate > calendarEndDate ? calendarEndDate : endDate;
+        }
+
+        /// <summary>
         /// Added By: Maninder Singh Wadhva.
         /// Function to get days between start and end date as per Calendar.
         /// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.

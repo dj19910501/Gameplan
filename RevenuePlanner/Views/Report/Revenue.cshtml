@@ -90,7 +90,7 @@
     <div class="title-header-reports border-btm">
         <h4>Revenue Realization</h4>
         <div>
-            <span class="selectBox" id="ddlBusinessUnitSelectBox">
+            @*<span class="selectBox" id="ddlBusinessUnitSelectBox">*@
                 @if (RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds != null && RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.Count == 1)
                 {
                     @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title", @RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.FirstOrDefault()), new { @class = "ddlStyleReport", @disabled = "disabled" })
@@ -101,22 +101,22 @@
                     @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title"), new { @class = "ddlStyleReport" })
                     @Html.Hidden("hdnBusinessUnitId", false);
                 }
-            </span>
-            <span class="selectBox" id="ddlCampaignSelectBox">
+            @*</span>
+            <span class="selectBox" id="ddlCampaignSelectBox">*@
                 <select id="ddlCampaign" name="ddlCampaign" class="ddlStyleReport">
                     <option value="0">All Campaigns</option>
                 </select>
-            </span>
-            <span class="selectBox" id="ddlProgramSelectBox">
+            @*</span>
+            <span class="selectBox" id="ddlProgramSelectBox">*@
                 <select id="ddlProgram" name="ddlProgram" class="ddlStyleReport">
                     <option value="0">All Programs</option>
                 </select>
-            </span>
-            <span class="selectBox" id="ddlTacticSelectBox">
+            @*</span>
+            <span class="selectBox" id="ddlTacticSelectBox">*@
                 <select id="ddlTactic" name="ddlTactic" class="ddlStyleReport">
                     <option value="0">All Tactics</option>
                 </select>
-            </span>
+            @*</span>*@
 
         </div>
     </div>
@@ -138,20 +138,7 @@
     </div>
     <!--  Revenue Source Performance-->
     <div style="page-break-before:always;"> 
-    <ul class="nav nav-tabs" id="ParentULSourcePerformance">
-        <li class="source-sans-proregular">
-            <h4 class="title-header">Source Performance</h4>
-        </li>
-        <li class="active pull-right">
-            <a>Actual vs Planned</a>
-        </li>
-        @* <li class="disabled pull-right">
-            <a>@RevenuePlanner.Helpers.Common.SourcePerformanceTrend</a>
-        </li>
-        <li class="disabled pull-right">
-            <a>@RevenuePlanner.Helpers.Common.SourcePerformancePlan</a>
-        </li>*@
-    </ul>
+    <h4 class="title-header border-btm" style="float: none; text-align: left;">Source Performance - Actual vs Planned</h4>
     <div class="report-gray-container">
         <div class="report-chart-group">
             <div class="report-chart" id="chartDiv4Parent">
@@ -205,11 +192,11 @@
                 @if (RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds != null && RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.Count > 1)
                 {
                     <th class="border-r table_header">
-                        <span class="selectBox" id="ddlBusinessSelectBox">
+                      @*  <span class="selectBox" id="ddlBusinessSelectBox">*@
                             <select id="ddlBusinessUnitContribution" name="ddlBusinessUnitContribution" class="ddlStyleReport">
                                 <option value="0">All Business Units</option>
                             </select>
-                        </span>
+                        @*</span>*@
                     </th>
                 }
                 else
@@ -261,13 +248,18 @@
 
         GenerateCustomizeMultiselect(ddlChildRevenueToPlanId, true, false, false);
         GenerateCustomizeMultiselect(ddlChildRevenueSummeryId, true, false, false);
+        GenerateCustomizeMultiselect('ddlBusinessUnit', true, false, false);
+        GenerateCustomizeMultiselect('ddlCampaign', true, false, false);
+        GenerateCustomizeMultiselect('ddlProgram', true, false, false);
+        GenerateCustomizeMultiselect('ddlTactic', true, false, false);
+        GenerateCustomizeMultiselect('ddlBusinessUnitContribution', true, false, false);
         $('#ddlParentRevenueSummery').bind('change', function () {
             var selectedOption = $(this).val();
-            loadChildListData(selectedOption, ddlChildRevenueSummeryId);
+            loadChildListData(selectedOption, ddlChildRevenueSummeryId, true);
         });
         $('#ddlParentRevenueToPlan').bind('change', function () {
             var selectedOption = $(this).val();
-            loadChildListData(selectedOption, ddlChildRevenueToPlanId);
+            loadChildListData(selectedOption, ddlChildRevenueToPlanId, false);
         });
         loadChildListData($('#ddlParentRevenueSummery').val(), ddlChildRevenueSummeryId, true);
         loadChildListData($('#ddlParentRevenueToPlan').val(), ddlChildRevenueToPlanId, false);
@@ -1222,11 +1214,15 @@
                         $("#ddlCampaign").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
                     });
                     fillProgramDropdown();
+                    $('#ddlCampaign').multiselect("refresh");
                 },
                 error: function () {
                     $("#ddlCampaign").empty();
                     $("#ddlCampaign").append("<option value='0'>All Campaigns</option>");
+                  
                     fillProgramDropdown();
+                    $('#ddlCampaign').multiselect("refresh");
+
                     GoToLogin();
                 }
             });
@@ -1260,11 +1256,13 @@
                         $("#ddlProgram").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
                     });
                     fillTacticDropdown();
+                    $('#ddlProgram').multiselect("refresh");
                 },
                 error: function () {
                     $("#ddlProgram").empty();
                     $("#ddlProgram").append("<option value='0'>All Programs</option>");
                     fillTacticDropdown();
+                    $('#ddlProgram').multiselect("refresh");
                     GoToLogin();
                 }
             });
@@ -1301,12 +1299,14 @@
                 $.each(data, function (index, optionData) {
                     $("#ddlTactic").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
                 });
+                $('#ddlTactic').multiselect("refresh");
                 LoadDataRevenueRealization();
                 myApp.hidePleaseWait();
             },
             error: function () {
                 $("#ddlTactic").empty();
                 $("#ddlTactic").append("<option value='0'>All Tactics</option>");
+                $('#ddlTactic').multiselect("refresh");
                 LoadDataRevenueRealization();
                 GoToLogin();
             }
@@ -1314,7 +1314,7 @@
 
     }
         function LoadDataRevenueRealization() {
-            $(".selectBox select").selectbox('detach');
+            //$(".selectBox select").selectbox('detach');
             var id;
             var Type = '';
             var tacticId = $("#ddlTactic").val();
@@ -1348,7 +1348,7 @@
         success: function (r) {
             reportTableInfo3 = r;
             fillReportTable3();
-            $(".selectBox select").selectbox('attach');
+            //$(".selectBox select").selectbox('attach');
             if ($("#hdnBusinessUnitId").val() == 'True') {
                 $("#ddlBusinessUnitSelectBox").find('.sbSelector').each(function () {
                     $(this).unbind("click");
@@ -1365,7 +1365,7 @@
             }
         },
         error: function () {
-            $(".selectBox select").selectbox('attach');
+            //$(".selectBox select").selectbox('attach');
             GoToLogin();
         }
     });
@@ -1776,7 +1776,8 @@
             AddDropdown();
         }
         function AddDropdown() {
-            $(".selectBox select").selectbox("detach");
+            
+            //$(".selectBox select").selectbox("detach");
             var plabel = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
             $.ajax({
                 type: 'POST',
@@ -1788,12 +1789,14 @@
                     $.each(data, function (index, optionData) {
                         $("#ddlBusinessUnitContribution").append("<option value='" + optionData.id + "'>" + optionData.title + "</option>");
                     });
-                    $(".selectBox select").selectbox("attach");
+                    //$(".selectBox select").selectbox("attach");
+                    $("#ddlBusinessUnitContribution").multiselect("refresh");
                     LoadRevenueContributionData();
                 },
                 error: function () {
                     $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
-                    $(".selectBox select").selectbox("attach");
+                    //$(".selectBox select").selectbox("attach");
+                    $("#ddlBusinessUnitContribution").multiselect("refresh");
                     GoToLogin();
                 }
             });

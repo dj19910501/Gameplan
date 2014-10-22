@@ -198,7 +198,11 @@
     $(document).ready(function () {
 
         $("#ddlYearSpan select").selectbox();
-
+        $('.sbHolder').click(function () {
+            $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
+                $(this).multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu 
+            });
+        });
         ///Start Modified by Mitesh Vaishnav for PL ticket #727
         $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
             $(this).multiselect({ noneSelectedText: $(this).attr('noneselectedvalue') }).multiselectfilter();
@@ -207,7 +211,7 @@
         $(".sbSelector").css("color", "#6D6D6D");
         $(".sbToggle").css("border-top-color", "#6D6D6D");
 
-        $("#yeardetail").html("FY " + $('#ddlYear').val());
+        $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
         $("#ddlViewAudience").next().attr('title', '@AudienceLabelTitle');
         LoadCheckBoxValue(multiselectPlanId, filterPlanid);
         LoadCheckBoxValue(ddlViewAudience, audiencedetail);
@@ -488,7 +492,7 @@
 
     $('#button-save').click(function () {
         OptionMain = $('#ddlYear').val();
-        $("#yeardetail").html("FY " + $('#ddlYear').val());
+        $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
         LoadCheckBoxValue(multiselectPlanId, filterPlanid);
         LoadCheckBoxValue(ddlViewAudience, audiencedetail);
         LoadCheckBoxValue(ddlViewVertical, verticaldetail);
@@ -563,13 +567,15 @@ function LoadYearDropdown() {
         }
     });
     $("#ddlYear").next().find('ul li a').each(function () {
-        if (isClick == true)
+        var selectedValue=$("#ddlYear").val();
+        if (isClick == true && selectedValue == 'thisquarter')
         {
             var selectedvalue = $(this).attr('rel');
             if (selectedvalue == '@RevenuePlanner.Helpers.Common.GetCurrentYear()') {
                 IsCallFromYearDropdown = false;
                 $(this).click();
                 IsCallFromYearDropdown = true;
+                $("#yeardetail").html($("#ddlYear option[value='" + selectedvalue + "']").text());
             }
         }
     });

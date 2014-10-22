@@ -107,9 +107,9 @@ namespace RevenuePlanner.Controllers
 
             string published = Enums.PlanStatus.Published.ToString();
             List<SelectListItem> lstYear = new List<SelectListItem>();
-            var lstPlan = db.Plans.Where(p => p.IsDeleted == false && p.Status == published && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList();
+            var lstPlan = db.Plans.Where(p => p.IsDeleted == false && p.Status == published && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId && p.Model.IsDeleted==false).ToList();
             var yearlist = lstPlan.OrderBy(p => p.Year).Select(p => p.Year).Distinct().ToList();
-            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year }));
+            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year, Selected = year == DateTime.Now.Year.ToString() ? true : false }));
             SelectListItem thisQuarter = new SelectListItem { Text = "this quarter", Value = "thisquarter" };
             lstYear.Add(thisQuarter);
 
@@ -3143,7 +3143,7 @@ namespace RevenuePlanner.Controllers
             string published = Enums.PlanStatus.Published.ToString();
             string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
             string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
-            var planList = db.Plans.Where(p => p.Year == Year && p.IsDeleted == false && p.Status == published && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList().Select(p => new
+            var planList = db.Plans.Where(p => p.Year == Year && p.IsDeleted == false && p.Status == published && p.Model.IsDeleted==false && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList().Select(p => new
             {
                 Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy),
                 Value = p.PlanId.ToString() + "_" + p.AllocatedBy
@@ -3379,11 +3379,11 @@ namespace RevenuePlanner.Controllers
                     {
                         List<int> entityids = tacticList.Select(t => t.PlanTacticId).ToList();
                         var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
-                        planobj = cusomfieldEntity.Select(p => new BudgetReportTab
+                        planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
                         {
-                            Id = p.Value,
-                            Title = p.Value
-                        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
+                            Id = p.Key,
+                            Title = p.Key
+                        }).Select(b => b).OrderBy(b => b.Title).ToList();
                     }
 
                 }
@@ -3393,19 +3393,6 @@ namespace RevenuePlanner.Controllers
                 {
                     foreach (var p in planobj)
                     {
-                        obj = new BudgetModelReport();
-                        obj.Id = p.Id.ToString();
-                        obj.ActivityId = "plan_" + p.Id.ToString();
-                        obj.ActivityName = p.Title;
-                        obj.ActivityType = ActivityType.ActivityPlan;
-                        obj.ParentActivityId = parentMainId;
-                        obj.TabActivityId = p.Id.ToString();
-                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
-                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
-                        model.Add(obj);
-                        parentPlanId = "plan_" + p.Id.ToString();
-
                         var TacticListInner = tacticList;
 
                         if (Tab == ReportTabType.Audience.ToString())
@@ -3429,7 +3416,22 @@ namespace RevenuePlanner.Controllers
                             var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == p.Id).ToList();
                             List<int> entityids = cusomfieldEntity.Select(e => e.EntityId).ToList();
                             TacticListInner = tacticList.Where(tactic => entityids.Contains(tactic.PlanTacticId)).ToList();
+                            p.Id = p.Id.Replace(' ', '_').Replace('#','_').Replace('-','_');
                         }
+
+                        obj = new BudgetModelReport();
+                        obj.Id = p.Id.ToString();
+                        obj.ActivityId = "plan_" + p.Id.ToString();
+                        obj.ActivityName = p.Title;
+                        obj.ActivityType = ActivityType.ActivityPlan;
+                        obj.ParentActivityId = parentMainId;
+                        obj.TabActivityId = p.Id.ToString();
+                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
+                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
+                        model.Add(obj);
+                        parentPlanId = "plan_" + p.Id.ToString();
+                       
                         var ProgramListInner = ProgramList.Where(program => TacticListInner.Select(t => t.PlanProgramId).Contains(program.PlanProgramId)).ToList();
                         var campaignObj = CampaignList.Where(campaign => ProgramListInner.Select(program => program.PlanCampaignId).Contains(campaign.PlanCampaignId)).ToList();
 
