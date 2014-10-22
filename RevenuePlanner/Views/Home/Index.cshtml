@@ -1916,24 +1916,24 @@
                       $(".shadow-scroll-gantt").hide();
                   }
 
-                  // Start - Added by Sohel Pathan on 21-10-2014 for PL ticket #830
-                  $('.gantt_container .gantt_grid .gantt_grid_data .gantt_row').each(function () {
-                      var task_id = $(this).attr('task_id');
-                      if(task_id != '') {
-                          if ((task_id.substring(0, 1) == "L" && (task_id.indexOf("_M") > 0 || task_id.indexOf("_T") > 0)
-                              && (task_id.indexOf("_I") == -1))
-                              || (task_id.substring(0, 1) == "L" && task_id.indexOf("_M") == -1 && task_id.indexOf("_C") == -1 && task_id.indexOf("_P") == -1)) {
-                              $(this).css('font-weight', 'bold');
-                          }
-                          else if (task_id.substring(0, 1) == "Z" && (task_id.indexOf("_M") > 0 || task_id.indexOf("_T") > 0)
-                              && (task_id.indexOf("_I") == -1)
-                              || (task_id.substring(0, 1) == "Z" && task_id.indexOf("_M") == -1 && task_id.indexOf("_C") == -1 && task_id.indexOf("_P") == -1 && task_id.indexOf("_L") > 0)
-                              || (task_id.substring(0, 1) == "Z" && task_id.indexOf("_M") == -1 && task_id.indexOf("_C") == -1 && task_id.indexOf("_P") == -1 && task_id.indexOf("_L") == -1)) {
-                              $(this).css('font-weight', 'bold');
-                          }
-                      }
-                  });
-                  // End - Added by Sohel Pathan on 21-10-2014 for PL ticket #830
+                  //// Start - Added by Sohel Pathan on 21-10-2014 for PL ticket #830
+                  //$('.gantt_container .gantt_grid .gantt_grid_data .gantt_row').each(function () {
+                  //    var task_id = $(this).attr('task_id');
+                  //    if(task_id != '') {
+                  //        if ((task_id.substring(0, 1) == "L" && (task_id.indexOf("_M") > 0 || task_id.indexOf("_T") > 0)
+                  //            && (task_id.indexOf("_I") == -1))
+                  //            || (task_id.substring(0, 1) == "L" && task_id.indexOf("_M") == -1 && task_id.indexOf("_C") == -1 && task_id.indexOf("_P") == -1)) {
+                  //            $(this).css('font-weight', 'bold');
+                  //        }
+                  //        else if (task_id.substring(0, 1) == "Z" && (task_id.indexOf("_M") > 0 || task_id.indexOf("_T") > 0)
+                  //            && (task_id.indexOf("_I") == -1)
+                  //            || (task_id.substring(0, 1) == "Z" && task_id.indexOf("_M") == -1 && task_id.indexOf("_C") == -1 && task_id.indexOf("_P") == -1 && task_id.indexOf("_L") > 0)
+                  //            || (task_id.substring(0, 1) == "Z" && task_id.indexOf("_M") == -1 && task_id.indexOf("_C") == -1 && task_id.indexOf("_P") == -1 && task_id.indexOf("_L") == -1)) {
+                  //            $(this).css('font-weight', 'bold');
+                  //        }
+                  //    }
+                  //});
+                  //// End - Added by Sohel Pathan on 21-10-2014 for PL ticket #830
 
                   //gantt.render();     ////Added by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
               }
