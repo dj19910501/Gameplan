@@ -256,6 +256,7 @@
     // this exists as a separate method so that the developer 
     // can easily override it.
     _setButtonValue: function(value) {
+        this.button.attr('title', value);
       this.buttonlabel.text(value);
     },
 

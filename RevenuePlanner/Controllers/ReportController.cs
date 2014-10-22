@@ -107,9 +107,9 @@ namespace RevenuePlanner.Controllers
 
             string published = Enums.PlanStatus.Published.ToString();
             List<SelectListItem> lstYear = new List<SelectListItem>();
-            var lstPlan = db.Plans.Where(p => p.IsDeleted == false && p.Status == published && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList();
+            var lstPlan = db.Plans.Where(p => p.IsDeleted == false && p.Status == published && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId && p.Model.IsDeleted==false).ToList();
             var yearlist = lstPlan.OrderBy(p => p.Year).Select(p => p.Year).Distinct().ToList();
-            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year }));
+            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year, Selected = year == DateTime.Now.Year.ToString() ? true : false }));
             SelectListItem thisQuarter = new SelectListItem { Text = "this quarter", Value = "thisquarter" };
             lstYear.Add(thisQuarter);
 
@@ -3143,7 +3143,7 @@ namespace RevenuePlanner.Controllers
             string published = Enums.PlanStatus.Published.ToString();
             string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
             string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
-            var planList = db.Plans.Where(p => p.Year == Year && p.IsDeleted == false && p.Status == published && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList().Select(p => new
+            var planList = db.Plans.Where(p => p.Year == Year && p.IsDeleted == false && p.Status == published && p.Model.IsDeleted==false && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList().Select(p => new
             {
                 Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy),
                 Value = p.PlanId.ToString() + "_" + p.AllocatedBy
