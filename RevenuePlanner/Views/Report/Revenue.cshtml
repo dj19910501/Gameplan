@@ -484,7 +484,7 @@
                     $tableReports1.append(htmlOther);
                 } else {
                     $('#table_reports > tbody').empty();
-                    $('#table_reports > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
+                    $('#table_reports > tbody').append('<tr><td colspan="16" class="gray" style="text-align:left;">No saved reports to display.</td></tr>');
                 }
             }
             /*change value on MQL totals*/
@@ -1073,6 +1073,7 @@
                 } else {
                     $('#table_reports2 > tbody').empty();
                     $('#table_reports2 > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
+                    $('#table_reports2').parent('#chartDiv3Parent').css('height', 'auto');
                 }
             }
         }

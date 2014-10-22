@@ -1102,7 +1102,7 @@ namespace RevenuePlanner.Controllers
             var lstCustomFieldsTactics = Common.GetTacticsCustomFields(tacticlist.Select(a => a.PlanTacticId).ToList());
 
             List<ViewByModel> lstParentConversionSummery = new List<ViewByModel>();
-            lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
+            lstParentConversionSummery.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = Common.RevenueAudience });
             lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
             lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
             if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
@@ -1786,7 +1786,7 @@ namespace RevenuePlanner.Controllers
             List<ViewByModel> lstParentRevenueSummery = new List<ViewByModel>();
             lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
             lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
-            lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
+            lstParentRevenueSummery.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = Common.RevenueAudience });
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count != 1)
             {
                 lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenuePlans, Value = Common.RevenuePlans });
@@ -1803,7 +1803,7 @@ namespace RevenuePlanner.Controllers
             List<ViewByModel> lstParentRevenueToPlan = new List<ViewByModel>();
             lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueOrganization, Value = Common.RevenueOrganization });
             lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
-            lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
+            lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = Common.RevenueAudience });
             lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
             if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
             {
@@ -1815,7 +1815,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.parentRevenueToPlan = lstParentRevenueToPlan;
 
             List<ViewByModel> lstParentRevenueContribution = new List<ViewByModel>();
-            lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueAudience, Value = Common.RevenueAudience });
+            lstParentRevenueContribution.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = Common.RevenueAudience });
             lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
             lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
             lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
