@@ -1896,6 +1896,8 @@
                   }
 
                   renderGantt(data.taskData);
+                  var w1 = window.innerWidth;
+                  var w3 = document.body.clientWidth;
                   //// Hide/Show Tabulated data shown below gantt of request tab.
                   if ('@PlanGanttTypes.Request.ToString()' == type) {
                       $(".shadow-scroll-gantt").show();
@@ -1904,6 +1906,19 @@
 
                       if ($('.gantt_ver_scroll').is(":visible")) {
                           //$(".shadow-scroll-gantt").removeClass("full-width");
+                          if (w1 - w3 == 0) {
+                              if ($('.gantt_task').length > 0) {
+                                  var widthMain = $('.gantt_task').css('width');
+                                  widthMain = widthMain.replace('px', '');
+                                  widthMain = (parseInt(widthMain) - 17);
+                                  if (!isNaN(widthMain)) {
+                                      if ($('.gantt_task_scale').length > 0)
+                                          $('.gantt_task_scale').css('width', widthMain + 'px');
+                                      if ($('.gantt_data_area').length > 0)
+                                          $('.gantt_data_area').css('width', widthMain + 'px');
+                                  }
+                              }
+                          }
                       }
                       else {
                           //$(".shadow-scroll-gantt").addClass("full-width");
