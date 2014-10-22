@@ -10567,3 +10567,7 @@ top:-10px; right:-9px; border-radius:10px; text-align:center; padding-top:0px; l
     max-width: none;
 }
 /* End - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */
+
+#improvements {
+    margin-bottom: 70px !important;
+}
