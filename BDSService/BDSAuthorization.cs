@@ -24,11 +24,16 @@ namespace BDSService
             byte[] saltbytes = Common.GetSaltBytes();
 
             string HashPassword = Common.ComputeFinalHash(userPassword, saltbytes);
-
+            //Start PL#861 New User's Login Issues Manoj 22Oct2014
+            //var user = (from u in db.Users
+            //            join ua in db.User_Application on u.UserId equals ua.UserId
+            //            where u.Email == userEmail && u.Password == HashPassword && ua.ApplicationId == applicationId && u.IsDeleted == false
+            //            select new { u }).SingleOrDefault();
             var user = (from u in db.Users
                         join ua in db.User_Application on u.UserId equals ua.UserId
-                        where u.Email == userEmail && u.Password == HashPassword && ua.ApplicationId == applicationId && u.IsDeleted == false
-                        select new { u }).SingleOrDefault();
+                        where u.Email == userEmail && u.Password == HashPassword && ua.ApplicationId == applicationId && u.IsDeleted == false && ua.IsDeleted == false
+                        select new { u }).FirstOrDefault();
+            //End PL#861 New User's Login Issues Manoj 22Oct2014
             if (user == null)
             {
                 userObj = null;

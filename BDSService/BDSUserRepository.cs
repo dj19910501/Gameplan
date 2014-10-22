@@ -257,7 +257,10 @@ namespace BDSService
                 userObj.LastName = user.LastName;
                 userObj.Password = user.Password;
                 userObj.ProfilePhoto = user.ProfilePhoto;
-                userObj.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
+                //Start PL#861 New User's Login Issues Manoj 22Oct2014
+                //userObj.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
+                userObj.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId && ua.IsDeleted == false).Select(u => u.RoleId).FirstOrDefault();
+                //End PL#861 New User's Login Issues Manoj 22Oct2014
 
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                 var objRole = db.Roles.FirstOrDefault(rl => rl.RoleId == userObj.RoleId && rl.ClientId == userObj.ClientId);
