@@ -4315,6 +4315,7 @@ namespace RevenuePlanner.Helpers
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = BusinessUnit.ToString(), Value = PlanGanttTypes.BusinessUnit.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = PlanGanttTypes.Audience.ToString() });
+            lstViewByTab = lstViewByTab.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             //Check that if PlanTactic is not null then we are going to fetch the Custom Fields
             if (planTacticIds != null)
@@ -4322,6 +4323,8 @@ namespace RevenuePlanner.Helpers
                 if (planTacticIds.Count > 0)
                 {
                     var lstCustomFields = GetTacticsCustomFields(planTacticIds);
+                    lstCustomFields = lstCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+
                     //Concat the Default list with newly fetched custom fields. 
                     lstViewByTab = lstViewByTab.Concat(lstCustomFields).ToList();
                 }

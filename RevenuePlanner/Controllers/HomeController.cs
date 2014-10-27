@@ -379,7 +379,6 @@ namespace RevenuePlanner.Controllers
             objHomePlan.plans = planList;
 
             List<ViewByModel> lstViewByTab = Common.GetDefaultGanttTypes(null, Convert.ToString(currentPlanId));
-            lstViewByTab = lstViewByTab.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewByTab = lstViewByTab;
 
             List<SelectListItem> lstUpComingActivity = UpComingActivity(Convert.ToString(currentPlanId));
@@ -1186,7 +1185,6 @@ namespace RevenuePlanner.Controllers
             var finalTaskData = newTaskDataCustomField.Concat<object>(newTaskDataPlan).Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic).Concat<object>(newTaskDataCampaign).Concat<object>(newTaskDataTactic).Concat<object>(newTaskDataProgram).ToList<object>();
 
             List<ViewByModel> lstViewById = Common.GetDefaultGanttTypes(tactic.ToList().Select(t => t.PlanTacticId).ToList(), planId);
-            lstViewById = lstViewById.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             return Json(new
             {
                 customFieldTactics = lstCustomFieldTactics,
@@ -1232,7 +1230,6 @@ namespace RevenuePlanner.Controllers
             List<object> tacticAndRequestTaskData = GetTaskDetailTactic(campaign.ToList(), program.ToList(), tactic.ToList(), improvementTactic);
 
             List<ViewByModel> lstViewById = Common.GetDefaultGanttTypes(tactic.ToList().Select(t => t.PlanTacticId).ToList(), planId);
-            lstViewById = lstViewById.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             return Json(new
             {
