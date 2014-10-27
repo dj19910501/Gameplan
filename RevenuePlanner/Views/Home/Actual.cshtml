@@ -21,29 +21,18 @@
         <div>
             <span>Note that imported values override user-generated values.</span>
         </div>
-        <div id="months_container" class="container-table" style="float: left; width:820px; overflow-x:scroll;">
-            <table class="table table-striped mystats table-style " id="tblActual">
+        @* Added by Viral kadiya for PL Ticket #880.*@
+        <div class="pull-left" style="float: left; width: 150px;">
+            <table class="table table-striped mystats table-style">
                 <thead>
-                    <tr class="text-align-right height42">
+                    <tr class="height42">
                         <th class="font908D88 actual-popup-tile">Title</th>
-                        <th class="border-r font908D88 padding-left55 text-align-right">Jan</th>
-                        <th class="font908D88 padding-left55 text-align-right">Feb</th>
-                        <th class="border-r font908D88 padding-left55 text-align-right">Mar</th>
-                        <th class="font908D88 padding-left55 text-align-right">Apr</th>
-                        <th class="font908D88 padding-left55 text-align-right">May</th>
-                        <th class="border-r font908D88 padding-left55 text-align-right">Jun</th>
-                        <th class="font908D88 padding-left55 text-align-right">Jul</th>
-                        <th class="border-r font908D88 padding-left55 text-align-right">Aug</th>
-                        <th class="font908D88 padding-left55 text-align-right">Sept</th>
-                        <th class="font908D88 padding-left55 text-align-right">Oct</th>
-                        <th class="border-r font908D88 padding-left55 text-align-right">Nov</th>
-                        <th class="font908D88 padding-left55 text-align-right">Dec</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (string s in @ViewBag.StageTitle)
                     {
-                        string idtr = "tr" + @s;
+                        string idtr = "tr_title" + @s;
                         <tr class="height42" id="@idtr">
                             @{
                         string stageLable = s;
@@ -69,6 +58,53 @@
                         }
                             }
                             <th class="font3F3F3F actual-popup-tile table-head" title="@stageLable">@stageLable</th>
+
+                        </tr>
+                    }
+                    <tr class="height42" id="tr_titleCost">
+                        <th class="font3F3F3F actual-popup-tile table-head">Cost</th>
+                    </tr>
+                    @if (lineItemList.Count > 0)
+                    {
+                        foreach (var item in lineItemList)
+                        {
+                            planLineItemIds += item.PlanLineItemId + ",";
+                            string rawId = "trLine_title" + item.PlanLineItemId;
+                        <tr class="height42 lines" id="@rawId">
+                            <th class="font3F3F3F actual-popup-tile" style="font-weight:normal;" title="@item.Title">@item.Title</th>
+                        </tr>
+                        }
+                    }
+                    <tr class="height42">
+                        <th class="font3F3F3F actual-popup-tile table-head">ROI</th>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <div id="months_container" class="container-table" style="float: left; width: 670px; overflow-x: scroll;">
+            <table class="table table-striped mystats table-style " id="tblActual">
+                <thead>
+                    <tr class="text-align-right height42">
+                        <th class="border-r font908D88 padding-left55 text-align-right">Jan</th>
+                        <th class="font908D88 padding-left55 text-align-right">Feb</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Mar</th>
+                        <th class="font908D88 padding-left55 text-align-right">Apr</th>
+                        <th class="font908D88 padding-left55 text-align-right">May</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Jun</th>
+                        <th class="font908D88 padding-left55 text-align-right">Jul</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Aug</th>
+                        <th class="font908D88 padding-left55 text-align-right">Sept</th>
+                        <th class="font908D88 padding-left55 text-align-right">Oct</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Nov</th>
+                        <th class="font908D88 padding-left55 text-align-right">Dec</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (string s in @ViewBag.StageTitle)
+                    {
+                        string idtr = "tr" + @s;
+                        <tr class="height42" id="@idtr">
                             @for (int j = 1; j <= 12; j++)
                             {
                                 string ids = s + "-Y" + j;
@@ -87,7 +123,6 @@
                         </tr>
                     }
                     <tr class="height42" id="trCost">
-                        <th class="font3F3F3F actual-popup-tile table-head">Cost</th>
                         @for (int j = 1; j <= 12; j++)
                         {
                             string costIds = "Cost-Y" + j;
@@ -115,7 +150,6 @@
                             planLineItemIds += item.PlanLineItemId + ",";
                             string rawId="trLine"+item.PlanLineItemId;
                              <tr class="height42 lines" id="@rawId">
-                        <th class="font3F3F3F actual-popup-tile" style="font-weight:normal;" title="@item.Title">@item.Title</th>
                                  @for (int j = 1; j <= 12; j++)
                         {
                             string lineItemIds = @item.PlanLineItemId+"-Y" + j;
@@ -131,7 +165,6 @@
                         planLineItemIds = planLineItemIds.Remove(planLineItemIds.Length - 1, 1);
                     }
                     <tr class="height42">
-                        <th class="font3F3F3F actual-popup-tile table-head">ROI</th>
                         <th class="border-r font3F3F3F"></th>
                         <th class="font3F3F3F"></th>
                         <th class="border-r font3F3F3F"></th>
@@ -268,6 +301,7 @@
                     TacticActual = r.actualData;
                     if (r.IsLineItemForTactic) {
                         $("#trCost").addClass("disabled-row");
+                            $("#tr_titleCost").addClass("disabled-row");
                         LineItemActual = r.ActualCostAllocationData;
                         fillLineItemValue();
                     }
