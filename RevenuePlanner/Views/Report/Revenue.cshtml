@@ -1735,12 +1735,12 @@
         $('#ddlParentRevenueContribution').bind('change', function () {
             var id = $(this).val();
             if (id == "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
-                    $("#ddlBusinessUnitContribution").css("display", "none");
+                  //  $("#ddlBusinessUnitContribution").css("display", "none");
                     $("#ddlBusinessUnitContribution").next().hide();
                 LoadRevenueContributionData();
                 }
                 else {
-                    $("#ddlBusinessUnitContribution").css("display", "block");
+                    //$("#ddlBusinessUnitContribution").css("display", "block");
                     $("#ddlBusinessUnitContribution").next().show();
                 addHeaderPart();
             }

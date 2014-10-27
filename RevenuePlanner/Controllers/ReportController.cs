@@ -4219,6 +4219,10 @@ namespace RevenuePlanner.Controllers
                     if (lstPlanIds.Count > 0)
                     {
                         Sessions.ReportPlanIds = lstPlanIds;
+                        if (lstPlanIds.Count == 1)
+                        {
+                            Sessions.PlanId = lstPlanIds.FirstOrDefault();
+                        }
                     }
                 }
                 else
