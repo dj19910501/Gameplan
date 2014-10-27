@@ -425,11 +425,19 @@
 
         var email = this.value;
         if (email != null && email != '') {
-            var pattern = new RegExp(/^\b[A-Z0-9._%-]+@@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i);
+            @* var pattern = new RegExp(/^\b[A-Z0-9._%-]+@@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i);
             if (!pattern.test(email)) {
                 $('#isEmailExist').addClass('field-validation-error');
                 $('#isEmailExist').html('@Common.objCached.NotValidEmail');
                 return;
+            }*@
+            if ($("span[data-valmsg-for=Email]").length > 0) {
+                if ($("span[data-valmsg-for=Email]").find('span:eq(0)').length > 0) {
+                    var messageSpan = $("span[data-valmsg-for=Email]").find('span:eq(0)').html();
+                    if (messageSpan.length > 0) {
+                        return false;
+                    }
+                }
             }
             $.ajax(
             {

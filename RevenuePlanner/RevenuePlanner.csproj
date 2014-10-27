@@ -297,7 +297,9 @@
     <Content Include="Content\images\apple-touch-icon-72-precomposed.png" />
     <Content Include="Content\images\arrow-collapse.gif" />
     <Content Include="Content\images\arrow-collapse2.gif" />
+    <Content Include="Content\images\arrow-d-big-icon-blue.png" />
     <Content Include="Content\images\arrow-d-icon-active.png" />
+    <Content Include="Content\images\arrow-d-icon-black.png" />
     <Content Include="Content\images\arrow-d-icon-blue.png" />
     <Content Include="Content\images\arrow-d-icon.png" />
     <Content Include="Content\images\arrow-down-accordion.png" />
@@ -341,6 +343,7 @@
     <Content Include="Content\images\check-green.png" />
     <Content Include="Content\images\check-red.png" />
     <Content Include="Content\images\check_signup.png" />
+    <Content Include="Content\images\check_signup_checkbox.png" />
     <Content Include="Content\images\circle-check-icon-blue.png" />
     <Content Include="Content\images\circle-check-icon-gray.png" />
     <Content Include="Content\images\circle-check-icon-small-blue.png" />

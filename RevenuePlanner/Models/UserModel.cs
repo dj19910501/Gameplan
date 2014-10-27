@@ -29,8 +29,8 @@ namespace RevenuePlanner.Models
 
         [Required]
         [Display(Name = "Email")]
-        //[RegularExpression("^[A-Za-z0-9_\\+-]+(\\.[A-Za-z0-9_\\+-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.([A-Za-z]{2,4})$", ErrorMessage = "Not a valid Email.")]
-        [MaxLength(255, ErrorMessage = "Email cannot contain more than 255 characters.")]
+        [RegularExpression("^[A-Za-z0-9_\\+-]+(\\.[A-Za-z0-9_\\+-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.([A-Za-z]{2,4})$", ErrorMessage = "Not a valid Email.")]
+        [MaxLength(100, ErrorMessage = "Email cannot contain more than 100 characters.")]
         public string Email { get; set; }
 
         [Required]
