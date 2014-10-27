@@ -233,7 +233,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    if (form.Password != null)
+                    if (form.Password != null && form.Password.Length <8)
                     {
                         ModelState.AddModelError("", Common.objCached.InvalidPassword);
                     }
