@@ -10618,3 +10618,8 @@ top:-10px; right:-9px; border-radius:10px; text-align:center; padding-top:0px; l
     min-height: 23px;
     width: 100%;
 }
+
+#frm_campaigns .paddingleft25px:nth-of-type(1)
+{
+    padding-left:0px !important;
+}

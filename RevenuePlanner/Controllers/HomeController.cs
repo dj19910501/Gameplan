@@ -5182,6 +5182,8 @@ namespace RevenuePlanner.Controllers
             pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
             pcpm.Cost = Common.CalculateProgramCost(pcp.PlanProgramId);
 
+            ViewBag.CampaignTitle = HttpUtility.HtmlDecode(pcp.Plan_Campaign.Title);
+
             List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pcp.PlanCampaignId &&
                 t.Plan_Campaign_Program.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList());
             pcpm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
@@ -5241,7 +5243,7 @@ namespace RevenuePlanner.Controllers
         }
 
         [HttpPost]
-        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, bool RedirectType, string closedTask, string customFieldInputs, string UserId = "", string CalledFromBudget = "")
+        public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, string UserId = "",string title="")
         {
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
@@ -5249,8 +5251,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
-                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                    return Json(new { IsSaved = false , Msg = Common.objCached.LoginWithSameSession }, JsonRequestBehavior.AllowGet);
                 }
             }
             try
@@ -5270,12 +5271,12 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateProgramExits });
+                                return Json(new { IsSaved = false, Msg = Common.objCached.DuplicateProgramExits }, JsonRequestBehavior.AllowGet);
                             }
                             else
                             {
                                 Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).SingleOrDefault();
-                                pcpobj.Title = form.Title;
+                                pcpobj.Title = title;
                                 pcpobj.Description = form.Description;
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcpobj.StartDate = form.StartDate;
@@ -5320,7 +5321,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);
                                     scope.Complete();
-                                    return Json(new { issuccess = true });
+                                    return Json(new { IsSaved = true, Msg = "Saved Successfully." }, JsonRequestBehavior.AllowGet);
                                 }
                             }
                         }
@@ -5331,7 +5332,7 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
 
-            return Json(new { });
+            return Json(new { IsSaved = false, Msg = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

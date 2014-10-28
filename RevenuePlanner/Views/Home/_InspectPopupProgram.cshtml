@@ -6,7 +6,7 @@
 @Html.Display(popupvalue)
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 @{
-    var programMaster  = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
+    var programMaster = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
     bool IsPlanOwner = (bool)ViewBag.InspectPopUpIsOwner;
 }
@@ -14,13 +14,21 @@
 @Html.Hidden("hdnProgramStatus", programMaster.Status, new { id = "hdnProgramStatus" })
 @Html.Hidden("hdnProgramOpt", "View", new { id = "hdnProgramOpt" })
 <div class="modal-popup-title">
+    <div style="display: inline-block; width: 91%;">
     <span class="icon-flag bg-purple" style="background-color:#@programMaster.ColorCode !important;"></span>
-    <h2 class="title-simple source-sans-prolight"><span class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
-    @if (IsPlanEditable && IsPlanOwner)
-    {
-        @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId , tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id="EditProgram" , @class = "edit-icon-white btn-blue btn-large"})
-    }
+    <h2 class="title-simple source-sans-prolight">
+         <span>
+        <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
+             </span>
+        @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programMaster.ProgramTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 86%; height: 28px;display:none", title = programMaster.ProgramTitle })  
     </h2>
+        </div>
+    <div style="display: inline;">
+         @if (IsPlanEditable && IsPlanOwner)
+         {
+        @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large" })
+         }
+        </div>
 </div>
 
 <div class="modal-popup-summary">
@@ -73,6 +81,13 @@
             <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
         </li>
     </ul>
+
+    
+    <div id="successMessageViewProgram" class="alert hide alert-success message-position-small">
+    <a class="close">×</a>
+    <span id="spanSuccessMessageViewProgram"></span>
+</div>
+
     <div id="divTab">
     </div>
 </div>
@@ -102,7 +117,8 @@
           loadReview(planProgramId, tabtext);
 
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $("#liSetup,#liReview").on("click", function () {
+          $("#liSetup,#liReview,#liBudget").on("click", function () {
+              $("#successMessageViewProgram").slideUp(200);
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");
@@ -115,37 +131,32 @@
 
           });
 
-          $("#liSetup,#liBudget").on("click", function () {
-              RemoveTabClass();
-              $(this).removeClass("pull-left");
-              $(this).addClass("active pull-left");
-              $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
-              var tabtext = ($(this).children('a').text());
-              var planTacticId = $("#hdnPlanTacticId").val();
-              loadReview(planProgramId, tabtext);
-
-          });
-
-
           $("#EditProgram").on("click", function () {
               var url;
               $("#hdnProgramOpt").val("Edit");
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());
 
+              //$('#jqueryUi').remove();
+              //$('#multiSelected').remove();
+              //$('#multiSelectedfilter').remove();
+
+
               if (tabtext == "Setup") {
                   url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
                   $("#divTab").empty();
                   $("#divTab").load(url + '?id=' + planProgramId);
               }
-              else if (tabtext == "Budget")
-              {
+              else if (tabtext == "Budget") {
                   url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + planProgramId);
-              }
-            
+                      $("#divTab").empty();
+                      $("#divTab").load(url + '?id=' + planProgramId);
+                  }
+
+              $("#EditProgram").css("display", "none");
+              $('#txtProgramTitle').css('display', 'block');
+              $('#lblProgramTitle').css('display', 'none');
+
               return false;
           });
 
@@ -163,39 +174,39 @@
               var planTacticId = $("#hdnPlanTacticId").val();
               loadReview(planProgramId, tabtext);
               return false;
-      });
-          
+          });
+
 
       });
 
-    function RemoveTabClass() {
-        $('#InspectTab').children().each(function () {
-            if ($(this).hasClass('active pull-left')) {
-                $(this).removeClass("active pull-left");
-                $(this).addClass("pull-left");
-            }
-        });
-    }
+      function RemoveTabClass() {
+          $('#InspectTab').children().each(function () {
+              if ($(this).hasClass('active pull-left')) {
+                  $(this).removeClass("active pull-left");
+                  $(this).addClass("pull-left");
+              }
+          });
+      }
 
-    function loadReview(id, tabValue) {
-        $("#hdnInspectPopup").val(tabValue);
-        $.ajaxSetup({ cache: false });
-        var url;
-        var ProgramOpt = $("#hdnProgramOpt").val();
-        if (tabValue == TabSetup) {
-            if (ProgramOpt == "Edit") {
-                url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
+      function loadReview(id, tabValue) {
+          $("#hdnInspectPopup").val(tabValue);
+          $.ajaxSetup({ cache: false });
+          var url;
+          var ProgramOpt = $("#hdnProgramOpt").val();
+          if (tabValue == TabSetup) {
+              if (ProgramOpt == "Edit") {
+                  url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
             }
             else {
-            url = '@Url.Content("~/Home/LoadSetupProgram/")';
-          }
-          }
-          if (tabValue == TabReview) {
-              url = '@Url.Content("~/Home/LoadReviewProgram/")';
+                url = '@Url.Content("~/Home/LoadSetupProgram/")';
+            }
         }
+        if (tabValue == TabReview) {
+            url = '@Url.Content("~/Home/LoadReviewProgram/")';
+          }
 
-        if (tabValue == TabBudget) {
-            url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
+          if (tabValue == TabBudget) {
+              url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
         }
 
         RemoveTabClass();

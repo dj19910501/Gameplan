@@ -306,6 +306,7 @@
     $("#cancelProgramBudget").click(function () {
         $("#hdnProgramOpt").val("View");
         loadReview('@Model.PlanProgramId', "Budget");
+        $("#EditProgram").css("display", "block");
     });
 
 

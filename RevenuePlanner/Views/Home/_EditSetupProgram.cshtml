@@ -5,6 +5,7 @@
     bool ExtIntService = (bool)ViewBag.ExtIntService;
     string CalledFromBudget = ViewBag.CalledFromBudget;
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
+    string CampaignTitle = ViewBag.CampaignTitle;
 }
 
 <style type="text/css">
@@ -14,10 +15,6 @@
     }
 </style>
 
-<div id="successMessageEditProgram" class="alert hide alert-success message-position-small">
-    <a class="close">×</a>
-    <span id="spanSuccessMessageEditProgram"></span>
-</div>
 <div id="errorMessageEditProgram" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
     <span id="spanMessageEditProgram"></span>
@@ -25,7 +22,7 @@
 
 <div id="frm_campaigns" name="frm_campaigns">
 
-    @using (Html.BeginForm(new { @id = "frmSaveProgram" }))
+    @using (Html.BeginForm(new { id = "frmSaveProgram" }))
     {
             <script type="text/javascript">
                 $(document).ready(function () {
@@ -45,8 +42,8 @@
 
             <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
                 <div class="span6" id="inspect-modal-left-column1">
-                    <label class="t_title">Program Title</label>
-            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id = "txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
+              <p>@Html.Raw("Parent Campaign")</p>
+            @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(CampaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = CampaignTitle })
 
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
@@ -118,8 +115,11 @@
         </li>
     </ul>
              <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
-                        @Model.CustomFieldHtmlContent
+                 
+                  @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanProgramId, Enums.EntityType.Program.ToString(), 1)
         
+                 <div class="clear-section"></div>
+
                         @if ((bool)ViewBag.IsOwner)
                         {
                             <div class="wraper-btns cf">
@@ -146,9 +146,15 @@
     }
 
     $(document).ready(function () {
+
+        $(".selectBox select").selectbox();
+
         $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
         FormatRemainingBudget();
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
+        $("#successMessageViewProgram").slideUp(200);
+
+        $("#txtProgramTitle").val($("#lblProgramTitle").html());
 
         var SaveCampaignFlag = true;
         var isredirect = "@ViewBag.RedirectType";
@@ -181,18 +187,6 @@
                     $(this).removeClass("icon-check-gray");
                     $("#hdnIsDeployedToIntegration").val(true);
                 }
-            }
-        });
-
-        var tactictype;
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/GetTacticType/")',
-            data: {
-            },
-            success: function (r) {
-                tactictype = r;
-                myApp.hidePleaseWait();
             }
         });
 
@@ -258,7 +252,10 @@
         });
 
         $("#save_campaign_program").click(function () {
+            
             var iserror = false;
+            var title = htmlEncode($('#txtProgramTitle').val());
+
             $('form').find('input[type=text], select, textarea').each(function () {
                 if ($(this).attr('require') == 'true') {
                     if ($(this).val() == '') {
@@ -272,6 +269,7 @@
             });
 
             $('form').find('.sbSelector').each(function () {
+
                 if ($(this).parent().prev().attr('require') == 'true') {
                     if ($(this).text() == 'Please Select') {
                         $(this).addClass("error");
@@ -282,6 +280,10 @@
                     }
                 }
             });
+
+            if (title == '') {
+                iserror = true;
+            }
 
             if (iserror) {
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
@@ -313,14 +315,9 @@
             if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) return false;
             if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
 
-            var isAssortment = $("#hdnRedirectType").val();
-
-            var arrClosedTaskString = null;
-            if (typeof arrClosedTask != 'undefined') {
-                arrClosedTaskString = arrClosedTask.toString();
-            }
-
             $("#txtProgramBudget").val(ReplaceCC($("#txtProgramBudget").val()));
+            $("#lblProgramTitle").html(htmlEncode($('#txtProgramTitle').val()));
+            $("#tactic-name").html(htmlEncode($('#txtProgramTitle').val()));
 
             var _customFieldValues = [];
             $('form').find('input[type=text], select').each(function () {
@@ -333,29 +330,30 @@
             });
             _customFieldValues = JSON.stringify(_customFieldValues);
 
-            document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());
-            document.getElementById("Description").value = htmlEncode($('#Description').val());
             var uId = $(window).attr('name');
 
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Home/SaveProgram")',
-                data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget' + '&customFieldInputs=' + escape(_customFieldValues),
+                url: '@Url.Content("~/Home/SetupSaveProgram")',
+                data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserId=' + uId + '&title=' + title ,
                 success: function (data) {
-                    if (data.issuccess) {
-                        $("#errorMessageEditProgram").slideUp(400);
-                        $("#spanMessageEditProgram").empty();
-                        $("#successMessageEditProgram").slideDown(400);
-                        $("#spanSuccessMessageEditProgram").empty();
-                        $("#spanSuccessMessageEditProgram").html("Successfully saved.");
+                    if (data.IsSaved) {
+                        CancelEvent();
+                        $("#spanMessageViewProgram").empty();
+                        $("#successMessageViewProgram").slideDown(400);
+                        $("#spanSuccessMessageViewProgram").empty();
+                        $("#spanSuccessMessageViewProgram").html(data.Msg);
+                    }
+                    else {
+                        CancelEvent();
+                        ShowError(data.Msg);
                     }
                 }
             });
         });
 
         function ShowError(value) {
-            $("#successMessageEditProgram").slideUp(400);
-            $("#spanSuccessMessageEditProgram").empty();
+            $("#successMessageViewProgram").slideUp(400);
             $("#errorMessageEditProgram").slideDown(400);
             $("#spanMessageEditProgram").empty();
             $("#spanMessageEditProgram").html(value);
@@ -393,10 +391,18 @@
     });
 
     $("#cancelProgramEditSection").click(function () {
-        $("#hdnProgramOpt").val("View");
-        loadReview('@Model.PlanProgramId', "Setup");
+        CancelEvent();
     });
 
+
+    function CancelEvent()
+    {
+        $("#hdnProgramOpt").val("View");
+        loadReview('@Model.PlanProgramId', "Setup");
+        $("#EditProgram").css("display", "block");
+        $('#txtProgramTitle').css('display', 'none');
+        $('#lblProgramTitle').css('display', 'block');
+    }
 
     $("#txtProgramBudget").keyup(function () {
         var ProgramBudgetValue = ReplaceCC($("#txtProgramBudget").val());
