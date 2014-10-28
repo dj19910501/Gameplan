@@ -355,8 +355,6 @@
 
         NumberFormatterTipsyTitle(".displaytitle", 31);
 
-        $(".datepicker.dropdown-menu").css("z-index", "2501");
-
     });
 
     $("#cancelProgramEditSection").click(function () {
@@ -396,18 +394,19 @@
         format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
             autoclose: false,
         }).on('changeDate', function (ev) {
-           // $(this).datepicker('hide');
+            $(this).datepicker('hide');
         });;
 
         $('#dp_start .add-on').click(function () {
             $('#dp_start').datepicker('show');
-            //$('#dp_end').datepicker('hide');
-            return false;
+            $('#dp_end').datepicker('hide');
+            $(".dropdown-menu").css("z-index", "25001");
         })
 
         $('#dp_end .add-on').click(function () {
             $('#dp_start').datepicker('hide');
             $('#dp_end').datepicker('show');
+            $(".dropdown-menu").css("z-index", "25001");
         })
 
         $('#t_startdate').click(function () {
