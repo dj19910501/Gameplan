@@ -223,9 +223,10 @@
         loadBasedOnPlan();
         $("#DivShareReport").hide();
         GetFilterIdForPlan(multiselectPlanId); 
-$(document).mouseup(function (e) {
+            $(document).mouseup(function (e) {
             var BUcontainer = $('#multipleselect_ddlViewBusinessUnit');
-            if (!BUcontainer.is(e.target) && BUcontainer.has(e.target).length === 0 && BUcontainer.css('display')=='block') {
+            var BUbutton = $('#btnMultiselect_ddlViewBusinessUnit');
+            if (!BUcontainer.is(e.target) && BUcontainer.has(e.target).length === 0 && BUcontainer.css('display') == 'block' && !BUbutton.is(e.target) && BUbutton.has(e.target).length === 0) {
                 $('#ddlViewBusinessUnit').multiselect('close');
             }
         });

@@ -21,12 +21,11 @@
 
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
-            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "height:92px;" })
+            @Html.TextAreaFor(model=>model.Description, new {id="txtDescription", @class = "span12 text-area-size", style = "height:92px;" })
             <p style="width: 110%;">@Html.Raw("Deployed to Integration")</p>
             @* @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", id = "txtDeployStatus"})*@
             @if (ExtIntService)
             {
-                <label>Status</label>
                 if (Model.IsDeployedToIntegration)
                 {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
@@ -79,11 +78,12 @@
     
         @if ((bool)ViewBag.IsOwner)
         {
+            <br />
             <div class="wraper-btns cf">
                 <div class="span2 btn-save">
                     <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
                 </div>
-                <div class="span2">
+                <div class="span2" style="vertical-align:middle;padding-top:5px;">
                     <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
                 </div>
             </div>
