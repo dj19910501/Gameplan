@@ -8,6 +8,7 @@
     string CampaignTitle = ViewBag.CampaignTitle;
 }
 
+<script src="~/Scripts/js/bootstrap-datepicker.js"></script>
 <style type="text/css">
     .verticalIdSelectBox .sbHolder
     {
@@ -26,6 +27,8 @@
     {
             <script type="text/javascript">
                 $(document).ready(function () {
+
+                    $(".selectBox select").selectbox();
                     $(".verticalIdSelectBox select").selectbox();
                 });
              </script>
@@ -147,12 +150,10 @@
 
     $(document).ready(function () {
 
-        $(".selectBox select").selectbox();
-
         $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
         FormatRemainingBudget();
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
-        $("#successMessageViewProgram").slideUp(200);
+        $("#successMessageViewProgram").slideUp(100);
 
         $("#txtProgramTitle").val($("#lblProgramTitle").html());
 
@@ -198,13 +199,6 @@
             $(this).closest(".alert").slideUp(400);
         });
 
-        $('.datepicker.dropdown-menu').css("display", "none");
-
-        $('.close-form', this.$panel).click(function (e) {
-            $('.datepicker.dropdown-menu').css("display", "none");
-            $("#slidepanel").css("display", "none");
-            $("#slidepanel-container").empty();
-        });
 
         var isOwner = "@ViewBag.IsOwner";
         if (isOwner == 'False') {
@@ -359,34 +353,9 @@
             $("#spanMessageEditProgram").html(value);
         }
 
-        $('.dp').datepicker({
-            format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
-            autoclose: true,
-        }).on('changeDate', function (ev) {
-            $(this).datepicker('hide');
-        });;
-
-        $('#dp_start .add-on').click(function () {
-            $('#dp_start').datepicker('show');
-            $('#dp_end').datepicker('hide');
-        })
-
-        $('#dp_end .add-on').click(function () {
-            $('#dp_start').datepicker('hide');
-            $('#dp_end').datepicker('show');
-        })
-
-        $('#t_startdate').click(function () {
-            $('#dp_end').datepicker('hide');
-        })
-
-        $('#t_enddate').click(function () {
-            $('#dp_start').datepicker('hide');
-        })
-
         NumberFormatterTipsyTitle(".displaytitle", 31);
 
-        //$(".datepicker.dropdown-menu").css("z-index", "2501");
+        $(".datepicker.dropdown-menu").css("z-index", "2501");
 
     });
 
@@ -421,4 +390,32 @@
             $("#txtRemainingBudget").removeClass('error-text');
         }
     });
+
+
+    $('.dp').datepicker({
+        format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+            autoclose: false,
+        }).on('changeDate', function (ev) {
+           // $(this).datepicker('hide');
+        });;
+
+        $('#dp_start .add-on').click(function () {
+            $('#dp_start').datepicker('show');
+            //$('#dp_end').datepicker('hide');
+            return false;
+        })
+
+        $('#dp_end .add-on').click(function () {
+            $('#dp_start').datepicker('hide');
+            $('#dp_end').datepicker('show');
+        })
+
+        $('#t_startdate').click(function () {
+            $('#dp_end').datepicker('hide');
+        })
+
+        $('#t_enddate').click(function () {
+            $('#dp_start').datepicker('hide');
+        })
+
   </script>

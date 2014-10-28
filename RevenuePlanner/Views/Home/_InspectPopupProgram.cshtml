@@ -137,11 +137,6 @@
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());
 
-              //$('#jqueryUi').remove();
-              //$('#multiSelected').remove();
-              //$('#multiSelectedfilter').remove();
-
-
               if (tabtext == "Setup") {
                   url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
                   $("#divTab").empty();
@@ -218,5 +213,6 @@
 
         $("#divTab").load(url + '?id=' + id);
     }
+
 
 </script>
