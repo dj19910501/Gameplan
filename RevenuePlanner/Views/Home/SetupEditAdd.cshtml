@@ -103,6 +103,11 @@
         </div>
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 3,"addEdit")
     </div>   
+    
+    <div style="width:100%;display:none;" id="divTacticSaveCancel" >
+          <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float :left;" type="button">Save & Continue</button>
+          <button id="btnCancel" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left; margin-left:20px" type="button">Cancel</button>                
+    </div>
 }
 
 <script type="text/javascript">
@@ -110,7 +115,7 @@
 
     $(document).ready(
       function () {
-          
+          $("#txtTacticTitle").val($("#lblTacticTitle").attr('title'));
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
           $('#divTacticSaveCancel').css('display', 'block');

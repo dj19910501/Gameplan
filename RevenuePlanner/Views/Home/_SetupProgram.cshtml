@@ -23,15 +23,15 @@
         <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
             <p>@Html.Raw("Owner")</p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = program.Owner })
-            <p>@Html.Raw("Cost")</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
             <p>Start Date</p>
             @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate", @readonly = "true", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat) })
-            
+             <p>End Date</p>
+            @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
+  
         </div>
         <div class="span3" id="inspect-modal-left-column3">
-            <p>End Date</p>
-            @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
+             <p>@Html.Raw("Cost")</p>
+            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
             <p style="width: 110%;">@Html.Raw("Deployed to Integration")</p>
             @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
         </div>

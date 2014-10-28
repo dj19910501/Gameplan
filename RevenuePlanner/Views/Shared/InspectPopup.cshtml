@@ -24,7 +24,7 @@
         <span class="edit-icon-white btn-blue btn-large" style="display:block" id="EditForm"></span>
     }
      </span>
-    @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticMaster.TacticTitle), new {placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 86%; height: 28px;display:none", title = tacticMaster.TacticTitle })
+    @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticMaster.TacticTitle), new {placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = tacticMaster.TacticTitle })
     </h2>
 </div>
 </form>
@@ -44,7 +44,7 @@
             <span id="vertical" class="source-sans-prosemibold color5693B3">@tacticMaster.VerticalTitle</span>
         vertical.
         
-        <p class="modal-status">The status is: 
+        <p class="modal-status">Status: 
             @if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
             {
                 <span id="status" class="source-sans-prosemibold statussubmitted">@tacticMaster.Status</span>
@@ -62,7 +62,7 @@
             else if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
             {
                 <span id="status" class="source-sans-prosemibold statuscreated">@tacticMaster.Status</span>
-            }.</p>
+            }</p>
     </div>
 </div>
 
@@ -86,10 +86,6 @@
         </li>
     </ul>
     <div id="divTab">
-    </div>
-    <div style="width:100%;display:none;" id="divTacticSaveCancel" >
-          <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float :left;" type="button">Save & Continue</button>
-          <button id="btnCancel" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left; margin-left:20px" type="button">Cancel</button>                
     </div>
 </div>
 

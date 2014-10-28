@@ -32,7 +32,7 @@
             <span id="start-date" class="source-sans-prosemibold color5693B3">@tacticMaster.StartDate.ToString(Common.DateFormateForInspectPopupDescription)</span>
         .
         
-        <p class="modal-status">The status is: 
+        <p class="modal-status">Status: 
 
             @if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
             {
@@ -52,7 +52,7 @@
             {
                  <span id="status" class="source-sans-prosemibold statuscreated"> @tacticMaster.Status</span>
             }
-                                               .</p>
+        </p>
     </div>
 </div>
 
