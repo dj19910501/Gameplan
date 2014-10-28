@@ -12,18 +12,22 @@
 }
 @Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
+<form>
 <div class="modal-popup-title">
     <span class="icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
     <h2 class="title-simple source-sans-prolight">
-        <span class="tipsyclassTitle" title="@Html.Raw(tacticMaster.TacticTitle)">@Html.Raw(tacticMaster.TacticTitle)</span>
+        <span>
+         <span id="lblTacticTitle" class="tipsyclassTitle" title="@Html.Raw(tacticMaster.TacticTitle)">@Html.Raw(tacticMaster.TacticTitle)</span>
     @if (IsPlanEditable)
     {
-        @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = tacticMaster.PlanCampaignId, programId = tacticMaster.PlanProgramId, tacticId = tacticMaster.PlanTacticId, EditObject = "Tactic", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large"})   
+        @*@Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = tacticMaster.PlanCampaignId, programId = tacticMaster.PlanProgramId, tacticId = tacticMaster.PlanTacticId, EditObject = "Tactic", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large"})   *@
+        <span class="edit-icon-white btn-blue btn-large" style="display:block" id="EditForm"></span>
     }
+     </span>
+    @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticMaster.TacticTitle), new {placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 86%; height: 28px;display:none", title = tacticMaster.TacticTitle })
     </h2>
-
-
 </div>
+</form>
 
 <div class="modal-popup-summary">
     <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
@@ -82,6 +86,10 @@
         </li>
     </ul>
     <div id="divTab">
+    </div>
+    <div style="width:100%;display:none;" id="divTacticSaveCancel" >
+          <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float :left;" type="button">Save & Continue</button>
+          <button id="btnCancel" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left; margin-left:20px" type="button">Cancel</button>                
     </div>
 </div>
 
@@ -143,6 +151,12 @@
           });
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
+          $("#EditForm").on("click", function (e) {
+              var activeTab = $("#InspectTab li.active a").text()
+              var planTacticId = $("#hdnPlanTacticId").val();
+              loadReview(planTacticId, activeTab, "edit");
+          });
+          
       });
 
     function topTabsClick(tabText) {
@@ -166,27 +180,38 @@
         });
     }
 
-    function loadReview(id, tabValue) {
+    function loadReview(id, tabValue, mode) {
         $.ajaxSetup({ cache: false });
         var url;
         if (tabValue == TabSetup) {
-            url = '@Url.Content("~/Home/LoadSetup/")';
-          }
-          if (tabValue == TabReview) {
-              url = '@Url.Content("~/Home/LoadReview/")';
+            if (mode == "edit") {
+                url = '@Url.Content("~/Home/EditTactic/")';
+            }
+            else {
+                url = '@Url.Content("~/Home/LoadSetup/")';
+            }
+        }
+        if (tabValue == TabReview) {
+            url = '@Url.Content("~/Home/LoadReview/")';
         }
         if (tabValue == TabActual) {
             url = '@Url.Content("~/Home/LoadActuals/")';
-        }
+          }
 
-        RemoveTabClass();
-        $("#li" + tabValue).removeClass("pull-left");
-        $("#li" + tabValue).addClass("active pull-left");
-        $('#div' + tabValue).css({ display: "block" });
+          RemoveTabClass();
+          $("#li" + tabValue).removeClass("pull-left");
+          $("#li" + tabValue).addClass("active pull-left");
+          $('#div' + tabValue).css({ display: "block" });
 
-        $("#divTab").empty();
-        $("#divTab").load(url + '?id=' + id);
-    }
+          $("#divTab").empty();
+
+          if (mode == "edit") {
+              $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""');
+          }
+          else {
+              $("#divTab").load(url + '?id=' + id + '&Mode=' + mode);
+          }
+      }
 
     //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
     function AssignDefaultValue() {

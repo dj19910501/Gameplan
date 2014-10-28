@@ -3726,7 +3726,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
         /// <param name="section">Parameter contains value from enum EntityType like Campaign or Program or Tactic.</param>
         /// <returns>If Plan Tactic or Plan Campaign or Plan Program contains custom fields than returns html string else empty string</returns>
-        public static MvcHtmlString GenerateCustomFieldsForInspectPopup(int id, string section,int fieldCounter=0)
+        public static MvcHtmlString GenerateCustomFieldsForInspectPopup(int id, string section,int fieldCounter=0,string mode="readOnly")
         {
             //list of custom fields for particular campaign or Program or Tactic
             List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
@@ -3749,7 +3749,14 @@ namespace RevenuePlanner.Helpers
                     {
                         //When item value contains double quots then it would be replaced 
                         string customFieldEntityValue = item.value != null ? item.value.Replace("\"", "&quot;") : string.Empty;
-                        sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
+                        if (mode=="readOnly")
+                        {
+                            sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");    
+                        }
+                        else
+                        {
+                            sb.Append("<input type=\"text\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");    
+                        }
 
                         //If custom field is required than add attribute require
                         if (item.isRequired)

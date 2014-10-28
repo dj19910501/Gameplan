@@ -146,6 +146,50 @@ namespace RevenuePlanner.Models
         public MvcHtmlString CustomFieldHtmlContent { get; set; }
     }
 
+    public class Inspect_Popup_Plan_Campaign_Program_TacticModel
+    {
+        public int PlanProgramId { get; set; }
+        public int PlanCampaignId { get; set; }
+        public int PlanTacticId { get; set; }
+
+        public string TacticTitle { get; set; }
+        public string ProgramTitle { get; set; }
+        public string CampaignTitle { get; set; }
+
+        public int TacticTypeId { get; set; }
+        
+        public string Description { get; set; }
+
+        public string Owner { get; set; }
+        public Guid OwnerId { get; set; }
+
+        public int VerticalId { get; set; }
+        public int AudienceId { get; set; }
+        public Guid GeographyId { get; set; }
+
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public double MQLs { get; set; }
+        public double Cost { get; set; }
+
+        public DateTime PStartDate { get; set; }
+        public DateTime PEndDate { get; set; }
+        public DateTime CStartDate { get; set; }
+        public DateTime CEndDate { get; set; }
+
+        public bool IsDeployedToIntegration { get; set; }
+
+        public int StageId { get; set; }
+        public string StageTitle { get; set; }
+        public double ProjectedStageValue { get; set; }
+
+
+        public double TacticCost { get; set; }
+        public string AllocatedBy { get; set; }
+        public double Revenue { get; set; }
+        public MvcHtmlString CustomFieldHtmlContent { get; set; }
+    }
+
     public class Plan_Campaign_Program_Tactic_LineItemModel
     {
         public int PlanLineItemId { get; set; }

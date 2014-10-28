@@ -1,0 +1,442 @@
+﻿@model RevenuePlanner.Models.Inspect_Popup_Plan_Campaign_Program_TacticModel
+@using RevenuePlanner.Helpers;
+
+@using (Html.BeginForm())
+{
+    
+ @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+    @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
+    @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
+    @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
+    @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
+    @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
+    @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
+    @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+    @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
+
+ <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+     <div class="span6" id="inspect-modal-left-column1">
+         <p>Parent Campaign</p>
+         @Html.TextBoxFor(model => model.CampaignTitle, new { @class = "span12 input-small truncate", id = "txtCampaign", @readonly = "true", style = "background:#F2F2F2;" })
+         <p>Parent Program</p>
+         @Html.TextBoxFor(model => model.ProgramTitle, new { @class = "span12 input-small truncate", id = "txtProgram", @readonly = "true", style = "background:#F2F2F2;" })
+         <p>Description</p>
+         @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size", id = "Description" })
+     </div>
+     <div class="span3" id="inspect-modal-left-column2">
+         <p>Tactic Type</p>
+         @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })
+         <p>Cost</p>
+         @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate", id = "TacticCost", })
+         <p>Start Date</p>
+         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+             @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", id = "t_startdate" })
+             <span class="add-on">
+                 <img src="~/Content/images/gray-calendar-icon.png"></span>
+         </div>
+         <p>End Date</p>
+         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+             @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small", id = "t_enddate" })
+             <span class="add-on">
+                 <img src="~/Content/images/gray-calendar-icon.png"></span>
+         </div>
+     </div>
+     <div class="span3" id="inspect-modal-left-column3">
+         <p>Owner</p>
+         @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = Model.Owner })
+         <p style="width: 110%;">Deployed to Integration</p>
+         @Html.DropDownListFor(model => model.IsDeployedToIntegration, new SelectList((System.Collections.IEnumerable)Common.YesNoDropdownList(), "Value", "Text"), new { @class = "ddlStyle", require = "true" })
+
+         <div class="cf width100">
+             <div class="width65px margin-right20 pull-left" style="width: 30%">
+                 @*<label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>*@
+
+                 <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
+                          @if (ViewBag.IsDiffrentStageType == true)
+                          {
+                              <span>
+                                  <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
+                              
+                          }</label>
+                 @*@Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
+                 @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+             </div>
+
+             <div class="width65px margin-right20 pull-left" style="width: 30%">
+                 <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
+                 @*@Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @readonly = "true" })*@
+                 <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
+             </div>
+
+             @*  <div class="width65px margin-right20 pull-left">
+                    <label title="Cost">Cost</label>
+                    @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                </div>*@
+
+             <div class="width65px pull-left" style="width: 30%">
+                 <label title="Revenue">Revenue</label>
+                 @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+             </div>
+         </div>
+     </div>
+ </div>
+
+    <ul class="nav nav-tabs new-margin padding-bottom10 clear" id="InspectTab">
+        <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
+        </li>
+    </ul>
+
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+        <div class="span3 margin-top10">
+            <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
+            <span class="verticalIdSelectBox" style="margin-left: -2px;">
+                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+            </span>
+        </div>
+        <div class="span3 margin-top10 paddingleft25px">
+            <p>Vertical</p>
+            @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+        </div>
+        <div class="span3 margin-top10 paddingleft25px">
+            <p>Geography</p>
+            @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+        </div>
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 3,"addEdit")
+    </div>   
+}
+
+<script type="text/javascript">
+    var hdnYear;
+
+    $(document).ready(
+      function () {
+          
+          $('#txtTacticTitle').css('display', 'block');
+          $('#lblTacticTitle').css('display', 'none');
+          $('#divTacticSaveCancel').css('display', 'block');
+          $('#EditForm').css('display', 'none');
+
+          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point to add title tooltip 2-7-2014
+          $(".selectBox select").selectbox();
+
+          $('.dp').datepicker({
+              format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+              autoclose: true,
+          }).on('changeDate', function (ev) {
+              //var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
+              //if ($('#ddlTacticType').val() != '') {      // Added by Sohel Pathan on 11/07/2014 for PL ticket #549
+              //    GetConversionRate(projectedStageValue, false);//commented by uday for internal point 68 17-7-2014
+              //}
+              $(this).datepicker('hide');
+          });;
+
+          /*hide the other datepicker in input onclick*/
+
+         
+
+          $('#t_startdate').click(function () {
+              $('#dp_end').datepicker('hide');
+          })
+
+          $('#t_enddate').click(function () {
+              $('#dp_start').datepicker('hide');
+          })
+
+          //hide the other datepicker in add-on onclick
+          $('#dp_start .add-on').click(function () {
+              alert("yes");
+              $('#dp_start').datepicker('show');
+              $('#dp_end').datepicker('hide');
+          })
+
+          $('#dp_end .add-on').click(function () {
+              $('#dp_start').datepicker('hide');
+              $('#dp_end').datepicker('show');
+          })
+
+          $("#btnUploadResult").on("click", function (e) {
+              hdnYear = @ViewBag.Year
+              saveTactic();
+          });
+
+          $("#btnCancel").on("click", function (e) {
+              var activeTab = $("#InspectTab li.active a").text()
+              var planTacticId = $("#hdnPlanTacticId").val();
+              $('#txtTacticTitle').css('display', 'none');
+              $('#lblTacticTitle').css('display', 'block');
+              $("#lblTacticTitle").removeAttr("style");
+
+              $('#divTacticSaveCancel').css('display', 'none');
+              $('#EditForm').css('display', 'block');
+              loadReview(planTacticId, activeTab);
+          });
+
+      });
+    
+    function saveTactic() {
+        var isLowBudgeted = false;
+        var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
+        var lowBudgetedMonths = "";
+        var removeLength = 0;
+        
+        var iserror = false;
+        $('form').find('input[type=text], select, textarea').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        //sbSelector
+        $('form').find('.sbSelector').each(function () {
+            if ($(this).parent().prev().attr('require') == 'true') {
+                if ($(this).text() == 'Please Select') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
+        //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+        var sdate = $('#t_startdate').val();
+        alert("sdate - " + sdate);
+        var edate = $('#t_enddate').val();
+        alert("edate - " + edate);
+        if (!isDate(sdate)) {
+            alert('@Common.objCached.ValidateStartDate');
+              return false;
+          }
+          if (!isDate(edate)) {
+              alert('@Common.objCached.ValidateEndDate');
+                 return false;
+            }
+
+
+        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+        if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+
+        $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
+        if ($("#txtmql").val() == 'N/A') {
+            $("#txtmql").val(0);
+            $("#txtmql").attr("title", "0");
+        }
+        else {
+            var mqlValue = ReplaceCC($("#txtmql").val());
+            $("#txtmql").val(mqlValue);
+            $("#txtmql").attr("title", mqlValue);
+        }
+
+        $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));    // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
+        var arrClosedTaskString = null;
+        if (typeof arrClosedTask != 'undefined') {
+            arrClosedTaskString = arrClosedTask.toString();
+        }
+        ////Start by Kalpesh Sharma #605: Cost allocation for Tactic
+        //var allocationValue = [];
+        //var lstAllocInputs = $("#planned-Cost-Allocation input").not('.unallocated-text');
+        //for (var i = 0; i < lstAllocInputs.length; i++) {
+        //    allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
+        //}
+        ///*Start Added by Mitesh Vaishnav for PL ticket #571
+        //creating variable which contains month wise actual cost of tactic*/
+        //var actualAllocationValue = [];
+        //var lstActualAllocInputs = $("#actual-Cost-Allocation input").not('.unallocated-text');
+        //for (var i = 0; i < lstActualAllocInputs.length; i++) {
+        //    actualAllocationValue.push(ReplaceCC($(lstActualAllocInputs[i]).val()));
+        //}
+        ///*End Added by Mitesh Vaishnav for PL ticket #571*/
+        var arLineitem = [];
+        var _Lineitems = $("#frm_campaigns #c_tactics select");
+        for (var l = 0; l < _Lineitems.length; l++) {
+            var typeid = $(_Lineitems[l]).val();
+            arLineitem[l] = typeid;
+        }
+        ////Start Added by Mitesh Vaishnav for PL ticket #720
+        ////creating object which contains value of custom fields
+        var _customFieldValues = [];
+        $('form').find('input[type=text], select').each(function () {
+            if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
+                _customFieldValues.push({
+                    Key: $(this).attr('cf_id').toString(),
+                    Value: htmlEncode($(this).val().toString())
+                });
+            }
+        });
+        _customFieldValues = JSON.stringify(_customFieldValues);
+        var uId = $(window).attr('name');
+        var isAssortment = true;
+        $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/SaveTactic1")',
+            data: $("form").serialize() + '&lineitems=' + arLineitem + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues),
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.redirect) {
+                        //window.location.href = data.redirect;
+                        //$("#divTab").load(data.redirect);
+                        var activeTab = $("#InspectTab li.active a").text()
+                        var planTacticId = $("#hdnPlanTacticId").val();
+                        $("#lblTacticTitle").val($("#hdnPlanTacticTitle").val());
+                        //loadReview(planTacticId, activeTab);
+                        $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
+                        $('#txtTacticTitle').css('display', 'none');
+                        $('#lblTacticTitle').css('display', 'block');
+                        $("#lblTacticTitle").removeAttr("style");
+                        $('#divTacticSaveCancel').css('display', 'none');
+                        $('#EditForm').css('display', 'block');
+                        loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab);
+                             return;
+                    }
+
+                         if (data.errormsg) {
+
+                             document.getElementById("Title").value = htmlDecode($('#Title').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                             document.getElementById("Description").value = htmlDecode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                             ShowError(data.errormsg);
+                             //Added By : Kalpesh Sharma Functional and Review Points 07/31/2014
+                             $("#divBudgetError").slideUp(30);
+                             return;
+                         }
+                     }
+            }
+        });
+         }
+
+    function ShowError(value) {
+        $("#errorMessage").css("display", "block");
+        $("#errorMessage").slideDown(400);
+        $("#spanMessage").empty();
+        $("#spanMessage").text(value);
+    }
+
+         $('#ddlTacticType').change(function () {
+             var tacticTypeId = $(this).val();
+             var pmql = 0;
+             var pcost = 0;
+             var projectedStageValue = 0;
+             if (tacticTypeId != '') {
+                 if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {
+                     $.ajax({
+                         type: 'POST',
+                         url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
+                         data: { tacticTypeId: tacticTypeId },
+                         success: function (data) {
+                             pcost = data.revenue;
+                             projectedStageValue = data.projectedStageValue;
+                             $("#lblStageTitle").text(data.stageTitle);
+                             $("#hdnStageId").val(data.stageId);
+                             $("#txtProjectedStageValue").val(projectedStageValue);
+                             GetConversionRate(projectedStageValue, true);
+                             $("#TacticCost").val(pcost);
+
+                             $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                             $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+                             //var ProgramBudgetValue = ReplaceCC($("#TacticCost").val());
+                             //var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val()) - ProgramBudgetValue;
+                             //$("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+                             //FormatRemainingBudget();
+                             //$("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+
+                             if (data.IsDeployedToIntegration) {
+                                 //$("#t_integration_status").val("Sync to integration");
+                                 //$("#t_integration_status").addClass("icon-check-blue");
+                                 //$("#t_integration_status").removeClass("icon-check-gray");
+                                 $("#hdnIsDeployedToIntegration").val(true);
+                             }
+                             else {
+                                 //$("#t_integration_status").val("Not Sync to integration");
+                                 //$("#t_integration_status").addClass("icon-check-gray");
+                                 //$("#t_integration_status").removeClass("icon-check-blue");
+                                 $("#hdnIsDeployedToIntegration").val(false);
+                             }
+                             $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());   // Added by Sohel Pathan on 12/08/2014 for PL ticket #605
+                         }
+                     });
+                 }
+             }
+             else {
+                 $("#txtProjectedStageValue").val(projectedStageValue);
+                 $("#txtmql").val(pmql);
+                 $("#txtRevenue").val('0');
+
+                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
+                 $("#TacticCost").val('0');
+                 $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                 $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                 $("#lblStageTitle").text("Stage");
+                 $("#hdnStageId").val("0");
+                 // Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
+                 var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val());
+                 // $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+                 $('#hdnPrevTacticTypeId').val('0');
+                 // End - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
+             }
+
+             $('#ddlTacticType').next().find('.sbSelector').focus();
+         });
+
+         function FormatRemainingBudget() {
+             if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+                 $("#txtRemainingBudget").addClass('error-text');
+             }
+             else {
+                 $("#txtRemainingBudget").removeClass('error-text');
+             }
+         }
+
+         $("#txtProjectedStageValue").focusout(function () {
+             var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
+             $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
+             GetConversionRate(projectedStageValue, false);
+             $("#txtProjectedStageValue").val(FormatCommas($("#txtProjectedStageValue").val(), false));
+         });
+
+         var isAssortment = true;
+         var mqlConversion = 0;
+         function GetConversionRate(projectedStageValue, isTacticTypeChange) {
+             if ($('#ddlTacticType').val() != '') {//added by uday for point 68
+                 $.ajax({
+                     type: 'POST',
+                     url: '@Url.Content("~/Home/CalculateMQL")',
+                data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
+                success: function (data) {
+                    if (data.mql == 'N/A') {
+                        $("#txtmql").val(data.mql);
+                        $("#txtmql").attr("title", data.mql);
+                        $("#txtmql").removeClass('priceValue');
+                    }
+                    else {
+                        mqlConversion = data.mql;
+                        var mqlValue = FormatCommas(mqlConversion.toString(), false);
+                        $("#txtmql").val(mqlValue);
+                        $("#txtmql").attr("title", mqlValue);
+                    }
+                    // Added by dharmraj on 4-sep-2014, #760 Advanced budgeting – show correct revenue in Tactic fly out
+                    $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ',')); //Modified by Sohel Pathan on 10/09/2014 for PL ticket #760
+                    $("#txtRevenue").attr("title", $("#txtRevenue").val());
+                }
+            });
+        }
+    }
+
+</script>
