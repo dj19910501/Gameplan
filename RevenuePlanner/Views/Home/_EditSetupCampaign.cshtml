@@ -7,7 +7,7 @@
     //deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
 }
 
-
+<script src="~/Scripts/js/bootstrap-datepicker.js"></script>   
 @using (Html.BeginForm())
 {
     
@@ -135,13 +135,16 @@
     $('#dp_start .add-on').click(function () {
         $('#dp_start').datepicker('show');
         $('#dp_end').datepicker('hide');
+        $(".dropdown-menu").css("z-index", "25001");
+    })
 
-    });
     $('#dp_end .add-on').click(function () {
         $('#dp_start').datepicker('hide');
         $('#dp_end').datepicker('show');
+        $(".dropdown-menu").css("z-index", "25001");
+    })
 
-    });
+
 
     $('.dp').datepicker({
         format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
