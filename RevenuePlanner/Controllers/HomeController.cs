@@ -8242,7 +8242,7 @@ namespace RevenuePlanner.Controllers
 
             return Json(new { IsSaved = false, msg = Common.objCached.ErrorOccured, JsonRequestBehavior.AllowGet });
         }
- /// <summary>
+       /// <summary>
         /// Added By: Mitesh Vaishnav.
         /// Action to Load Campaign Setup Tab in edit mode.
         /// </summary>
@@ -8355,7 +8355,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string customFieldInputs, string UserId = "")
+        public ActionResult SaveCampaign(Plan_CampaignModel form,string title, string customFieldInputs, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -8383,8 +8383,8 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(form.PlanCampaignId) && pcobjw.IsDeleted.Equals(false)).SingleOrDefault();
-                            //TODO
-                            //pcobj.Title = form.Title;
+                            
+                            pcobj.Title = title;
                             pcobj.Description = form.Description;
                             pcobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                             pcobj.StartDate = form.StartDate;

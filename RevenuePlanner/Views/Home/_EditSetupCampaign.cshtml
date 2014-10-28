@@ -274,7 +274,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/home/SaveCampaign")',
-            data: formData + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues),
+            data: formData + '&UserId=' + uId +'&title='+campaignTitle+ '&customFieldInputs=' + escape(_customFieldValues),
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
@@ -286,8 +286,10 @@
                         $("#successMessageEditCamapaign").slideDown(400);
                         $("#spanSuccessMessageEditCamapaign").empty();
                         $("#spanSuccessMessageEditCamapaign").html(data.successmsg);
-                        $("lblCampaignTitle").html($("#txtTitle").text());
-                        $("tactic-name").html($("#txtTitle").text());
+                        $("#lblCampaignTitle").html($("#txtTitle").val());
+                        $("#btnEditCampaign").css("display", "block");
+                        $("#lblCampaignTitle").css("display", "block");
+                        $("#tactic-name").html($("#txtTitle").val());
                         $("#txtTitle").css("display", "none");
                         $("#NonEditedTitleSpan").css("display", "block");
                         var url = '@Url.Content("~/Home/LoadSetupCampaign/")';
