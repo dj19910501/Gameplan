@@ -183,7 +183,7 @@
             </table>
         </div>
         <div class="pull-left" style="float: left; width: 150px;">
-            <table class="table mystats table-style shadow-table">
+            <table class="table table-striped mystats table-style">
                 <thead>
                     <tr class="height42">
                         <th class="font908D88 text-align-right" style="width:75px;">Projected</th> @*removing padding-left55 class by mitesh vaishnav for pl ticket 812*@
@@ -220,7 +220,7 @@
                         <input type="hidden" id="hdnRp" value="@tacticActual.Revenues" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right setBudget border-none" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th> @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@
                     </tr>
-                    <tr class="height42">
+                    <tr class="height42" id="tr_rightCost">
                         <th id="cP" class="text-align-right projected font3F3F3F setBudget border-none">@tacticActual.Cost</th> @* Modified by Sohel Pathan on 15/09/2014 for PL ticket #760 *@
                         <input type="hidden" id="hdnCp" value="@tacticActual.Cost" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <th class="border-r font3F3F3F text-align-right border-none" id="lblTotalCost">0</th>
@@ -302,6 +302,7 @@
                     if (r.IsLineItemForTactic) {
                         $("#trCost").addClass("disabled-row");
                             $("#tr_titleCost").addClass("disabled-row");
+                        $("#tr_rightCost").addClass("disabled-row");
                         LineItemActual = r.ActualCostAllocationData;
                         fillLineItemValue();
                     }
