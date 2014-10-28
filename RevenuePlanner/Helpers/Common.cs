@@ -4305,7 +4305,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="planTacticIds">List of PlanTactic Id's</param>
         /// <param name="planIds">list of planids with comma Sepreated</param>
         /// <returns>List of ViewByModel</returns>
-        public static List<ViewByModel> GetDefaultGanttTypes(List<int> planTacticIds, string planIds = "")
+        public static List<ViewByModel> GetDefaultGanttTypes(List<int> planTacticIds)
         {
             //Initialize the default Plan Gantt Types
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();

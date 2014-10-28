@@ -142,6 +142,7 @@
                     }
                 }
                 PagePostRequest = false;
+                getViewByList = true;
                 RefreshCurrentTab();
                 if (CurrentPlanId > 0) {
                     GetHealderData(CurrentPlanId);
@@ -738,6 +739,7 @@
                     isQuater = Currenttime;
                     SetBudget("#pbudget");
                     SetPriceValue("#pMQLs");
+                    getViewByList = true;
                     RefreshCurrentTab();
                     GetHealderData(SelectedPlanIds);
                     GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
@@ -1407,6 +1409,7 @@
     $(".selectBox select").selectbox();
     $('#ddlBusinessUnit').change(function () {
         var Bid = $('#ddlBusinessUnit').val();
+        getViewByList = true;
         SelectedBusinessUnitTitle = ($("#dropdown-business-unit .sbSelector").html());
         CurrentPlanId = $('#PlanId').val();
         $("#CurrentPlanId").val(CurrentPlanId);
@@ -1452,6 +1455,7 @@
     /// Added By: Maninder Singh Wadhva.
     //// Default load tactics in view control.
     var activeMenu = $('#ActiveMenu').val().toLowerCase();
+    var getViewByList = false;  //// Added by Sohel Pathan on 28/10/2014 for PL ticket #885.
     function DuplicatePlan() {
         $.ajax({
             type: 'POST',
@@ -1527,7 +1531,7 @@
             else {
                 PlanIdsCustom = CurrentPlanId;
             }
-
+            getViewByList = true;
             BindOtherAttributes();
             GetOwnerListForFilter(PlanIdsCustom); 
             if (filters.OwnerTitles.length <= 0) {
@@ -1797,8 +1801,7 @@
             var GeoId = filters.geographyIds;
             var VerticalId = filters.VerticalId;
             var AudienceId = filters.AudienceIds;
-        var OwnerIds = filters.OwnerIds;
-
+            var OwnerIds = filters.OwnerIds;
             var GetSelectedPlanNo = filters.SelectedPlans.length;
 
             if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
@@ -1815,9 +1818,9 @@
             BUId = ($('#ddlBusinessUnit').val());
             GetSelectedPlanNo = 1;
         }
+
             if (Planid != 0) {
-        $.ajax(
-          {
+            $.ajax({
               type: "GET",
               cache: false,
               url: '@Url.Action("GetViewControlDetail", "Home")',
@@ -1830,12 +1833,17 @@
                   verticalIds: VerticalId.toString(),
                   audienceIds: AudienceId.toString(),
                   ownerIds: OwnerIds.toString(),
-                  activeMenu: $('#ActiveMenu').val()
+                activeMenu: $('#ActiveMenu').val(),
+                getViewByList: getViewByList
               },
               dataType: "json",
               success: function (data) {
-                  BindViewSelections(data.ViewById);
-                  $('#ddlTabViewBy').val(type.toString());
+                  type = data.ViewBy.toString();
+                  if (getViewByList == true) {
+                      BindViewSelections(data.ViewById, type);
+                  }
+                  getViewByList = false;
+                  $('#ddlTabViewBy').val(data.ViewBy.toString());
                   $('.request-icons').find('.counter').html(data.requestCount);
                   planYear = parseInt(data.planYear);
                   var isDataExistForTacticTable = false;
@@ -1968,7 +1976,7 @@
   }
 
 
-      function BindViewSelections(data) {
+    function BindViewSelections(data, type) {
         var $dropdown = $("#ddlTabViewBy");
         $dropdown.html('');
         var $html = '';

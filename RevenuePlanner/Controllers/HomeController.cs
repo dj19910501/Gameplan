@@ -374,11 +374,11 @@ namespace RevenuePlanner.Controllers
                 }
 
             }
-            if(planList != null)
+            if (planList != null)
                 planList = planList.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             objHomePlan.plans = planList;
 
-            List<ViewByModel> lstViewByTab = Common.GetDefaultGanttTypes(null, Convert.ToString(currentPlanId));
+            List<ViewByModel> lstViewByTab = Common.GetDefaultGanttTypes(null);
             ViewBag.ViewByTab = lstViewByTab;
 
             List<SelectListItem> lstUpComingActivity = UpComingActivity(Convert.ToString(currentPlanId));
@@ -421,7 +421,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="planVersionId">Plan version Id.</param>
         /// <returns>Returns tactic type and paln campaign program tactic as Json Result.</returns>
-        public JsonResult GetViewControlDetail(string viewBy, string planId, string isQuarter, string businessunitIds, string geographyIds, string verticalIds, string audienceIds, string ownerIds, string activeMenu)
+        public JsonResult GetViewControlDetail(string viewBy, string planId, string isQuarter, string businessunitIds, string geographyIds, string verticalIds, string audienceIds, string ownerIds, string activeMenu, bool getViewByList)
         {
             #region "For all users"
 
@@ -527,6 +527,8 @@ namespace RevenuePlanner.Controllers
 
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
 
+            var tacticForAllTabs = tactic.ToList();
+
             // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
             if (viewBy.Equals(PlanGanttTypes.Request.ToString()))
             {
@@ -565,13 +567,24 @@ namespace RevenuePlanner.Controllers
                 improvementTacticTypeForAccordion = GetImprovementTacticTypeForAccordion(improvementTactic);
             }
 
+            // Start - Added by Sohel Pathan on 28/10/2014 for PL ticket #885
+            var viewByListResult = prepareViewByList(getViewByList, tacticForAllTabs);
+            if (viewByListResult.Count > 0)
+            {
+                if (!(viewByListResult.Where(v => v.Value.Equals(viewBy, StringComparison.OrdinalIgnoreCase)).Any()))
+                {
+                    viewBy = PlanGanttTypes.Tactic.ToString();
+                }
+            }
+            // End - Added by Sohel Pathan on 28/10/2014 for PL ticket #885
+
             if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) || viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                return PrepareTacticAndRequestTabResult(campaign.ToList(), program.ToList(), tactic.ToList(), improvementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, planId);
+                return PrepareTacticAndRequestTabResult(viewBy, campaign.ToList(), program.ToList(), tactic.ToList(), improvementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, planId, viewByListResult);
             }
             else
             {
-                return PrepareCustomFieldResult(viewBy, campaign.ToList(), program.ToList(), tactic.ToList(), improvementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, planId);
+                return PrepareCustomFieldResult(viewBy, campaign.ToList(), program.ToList(), tactic.ToList(), improvementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, planId, viewByListResult);
             }
 
             #endregion
@@ -591,8 +604,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="improvementTacticForAccordion"></param>
         /// <param name="improvementTacticTypeForAccordion"></param>
         /// <returns></returns>
-        private JsonResult PrepareCustomFieldResult(string viewBy, List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, string planId)
+        private JsonResult PrepareCustomFieldResult(string viewBy, List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, string planId, List<ViewByModel> viewByListResult)
         {
+            string sourceViewBy = viewBy;
             int CustomTypeId = 0;
             if (viewBy.Contains(Common.CustomTitle))
             {
@@ -891,7 +905,7 @@ namespace RevenuePlanner.Controllers
                         ColorCode = Common.ColorCodeForCustomField,
                         StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForCustomField(PlanGanttTypes.Custom, item.tactic.PlanTacticId, campaign, program, tactic)),
                         EndDate = Common.GetEndDateAsPerCalendarInDateFormat(CalendarEndDate, GetMaxEndDateForCustomField(PlanGanttTypes.Custom, item.tactic.PlanTacticId, campaign, program, tactic)),  //item.tactic.EndDate,
-                        Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, 
+                        Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
                                                           GetMinStartDateForCustomField(PlanGanttTypes.Custom, item.tactic.PlanTacticId, campaign, program, tactic),
                                                           GetMaxEndDateForCustomField(PlanGanttTypes.Custom, item.tactic.PlanTacticId, campaign, program, tactic)),
                         CampaignProgress = GetCampaignProgress(tactic.Where(t => t.PlanTacticId == item.tactic.PlanTacticId).Select(t => t).ToList(),
@@ -1184,7 +1198,6 @@ namespace RevenuePlanner.Controllers
 
             var finalTaskData = newTaskDataCustomField.Concat<object>(newTaskDataPlan).Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic).Concat<object>(newTaskDataCampaign).Concat<object>(newTaskDataTactic).Concat<object>(newTaskDataProgram).ToList<object>();
 
-            List<ViewByModel> lstViewById = Common.GetDefaultGanttTypes(tactic.ToList().Select(t => t.PlanTacticId).ToList(), planId);
             return Json(new
             {
                 customFieldTactics = lstCustomFieldTactics,
@@ -1194,7 +1207,8 @@ namespace RevenuePlanner.Controllers
                 planYear = planYear,
                 improvementTacticForAccordion = viewBy.Equals(PlanGanttTypes.Custom.ToString(), StringComparison.OrdinalIgnoreCase) ? 0 : improvementTacticForAccordion,
                 improvementTacticTypeForAccordion = viewBy.Equals(PlanGanttTypes.Custom.ToString(), StringComparison.OrdinalIgnoreCase) ? 0 : improvementTacticTypeForAccordion,
-                ViewById = lstViewById
+                ViewById = viewByListResult,
+                ViewBy = sourceViewBy
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -1209,7 +1223,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="requestCount">No. of tactic count for Request tab</param>
         /// <param name="planYear">Plan year</param>
         /// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        private JsonResult PrepareTacticAndRequestTabResult(List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, string planId)
+        private JsonResult PrepareTacticAndRequestTabResult(string viewBy, List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, string planId, List<ViewByModel> viewByListResult)
         {
             var planCampaignProgramTactic = tactic.ToList().Select(pcpt => new
             {
@@ -1229,7 +1243,6 @@ namespace RevenuePlanner.Controllers
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             List<object> tacticAndRequestTaskData = GetTaskDetailTactic(campaign.ToList(), program.ToList(), tactic.ToList(), improvementTactic);
 
-            List<ViewByModel> lstViewById = Common.GetDefaultGanttTypes(tactic.ToList().Select(t => t.PlanTacticId).ToList(), planId);
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             return Json(new
             {
@@ -1240,201 +1253,31 @@ namespace RevenuePlanner.Controllers
                 planYear = planYear,
                 improvementTacticForAccordion = improvementTacticForAccordion,
                 improvementTacticTypeForAccordion = improvementTacticTypeForAccordion,
-                ViewById = lstViewById
+                ViewById = viewByListResult,
+                ViewBy = viewBy
             }, JsonRequestBehavior.AllowGet);
         }
         #endregion
 
-        #region Prepare Vertical Tab data
-        ///// <summary>
-        ///// Prepare Json result for Vertical tab to be rendered in gantt chart
-        ///// </summary>
-        ///// <param name="campaign">list of campaigns</param>
-        ///// <param name="program">list of programs</param>
-        ///// <param name="tactic">list of tactics</param>
-        ///// <param name="improvementTactic">list of improvement tactics</param>
-        ///// <param name="requestCount">No. of tactic count for Request tab</param>
-        ///// <param name="planYear">Plan year</param>
-        ///// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        //private JsonResult PrepareVerticalTabResult(List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion)
-        //{
-        //    var verticalTactic = tactic.ToList().Select(pcpt => new
-        //    {
-        //        PlanTacticId = pcpt.PlanTacticId,
-        //        VerticalId = pcpt.VerticalId,
-        //        Title = pcpt.Title,
-        //        TaskId = string.Format("V{0}_L{1}_C{2}_P{3}_T{4}", pcpt.VerticalId, pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId, pcpt.Plan_Campaign_Program.PlanCampaignId, pcpt.PlanProgramId, pcpt.PlanTacticId),
-        //    });
-
-        //    var verticals = (tactic.Select(vertical => vertical.Vertical)).Select(vertical => new
-        //    {
-        //        VerticalId = vertical.VerticalId,
-        //        Title = vertical.Title,
-        //        ColorCode = vertical.ColorCode
-        //    }).Distinct().OrderBy(vertical => vertical.Title);
-
-        //    List<object> verticalTaskData = GetTaskDetailVertical(campaign.ToList(), program.ToList(), tactic.ToList(), improvementTactic);
-
-        //    return Json(new
-        //    {
-        //        verticalTactic = verticalTactic.ToList(),
-        //        vertical = verticals.ToList(),
-        //        taskData = verticalTaskData,
-        //        requestCount = requestCount,
-        //        planYear = planYear,
-        //        improvementTacticForAccordion = improvementTacticForAccordion,
-        //        improvementTacticTypeForAccordion = improvementTacticTypeForAccordion
-        //    }, JsonRequestBehavior.AllowGet);
-        //}
-        #endregion
-
-        #region Prepare Stage Tab data
-        ///// <summary>
-        ///// Prepare Json result for Stage tab to be rendered in gantt chart
-        ///// </summary>
-        ///// <param name="campaign">list of campaigns</param>
-        ///// <param name="program">list of programs</param>
-        ///// <param name="tactic">list of tactics</param>
-        ///// <param name="improvementTactic">list of improvement tactics</param>
-        ///// <param name="requestCount">No. of tactic count for Request tab</param>
-        ///// <param name="planYear">Plan year</param>
-        ///// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        //private JsonResult PrepareStageTabResult(List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion)
-        //{
-        //    var queryStages = tactic.Select(t => new
-        //    {
-        //        t.StageId,
-        //        t.Stage.Title,
-        //        t.Stage.ColorCode
-        //    }).Distinct();
-
-        //    var queryStageTacticType = tactic.Select(t => new
-        //    {
-        //        t.PlanTacticId,
-        //        t.Title,
-        //        t.StageId,
-        //        TaskId = string.Format("S{0}_L{1}_C{2}_P{3}_T{4}", t.StageId, t.Plan_Campaign_Program.Plan_Campaign.PlanId, t.Plan_Campaign_Program.PlanCampaignId, t.PlanProgramId, t.PlanTacticId)
-        //    });
-
-        //    List<object> stageTaskData = GetTaskDetailStage(campaign.ToList(), program.ToList(), tactic.ToList(), improvementTactic);
-
-        //    return Json(new
-        //    {
-        //        //// For View Control.
-        //        stageTactic = queryStageTacticType.ToList(),
-
-        //        //// For View Control.
-        //        stage = queryStages.ToList(),
-
-        //        //// For Gantt.
-        //        taskData = stageTaskData,
-        //        requestCount = requestCount,
-        //        planYear = planYear,
-        //        improvementTacticForAccordion = improvementTacticForAccordion,
-        //        improvementTacticTypeForAccordion = improvementTacticTypeForAccordion
-        //    }, JsonRequestBehavior.AllowGet);
-        //}
-        #endregion
-
-        #region Prepare Audience Tab data
-        ///// <summary>
-        ///// Prepare Json result for Audience tab to be rendered in gantt chart
-        ///// </summary>
-        ///// <param name="campaign">list of campaigns</param>
-        ///// <param name="program">list of programs</param>
-        ///// <param name="tactic">list of tactics</param>
-        ///// <param name="improvementTactic">list of improvement tactics</param>
-        ///// <param name="requestCount">No. of tactic count for Request tab</param>
-        ///// <param name="planYear">Plan year</param>
-        ///// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        //private JsonResult PrepareAudienceTabResult(List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion)
-        //{
-        //    var audienceTactic = tactic.ToList().Select(pcpt => new
-        //    {
-        //        PlanTacticId = pcpt.PlanTacticId,
-        //        AudienceId = pcpt.AudienceId,
-        //        Title = pcpt.Title,
-        //        TaskId = string.Format("A{0}_L{1}_C{2}_P{3}_T{4}", pcpt.AudienceId, pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId, pcpt.Plan_Campaign_Program.PlanCampaignId, pcpt.PlanProgramId, pcpt.PlanTacticId)
-        //    });
-
-        //    var audiences = (tactic.Select(audience => audience.Audience)).Select(audience => new
-        //    {
-        //        audience.AudienceId,
-        //        audience.Title,
-        //        ColorCode = audience.ColorCode
-        //    }).Distinct().OrderBy(audience => audience.Title);
-
-        //    List<object> audienceTaskData = GetTaskDetailAudience(campaign.ToList(), program.ToList(), tactic.ToList(), improvementTactic);
-
-        //    return Json(new
-        //    {
-        //        audienceTactic = audienceTactic.ToList(),
-        //        audience = audiences.ToList(),
-        //        taskData = audienceTaskData,
-        //        requestCount = requestCount,
-        //        planYear = planYear,
-        //        improvementTacticForAccordion = improvementTacticForAccordion,
-        //        improvementTacticTypeForAccordion = improvementTacticTypeForAccordion
-        //    }, JsonRequestBehavior.AllowGet);
-        //}
-        #endregion
-
-        #region Prepare BusinessUnit Tab data
-        ///// <summary>
-        ///// Prepare Json result for BusinessUnit tab to be rendered in gantt chart
-        ///// </summary>
-        ///// <param name="campaign">list of campaigns</param>
-        ///// <param name="program">list of programs</param>
-        ///// <param name="tactic">list of tactics</param>
-        ///// <param name="improvementTactic">list of improvement tactics</param>
-        ///// <param name="requestCount">No. of tactic count for Request tab</param>
-        ///// <param name="planYear">Plan year</param>
-        ///// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        //private JsonResult PrepareBusinessUnitTabResult(List<Plan_Campaign> campaign, List<Plan_Campaign_Program> program, List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion)
-        //{
-        //    //// Business and Tactic type.
-        //    var queryBusinessUnitTacticType = tactic.Select(pt => new
-        //    {
-        //        pt.PlanTacticId,
-        //        pt.Title,
-        //        pt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId,// businessUnit.BusinessUnitId,
-        //        TaskId = string.Format("B{0}_L{1}_C{2}_P{3}_T{4}", pt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId, pt.Plan_Campaign_Program.Plan_Campaign.PlanId, pt.Plan_Campaign_Program.PlanCampaignId, pt.PlanProgramId, pt.PlanTacticId)
-        //    });
-
-        //    var businessUnits = (tactic.Select(bu => bu.BusinessUnit)).Select(bu => new
-        //    {
-        //        bu.BusinessUnitId,
-        //        bu.Title,
-        //        ColorCode = bu.ColorCode
-        //    }).Distinct().OrderBy(audience => audience.Title);
-
-        //    //// Modified By Maninder Singh Wadhva PL Ticket#47
-        //    List<object> businessUnitTaskData = GetTaskDetailBusinessUnit(tactic.ToList(), improvementTactic);
-
-        //    //// Modified By Maninder Singh Wadhva PL Ticket#47
-        //    if (queryBusinessUnitTacticType.Count() > 0)
-        //    {
-        //        return Json(new
-        //        {
-        //            //// For View Control.
-        //            businessUnitTactic = queryBusinessUnitTacticType.ToList(),
-
-        //            //// For View Control.
-        //            businessUnit = businessUnits,
-
-        //            //// For Gantt.
-        //            taskData = businessUnitTaskData,
-        //            requestCount = requestCount,
-        //            planYear = planYear,
-        //            improvementTacticForAccordion = improvementTacticForAccordion,
-        //            improvementTacticTypeForAccordion = improvementTacticTypeForAccordion
-        //        }, JsonRequestBehavior.AllowGet);
-        //    }
-        //    else
-        //    {
-        //        return Json(new { businessUnitTactic = "", businessUnit = "", taskData = "", planYear = planYear }, JsonRequestBehavior.AllowGet);
-        //    }
-        //}
+        #region Prepare ViewBy List for Dropdown
+        /// <summary>
+        /// Added By : Sohel Pathan
+        /// Added Date : 28/10/2014
+        /// Description : Prepare a list for ViewBy Dropdown.
+        /// </summary>
+        /// <param name="getViewByList">flag that indicates whether to prepare new ViewBy list based on tactic list or not.</param>
+        /// <param name="tacticForAllTabs">List of all tactic of selected plan</param>
+        /// <returns>List of ViewBy options</returns>
+        private List<ViewByModel> prepareViewByList(bool getViewByList, List<Plan_Campaign_Program_Tactic> tacticForAllTabs)
+        {
+            List<ViewByModel> lstViewById = new List<ViewByModel>();
+            if (getViewByList)
+            {
+                lstViewById = Common.GetDefaultGanttTypes(tacticForAllTabs.ToList().Select(t => t.PlanTacticId).ToList());
+                lstViewById = lstViewById.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            }
+            return lstViewById;
+        }
         #endregion
 
         /// <summary>
@@ -2686,70 +2529,98 @@ namespace RevenuePlanner.Controllers
                 planid = c.planid
             });
 
-            if (NewTaskDataTactic.Count() > 0)
+            var planIdList = tactic.Select(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId).ToList().Distinct();
+
+            var taskDataPlanForImprovement = improvementTactic.Where(it => !planIdList.Contains(it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(t => new
             {
-                #region Improvement Activities & Tactics
-                var improvemntTacticList = improvementTactic.Select(it => new
-                {
-                    ImprovementTactic = it,
-                    //// Getting start date for improvement activity task.
-                    minStartDate = improvementTactic.Where(impt => impt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impt => impt.EffectiveDate).Min(),
-                }).Select(a => a).ToList().Distinct().ToList();
+                id = string.Format("L{0}", t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                text = t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Title,
+                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.None, t.ImprovementPlanTacticId, t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, campaign, program, tactic)),
+                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                          CalendarEndDate,
+                                                          GetMinStartDateForPlan(GanttTabs.None, t.ImprovementPlanTacticId, t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, campaign, program, tactic),
+                                                          GetMaxEndDateForPlan(GanttTabs.None, t.ImprovementPlanTacticId, t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, campaign, program, tactic)),
+                progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.None, t.ImprovementPlanTacticId, t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, campaign, program, tactic)),
+                                                Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                          CalendarEndDate,
+                                                          GetMinStartDateForPlan(GanttTabs.None, t.ImprovementPlanTacticId, t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, campaign, program, tactic),
+                                                          GetMaxEndDateForPlan(GanttTabs.None, t.ImprovementPlanTacticId, t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, campaign, program, tactic)),
+                                               tactic, improvementTactic, t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                open = false,
+                color = GetColorBasedOnImprovementActivity(improvementTactic, t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                planid = t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId
+            }).Select(t => t).Distinct().OrderBy(t => t.text);
 
-                //// Improvement Activities
-                var taskDataImprovementActivity = improvemntTacticList.Select(ita => new
-                {
-                    id = string.Format("L{0}_M{1}", ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, ita.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId),
-                    text = ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title,
-                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, ita.minStartDate),
-                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                              CalendarEndDate,
-                                                              ita.minStartDate,
-                                                              CalendarEndDate) - 1,
-                    progress = 0,
-                    open = true,
-                    color = GetColorBasedOnImprovementActivity(improvementTactic, ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
-                    ImprovementActivityId = ita.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
-                    isImprovement = true,
-                    IsHideDragHandleLeft = ita.minStartDate < CalendarStartDate,
-                    IsHideDragHandleRight = true,
-                    parent = string.Format("L{0}", ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
-                }).Select(i => i).Distinct().ToList();
-
-                var taskDataImprovementTactic = improvemntTacticList.Select(it => new
-                {
-                    id = string.Format("L{0}_M{1}_I{2}_Y{3}", it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId, it.ImprovementTactic.ImprovementPlanTacticId, it.ImprovementTactic.ImprovementTacticTypeId),
-                    text = it.ImprovementTactic.Title,
-                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, it.ImprovementTactic.EffectiveDate),
-                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                              CalendarEndDate,
-                                                              it.ImprovementTactic.EffectiveDate,
-                                                              CalendarEndDate) - 1,
-                    progress = 0,
-                    open = true,
-                    parent = string.Format("L{0}_M{1}", it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
-                    color = string.Concat(Common.GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, it.ImprovementTactic.ImprovementTacticType.ColorCode.ToLower()),
-                    isSubmitted = it.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
-                    isDeclined = it.ImprovementTactic.Status.Equals(tacticStatusDeclined),
-                    inqs = 0,
-                    mqls = 0,
-                    cost = it.ImprovementTactic.Cost,
-                    cws = 0,
-                    it.ImprovementTactic.ImprovementPlanTacticId,
-                    isImprovement = true,
-                    IsHideDragHandleLeft = it.ImprovementTactic.EffectiveDate < CalendarStartDate,
-                    IsHideDragHandleRight = true,
-                    Status = it.ImprovementTactic.Status
-                }).OrderBy(t => t.text);
-                #endregion
-
-                //return taskDataCampaign.Concat<object>(taskDataTactic).Concat<object>(taskDataProgram).ToList<object>();
-                return newTaskDataPlan.Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic).Concat<object>(newTaskDataCampaign).Concat<object>(NewTaskDataTactic).Concat<object>(newTaskDataProgram).ToList<object>();
-            }
-            else
+            var newTaskDataPlanForImprovement = taskDataPlanForImprovement.Select(c => new
             {
-                return newTaskDataPlan.Concat<object>(newTaskDataCampaign).Concat<object>(NewTaskDataTactic).Concat<object>(newTaskDataProgram).ToList<object>();
-            }
+                id = c.id,
+                text = c.text,
+                start_date = c.start_date,
+                duration = c.duration,
+                progress = c.progress,
+                open = c.open,
+                color = c.color + (c.progress > 0 ? "stripe" : ""),
+                planid = c.planid
+            });
+
+            var taskDataPlanMerged = newTaskDataPlan.Concat<object>(newTaskDataPlanForImprovement).ToList().Distinct();
+
+            #region Improvement Activities & Tactics
+            var improvemntTacticList = improvementTactic.Select(it => new
+            {
+                ImprovementTactic = it,
+                //// Getting start date for improvement activity task.
+                minStartDate = improvementTactic.Where(impt => impt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impt => impt.EffectiveDate).Min(),
+            }).Select(a => a).ToList().Distinct().ToList();
+
+            //// Improvement Activities
+            var taskDataImprovementActivity = improvemntTacticList.Select(ita => new
+            {
+                id = string.Format("L{0}_M{1}", ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, ita.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId),
+                text = ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title,
+                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, ita.minStartDate),
+                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                          CalendarEndDate,
+                                                          ita.minStartDate,
+                                                          CalendarEndDate) - 1,
+                progress = 0,
+                open = true,
+                color = GetColorBasedOnImprovementActivity(improvementTactic, ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                ImprovementActivityId = ita.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
+                isImprovement = true,
+                IsHideDragHandleLeft = ita.minStartDate < CalendarStartDate,
+                IsHideDragHandleRight = true,
+                parent = string.Format("L{0}", ita.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+            }).Select(i => i).Distinct().ToList();
+
+            var taskDataImprovementTactic = improvemntTacticList.Select(it => new
+            {
+                id = string.Format("L{0}_M{1}_I{2}_Y{3}", it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId, it.ImprovementTactic.ImprovementPlanTacticId, it.ImprovementTactic.ImprovementTacticTypeId),
+                text = it.ImprovementTactic.Title,
+                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, it.ImprovementTactic.EffectiveDate),
+                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                          CalendarEndDate,
+                                                          it.ImprovementTactic.EffectiveDate,
+                                                          CalendarEndDate) - 1,
+                progress = 0,
+                open = true,
+                parent = string.Format("L{0}_M{1}", it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, it.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
+                color = string.Concat(Common.GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, it.ImprovementTactic.ImprovementTacticType.ColorCode.ToLower()),
+                isSubmitted = it.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
+                isDeclined = it.ImprovementTactic.Status.Equals(tacticStatusDeclined),
+                inqs = 0,
+                mqls = 0,
+                cost = it.ImprovementTactic.Cost,
+                cws = 0,
+                it.ImprovementTactic.ImprovementPlanTacticId,
+                isImprovement = true,
+                IsHideDragHandleLeft = it.ImprovementTactic.EffectiveDate < CalendarStartDate,
+                IsHideDragHandleRight = true,
+                Status = it.ImprovementTactic.Status
+            }).OrderBy(t => t.text);
+            #endregion
+
+            return taskDataPlanMerged.Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic).Concat<object>(newTaskDataCampaign).Concat<object>(NewTaskDataTactic).Concat<object>(newTaskDataProgram).ToList<object>();
         }
 
         /// <summary>
@@ -3066,12 +2937,15 @@ namespace RevenuePlanner.Controllers
                     break;
                 case GanttTabs.Tactic:
                     queryPlanProgramId = tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).Select(t => t.PlanProgramId).ToList<int>();
-                    minDateTactic = tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).Select(t => t.StartDate).Min();
+                    minDateTactic = tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).Select(t => t.StartDate).ToList().Min();
                     break;
                 case GanttTabs.BusinessUnit:
                     var businessUnitId = tactic.Where(t => t.PlanTacticId == typeId).Select(t => t.BusinessUnitId).FirstOrDefault();
                     queryPlanProgramId = tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId && t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId == businessUnitId).Select(t => t.PlanProgramId).ToList<int>();
                     minDateTactic = tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId && t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId == businessUnitId).Select(t => t.StartDate).Min();
+                    break;
+                case GanttTabs.None:
+                    queryPlanProgramId = program.Where(p => p.Plan_Campaign.PlanId == planId).Select(p => p.PlanProgramId).ToList<int>();
                     break;
                 default:
                     break;
@@ -3261,6 +3135,9 @@ namespace RevenuePlanner.Controllers
                     var businessUnitId = tactic.Where(t => t.PlanTacticId == typeId).Select(t => t.BusinessUnitId).FirstOrDefault();
                     queryPlanProgramId = tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId && t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId == businessUnitId).Select(t => t.PlanProgramId).ToList<int>();
                     maxDateTactic = tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId && t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId == businessUnitId).Select(t => t.EndDate).Max();
+                    break;
+                case GanttTabs.None:
+                    queryPlanProgramId = program.Where(p => p.Plan_Campaign.PlanId == planId).Select(p => p.PlanProgramId).ToList<int>();
                     break;
                 default:
                     break;
@@ -5178,7 +5055,7 @@ namespace RevenuePlanner.Controllers
             {
                 pcpm.TEndDate = (from oted in ted select oted.EndDate).Max();
             }
-            
+
             pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
             pcpm.Cost = Common.CalculateProgramCost(pcp.PlanProgramId);
 
@@ -5243,7 +5120,7 @@ namespace RevenuePlanner.Controllers
         }
 
         [HttpPost]
-        public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, string UserId = "",string title="")
+        public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, string UserId = "", string title = "")
         {
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
@@ -5251,81 +5128,81 @@ namespace RevenuePlanner.Controllers
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
-                    return Json(new { IsSaved = false , Msg = Common.objCached.LoginWithSameSession }, JsonRequestBehavior.AllowGet);
+                    return Json(new { IsSaved = false, Msg = Common.objCached.LoginWithSameSession }, JsonRequestBehavior.AllowGet);
                 }
             }
             try
             {
                 //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
-              
-                    using (MRPEntities mrp = new MRPEntities())
+
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
                     {
-                        using (var scope = new TransactionScope())
+                        var pcpvar = (from pcp in db.Plan_Campaign_Program
+                                      join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                      where pc.PlanId == Sessions.PlanId && pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
+                                      && pc.PlanCampaignId == form.PlanCampaignId
+                                      select pcp).FirstOrDefault();
+
+                        if (pcpvar != null)
                         {
-                            var pcpvar = (from pcp in db.Plan_Campaign_Program
-                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
-                                          && pc.PlanCampaignId == form.PlanCampaignId
-                                          select pcp).FirstOrDefault();
-
-                            if (pcpvar != null)
+                            return Json(new { IsSaved = false, Msg = Common.objCached.DuplicateProgramExits }, JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).SingleOrDefault();
+                            pcpobj.Title = title;
+                            pcpobj.Description = form.Description;
+                            pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                            pcpobj.StartDate = form.StartDate;
+                            pcpobj.EndDate = form.EndDate;
+                            if (form.CStartDate > form.StartDate)
                             {
-                                return Json(new { IsSaved = false, Msg = Common.objCached.DuplicateProgramExits }, JsonRequestBehavior.AllowGet);
+                                pcpobj.Plan_Campaign.StartDate = form.StartDate;
                             }
-                            else
+
+                            if (form.EndDate > form.CEndDate)
                             {
-                                Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).SingleOrDefault();
-                                pcpobj.Title = title;
-                                pcpobj.Description = form.Description;
-                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                pcpobj.StartDate = form.StartDate;
-                                pcpobj.EndDate = form.EndDate;
-                                if (form.CStartDate > form.StartDate)
-                                {
-                                    pcpobj.Plan_Campaign.StartDate = form.StartDate;
-                                }
+                                pcpobj.Plan_Campaign.EndDate = form.EndDate;
+                            }
 
-                                if (form.EndDate > form.CEndDate)
-                                {
-                                    pcpobj.Plan_Campaign.EndDate = form.EndDate;
-                                }
-                                
-                                pcpobj.ModifiedBy = Sessions.User.UserId;
-                                pcpobj.ModifiedDate = DateTime.Now;
-                                pcpobj.ProgramBudget = form.ProgramBudget;
-                                db.Entry(pcpobj).State = EntityState.Modified;
+                            pcpobj.ModifiedBy = Sessions.User.UserId;
+                            pcpobj.ModifiedDate = DateTime.Now;
+                            pcpobj.ProgramBudget = form.ProgramBudget;
+                            db.Entry(pcpobj).State = EntityState.Modified;
 
-                                string entityTypeProgram = Enums.EntityType.Program.ToString();
-                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == form.PlanProgramId && c.CustomField.EntityType == entityTypeProgram).ToList();
-                                prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
+                            string entityTypeProgram = Enums.EntityType.Program.ToString();
+                            var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == form.PlanProgramId && c.CustomField.EntityType == entityTypeProgram).ToList();
+                            prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
 
-                                if (customFields.Count != 0)
+                            if (customFields.Count != 0)
+                            {
+                                foreach (var item in customFields)
                                 {
-                                    foreach (var item in customFields)
-                                    {
-                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
-                                        objcustomFieldEntity.EntityId = form.PlanProgramId;
-                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
-                                    }
+                                    CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                    objcustomFieldEntity.EntityId = form.PlanProgramId;
+                                    objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                    objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                    objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                    objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                    db.Entry(objcustomFieldEntity).State = EntityState.Added;
                                 }
-                                int result = db.SaveChanges();
-                                
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                                
-                                if (result >= 1)
-                                {
-                                    Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);
-                                    scope.Complete();
-                                    return Json(new { IsSaved = true, Msg = "Saved Successfully." }, JsonRequestBehavior.AllowGet);
-                                }
+                            }
+                            int result = db.SaveChanges();
+
+                            result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                            if (result >= 1)
+                            {
+                                Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);
+                                scope.Complete();
+                                return Json(new { IsSaved = true, Msg = "Saved Successfully." }, JsonRequestBehavior.AllowGet);
                             }
                         }
                     }
+                }
             }
             catch (Exception e)
             {
@@ -5811,7 +5688,7 @@ namespace RevenuePlanner.Controllers
             {
                 ippctm.Revenue = 0;
             }
-            
+
 
             ippctm.Cost = pcpt.Cost;
 
@@ -5855,7 +5732,7 @@ namespace RevenuePlanner.Controllers
             }
 
             ViewBag.Tactics = tnewList.OrderBy(t => t.Title);
-           // ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == ippctm.AudienceId).Select(a => a.Title).SingleOrDefault();
+            // ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == ippctm.AudienceId).Select(a => a.Title).SingleOrDefault();
             //ViewBag.Program = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Title);
             //ViewBag.Campaign = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Plan_Campaign.Title);
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
@@ -5931,7 +5808,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.GeographyId = form.GeographyId;
                                 //pcpobj.INQs = form.INQs;
                                 //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
-                               // pcpobj.Cost = UpdateBugdetAllocationCost(arrBudgetInputValues, form.TacticCost);
+                                // pcpobj.Cost = UpdateBugdetAllocationCost(arrBudgetInputValues, form.TacticCost);
                                 pcpobj.StartDate = form.StartDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 pcpobj.EndDate = form.EndDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
@@ -6025,7 +5902,7 @@ namespace RevenuePlanner.Controllers
 
                                     scope.Complete();
 
-                                    return Json(new { redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId}) });
+                                    return Json(new { redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }) });
                                 }
                             }
                         }
@@ -6168,7 +6045,7 @@ namespace RevenuePlanner.Controllers
                                 //    if (!isDirectorLevelUser) isReSubmission = true;
                                 //}
                                 /* TFS Bug 207 : end changes */
-                                pcpobj.Cost = form.Cost; 
+                                pcpobj.Cost = form.Cost;
 
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcpobj.StageId = form.StageId;
@@ -8152,7 +8029,7 @@ namespace RevenuePlanner.Controllers
         }
 
 
-        #region Budget Allocation in Program Tab 
+        #region Budget Allocation in Program Tab
 
         public PartialViewResult LoadSetupProgramBudget(int id = 0)
         {
@@ -8164,9 +8041,9 @@ namespace RevenuePlanner.Controllers
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
             pcpm.PlanProgramId = pcp.PlanProgramId;
             pcpm.PlanCampaignId = pcp.PlanCampaignId;
-            
+
             pcpm.ProgramBudget = pcp.ProgramBudget;
-            
+
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
             pcpm.AllocatedBy = objPlan.AllocatedBy;
 
@@ -8187,177 +8064,177 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveProgramBudgetAllocation(Plan_Campaign_ProgramModel form,string BudgetInputValues,string UserId = "")
+        public ActionResult SaveProgramBudgetAllocation(Plan_Campaign_ProgramModel form, string BudgetInputValues, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
-                    return Json(new { IsSaved = false, msg = Common.objCached.LoginWithSameSession , JsonRequestBehavior.AllowGet});
+                    return Json(new { IsSaved = false, msg = Common.objCached.LoginWithSameSession, JsonRequestBehavior.AllowGet });
                 }
             }
             try
             {
-                    using (MRPEntities mrp = new MRPEntities())
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
                     {
-                        using (var scope = new TransactionScope())
+                        var pcpvar = (from pcp in db.Plan_Campaign_Program
+                                      join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                      where pc.PlanId == Sessions.PlanId && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
+                                      && pc.PlanCampaignId == form.PlanCampaignId   //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
+                                      select pcp).FirstOrDefault();
+
+                        if (pcpvar != null)
                         {
-                            var pcpvar = (from pcp in db.Plan_Campaign_Program
-                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
-                                          && pc.PlanCampaignId == form.PlanCampaignId   //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
-                                          select pcp).FirstOrDefault();
+                            return Json(new { IsSaved = false, msg = Common.objCached.DuplicateProgramExits, JsonRequestBehavior.AllowGet });
+                        }
+                        else
+                        {
+                            Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).SingleOrDefault();
+                            string[] arrBudgetInputValues = BudgetInputValues.Split(',');
 
-                            if (pcpvar != null)
+                            //pcpobj.Title = form.Title;
+                            pcpobj.ModifiedBy = Sessions.User.UserId;
+                            pcpobj.ModifiedDate = DateTime.Now;
+
+                            pcpobj.ProgramBudget = form.ProgramBudget;
+
+                            //Start added by Kalpesh  #608: Budget allocation for Program
+                            var PrevAllocationList = db.Plan_Campaign_Program_Budget.Where(c => c.PlanProgramId == form.PlanProgramId).Select(c => c).ToList();    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
+                            //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by Sohel Pathan on 03/09/2014 for PL ticket #758
+
+                            if (arrBudgetInputValues.Length == 12)
                             {
-                                return Json(new { IsSaved = false, msg = Common.objCached.DuplicateProgramExits, JsonRequestBehavior.AllowGet });
-                            }
-                            else
-                            {
-                                Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).SingleOrDefault();
-                                string[] arrBudgetInputValues = BudgetInputValues.Split(',');
-
-                                //pcpobj.Title = form.Title;
-                                pcpobj.ModifiedBy = Sessions.User.UserId;
-                                pcpobj.ModifiedDate = DateTime.Now;
-
-                                pcpobj.ProgramBudget = form.ProgramBudget;
-
-                                //Start added by Kalpesh  #608: Budget allocation for Program
-                                var PrevAllocationList = db.Plan_Campaign_Program_Budget.Where(c => c.PlanProgramId == form.PlanProgramId).Select(c => c).ToList();    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
-                                //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by Sohel Pathan on 03/09/2014 for PL ticket #758
-
-                                if (arrBudgetInputValues.Length == 12)
+                                for (int i = 0; i < arrBudgetInputValues.Length; i++)
                                 {
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
+                                    // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
+                                    bool isExists = false;
+                                    if (PrevAllocationList != null)
                                     {
-                                        // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                        bool isExists = false;
-                                        if (PrevAllocationList != null)
+                                        if (PrevAllocationList.Count > 0)
                                         {
-                                            if (PrevAllocationList.Count > 0)
+                                            var updatePlanProgramBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                            if (updatePlanProgramBudget != null)
                                             {
-                                                var updatePlanProgramBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
-                                                if (updatePlanProgramBudget != null)
+                                                if (arrBudgetInputValues[i] != "")
                                                 {
-                                                    if (arrBudgetInputValues[i] != "")
+                                                    var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                    if (updatePlanProgramBudget.Value != newValue)
                                                     {
-                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                        if (updatePlanProgramBudget.Value != newValue)
-                                                        {
-                                                            updatePlanProgramBudget.Value = newValue;
-                                                            db.Entry(updatePlanProgramBudget).State = EntityState.Modified;
-                                                        }
+                                                        updatePlanProgramBudget.Value = newValue;
+                                                        db.Entry(updatePlanProgramBudget).State = EntityState.Modified;
                                                     }
-                                                    else
-                                                    {
-                                                        db.Entry(updatePlanProgramBudget).State = EntityState.Deleted;
-                                                    }
-                                                    isExists = true;
                                                 }
+                                                else
+                                                {
+                                                    db.Entry(updatePlanProgramBudget).State = EntityState.Deleted;
+                                                }
+                                                isExists = true;
                                             }
                                         }
-                                        if (!isExists && arrBudgetInputValues[i] != "")
-                                        {
-                                            // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                            Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
-                                            objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
-                                            objPlanCampaignProgramBudget.Period = "Y" + (i + 1);
-                                            objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
-                                            objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
-                                            db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
-                                        }
                                     }
-                                    db.SaveChanges();
-                                }
-                                else if (arrBudgetInputValues.Length == 4)
-                                {
-                                    int BudgetInputValuesCounter = 1;
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
+                                    if (!isExists && arrBudgetInputValues[i] != "")
                                     {
-                                        // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                        bool isExists = false;
-                                        if (PrevAllocationList != null)
+                                        // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
+                                        Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
+                                        objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
+                                        objPlanCampaignProgramBudget.Period = "Y" + (i + 1);
+                                        objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                        objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
+                                        objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
+                                        db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
+                                    }
+                                }
+                                db.SaveChanges();
+                            }
+                            else if (arrBudgetInputValues.Length == 4)
+                            {
+                                int BudgetInputValuesCounter = 1;
+                                for (int i = 0; i < arrBudgetInputValues.Length; i++)
+                                {
+                                    // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
+                                    bool isExists = false;
+                                    if (PrevAllocationList != null)
+                                    {
+                                        if (PrevAllocationList.Count > 0)
                                         {
-                                            if (PrevAllocationList.Count > 0)
+                                            var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 1)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                            var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
+
+                                            if (thisQuarterFirstMonthBudget != null)
                                             {
-                                                var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 1)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
-                                                var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
-
-                                                if (thisQuarterFirstMonthBudget != null)
+                                                if (arrBudgetInputValues[i] != "")
                                                 {
-                                                    if (arrBudgetInputValues[i] != "")
-                                                    {
-                                                        var thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
-                                                        var thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
-                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                    var thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
+                                                    var thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
+                                                    var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
 
-                                                        if (thisQuarterTotalBudget != newValue)
+                                                    if (thisQuarterTotalBudget != newValue)
+                                                    {
+                                                        var BudgetDiff = newValue - thisQuarterTotalBudget;
+                                                        if (BudgetDiff > 0)
                                                         {
-                                                            var BudgetDiff = newValue - thisQuarterTotalBudget;
-                                                            if (BudgetDiff > 0)
+                                                            thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+                                                            db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+                                                        }
+                                                        else
+                                                        {
+                                                            int j = 1;
+                                                            while (BudgetDiff < 0)
                                                             {
-                                                                thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-                                                                db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                            }
-                                                            else
-                                                            {
-                                                                int j = 1;
-                                                                while (BudgetDiff < 0)
+                                                                if (thisQuarterFirstMonthBudget != null)
                                                                 {
-                                                                    if (thisQuarterFirstMonthBudget != null)
-                                                                    {
-                                                                        BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+                                                                    BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
 
-                                                                        if (BudgetDiff <= 0)
-                                                                            thisQuarterFirstMonthBudget.Value = 0;
-                                                                        else
-                                                                            thisQuarterFirstMonthBudget.Value = BudgetDiff;
+                                                                    if (BudgetDiff <= 0)
+                                                                        thisQuarterFirstMonthBudget.Value = 0;
+                                                                    else
+                                                                        thisQuarterFirstMonthBudget.Value = BudgetDiff;
 
-                                                                        db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                    }
-                                                                    if ((BudgetInputValuesCounter + j) <= (BudgetInputValuesCounter + 2))
-                                                                    {
-                                                                        thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter + j))).FirstOrDefault();
-                                                                    }
-
-                                                                    j = j + 1;
+                                                                    db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
                                                                 }
+                                                                if ((BudgetInputValuesCounter + j) <= (BudgetInputValuesCounter + 2))
+                                                                {
+                                                                    thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter + j))).FirstOrDefault();
+                                                                }
+
+                                                                j = j + 1;
                                                             }
                                                         }
                                                     }
-                                                    else
-                                                    {
-                                                        thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                                    }
-                                                    isExists = true;
                                                 }
+                                                else
+                                                {
+                                                    thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                                }
+                                                isExists = true;
                                             }
                                         }
-                                        if (!isExists && arrBudgetInputValues[i] != "")
-                                        {
-                                            // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                            Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
-                                            objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
-                                            objPlanCampaignProgramBudget.Period = "Y" + BudgetInputValuesCounter;
-                                            objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
-                                            objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
-                                            db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
-                                        }
-                                        BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
                                     }
+                                    if (!isExists && arrBudgetInputValues[i] != "")
+                                    {
+                                        // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
+                                        Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
+                                        objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
+                                        objPlanCampaignProgramBudget.Period = "Y" + BudgetInputValuesCounter;
+                                        objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                        objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
+                                        objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
+                                        db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
+                                    }
+                                    BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
                                 }
-
-                                db.Entry(pcpobj).State = EntityState.Modified;
-                                int result = db.SaveChanges();
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                                return Json(new { IsSaved = true, msg = "Saved Successfully.", JsonRequestBehavior.AllowGet });
                             }
+
+                            db.Entry(pcpobj).State = EntityState.Modified;
+                            int result = db.SaveChanges();
+                            result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                            return Json(new { IsSaved = true, msg = "Saved Successfully.", JsonRequestBehavior.AllowGet });
                         }
                     }
                 }
+            }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);

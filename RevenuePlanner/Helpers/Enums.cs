@@ -837,7 +837,8 @@ namespace RevenuePlanner.Helpers
         Stage = 2,
         Audience = 3,
         BusinessUnit = 4,
-        Request = 5
+        Request = 5,
+        None = 6
     }
 
 
