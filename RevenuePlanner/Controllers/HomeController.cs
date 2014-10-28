@@ -8242,6 +8242,194 @@ namespace RevenuePlanner.Controllers
 
             return Json(new { IsSaved = false, msg = Common.objCached.ErrorOccured, JsonRequestBehavior.AllowGet });
         }
+ /// <summary>
+        /// Added By: Mitesh Vaishnav.
+        /// Action to Load Campaign Setup Tab in edit mode.
+        /// </summary>
+        /// <param name="id">Plan Campaign Id.</param>
+        /// <returns>Returns Partial View Of edit Setup Tab.</returns>
+        public ActionResult LoadEditSetupCampaign(int id)
+        {
+            ViewBag.IsCreated = false;
+            Plan_Campaign pc = db.Plan_Campaign.Where(pcobj => pcobj.PlanCampaignId.Equals(id) && pcobj.IsDeleted.Equals(false)).SingleOrDefault();
+            if (pc == null)
+            {
+                return null;
+            }
+            ViewBag.Year = pc.Plan.Year;
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pc.Plan.Model);
+            Plan_CampaignModel pcm = new Plan_CampaignModel();
+            pcm.PlanCampaignId = pc.PlanCampaignId;
+            pcm.Title = HttpUtility.HtmlDecode(pc.Title);
+            pcm.Description = HttpUtility.HtmlDecode(pc.Description);
+            pcm.IsDeployedToIntegration = pc.IsDeployedToIntegration;
+            ViewBag.IsDeployedToIntegration = pcm.IsDeployedToIntegration;
+            pcm.StartDate = pc.StartDate;
+            pcm.EndDate = pc.EndDate;
+            var psd = (from p in db.Plan_Campaign_Program where p.PlanCampaignId == id && p.IsDeleted.Equals(false) select p);
+            if (psd.Count() > 0)
+            {
+                pcm.PStartDate = (from opsd in psd select opsd.StartDate).Min();
+            }
+
+            var ped = (from p in db.Plan_Campaign_Program where p.PlanCampaignId == id && p.IsDeleted.Equals(false) select p);
+            if (ped.Count() > 0)
+            {
+                pcm.PEndDate = (from oped in ped select oped.EndDate).Max();
+            }
+            var tsd = (from t in db.Plan_Campaign_Program_Tactic where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false) select t);
+            if (tsd.Count() > 0)
+            {
+                pcm.TStartDate = (from otsd in tsd select otsd.StartDate).Min();
+            }
+            var ted = (from t in db.Plan_Campaign_Program_Tactic where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false) select t);
+            if (ted.Count() > 0)
+            {
+                pcm.TEndDate = (from oted in ted select oted.EndDate).Max();
+            }
+            //}
+            //pcm.INQs = pc.INQs;
+            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList());
+            pcm.MQLs = PlanTacticValuesList.Sum(tm => tm.MQL);
+            pcm.Cost = Common.CalculateCampaignCost(pc.PlanCampaignId); //pc.Cost; // Modified for PL#440 by Dharmraj
+            // Start Added By Dharmraj #567 : Budget allocation for campaign
+            pcm.CampaignBudget = pc.CampaignBudget;
+            pcm.AllocatedBy = pc.Plan.AllocatedBy;
+
+            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
+            double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
+            double planBudget = pc.Plan.Budget;
+            double planRemainingBudget = planBudget - allCampaignBudget;
+            ViewBag.planRemainingBudget = planRemainingBudget;
+
+            pcm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); //  Update by Bhavesh to Display Revenue
+            // End Added By Dharmraj #567 : Budget allocation for campaign
+
+            pcm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Campaign.ToString());//Added by Mitesh Vaishnav for PL ticket #718
+            if (Sessions.User.UserId == pc.CreatedBy)
+            {
+                ViewBag.IsOwner = true;
+
+                // Added by Dharmraj Mangukiya to hide/show delete program as per custom restrictions PL ticket #577
+                var AllTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList();
+                bool IsCampaignDeleteble = true;
+                if (AllTactic.Count > 0)
+                {
+                    var OthersTactic = AllTactic.Where(t => t.CreatedBy != Sessions.User.UserId).ToList();
+                    if (OthersTactic.Count > 0)
+                    {
+                        IsCampaignDeleteble = false;
+                    }
+                    else
+                    {
+                        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                        var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
+                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
+                        var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
+                        if (AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower()) || !lstAllowedVertical.Contains(t.VerticalId.ToString().ToLower()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString().ToLower()))).ToList().Count > 0)
+                        {
+                            IsCampaignDeleteble = false;
+                        }
+                    }
+                }
+
+                ViewBag.IsCampaignDeleteble = IsCampaignDeleteble;
+            }
+            else
+            {
+                ViewBag.IsOwner = false;
+                ViewBag.IsCampaignDeleteble = false;
+            }
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+
+            return PartialView("_EditSetupCampaign", pcm);
+        }
+
+        /// <summary>
+        /// Added By: Mitesh Vaishnav.
+        /// Action to Save Campaign.
+        /// </summary>
+        /// <param name="form">Form object of Plan_CampaignModel.</param>
+        /// <param name="programs">Program list string array.</param>
+        /// <param name="RedirectType">Redirect Type.</param>
+        /// <returns>Returns Action Result.</returns>
+        [HttpPost]
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string customFieldInputs, string UserId = "")
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
+                        //TODO
+                        int planId = db.Plan_Campaign.Where(p => p.PlanCampaignId.Equals(form.PlanCampaignId)).FirstOrDefault().PlanId;
+                        var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(form.PlanCampaignId))).FirstOrDefault();
+
+                        if (pc != null)
+                        {
+                            return Json(new { errormsg = Common.objCached.DuplicateCampaignExits });
+                        }
+                        else
+                        {
+                            Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(form.PlanCampaignId) && pcobjw.IsDeleted.Equals(false)).SingleOrDefault();
+                            //TODO
+                            //pcobj.Title = form.Title;
+                            pcobj.Description = form.Description;
+                            pcobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                            pcobj.StartDate = form.StartDate;
+                            pcobj.EndDate = form.EndDate;
+                            pcobj.ModifiedBy = Sessions.User.UserId;
+                            pcobj.ModifiedDate = DateTime.Now;
+                            pcobj.CampaignBudget = form.CampaignBudget;
+                            db.Entry(pcobj).State = EntityState.Modified;
+
+                            Common.InsertChangeLog(Sessions.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                            string entityTypeCampaign = Enums.EntityType.Campaign.ToString();
+                            var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == pcobj.PlanCampaignId && c.CustomField.EntityType == entityTypeCampaign).ToList();
+                            prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
+
+                            if (customFields.Count != 0)
+                            {
+                                foreach (var item in customFields)
+                                {
+                                    CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                    objcustomFieldEntity.EntityId = pcobj.PlanCampaignId;
+                                    objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                    objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                    objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                    objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                    db.Entry(objcustomFieldEntity).State = EntityState.Added;
+
+                                }
+                            }
+                            db.SaveChanges();
+                            scope.Complete();
+                            return Json(new { successmsg = "Campaign Saved Successfully" });
+                        }
+
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { });
+        }
 
         #endregion
 

@@ -1,0 +1,305 @@
+﻿@model RevenuePlanner.Models.Plan_CampaignModel
+@using RevenuePlanner.Helpers
+@{
+    // var campaign = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
+    bool ExtIntService = (bool)ViewBag.ExtIntService;
+    var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
+    //deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+}
+
+
+@using (Html.BeginForm())
+{
+    
+    @Html.HiddenFor(model => model.PlanCampaignId)
+    @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+    @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
+    @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
+    @Html.HiddenFor(model => model.TStartDate, new { id = "hdnTStartDate" })
+    @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+
+        <div class="span6" id="inspect-modal-left-column1">
+            <p>@Html.Raw("Description")</p>
+            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "height:92px;" })
+            <p style="width: 110%;">@Html.Raw("Deployed to Integration")</p>
+            @* @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", id = "txtDeployStatus"})*@
+            @if (ExtIntService)
+            {
+                <label>Status</label>
+                if (Model.IsDeployedToIntegration)
+                {
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                }
+                else
+                {    
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
+                }
+            }
+            <div style="clear: both; width: 250%;">
+                <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
+            </div>
+        </div>
+        <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
+            <p>@Html.Raw("Campaign Budget")</p>
+            @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "span12 input-small truncate", id = "txtCampaignBudget", placeholder = "Required", require = "true" })
+            <p>Start Date</p>
+            <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_startdate" })
+                <span class="add-on">
+                    <img src="~/Content/images/gray-calendar-icon.png"></span>
+            </div>
+            <label class="clear-section">End Date</label>
+            <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_enddate" })
+                <span class="add-on">
+                    <img src="~/Content/images/gray-calendar-icon.png"></span>
+            </div>
+        </div>
+        <div class="span3" id="inspect-modal-left-column3">
+            <p>@Html.LabelForMQL("MQL")</p>
+            @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small truncate priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
+            <p>Cost</p>
+            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+            <p>Revenue</p>
+            @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small truncate currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+        </div>
+    </div>
+    
+    <ul class="nav nav-tabs new-margin padding-bottom10 clear" id="InspectTab">
+        <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
+        </li>
+    </ul>
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" id="attributesControlsArea">
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString(), 0)
+   <div class="clear-section"></div>
+    
+    
+    
+        @if ((bool)ViewBag.IsOwner)
+        {
+            <div class="wraper-btns cf">
+                <div class="span2 btn-save">
+                    <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
+                </div>
+                <div class="span2">
+                    <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+                </div>
+            </div>
+        }
+    </div>
+    
+}
+<script type="text/javascript">
+
+    $(document).ready(
+      function () {
+
+          $(".selectBox select").selectbox();
+          $('#attributesControlsArea').find('input').each(function () {
+              $(this).removeAttr('readonly style');
+          });
+
+          $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+          $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+
+          if ($("#t_integration_status").val() == '') {
+              if ($("#t_integration_status").hasClass("icon-check-blue")) {
+                  $("#hdnIsDeployedToIntegration").val(true);
+              }
+              else {
+                  $("#hdnIsDeployedToIntegration").val(false);
+              }
+          }
+      });
+    //<---  End Document.ready Event --->
+
+    $("#btnCancel").click(function () {
+        $("#txtTitle").css("display", "none");
+        $("#NonEditedTitleSpan").css("display", "block");
+        var url = '@Url.Content("~/Home/LoadSetupCampaign/")';
+        $("#divTab").load(url + '?id=@Model.PlanCampaignId');
+    });
+
+    $('#t_startdate').click(function () {
+        $('#dp_end').datepicker('hide');
+    });
+
+    $('#t_enddate').click(function () {
+        $('#dp_start').datepicker('hide');
+    });
+
+    $('#dp_start .add-on').click(function () {
+        $('#dp_start').datepicker('show');
+        $('#dp_end').datepicker('hide');
+
+    });
+    $('#dp_end .add-on').click(function () {
+        $('#dp_start').datepicker('hide');
+        $('#dp_end').datepicker('show');
+
+    });
+
+    $('.dp').datepicker({
+        format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+        autoclose: true,
+    }).on('changeDate', function (ev) {
+        $(this).datepicker('hide');
+    });
+
+    $(".alert").find(".close").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
+    });
+
+    $("#t_integration_status").click(function () {
+
+        if ($(this).hasClass("icon-check-blue")) {
+            $(this).val("Not Sync to integration");
+            $(this).addClass("icon-check-gray");
+            $(this).removeClass("icon-check-blue");
+            $("#hdnIsDeployedToIntegration").val(false);
+        }
+        else {
+            $(this).val("Sync to integration");
+            $(this).addClass("icon-check-blue");
+            $(this).removeClass("icon-check-gray");
+            $("#hdnIsDeployedToIntegration").val(true);
+        }
+
+    });
+    function ShowError(value) {
+        $("#successMessageEditCamapaign").slideUp(400);
+        $("#spanSuccessMessageEditCamapaign").empty();
+        $("#errorMessageEditCampaign").slideDown(400);
+        $("#spanMessageEditCampaign").empty();
+        $("#spanMessageEditCampaign").html(value);
+    }
+    $("#save_campaign").click(function () {
+        var iserror = false;
+        var campaignTitle = $('#txtTitle').val();
+        var hdnYear = @ViewBag.Year
+
+        $('form').find('input[type=text], select, textarea').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val().toString().trim() == '') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        $('form').find('.sbSelector').each(function () {
+            if ($(this).parent().prev().attr('require') == 'true') {
+                if ($(this).text() == 'Please Select') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+        if (campaignTitle == "") {
+            $('#txtTitle').addClass("error");
+            iserror = true;
+        }
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
+
+        sdate = $('#t_startdate').val();
+        edate = $('#t_enddate').val();
+        var psdate = $('#hdnPStartDate').val();
+        var pedate = $('#hdnPEndDate').val();
+        var tsdate = $('#hdnTStartDate').val();
+        var tedate = $('#hdnTEndDate').val();
+        $('#t_enddate').removeClass("error");
+        $('#t_startdate').removeClass("error");
+        if (!isDate(sdate)) {
+            alert('@Common.objCached.ValidateStartDate');
+            return false;
+        }
+        if (!isDate(edate)) {
+            alert('@Common.objCached.ValidateEndDate');
+            return false;
+        }
+        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+        if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+        if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) {
+            return false;
+        }
+        if (!validateDateCompare(sdate, psdate, "@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate")) {
+            return false;
+        }
+        if (!validateDateCompare(pedate, edate, "@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate")) {
+            return false;
+        }
+        if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
+            return false;
+        }
+        if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
+            return false;
+        }
+
+        //TODO
+        @*if ($("#txtRemainingBudget").hasClass('error-text')) {
+            errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted";
+            ShowBudgetError(errorMsg);
+            return false;
+        }*@
+        var _customFieldValues = [];
+        $('form').find('input[type=text], select').each(function () {
+            if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
+                _customFieldValues.push({
+                    Key: $(this).attr('cf_id').toString(),
+                    Value: htmlEncode($(this).val().toString())
+                });
+            }
+        });
+        _customFieldValues = JSON.stringify(_customFieldValues);
+        ////End Added by Mitesh Vaishnav for PL ticket #718
+        //document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+        document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+        $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
+        $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
+        var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+        var uId = $(window).attr('name');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/home/SaveCampaign")',
+            data: formData + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues),
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.successmsg) {
+                        $("#errorMessageEditCamapaign").slideUp(400);
+                        $("#spanMessageEditCamapaign").empty();
+                        $("#successMessageEditCamapaign").slideDown(400);
+                        $("#spanSuccessMessageEditCamapaign").empty();
+                        $("#spanSuccessMessageEditCamapaign").html(data.successmsg);
+                        $("lblCampaignTitle").html($("#txtTitle").text());
+                        $("tactic-name").html($("#txtTitle").text());
+                        $("#txtTitle").css("display", "none");
+                        $("#NonEditedTitleSpan").css("display", "block");
+                        var url = '@Url.Content("~/Home/LoadSetupCampaign/")';
+                        $("#divTab").load(url + '?id=@Model.PlanCampaignId');
+                    }
+                    if (data.errormsg) {
+                        document.getElementById("txtDescription").value = htmlDecode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                        ShowError(data.errormsg);
+                        return false;
+                    }
+                }
+            }
+        });
+    });
+</script>
