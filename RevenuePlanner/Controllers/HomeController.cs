@@ -4105,6 +4105,45 @@ namespace RevenuePlanner.Controllers
 
                               }).SingleOrDefault();
 
+                    Plan_Campaign_Program_Tactic pcpt1 = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).SingleOrDefault();
+                    List<Plan_Campaign_Program_Tactic> lstTmpTac = new List<Plan_Campaign_Program_Tactic>();
+                    lstTmpTac.Add(pcpt1);
+                    List<TacticStageValue> varTacticStageValue = Common.GetTacticStageRelation(lstTmpTac, false);
+                    // Set MQL
+                    string stageMQL = Enums.Stage.MQL.ToString();
+                    int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
+                    int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == id).Stage.Level);
+                    if (tacticStageLevel < levelMQL)
+                    {
+                        if (varTacticStageValue.Count > 0)
+                        {
+                            imodel.MQLs = varTacticStageValue[0].MQLValue;
+                        }
+                        else
+                        {
+                            imodel.MQLs = 0;
+                        }
+                    }
+                    else if (tacticStageLevel == levelMQL)
+                    {
+                        imodel.MQLs = Convert.ToDouble(imodel.ProjectedStageValue);
+                    }
+                    else if (tacticStageLevel > levelMQL)
+                    {
+                        imodel.MQLs = 0;
+                        TempData["TacticMQL"] = "N/A";
+                    }
+
+                    // Set Revenue
+                    if (varTacticStageValue.Count > 0)
+                    {
+                        imodel.Revenues = Math.Round(varTacticStageValue[0].RevenueValue, 2);
+                    }
+                    else
+                    {
+                        imodel.Revenues = 0;
+                    }
+
                     imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(db.Plan_Campaign_Program_Tactic.SingleOrDefault(varT => varT.PlanTacticId == id).TacticType.Model);
                 }
                 if (section == Convert.ToString(Enums.Section.Program).ToLower())
@@ -5631,7 +5670,7 @@ namespace RevenuePlanner.Controllers
             }
 
 
-            Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id)).SingleOrDefault();
+            Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).SingleOrDefault();
 
             if (pcpt == null)
             {
@@ -5733,24 +5772,6 @@ namespace RevenuePlanner.Controllers
             }
 
             ippctm.Owner = (userName.FirstName + " " + userName.LastName).ToString();
-
-            #region Commented Code
-            //Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
-            //pcptm.PlanProgramId = pcpt.PlanProgramId;
-            //pcptm.PlanTacticId = pcpt.PlanTacticId;
-            //pcptm.TacticTypeId = pcpt.TacticTypeId;
-            //pcptm.Title = HttpUtility.HtmlDecode(pcpt.Title);
-            //pcptm.Description = HttpUtility.HtmlDecode(pcpt.Description);
-            //pcptm.VerticalId = pcpt.VerticalId;
-            //pcptm.AudienceId = pcpt.AudienceId;
-            //pcptm.GeographyId = pcpt.GeographyId;
-            //pcptm.StartDate = pcpt.StartDate;
-            //pcptm.EndDate = pcpt.EndDate;
-            //pcptm.PStartDate = pcpt.Plan_Campaign_Program.StartDate;
-            //pcptm.PEndDate = pcpt.Plan_Campaign_Program.EndDate;
-            //pcptm.CStartDate = pcpt.Plan_Campaign_Program.Plan_Campaign.StartDate;
-            //pcptm.CEndDate = pcpt.Plan_Campaign_Program.Plan_Campaign.EndDate;
-            #endregion
 
             List<Plan_Campaign_Program_Tactic> lstTmpTac = new List<Plan_Campaign_Program_Tactic>();
             lstTmpTac.Add(pcpt);

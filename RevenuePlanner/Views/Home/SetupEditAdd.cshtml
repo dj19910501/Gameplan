@@ -45,12 +45,18 @@
          <p>Owner</p>
          @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = Model.Owner })
          <p style="width: 110%;">Deployed to Integration</p>
-         @Html.DropDownListFor(model => model.IsDeployedToIntegration, new SelectList((System.Collections.IEnumerable)Common.YesNoDropdownList(), "Value", "Text"), new { @class = "ddlStyle", require = "true" })
+
+          @if (Model.IsDeployedToIntegration)
+                        {
+                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
+                        }
+                        else
+                        {
+                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
+                        }
 
          <div class="cf width100">
              <div class="width65px margin-right20 pull-left" style="width: 30%">
-                 @*<label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>*@
-
                  <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
                           @if (ViewBag.IsDiffrentStageType == true)
                           {
@@ -58,20 +64,13 @@
                                   <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
                           }</label>
-                 @*@Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
                  @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
              </div>
 
              <div class="width65px margin-right20 pull-left" style="width: 30%">
                  <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
-                 @*@Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @readonly = "true" })*@
                  <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
              </div>
-
-             @*  <div class="width65px margin-right20 pull-left">
-                    <label title="Cost">Cost</label>
-                    @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-                </div>*@
 
              <div class="width65px pull-left" style="width: 30%">
                  <label title="Revenue">Revenue</label>
@@ -125,16 +124,25 @@
               format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
               autoclose: true,
           }).on('changeDate', function (ev) {
-              //var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
-              //if ($('#ddlTacticType').val() != '') {      // Added by Sohel Pathan on 11/07/2014 for PL ticket #549
-              //    GetConversionRate(projectedStageValue, false);//commented by uday for internal point 68 17-7-2014
-              //}
-              $(this).datepicker('hide');
+                   $(this).datepicker('hide');
           });;
 
           /*hide the other datepicker in input onclick*/
 
-         
+          $("#t_integration_status").click(function () {
+              if ($(this).hasClass("icon-check-blue")) {
+                  $(this).val("Not Sync to integration");
+                  $(this).addClass("icon-check-gray");
+                  $(this).removeClass("icon-check-blue");
+                  $("#hdnIsDeployedToIntegration").val(false);
+              }
+              else {
+                  $(this).val("Sync to integration");
+                  $(this).addClass("icon-check-blue");
+                  $(this).removeClass("icon-check-gray");
+                  $("#hdnIsDeployedToIntegration").val(true);
+              }
+          });
 
           $('#t_startdate').click(function () {
               $('#dp_end').datepicker('hide');
@@ -146,7 +154,6 @@
 
           //hide the other datepicker in add-on onclick
           $('#dp_start .add-on').click(function () {
-              alert("yes");
               $('#dp_start').datepicker('show');
               $('#dp_end').datepicker('hide');
           })
@@ -211,11 +218,9 @@
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
             return false;
         }
-        //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+
         var sdate = $('#t_startdate').val();
-        alert("sdate - " + sdate);
         var edate = $('#t_enddate').val();
-        alert("edate - " + edate);
         if (!isDate(sdate)) {
             alert('@Common.objCached.ValidateStartDate');
               return false;
@@ -240,32 +245,19 @@
             $("#txtmql").attr("title", mqlValue);
         }
 
-        $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));    // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
+        $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));   
         var arrClosedTaskString = null;
         if (typeof arrClosedTask != 'undefined') {
             arrClosedTaskString = arrClosedTask.toString();
         }
-        ////Start by Kalpesh Sharma #605: Cost allocation for Tactic
-        //var allocationValue = [];
-        //var lstAllocInputs = $("#planned-Cost-Allocation input").not('.unallocated-text');
-        //for (var i = 0; i < lstAllocInputs.length; i++) {
-        //    allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
-        //}
-        ///*Start Added by Mitesh Vaishnav for PL ticket #571
-        //creating variable which contains month wise actual cost of tactic*/
-        //var actualAllocationValue = [];
-        //var lstActualAllocInputs = $("#actual-Cost-Allocation input").not('.unallocated-text');
-        //for (var i = 0; i < lstActualAllocInputs.length; i++) {
-        //    actualAllocationValue.push(ReplaceCC($(lstActualAllocInputs[i]).val()));
-        //}
-        ///*End Added by Mitesh Vaishnav for PL ticket #571*/
+       
         var arLineitem = [];
         var _Lineitems = $("#frm_campaigns #c_tactics select");
         for (var l = 0; l < _Lineitems.length; l++) {
             var typeid = $(_Lineitems[l]).val();
             arLineitem[l] = typeid;
         }
-        ////Start Added by Mitesh Vaishnav for PL ticket #720
+
         ////creating object which contains value of custom fields
         var _customFieldValues = [];
         $('form').find('input[type=text], select').each(function () {
@@ -291,12 +283,9 @@
                 }
                 else {
                     if (data.redirect) {
-                        //window.location.href = data.redirect;
-                        //$("#divTab").load(data.redirect);
                         var activeTab = $("#InspectTab li.active a").text()
                         var planTacticId = $("#hdnPlanTacticId").val();
                         $("#lblTacticTitle").val($("#hdnPlanTacticTitle").val());
-                        //loadReview(planTacticId, activeTab);
                         $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
                         $('#txtTacticTitle').css('display', 'none');
                         $('#lblTacticTitle').css('display', 'block');
@@ -308,11 +297,9 @@
                     }
 
                          if (data.errormsg) {
-
-                             document.getElementById("Title").value = htmlDecode($('#Title').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                             document.getElementById("Description").value = htmlDecode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                             document.getElementById("Title").value = htmlDecode($('#Title').val());
+                             document.getElementById("Description").value = htmlDecode($('#Description').val());
                              ShowError(data.errormsg);
-                             //Added By : Kalpesh Sharma Functional and Review Points 07/31/2014
                              $("#divBudgetError").slideUp(30);
                              return;
                          }
@@ -350,26 +337,20 @@
 
                              $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                              $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-
-                             //var ProgramBudgetValue = ReplaceCC($("#TacticCost").val());
-                             //var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val()) - ProgramBudgetValue;
-                             //$("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
-                             //FormatRemainingBudget();
-                             //$("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
-
+                             
                              if (data.IsDeployedToIntegration) {
-                                 //$("#t_integration_status").val("Sync to integration");
-                                 //$("#t_integration_status").addClass("icon-check-blue");
-                                 //$("#t_integration_status").removeClass("icon-check-gray");
+                                 $("#t_integration_status").val("Sync to integration");
+                                 $("#t_integration_status").addClass("icon-check-blue");
+                                 $("#t_integration_status").removeClass("icon-check-gray");
                                  $("#hdnIsDeployedToIntegration").val(true);
                              }
                              else {
-                                 //$("#t_integration_status").val("Not Sync to integration");
-                                 //$("#t_integration_status").addClass("icon-check-gray");
-                                 //$("#t_integration_status").removeClass("icon-check-blue");
+                                 $("#t_integration_status").val("Not Sync to integration");
+                                 $("#t_integration_status").addClass("icon-check-gray");
+                                 $("#t_integration_status").removeClass("icon-check-blue");
                                  $("#hdnIsDeployedToIntegration").val(false);
                              }
-                             $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());   // Added by Sohel Pathan on 12/08/2014 for PL ticket #605
+                             $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());  
                          }
                      });
                  }
@@ -379,17 +360,13 @@
                  $("#txtmql").val(pmql);
                  $("#txtRevenue").val('0');
 
-                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
                  $("#TacticCost").val('0');
                  $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                  $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                  $("#lblStageTitle").text("Stage");
                  $("#hdnStageId").val("0");
-                 // Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
                  var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val());
-                 // $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
                  $('#hdnPrevTacticTypeId').val('0');
-                 // End - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
              }
 
              $('#ddlTacticType').next().find('.sbSelector').focus();
@@ -414,7 +391,7 @@
          var isAssortment = true;
          var mqlConversion = 0;
          function GetConversionRate(projectedStageValue, isTacticTypeChange) {
-             if ($('#ddlTacticType').val() != '') {//added by uday for point 68
+             if ($('#ddlTacticType').val() != '') {
                  $.ajax({
                      type: 'POST',
                      url: '@Url.Content("~/Home/CalculateMQL")',
@@ -431,8 +408,8 @@
                         $("#txtmql").val(mqlValue);
                         $("#txtmql").attr("title", mqlValue);
                     }
-                    // Added by dharmraj on 4-sep-2014, #760 Advanced budgeting – show correct revenue in Tactic fly out
-                    $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ',')); //Modified by Sohel Pathan on 10/09/2014 for PL ticket #760
+
+                    $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
                     $("#txtRevenue").attr("title", $("#txtRevenue").val());
                 }
             });
