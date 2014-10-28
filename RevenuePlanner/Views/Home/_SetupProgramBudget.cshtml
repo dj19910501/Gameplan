@@ -1,0 +1,430 @@
+﻿@model RevenuePlanner.Models.Plan_Campaign_ProgramModel
+@using RevenuePlanner.Helpers;
+@{
+    string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
+    bool IsBudgetAllocated = false;
+    if (Model.AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+    {
+        IsBudgetAllocated = true;
+    }
+}
+
+ @using (Html.BeginForm(new { @id = "frmProgramBudgetAllocation" }))
+ {
+     <div id="successMessageEditProgramBudget" class="alert hide alert-success message-position-small">
+        <a class="close">×</a>
+        <span id="spanSuccessMessageEditProgramBudget"></span>
+     </div>
+    
+      <div id="divBudgetError" class="alert alert-error hide error-msg">
+            <a class="close">×</a>
+            <p id="BudgetErrorMessage" class="source-sans-probold">You cannot allocate more than budgeted for Jan and May .</p>
+     </div>
+     
+     @Html.HiddenFor(model => model.ProgramBudget, new { id = "hdnOldProgramBudget" })
+     @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
+     @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+     @Html.HiddenFor(model => model.PlanCampaignId, new { id = "hdnPlanCampaignId" })
+     
+     <span id="lblTotalAllocated" class="source-sans-proregular" style="display:none;"></span>
+
+    <div style="width:30%;float:left;">
+   <label class="padding-left4" title="Program Budget">Program Budget</label>
+                @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+    <div>
+         <label title="Remaining Campaign Budget">Remaining Campaign Budget</label>
+                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+                   </div>
+    </div>
+    <div style="width:70%;float:left;" class="ProgramBudgetSection">
+    @if (@Model.AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+    {
+        <div class="budget-section">
+            <div class="budget-head clearfix">
+                <p>Planned Cost Allocation</p>
+            </div>
+            <div class="budget-collapse">
+                <div class="white-bg-edirProgram">
+                    @HtmlHelpers.GenerateBudgetAllocationControl(@Model.AllocatedBy)
+                    <div class="budget-month">
+                        <span class="month">@Common.UnallocatedBudgetLabelText</span>   @* Modified by Sohel Pathan on 04/08/2014 *@
+                        <span class="unallocated-span">
+                            <input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
+                    </div>
+                </div>
+                <div class="budget-result source-sans-prolight">
+                    <p>
+                        Remaining @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
+                                    	<span id="lblRemainingMonthlyBudget" class="source-sans-proregular"></span>
+                    </p>
+                    <p>
+                        Total Budgeted:
+                          <span id="lblTotalBudget" class="source-sans-proregular">@Model.ProgramBudget</span>
+                    </p>
+                </div>
+            </div>
+            <!--End content-->
+        </div>
+    }
+  </div>
+    
+     <div class="wraper-btns cf" id="SaveProgramBudgetSection" >
+            <div class="span2 btn-save">
+                <button id="save_campaign_program" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
+            </div>
+            <div class="span2">
+                <button id="cancelProgramBudget" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+            </div>
+        </div>   
+}
+
+<script type="text/javascript">
+
+    function FormatRemainingBudget() {
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+    }
+
+    $(document).ready(
+    function () {
+        var IsEditable = $("#hdnProgramOpt").val(); 
+        if (IsEditable == 'View') {
+            $('form').find(".sbSelector").each(function () {
+                $(this).unbind("click");
+                $(this).removeAttr("href");
+                $(this).prev().unbind("click");
+                $(this).prev().removeAttr("href");
+            });
+            $('form').find("input[type=text], textarea").each(function () {
+                $(this).prop('readonly', true);
+            });
+            $('form .budget-month').find("input").each(function () {
+                $(this).parent().removeClass('light-blue-background');
+                $(this).parent().addClass('unallocated-span');
+                $(this).addClass('unallocated-text');
+                $(this).prop('readonly', true);
+            });
+
+            $('form').find(".add-on").each(function () {
+                $(this).unbind("click");
+            });
+
+            $("#SaveProgramBudgetSection").css("display", "none");
+        }
+        else {
+            $("#SaveProgramBudgetSection").css("display", "block");
+        }
+
+          $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
+          FormatRemainingBudget();
+          $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+
+          if ($("#hdnIsBudgetAllocated").val() == "True") {
+              $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
+          }
+
+          fillBudgetAllocationData();
+
+          $('.budget-section').find('input').not('.unallocated-text').each(function () {
+              $(this).keyup(function () {
+                  //Modified By Kalpesh Sharma #761 CAMPAIGNS View: Campaign/Plan Budget field is clearing Remaining Budget/Remaining
+                  var GetCurrentvalue = $(this).val().trim();
+                  if (GetCurrentvalue == '') {
+                      GetCurrentvalue = '0';
+                  }
+                  var currentValue = GetCurrentvalue.replace(/,/g, '').replace('$', '');
+                  if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+
+                      var OldBudgetValue = parseInt($(this).attr("ov"));
+                      var RemainingBudgetValue = parseInt($(this).attr("rmb"));
+                      var differenceVal = OldBudgetValue - parseInt(currentValue);
+                      var newRemainingBudgetValue = RemainingBudgetValue + differenceVal;
+                      $(this).attr("rmb", newRemainingBudgetValue);
+                      $(this).attr("ov", currentValue);
+                      if (newRemainingBudgetValue < 0) {
+                          $(this).addClass('error-text');
+                          $("#lblRemainingMonthlyBudget").addClass('error-text');
+                      }
+                      else {
+                          $(this).removeClass('error-text');
+                          $("#lblRemainingMonthlyBudget").removeClass('error-text');
+                      }
+
+                      //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+                      $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(newRemainingBudgetValue.toString(), false, true));
+
+                      var ProgramBudgetValue = parseInt($(this).attr("pmb"));
+                     
+                      var TotalallocationValue = 0;
+                      var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+                      for (var i = 0; i < lstAllocInputs.length; i++) {
+                          TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+                      }
+                      $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+                      calculateUnallocatedBudget();
+                  }
+              });
+          });
+
+      });
+
+    $(".alert").find(".close").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").slideUp(400);
+    });
+
+    function calculateUnallocatedBudget() {
+        var CampaignBudgetValue = $("#txtProgramBudget").val().trim().replace(/,/g, '').replace('$', '');
+        var CampaignAllocatedBudgetValue = "0";
+        if (typeof $("#lblTotalAllocated").html() != 'undefined') {
+            CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
+        }
+        var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
+
+        //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true));
+
+        if (unallocatedBudget < 0) {
+            $("#lblUnallocatedBudget").addClass('error-text');
+            $("#lblTotalAllocated").addClass('error-text');
+
+        }
+        else {
+            $("#lblUnallocatedBudget").removeClass('error-text');
+            $("#lblTotalAllocated").removeClass('error-text');
+        }
+    }
+
+    function ShowBudgetError(value) {
+        $("#successMessageEditProgramBudget").slideUp(400);
+        $("#divBudgetError").slideDown(400);
+        $("#BudgetErrorMessage").empty();
+        $("#BudgetErrorMessage").html(value);
+    }
+
+    $("#txtProgramBudget").keyup(function () {
+        var ProgramBudgetValue = ReplaceCC($("#txtProgramBudget").val());
+        var OldProgramBudgetValue = ReplaceCC($("#hdnOldProgramBudget").val());
+        var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
+        var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
+
+
+        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+        $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+
+        $("#hdnOldProgramBudget").val(ProgramBudgetValue);
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#lblTotalBudget").addClass('error-text');
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#lblTotalBudget").removeClass('error-text');
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+
+        $("#lblTotalBudget").html(FormatCommasBudget(ProgramBudgetValue, false, true));
+        if ($("#hdnIsBudgetAllocated").val() == "True") {
+            calculateUnallocatedBudget();
+        }
+
+    });
+
+    function fillBudgetAllocationData() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetBudgetAllocationProgrmaData/")',
+            data: {
+                CampaignId: '@Model.PlanCampaignId', PlanProgramId: '@Model.PlanProgramId'
+            },
+            success: function (data) {
+                var r = data.budgetData;
+                if (typeof r != 'undefined') {
+                    if (r.length) {
+                        for (i in r) {
+                            var remainingMonthlyBudget = r[i].remainingMonthlyBudget == '' ? '0' : r[i].remainingMonthlyBudget;
+                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue.toString(), false));
+                            $("#" + r[i].periodTitle).attr('ov', r[i].budgetValue == '' ? '0' : r[i].budgetValue);
+                            $("#" + r[i].periodTitle).attr('rmb', remainingMonthlyBudget);
+                            $("#" + r[i].periodTitle).attr('pmb', r[i].programMonthlyBudget);
+                            $("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
+                            if (parseInt(remainingMonthlyBudget) < 0) {
+                                $("#" + r[i].periodTitle).addClass('error-text');
+                            }
+                        }
+                    }
+                }
+
+                //Added By : Kalpesh Sharma : Functional Review Points #693
+                $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false, true));
+                FormatRemainingBudget();
+
+                $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+                $("#txtRemainingBudget").attr('myvalue', $("#txtRemainingBudget").val());
+
+                var TotalallocationValue = 0;
+                var lstAllocInputs = $(".budget-section input");
+                for (var i = 0; i < lstAllocInputs.length; i++) {
+                    TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+                }
+                $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+                calculateUnallocatedBudget();
+                $("#Y1").focus();
+            },
+            error: function () {
+                ShowError('');
+                return false;
+            }
+        });
+    }
+
+    $('.budget-section').find('input').not('#lblUnallocatedBudget').each(function () {
+        $(this).focus(function () {
+            $('.budget-section').find('input').not('#lblUnallocatedBudget').parent().removeClass('border000000');
+            $(this).parent().addClass('border000000');
+            var remainingValue = parseInt($(this).attr("rmb"));
+            var AllocatedProgramsBudget = parseInt($(this).attr("pmb"));
+            if (remainingValue < 0) {
+                $("#lblRemainingMonthlyBudget").addClass('error-text');
+            }
+            else {
+                $("#lblRemainingMonthlyBudget").removeClass('error-text');
+            }
+            $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(remainingValue.toString(), false, true));
+
+        });
+
+    });
+
+
+    $("#cancelProgramBudget").click(function () {
+        $("#hdnProgramOpt").val("View");
+        loadReview('@Model.PlanProgramId', "Budget");
+    });
+
+
+    $("#save_campaign_program").click(function () {
+        debugger;
+        var iserror = false;
+        $('#frmProgramBudgetAllocation').find('input[type=text], select, textarea').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        $('#frmProgramBudgetAllocation').find('.sbSelector').each(function () {
+            if ($(this).parent().prev().attr('require') == 'true') {
+                if ($(this).text() == 'Please Select') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                return false;
+            }
+
+         if ($("#hdnIsBudgetAllocated").val() == "True") {
+             var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
+             if (lstAllocInputs.length > 0) {
+                 var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
+                    var inputLength = lstAllocInputs.length;
+                    var removeLength = 0;
+                    for (var i = 0; i < lstAllocInputs.length; i++) {
+
+                        if (inputLength == 1) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
+                        }
+                        else if (inputLength == 2) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                            removeLength = 4;
+                        }
+                        else if (inputLength > 2) {
+                            if (i == inputLength - 2) {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                                removeLength = 4;
+                            }
+                            else {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
+                                removeLength = 2;
+                            }
+                        }
+
+                    }
+
+                    errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
+                    errorMsg += '.';
+
+                    ShowBudgetError(errorMsg);
+                    return false;
+                }
+
+                if ($("#lblTotalAllocated").hasClass('error-text')) {
+                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted");
+                    return false;
+                }
+
+                if (parseInt(ReplaceCC($("#lblUnallocatedBudget").val())) < 0) {
+                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.CannotSetBudgetLessthanAllocated");
+                    return false;
+                }
+
+                if ($("#txtRemainingBudget").hasClass('error-text')) {
+                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
+                    return false;
+                }
+            }
+            else {
+                if ($("#txtRemainingBudget").hasClass('error-text')) {
+                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
+                    return false;
+                }
+            }
+        
+         ////Start added by Kalpesh  #608: Budget allocation for Program
+         var allocationValue = [];
+         var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+         for (var i = 0; i < lstAllocInputs.length; i++) {
+             allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
+         }
+
+         $("#txtProgramBudget").val(ReplaceCC($("#txtProgramBudget").val()));
+
+         var uId = $(window).attr('name');
+         $.ajax({
+             type: 'POST',
+             url: '@Url.Content("~/Home/SaveProgramBudgetAllocation")',
+             data: $("form").serialize() + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId,
+             success: function (data) {
+                 if (data.IsSaved) {
+                     $("#divBudgetError").slideUp(400);
+                     $("#successMessageEditProgramBudget").slideDown(400);
+                     $("#spanSuccessMessageEditProgramBudget").empty();
+                     $("#spanSuccessMessageEditProgramBudget").html("Successfully saved.");
+                 }
+                 else {
+                     ShowBudgetError(data.msg);
+                 }
+
+                }
+            });
+     });
+
+</script>

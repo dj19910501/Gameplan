@@ -1,0 +1,418 @@
+﻿@model RevenuePlanner.Models.Plan_Campaign_ProgramModel
+@using RevenuePlanner.Helpers
+
+@{
+    bool ExtIntService = (bool)ViewBag.ExtIntService;
+    string CalledFromBudget = ViewBag.CalledFromBudget;
+    string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
+}
+
+<style type="text/css">
+    .verticalIdSelectBox .sbHolder
+    {
+        width: 90%;
+    }
+</style>
+
+<div id="successMessageEditProgram" class="alert hide alert-success message-position-small">
+    <a class="close">×</a>
+    <span id="spanSuccessMessageEditProgram"></span>
+</div>
+<div id="errorMessageEditProgram" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <span id="spanMessageEditProgram"></span>
+</div>
+
+<div id="frm_campaigns" name="frm_campaigns">
+
+    @using (Html.BeginForm(new { @id = "frmSaveProgram" }))
+    {
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $(".verticalIdSelectBox select").selectbox();
+                });
+             </script>
+        
+            @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+            @Html.HiddenFor(model => model.PlanCampaignId, new { id = "hdnPlanCampaignId" })
+            @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
+            @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
+            @Html.HiddenFor(model => model.TStartDate, new { id = "hdnTStartDate" })
+            @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
+            @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+            @Html.HiddenFor(model => model.ProgramBudget, new { id = "hdnOldProgramBudget" })
+            @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
+
+            <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+                <div class="span6" id="inspect-modal-left-column1">
+                    <label class="t_title">Program Title</label>
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id = "txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
+
+            <label>Description</label>
+            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
+
+               </div>
+                <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
+                        <p>Start Date</p>
+                        <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                            @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", id = "t_startdate" })
+                            <span class="add-on">
+                                <img src="~/Content/images/gray-calendar-icon.png"></span>
+                    </div>
+
+                        <label class="clear-section">End Date</label>
+                        <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                            @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small", id = "t_enddate" })
+                            <span class="add-on">
+                                <img src="~/Content/images/gray-calendar-icon.png"></span>
+                        </div>
+                      @if (ExtIntService)
+                      {
+                         <label class="clear-section">Status</label>
+                          if (Model.IsDeployedToIntegration)
+                          {
+                                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                          }
+                          else
+                          {    
+                                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
+                          }
+                      }
+                </div>
+              
+                <div class="span3" id="inspect-modal-left-column3">
+                <label class="padding-left4" title="Program Budget">Program Budget</label>
+                @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+            
+                     <div class="content dark inline-ellipsis">
+                        @if (!(bool)ViewBag.IsCreated)
+                        {
+                            <div class="cf width100">
+                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                    <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
+                                    @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                                </div>
+
+                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                    <label title="Cost">Cost</label>
+                                    @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                                </div>
+
+                                <div class="width65px pull-left" style="width:40%;">
+                                    <label title="Revenue">Revenue</label>
+                                    @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                <div style="display:none;">
+                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+                   </div>
+                </div>
+            </div>
+         
+        <ul class="nav nav-tabs new-margin padding-bottom10 clear" id="InspectTab">
+        <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
+        </li>
+    </ul>
+             <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+                        @Model.CustomFieldHtmlContent
+        
+                        @if ((bool)ViewBag.IsOwner)
+                        {
+                            <div class="wraper-btns cf">
+                            <div class="span2 btn-save">
+                                <button id="save_campaign_program" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
+                            </div>
+                            <div class="span2">
+                                <button id="cancelProgramEditSection" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+                            </div>
+                    </div>
+                        }
+             </div>
+    }
+    </div>
+
+<script type="text/javascript">
+    function FormatRemainingBudget() {
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+    }
+
+    $(document).ready(function () {
+        $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
+        FormatRemainingBudget();
+        $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
+
+        var SaveCampaignFlag = true;
+        var isredirect = "@ViewBag.RedirectType";
+        var hdnYear = @ViewBag.Year
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+
+        $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+        $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+
+        $("#txtTitle").keypress(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        $("#t_integration_status").click(function () {
+            if (isOwner == 'True') {
+                if ($(this).hasClass("icon-check-blue")) {
+                    $(this).val("Not Sync to integration");
+                    $(this).addClass("icon-check-gray");
+                    $(this).removeClass("icon-check-blue");
+                    $("#hdnIsDeployedToIntegration").val(false);
+                }
+                else {
+                    $(this).val("Sync to integration");
+                    $(this).addClass("icon-check-blue");
+                    $(this).removeClass("icon-check-gray");
+                    $("#hdnIsDeployedToIntegration").val(true);
+                }
+            }
+        });
+
+        var tactictype;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetTacticType/")',
+            data: {
+            },
+            success: function (r) {
+                tactictype = r;
+                myApp.hidePleaseWait();
+            }
+        });
+
+        $("span.tool-tip").tooltip();
+
+        $(".alert").find(".close").on("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        $('.datepicker.dropdown-menu').css("display", "none");
+
+        $('.close-form', this.$panel).click(function (e) {
+            $('.datepicker.dropdown-menu').css("display", "none");
+            $("#slidepanel").css("display", "none");
+            $("#slidepanel-container").empty();
+        });
+
+        var isOwner = "@ViewBag.IsOwner";
+        if (isOwner == 'False') {
+            $('form').find(".sbSelector").each(function () {
+                $(this).unbind("click");
+                $(this).removeAttr("href");
+                $(this).prev().unbind("click");
+                $(this).prev().removeAttr("href");
+            });
+            $('form').find("input[type=text], textarea").each(function () {
+                $(this).prop('readonly', true);
+            });
+
+            $('form').find(".add-on").each(function () {
+                $(this).unbind("click");
+            });
+            return false;
+        }
+
+        $('form').find('input[type=text], select, textarea').each(function () {
+            $(this).change(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+        });
+
+        $('form').find(".sbSelector").each(function () {
+            $(this).next().find('li').click(function () {
+                if ($(this).parent().parent().prev().attr('require') == 'true') {
+                    if ($(this).parent().prev().text() == 'Please Select') {
+                        $(this).parent().prev().addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).parent().prev().removeClass("error");
+                    }
+                }
+            });
+        });
+
+        $("#save_campaign_program").click(function () {
+            var iserror = false;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+
+            $('form').find('.sbSelector').each(function () {
+                if ($(this).parent().prev().attr('require') == 'true') {
+                    if ($(this).text() == 'Please Select') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+
+            if (iserror) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                return false;
+            }
+
+            if ($("#txtRemainingBudget").hasClass('error-text')) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
+                return false;
+            }
+
+            sdate = $('#t_startdate').val();
+            edate = $('#t_enddate').val();
+            var tsdate = $('#hdnTStartDate').val();
+            var tedate = $('#hdnTEndDate').val();
+
+            if (!isDate(sdate)) {
+                alert('@Common.objCached.ValidateStartDate');
+                return false;
+            }
+            if (!isDate(edate)) {
+                alert('@Common.objCached.ValidateEndDate');
+                return false;
+            }
+
+            if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+            if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+            if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
+            if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) return false;
+            if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
+
+            var isAssortment = $("#hdnRedirectType").val();
+
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+
+            $("#txtProgramBudget").val(ReplaceCC($("#txtProgramBudget").val()));
+
+            var _customFieldValues = [];
+            $('form').find('input[type=text], select').each(function () {
+                if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
+                    _customFieldValues.push({
+                        Key: $(this).attr('cf_id').toString(),
+                        Value: htmlEncode($(this).val().toString())
+                    });
+                }
+            });
+            _customFieldValues = JSON.stringify(_customFieldValues);
+
+            document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());
+            document.getElementById("Description").value = htmlEncode($('#Description').val());
+            var uId = $(window).attr('name');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/SaveProgram")',
+                data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget' + '&customFieldInputs=' + escape(_customFieldValues),
+                success: function (data) {
+                    if (data.issuccess) {
+                        $("#errorMessageEditProgram").slideUp(400);
+                        $("#spanMessageEditProgram").empty();
+                        $("#successMessageEditProgram").slideDown(400);
+                        $("#spanSuccessMessageEditProgram").empty();
+                        $("#spanSuccessMessageEditProgram").html("Successfully saved.");
+                    }
+                }
+            });
+        });
+
+        function ShowError(value) {
+            $("#successMessageEditProgram").slideUp(400);
+            $("#spanSuccessMessageEditProgram").empty();
+            $("#errorMessageEditProgram").slideDown(400);
+            $("#spanMessageEditProgram").empty();
+            $("#spanMessageEditProgram").html(value);
+        }
+
+        $('.dp').datepicker({
+            format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+            autoclose: true,
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });;
+
+        $('#dp_start .add-on').click(function () {
+            $('#dp_start').datepicker('show');
+            $('#dp_end').datepicker('hide');
+        })
+
+        $('#dp_end .add-on').click(function () {
+            $('#dp_start').datepicker('hide');
+            $('#dp_end').datepicker('show');
+        })
+
+        $('#t_startdate').click(function () {
+            $('#dp_end').datepicker('hide');
+        })
+
+        $('#t_enddate').click(function () {
+            $('#dp_start').datepicker('hide');
+        })
+
+        NumberFormatterTipsyTitle(".displaytitle", 31);
+
+        //$(".datepicker.dropdown-menu").css("z-index", "2501");
+
+    });
+
+    $("#cancelProgramEditSection").click(function () {
+        $("#hdnProgramOpt").val("View");
+        loadReview('@Model.PlanProgramId', "Setup");
+    });
+
+
+    $("#txtProgramBudget").keyup(function () {
+        var ProgramBudgetValue = ReplaceCC($("#txtProgramBudget").val());
+        var OldProgramBudgetValue = ReplaceCC($("#hdnOldProgramBudget").val());
+        var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
+        var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
+
+        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+        $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+
+        $("#hdnOldProgramBudget").val(ProgramBudgetValue);
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+    });
+  </script>

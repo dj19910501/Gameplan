@@ -3634,6 +3634,16 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
+
+                if (objPlan.CreatedBy.Equals(Sessions.User.UserId))
+                {
+                    ViewBag.InspectPopUpIsOwner = true;
+                }
+                else
+                {
+                    ViewBag.InspectPopUpIsOwner = false;
+                }
+
                 if (Convert.ToString(section) != "")
                 {
                     string verticalId = string.Empty;
@@ -5088,6 +5098,192 @@ namespace RevenuePlanner.Controllers
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
 
             return PartialView("_SetupProgram", im);
+        }
+
+
+        public PartialViewResult LoadSetupProgramEdit(int id = 0)
+        {
+            Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
+            if (pcp == null)
+            {
+                return null;
+            }
+            ViewBag.IsCreated = false;
+            ViewBag.RedirectType = false;
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pcp.Plan_Campaign.Plan.Model);
+            Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
+            pcpm.PlanProgramId = pcp.PlanProgramId;
+            pcpm.PlanCampaignId = pcp.PlanCampaignId;
+            pcpm.Title = HttpUtility.HtmlDecode(pcp.Title);
+            pcpm.Description = HttpUtility.HtmlDecode(pcp.Description);
+            pcpm.StartDate = pcp.StartDate;
+            pcpm.EndDate = pcp.EndDate;
+            pcpm.CStartDate = pcp.Plan_Campaign.StartDate;
+            pcpm.CEndDate = pcp.Plan_Campaign.EndDate;
+            var tsd = (from t in db.Plan_Campaign_Program_Tactic where t.PlanProgramId == id select t);
+            if (tsd.Count() > 0)
+            {
+                pcpm.TStartDate = (from otsd in tsd select otsd.StartDate).Min();
+            }
+            var ted = (from t in db.Plan_Campaign_Program_Tactic where t.PlanProgramId == id select t);
+            if (ted.Count() > 0)
+            {
+                pcpm.TEndDate = (from oted in ted select oted.EndDate).Max();
+            }
+            
+            pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
+            pcpm.Cost = Common.CalculateProgramCost(pcp.PlanProgramId);
+
+            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pcp.PlanCampaignId &&
+                t.Plan_Campaign_Program.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList());
+            pcpm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
+
+            pcpm.ProgramBudget = pcp.ProgramBudget;
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            pcpm.AllocatedBy = objPlan.AllocatedBy;
+
+            pcpm.IsDeployedToIntegration = pcp.IsDeployedToIntegration;
+
+            pcpm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Program.ToString());//Added by Mitesh Vaishnav for PL ticket #719
+
+            if (Sessions.User.UserId == pcp.CreatedBy)
+            {
+                ViewBag.IsOwner = true;
+
+                // Added by Dharmraj Mangukiya to hide/show delete program as per custom restrictions PL ticket #577
+                var AllTactic = pcp.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted.Equals(false)).ToList();
+                bool IsProgramDeleteble = true;
+                if (AllTactic.Count > 0)
+                {
+                    var OthersTactic = AllTactic.Where(t => t.CreatedBy != Sessions.User.UserId).ToList();
+                    if (OthersTactic.Count > 0)
+                    {
+                        IsProgramDeleteble = false;
+                    }
+                    else
+                    {
+                        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                        var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
+                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
+                        var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
+                        if (AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower()) || !lstAllowedVertical.Contains(t.VerticalId.ToString().ToLower()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString().ToLower()))).ToList().Count > 0)
+                        {
+                            IsProgramDeleteble = false;
+                        }
+                    }
+                }
+
+                ViewBag.IsProgramDeleteble = IsProgramDeleteble;
+            }
+            else
+            {
+                ViewBag.IsOwner = false;
+                ViewBag.IsProgramDeleteble = false;
+            }
+            ViewBag.Campaign = HttpUtility.HtmlDecode(pcp.Plan_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+
+            var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
+            var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList();
+            double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
+            ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
+
+            return PartialView("_EditSetupProgram", pcpm);
+        }
+
+        [HttpPost]
+        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, bool RedirectType, string closedTask, string customFieldInputs, string UserId = "", string CalledFromBudget = "")
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            try
+            {
+                //Deserialize customFieldInputs json string to  KeyValuePair List
+                var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
+              
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                            var pcpvar = (from pcp in db.Plan_Campaign_Program
+                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                          where pc.PlanId == Sessions.PlanId && pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
+                                          && pc.PlanCampaignId == form.PlanCampaignId
+                                          select pcp).FirstOrDefault();
+
+                            if (pcpvar != null)
+                            {
+                                return Json(new { errormsg = Common.objCached.DuplicateProgramExits });
+                            }
+                            else
+                            {
+                                Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).SingleOrDefault();
+                                pcpobj.Title = form.Title;
+                                pcpobj.Description = form.Description;
+                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                pcpobj.StartDate = form.StartDate;
+                                pcpobj.EndDate = form.EndDate;
+                                if (form.CStartDate > form.StartDate)
+                                {
+                                    pcpobj.Plan_Campaign.StartDate = form.StartDate;
+                                }
+
+                                if (form.EndDate > form.CEndDate)
+                                {
+                                    pcpobj.Plan_Campaign.EndDate = form.EndDate;
+                                }
+                                
+                                pcpobj.ModifiedBy = Sessions.User.UserId;
+                                pcpobj.ModifiedDate = DateTime.Now;
+                                pcpobj.ProgramBudget = form.ProgramBudget;
+                                db.Entry(pcpobj).State = EntityState.Modified;
+
+                                string entityTypeProgram = Enums.EntityType.Program.ToString();
+                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == form.PlanProgramId && c.CustomField.EntityType == entityTypeProgram).ToList();
+                                prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
+
+                                if (customFields.Count != 0)
+                                {
+                                    foreach (var item in customFields)
+                                    {
+                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = form.PlanProgramId;
+                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
+                                    }
+                                }
+                                int result = db.SaveChanges();
+                                
+                                result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                                
+                                if (result >= 1)
+                                {
+                                    Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);
+                                    scope.Complete();
+                                    return Json(new { issuccess = true });
+                                }
+                            }
+                        }
+                    }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { });
         }
 
         /// <summary>
@@ -7090,6 +7286,224 @@ namespace RevenuePlanner.Controllers
             yearlistAfter.ForEach(p => UpcomingActivityList.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
             return UpcomingActivityList;
         }
+
+
+        #region Budget Allocation in Program Tab 
+
+        public PartialViewResult LoadSetupProgramBudget(int id = 0)
+        {
+            Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
+            if (pcp == null)
+            {
+                return null;
+            }
+            Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
+            pcpm.PlanProgramId = pcp.PlanProgramId;
+            pcpm.PlanCampaignId = pcp.PlanCampaignId;
+            
+            pcpm.ProgramBudget = pcp.ProgramBudget;
+            
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            pcpm.AllocatedBy = objPlan.AllocatedBy;
+
+            var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
+            var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList();
+            double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
+            ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
+
+            return PartialView("_SetupProgramBudget", pcpm);
+        }
+
+        /// <summary>
+        /// Added By: Bhavesh Dobariya.
+        /// Action to Save Program.
+        /// </summary>
+        /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
+        /// <param name="programs">Program list string array.</param>
+        /// <param name="RedirectType">Redirect Type.</param>
+        /// <returns>Returns Action Result.</returns>
+        [HttpPost]
+        public ActionResult SaveProgramBudgetAllocation(Plan_Campaign_ProgramModel form,string BudgetInputValues,string UserId = "")
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    return Json(new { IsSaved = false, msg = Common.objCached.LoginWithSameSession , JsonRequestBehavior.AllowGet});
+                }
+            }
+            try
+            {
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                            var pcpvar = (from pcp in db.Plan_Campaign_Program
+                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                          where pc.PlanId == Sessions.PlanId && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
+                                          && pc.PlanCampaignId == form.PlanCampaignId   //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
+                                          select pcp).FirstOrDefault();
+
+                            if (pcpvar != null)
+                            {
+                                return Json(new { IsSaved = false, msg = Common.objCached.DuplicateProgramExits, JsonRequestBehavior.AllowGet });
+                            }
+                            else
+                            {
+                                Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).SingleOrDefault();
+                                string[] arrBudgetInputValues = BudgetInputValues.Split(',');
+
+                                //pcpobj.Title = form.Title;
+                                pcpobj.ModifiedBy = Sessions.User.UserId;
+                                pcpobj.ModifiedDate = DateTime.Now;
+
+                                pcpobj.ProgramBudget = form.ProgramBudget;
+
+                                //Start added by Kalpesh  #608: Budget allocation for Program
+                                var PrevAllocationList = db.Plan_Campaign_Program_Budget.Where(c => c.PlanProgramId == form.PlanProgramId).Select(c => c).ToList();    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
+                                //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by Sohel Pathan on 03/09/2014 for PL ticket #758
+
+                                if (arrBudgetInputValues.Length == 12)
+                                {
+                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
+                                    {
+                                        // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
+                                        bool isExists = false;
+                                        if (PrevAllocationList != null)
+                                        {
+                                            if (PrevAllocationList.Count > 0)
+                                            {
+                                                var updatePlanProgramBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                                if (updatePlanProgramBudget != null)
+                                                {
+                                                    if (arrBudgetInputValues[i] != "")
+                                                    {
+                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                        if (updatePlanProgramBudget.Value != newValue)
+                                                        {
+                                                            updatePlanProgramBudget.Value = newValue;
+                                                            db.Entry(updatePlanProgramBudget).State = EntityState.Modified;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        db.Entry(updatePlanProgramBudget).State = EntityState.Deleted;
+                                                    }
+                                                    isExists = true;
+                                                }
+                                            }
+                                        }
+                                        if (!isExists && arrBudgetInputValues[i] != "")
+                                        {
+                                            // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
+                                            Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
+                                            objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
+                                            objPlanCampaignProgramBudget.Period = "Y" + (i + 1);
+                                            objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                            objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
+                                            objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
+                                            db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
+                                        }
+                                    }
+                                    db.SaveChanges();
+                                }
+                                else if (arrBudgetInputValues.Length == 4)
+                                {
+                                    int BudgetInputValuesCounter = 1;
+                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
+                                    {
+                                        // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
+                                        bool isExists = false;
+                                        if (PrevAllocationList != null)
+                                        {
+                                            if (PrevAllocationList.Count > 0)
+                                            {
+                                                var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 1)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                                var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
+
+                                                if (thisQuarterFirstMonthBudget != null)
+                                                {
+                                                    if (arrBudgetInputValues[i] != "")
+                                                    {
+                                                        var thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
+                                                        var thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
+                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+
+                                                        if (thisQuarterTotalBudget != newValue)
+                                                        {
+                                                            var BudgetDiff = newValue - thisQuarterTotalBudget;
+                                                            if (BudgetDiff > 0)
+                                                            {
+                                                                thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+                                                                db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+                                                            }
+                                                            else
+                                                            {
+                                                                int j = 1;
+                                                                while (BudgetDiff < 0)
+                                                                {
+                                                                    if (thisQuarterFirstMonthBudget != null)
+                                                                    {
+                                                                        BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+
+                                                                        if (BudgetDiff <= 0)
+                                                                            thisQuarterFirstMonthBudget.Value = 0;
+                                                                        else
+                                                                            thisQuarterFirstMonthBudget.Value = BudgetDiff;
+
+                                                                        db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+                                                                    }
+                                                                    if ((BudgetInputValuesCounter + j) <= (BudgetInputValuesCounter + 2))
+                                                                    {
+                                                                        thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter + j))).FirstOrDefault();
+                                                                    }
+
+                                                                    j = j + 1;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                                    }
+                                                    isExists = true;
+                                                }
+                                            }
+                                        }
+                                        if (!isExists && arrBudgetInputValues[i] != "")
+                                        {
+                                            // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
+                                            Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
+                                            objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
+                                            objPlanCampaignProgramBudget.Period = "Y" + BudgetInputValuesCounter;
+                                            objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                            objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
+                                            objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
+                                            db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
+                                        }
+                                        BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
+                                    }
+                                }
+
+                                db.Entry(pcpobj).State = EntityState.Modified;
+                                int result = db.SaveChanges();
+                                result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                                return Json(new { IsSaved = true, msg = "Saved Successfully.", JsonRequestBehavior.AllowGet });
+                            }
+                        }
+                    }
+                }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { IsSaved = false, msg = Common.objCached.ErrorOccured, JsonRequestBehavior.AllowGet });
+        }
+
+        #endregion
+
     }
 }
 
