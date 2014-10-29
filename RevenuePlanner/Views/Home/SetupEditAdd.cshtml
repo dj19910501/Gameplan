@@ -331,7 +331,8 @@
                         $('#divTacticSaveCancel').css('display', 'none');
                         $('#EditForm').css('display', 'block');
                         loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab);
-                             return;
+                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        return;
                     }
 
                          if (data.errormsg) {
