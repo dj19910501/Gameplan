@@ -12,6 +12,7 @@
 }
 @Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
+@Html.Hidden("hdnTacticOpt", "read", new { id = "hdnTacticOpt" })
 <form>
 <div class="modal-popup-title">
     <span class="icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
@@ -152,7 +153,11 @@
           $("#EditForm").on("click", function (e) {
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();
-              loadReview(planTacticId, activeTab, "edit");
+              $("#hdnTacticOpt").val("Edit");
+              $('#txtTacticTitle').css('display', 'block');
+              $('#lblTacticTitle').css('display', 'none');
+              $('#EditForm').css('display', 'none');
+              loadReview(planTacticId, activeTab);
           });
           
       });
@@ -178,11 +183,12 @@
         });
     }
 
-    function loadReview(id, tabValue, mode) {
+    function loadReview(id, tabValue) {
         $.ajaxSetup({ cache: false });
         var url;
+        var ProgramOpt = $("#hdnTacticOpt").val();
         if (tabValue == TabSetup) {
-            if (mode == "edit") {
+            if (ProgramOpt == "Edit") {
                 url = '@Url.Content("~/Home/EditTactic/")';
             }
             else {
@@ -203,11 +209,11 @@
 
           $("#divTab").empty();
 
-          if (mode == "edit") {
+          if (ProgramOpt == "Edit") {
               $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""');
           }
           else {
-              $("#divTab").load(url + '?id=' + id + '&Mode=' + mode);
+              $("#divTab").load(url + '?id=' + id + '&Mode=' + ProgramOpt);
           }
       }
 

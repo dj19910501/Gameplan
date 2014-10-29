@@ -44,7 +44,7 @@
                                   <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
                           }</label>
-                <input type="text" value="@Model.ProjectedStageValue" readonly="true" id = "txtProjectedStageValue" />
+                <input type="text" value="@Model.ProjectedStageValue" readonly="true" id = "txtProjectedStageValue" class="priceValue" />
              </div>
 
              <div class="pull-left" style="width: 47%">
@@ -106,5 +106,17 @@
               $(this).prev().removeAttr("href");
           });
 
+          $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+          if ('@TempData["TacticMQL"]' == "N/A") {
+              $("#txtmql").removeClass("priceValue");
+              $("#txtmql").val("N/A");
+              $("#txtmql").attr('title', 'N/A');
+          }
+          else {
+              var mqlValue = FormatCommas($("#txtmql").val(), false);
+              $("#txtmql").val(mqlValue);
+              $("#txtmql").attr('title', mqlValue);
+          }
       });
 </script>

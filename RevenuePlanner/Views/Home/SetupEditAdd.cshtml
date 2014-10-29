@@ -58,11 +58,11 @@
                 <p style="width: 110%;">Deployed to Integration</p>
                 if (Model.IsDeployedToIntegration)
                 {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to Integration" maxlength="18" readonly />
                 }
                 else
                 {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Sync to Integration" maxlength="18" readonly />
                 }
             }
 
@@ -99,7 +99,7 @@
         </li>
     </ul>
 
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
         <div class="span3 margin-top10">
             <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
@@ -179,6 +179,18 @@
               }
           });
 
+          if ('@TempData["TacticMQL"]' == "N/A") {
+              $("#txtmql").removeClass("priceValue");
+              $("#txtmql").val("N/A");
+              $("#txtmql").attr('title', 'N/A');
+          }
+          else {
+              var mqlValue = FormatCommas($("#txtmql").val(), false);
+              $("#txtmql").val(mqlValue);
+              $("#txtmql").attr('title', mqlValue);
+          }
+
+
           $('#t_startdate').click(function () {
               $('#dp_end').datepicker('hide');
           })
@@ -215,6 +227,7 @@
 
               $('#divTacticSaveCancel').css('display', 'none');
               $('#EditForm').css('display', 'block');
+              $("#hdnTacticOpt").val("read");
               loadReview(planTacticId, activeTab);
           });
 
@@ -313,8 +326,8 @@
 
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/Home/SaveTactic1")',
-            data: $("form").serialize() + '&lineitems=' + arLineitem + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues),
+            url: '@Url.Content("~/Home/SetupSaveTactic")',
+            data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues),
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

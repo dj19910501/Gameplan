@@ -5795,7 +5795,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveTactic1(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, bool RedirectType, string closedTask, string customFieldInputs, string UserId = "")
+        public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -5810,142 +5810,7 @@ namespace RevenuePlanner.Controllers
                 int cid = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == form.PlanProgramId).Select(p => p.PlanCampaignId).FirstOrDefault();
                 int pid = form.PlanProgramId;
 
-                //string[] arrBudgetInputValues = BudgetInputValues.Split(',');
-                //string[] arrActualCostInputValues = actualInputValues.Split(',');
-                //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
-
-                if (form.PlanTacticId == 0)
-                {
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
-                                          join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.TacticTitle.Trim().ToLower()) && pcpt.IsDeleted.Equals(false)
-                                          && pcp.PlanProgramId == form.PlanProgramId    //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
-                                          select pcp).FirstOrDefault();
-
-                            if (pcpvar != null)
-                            {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
-                            }
-                            else
-                            {
-                                Plan_Campaign_Program_Tactic pcpobj = new Plan_Campaign_Program_Tactic();
-                                pcpobj.PlanProgramId = form.PlanProgramId;
-                                pcpobj.Title = form.TacticTitle;
-                                pcpobj.TacticTypeId = form.TacticTypeId;
-                                pcpobj.Description = form.Description;
-                                pcpobj.VerticalId = form.VerticalId;
-                                pcpobj.AudienceId = form.AudienceId;
-                                pcpobj.GeographyId = form.GeographyId;
-                                //pcpobj.INQs = form.INQs;
-                                //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
-                                // pcpobj.Cost = UpdateBugdetAllocationCost(arrBudgetInputValues, form.TacticCost);
-                                pcpobj.StartDate = form.StartDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                pcpobj.EndDate = form.EndDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
-                                pcpobj.BusinessUnitId = (from m in db.Models
-                                                         join p in db.Plans on m.ModelId equals p.ModelId
-                                                         where p.PlanId == Sessions.PlanId
-                                                         select m.BusinessUnitId).FirstOrDefault();
-                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                pcpobj.StageId = form.StageId;
-                                pcpobj.ProjectedStageValue = form.ProjectedStageValue;
-                                pcpobj.CreatedBy = Sessions.User.UserId;
-                                pcpobj.CreatedDate = DateTime.Now;
-                                db.Entry(pcpobj).State = EntityState.Added;
-                                int result = db.SaveChanges();
-                                int tacticId = pcpobj.PlanTacticId;
-
-                                // Start Added by dharmraj for ticket #644
-                                if (pcpobj.Cost > 0)
-                                {
-                                    Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                    objNewLineitem.PlanTacticId = tacticId;
-                                    objNewLineitem.Title = Common.DefaultLineItemTitle;
-                                    objNewLineitem.Cost = pcpobj.Cost;
-                                    objNewLineitem.Description = string.Empty;
-                                    objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                    objNewLineitem.CreatedDate = DateTime.Now;
-                                    db.Entry(objNewLineitem).State = EntityState.Added;
-                                    db.SaveChanges();
-                                }
-                                // End Added by dharmraj for ticket #644
-
-                                ////Start - Added by : Mitesh Vaishnav on 25-06-2014    for PL ticket 554 Home & Plan Pages: Program and Campaign Blocks are not covering newly added Tactic.
-                                var planCampaignProgramDetails = (from pcp in db.Plan_Campaign_Program
-                                                                  join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                                                  where pcp.PlanProgramId == pcpobj.PlanProgramId
-                                                                  select pcp).FirstOrDefault();
-                                if (planCampaignProgramDetails.StartDate > pcpobj.StartDate)
-                                {
-                                    planCampaignProgramDetails.StartDate = pcpobj.StartDate;
-                                }
-                                if (planCampaignProgramDetails.Plan_Campaign.StartDate > pcpobj.StartDate)
-                                {
-                                    planCampaignProgramDetails.Plan_Campaign.StartDate = pcpobj.StartDate;
-                                }
-                                if (pcpobj.EndDate > planCampaignProgramDetails.EndDate)
-                                {
-                                    planCampaignProgramDetails.EndDate = pcpobj.EndDate;
-                                }
-                                if (pcpobj.EndDate > planCampaignProgramDetails.Plan_Campaign.EndDate)
-                                {
-                                    planCampaignProgramDetails.Plan_Campaign.EndDate = pcpobj.EndDate;
-                                }
-                                db.Entry(planCampaignProgramDetails).State = EntityState.Modified;
-
-                                ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
-                                ////save custom fields value for particular Tactic
-                                if (customFields.Count != 0)
-                                {
-                                    foreach (var item in customFields)
-                                    {
-                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
-                                        objcustomFieldEntity.EntityId = tacticId;
-                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
-                                    }
-                                }
-                                ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
-
-                                db.SaveChanges();
-
-                                //result = TacticValueCalculate(pcpobj.PlanProgramId); // Commented by Dharmraj for PL #440
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-
-                                // Added By : Kalpesh Sharma : Functional Review Points #697
-                                // Check whether the lineitmes is empty or not . if lineitems have any instance at that time call the SaveLineItems function and insert the data into the lineItems table. 
-                                if (lineitems != string.Empty)
-                                {
-                                    //result = SaveLineItems(form, lineitems, tacticId);
-                                }
-
-                                if (result >= 1)
-                                {
-                                    //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId);
-                                    var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpobj.PlanProgramId).Select(a => a.PlanCampaignId).Single();
-                                    Common.ChangeCampaignStatus(PlanCampaignId);
-                                    //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-
-                                    scope.Complete();
-
-                                    return Json(new { redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }) });
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
 
                     using (MRPEntities mrp = new MRPEntities())
                     {
@@ -6214,8 +6079,7 @@ namespace RevenuePlanner.Controllers
 
                                     scope.Complete();
 
-                                    return Json(new { redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }) });
-                                }
+                                return Json(new { redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId}), Msg = "Changes saved." });
                             }
                         }
                     }
