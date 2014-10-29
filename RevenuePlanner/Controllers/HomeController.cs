@@ -1274,7 +1274,7 @@ namespace RevenuePlanner.Controllers
             if (getViewByList)
             {
                 lstViewById = Common.GetDefaultGanttTypes(tacticForAllTabs.ToList().Select(t => t.PlanTacticId).ToList());
-                lstViewById = lstViewById.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+                //lstViewById = lstViewById.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             }
             return lstViewById;
         }
