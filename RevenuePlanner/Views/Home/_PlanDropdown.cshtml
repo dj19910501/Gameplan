@@ -116,6 +116,11 @@
             GetHealderData(TempPlanIds);
             GetNumberOfActivityPerMonByPlanId(TempPlanIds, Currenttime);
     });
+    $('.sbHolder').click(function () {
+        
+        $("#ddlTabViewBy").multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu 
+        
+    });
 
 </script>
 
