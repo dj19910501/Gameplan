@@ -3742,6 +3742,10 @@ namespace RevenuePlanner.Helpers
                     {
                         className += " paddingleft25px";
                     }
+                    else
+                    {
+                        className+="\" style=\"clear:both;\""; 
+                    }
                     sb.Append("<div class=\""+className+"\"><p title=\""+item.name+"\" class=\"ellipsis\">"+item.name+"</p>");
 
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
