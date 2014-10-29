@@ -68,7 +68,6 @@
                     {
                         foreach (var item in lineItemList)
                         {
-                            planLineItemIds += item.PlanLineItemId + ",";
                             string rawId = "trLine_title" + item.PlanLineItemId;
                         <tr class="height42 lines" id="@rawId">
                             <th class="font3F3F3F actual-popup-tile" style="font-weight:normal;" title="@item.Title">@item.Title</th>
@@ -183,7 +182,7 @@
             </table>
         </div>
         <div class="pull-left" style="float: left; width: 150px;">
-            <table class="table table-striped mystats table-style">
+            <table class="table table-striped mystats table-style shadow-table">
                 <thead>
                     <tr class="height42">
                         <th class="font908D88 text-align-right" style="width:75px;">Projected</th> @*removing padding-left55 class by mitesh vaishnav for pl ticket 812*@
@@ -320,7 +319,7 @@
 
                     // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
                     $('.setBudget').each(function () {
-                        SetBudget($(this));
+                        SetBudget("#" + $(this).attr('id'));  // Modified By : Viral Kadiya Internal Review Points 10/29/2014.
                     });
                     // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
 

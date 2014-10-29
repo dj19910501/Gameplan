@@ -881,7 +881,7 @@
 
                 // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
                 $('.setBudget').each(function () {
-                    SetBudget($(this));
+                    SetBudget("#" + $(this).attr('id'));    // Modified By : Viral Kadiya Internal Review Points 10/29/2014
                 });
                 // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
             }

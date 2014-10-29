@@ -162,28 +162,12 @@ function FormatCommasBudget(amount, showDecimals , showCurrencySymbol) {
 function ReplaceCC(text) {
     return text.trim().replace(/,/g, '').replace('$', '');
 }
-
+//// Modified By: Viral Kadiya
+//// Date 10/29/2014
+//// Remove extra code from this function cause it work same as setLabelToolTip function.
 function SetBudget(idName) {
-    $(idName).html($(idName).html().replace("$", "").trim());
-    //$(idName).html("$ " + number_format($(idName).html(), 0, '.', ','));
     var budgetValue = $(idName).html();
-    if (budgetValue.length >= 5) {
-        $(idName).html(SetFormatForLabelExtended(idName)); //$(idName).html($(idName).html().substring(0, 7) + ".."); change by dharmraj for ticket #479 : to accommodate large number
-        $(idName).html('$' + $(idName).html());
-        //Added By : Kalpesh Sharma
-        //PL #508 Set format for label in tool tip
-        //$(idName).prop('title', budgetValue);
-        $(idName).prop('title', "$" + number_format(budgetValue.toString(), 0, '.', ','));
-        $(idName).addClass('north');
-        $('.north').tipsy({ gravity: 'n' });
-    }
-    else {
-        //Modified By : Kalpesh Sharma
-        //PL #508 Set the comma sperater format for those values who is less then 5 digits ($2500) ==> $2,500
-        $(idName).html('$' + number_format(budgetValue.toString(), 0, '.', ','));
-        $(idName).removeAttr('original-title');
-        $(idName).removeClass('north');
-    }
+    setLabelToolTip(idName, budgetValue, 5, true);
 }
 
 //PL #508 Label formater with tipsy 
@@ -293,20 +277,12 @@ function SetLabelFormaterWithTipsyNumbers(idName) {
     }
 }
 
-
+//// Modified By: Viral Kadiya
+//// Date 10/29/2014
+//// Remove extra code from this function cause it work same as setLabelToolTip function.
 function SetPriceValue(idName) {
-    $(idName).html(number_format($(idName).html(), 0, '.', ','));
-    var budgetValue = $(idName).html();
-    if (budgetValue.length >= 10) {
-        $(idName).html($(idName).html().substring(0, 8) + "..");
-        $(idName).prop('title', budgetValue);
-        $(idName).addClass('north');
-        $('.north').tipsy({ gravity: 's' });
-    }
-    else {
-        $(idName).removeAttr('original-title');
-        $(idName).removeClass('north');
-    }
+    var pricevalue = $(idName).html();
+    setLabelToolTip(idName, pricevalue, 5, false);
 }
 
 function getblurvalue(sender) {
@@ -570,22 +546,24 @@ function numberWithCommas(value) {
 //// Modified By : Kalpesh Sharma
 //// Date 3/07/2014
 //// Changes in number formater function PL#508. 
+//// Modified By : Viral Kadiya on 
+//// Date 10/29/2014
+//// Make common function. This function also called from SetBudget function. 
 function setLabelToolTip(lableId, value, maxSize, iscurrency) {
-    var roundValue = (Math.round(parseFloat(value) * 100) / 100);
+    var numericval = RemoveExtraCharactersFromString(value.toString()); // Remove currency symbol($) and other characters from value.
+    if (isNaN(numericval))   // check whether value is numeric or not : if illegal then return true.
+        return value;
+    var roundValue = (Math.round(parseFloat(numericval) * 100) / 100);
     var splitvalue = roundValue.toString().split(".");
     var lengthvalue = splitvalue[0].toString().length;
-    //if (lengthvalue > maxSize) {
+
     if (lengthvalue >= maxSize) {
         if (iscurrency) {
-            $(lableId).text("$" + GetAbberiviatedValue(value));
-
-            //$(lableId).attr('title', "$" + numberWithCommas(roundValue));
+            $(lableId).text("$" + GetAbberiviatedValue(numericval));
             $(lableId).attr('title', "$" + number_format(roundValue, 0, '.', ','));
-
         }
         else {
-            $(lableId).text(GetAbberiviatedValue(value));
-            //$(lableId).attr('title', numberWithCommas(roundValue));
+            $(lableId).text(GetAbberiviatedValue(numericval));
             $(lableId).attr('title',number_format(roundValue, 0, '.', ','));
         }
         $(lableId).addClass('north');
@@ -595,15 +573,14 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
         $(lableId).removeAttr('original-title');
         $(lableId).removeClass('north');
         if (iscurrency) {
-            //$(lableId).text("$" + numberWithCommas(roundValue));
               $(lableId).text("$" + number_format(roundValue, 0, '.', ','));
         }
         else {
-            //$(lableId).text(numberWithCommas(roundValue));
               $(lableId).text(number_format(roundValue, 0, '.', ','));
         }
     }
 }
+
 //Start Manoj: 30Jan2014 - Bug 17:Should not be able to edit a published model
 //Function added to disable all inputs
 function MakeViewOnly(ContainerId) {

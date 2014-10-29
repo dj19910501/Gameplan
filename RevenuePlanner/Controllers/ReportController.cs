@@ -1801,7 +1801,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.parentRevenueSummery = lstParentRevenueSummery;
 
             List<ViewByModel> lstParentRevenueToPlan = new List<ViewByModel>();
-            lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueOrganization, Value = Common.RevenueOrganization });
+            //lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueOrganization, Value = Common.RevenueOrganization });
             lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
             lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = Common.RevenueAudience });
             lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
