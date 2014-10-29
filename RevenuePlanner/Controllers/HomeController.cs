@@ -5117,7 +5117,23 @@ namespace RevenuePlanner.Controllers
             ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == pcp.Plan_Campaign.Plan.Model.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();
             
-             ViewBag.OwnerName =  (Sessions.User.FirstName + " " + Sessions.User.LastName).ToString();
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(pcp.CreatedBy, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    RedirectToAction("Index", "Login");
+                }
+            }
+            ViewBag.OwnerName = userName.FirstName + " " + userName.LastName;
 
             return PartialView("_EditSetupProgram", pcpm);
         }
@@ -8260,8 +8276,26 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(pc.CreatedBy, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+            ViewBag.OwnerName = userName.FirstName+" "+userName.LastName;
             ViewBag.Year = pc.Plan.Year;
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pc.Plan.Model);
+            ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == pc.Plan.Model.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();
             Plan_CampaignModel pcm = new Plan_CampaignModel();
             pcm.PlanCampaignId = pc.PlanCampaignId;
             pcm.Title = HttpUtility.HtmlDecode(pc.Title);

@@ -6,6 +6,7 @@
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     //deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+    string OwnerName = ViewBag.OwnerName;
 }
 
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>   
@@ -30,26 +31,14 @@
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
             @Html.TextAreaFor(model=>model.Description, new {id="txtDescription", @class = "span12 text-area-size", style = "height:92px;" })
-            <p style="width: 110%;">@Html.Raw("Deployed to Integration")</p>
-            @* @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", id = "txtDeployStatus"})*@
-            @if (ExtIntService)
-            {
-                if (Model.IsDeployedToIntegration)
-                {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
-                }
-                else
-                {    
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
-                }
-            }
+            
             <div style="clear: both; width: 250%;">
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
         </div>
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
-            <p>@Html.Raw("Campaign Budget")</p>
-            @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate", id = "txtCampaignBudget", placeholder = "Required", require = "true" , maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar})
+           <p>@Html.Raw("Owner")</p>
+                    @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true"})
             <p>Start Date</p>
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                 @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_startdate" })
@@ -62,26 +51,59 @@
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
+            <p class="clear-section" style=" padding-top: 6px;">@Html.Raw("Deployed to Integration")</p>
+            @* @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", id = "txtDeployStatus"})*@
+            @if (ExtIntService)
+            {
+                if (Model.IsDeployedToIntegration)
+                {
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                }
+                else
+                {    
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
+                }
+            }
         </div>
         <div class="span3" id="inspect-modal-left-column3">
+             <p>@Html.Raw("Campaign Budget")</p>
+            @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate", id = "txtCampaignBudget", placeholder = "Required", require = "true" , maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar})
+            <p>Remaining Campaign Budget</p>
+                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+             <div class="content dark inline-ellipsis">
+                        @if (!(bool)ViewBag.IsCreated)
+                        {
+                            <div class="cf width100">
+                                <div class="width65px margin-right20 pull-left" style="width:40%;">
             <p>@Html.LabelForMQL("MQL")</p>
-            @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small truncate priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
+            @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
+                   </div>
+
+                                <div class="width65px margin-right20 pull-left" style="width:40%;">
             <p>Cost</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
-            <p>Revenue</p>
-            @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small truncate currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+            </div>
+
+                                <div class="width65px pull-left" style="width:40%;">
+                                    <p>Revenue</p>
+            @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+                                     </div>
+                            </div>
+                        }
+                    </div>
         </div>
     </div>
-    <div style="display:none;">
-                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
-                   </div>
     <ul class="nav nav-tabs new-margin padding-bottom10 clear" id="InspectTab">
         <li class="pull-right">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border" id="attributesControlsArea">
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString(), 0)
+           <div class="span3 margin-top10">
+            <p>Business Unit</p>
+            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
+            </div>
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString(), 1,"addEdit")
    <div class="clear-section"></div>
     
       <div id="CustomFieldSepreater"></div>
@@ -128,9 +150,9 @@
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
           $(".selectBox select").selectbox();
-          $('#attributesControlsArea').find('input').each(function () {
-              $(this).removeAttr('readonly style');
-          });
+          //$('#attributesControlsArea').find('input').each(function () {
+          //    $(this).removeAttr('readonly style');
+          //});
 
           $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
           $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
