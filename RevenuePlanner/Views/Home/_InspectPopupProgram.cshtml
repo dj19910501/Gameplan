@@ -43,7 +43,7 @@
                 }
             </span>
             @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programMaster.ProgramTitle), new { placeholder = "Program names goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = programMaster.ProgramTitle })
-
+            @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
         </h2>
 
     </div>

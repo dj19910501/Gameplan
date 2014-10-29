@@ -43,6 +43,7 @@
             }
             </span> 
         @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = campaignMaster.CampaignTitle,id="txtTitle" })
+        @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
     </h2>
 </div>
 </form>
