@@ -10,7 +10,7 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanProgramId)
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="padding-top:15px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Parent Campaign")</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(program.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = program.CampaignTitle })

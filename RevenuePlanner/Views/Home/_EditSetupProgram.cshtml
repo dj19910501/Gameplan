@@ -10,16 +10,11 @@
 
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
 <style type="text/css">
-    .verticalIdSelectBox .sbHolder
-    {
-        width: 90%;
+    #dp_start,#dp_end    {
+        padding-left:0px;
     }
-</style>
 
-<div id="errorMessageEditProgram" class="alert alert-error hide message-position-small">
-    <a class="close">×</a>
-    <span id="spanMessageEditProgram"></span>
-</div>
+</style>
 
 <div id="frm_campaigns" name="frm_campaigns">
 
@@ -27,9 +22,7 @@
     {
             <script type="text/javascript">
                 $(document).ready(function () {
-
                     $(".selectBox select").selectbox();
-                    $(".verticalIdSelectBox select").selectbox();
                 });
              </script>
         
@@ -43,7 +36,7 @@
             @Html.HiddenFor(model => model.ProgramBudget, new { id = "hdnOldProgramBudget" })
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
 
-            <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+            <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
                 <div class="span6" id="inspect-modal-left-column1">
               <p>@Html.Raw("Parent Campaign")</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(CampaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = CampaignTitle })
@@ -53,6 +46,8 @@
 
                </div>
                 <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
+                    <label  title="Program Budget">Program Budget</label>
+                        @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                         <p>Start Date</p>
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                             @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", id = "t_startdate" })
@@ -66,7 +61,11 @@
                             <span class="add-on">
                                 <img src="~/Content/images/gray-calendar-icon.png"></span>
                         </div>
-                      @if (ExtIntService)
+                      
+                </div>
+              
+                <div class="span3" id="inspect-modal-left-column3">
+                    @if (ExtIntService)
                       {
                          <label class="clear-section">Status</label>
                           if (Model.IsDeployedToIntegration)
@@ -78,12 +77,6 @@
                                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
                           }
                       }
-                </div>
-              
-                <div class="span3" id="inspect-modal-left-column3">
-                <label class="padding-left4" title="Program Budget">Program Budget</label>
-                @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-            
                      <div class="content dark inline-ellipsis">
                         @if (!(bool)ViewBag.IsCreated)
                         {
@@ -119,10 +112,10 @@
     </ul>
              <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
                  
-                  @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanProgramId, Enums.EntityType.Program.ToString(), 1)
+                  @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanProgramId, Enums.EntityType.Program.ToString(), 1,"Edit")
         
                  <div class="clear-section"></div>
-
+                 <div id="CustomFieldSepreater"></div>
                         @if ((bool)ViewBag.IsOwner)
                         {
                             <div class="wraper-btns cf">
@@ -153,7 +146,9 @@
         $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
         FormatRemainingBudget();
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
-        $("#successMessageViewProgram").slideUp(100);
+
+        $("#successMessageViewProgram").slideUp(50);
+        $("#errorMessageEditProgram").slideUp(50);
 
         $("#txtProgramTitle").val($("#lblProgramTitle").html());
 
@@ -333,6 +328,7 @@
                 success: function (data) {
                     if (data.IsSaved) {
                         CancelEvent();
+                        $("#errorMessageEditProgram").slideUp(50);
                         $("#spanMessageViewProgram").empty();
                         $("#successMessageViewProgram").slideDown(400);
                         $("#spanSuccessMessageViewProgram").empty();
@@ -347,7 +343,7 @@
         });
 
         function ShowError(value) {
-            $("#successMessageViewProgram").slideUp(400);
+            $("#successMessageViewProgram").slideUp(50);
             $("#errorMessageEditProgram").slideDown(400);
             $("#spanMessageEditProgram").empty();
             $("#spanMessageEditProgram").html(value);
@@ -359,6 +355,8 @@
 
     $("#cancelProgramEditSection").click(function () {
         CancelEvent();
+        $("#successMessageViewProgram").slideUp(50);
+        $("#errorMessageEditProgram").slideUp(50);
     });
 
 
@@ -369,6 +367,7 @@
         $("#EditProgram").css("display", "block");
         $('#txtProgramTitle').css('display', 'none');
         $('#lblProgramTitle').css('display', 'block');
+        $("#lblProgramTitle").removeAttr("style");
     }
 
     $("#txtProgramBudget").keyup(function () {

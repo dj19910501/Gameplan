@@ -13,24 +13,41 @@
 @Html.Hidden("hdnPlanProgramId", programMaster.PlanProgramId, new { id = "hdnPlanProgramId" })
 @Html.Hidden("hdnProgramStatus", programMaster.Status, new { id = "hdnProgramStatus" })
 @Html.Hidden("hdnProgramOpt", "View", new { id = "hdnProgramOpt" })
-<div class="modal-popup-title">
-    <div style="display: inline-block; width: 91%;">
-    <span class="icon-flag bg-purple" style="background-color:#@programMaster.ColorCode !important;"></span>
-    <h2 class="title-simple source-sans-prolight">
-         <span>
-        <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
-             </span>
-        @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programMaster.ProgramTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 86%; height: 28px;display:none", title = programMaster.ProgramTitle })  
-    </h2>
-        </div>
-    <div style="display: inline;">
-         @if (IsPlanEditable && IsPlanOwner)
-         {
-        @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large" })
-         }
-        </div>
+
+<style type="text/css">
+    #successMessageViewProgram, #errorMessageEditProgram
+    {
+        margin-bottom: 15px !important;
+    }
+
+</style>
+
+<div id="successMessageViewProgram" class="alert hide alert-success message-position-small">
+    <a class="close">×</a>
+    <span id="spanSuccessMessageViewProgram"></span>
 </div>
 
+<div id="errorMessageEditProgram" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <span id="spanMessageEditProgram"></span>
+</div>
+<form>
+    <div class="modal-popup-title">
+        <span class="icon-flag bg-purple" style="background-color:#@programMaster.ColorCode !important;"></span>
+        <h2 class="title-simple source-sans-prolight">
+            <span>
+                <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
+                @if (IsPlanEditable && IsPlanOwner)
+                {
+                    @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large" })
+                }
+            </span>
+            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programMaster.ProgramTitle), new { placeholder = "Program names goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = programMaster.ProgramTitle })
+
+        </h2>
+
+    </div>
+</form>
 <div class="modal-popup-summary">
     <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
     <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
@@ -40,7 +57,8 @@
             <span id="start-date" class="source-sans-prosemibold color5693B3">@programMaster.StartDate.ToString(Common.DateFormateForInspectPopupDescription)</span>
         to
             <span id="end-date" class="source-sans-prosemibold color5693B3">@programMaster.EndDate.ToString(Common.DateFormateForInspectPopupDescription)</span>. 
-        <p class="modal-status">Status: 
+        <p class="modal-status">
+            Status: 
 
             @if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
             {
@@ -48,18 +66,18 @@
             }
             else if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value)
             {
-                 <span id="status" class="source-sans-prosemibold statusrejected">@programMaster.Status</span>
+                <span id="status" class="source-sans-prosemibold statusrejected">@programMaster.Status</span>
             }
             else if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value ||
                      programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value ||
                      programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value)
             {
-                 <span id="status" class="source-sans-prosemibold statusapproved">@programMaster.Status</span>
+                <span id="status" class="source-sans-prosemibold statusapproved">@programMaster.Status</span>
             }
             else if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
             {
-                 <span id="status" class="source-sans-prosemibold statuscreated">@programMaster.Status</span>
-            }            
+                <span id="status" class="source-sans-prosemibold statuscreated">@programMaster.Status</span>
+            }
         </p>
     </div>
 </div>
@@ -80,12 +98,6 @@
             <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
         </li>
     </ul>
-
-    
-    <div id="successMessageViewProgram" class="alert hide alert-success message-position-small">
-    <a class="close">×</a>
-    <span id="spanSuccessMessageViewProgram"></span>
-</div>
 
     <div id="divTab">
     </div>
@@ -190,28 +202,28 @@
           if (tabValue == TabSetup) {
               if (ProgramOpt == "Edit") {
                   url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
-            }
-            else {
-                url = '@Url.Content("~/Home/LoadSetupProgram/")';
-            }
+              }
+              else {
+                  url = '@Url.Content("~/Home/LoadSetupProgram/")';
+              }
+          }
+          if (tabValue == TabReview) {
+              url = '@Url.Content("~/Home/LoadReviewProgram/")';
         }
-        if (tabValue == TabReview) {
-            url = '@Url.Content("~/Home/LoadReviewProgram/")';
+
+        if (tabValue == TabBudget) {
+            url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
           }
 
-          if (tabValue == TabBudget) {
-              url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
-        }
+          RemoveTabClass();
+          $("#li" + tabValue).removeClass("pull-left");
+          $("#li" + tabValue).addClass("active pull-left");
+          $('#div' + tabValue).css({ display: "block" });
 
-        RemoveTabClass();
-        $("#li" + tabValue).removeClass("pull-left");
-        $("#li" + tabValue).addClass("active pull-left");
-        $('#div' + tabValue).css({ display: "block" });
+          $("#divTab").empty();
 
-        $("#divTab").empty();
-
-        $("#divTab").load(url + '?id=' + id);
-    }
+          $("#divTab").load(url + '?id=' + id);
+      }
 
 
 </script>

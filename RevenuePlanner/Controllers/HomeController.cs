@@ -5198,7 +5198,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);
                                 scope.Complete();
-                                return Json(new { IsSaved = true, Msg = "Saved Successfully." }, JsonRequestBehavior.AllowGet);
+                                return Json(new { IsSaved = true, Msg = "Changes saved." }, JsonRequestBehavior.AllowGet);
                             }
                         }
                     }

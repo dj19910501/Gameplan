@@ -41,7 +41,7 @@
         </div>
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
             <p>@Html.Raw("Campaign Budget")</p>
-            @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate", id = "txtCampaignBudget", placeholder = "Required", require = "true" })
+            @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate", id = "txtCampaignBudget", placeholder = "Required", require = "true" , maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar})
             <p>Start Date</p>
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                 @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_startdate" })
