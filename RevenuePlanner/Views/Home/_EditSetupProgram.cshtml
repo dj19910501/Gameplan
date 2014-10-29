@@ -41,13 +41,13 @@
               <p>@Html.Raw("Parent Campaign")</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(CampaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = CampaignTitle })
 
-            <label>Description</label>
+            <p>Description</p>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
 
                </div>
                 <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
-                    <label  title="Program Budget">Program Budget</label>
-                        @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                    <p>Program Budget</p>
+                        @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                         <p>Start Date</p>
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                             @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", id = "t_startdate" })
@@ -55,7 +55,7 @@
                                 <img src="~/Content/images/gray-calendar-icon.png"></span>
                     </div>
 
-                        <label class="clear-section">End Date</label>
+                        <p class="clear-section">End Date</p>
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                             @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small", id = "t_enddate" })
                             <span class="add-on">
@@ -67,7 +67,7 @@
                 <div class="span3" id="inspect-modal-left-column3">
                     @if (ExtIntService)
                       {
-                         <label class="clear-section">Status</label>
+                         <p class="clear-section">Status</p>
                           if (Model.IsDeployedToIntegration)
                           {
                                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
@@ -82,17 +82,17 @@
                         {
                             <div class="cf width100">
                                 <div class="width65px margin-right20 pull-left" style="width:40%;">
-                                    <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
+                                    <p title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</p>
                                     @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                                 </div>
 
                                 <div class="width65px margin-right20 pull-left" style="width:40%;">
-                                    <label title="Cost">Cost</label>
+                                    <p title="Cost">Cost</p>
                                     @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                 </div>
 
                                 <div class="width65px pull-left" style="width:40%;">
-                                    <label title="Revenue">Revenue</label>
+                                    <p title="Revenue">Revenue</p>
                                     @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                 </div>
                             </div>
