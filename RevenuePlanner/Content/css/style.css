@@ -10130,7 +10130,7 @@ li.close-list {
 #divPartial {
     /*margin: 0 auto;*/
     /*Added by : Kalpesh Sharma #732*/ 
-    margin: 80px auto;
+    margin: auto;
     min-width: 1000px;
     max-width: 1000px;
 }
