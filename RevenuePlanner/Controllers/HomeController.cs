@@ -5007,7 +5007,7 @@ namespace RevenuePlanner.Controllers
             }
             im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
             ViewBag.ProgramDetail = im;
-
+            ViewBag.OwnerName = im.Owner;
             if (im.LastSyncDate != null)
             {
                 TimeZone localZone = TimeZone.CurrentTimeZone;
@@ -5076,7 +5076,7 @@ namespace RevenuePlanner.Controllers
             if (Sessions.User.UserId == pcp.CreatedBy)
             {
                 ViewBag.IsOwner = true;
-
+                
                 // Added by Dharmraj Mangukiya to hide/show delete program as per custom restrictions PL ticket #577
                 var AllTactic = pcp.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted.Equals(false)).ToList();
                 bool IsProgramDeleteble = true;
@@ -5115,6 +5115,9 @@ namespace RevenuePlanner.Controllers
             var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList();
             double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
             ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
+            ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == pcp.Plan_Campaign.Plan.Model.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();
+            
+             ViewBag.OwnerName =  (Sessions.User.FirstName + " " + Sessions.User.LastName).ToString();
 
             return PartialView("_EditSetupProgram", pcpm);
         }
@@ -8064,7 +8067,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveProgramBudgetAllocation(Plan_Campaign_ProgramModel form, string BudgetInputValues, string UserId = "")
+        public ActionResult SaveProgramBudgetAllocation(Plan_Campaign_ProgramModel form, string BudgetInputValues, string UserId = "" ,string title="")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -8097,7 +8100,7 @@ namespace RevenuePlanner.Controllers
                             //pcpobj.Title = form.Title;
                             pcpobj.ModifiedBy = Sessions.User.UserId;
                             pcpobj.ModifiedDate = DateTime.Now;
-
+                            pcpobj.Title = title;
                             pcpobj.ProgramBudget = form.ProgramBudget;
 
                             //Start added by Kalpesh  #608: Budget allocation for Program

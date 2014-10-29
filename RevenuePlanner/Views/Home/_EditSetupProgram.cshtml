@@ -6,6 +6,7 @@
     string CalledFromBudget = ViewBag.CalledFromBudget;
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     string CampaignTitle = ViewBag.CampaignTitle;
+    string OwnerName = ViewBag.OwnerName;
 }
 
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
@@ -46,9 +47,9 @@
 
                </div>
                 <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
-                    <p>Program Budget</p>
-                        @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-                        <p>Start Date</p>
+                    <p>@Html.Raw("Owner")</p>
+                    @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true"})
+                    <p>Start Date</p>
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                             @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", id = "t_startdate" })
                             <span class="add-on">
@@ -61,13 +62,9 @@
                             <span class="add-on">
                                 <img src="~/Content/images/gray-calendar-icon.png"></span>
                         </div>
-                      
-                </div>
-              
-                <div class="span3" id="inspect-modal-left-column3">
-                    @if (ExtIntService)
+                     @if (ExtIntService)
                       {
-                         <p class="clear-section">Status</p>
+                         <p class="clear-section" style=" padding-top: 6px;">Deployed to Integration</p>
                           if (Model.IsDeployedToIntegration)
                           {
                                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
@@ -77,6 +74,14 @@
                                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
                           }
                       }
+                      
+                </div>
+              
+                <div class="span3" id="inspect-modal-left-column3">
+                     <p>Program Budget</p>
+                        @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })    
+                    <p>Remaining Campaign Budget</p>
+                    @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
                      <div class="content dark inline-ellipsis">
                         @if (!(bool)ViewBag.IsCreated)
                         {
@@ -98,10 +103,6 @@
                             </div>
                         }
                     </div>
-
-                <div style="display:none;">
-                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
-                   </div>
                 </div>
             </div>
          
@@ -111,7 +112,10 @@
         </li>
     </ul>
              <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
-                 
+                 <div class="span3 margin-top10">
+            <p>Business Unit</p>
+            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
+            </div>
                   @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanProgramId, Enums.EntityType.Program.ToString(), 1,"Edit")
         
                  <div class="clear-section"></div>
@@ -142,7 +146,6 @@
     }
 
     $(document).ready(function () {
-
         $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
         FormatRemainingBudget();
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
@@ -400,12 +403,14 @@
             $('#dp_start').datepicker('show');
             $('#dp_end').datepicker('hide');
             $(".dropdown-menu").css("z-index", "25001");
+            
         })
 
         $('#dp_end .add-on').click(function () {
             $('#dp_start').datepicker('hide');
             $('#dp_end').datepicker('show');
             $(".dropdown-menu").css("z-index", "25001");
+            
         })
 
         $('#t_startdate').click(function () {
