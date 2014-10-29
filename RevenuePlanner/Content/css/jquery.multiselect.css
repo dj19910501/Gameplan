@@ -35,11 +35,11 @@
 .ui-multiselect-single .ui-multiselect-checkboxes input { position:absolute !important; top: auto !important; left:-9999px; }
 .ui-multiselect-single .ui-multiselect-checkboxes label { padding:5px !important }
 
-.ui-multiselect-menu{width:224px; max-width:250px; padding:12px; margin-top:7px; border:1px solid #e7e7e7; background:#fff; display:none; position:absolute; z-index:10000; border-radius:4px; font-family: 'source_sans_proregular', Arial, "sans-serif" !important;}
+.ui-multiselect-menu{width:auto; max-width:250px; padding:12px; margin-top:7px; border:1px solid #e7e7e7; background:#fff; display:none; position:absolute; z-index:10000; border-radius:4px; font-family: 'source_sans_proregular', Arial, "sans-serif" !important;}
 
 .ui-multiselect-header {margin-bottom:5px;}
 .ui-multiselect-header > div{width:100%;}
-.ui-multiselect-filter input[type=search]{font-family: 'source_sans_proregular', Arial, "sans-serif" !important; background:url(../images/icon-filter-search.gif) right center no-repeat; padding-right: 30px; width:83%;}
+.ui-multiselect-filter input[type=search]{font-family: 'source_sans_proregular', Arial, "sans-serif" !important; background:url(../images/icon-filter-search.gif) right center no-repeat; padding-right: 0; width:90%;}
 .ui-multiselect-header ul { font-size:0.9em; width:100%; margin:0; list-style:none;}
 .ui-multiselect-header ul li { float:left; padding:0 15px 0 0; margin-right:15px; line-height:14px;}
 .ui-multiselect-header ul li:first-child{border-right:1px solid #000;}
@@ -69,8 +69,8 @@
 .ui-widget-footer .ui-helper-reset li {
     list-style: none outside none;
     float: left;
-    padding-right: 15px;
-    margin-right: 15px;
+    padding-right: 5px;
+    margin-right: 5px;
 }
 
 .ui-widget-footer .ui-helper-reset li:first-child {
