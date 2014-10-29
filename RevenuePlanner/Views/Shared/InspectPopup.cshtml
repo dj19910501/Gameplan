@@ -151,6 +151,8 @@
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
           $("#EditForm").on("click", function (e) {
+              $("#errorMessage").css("display", "none");
+              $("#successMessage").css("display", "none");
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();
               $("#hdnTacticOpt").val("Edit");
