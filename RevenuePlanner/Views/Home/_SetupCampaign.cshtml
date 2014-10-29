@@ -9,7 +9,7 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanCampaignId)
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="padding-top:15px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
             @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;height:92px;", @readonly = "true" })

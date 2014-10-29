@@ -10128,7 +10128,9 @@ li.close-list {
 }
 
 #divPartial {
-    margin: 0 auto;
+    /*margin: 0 auto;*/
+    /*Added by : Kalpesh Sharma #732*/ 
+    margin: 80px auto;
     min-width: 1000px;
     max-width: 1000px;
 }
@@ -10253,7 +10255,7 @@ li.close-list {
 }
 
 .close-x-big-icon {
-    position: fixed;
+    position: absolute;
     /*right: 200px;*/
     /*732 - Actual cost - Design changes to add actuals & inspect popup screen –Kalpesh*/
     right: 50px;
@@ -10635,7 +10637,7 @@ top:-10px; right:-9px; border-radius:10px; text-align:center; padding-top:0px; l
     margin-top: 25px;
 }
 
-#cancelProgramEditSection {
+#cancelProgramEditSection , #btnCancel {
     color: gray;
     margin-top: 6px;
 }

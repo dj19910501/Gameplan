@@ -4,10 +4,17 @@
     // var campaign = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
     bool ExtIntService = (bool)ViewBag.ExtIntService;
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
+    string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     //deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
 }
 
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>   
+<style type="text/css">
+    #dp_start,#dp_end    {
+        padding-left:0px;
+    }
+
+</style>
 @using (Html.BeginForm())
 {
     
@@ -17,7 +24,8 @@
     @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
     @Html.HiddenFor(model => model.TStartDate, new { id = "hdnTStartDate" })
     @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    @Html.HiddenFor(model => model.CampaignBudget, new { id = "hdnOldCampaignBudget" })
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
 
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
@@ -48,7 +56,7 @@
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
-            <label class="clear-section">End Date</label>
+            <p class="clear-section" style="margin-top:2px;">End Date</p>
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                 @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_enddate" })
                 <span class="add-on">
@@ -64,7 +72,9 @@
             @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small truncate currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
         </div>
     </div>
-    
+    <div style="display:none;">
+                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+                   </div>
     <ul class="nav nav-tabs new-margin padding-bottom10 clear" id="InspectTab">
         <li class="pull-right">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
@@ -74,7 +84,7 @@
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString(), 0)
    <div class="clear-section"></div>
     
-    
+      <div id="CustomFieldSepreater"></div>
     
         @if ((bool)ViewBag.IsOwner)
         {
@@ -83,7 +93,7 @@
                 <div class="span2 btn-save">
                     <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
                 </div>
-                <div class="span2" style="vertical-align:middle;padding-top:5px;">
+                <div class="span2" >
                     <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
                 </div>
             </div>
@@ -93,8 +103,27 @@
 }
 <script type="text/javascript">
 
+
+    function FormatRemainingBudget() {
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+    }
+
     $(document).ready(
       function () {
+
+          $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
+          FormatRemainingBudget();
+
+          $("#txtTitle").val($("#lblCampaignTitle").html());
+
+          $("#successMessageViewCampaign").slideUp(50);
+          $("#errorMessageEditCampaign").slideUp(50);
+
           $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
@@ -118,11 +147,20 @@
     //<---  End Document.ready Event --->
 
     $("#btnCancel").click(function () {
-        $("#txtTitle").css("display", "none");
-        $("#NonEditedTitleSpan").css("display", "block");
-        var url = '@Url.Content("~/Home/LoadSetupCampaign/")';
-        $("#divTab").load(url + '?id=@Model.PlanCampaignId');
+        CancelEvent();
+        $("#successMessageViewCampaign").slideUp(50);
+        $("#errorMessageEditCampaign").slideUp(50);
     });
+
+
+    function CancelEvent() {
+        $("#hdnCampaignOpt").val("View");
+        loadReview('@Model.PlanCampaignId', "Setup");
+        $("#btnEditCampaign").css("display", "block");
+        $('#txtTitle').css('display', 'none');
+        $('#lblCampaignTitle').css('display', 'block');
+        $("#lblCampaignTitle").removeAttr("style");
+    }
 
     $('#t_startdate').click(function () {
         $('#dp_end').datepicker('hide');
@@ -176,12 +214,32 @@
 
     });
     function ShowError(value) {
-        $("#successMessageEditCamapaign").slideUp(400);
-        $("#spanSuccessMessageEditCamapaign").empty();
+        $("#successMessageViewCamapaign").slideUp(400);
+        $("#spanSuccessMessageViewCamapaign").empty();
         $("#errorMessageEditCampaign").slideDown(400);
         $("#spanMessageEditCampaign").empty();
         $("#spanMessageEditCampaign").html(value);
     }
+
+
+    $("#txtCampaignBudget").keyup(function () {
+        var ProgramBudgetValue = ReplaceCC($("#txtCampaignBudget").val());
+        var OldProgramBudgetValue = ReplaceCC($("#hdnOldCampaignBudget").val());
+        var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
+        var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
+
+        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+        $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+
+        $("#hdnOldCampaignBudget").val(ProgramBudgetValue);
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+    });
+
     $("#save_campaign").click(function () {
         var iserror = false;
         var campaignTitle = $('#txtTitle').val();
@@ -219,6 +277,11 @@
             return false;
         }
 
+        if ($("#txtRemainingBudget").hasClass('error-text')) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
+               return false;
+           }
+
         sdate = $('#t_startdate').val();
         edate = $('#t_enddate').val();
         var psdate = $('#hdnPStartDate').val();
@@ -253,12 +316,6 @@
             return false;
         }
 
-        //TODO
-        @*if ($("#txtRemainingBudget").hasClass('error-text')) {
-            errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted";
-            ShowBudgetError(errorMsg);
-            return false;
-        }*@
         var _customFieldValues = [];
         $('form').find('input[type=text], select').each(function () {
             if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
@@ -269,11 +326,14 @@
             }
         });
         _customFieldValues = JSON.stringify(_customFieldValues);
-        ////End Added by Mitesh Vaishnav for PL ticket #718
-        //document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+        
         document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
         $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
+
+        $("#lblCampaignTitle").html(htmlEncode($('#txtTitle').val()));
+        $("#tactic-name").html(htmlEncode($('#txtTitle').val()));
+
         var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         var uId = $(window).attr('name');
         $.ajax({
@@ -285,25 +345,17 @@
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                    if (data.successmsg) {
-                        $("#errorMessageEditCamapaign").slideUp(400);
-                        $("#spanMessageEditCamapaign").empty();
-                        $("#successMessageEditCamapaign").slideDown(400);
-                        $("#spanSuccessMessageEditCamapaign").empty();
-                        $("#spanSuccessMessageEditCamapaign").html(data.successmsg);
-                        $("#lblCampaignTitle").html($("#txtTitle").val());
-                        $("#btnEditCampaign").css("display", "block");
-                        $("#lblCampaignTitle").css("display", "block");
-                        $("#tactic-name").html($("#txtTitle").val());
-                        $("#txtTitle").css("display", "none");
-                        $("#NonEditedTitleSpan").css("display", "block");
-                        var url = '@Url.Content("~/Home/LoadSetupCampaign/")';
-                        $("#divTab").load(url + '?id=@Model.PlanCampaignId');
+                    if (data.isSaved) {
+                        CancelEvent();
+                        $("#errorMessageEditCampaign").slideUp(50);
+                        $("#spanSuccessMessageViewCampaign").empty();
+                        $("#successMessageViewCampaign").slideDown(400);
+                        $("#spanSuccessMessageViewCampaign").empty();
+                        $("#spanSuccessMessageViewCampaign").html(data.msg);
                     }
-                    if (data.errormsg) {
-                        document.getElementById("txtDescription").value = htmlDecode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                        ShowError(data.errormsg);
-                        return false;
+                    else {
+                        CancelEvent();
+                        ShowError(data.msg);
                     }
                 }
             }

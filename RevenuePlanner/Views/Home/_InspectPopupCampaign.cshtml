@@ -11,24 +11,41 @@
 }
 @Html.Hidden("hdnPlanCampaignId", campaignMaster.PlanCampaignId, new { id = "hdnPlanCampaignId" })
 @Html.Hidden("hdnCampaignStatus", campaignMaster.Status, new { id = "hdnCampaignStatus" })
+@Html.Hidden("hdnCampaignOpt", "View", new { id = "hdnCampaignOpt" })
 
+<style type="text/css">
+    #successMessageViewCampaign, #errorMessageEditCampaign
+    {
+        margin-bottom: 15px !important;
+    }
+
+</style>
+
+<div id="successMessageViewCampaign" class="alert hide alert-success message-position-small">
+    <a class="close">×</a>
+    <span id="spanSuccessMessageViewCampaign"></span>
+</div>
+
+<div id="errorMessageEditCampaign" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <span id="spanMessageEditCampaign"></span>
+</div>
+
+<form>
 <div class="modal-popup-title">
-      <div style="display: inline-block; width: 91%;">
     <span class="icon-flag bg-purple" style="background-color:#@campaignMaster.ColorCode !important;"></span>
     <h2 class="title-simple source-sans-prolight">
         <span>
-            <span id="lblCampaignTitle" class="tipsyclassTitle" title="@Html.Raw(campaignMaster.CampaignTitle)" id="NonEditedTitleSpan">@Html.Raw(campaignMaster.CampaignTitle)</span>
-            </span> 
-        @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 86%; height: 28px;display:none", title = campaignMaster.CampaignTitle,id="txtTitle" })
-    </h2>
-</div>
-     <div style="display: inline;">
-          @if (IsPlanEditable)
+            <span id="lblCampaignTitle" class="tipsyclassTitle" title="@Html.Raw(campaignMaster.CampaignTitle)" >@Html.Raw(campaignMaster.CampaignTitle)</span>
+             @if (IsPlanEditable)
             {
                 <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign"></a>
             }
-         </div>
+            </span> 
+        @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = campaignMaster.CampaignTitle,id="txtTitle" })
+    </h2>
 </div>
+</form>
 
 <div class="modal-popup-summary">
     <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
@@ -79,17 +96,8 @@
             <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
         </li>
     </ul>
-    <div id="successMessageEditCamapaign" class="alert hide alert-success message-position-small">
-        <a class="close">×</a>
-        <strong>Success!</strong> <span id="spanSuccessMessageEditCamapaign"></span>
-    </div>
-    <div id="errorMessageEditCampaign" class="alert alert-error hide message-position-small">
-        <a class="close">×</a>
-        <strong>Error!</strong> <span id="spanMessageEditCampaign"></span>
-    </div>
     <div id="divTab">
     </div>
-
 
 </div>
 
@@ -98,13 +106,12 @@
     var divPartial = "#divPartial";
     var TabSetup = "Setup";
     var TabReview = "Review";
-
+    var TabBudget = "Budget";
     var divTab = "#divTab";
 
     $(document).ready(
       function () {
           $("#btnEditCampaign").css("display", "block");
-          $("#lblCampaignTitle").css("display", "block");
           NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
           var InspectValue = $("#hdnInspectPopup").val();
           var planCampaignId = $("#hdnPlanCampaignId").val();
@@ -120,6 +127,7 @@
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview").on("click", function () {
+              $("#successMessageViewCampaign").slideUp(50);
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");
@@ -131,14 +139,27 @@
               loadReview(planCampaignId, tabtext);
 
           });
-          $("#btnEditCampaign").on("click", function () {
 
-              $("#lblCampaignTitle").css("display", "none");
+          $("#btnEditCampaign").on("click", function () {
+              $("#hdnCampaignOpt").val("Edit");
+              var InspectValue = $("#hdnInspectPopup").val();
+              var tabtext = ($("#li" + InspectValue).children('a').text());
+
+              if (tabtext == "Setup") {
+                  url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
+                  $("#divTab").empty();
+                  $("#divTab").load(url + '?id=' + planCampaignId);
+              }
+              else if (tabtext == "Budget") {
+                  url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
+                      $("#divTab").empty();
+                      $("#divTab").load(url + '?id=' + planCampaignId);
+                  }
+
               $("#btnEditCampaign").css("display", "none");
-              $("#txtTitle").css("display", "block");
-              $("#NonEditedTitleSpan").css("display", "none");
-              var url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
-              $("#divTab").load(url + '?id=' + planCampaignId);
+              $('#txtTitle').css('display', 'block');
+              $('#lblCampaignTitle').css('display', 'none');
+              return false;
           });
           // Close event for Error Message & Success Message Close button 
           $(".alert").find(".close").on("click", function (e) {
@@ -161,16 +182,26 @@
 
     function loadReview(id, tabValue) {
 
-
+        $("#hdnInspectPopup").val(tabValue);
         $.ajaxSetup({ cache: false });
         var url;
+
+        var CampaignOpt = $("#hdnCampaignOpt").val();
         if (tabValue == TabSetup) {
-            url = '@Url.Content("~/Home/LoadSetupCampaign/")';
-        }
-        if (tabValue == TabReview) {
-            url = '@Url.Content("~/Home/LoadReviewCampaign/")';
+            if (CampaignOpt == "Edit") {
+                url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
+              }
+              else {
+                  url = '@Url.Content("~/Home/LoadSetupCampaign/")';
+              }
+          }
+          if (tabValue == TabReview) {
+              url = '@Url.Content("~/Home/LoadReviewCampaign/")';
           }
 
+          if (tabValue == TabBudget) {
+              url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
+          }
 
           RemoveTabClass();
           $("#li" + tabValue).removeClass("pull-left");

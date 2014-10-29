@@ -8378,7 +8378,7 @@ namespace RevenuePlanner.Controllers
 
                         if (pc != null)
                         {
-                            return Json(new { errormsg = Common.objCached.DuplicateCampaignExits });
+                            return Json(new { isSaved = false , msg = Common.objCached.DuplicateCampaignExits });
                         }
                         else
                         {
@@ -8416,7 +8416,7 @@ namespace RevenuePlanner.Controllers
                             }
                             db.SaveChanges();
                             scope.Complete();
-                            return Json(new { successmsg = "Campaign Saved Successfully" });
+                            return Json(new { isSaved = true, msg = "Changes Saved." });
                         }
 
                     }
@@ -8428,7 +8428,7 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
 
-            return Json(new { });
+            return Json(new { isSaved = false });
         }
 
         #endregion
