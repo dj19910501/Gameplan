@@ -5693,7 +5693,8 @@ namespace RevenuePlanner.Controllers
             }
 
 
-            ippctm.Cost = pcpt.Cost;
+            ippctm.Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0 ?
+                                            (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost) : pcpt.Cost;
 
             ippctm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
 
@@ -5969,7 +5970,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 if (pcpobj.AudienceId != form.AudienceId)
                                 {
-                                    //pcpobj.AudienceId = form.AudienceId;
+                                    pcpobj.AudienceId = form.AudienceId;
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
                                 if (pcpobj.GeographyId != form.GeographyId)

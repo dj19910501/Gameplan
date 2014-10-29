@@ -3,84 +3,95 @@
 
 @using (Html.BeginForm())
 {
-    <script src="~/Scripts/js/bootstrap-datepicker.js"></script>   
+    <script src="~/Scripts/js/bootstrap-datepicker.js"></script> 
+ 
+    bool ExtIntService = (bool)ViewBag.ExtIntService;  
  @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
-    @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
-    @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
-    @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
-    @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
-    @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
-    @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
-    @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
-    @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
+ @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
+ @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
+ @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
+ @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
+ @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
+ @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
+ @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+ @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
 
- <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
-     <div class="span6" id="inspect-modal-left-column1">
-         <p>Parent Campaign</p>
-         @Html.TextBoxFor(model => model.CampaignTitle, new { @class = "span12 input-small truncate", id = "txtCampaign", @readonly = "true", style = "background:#F2F2F2;" })
-         <p>Parent Program</p>
-         @Html.TextBoxFor(model => model.ProgramTitle, new { @class = "span12 input-small truncate", id = "txtProgram", @readonly = "true", style = "background:#F2F2F2;" })
-         <p>Description</p>
-         @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size", id = "Description" })
-     </div>
-     <div class="span3" id="inspect-modal-left-column2">
-         <p>Tactic Type</p>
-         @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })
-         <p>Cost</p>
-         @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate", id = "TacticCost", })
-         <p>Start Date</p>
-         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-             @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", id = "t_startdate" })
-             <span class="add-on">
-                 <img src="~/Content/images/gray-calendar-icon.png"></span>
-         </div>
-         <br/>
-        <br/>
-         <p>End Date</p>
-         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-             @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small", id = "t_enddate" })
-             <span class="add-on">
-                 <img src="~/Content/images/gray-calendar-icon.png"></span>
-         </div>
-     </div>
-     <div class="span3" id="inspect-modal-left-column3">
-         <p>Owner</p>
-         @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = Model.Owner })
-         <p style="width: 110%;">Deployed to Integration</p>
 
-          @if (Model.IsDeployedToIntegration)
+
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+        <div class="span6" id="inspect-modal-left-column1">
+            <p>Parent Campaign</p>
+            @Html.TextBoxFor(model => model.CampaignTitle, new { @class = "span12 input-small truncate", id = "txtCampaign", @readonly = "true", style = "background:#F2F2F2;" })
+            <p>Parent Program</p>
+            @Html.TextBoxFor(model => model.ProgramTitle, new { @class = "span12 input-small truncate", id = "txtProgram", @readonly = "true", style = "background:#F2F2F2;" })
+            <p>Description</p>
+            @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size", id = "Description", maxlength = "4000" })
+        </div>
+        <div class="span3" id="inspect-modal-left-column2">
+            <p>Tactic Type</p>
+            <span class="verticalIdSelectBox" style="margin-left: -2px;">
+                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })
+            </span>
+            <p>Cost</p>
+            @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+            <p>Start Date</p>           
+            <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", id = "t_startdate" })
+                <span class="add-on">
+                    <img src="~/Content/images/gray-calendar-icon.png"></span>
+            </div>
+            <br />
+            <br />
+            <p>End Date</p>
+            <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small", id = "t_enddate" })
+                <span class="add-on">
+                    <img src="~/Content/images/gray-calendar-icon.png"></span>
+            </div>
+        </div>
+        <div class="span3" id="inspect-modal-left-column3">
+            <p>Owner</p>
+            @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = Model.Owner })
+
+            @if (ExtIntService)
+            {                 
+                <p style="width: 110%;">Deployed to Integration</p>
+                if (Model.IsDeployedToIntegration)
+                {
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
+                }
+                else
+                {
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
+                }
+            }
+
+            <div class="cf width100" style="width: 244px;">
+                <div class="margin-right10 pull-left" style="width: 47%">
+                    <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
+                         
+                        @if (ViewBag.IsDiffrentStageType == true)
                         {
-                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
-                        }
-                        else
-                        {
-                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
-                        }
 
-         <div class="cf width100">
-             <div class="width65px margin-right20 pull-left" style="width: 30%">
-                 <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
-                          @if (ViewBag.IsDiffrentStageType == true)
-                          {
-                              <span>
-                                  <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
+                            <span>
+                                <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
-                          }</label>
-                 @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
-             </div>
+                        }</label>
+                    @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                </div>
 
-             <div class="width65px margin-right20 pull-left" style="width: 30%">
-                 <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
-                 <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
-             </div>
+                <div class="pull-left" style="width: 47%">
+                    <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
+                    <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
+                </div>
 
-             <div class="width65px pull-left" style="width: 30%">
-                 <label title="Revenue">Revenue</label>
-                 @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-             </div>
-         </div>
-     </div>
- </div>
+                <div class="pull-left" style="width: 47%">
+                    <label title="Revenue">Revenue</label>
+                    @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                </div>
+            </div>
+        </div>
+    </div>
 
     <ul class="nav nav-tabs new-margin padding-bottom10 clear" id="InspectTab">
         <li class="pull-right">
@@ -97,18 +108,26 @@
         </div>
         <div class="span3 margin-top10 paddingleft25px">
             <p>Vertical</p>
-            @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+            <span class="verticalIdSelectBox" style="margin-left: -2px;">
+                @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+            </span>
         </div>
         <div class="span3 margin-top10 paddingleft25px">
             <p>Geography</p>
-            @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+            <span class="verticalIdSelectBox" style="margin-left: -2px;">
+                @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+            </span>
         </div>
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 3,"addEdit")
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 3, "addEdit")
     </div>   
-    
-    <div style="width:100%;display:none;" id="divTacticSaveCancel" >
-          <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float :left;" type="button">Save & Continue</button>
-          <button id="btnCancel" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left; margin-left:20px" type="button">Cancel</button>                
+
+    <div style="width: 100%; display: none;" id="divTacticSaveCancel" class="wraper-btns cf">
+        <div class="span2 btn-save" style="width:122px">
+            <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save & Continue</button>
+        </div>
+        <div class="span2">
+            <button id="btnCancel" class="close-form btn-link source-sans-proregular" style="float: left; margin-left: 20px; margin-top: 30px !important" type="button">Cancel</button>
+        </div>
     </div>
 }
 
@@ -117,6 +136,8 @@
 
     $(document).ready(
       function () {
+          $(this).scrollTop(0);
+          $(".verticalIdSelectBox select").selectbox();
           $("#txtTacticTitle").val($("#lblTacticTitle").attr('title'));
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
@@ -127,11 +148,18 @@
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point to add title tooltip 2-7-2014
           $(".selectBox select").selectbox();
 
+          $("#txtRevenue").val('$' + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
+          $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+          $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+          $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+
           $('.dp').datepicker({
               format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
               autoclose: true,
           }).on('changeDate', function (ev) {
-                   $(this).datepicker('hide');
+              $(this).datepicker('hide');
           });;
 
           /*hide the other datepicker in input onclick*/

@@ -35,10 +35,8 @@
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
             <p style="width: 110%;">Deployed to Integration</p>
             @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
-            <div class="cf width100">
-             <div class="width65px margin-right20 pull-left" style="width: 30%">
-                 @*<label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>*@
-
+            <div class="cf width100" style="width:244px;">
+             <div class="margin-right10 pull-left" style="width: 47%">
                  <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
                           @if (ViewBag.IsDiffrentStageType == true)
                           {
@@ -46,17 +44,15 @@
                                   <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
                           }</label>
-                 @*@Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
-                 @*@Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
                 <input type="text" value="@Model.ProjectedStageValue" readonly="true" id = "txtProjectedStageValue" />
              </div>
 
-             <div class="width65px margin-right20 pull-left" style="width: 30%">
+             <div class="pull-left" style="width: 47%">
                  <label title="@Html.LabelForMQL("MQLs")">@Html.LabelForMQL("MQLs")</label>
                  <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
              </div>
 
-             <div class="width65px pull-left" style="width: 30%">
+             <div class="pull-left" style="width: 47%">
                  <label title="Revenue">Revenue</label>
                  @Html.TextBoxFor(model => model.Revenues, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
              </div>
@@ -98,10 +94,11 @@
 <script type="text/javascript">
     $(document).ready(
       function () {
+	  $(this).scrollTop(0);
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point to add title tooltip 2-7-2014
           $(".selectBox select").selectbox();
-
+          $("#txtRevenue").val('$' + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
           $('form').find(".sbSelector").each(function () {
               $(this).unbind("click");
               $(this).removeAttr("href");
