@@ -35,7 +35,7 @@
 .ui-multiselect-single .ui-multiselect-checkboxes input { position:absolute !important; top: auto !important; left:-9999px; }
 .ui-multiselect-single .ui-multiselect-checkboxes label { padding:5px !important }
 
-.ui-multiselect-menu{width:auto; max-width:250px; padding:12px; margin-top:7px; border:1px solid #e7e7e7; background:#fff; display:none; position:absolute; z-index:10000; border-radius:4px; font-family: 'source_sans_proregular', Arial, "sans-serif" !important;}
+.ui-multiselect-menu{width:auto; max-width:250px; padding:12px; margin-top:7px; border:1px solid #e7e7e7; background:#fff; display:none; position:absolute; z-index:10000; border-radius:4px; font-family: 'source_sans_proregular', Arial, "sans-serif" !important; min-width:115px;}
 
 .ui-multiselect-header {margin-bottom:5px;}
 .ui-multiselect-header > div{width:100%;}
