@@ -554,6 +554,7 @@
     }
 }
 
+@*Start - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899
 @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
 {
     <div class="HomeSearchFilter-area clearfix">
@@ -587,6 +588,7 @@
         </div>
     </div>
 }
+End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
 
 <script>
     var pid = $('#PlanId').val();
@@ -617,7 +619,7 @@
 @* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
             }
             <div>
-                <div class="gantt-padding cf lenght-div" style="min-height: 300px;">
+                <div class="gantt-padding cf lenght-div" style="min-height: 350px;">    @* Modified by : Sohel Pathan on 29/10/2014 for PL ticket #899 *@
                     <div id="gantt_here"></div>
                 </div>
                 <div class="shadow-scroll-gantt"></div>
