@@ -331,11 +331,18 @@
                 success: function (data) {
                     if (data.IsSaved) {
                         CancelEvent();
-                        $("#errorMessageEditProgram").slideUp(50);
-                        $("#spanMessageViewProgram").empty();
-                        $("#successMessageViewProgram").slideDown(400);
-                        $("#spanSuccessMessageViewProgram").empty();
-                        $("#spanSuccessMessageViewProgram").html(data.Msg);
+                        var activeTab = $("#InspectTab li.active a").text()
+                        var planProgramId = $("#hdnPlanProgramId").val();
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.Msg);
+                        $("#errorMessage").css("display", "none");
+                        //$("#errorMessageEditProgram").slideUp(50);
+                        //$("#spanMessageViewProgram").empty();
+                        //$("#successMessageViewProgram").slideDown(400);
+                        //$("#spanSuccessMessageViewProgram").empty();
+                        //$("#spanSuccessMessageViewProgram").html(data.Msg);
+                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", activeTab);
                         RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                     }
                     else {

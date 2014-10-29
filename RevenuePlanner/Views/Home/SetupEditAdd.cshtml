@@ -330,6 +330,10 @@
                         $("#lblTacticTitle").removeAttr("style");
                         $('#divTacticSaveCancel').css('display', 'none');
                         $('#EditForm').css('display', 'block');
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.Msg);
+                        $("#errorMessage").css("display", "none");
                         loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab);
                         RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         return;
