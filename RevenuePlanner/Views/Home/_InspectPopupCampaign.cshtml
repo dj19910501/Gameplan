@@ -39,7 +39,8 @@
             <span id="lblCampaignTitle" class="tipsyclassTitle" title="@Html.Raw(campaignMaster.CampaignTitle)" >@Html.Raw(campaignMaster.CampaignTitle)</span>
              @if (IsPlanEditable)
             {
-                <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign"></a>
+                @*<a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign"></a>*@
+                  @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0, tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large" })
             }
             </span> 
         @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = campaignMaster.CampaignTitle,id="txtTitle" })
