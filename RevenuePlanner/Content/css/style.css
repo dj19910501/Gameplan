@@ -10463,11 +10463,13 @@ float:left;
 .summary-btns p, .summary-btns button {
     float:left;
 }
+/*Modified by Mitesh Vaishnav for PL ticket #920*/
 .summary-btns p {
-    font-size:15px;
-    font-family: 'source_sans_proregular', Arial, "sans-serif" !important;
-    color:#000;
+    font-size:13px;
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif !important;
+    /*color:#000;*/
     line-height: 27px;
+    font-weight:bold;
 }
 .summary-btns .ui-multiselect {
     margin-right:0;
@@ -10529,13 +10531,14 @@ float:left;
     padding-top:10px;
     }
 
-/*Internal Review Point : Apply ellipsis on Dropdown control : Kalpesh Sharma*/
+/*modified by Mitesh Vaishnav for PL ticket #920*/
 .ui-multiselect.ui-widget.ui-state-default.ui-corner-all span{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 90%;
     margin-left:10px;
+    text-align:left;
 }
 
 .ui-multiselect.ui-widget.ui-state-default.ui-corner-all span[class] {

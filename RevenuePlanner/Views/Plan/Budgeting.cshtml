@@ -63,7 +63,7 @@
         <div class="progressText source-sans-proregular" id="planCostValue"></div>
         <div style="clear: both;"></div>
     </div>
-    <div class="budgetCompare">
+    <div class="budgetCompare" style="width:600px;height:120px;">
         <h3 class="source-sans-proregular" id="monthCompareTitle"></h3>
         <div class="budgetCompareInner" id="monthContainer">
         </div>
@@ -89,7 +89,7 @@
         </div>
         }
         <div id="divViewBy" style="display: none;">
-            @Html.Label("View By:", new { id = "lblViewBy" })
+            @Html.Label("View By:", new { id = "lblViewBy",style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px;" })
             <span class="selectBox" id="ddlCampaignSelectBox" style="width: 158px;">
                 @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text" ,myView), new { @class = "ddlStyleReport" })
             </span>
