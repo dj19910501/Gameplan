@@ -16,7 +16,7 @@
     <h2 class="title-simple source-sans-prolight"><span class="tipsyclassTitle" title="@Html.Raw(tacticMaster.TacticTitle)">@Html.Raw(tacticMaster.TacticTitle)</span>
     @if (IsPlanEditable)
     {
-        @Html.ActionLink(" ", "Assortment", "Plan", new { tacticId = tacticMaster.PlanTacticId, EditObject = "ImprovementTactic", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large"})
+        @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = tacticMaster.PlanCampaignId, tacticId = tacticMaster.PlanTacticId, EditObject = "ImprovementTactic", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large"})
     }
     </h2>
 </div>

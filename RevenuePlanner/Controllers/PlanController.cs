@@ -1929,7 +1929,14 @@ namespace RevenuePlanner.Controllers
         {
             if (campaignId != 0)
             {
+                if (EditObject == "ImprovementTactic")
+                {
+                    Sessions.PlanId = db.Plan_Improvement_Campaign.Where(c => c.ImprovementPlanCampaignId == campaignId).Select(c => c.ImprovePlanId).FirstOrDefault();
+                }
+                else
+                {
                 Sessions.PlanId = db.Plan_Campaign.Where(c => c.PlanCampaignId == campaignId).Select(c => c.PlanId).FirstOrDefault();
+                }
             }
             
             // Added by dharmraj to check user activity permission
