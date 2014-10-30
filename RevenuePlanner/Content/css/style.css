@@ -10645,7 +10645,7 @@ margin-right:-20px;
     margin-top: 25px;
 }
 
-#cancelProgramEditSection , #btnCancel {
+#cancelProgramEditSection {
     color: gray;
     margin-top: 6px;
 }
@@ -10656,3 +10656,19 @@ margin-right:-20px;
      padding-top:15px;
      margin-bottom: 10px;
 }
+
+.Section-width
+{
+    width:54%;
+    height: 100px;
+}
+
+.innerSection-height
+{
+    height:60px;
+}
+
+.nl-field-toggle:active {
+    color: #444344 !important;
+}
+
