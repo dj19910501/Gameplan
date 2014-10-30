@@ -10563,11 +10563,16 @@ margin-right:-20px;
 /* Start - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */
 .request-icons{clear: both; display: block; margin-left: 20px; float:left;}
 .request-icon-block{float: left; margin-left:10px; position:relative;top:-10px;}
-.counter{background:#ff931e;  height:19px; width:21px; font-size:13px; color:#fff; position:absolute; 
-top:-10px; right:-9px; border-radius:10px; text-align:center; padding-top:0px; left:18px;}
-.request-icons .request-icon-block img {
-    height:none;
-    max-width: none;
+.request-icon-block .request{background: url("../../images/icon-2.png") no-repeat scroll left center #2384b8;
+    border-radius: 5px;
+    color: #ffffff !important;
+    height: 32px;
+    padding: 6px 6px 6px 30px;
+    line-height:33px;
+    text-decoration: none;}
+.counter{background:#ff931e;  height:18px; width:21px; font-size:12px; color:#fff; position:absolute; top:-8px; right:-9px; border-radius:10px; text-align:center; padding-top:1px;}
+.request-icon-block .request:hover {
+    color: #ffffff !important;
 }
 /* End - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */
 
