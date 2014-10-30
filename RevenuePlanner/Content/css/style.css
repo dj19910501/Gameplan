@@ -10470,6 +10470,7 @@ float:left;
     /*color:#000;*/
     line-height: 27px;
     font-weight:bold;
+    padding-right:7px;
 }
 .summary-btns .ui-multiselect {
     margin-right:0;

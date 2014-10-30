@@ -12,7 +12,7 @@
     <div style="margin-left: 18px; margin-right: 20px; margin-bottom: 10px; width: 97%; float: left;">
         <div class="title-header source-sans-proregular bold budget-title">
             <div style="float: right;">
-                @Html.Label("View By:", new { id = "lblViewBy" })
+                @Html.Label("View By:", new { id = "lblViewBy",style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important" })
                
                     @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.ReportTabType.Plan.ToString()), new { @class = "ddlStyleReport" })
                

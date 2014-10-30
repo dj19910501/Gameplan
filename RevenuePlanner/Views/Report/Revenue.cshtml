@@ -10,7 +10,7 @@
 </ul>
  <div class="summary-btns">
         <p>View By:</p>
-     <span class="margin-left20px">
+     <span>
              @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text", Common.RevenueGeography.ToString()))
          </span>
       <span class="margin-left20px">
@@ -53,7 +53,7 @@
     </ul>
   <div class="summary-btns">
         <p>View By:</p>
-            <span class="margin-left20px">
+            <span>
              @Html.DropDownList("ddlParentRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueToPlan, "Value", "Text", Common.RevenueOrganization.ToString()))
          </span>
       <span class="margin-left20px">
@@ -165,7 +165,7 @@
     </ul>
     <div class="summary-btns">
         <p>View By:</p>
-            <span class="margin-left20px">
+            <span>
              @Html.DropDownList("ddlParentRevenueContribution", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueContribution, "Value", "Text", Common.RevenueAudience.ToString()))
          </span>
          
