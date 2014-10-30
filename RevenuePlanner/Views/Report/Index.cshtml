@@ -13,7 +13,7 @@
         AudienceLabelTitle = AudienceLabel;
         AudienceLabel = AudienceLabel.Substring(0, 10) + "...";
     }
-    ViewBag.Title = "Report";
+    ViewBag.Title = "Summary";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
@@ -593,6 +593,7 @@ function LoadYearDropdown() {
 
 $('#liSummary').click(function () {
     if (isAllowClick) {
+        document.title = "Summary";
         isAllowClick = false;
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
         LoadYearDropdown(leftPaneOption);
@@ -611,7 +612,8 @@ $('#liSummary').click(function () {
 });
 
     $('#liRevenue').click(function () {
-    if (isAllowClick) {
+        if (isAllowClick) {
+            document.title = "Revenue";
         isAllowClick = false;
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
         LoadYearDropdown(leftPaneOption);
@@ -625,7 +627,8 @@ $('#liSummary').click(function () {
 });
 
     $('#liConversion').click(function () {
-    if (isAllowClick) {
+        if (isAllowClick) {
+            document.title = "Conversion";
         isAllowClick = false;
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
         LoadYearDropdown(leftPaneOption);
@@ -640,6 +643,7 @@ $('#liSummary').click(function () {
 
         $('#liBudget').click(function () {
             if (isAllowClick) {
+                document.title = "Budget";
                 isAllowClick = false;
                 leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
                 LoadYearDropdown(leftPaneOption);
