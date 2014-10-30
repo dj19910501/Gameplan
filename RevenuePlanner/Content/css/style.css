@@ -10682,3 +10682,12 @@ margin-right:-20px;
 {
     line-height:35px;
 }
+
+/*Added By : Kalpesh Sharma Update the title color (Internal Review Point)*/
+.nav-tabs li #nl-form2 a[class="nl-field-toggle"] {
+    color: #555555 !important;
+}
+
+.nav-tabs li #nl-form2 a[class="nl-field-toggle"]:hover {
+    color: #3a3a3a !important;
+}
