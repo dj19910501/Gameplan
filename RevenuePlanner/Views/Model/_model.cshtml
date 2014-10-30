@@ -5,7 +5,7 @@
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
     string modelId = null;
     int? stagecount = ViewBag.modelStageCount;
-    if(stagecount==null)
+    if (stagecount == null)
     {
         stagecount = 0;
     }
@@ -15,107 +15,118 @@
     }
     else
     {
-        modelId =Convert.ToString(Model.ModelId);
+        modelId = Convert.ToString(Model.ModelId);
     }
     
 }
-    <div class="padding-content padding-bottom0">
-        <h4 class="text-shadow-black source-sans-prolight">Model Summary</h4>
-        <div class="wraper-btns cf">
-            <div class="span6">
-                <div class="btn-group">
-                    <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit source-sans-prolight width90px">
-                        New Model
-                    </button>
-                    <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu source-sans-prolight">
-                        <li>
-                            <a href="#">Create New</a>
-                        </li>
-                        @* Show Duplicate option only in Edit mode and only for latest version of model. *@
-                        @if (Convert.ToString(modelId) != "" && Convert.ToString(modelId) != "0" && (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")) // && isViewOnly != "true")
+<div class="padding-content padding-bottom0">
+    <h4 class="text-shadow-black source-sans-prolight">Model Summary</h4>
+    <div class="wraper-btns cf">
+        <div class="span6">
+            <div class="btn-group">
+                <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit source-sans-prolight width90px">
+                    New Model
+                </button>
+                <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu source-sans-prolight">
+                    <li>
+                        <a href="#">Create New</a>
+                    </li>
+                    @* Show Duplicate option only in Edit mode and only for latest version of model. *@
+                    @if (Convert.ToString(modelId) != "" && Convert.ToString(modelId) != "0" && (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")) // && isViewOnly != "true")
+                    {
+                        if (ViewBag.PageTitle == "Create")
                         {
-                            if (ViewBag.PageTitle == "Create")
+                            if (stagecount > 0)
                             {
-                                if (stagecount > 0)
-                                {
-                            <li id="liDuplicate">
-                                <a href="#">Duplicate</a>
-                            </li>
-                                }
+                        <li id="liDuplicate">
+                            <a href="#">Duplicate</a>
+                        </li>
                             }
-                            else
-                            {
-                            <li id="liDuplicate">
-                                <a href="#">Duplicate</a>
-                            </li>
-                            }
-
                         }
-                    </ul>
-                </div>
-            </div>
-            <div class="span6">
-                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" id="publish">@Html.Raw("Publish")</button>
-                @if (ViewBag.PageTitle == "Create") 
-                {
-                <button id="publishModel" style="display: none" class="btn btn-blue text-shadow-blue source-sans-proregular" href="@Url.Content("~/Model/ModelZero")" type="button">@Html.Raw("Publish")</button>
-                }
+                        else
+                        {
+                        <li id="liDuplicate">
+                            <a href="#">Duplicate</a>
+                        </li>
+                        }
+
+                    }
+                </ul>
             </div>
         </div>
+        <div class="span6">
+            <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" id="publish">@Html.Raw("Publish")</button>
+            @if (ViewBag.PageTitle == "Create")
+            {
+                <button id="publishModel" style="display: none" class="btn btn-blue text-shadow-blue source-sans-proregular" href="@Url.Content("~/Model/ModelZero")" type="button">@Html.Raw("Publish")</button>
+            }
+        </div>
     </div>
+</div>
 
-    <ul id="linkarea" class="nav nav-list nav-gray">
-        <li id="liInput" class="item">
-            <a class="source-sans-probold inputs leftnav" id="aInput" href="#"><span></span>@Html.Raw("INPUTS")</a>
+<ul id="linkarea" class="nav nav-list nav-gray">
+    <li id="liInput" class="item">
+        <a class="source-sans-probold inputs leftnav" id="aInput" href="#"><span></span>@Html.Raw("INPUTS")</a>
+    </li>
+    @if (ShowModelResultsTab == null || ShowModelResultsTab == "" || ShowModelResultsTab.ToLower() == "true")
+    {
+        <li id="liAudience" class="item">
+            <a class="source-sans-probold audience leftnav" id="aAudience" href="#"><span></span>@Html.Raw("AUDIENCE")</a>
         </li>
-        @if (ShowModelResultsTab == null || ShowModelResultsTab == "" || ShowModelResultsTab.ToLower() == "true")
-        {
-            <li id="liAudience" class="item">
-                <a class="source-sans-probold audience leftnav" id="aAudience" href="#"><span></span>@Html.Raw("AUDIENCE")</a>
-            </li>
-        }
-        <li id="litactics" class="item">
-            <a class="source-sans-probold tactics leftnav" id="aTactics" href="#"><span></span>@Html.Raw("TACTICS")</a>
+    }
+    <li id="litactics" class="item">
+        <a class="source-sans-probold tactics leftnav" id="aTactics" href="#"><span></span>@Html.Raw("TACTICS")</a>
+    </li>
+    @if (ShowModelResultsTab == null || ShowModelResultsTab == "" || ShowModelResultsTab.ToLower() == "true")
+    {
+        <li id="liResults" class="item">
+            <a class="source-sans-probold result leftnav" id="aResults" href="#"><span></span>@Html.Raw("RESULTS")</a>
         </li>
-        @if (ShowModelResultsTab == null || ShowModelResultsTab == "" || ShowModelResultsTab.ToLower() == "true")
-        {
-            <li id="liResults" class="item">
-                <a class="source-sans-probold result leftnav" id="aResults" href="#"><span></span>@Html.Raw("RESULTS")</a>
-            </li>
-        }
-        <li id="liIntegration" class="item">
-            <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#"><span></span>@Html.Raw("INTEGRATIONS")</a>
-        </li>
-    </ul>
-    <ul class="nav nav-list nav-gray-plan">
-        <li id="change-log" class="nav-header">
-            <span>Change Log</span>
-            <div class="changes"><div class="change">  <span class="action">None</span></div>
-        </li>
-    </ul>
+    }
+    <li id="liIntegration" class="item">
+        <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#"><span></span>@Html.Raw("INTEGRATIONS")</a>
+    </li>
+</ul>
+<ul class="nav nav-list nav-gray-plan">
+    <li id="change-log" class="nav-header">
+        <span>Change Log</span>
+        <div class="changes">
+            <div class="change"><span class="action">None</span></div>
+    </li>
+</ul>
 
 <script>
     $(document).ready(function () {
-               $('.nav nav-list nav-gray li').each(function () {
-                   $(this).removeClass('active');
-               });
-               if ('@ViewBag.PageTitle' == 'Tactics') {
-            $('#aTactics').removeAttr('id');
+
+        /*Internal Review Points : Kalpesh Sharma 10/30/2014*/
+
+        var ModelId = '@modelId';
+        if (ModelId > 0) {
+            $('.changes').html('');
+            var url = '@Url.Content("~/Model/LoadChangeLog/")';
+            $('.changes').load(url + '?objectId=' + ModelId);
+        }
+
+        $('.nav nav-list nav-gray li').each(function () {
+            $(this).removeClass('active');
+        });
+        if ('@ViewBag.PageTitle' == 'Tactics') {
+                   $('#aTactics').removeAttr('id');
                    if (!$('#litactics').hasClass('active')) {
                        $('#litactics').addClass('active');
                    }
                }
                else if ('@ViewBag.PageTitle' == 'Integration') {
-            $('#aIntegration').removeAttr('id');
+                   $('#aIntegration').removeAttr('id');
                    if (!$('#liIntegration').hasClass('active')) {
                        $('#liIntegration').addClass('active');
                    }
                }
                else if ('@ViewBag.PageTitle' == 'Create') {
-            $('#aInput').removeAttr('id');
+                   $('#aInput').removeAttr('id');
                    $('#publish').attr('id', 'publishModelDisabled');
                    if (!$('#liInput').hasClass('active')) {
                        $('#liInput').addClass('active');
@@ -123,8 +134,8 @@
                    if ('@modelId' == '' || '@modelId' == '0') {
                        $('#linkarea').removeClass();
                        $('#linkarea').addClass('nav nav-list nav-gray-planc');
-                $('#aTactics').attr('style', 'cursor:default !important');
-                $('#aIntegration').attr('style', 'cursor:default !important');
+                       $('#aTactics').attr('style', 'cursor:default !important');
+                       $('#aIntegration').attr('style', 'cursor:default !important');
                    }
                    else {
                        $('#linkarea').removeClass();

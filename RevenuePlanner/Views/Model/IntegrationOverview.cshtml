@@ -126,11 +126,7 @@
     //});
     var lastModelId = '@modelId';
     $(document).ready(function () {
-        /*Internal Review Points : Kalpesh Sharma 10/30/2014*/
-        $('.changes').html('');
-        var url = '@Url.Content("~/Model/LoadChangeLog/")';
-        $('.changes').load(url + '?objectId=' + $("#latestModelId").val());
-
+      
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
         var ismsg = $("#hdnMsg").val();
         if ($('#cSuccess').html() != '') {

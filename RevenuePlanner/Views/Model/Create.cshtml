@@ -606,13 +606,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
              GoToLogin();
          }
      });
-     if (modelId > 0) {
-     $('.changes').html('');
-     var url = '@Url.Content("~/Model/LoadChangeLog/")';
-
-         $('.changes').load(url + '?objectId=' + modelId);
-     }
-
+    
  }
  function fillmodel(data, modelId) {
      $.each(data.lstmodellist, function (index, obj) {
