@@ -5565,9 +5565,10 @@ namespace RevenuePlanner.Controllers
         public PartialViewResult EditTactic(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
             ViewBag.CalledFromBudget = CalledFromBudget;
+            int planId = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == id).FirstOrDefault().Plan_Campaign_Program.Plan_Campaign.PlanId;
             var tList = from t in db.TacticTypes
                         join p in db.Plans on t.ModelId equals p.ModelId
-                        where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true
+                        where p.PlanId == planId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true
                         orderby t.Title
                         select t;
 
@@ -5589,7 +5590,16 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
-
+            if (!tList.Any(t => t.TacticTypeId == pcpt.TacticTypeId))
+            {
+                var tacticTypeSpecial = from t in db.TacticTypes
+                                        join p in db.Plans on t.ModelId equals p.ModelId
+                                        where p.PlanId == planId && t.TacticTypeId == pcpt.TacticTypeId
+                                        orderby t.Title
+                                        select t;
+                tList = tList.Concat<TacticType>(tacticTypeSpecial);
+                tList = tList.OrderBy(a => a.Title);
+            }
             ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcpt.Status);
 
             if (!tList.Any(t => t.TacticTypeId == pcpt.TacticTypeId))
