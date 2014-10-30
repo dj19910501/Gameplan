@@ -10562,7 +10562,7 @@ margin-right:-20px;
 
 /* Start - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */
 .request-icons{clear: both; display: block; margin-left: 20px; float:left;}
-.request-icon-block{float: left; margin-left:10px; position:relative;top:-10px;}
+.request-icon-block{float: left; margin-left:10px; position:relative;top:-5px;}
 .request-icon-block .request{background: url("../../images/icon-2.png") no-repeat scroll left center #2384b8;
     border-radius: 5px;
     color: #ffffff !important;
