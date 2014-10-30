@@ -37,7 +37,7 @@
         <h2 class="title-simple source-sans-prolight">
             <span>
                 <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
-                @if (IsPlanEditable && IsPlanOwner)
+                @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
                 {
                     @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram11", @class = "edit-icon-white btn-blue btn-large" })
                 }
