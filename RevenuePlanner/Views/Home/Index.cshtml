@@ -1848,7 +1848,13 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
                   }
                   getViewByList = false;
                   $('#ddlTabViewBy').val(data.ViewBy.toString());
-                  $('.request-icons').find('.counter').html(data.requestCount);
+                  if (parseInt(data.requestCount) > 0) {
+                      $('.request-icons').find('.counter').css("display", "block");
+                      $('.request-icons').find('.counter').html(data.requestCount);
+                  }
+                  else {
+                      $('.request-icons').find('.counter').css("display", "none");
+                  }
                   planYear = parseInt(data.planYear);
                   var isDataExistForTacticTable = false;
                   //// Modified By Maninder Singh Wadhva PL Ticket#47
