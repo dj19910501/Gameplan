@@ -93,35 +93,31 @@
                     </div>
         </div>
     </div>
-    <ul class="nav nav-tabs new-margin padding-bottom10 clear" id="InspectTab">
+    <ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div" id="InspectTab">
         <li class="pull-right">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" id="attributesControlsArea">
-           <div class="span3 margin-top10" style="clear:both;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0" id="attributesControlsArea">
+        <div class="span3 margin-top10" style="clear: both;">
             <p>Business Unit</p>
             @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
-            </div>
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString(), 1,"addEdit")
-   <div class="clear-section"></div>
-    
-      <div id="CustomFieldSepreater"></div>
-    
-        @if ((bool)ViewBag.IsOwner)
-        {
-            <br />
-            <div class="wraper-btns cf">
-                <div class="span2 btn-save">
-                    <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
-                </div>
-                <div class="span2" >
-                    <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
-                </div>
-            </div>
-        }
+        </div>
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString(), 1, "addEdit")
+
     </div>
     
+                if ((bool)ViewBag.IsOwner)
+                {           
+    <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
+        <div class="span2 btn-save" style="width: 122px">
+            <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save & Continue</button>
+        </div>
+        <div class="span2">
+            <button id="btnCancel" class="close-form btn-link source-sans-proregular" style="float: left; margin-left: 20px; margin-top: 30px !important" type="button">Cancel</button>
+        </div>
+    </div>
+                }
 }
 <script type="text/javascript">
 
@@ -141,8 +137,6 @@
           $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
           FormatRemainingBudget();
 
-          $("#txtTitle").val($("#lblCampaignTitle").html());
-
           $("#successMessageViewCampaign").slideUp(50);
           $("#errorMessageEditCampaign").slideUp(50);
 
@@ -150,9 +144,6 @@
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
           $(".selectBox select").selectbox();
-          //$('#attributesControlsArea').find('input').each(function () {
-          //    $(this).removeAttr('readonly style');
-          //});
 
           $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
           $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);

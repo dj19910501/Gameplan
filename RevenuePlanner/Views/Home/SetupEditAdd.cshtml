@@ -93,13 +93,13 @@
         </div>
     </div>
 
-    <ul class="nav nav-tabs new-margin padding-bottom10 clear" id="InspectTab">
+    <ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div" id="InspectTab">
         <li class="pull-right">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
 
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
         <div class="span3 margin-top10" style="clear:both;">
             <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
@@ -125,7 +125,7 @@
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 4, "addEdit")
     </div>   
 
-    <div style="width: 100%; display: none;" id="divTacticSaveCancel" class="wraper-btns cf">
+    <div style="width: 100%; display: none;clear:both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
         <div class="span2 btn-save" style="width:122px">
             <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save & Continue</button>
         </div>
@@ -142,14 +142,13 @@
       function () {
           $(this).scrollTop(0);
           $(".verticalIdSelectBox select").selectbox();
-          $("#txtTacticTitle").val($("#lblTacticTitle").attr('title'));
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
           $('#divTacticSaveCancel').css('display', 'block');
           $('#EditForm').css('display', 'none');
 
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-          $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point to add title tooltip 2-7-2014
+          $('#txtCost').attr("title", $('#txtCost').val());
           $(".selectBox select").selectbox();
 
           $("#txtRevenue").val('$' + number_format($("#txtRevenue").val().toString(), 0, 0, ','));

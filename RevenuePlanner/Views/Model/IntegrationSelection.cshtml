@@ -145,6 +145,11 @@
     var lastModelId = '@modelId';
     $(document).ready(function () {
 
+        /*Internal Review Points : Kalpesh Sharma 10/30/2014*/
+        $('.changes').html('');
+        var url = '@Url.Content("~/Model/LoadChangeLog/")';
+        $('.changes').load(url + '?objectId=' + $("#latestModelId").val());
+
         if ('@message' != null && '@message' != '') {
             var msgspan = '@message';
             $('#cSuccess').html('<strong>Success!</strong> ' + $('#cSuccess').html())
