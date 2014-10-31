@@ -103,7 +103,7 @@
             $('form .budget-month').find("input").each(function () {
                 $(this).parent().removeClass('light-blue-background');
                 $(this).parent().addClass('unallocated-span');
-                $(this).addClass('unallocated-text');
+                $(this).addClass('unallocated-text-BudgetPopUp');
                 $(this).prop('readonly', true);
             });
 
@@ -130,7 +130,7 @@
 
           fillBudgetAllocationData();
 
-          $('.budget-section').find('input').not('.unallocated-text').each(function () {
+          $('.budget-section').find('input').not('.unallocated-text-BudgetPopUp').each(function () {
               $(this).keyup(function () {
                   //Modified By Kalpesh Sharma #761 CAMPAIGNS View: Campaign/Plan Budget field is clearing Remaining Budget/Remaining
                   var GetCurrentvalue = $(this).val().trim();
@@ -161,7 +161,7 @@
                       var ProgramBudgetValue = parseInt($(this).attr("pmb"));
                      
                       var TotalallocationValue = 0;
-                      var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+                      var lstAllocInputs = $(".budget-section input").not('.unallocated-text-BudgetPopUp');
                       for (var i = 0; i < lstAllocInputs.length; i++) {
                           TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
                       }
@@ -367,7 +367,7 @@
             }
 
          if ($("#hdnIsBudgetAllocated").val() == "True") {
-             var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
+             var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text-BudgetPopUp');
              if (lstAllocInputs.length > 0) {
                  var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
                     var inputLength = lstAllocInputs.length;
@@ -425,7 +425,7 @@
         
          ////Start added by Kalpesh  #608: Budget allocation for Program
          var allocationValue = [];
-         var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+         var lstAllocInputs = $(".budget-section input").not('.unallocated-text-BudgetPopUp');
          for (var i = 0; i < lstAllocInputs.length; i++) {
              allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
          }
