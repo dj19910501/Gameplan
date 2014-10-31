@@ -91,7 +91,7 @@
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
-        <li class="pull-left" id="liBudget" style="display:none;">
+        <li class="pull-left" id="liBudget" style="display:none;" >
             <a>Budget</a>
         </li>
         <li class="pull-right">
@@ -145,8 +145,8 @@
 
           $("#EditProgram").on("click", function () {
               var url;
-              $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
+              $("#successMessageViewProgram").slideUp(50);
+              $("#errorMessageEditProgram").slideUp(50);
               $("#hdnProgramOpt").val("Edit");
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());

@@ -8040,7 +8040,6 @@ namespace RevenuePlanner.Controllers
                                         db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
                                     }
                                 }
-                                db.SaveChanges();
                             }
                             else if (arrBudgetInputValues.Length == 4)
                             {
@@ -8124,6 +8123,7 @@ namespace RevenuePlanner.Controllers
                             db.Entry(pcpobj).State = EntityState.Modified;
                             int result = db.SaveChanges();
                             result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                            scope.Complete();
                             return Json(new { IsSaved = true, msg = "Saved Successfully.", JsonRequestBehavior.AllowGet });
                         }
                     }

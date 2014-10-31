@@ -10691,3 +10691,16 @@ margin-right:-20px;
 .nav-tabs li #nl-form2 a[class="nl-field-toggle"]:hover {
     color: #3a3a3a !important;
 }
+
+#SaveProgramBudgetSection
+{
+    width: 100%; 
+    clear: both;
+    padding-top: 30px;
+}
+
+.unallocated-text-BudgetPopUp {
+    background-color: #f2f2f2 !important;
+    color: #666666 ;
+    padding: 0 !important;
+}
