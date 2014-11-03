@@ -14,6 +14,7 @@
     .font-size16 { font-size:16px; }
     .ProgramBudgetSection { width:70%; float:left; margin-bottom:50px; }
     #divTab { margin-top: 30px; } 
+    #txtRemainingBudget {margin-bottom: 40px;}
     </style>
 
  @using (Html.BeginForm(new { @id = "frmProgramBudgetAllocation" }))
@@ -70,6 +71,12 @@
             <!--End content-->
         </div>
     }
+    else
+        {
+            <div class="font20 alignCenter" id="divDefaultBudget">
+                @Common.objCached.DefaultPlanAllocationMessage
+            </div>
+        }
   </div>
     
      <div class="wraper-btns cf border-top-div " id="SaveProgramBudgetSection" >

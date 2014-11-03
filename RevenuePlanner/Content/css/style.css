@@ -10741,3 +10741,8 @@ padding-bottom:5px;
    clear: both;
    padding-top: 30px;
 }
+
+.font20 {
+    font-size: 20px !important;
+    font-weight: normal !important;
+}
