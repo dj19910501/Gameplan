@@ -22,6 +22,13 @@
     padding-top: 30px;
 }
 
+.font-size16 { font-size:16px; }
+ #divTab { margin-top: 30px; } 
+ #txtRemainingBudget {margin-bottom: 40px;}
+    .CampaignBudgetSection
+    {
+        width: 70%; float: left;margin-bottom:50px;
+    }
 </style>
 
 @using (Html.BeginForm(new { @id = "frmCampaignBudgetAllocation" }))
@@ -30,8 +37,6 @@
     @Html.HiddenFor(model => model.CampaignBudget, new { id = "hdnOldCampaignBudget" })
     @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
    
-    <span id="lblTotalAllocated" class="source-sans-proregular" style="display: none;"></span>
-
     <div style="width: 30%; float: left;">
         <label class="padding-left4" title="Campaign Budget">Campaign Budget</label>
         @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtCampaignBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
@@ -40,12 +45,12 @@
             @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
         </div>
     </div>
-    <div style="width: 70%; float: left;" class="CampaignBudgetSection">
+    <div class="CampaignBudgetSection">
         @if (@Model.AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
         {
             <div class="budget-section">
                 <div class="budget-head clearfix">
-                    <p>Planned Cost Allocation</p>
+                    <p>Budget Allocation</p>
                 </div>
                 <div class="budget-collapse">
                     <div class="white-bg-edirProgram">
@@ -55,24 +60,32 @@
                             <span class="unallocated-span">
                                 <input id="lblUnallocatedBudget" class="unallocated-text-BudgetPopUp" style="color: #666666;" readonly="true" /></span>
                         </div>
-                    </div>
+                    <div class="SepraterStacticis"></div>
                     <div class="budget-result source-sans-prolight">
-                        <p>
+                        <p class="font-size16">
                             Remaining @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
                                     	<span id="lblRemainingMonthlyBudget" class="source-sans-proregular"></span>
                         </p>
-                        <p>
+                          <p class="font-size16">
+                        Allocated Programs Budget (this @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
+                                    	<span id="lblAllocatedBudget" class="source-sans-proregular"></span>
+                    </p>
+                    <p class="font-size16">
+                        Total Allocated:
+                                    	<span id="lblTotalAllocated" class="source-sans-proregular"></span>
+                    </p>
+                        <p class="font-size16">
                             Total Budgeted:
                           <span id="lblTotalBudget" class="source-sans-proregular">@Model.CampaignBudget</span>
                         </p>
                     </div>
                 </div>
-                <!--End content-->
+                    </div>
             </div>
         }
         else
         {
-            <div class="font30 alignCenter" id="divDefaultBudget">
+            <div class="font20 alignCenter" id="divDefaultBudget">
                 @Common.objCached.DefaultPlanAllocationMessage
             </div>
         }
@@ -171,6 +184,14 @@
                     $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(newRemainingBudgetValue.toString(), false, true));
 
                     var ProgramBudgetValue = parseInt($(this).attr("pmb"));
+                    if (parseInt(currentValue) < ProgramBudgetValue) {
+                        $(this).addClass('low-budgeted');
+                        $("#lblAllocatedBudget").addClass('error-text');
+                    }
+                    else {
+                        $(this).removeClass('low-budgeted');
+                        $("#lblAllocatedBudget").removeClass('error-text');
+                    }
 
                     var TotalallocationValue = 0;
                     var lstAllocInputs = $(".budget-section input").not('.unallocated-text-BudgetPopUp');
@@ -315,6 +336,23 @@
                 $("#lblRemainingMonthlyBudget").removeClass('error-text');
             }
             $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(remainingValue.toString(), false, true));
+
+            if ($(this).val().trim() != '') {
+                var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                    if (parseInt(currentValue) < AllocatedProgramsBudget) {
+                        $("#lblAllocatedBudget").addClass('error-text');
+                    }
+                    else {
+                        $("#lblAllocatedBudget").removeClass('error-text');
+                    }
+                }
+            }
+            else {
+                $("#lblAllocatedBudget").removeClass('error-text');
+            }
+
+            $("#lblAllocatedBudget").html(FormatCommasBudget(AllocatedProgramsBudget.toString(), false, true));
 
         });
 
