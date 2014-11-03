@@ -7944,7 +7944,11 @@ namespace RevenuePlanner.Controllers
 
 
         #region Budget Allocation in Program Tab
-
+        /// <summary>
+        /// Load the Program Budget Allocation values.
+        /// </summary>
+        /// <param name="id">Program Id</param>
+        /// <returns></returns>
         public PartialViewResult LoadSetupProgramBudget(int id = 0)
         {
             Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
@@ -7970,12 +7974,10 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Added By: Bhavesh Dobariya.
         /// Action to Save Program.
         /// </summary>
         /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
-        /// <param name="programs">Program list string array.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
+        /// <param name="BudgetInputValues">Budget allocation inputs values.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         public ActionResult SaveProgramBudgetAllocation(Plan_Campaign_ProgramModel form, string BudgetInputValues, string UserId = "" ,string title="")
@@ -8361,6 +8363,220 @@ namespace RevenuePlanner.Controllers
             }
 
             return Json(new { isSaved = false });
+        }
+
+        #endregion
+
+        #region Budget Allocation for Campaign Tab
+
+        public PartialViewResult LoadCampaignBudgetAllocation(int id = 0)
+        {
+            Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
+            if (pcp == null)
+            {
+                return null;
+            }
+            Plan_CampaignModel pcpm = new Plan_CampaignModel();
+            pcpm.PlanCampaignId = pcp.PlanCampaignId;
+
+            pcpm.CampaignBudget = pcp.CampaignBudget;
+
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            pcpm.AllocatedBy = objPlan.AllocatedBy;
+
+            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
+            double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
+            double planBudget = objPlan.Budget;
+            double planRemainingBudget = planBudget - allCampaignBudget;
+            ViewBag.planRemainingBudget = planRemainingBudget;
+
+            return PartialView("_SetupCampaignBudgetAllocation", pcpm);
+        }
+
+        /// <summary>
+        /// Added By: Bhavesh Dobariya.
+        /// Action to Save Program.
+        /// </summary>
+        /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
+        /// <param name="programs">Program list string array.</param>
+        /// <param name="RedirectType">Redirect Type.</param>
+        /// <returns>Returns Action Result.</returns>
+        [HttpPost]
+        public ActionResult SaveCampaignBudgetAllocation(Plan_CampaignModel form, string BudgetInputValues, string UserId = "", string title = "")
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    return Json(new { IsSaved = false, msg = Common.objCached.LoginWithSameSession, JsonRequestBehavior.AllowGet });
+                }
+            }
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(Sessions.PlanId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(form.PlanCampaignId))).FirstOrDefault();
+                        string[] arrBudgetInputValues = BudgetInputValues.Split(',');
+
+                        if (pc != null)
+                        {
+                            return Json(new { IsSaved = false, msg = Common.objCached.DuplicateCampaignExits, JsonRequestBehavior.AllowGet });
+                        }
+                        else
+                        {
+                            Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(form.PlanCampaignId) && pcobjw.IsDeleted.Equals(false)).SingleOrDefault();
+                            pcobj.Title = title;
+                            pcobj.ModifiedBy = Sessions.User.UserId;
+                            pcobj.ModifiedDate = DateTime.Now;
+                            pcobj.CampaignBudget = form.CampaignBudget;
+                            db.Entry(pcobj).State = EntityState.Modified;
+
+                            Common.InsertChangeLog(Sessions.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                            if (arrBudgetInputValues.Length > 0)    // Added by Sohel Pathan on 27/08/2014 for PL ticket #758
+                            {
+                                // Start Added By Dharmraj #567 : Budget allocation for campaign
+                                var PrevAllocationList = db.Plan_Campaign_Budget.Where(c => c.PlanCampaignId == form.PlanCampaignId).Select(c => c).ToList();
+                                //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by Sohel Pathan on 27/08/2014 for PL ticket #758
+
+                                if (arrBudgetInputValues.Length == 12)
+                                {
+                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
+                                    {
+                                        // Start - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
+                                        bool isExists = false;
+                                        if (PrevAllocationList != null)
+                                        {
+                                            if (PrevAllocationList.Count > 0)
+                                            {
+                                                var updatePlanCampaignBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                                if (updatePlanCampaignBudget != null)
+                                                {
+                                                    if (arrBudgetInputValues[i] != "")
+                                                    {
+                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                        if (updatePlanCampaignBudget.Value != newValue)
+                                                        {
+                                                            updatePlanCampaignBudget.Value = newValue;
+                                                            db.Entry(updatePlanCampaignBudget).State = EntityState.Modified;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        db.Entry(updatePlanCampaignBudget).State = EntityState.Deleted; //// Added by Sohel Pathan on 01/09/2014 for PL ticket #758
+                                                    }
+                                                    isExists = true;
+                                                }
+                                            }
+                                        }
+                                        if (!isExists && arrBudgetInputValues[i] != "")
+                                        {
+                                            // End - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
+                                            Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
+                                            objPlanCampaignBudget.PlanCampaignId = form.PlanCampaignId;
+                                            objPlanCampaignBudget.Period = "Y" + (i + 1);
+                                            objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                            objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
+                                            objPlanCampaignBudget.CreatedDate = DateTime.Now;
+                                            db.Entry(objPlanCampaignBudget).State = EntityState.Added;
+                                        }
+                                    }
+                                }
+                                else if (arrBudgetInputValues.Length == 4)
+                                {
+                                    int QuarterCnt = 1;
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        // Start - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
+                                        bool isExists = false;
+                                        if (PrevAllocationList != null)
+                                        {
+                                            if (PrevAllocationList.Count > 0)
+                                            {
+                                                var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt)) || pb.Period == ("Y" + (QuarterCnt + 1)) || pb.Period == ("Y" + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                                var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
+
+                                                if (thisQuarterFirstMonthBudget != null)
+                                                {
+                                                    if (arrBudgetInputValues[i] != "")
+                                                    {
+                                                        var thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
+                                                        var thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
+                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+
+                                                        if (thisQuarterTotalBudget != newValue)
+                                                        {
+                                                            var BudgetDiff = newValue - thisQuarterTotalBudget;
+                                                            if (BudgetDiff > 0)
+                                                            {
+                                                                thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+                                                                db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+                                                            }
+                                                            else
+                                                            {
+                                                                int j = 1;
+                                                                while (BudgetDiff < 0)
+                                                                {
+                                                                    if (thisQuarterFirstMonthBudget != null)
+                                                                    {
+                                                                        BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+
+                                                                        if (BudgetDiff <= 0)
+                                                                            thisQuarterFirstMonthBudget.Value = 0;
+                                                                        else
+                                                                            thisQuarterFirstMonthBudget.Value = BudgetDiff;
+
+                                                                        db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+                                                                    }
+                                                                    if ((QuarterCnt + j) <= (QuarterCnt + 2))
+                                                                    {
+                                                                        thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt + j))).FirstOrDefault();
+                                                                    }
+
+                                                                    j = j + 1;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                                    }
+                                                    isExists = true;
+                                                }
+                                            }
+                                        }
+                                        if (!isExists && arrBudgetInputValues[i] != "")
+                                        {
+                                            // End - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
+                                            Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
+                                            objPlanCampaignBudget.PlanCampaignId = form.PlanCampaignId;
+                                            objPlanCampaignBudget.Period = "Y" + QuarterCnt;
+                                            objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                            objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
+                                            objPlanCampaignBudget.CreatedDate = DateTime.Now;
+                                            db.Entry(objPlanCampaignBudget).State = EntityState.Added;
+                                        }
+                                        QuarterCnt = QuarterCnt + 3;
+                                    }
+                                }
+                            }
+                            
+                            db.SaveChanges();
+                            scope.Complete();
+                            return Json(new { IsSaved = true, msg = "Saved Successfully.", JsonRequestBehavior.AllowGet });
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { IsSaved = false, msg = Common.objCached.ErrorOccured, JsonRequestBehavior.AllowGet });
         }
 
         #endregion

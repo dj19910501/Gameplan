@@ -15,6 +15,11 @@
     color: gray;
     margin-top: 6px;
 }
+
+    .font-size16
+    {
+        font-size:16px;
+    }
     </style>
 
  @using (Html.BeginForm(new { @id = "frmProgramBudgetAllocation" }))
@@ -24,8 +29,6 @@
      @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
      @Html.HiddenFor(model => model.PlanCampaignId, new { id = "hdnPlanCampaignId" })
      
-     <span id="lblTotalAllocated" class="source-sans-proregular" style="display:none;"></span>
-
     <div style="width:30%;float:left;">
    <label class="padding-left4" title="Program Budget">Program Budget</label>
                 @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
@@ -39,7 +42,7 @@
     {
         <div class="budget-section">
             <div class="budget-head clearfix">
-                <p>Planned Cost Allocation</p>
+                <p>Budget Allocation</p>
             </div>
             <div class="budget-collapse">
                 <div class="white-bg-edirProgram">
@@ -51,11 +54,19 @@
                     </div>
                 </div>
                 <div class="budget-result source-sans-prolight">
-                    <p>
+                    <p class="font-size16">
                         Remaining @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
                                     	<span id="lblRemainingMonthlyBudget" class="source-sans-proregular"></span>
                     </p>
-                    <p>
+                    <p class="font-size16">
+                        Allocated Tactic Cost (this  @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
+                            <span id="lblAllocatedCampaignBudget" class="source-sans-proregular"></span>
+                    </p>
+                    <p class="font-size16">
+                        Total Allocated:
+                            <span id="lblTotalAllocated" class="source-sans-proregular"></span>
+                    </p>
+                    <p class="font-size16">
                         Total Budgeted:
                           <span id="lblTotalBudget" class="source-sans-proregular">@Model.ProgramBudget</span>
                     </p>
@@ -159,6 +170,14 @@
                       $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(newRemainingBudgetValue.toString(), false, true));
 
                       var ProgramBudgetValue = parseInt($(this).attr("pmb"));
+                      if (parseInt(currentValue) < ProgramBudgetValue) {
+                          $(this).addClass('low-budgeted');
+                          $("#lblAllocatedCampaignBudget").addClass('error-text');
+                      }
+                      else {
+                          $(this).removeClass('low-budgeted');
+                          $("#lblAllocatedCampaignBudget").removeClass('error-text');
+                      }
                      
                       var TotalallocationValue = 0;
                       var lstAllocInputs = $(".budget-section input").not('.unallocated-text-BudgetPopUp');
@@ -299,10 +318,24 @@
             }
             $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(remainingValue.toString(), false, true));
 
+            if ($(this).val().trim() != '') {
+                var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                    if (parseInt(currentValue) < AllocatedProgramsBudget) {
+                        $("#lblAllocatedCampaignBudget").addClass('error-text');
+                    }
+                    else {
+                        $("#lblAllocatedCampaignBudget").removeClass('error-text');
+                    }
+                }
+            }
+            else {
+                $("#lblAllocatedCampaignBudget").removeClass('error-text');
+            }
+
+            $("#lblAllocatedCampaignBudget").html(FormatCommasBudget(AllocatedProgramsBudget.toString(), false, true));
         });
-
     });
-
 
     $("#cancelProgramBudget").click(function () {
         CancelEvent();
