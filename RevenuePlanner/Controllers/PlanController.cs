@@ -6801,7 +6801,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-                                        return Json(new { redirect = Url.Action("Assortment") });
+                                        return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Changes saved." });
                                     }
                                 }
                             }

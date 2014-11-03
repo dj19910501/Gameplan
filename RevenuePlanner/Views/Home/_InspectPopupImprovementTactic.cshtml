@@ -1,6 +1,7 @@
 ﻿@using RevenuePlanner.Helpers;
 @{
     var popupvalue = (string)ViewBag.InspectPopup;
+    var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Display(popupvalue)
@@ -11,16 +12,37 @@
 }
 @Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
-<div class="modal-popup-title">
-    <span class="boost-icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important; margin-left:0px !important;"></span>
-    <h2 class="title-simple source-sans-prolight"><span class="tipsyclassTitle" title="@Html.Raw(tacticMaster.TacticTitle)">@Html.Raw(tacticMaster.TacticTitle)</span>
-    @if (IsPlanEditable)
-    {
-        @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = tacticMaster.PlanCampaignId, tacticId = tacticMaster.PlanTacticId, EditObject = "ImprovementTactic", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large"})
-    }
-    </h2>
+<div id="successMessageImprovementTactic" class="alert hide alert-success message-position-small">
+    <a class="close">×</a>
+    <span id="spanSuccMessageImprovementTactic"></span>
 </div>
 
+<div id="errorMessageImprovementTactic" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <span id="spanErrMessageImprovementTactic"></span>
+</div>
+<form>
+    <div class="modal-popup-title">
+        <span class="icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
+        <h2 class="title-simple source-sans-prolight">
+            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(tacticMaster.TacticTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class="span12 input-small truncate", style="width: 95%; height: 28px;", title = tacticMaster.TacticTitle })
+                @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
+            }
+            else
+            {
+                <span class="tipsyclassTitle" title="@Html.Raw(tacticMaster.TacticTitle)">@Html.Raw(tacticMaster.TacticTitle)</span>
+            }
+
+        @if (IsPlanEditable && !(InspectMode == Enums.InspectPopupMode.Edit.ToString()))
+        {
+            @*@Html.ActionLink(" ", "Assortment", "Plan", new { tacticId = tacticMaster.PlanTacticId, EditObject = "ImprovementTactic", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large"})*@
+            <a id="lnkEdit" class="edit-icon-white btn-blue btn-large"></a>
+        }
+        </h2>
+    </div>
+</form>
 <div class="modal-popup-summary">
     <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
     <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
@@ -105,8 +127,8 @@
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");
-              $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
+              $("#errorMessageImprovementTactic").css("display", "none");
+              $("#successMessageImprovementTactic").css("display", "none");
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
               var tabtext = ($(this).children('a').text());
               var planTacticId = $("#hdnPlanTacticId").val();
@@ -122,6 +144,15 @@
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
           });
 
+          if (InspectSuccMsg != '')
+          {
+              $("#successMessageImprovementTactic").css("display", "block");
+              $("#spanSuccMessageImprovementTactic").empty();
+              $("#spanSuccMessageImprovementTactic").text(InspectSuccMsg);
+              $("#errorMessageImprovementTactic").css("display", "none");
+              $("#spanErrMessageImprovementTactic").empty();
+              InspectSuccMsg = '';
+          }
       });
 
     function RemoveTabClass() {
@@ -152,7 +183,24 @@
         $('#div' + tabValue).css({ display: "block" });
 
         $("#divTab").empty();
-        $("#divTab").load(url + '?id=' + id);
+        $("#divTab").load(url + '?id=' + id + '&InspectPopupMode=' + '@InspectMode');
     }
 
+    $('#lnkEdit').click(function () {
+        @*@{ViewBag.InspectMode = Enums.InspectPopupMode.Edit;}*@
+        //window.location.reload();
+        //loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
+
+        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+        $("#divPartial").empty();
+        //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
+        $("#divPartial").load(url + '?id=' + @tacticMaster.PlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()");
+    });
+
+   @* $('.close-x-big-icon').click(function () {
+        if ('@InspectMode' == '@Enums.InspectPopupMode.Edit.ToString()')
+        {
+            returnToReadOnlyMode();
+        }
+    })*@
 </script>

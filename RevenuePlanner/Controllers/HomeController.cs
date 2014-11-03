@@ -3445,7 +3445,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="TabValue">Tab value of Popup.</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
-        public ActionResult LoadInspectPopup(int id, string section, string TabValue = "Setup")
+        public ActionResult LoadInspectPopup(int id, string section, string TabValue = "Setup", string InspectPopupMode = "")
         {
             try
             {
@@ -3644,6 +3644,14 @@ namespace RevenuePlanner.Controllers
             else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
             {
                 ViewBag.CampaignDetail = im;
+                if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
+                {
+                    ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
+                }
+                else
+                {
+                    ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
+                }
                 return PartialView("_InspectPopupImprovementTactic", im);
             }
             return PartialView("InspectPopup", im);
@@ -4171,7 +4179,12 @@ namespace RevenuePlanner.Controllers
                                   Cost = pcpt.Cost,
                                   StartDate = pcpt.EffectiveDate,
                                   IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
-                                  LastSyncDate = pcpt.LastSyncDate
+                                  LastSyncDate = pcpt.LastSyncDate,
+                                  ImprovementPlanProgramId = pcpt.ImprovementPlanProgramId,
+                                  ImprovementPlanTacticId = pcpt.ImprovementPlanTacticId,
+                                  ImprovementTacticTypeId = pcpt.ImprovementTacticTypeId,
+                                  EffectiveDate = pcpt.EffectiveDate,
+                                  Title = pcpt.Title
                               }).SingleOrDefault();
 
                     imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(db.Plan_Improvement_Campaign_Program_Tactic.SingleOrDefault(varT => varT.ImprovementPlanTacticId == id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model);
@@ -6238,7 +6251,7 @@ namespace RevenuePlanner.Controllers
             }
         }
 
-        public PartialViewResult LoadResubmission(string RedirectionType, string labelValues)
+        public PartialViewResult LoadResubmission(string redirectionType, string labelValues)
         {
             var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(labelValues);
 
@@ -6252,7 +6265,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            
+            ViewBag.RedirectionType = redirectionType;
             ViewBag.resubmissionValues = listLabelValue;
 
             return PartialView("_ResubmissionPopup");
@@ -7445,7 +7458,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id">Plan Tactic Id.</param>
         /// <returns>Returns Partial View Of Setup Tab.</returns>
-        public ActionResult LoadImprovementSetup(int id)
+        public ActionResult LoadImprovementSetup(int id, string InspectPopupMode = "")
         {
             InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
             List<Guid> userListId = new List<Guid>();
@@ -7467,15 +7480,18 @@ namespace RevenuePlanner.Controllers
                 }
             }
             im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
-            im.StartDate = im.StartDate;
+            im.EffectiveDate = im.EffectiveDate;
             ViewBag.TacticDetail = im;
+
+            var objPlan = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId.Equals(id) && t.IsDeleted.Equals(false)).Select(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan).FirstOrDefault();
+            int planId = objPlan.PlanId;
 
             var businessunittitle = (from bun in db.BusinessUnits
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
             ViewBag.ApprovedStatus = true;
-            ViewBag.NoOfTacticBoosts = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && t.StartDate >= im.StartDate && t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId).ToList().Count();
+            ViewBag.NoOfTacticBoosts = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && t.StartDate >= im.StartDate && t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList().Count();
 
 
             ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
@@ -7489,6 +7505,59 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.LastSync = string.Empty;
             }
+            if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
+
+                List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == planId && it.IsDeleted == false && it.ImprovementPlanTacticId != id).Select(it => it.ImprovementTacticTypeId).ToList();
+
+                var tactics = from t in db.ImprovementTacticTypes
+                              where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
+                              && t.IsDeleted == false
+                              select t;
+
+                //Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcptobj => pcptobj.ImprovementPlanTacticId.Equals(id)).SingleOrDefault();
+                
+                //if (pcpt == null)
+                //{
+                //    return null;
+                //}
+
+                foreach (var item in tactics)
+                {
+                    item.Title = HttpUtility.HtmlDecode(item.Title);
+                }
+
+                if (!tactics.Any(a => a.ImprovementTacticTypeId == im.ImprovementTacticTypeId))
+                {
+                    var tacticTypeSpecial = from t in db.ImprovementTacticTypes
+                                            where t.ClientId == Sessions.User.ClientId && t.ImprovementTacticTypeId == im.ImprovementTacticTypeId
+                                            orderby t.Title
+                                            select t;
+
+                    tactics = tactics.Concat<ImprovementTacticType>(tacticTypeSpecial);
+                    tactics.OrderBy(a => a.Title);
+
+                }
+
+                ViewBag.Tactics = tactics;
+                ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
+
+                if (Sessions.User.UserId == im.OwnerId)
+                {
+                    ViewBag.IsOwner = true;
+                }
+                else
+                {
+                    ViewBag.IsOwner = false;
+                }
+                ViewBag.Year = objPlan.Year;
+            }
+            
+            if (ViewBag.Year == null)
+            {
+                ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(planId) && p.IsDeleted == false).Year;
+            }
 
             return PartialView("_SetupImprovementTactic", im);
         }
@@ -7499,7 +7568,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id">Plan Tactic Id.</param>
         /// <returns>Returns Partial View Of Review Tab.</returns>
-        public ActionResult LoadImprovementReview(int id)
+        public ActionResult LoadImprovementReview(int id, string InspectPopupMode = "")
         {
             InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
             var tacticComment = (from tc in db.Plan_Improvement_Campaign_Program_Tactic_Comment
@@ -7619,7 +7688,7 @@ namespace RevenuePlanner.Controllers
             return PartialView("_ReviewImprovementTactic");
         }
 
-        public ActionResult LoadImprovementImpact(int id)
+        public ActionResult LoadImprovementImpact(int id, string InspectPopupMode = "")
         {
             return PartialView("_ImpactImprovementTactic");
         }

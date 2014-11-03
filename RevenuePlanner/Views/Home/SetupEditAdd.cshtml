@@ -228,57 +228,13 @@
               $(".dropdown-menu").css("z-index", "25001");
           })
 
+          var arLineitem = [];
+          var arrClosedTaskString = null;
+          var _customFieldValues = [];
           var _resubmissionLabelValues = [];
-
-          $("#btnUploadResult").on("click", function (e) {
-              _resubmissionLabelValues = [];
-              if (checkChangeValue(".resubmission", true)) {
-                  hdnYear = @ViewBag.Year
-                  url = '@Url.Content("~/Home/LoadResubmission")';
-                  $("#divResubmission").load(url + '?RedirectionType=tactic&labelValues=' + _resubmissionLabelValues);
-              } else {
-                  hdnYear = @ViewBag.Year
-                  saveTactic();
-              }
-          });
-
+          hdnYear = @ViewBag.Year
+          
           assignDefaultValue(".resubmission");
-
-          function assignDefaultValue(classname) {
-              $('form').find(classname).each(function () {
-                  $(this).attr("oldValue", $(this).val());
-              });
-          }
-
-          function checkChangeValue(classname, withResubmissionLabel) {
-              var resubmit = false;
-              if (withResubmissionLabel) {
-                  $('form').find(classname).each(function () {
-                      var oldValue = $(this).attr("oldValue");
-                      var value = $(this).val();
-                      if (oldValue != value) {
-                          _resubmissionLabelValues.push({
-                              Key: htmlEncode($(this).attr("label").toString()),
-                              Value: htmlEncode($(this).attr("label").toString())
-                          });
-
-                          resubmit = true;
-                      }
-                  });
-                  _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
-                  return resubmit;
-              }
-              else {
-                  $('form').find(classname).each(function () {
-                      var oldValue = $(this).attr("oldValue");
-                      var value = $(this).val();
-                      if (oldValue != value) {
-                          return resubmit = true;
-                      }
-                  });
-              }
-          }
-         
 
           $("#btnCancel").on("click", function (e) {
               var activeTab = $("#InspectTab li.active a").text()
@@ -294,10 +250,11 @@
           });
 
       });
-    
-    function saveTactic() {
-        var isLowBudgeted = false;
-        var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
+        
+      $("#btnUploadResult").on("click", function (e) {
+          
+          var isLowBudgeted = false;
+          var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
         var lowBudgetedMonths = "";
         var removeLength = 0;
         
@@ -358,13 +315,14 @@
             $("#txtmql").attr("title", mqlValue);
         }
 
-        $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));   
-        var arrClosedTaskString = null;
+        $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));
+        
+        arrClosedTaskString = null;
         if (typeof arrClosedTask != 'undefined') {
             arrClosedTaskString = arrClosedTask.toString();
         }
-       
-        var arLineitem = [];
+
+        arLineitem = [];
         var _Lineitems = $("#frm_campaigns #c_tactics select");
         for (var l = 0; l < _Lineitems.length; l++) {
             var typeid = $(_Lineitems[l]).val();
@@ -372,7 +330,7 @@
         }
 
         ////creating object which contains value of custom fields
-        var _customFieldValues = [];
+        _customFieldValues = [];
         $('form').find('input[type=text], select').each(function () {
             if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
                 _customFieldValues.push({
@@ -381,10 +339,24 @@
                 });
             }
         });
+
         _customFieldValues = JSON.stringify(_customFieldValues);
-        var uId = $(window).attr('name');
+        
         var isAssortment = true;
         $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
+
+        _resubmissionLabelValues = [];
+        if (checkChangeValue(".resubmission", true)) {
+            url = '@Url.Content("~/Home/LoadResubmission")';
+            $("#divResubmission").load(url + '?redirectionType=Tactic&labelValues=' + _resubmissionLabelValues);
+        } else {
+            saveTactic();
+        }
+    });
+
+    function saveTactic() {
+
+        var uId = $(window).attr('name');
 
         $.ajax({
             type: 'POST',
@@ -393,26 +365,26 @@
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
-                }
-                else {
-                    if (data.redirect) {
-                        var activeTab = $("#InspectTab li.active a").text()
-                        var planTacticId = $("#hdnPlanTacticId").val();
-                        $("#lblTacticTitle").val($("#hdnPlanTacticTitle").val());
-                        $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
-                        $('#txtTacticTitle').css('display', 'none');
-                        $('#lblTacticTitle').css('display', 'block');
-                        $("#lblTacticTitle").removeAttr("style");
-                        $('#divTacticSaveCancel').css('display', 'none');
-                        $('#EditForm').css('display', 'block');
-                        $("#successMessage").css("display", "block");
-                        $("#spanMessageSuccess").empty();
-                        $("#spanMessageSuccess").text(data.Msg);
-                        $("#errorMessage").css("display", "none");
-                        loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab);
-                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
-                        return;
                     }
+                    else {
+                        if (data.redirect) {
+                            var activeTab = $("#InspectTab li.active a").text()
+                            var planTacticId = $("#hdnPlanTacticId").val();
+                            $("#lblTacticTitle").val($("#hdnPlanTacticTitle").val());
+                            $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
+                            $('#txtTacticTitle').css('display', 'none');
+                            $('#lblTacticTitle').css('display', 'block');
+                            $("#lblTacticTitle").removeAttr("style");
+                            $('#divTacticSaveCancel').css('display', 'none');
+                            $('#EditForm').css('display', 'block');
+                            $("#successMessage").css("display", "block");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.Msg);
+                            $("#errorMessage").css("display", "none");
+                            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab);
+                            RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            return;
+                        }
 
                          if (data.errormsg) {
                              document.getElementById("Title").value = htmlDecode($('#Title').val());
@@ -424,25 +396,60 @@
                      }
             }
         });
-         }
+        }
+    
+        function ShowError(value) {
+            $("#errorMessage").css("display", "block");
+            $("#errorMessage").slideDown(400);
+            $("#spanMessage").empty();
+            $("#spanMessage").text(value);
+        }
+    
+        function assignDefaultValue(classname) {
+            $('form').find(classname).each(function () {
+                $(this).attr("oldValue", $(this).val());
+            });
+        }
 
-    function ShowError(value) {
-        $("#errorMessage").css("display", "block");
-        $("#errorMessage").slideDown(400);
-        $("#spanMessage").empty();
-        $("#spanMessage").text(value);
-    }
+        function checkChangeValue(classname, withResubmissionLabel) {
+            var resubmit = false;
+            if (withResubmissionLabel) {
+                $('form').find(classname).each(function () {
+                    var oldValue = $(this).attr("oldValue");
+                    var value = $(this).val();
+                    if (oldValue != value) {
+                        _resubmissionLabelValues.push({
+                            Key: htmlEncode($(this).attr("label").toString()),
+                            Value: htmlEncode($(this).attr("label").toString())
+                        });
 
-         $('#ddlTacticType').change(function () {
-             var tacticTypeId = $(this).val();
-             var pmql = 0;
-             var pcost = 0;
-             var projectedStageValue = 0;
-             if (tacticTypeId != '') {
-                 if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {
-                     $.ajax({
-                         type: 'POST',
-                         url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
+                        resubmit = true;
+                    }
+                });
+                _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
+                return resubmit;
+            }
+            else {
+                $('form').find(classname).each(function () {
+                    var oldValue = $(this).attr("oldValue");
+                    var value = $(this).val();
+                    if (oldValue != value) {
+                        return resubmit = true;
+                    }
+                });
+            }
+        }
+    
+        $('#ddlTacticType').change(function () {
+            var tacticTypeId = $(this).val();
+            var pmql = 0;
+            var pcost = 0;
+            var projectedStageValue = 0;
+            if (tacticTypeId != '') {
+                if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
                          data: { tacticTypeId: tacticTypeId },
                          success: function (data) {
                              pcost = data.revenue;

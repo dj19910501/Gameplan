@@ -1,4 +1,6 @@
-﻿
+﻿@{
+    var redirectionType = (string)ViewBag.RedirectionType;
+}
 <link href="@Url.Content("~/Content/css/Select2/select2.css")" rel="stylesheet" />
 <script src="~/Scripts/js/Select2/select2.js"></script>
 
@@ -7,10 +9,20 @@
         <div id="sharereport" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div>
                 <form name="share-report">
-                    <h2 class="primary-title source-sans-prosemibold resubmission_header">Tactic Submission</h2>
-                    <label style="text-align: center; width: 100%;" class="resubmission_content">You change the following attributes that will required this tactic to be resubmitted for approval.</label>
+                    @if (@redirectionType == "Tactic")
+                    {
+                    
+                        <h2 class="primary-title source-sans-prosemibold resubmission_header">Tactic Submission</h2>
+                        <label style="text-align: center; width: 100%;" class="resubmission_content">You change the following attributes that will required this tactic to be resubmitted for approval.</label>
+                    }
+                    else
+                    {
+                        <h2 class="primary-title source-sans-prosemibold resubmission_header">Improvement Tactic Submission</h2>
+                        <label style="text-align: center; width: 100%;" class="resubmission_content">You change the following attributes that will required this improvement tactic to be resubmitted for approval.</label>
+                    }
+
                     <div style="color: white !important;" class="resubmission_list">
-                        <ul >
+                        <ul>
                             @foreach (var item in ViewBag.resubmissionValues)
                             { 
                                 <li>@item</li>
@@ -49,7 +61,15 @@
             $('#sharereport').modal("hide");
             $("#divBackground").fadeOut("slow", function () {
             });
-            saveTactic();
+
+
+            if ('@redirectionType' == "Tactic") {
+                saveTactic();
+            }
+            else {
+                SaveImprovementTactic();
+            }
+
         });
     });
 </script>

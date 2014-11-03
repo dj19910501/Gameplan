@@ -3,47 +3,109 @@
     var tactic = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
     deployStatus = tactic.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+    var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
+    string hdnYear = ViewBag.Year != null ? (string)ViewBag.Year : string.Empty;
+    bool ExtIntService = ViewBag.ExtIntService != null ? (bool)ViewBag.ExtIntService : false;
+    bool isOwner = ViewBag.IsOwner != null ? (bool)ViewBag.IsOwner : false;
 }
-
+@using RevenuePlanner.Helpers
+<script src="~/Scripts/js/bootstrap-datepicker.js"></script>
 @using (Html.BeginForm())
 {
-    @Html.HiddenFor(model => model.PlanTacticId)
-                 <div class="inspect-column-parent source-sans-proregular remove-bottom-border">                      
-    <div class="span6" id="inspect-modal-left-column1">
-        <p>Parent Campaign</p>
-            @Html.TextBox("txtCampaign",HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
-     @*   <p>Parent Program</p>
-            @Html.TextBox("txtProgram", tactic.ProgramTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.ProgramTitle })*@
-        <p>Description</p>
-            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;height:93px;", @readonly = "true" })
-        
-        <div style="clear: both; width: 100%;">
-            <label style="color: #808080">This improvement tactics boosts @ViewBag.NoOfTacticBoosts activities.</label> 
-            <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
+    @Html.HiddenFor(model => model.ImprovementPlanTacticId)
+    @Html.HiddenFor(model => model.ImprovementPlanProgramId)
+    @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+    @Html.HiddenFor(model => model.TacticTitle)
+@*@Html.HiddenFor(model => model.IsDeployedToIntegration)*@
+    @Html.HiddenFor(model => model.Title)
+    <div class="inspect-column-parent source-sans-proregular">
+        <div class="span6" id="inspect-modal-left-column1">
+            <p>Parent Campaign</p>
+            @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
+            <p>Description</p>
+            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                @Html.TextAreaFor(model => model.Description, new { id = "txtDescription", @class = "span12 text-area-size", style = "height:93px;" })
+                <div style="clear: both; width: 100%;">
+                    <label style="color: #808080">This improvement tactics boosts @ViewBag.NoOfTacticBoosts activities.</label>
+                    <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
+                </div>
+            }
+            else
+            {
+                @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;height:93px;", @readonly = "true" })
+            }
+        </div>
+        <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
+            <p>Owner</p>
+            @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
+            <p>Effective Date</p>
+            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                    @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate resubmission", id = "txtDate", label = "Effective_Date" })
+                    <span class="add-on">
+                        <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png"></span>
+                </div>
+                if (@ExtIntService)
+                {
+                <p>Deployed to Integration</p>
+                    if (Model.IsDeployedToIntegration)
+                    {
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" readonly="true" />
+                    }
+                    else
+                    {
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" readonly="true" />
+                    }
+                }
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDate", @readonly = "true" })
+                <p>Deployed to Integration</p>
+                @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
+            }
+        </div>
+        <div class="span3" id="inspect-modal-left-column3">
+            <p>Business Unit</p>
+            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
+            <p>Cost</p>
+            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "span12 input-small truncate resubmission", style = "", id = "txtCost", label = "Cost" })
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
+            }
+        </div>
+        @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+        {
+            <div class="span3" id="inspect-modal-left-column4">
+                <p>Improvement Tactic Type</p>
+                <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })</span>
+            </div>  
+        }
+    </div>  
+        if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+        {
+    <div class="wraper-btns cf" style="width: 100%; clear: both">
+        <div style="width: 122px" class="span2 btn-save">
+            <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
+        </div>
+        <div class="span2">
+            <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button" style="float: left; margin-left: 20px; margin-top: 5px">Cancel</button>
         </div>
     </div>
-    <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
-        <p>Owner</p>
-        @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
-        <p>Effective Date</p>
-            @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDate", @readonly = "true" })
-        <p>Deployed to Integration</p>
-            @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
-    </div>
-    <div class="span3" id="inspect-modal-left-column3">
-        <p>Business Unit</p>
-        @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
-        <p>Cost</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
-        </div>
-              </div>                          
+        }                        
     <span class="flag-icon"></span>
 }
 
 <script type="text/javascript">
     $(document).ready(
       function () {
-          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $('#txtDate').val($('#txtDate').val().split(" ")[0].toString());
 
@@ -53,5 +115,201 @@
               $(this).prev().unbind("click");
               $(this).prev().removeAttr("href");
           });
+          $("#txtDate").val($("#txtDate").val().split(' ')[0]);
+          $('.datepicker.dropdown-menu').css("display", "none");
+                    
+          $(".verticalIdSelectBox select").selectbox();
+
+          if ('@InspectMode' == '@Enums.InspectPopupMode.Edit.ToString()')
+          {
+              $("#spanSuccMessageImprovementTactic").empty();
+              $("#successMessageImprovementTactic").css("display", "none");
+              $("#spanErrMessageImprovementTactic").empty();
+              $("#errorMessageImprovementTactic").css("display", "none");
+              $('.inspect-column-parent').removeClass('remove-bottom-border');
+
+              if ('@ExtIntService' == 'True')
+              {
+                  $('#inspect-modal-left-column4').css('padding-left', '25px');
+              }
+              else
+              {
+                  $('#inspect-modal-left-column4').css('padding-left', '40px');
+              }
+          }
+          else
+          {
+              $('.inspect-column-parent').addClass('remove-bottom-border');
+          }
       });
+
+      $('.dp').datepicker({
+          format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+        autoclose: true,
+    }).on('changeDate', function (ev) {
+        $(this).datepicker('hide');
+        var sdate = $('#txtDate').val();
+        if (!CheckDateYear(sdate, @hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+        //LoadImprovementTacticStages(false);
+    });;
+
+    //hide the other datepicker in add-on onclick
+    $('#dp_start .add-on').click(function () {
+        $('#dp_start').datepicker('show');
+        $(".dropdown-menu").css("z-index", "25001");
+    })
+
+    $('#btnEditCancel').click(function () {
+        returnToReadOnlyMode();
+    })
+
+    function returnToReadOnlyMode()
+    {
+        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+        $("#divPartial").empty();
+        $("#divPartial").load(url + '?id=' + @Model.PlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()");
+    }
+
+    assignDefaultValue(".resubmission");
+    $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+    function assignDefaultValue(classname) {
+        $('form').find(classname).each(function () {
+            $(this).attr("oldValue", $(this).val());
+        });
+    }
+
+    var _resubmissionLabelValues = [];
+
+    function checkChangeValue(classname, withResubmissionLabel) {
+        var resubmit = false;
+        if (withResubmissionLabel) {
+            $('form').find(classname).each(function () {
+                var oldValue = $(this).attr("oldValue");
+                var value = $(this).val();
+                if (oldValue != value) {
+                    _resubmissionLabelValues.push({
+                        Key: htmlEncode($(this).attr("label").toString()),
+                        Value: htmlEncode($(this).attr("label").toString())
+                    });
+
+                    resubmit = true;
+                }
+            });
+            _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
+            return resubmit;
+        }
+        else {
+            $('form').find(classname).each(function () {
+                var oldValue = $(this).attr("oldValue");
+                var value = $(this).val();
+                if (oldValue != value) {
+                    return resubmit = true;
+                }
+            });
+        }
+    }
+
+    $("#btnEditSave").click(function () {
+        var iserror = false;
+        $('form').find('input[type=text], select, textarea').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        //sbSelector
+        $('form').find('.sbSelector').each(function () {
+            if ($(this).parent().prev().attr('require') == 'true') {
+                if ($(this).text() == 'Please Select') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
+        var sdate = $('#txtDate').val();
+        if (!isDate(sdate)) {
+            alert('@Common.objCached.ValidateEffectiveDate');
+            return false;
+        }
+        if (!CheckDateYear(sdate, @hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+        $("#txtCost").val(ReplaceCC($("#txtCost").val()));
+        
+        document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());
+        document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
+
+        $('#Title').val($('#txtTitle').val());
+
+        _resubmissionLabelValues = [];
+        if (checkChangeValue(".resubmission", true)) {
+            url = '@Url.Content("~/Home/LoadResubmission")';
+            $("#divResubmission").load(url + '?redirectionType=ImprovementTactic&labelValues=' + _resubmissionLabelValues);
+        } else {
+            SaveImprovementTactic();
+    }
+    });
+
+
+    function SaveImprovementTactic() {
+        var isAssortment = false;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/SaveImprovementTactic")',
+                data: $("form").serialize() + '&RedirectType=' + isAssortment,
+                success: function (data) {
+                    if (data.isSaved) {
+                        returnToReadOnlyMode();
+                        RefreshCurrentTab();
+                        InspectSuccMsg = data.msg;
+                        return;
+                    }
+                    else{
+                        if (data.errormsg != "") {
+                            document.getElementById("txtTitle").value = htmlDecode($('#txtTitle').val());
+                            document.getElementById("txtDescription").value = htmlDecode($('#txtDescription').val());
+                            ShowError(data.errormsg);
+                            return;
+                        }
+                    }
+                }
+     });
+    }
+
+function ShowError(value) {
+    $("#errorMessageImprovementTactic").slideDown(400);
+    $("#spanErrMessageImprovementTactic").empty();
+    $("#spanErrMessageImprovementTactic").text(value);
+}
+
+$("#t_integration_status").click(function () {
+    if ('@isOwner' == 'True') {
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Not Sync to integration");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+                $("#hdnIsDeployedToIntegration").val(false);
+            }
+            else {
+                $(this).val("Sync to integration");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+                $("#hdnIsDeployedToIntegration").val(true);
+            }
+        }
+    });
+        
 </script>

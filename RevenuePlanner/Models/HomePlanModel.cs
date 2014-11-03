@@ -146,6 +146,12 @@ namespace RevenuePlanner.Models
         public double? ProjectedStageValueActual { get; set; }
 
         public string GeographyTitle { get; set; }
+
+        public int ImprovementPlanTacticId { get; set; }
+        public int ImprovementPlanProgramId { get; set; }
+        public int ImprovementTacticTypeId { get; set; }
+        public DateTime EffectiveDate { get; set; }
+        public string Title { get; set; }
     }
 
     public class InspectReviewModel

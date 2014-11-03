@@ -815,6 +815,17 @@ namespace RevenuePlanner.Helpers
             Tactic
         }
 
+        /// <summary>
+        /// Added By : Sohel Pathan
+        /// Added Date : 28/10/2014
+        /// Description : Enum for Inspect Popup Mode
+        /// </summary>
+        public enum InspectPopupMode
+        {
+            Add,
+            Edit,
+            ReadOnly
+        }
     }
 
     #region Authorization
