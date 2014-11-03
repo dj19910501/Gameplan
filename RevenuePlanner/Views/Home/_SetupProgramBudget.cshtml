@@ -9,17 +9,11 @@
     }
 }
 
-<style type="text/css">
-    
-    #cancelProgramBudget {
-    color: gray;
-    margin-top: 6px;
-}
-
-    .font-size16
-    {
-        font-size:16px;
-    }
+<style type="text/css">    
+    #cancelProgramBudget { color: gray; margin-top: 6px; }
+    .font-size16 { font-size:16px; }
+    .ProgramBudgetSection { width:70%; float:left; margin-bottom:50px; }
+    #divTab { margin-top: 30px; } 
     </style>
 
  @using (Html.BeginForm(new { @id = "frmProgramBudgetAllocation" }))
@@ -37,7 +31,7 @@
                 @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
                    </div>
     </div>
-    <div style="width:70%;float:left;" class="ProgramBudgetSection">
+    <div class="ProgramBudgetSection">
     @if (@Model.AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
     {
         <div class="budget-section">
@@ -52,7 +46,7 @@
                         <span class="unallocated-span">
                             <input id="lblUnallocatedBudget" class="unallocated-text-BudgetPopUp" style="color:#666666;" readonly="true" /></span>
                     </div>
-                </div>
+                <div class="SepraterStacticis"></div>
                 <div class="budget-result source-sans-prolight">
                     <p class="font-size16">
                         Remaining @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
@@ -71,6 +65,7 @@
                           <span id="lblTotalBudget" class="source-sans-proregular">@Model.ProgramBudget</span>
                     </p>
                 </div>
+                    </div>
             </div>
             <!--End content-->
         </div>

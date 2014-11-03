@@ -10596,7 +10596,6 @@ margin-right:-20px;
 .white-bg-edirProgram {
     background: none repeat scroll 0 0 #fff;
     float: left;
-    height: 170px;
     overflow: auto;
     padding: 8px 20px 0;
     width: 97%;
@@ -10734,4 +10733,11 @@ line-height:30px;
 Font-size:13px !important;
 padding-bottom:5px;
 
+}
+
+.SepraterStacticis 
+{
+   border-bottom: 1px solid #a8a8a8;
+   clear: both;
+   padding-top: 30px;
 }
