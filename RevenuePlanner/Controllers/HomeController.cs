@@ -6229,6 +6229,26 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        public PartialViewResult LoadResubmission(string RedirectionType, string labelValues)
+        {
+            var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(labelValues);
+
+            List<string> listLabelValue = new List<string>();
+
+            if (customFields.Count != 0)
+            {
+                foreach (var item in customFields)
+                {
+                    listLabelValue.Add(item.Value.Replace("_"," "));
+                }
+            }
+
+            
+            ViewBag.resubmissionValues = listLabelValue;
+
+            return PartialView("_ResubmissionPopup");
+        }
+
         #endregion
 
         #region "Home-Zero"

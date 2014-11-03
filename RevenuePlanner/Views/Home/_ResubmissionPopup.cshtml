@@ -1,0 +1,55 @@
+﻿
+<link href="@Url.Content("~/Content/css/Select2/select2.css")" rel="stylesheet" />
+<script src="~/Scripts/js/Select2/select2.js"></script>
+
+<div class="row-fluid calc-height">
+    <div class="span12">
+        <div id="sharereport" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div>
+                <form name="share-report">
+                    <h2 class="primary-title source-sans-prosemibold resubmission_header">Tactic Submission</h2>
+                    <label style="text-align: center; width: 100%;" class="resubmission_content">You change the following attributes that will required this tactic to be resubmitted for approval.</label>
+                    <div style="color: white !important;" class="resubmission_list">
+                        <ul >
+                            @foreach (var item in ViewBag.resubmissionValues)
+                            { 
+                                <li>@item</li>
+                            }
+                        </ul>
+                    </div>
+                    <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button">Proceed</button>
+                    <button id="cancel-button" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //// Hide parent div container when popup is closed.
+        $("#sharereport").on("hide", function (e) { $("#divResubmission").hide(); });
+        $('#sharereport').on("show", function (e) { $("#divResubmission").show(); });
+
+        $('#divBackground').on('click', function (e) { $("#sharereport").modal("hide"); $("#divBackground").fadeOut("slow", function () { }); });
+
+        //// Show popup.
+        $("#sharereport").modal('show');
+        $('#divBackground').attr('style', 'display: block !important;z-index: 2502 !important');
+
+        //// Close popup and error message.
+        $('#cancel-button').on("click", function () {
+            $('#sharereport').modal("hide");
+            $("#divBackground").fadeOut("slow", function () {
+            });
+        });
+
+        $('#proceed-button').on("click", function () {
+            $('#sharereport').modal("hide");
+            $("#divBackground").fadeOut("slow", function () {
+            });
+            saveTactic();
+        });
+    });
+</script>

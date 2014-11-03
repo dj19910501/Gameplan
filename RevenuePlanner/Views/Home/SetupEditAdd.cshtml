@@ -30,13 +30,13 @@
         <div class="span3" id="inspect-modal-left-column2">
             <p>Tactic Type</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })
+                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
-             <p style="margin-top: 10px;">Cost</p>
+            <p style="margin-top: 10px;">Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-            <p>Start Date</p>           
+            <p>Start Date</p>
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", id = "t_startdate" })
+                @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small resubmission", id = "t_startdate", label = "Start_Date" })
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
@@ -44,7 +44,7 @@
             <br />
             <p>End Date</p>
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small", id = "t_enddate" })
+                @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small resubmission", id = "t_enddate", label = "End_Date" })
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
@@ -55,13 +55,16 @@
 
             @if (ExtIntService)
             {                 
+
                 <p style="width: 110%;">Deployed to Integration</p>
                 if (Model.IsDeployedToIntegration)
                 {
+
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to Integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
                 }
                 else
                 {
+
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Sync to Integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
                 }
             }
@@ -70,14 +73,18 @@
                 <div class="margin-right10 pull-left" style="width: 47%">
                     <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
                          
+                       
+
                         @if (ViewBag.IsDiffrentStageType == true)
                         {
+
+
 
                             <span>
                                 <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
                         }</label>
-                    @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                    @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue resubmission", label = "Projected_Stage_Value", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
                 <div class="pull-left" style="width: 47%">
@@ -93,17 +100,21 @@
         </div>
     </div>
 
+
+
     <ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div" id="InspectTab">
         <li class="pull-right">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
 
+
+
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
-        <div class="span3 margin-top10" style="clear:both;">
+        <div class="span3 margin-top10" style="clear: both;">
             <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", label = "Audience", require = "true" })
             </span>
         </div>
         <div class="span3 margin-top10 paddingleft25px">
@@ -113,20 +124,22 @@
         <div class="span3 margin-top10 paddingleft25px">
             <p>Vertical</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+                @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Vertical" })
             </span>
         </div>
         <div class="span3 margin-top10 paddingleft25px">
             <p>Geography</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })
+                @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Geography" })
             </span>
         </div>
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 4, "addEdit")
     </div>   
 
-    <div style="width: 100%; display: none;clear:both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
-        <div class="span2 btn-save" style="width:122px">
+
+
+    <div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
+        <div class="span2 btn-save" style="width: 122px">
             <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save & Continue</button>
         </div>
         <div class="span2">
@@ -215,11 +228,57 @@
               $(".dropdown-menu").css("z-index", "25001");
           })
 
+          var _resubmissionLabelValues = [];
 
           $("#btnUploadResult").on("click", function (e) {
-              hdnYear = @ViewBag.Year
-              saveTactic();
+              _resubmissionLabelValues = [];
+              if (checkChangeValue(".resubmission", true)) {
+                  hdnYear = @ViewBag.Year
+                  url = '@Url.Content("~/Home/LoadResubmission")';
+                  $("#divResubmission").load(url + '?RedirectionType=tactic&labelValues=' + _resubmissionLabelValues);
+              } else {
+                  hdnYear = @ViewBag.Year
+                  saveTactic();
+              }
           });
+
+          assignDefaultValue(".resubmission");
+
+          function assignDefaultValue(classname) {
+              $('form').find(classname).each(function () {
+                  $(this).attr("oldValue", $(this).val());
+              });
+          }
+
+          function checkChangeValue(classname, withResubmissionLabel) {
+              var resubmit = false;
+              if (withResubmissionLabel) {
+                  $('form').find(classname).each(function () {
+                      var oldValue = $(this).attr("oldValue");
+                      var value = $(this).val();
+                      if (oldValue != value) {
+                          _resubmissionLabelValues.push({
+                              Key: htmlEncode($(this).attr("label").toString()),
+                              Value: htmlEncode($(this).attr("label").toString())
+                          });
+
+                          resubmit = true;
+                      }
+                  });
+                  _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
+                  return resubmit;
+              }
+              else {
+                  $('form').find(classname).each(function () {
+                      var oldValue = $(this).attr("oldValue");
+                      var value = $(this).val();
+                      if (oldValue != value) {
+                          return resubmit = true;
+                      }
+                  });
+              }
+          }
+         
 
           $("#btnCancel").on("click", function (e) {
               var activeTab = $("#InspectTab li.active a").text()
