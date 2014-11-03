@@ -39,7 +39,7 @@
                 <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
                 @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
                 {
-                    @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram11", @class = "edit-icon-white btn-blue btn-large" })
+                    @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large" })
                 }
             </span>
             @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programMaster.ProgramTitle), new { placeholder = "Program names goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = programMaster.ProgramTitle })
@@ -91,7 +91,7 @@
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
-        <li class="pull-left" id="liBudget" style="display:none;" >
+        <li class="pull-left" id="liBudget">
             <a>Budget</a>
         </li>
         <li class="pull-right">

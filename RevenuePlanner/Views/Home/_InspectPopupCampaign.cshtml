@@ -39,8 +39,8 @@
             <span id="lblCampaignTitle" class="tipsyclassTitle" title="@Html.Raw(campaignMaster.CampaignTitle)" >@Html.Raw(campaignMaster.CampaignTitle)</span>
              @if (IsPlanEditable)
             {
-                @*<a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign"></a>*@
-                  @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0, tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large" })
+                <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign"></a>
+                  @*@Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0, tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large" })*@
             }
             </span> 
         @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = campaignMaster.CampaignTitle,id="txtTitle" })
@@ -94,6 +94,9 @@
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
+        <li class="pull-left" id="liBudget" style="display:none;">
+            <a>Budget</a>
+        </li>
         <li class="pull-right">
             <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
         </li>
@@ -129,7 +132,7 @@
           loadReview(planCampaignId, tabtext);
 
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $("#liSetup,#liReview").on("click", function () {
+          $("#liSetup,#liReview,#liBudget").on("click", function () {
               $("#successMessageViewCampaign").slideUp(50);
               RemoveTabClass();
               $(this).removeClass("pull-left");
@@ -156,7 +159,7 @@
                   $("#divTab").load(url + '?id=' + planCampaignId);
               }
               else if (tabtext == "Budget") {
-                  url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
+                  url = '@Url.Content("~/Home/LoadCampaignBudgetAllocation/")';
                       $("#divTab").empty();
                       $("#divTab").load(url + '?id=' + planCampaignId);
                   }
@@ -205,7 +208,7 @@
           }
 
           if (tabValue == TabBudget) {
-              url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
+              url = '@Url.Content("~/Home/LoadCampaignBudgetAllocation/")';
           }
 
           RemoveTabClass();
