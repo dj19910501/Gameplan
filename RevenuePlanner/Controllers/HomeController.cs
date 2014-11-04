@@ -5852,7 +5852,7 @@ namespace RevenuePlanner.Controllers
                 int pid = form.PlanProgramId;
 
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
-
+                form.TacticTitle=Convert.ToString(Request["txtTacticTitle"]);
                     using (MRPEntities mrp = new MRPEntities())
                     {
                         using (var scope = new TransactionScope())
@@ -5866,7 +5866,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                //return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                return Json(new {IsDuplicate=true, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = Common.objCached.DuplicateTacticExits });
                             }
                             else
                             {
@@ -6120,7 +6121,7 @@ namespace RevenuePlanner.Controllers
 
                                     scope.Complete();
 
-                                return Json(new { redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId}), Msg = "Changes saved." });
+                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = "Changes saved." });
                             }
                         }
                     }

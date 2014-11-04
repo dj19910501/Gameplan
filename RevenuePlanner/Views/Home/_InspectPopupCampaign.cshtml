@@ -152,7 +152,7 @@
               $("#hdnCampaignOpt").val("Edit");
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());
-
+              $("#txtTitle").val($('#lblCampaignTitle').html());
               if (tabtext == "Setup") {
                   url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
                   $("#divTab").empty();

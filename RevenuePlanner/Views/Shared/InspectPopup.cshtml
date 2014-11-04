@@ -10,6 +10,7 @@
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
 }
+@Html.Hidden("hdnPlanTacticId", tacticMaster.TacticTitle, new { id = "hdnPlanTacticTitle" })
 @Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
 @Html.Hidden("hdnTacticBudgetAllocationOpt", "View", new { id = "hdnTacticBudgetAllocationOpt" })
@@ -106,6 +107,7 @@
     $(document).ready(
       function () {
           CloseIconClick();
+          $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
           NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
           var InspectValue = $("#hdnInspectPopup").val();
           var planTacticId = $("#hdnPlanTacticId").val();
@@ -157,6 +159,7 @@
           $("#EditForm").on("click", function (e) {
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
+              $("#txtTacticTitle").val($("#hdnPlanTacticTitle").val());
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();
               $("#hdnTacticBudgetAllocationOpt").val("Edit");
@@ -198,7 +201,6 @@
         $("#li" + tabValue).addClass("active pull-left");
         $('#div' + tabValue).css({ display: "block" });
         $("#divTab").empty();
-
         if (tabValue == TabSetup) {
             if (ProgramOpt == "Edit") {
                 url = '@Url.Content("~/Home/EditTactic/")';

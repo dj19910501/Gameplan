@@ -150,7 +150,7 @@
               $("#hdnProgramOpt").val("Edit");
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());
-
+              $("#txtProgramTitle").val($('#lblProgramTitle').html());
               if (tabtext == "Setup") {
                   url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
                   $("#divTab").empty();
