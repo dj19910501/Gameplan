@@ -3452,10 +3452,10 @@ namespace RevenuePlanner.Controllers
                 // To get permission status for Add/Edit Actual, By dharmraj PL #519
                 ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
                 //Get all subordinates of current user upto n level
-                var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                //var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
                 // Get current user permission for edit own and subordinates plans.
-                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                // bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                // bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
 
                 //// Added by Pratik Chauhan for functional review points
 
@@ -3464,71 +3464,96 @@ namespace RevenuePlanner.Controllers
                 Plan_Campaign objPlan_Campaign = null;
                 Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
                 int planId = 0;
-                //Added by Mitesh Vaishnav for PL ticket #926
-                Guid businessUnitId = Guid.Empty;
+                bool IsPlanEditable = false;
+                Guid BusinessUnitId = Guid.Empty;
+                bool IsBusinessUnitEditable = false;
                 if (Convert.ToString(section) != "")
                 {
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
                         //Added by Mitesh Vaishnav for PL ticket #926
-                        businessUnitId = objPlan_Campaign_Program_Tactic.BusinessUnitId;
-                        planId = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(objPlan_Campaign_Program_Tactic.PlanProgramId)).Select(r => r.PlanCampaignId).FirstOrDefault())).Select(r => r.PlanId).FirstOrDefault();
+                        //Add restriction of BU for edit button in inspect popup 
+                        BusinessUnitId = objPlan_Campaign_Program_Tactic.BusinessUnitId;
+                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        // planId = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(objPlan_Campaign_Program_Tactic.PlanProgramId)).Select(r => r.PlanCampaignId).FirstOrDefault())).Select(r => r.PlanId).FirstOrDefault();
+                        if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        {
+                            IsPlanEditable = true;
+                        }
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
                         objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
                         //Added by Mitesh Vaishnav for PL ticket #926
-                        businessUnitId = objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId : businessUnitId;
-                        planId = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(objPlan_Campaign_Program.PlanCampaignId)).Select(r => r.PlanId).FirstOrDefault();
+                        //Add restriction of BU for edit button in inspect popup
+                        BusinessUnitId = objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
+                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        // planId = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(objPlan_Campaign_Program.PlanCampaignId)).Select(r => r.PlanId).FirstOrDefault();
+                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        {
+                            IsPlanEditable = true;
+                        }
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         objPlan_Campaign = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
                         //Added by Mitesh Vaishnav for PL ticket #926
-                        businessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign.Plan.Model.BusinessUnitId : businessUnitId;
-                        planId = objPlan_Campaign.PlanId;
+                        //Add restriction of BU for edit button in inspect popup
+                        BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
+                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        // planId = objPlan_Campaign.PlanId;
+                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        {
+                            IsPlanEditable = true;
+                        }
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
                         objPlan_Improvement_Campaign_Program_Tactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(picpobjw => picpobjw.ImprovementPlanTacticId.Equals(id)).FirstOrDefault();
                         //Added by Mitesh Vaishnav for PL ticket #926
-                        businessUnitId = objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId : businessUnitId;
-                        planId = db.Plan_Improvement_Campaign.Where(picobjw => picobjw.ImprovementPlanCampaignId.Equals(db.Plan_Improvement_Campaign_Program.Where(picpobjw => picpobjw.ImprovementPlanProgramId.Equals(objPlan_Improvement_Campaign_Program_Tactic.ImprovementPlanProgramId)).Select(r => r.ImprovementPlanCampaignId).FirstOrDefault())).Select(r => r.ImprovePlanId).FirstOrDefault();
-                    }
-                }
-
-                var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == planId);
-                bool IsPlanEditable = false;
-                bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(businessUnitId);   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                if (IsBusinessUnitEditable)
-                {
-                    if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+                        //Add restriction of BU for edit button in inspect popup
+                        BusinessUnitId = objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
+                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        // planId = db.Plan_Improvement_Campaign.Where(picobjw => picobjw.ImprovementPlanCampaignId.Equals(db.Plan_Improvement_Campaign_Program.Where(picpobjw => picpobjw.ImprovementPlanProgramId.Equals(objPlan_Improvement_Campaign_Program_Tactic.ImprovementPlanProgramId)).Select(r => r.ImprovementPlanCampaignId).FirstOrDefault())).Select(r => r.ImprovePlanId).FirstOrDefault();
+                        if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
                     {
                         IsPlanEditable = true;
                     }
-                    else if (IsPlanEditAllAuthorized) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    {
-                        IsPlanEditable = true;
-                    }
-                    else if (IsPlanEditSubordinatesAuthorized)
-                    {
-                        if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy)) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                        {
-                            IsPlanEditable = true;
-                        }
                     }
                 }
 
+                // var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == planId);
 
-                if (objPlan.CreatedBy.Equals(Sessions.User.UserId))
-                {
-                    ViewBag.InspectPopUpIsOwner = true;
-                }
-                else
-                {
-                    ViewBag.InspectPopUpIsOwner = false;
-                }
+                // bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                //if (IsBusinessUnitEditable)
+                //{
+                //    if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+                //    {
+                //        IsPlanEditable = true;
+                //    }
+                //    else if (IsPlanEditAllAuthorized) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                //    {
+                //        IsPlanEditable = true;
+                //    }
+                //    else if (IsPlanEditSubordinatesAuthorized)
+                //    {
+                //        if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy)) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                //        {
+                //            IsPlanEditable = true;
+                //        }
+                //    }
+                //}
+
+
+                //if (objPlan.CreatedBy.Equals(Sessions.User.UserId))
+                // {
+                //ViewBag.InspectPopUpIsOwner = true;
+                //  }
+                //  else
+                //  {
+                //  ViewBag.InspectPopUpIsOwner = false;
+                // }
 
                 if (Convert.ToString(section) != "")
                 {
