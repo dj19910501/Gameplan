@@ -21,7 +21,7 @@
         </div>
         <div class="dropdown-info-user" style="display: none;">
             <ul class="drop-down-menu">
-                <li><a href="@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })">Preferences</a></li>
+                <li><a href="@Url.Action("Edit", "User")">Preferences</a></li>  @* Modified by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
                 <li><a href="#" id="ContactSupport">Support</a></li>
                 <li><a href="@Url.Action("LogOff", "Login")">Sign Out</a></li>
                @* @using (Html.BeginForm("LogOff", "Login", FormMethod.Post, new { id = "logoutForm" }))

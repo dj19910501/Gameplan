@@ -22,27 +22,53 @@
 @section Sidebar {
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
-
+@* Modified by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
+@if (TempData["SuccessMessage"] != null)
+{
+    if (!Convert.ToString(TempData["SuccessMessage"]).ToLower().Contains("model"))
+    {
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
     <a class="close">×</a>
     <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
 </div>
 <!--success message-->
+        TempData["SuccessMessage"] = "";
+    }
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    if (!Convert.ToString(TempData["ErrorMessage"]).ToLower().Contains("model"))
+    {
 <!--error message-->
 <div id="errorMessage" class="alert hide alert-error message-position">
     <a class="close">×</a>
     <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
 </div>
 <!--error message-->
-
+        TempData["ErrorMessage"] = "";
+    }
+}
+<div id="hdrMyTeam">
 <ul class="nav nav-tabs">
     <li class="source-sans-proregular">
         <h2 class="title-header">My Team</h2>
     </li>
 </ul>
+</div>
+@* Start - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
+<div id="hdrEditUser" style="display: none;">
+    <ul class="nav nav-tabs margin-bottom0">
+        <li class="source-sans-proregular">
+            <h2 class="title-header">Edit User</h2>
+        </li>
+    </ul>
+    <a class="link-gray" href="@Url.Action("Index", "User")">« BACK TO LIST</a>
+</div>
+@* End - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
 <div class="padding-content cf source-sans-proregular">
-    <div class="row">
+    <div class="row" id="dvMyTeam">
        @Html.Partial("~/Views/User/_myprofile.cshtml")
         <div class="span10 content-colum-right">
             <table class="table table-striped table-hover myteam" id="userTable">
@@ -174,6 +200,15 @@
         }
         @* End- Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
     </div>
+
+    @* Start - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
+    <div class="row" id="dvEditUser" style="display: none;">
+        <div class="span2 content-colum-left content-img-user">
+            <img id="userImage" src="@Url.Action("LoadUserImage", "User", new { id = string.Empty, width = 60, height = 60 })" class="img-user" style="height:140px; width:140px;">
+</div>
+        <div id="dvEditUserDetails"></div>
+    </div>
+    @* End - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
 </div>
 
 <script type="text/javascript">
@@ -218,7 +253,7 @@
             var userId = $(this).closest('tr').attr('id');
             if (tdClass == null || tdClass == '') {
                 if (userId != null) {
-                    window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam";
+                    OnTeamMemberClick(userId);  @* Modified by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
         }
     }
     else {
@@ -275,6 +310,34 @@
         });
     });
     @* End - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+
+    @* Start - Added by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
+    function OnTeamMemberClick(userid) {
+        $('#SuccMsg').val('');
+        $('#ErrMsg').val('');
+        $("#successMessage").slideUp(1);
+        $("#errorMessage").slideUp(1);
+        //$("#successMessage").css('display', 'none');
+        //$("#errorMessage").css('display', 'none');
+        $.ajax({
+            url: '@Url.Content("~/user/edit")', type: "GET",
+            data: { usrid: userid, src: 'myteam' },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data != null && data != 'undefined') {
+                    $("#dvMyTeam").css('display', 'none');
+                    $("#hdrMyTeam").css('display', 'none');
+                    $("#hdrEditUser").css('display', 'block');
+                    $("#dvEditUser").css('display', 'block');
+                    $("#dvEditUserDetails").html(data);
+                }
+                //alert(data);
+                //window.location.href = data;
+            }
+        });
+    }
+    @* End - Added by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
 </script>
 
 @*@section Scripts {

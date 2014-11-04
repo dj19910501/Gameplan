@@ -985,6 +985,9 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
+            // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917
+            if (src.ToLower() == "myteam")
+                return PartialView("_UpdateUserDetails", objUserModel);
             return View(objUserModel);
         }
 
@@ -1184,6 +1187,9 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
+            // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917
+            if (form.UserId != Sessions.User.UserId)
+                return RedirectToAction("Index");
             return View(form);
         }
 

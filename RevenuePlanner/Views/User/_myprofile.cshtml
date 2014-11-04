@@ -24,12 +24,12 @@
                     <ul class="nav nav-pills nav-stacked width216">
                     @if (@ViewBag.PageTitle == "Edit")
                     {
-                        <li id="account"><a href="@Url.Action("Edit", "User", new { usrid = Model.UserId, src = "myaccount" })">Account</a></li>
+                        <li id="account"><a href="@Url.Action("Edit", "User")">Account</a></li> @* Modified by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
                     }
                     else
                     {
                         <li id="account">
-                            <a  href="@Url.Action("Edit", "User", new { src = "myaccount" })">Account</a>
+                            <a  href="@Url.Action("Edit", "User")">Account</a> @* Modified by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
                         </li>
                     }
                     <li id="Tmember"><a href="@Url.Action("Index", "User")">Team Members</a></li>
