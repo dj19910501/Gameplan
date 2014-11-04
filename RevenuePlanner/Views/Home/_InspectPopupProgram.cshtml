@@ -8,7 +8,7 @@
 @{
     var programMaster = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
-    bool IsPlanOwner = (bool)ViewBag.InspectPopUpIsOwner;
+    //bool IsPlanOwner = (bool)ViewBag.InspectPopUpIsOwner;
 }
 @Html.Hidden("hdnPlanProgramId", programMaster.PlanProgramId, new { id = "hdnPlanProgramId" })
 @Html.Hidden("hdnProgramStatus", programMaster.Status, new { id = "hdnProgramStatus" })
