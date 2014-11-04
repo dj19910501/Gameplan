@@ -8446,7 +8446,11 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Budget Allocation for Campaign Tab
-
+        /// <summary>
+        /// Fetch the Campaign Budget Allocation 
+        /// </summary>
+        /// <param name="id">Campaign Id</param>
+        /// <returns></returns>
         public PartialViewResult LoadCampaignBudgetAllocation(int id = 0)
         {
             Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
@@ -8472,11 +8476,10 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Save Program.
+        /// Action to Save Campaign Allocation.
         /// </summary>
         /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
-        /// <param name="programs">Program list string array.</param>
+        /// <param name="BudgetInputValues">Budget Input Values.</param>
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
