@@ -12,7 +12,7 @@
 }
 @Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
-@Html.Hidden("hdnTacticOpt", "read", new { id = "hdnTacticOpt" })
+@Html.Hidden("hdnTacticBudgetAllocationOpt", "View", new { id = "hdnTacticBudgetAllocationOpt" })
 <form>
 <div class="modal-popup-title">
     <span class="icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
@@ -83,6 +83,9 @@
             <a>Actuals</a>
         </li>
         }
+         <li class="pull-left" id="liBudget">
+            <a>Budget</a>
+        </li>
          <li class="pull-right">
               <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
         </li>
@@ -98,6 +101,7 @@
     var TabReview = "Review";
     var TabActual = "Actuals";
     var divTab = "#divTab";
+    var TabBudget = "Budget";
 
     $(document).ready(
       function () {
@@ -116,7 +120,7 @@
           loadReview(planTacticId, tabtext);
 
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $("#liSetup,#liReview,#liActuals").on("click", function () {
+          $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
               var activeTab = $("#InspectTab li.active a").text();
               if (activeTab == 'Actuals') {
                   var tabtext = ($(this).children('a').text());
@@ -155,7 +159,7 @@
               $("#successMessage").css("display", "none");
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();
-              $("#hdnTacticOpt").val("Edit");
+              $("#hdnTacticBudgetAllocationOpt").val("Edit");
               $('#txtTacticTitle').css('display', 'block');
               $('#lblTacticTitle').css('display', 'none');
               $('#EditForm').css('display', 'none');
@@ -188,35 +192,37 @@
     function loadReview(id, tabValue) {
         $.ajaxSetup({ cache: false });
         var url;
-        var ProgramOpt = $("#hdnTacticOpt").val();
+        var ProgramOpt = $("#hdnTacticBudgetAllocationOpt").val();
+        RemoveTabClass();
+        $("#li" + tabValue).removeClass("pull-left");
+        $("#li" + tabValue).addClass("active pull-left");
+        $('#div' + tabValue).css({ display: "block" });
+        $("#divTab").empty();
+
         if (tabValue == TabSetup) {
             if (ProgramOpt == "Edit") {
                 url = '@Url.Content("~/Home/EditTactic/")';
+                $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""');
             }
             else {
                 url = '@Url.Content("~/Home/LoadSetup/")';
+                $("#divTab").load(url + '?id=' + id + '&Mode=' + ProgramOpt);
             }
         }
+
         if (tabValue == TabReview) {
             url = '@Url.Content("~/Home/LoadReview/")';
+            $("#divTab").load(url + '?id=' + id );
         }
         if (tabValue == TabActual) {
             url = '@Url.Content("~/Home/LoadActuals/")';
-          }
+            $("#divTab").load(url + '?id=' + id );
+        }
 
-          RemoveTabClass();
-          $("#li" + tabValue).removeClass("pull-left");
-          $("#li" + tabValue).addClass("active pull-left");
-          $('#div' + tabValue).css({ display: "block" });
-
-          $("#divTab").empty();
-
-          if (ProgramOpt == "Edit") {
-              $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""');
-          }
-          else {
-              $("#divTab").load(url + '?id=' + id + '&Mode=' + ProgramOpt);
-          }
+        if (tabValue == TabBudget) {
+            url = '@Url.Content("~/Home/LoadTacticBudgetAllocation/")';
+            $("#divTab").load(url + '?id=' + id);
+        }
       }
 
     //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
