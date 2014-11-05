@@ -986,7 +986,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917
-            if (src.ToLower() == "myteam")
+            if (src.ToLower() == "myteam")          // if user clicked from TeamMembers page then return "Partialview" for update user details otherwise return "Edit" view.
                 return PartialView("_UpdateUserDetails", objUserModel);
             return View(objUserModel);
         }
@@ -1188,7 +1188,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917
-            if (form.UserId != Sessions.User.UserId)
+            if (form.UserId != Sessions.User.UserId)      // On User Details Save button click, if team member details updated then redirect to "Index" action to display Teamlist otherwise redirect to same page("Edit" view).
                 return RedirectToAction("Index");
             return View(form);
         }
