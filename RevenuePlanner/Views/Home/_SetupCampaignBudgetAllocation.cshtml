@@ -488,6 +488,7 @@
         $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
         $("#lblCampaignTitle").html(htmlEncode($('#txtTitle').val()));
         $("#tactic-name").html(htmlEncode($('#txtTitle').val()));
+        $("#hdnCampaignTitle").val(htmlDecode($('#txtTitle').val()));
 
         var uId = $(window).attr('name');
         $.ajax({

@@ -260,7 +260,7 @@
 
     $("#save_campaign").click(function () {
         var iserror = false;
-        var campaignTitle = $('#txtTitle').val();
+        var campaignTitle = htmlEncode($('#txtTitle').val());
         var hdnYear = @ViewBag.Year
 
         $('form').find('input[type=text], select, textarea').each(function () {
@@ -357,7 +357,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/home/SaveCampaign")',
-            data: formData + '&UserId=' + uId + '&title=' + campaignTitle + '&customFieldInputs=' + escape(_customFieldValues),
+            data: formData + '&UserId=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues),
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

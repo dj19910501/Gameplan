@@ -12,6 +12,7 @@
 @Html.Hidden("hdnPlanCampaignId", campaignMaster.PlanCampaignId, new { id = "hdnPlanCampaignId" })
 @Html.Hidden("hdnCampaignStatus", campaignMaster.Status, new { id = "hdnCampaignStatus" })
 @Html.Hidden("hdnCampaignOpt", "View", new { id = "hdnCampaignOpt" })
+@Html.Hidden("hdnCampaignTitle", HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), new { id = "hdnCampaignTitle" })
 
 <style type="text/css">
     #successMessageViewCampaign, #errorMessageEditCampaign
@@ -36,14 +37,14 @@
     <span class="icon-flag bg-purple" style="background-color:#@campaignMaster.ColorCode !important;"></span>
     <h2 class="title-simple source-sans-prolight">
         <span>
-            <span id="lblCampaignTitle" class="tipsyclassTitle" title="@Html.Raw(campaignMaster.CampaignTitle)" >@Html.Raw(campaignMaster.CampaignTitle)</span>
+            <span id="lblCampaignTitle" class="tipsyclassTitle" title="@Html.Raw(campaignMaster.CampaignTitle)" >@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)</span>
              @if (IsPlanEditable)
             {
                 <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign"></a>
                   @*@Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0, tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large" })*@
             }
             </span> 
-        @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = campaignMaster.CampaignTitle,id="txtTitle" })
+        @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = HttpUtility.HtmlDecode(campaignMaster.CampaignTitle),id="txtTitle" })
         @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
     </h2>
 </div>
@@ -55,7 +56,7 @@
         I'm running a
             @*<span id="tactic-type" class="source-sans-prosemibold color5693B3">Email</span>*@
         campaign called 
-            <span id="tactic-name" class="source-sans-prosemibold color5693B3">@campaignMaster.CampaignTitle</span>
+            <span id="tactic-name" class="source-sans-prosemibold color5693B3">@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)</span>
         from
             <span id="start-date" class="source-sans-prosemibold color5693B3">@campaignMaster.StartDate.ToString(Common.DateFormateForInspectPopupDescription)</span>
         to
@@ -152,7 +153,8 @@
               $("#hdnCampaignOpt").val("Edit");
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());
-              $("#txtTitle").val($('#lblCampaignTitle').html());
+              $("#txtTitle").val($('#lblCampaignTitle').text());
+
               if (tabtext == "Setup") {
                   url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
                   $("#divTab").empty();
@@ -167,6 +169,7 @@
               $("#btnEditCampaign").css("display", "none");
               $('#txtTitle').css('display', 'block');
               $('#lblCampaignTitle').css('display', 'none');
+              $("#txtTitle").prop('readonly', false);
               return false;
           });
           // Close event for Error Message & Success Message Close button 
