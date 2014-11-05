@@ -305,8 +305,7 @@
             if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
 
             $("#txtProgramBudget").val(ReplaceCC($("#txtProgramBudget").val()));
-            $("#lblProgramTitle").html(htmlEncode($('#txtProgramTitle').val()));
-            $("#tactic-name").html(htmlEncode($('#txtProgramTitle').val()));
+            
             document.getElementById("Description").value = htmlEncode($('#Description').val());
 
             var _customFieldValues = [];
@@ -335,9 +334,11 @@
                         $("#successMessageViewProgram").slideDown(400);
                         $("#spanSuccessMessageViewProgram").empty();
                         $("#spanSuccessMessageViewProgram").html(data.Msg);
+			$("#lblProgramTitle").html(htmlEncode($('#txtProgramTitle').val()));
+	               $("#tactic-name").html(htmlEncode($('#txtProgramTitle').val()));			
                     }
                     else {
-                        CancelEvent();
+                        //CancelEvent();
                         ShowError(data.Msg);
                     }
                 }
@@ -345,6 +346,7 @@
         });
 
         function ShowError(value) {
+            $("#modal-container-186470").scrollTop(0);
             $("#successMessageViewProgram").slideUp(50);
             $("#errorMessageEditProgram").slideDown(400);
             $("#spanMessageEditProgram").empty();

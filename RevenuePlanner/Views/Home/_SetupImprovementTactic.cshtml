@@ -253,11 +253,11 @@
         document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
 
         $('#Title').val($('#txtTitle').val());
-
+        
         _resubmissionLabelValues = [];
-        if (checkChangeValue(".resubmission", true)) {
+        if (checkChangeValue(".resubmission", true) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
             url = '@Url.Content("~/Home/LoadResubmission")';
-            $("#divResubmission").load(url + '?redirectionType=ImprovementTactic&labelValues=' + _resubmissionLabelValues);
+            $("#divResubmission").load(url + '?redirectionType='+'@Convert.ToString(Enums.ResubmissionOpenFrom.ImprovementTactic)'+'&labelValues=' + _resubmissionLabelValues);
         } else {
             SaveImprovementTactic();
     }

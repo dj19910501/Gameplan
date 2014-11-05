@@ -232,6 +232,7 @@
 
     });
     function ShowError(value) {
+        $("#modal-container-186470").scrollTop(0);
         $("#successMessageViewCamapaign").slideUp(400);
         $("#spanSuccessMessageViewCamapaign").empty();
         $("#errorMessageEditCampaign").slideDown(400);
@@ -349,8 +350,7 @@
         $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
         $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
 
-        $("#lblCampaignTitle").html(htmlEncode($('#txtTitle').val()));
-        $("#tactic-name").html(htmlEncode($('#txtTitle').val()));
+       
 
         var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         var uId = $(window).attr('name');
@@ -371,9 +371,11 @@
                         $("#successMessageViewCampaign").slideDown(400);
                         $("#spanSuccessMessageViewCampaign").empty();
                         $("#spanSuccessMessageViewCampaign").html(data.msg);
+			$("#lblCampaignTitle").html(htmlEncode($('#txtTitle').val()));
+                        $("#tactic-name").html(htmlEncode($('#txtTitle').val()));
                     }
                     else {
-                        CancelEvent();
+                        //CancelEvent();
                         ShowError(data.msg);
                     }
                 }

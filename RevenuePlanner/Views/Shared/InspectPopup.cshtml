@@ -9,11 +9,14 @@
     var tacticMaster = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+    var IsResubmitableStatus = (bool)Common.CheckAfterApprovedStatus(tacticMaster.Status);
 }
-@Html.Hidden("hdnPlanTacticId", tacticMaster.TacticTitle, new { id = "hdnPlanTacticTitle" })
+@Html.Hidden("hdnPlanTacticTitle", tacticMaster.TacticTitle, new { id = "hdnPlanTacticTitle" })
 @Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
 @Html.Hidden("hdnTacticBudgetAllocationOpt", "View", new { id = "hdnTacticBudgetAllocationOpt" })
+@Html.Hidden("hdnIsResubmitableStatus", IsResubmitableStatus, new { id = "hdnIsResubmitableStatus" })
+
 <form>
 <div class="modal-popup-title">
     <span class="icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
@@ -159,6 +162,7 @@
           $("#EditForm").on("click", function (e) {
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
+              $("#txtTacticTitle").removeClass("error");
               $("#txtTacticTitle").val($("#hdnPlanTacticTitle").val());
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();

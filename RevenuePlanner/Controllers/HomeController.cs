@@ -6277,10 +6277,18 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        /// <summary>
+        /// Added By: Pratik Chauhan.
+        /// Action to open resubmission popup.
+        /// </summary>
+        /// <param name="redirectionType">From where it open.</param>
+        /// <param name="labelValues">Changed control label value(s).</param>
+        /// <returns>Returns Partial View Of resubmission popup.</returns>
         public PartialViewResult LoadResubmission(string redirectionType, string labelValues)
         {
             var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(labelValues);
 
+            //// Create list for changed control label(s).
             List<string> listLabelValue = new List<string>();
 
             if (customFields.Count != 0)

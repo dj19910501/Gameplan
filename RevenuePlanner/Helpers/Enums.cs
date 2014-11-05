@@ -815,6 +815,9 @@ namespace RevenuePlanner.Helpers
             Tactic
         }
 
+        #region "Inspect Popup"
+
+
         /// <summary>
         /// Added By : Sohel Pathan
         /// Added Date : 28/10/2014
@@ -826,6 +829,19 @@ namespace RevenuePlanner.Helpers
             Edit,
             ReadOnly
         }
+
+        /// <summary>
+        /// Added By : Pratik
+        /// Added Date : 05/11/2014
+        /// Description : Enum for Resubmission Popup open from
+        /// </summary>
+        public enum ResubmissionOpenFrom
+        {
+            Tactic,
+            ImprovementTactic
+        }
+
+        #endregion
     }
 
     #region Authorization

@@ -9,9 +9,11 @@
 @{
     var tacticMaster = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+    var IsResubmitableStatus = (bool)Common.CheckAfterApprovedStatus(tacticMaster.Status);
 }
 @Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
+@Html.Hidden("hdnIsResubmitableStatus", IsResubmitableStatus, new { id = "hdnIsResubmitableStatus" })
 <div id="successMessageImprovementTactic" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
     <span id="spanSuccMessageImprovementTactic"></span>

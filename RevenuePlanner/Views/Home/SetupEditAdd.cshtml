@@ -7,20 +7,14 @@
     <script src="~/Scripts/js/bootstrap-datepicker.js"></script> 
  
     bool ExtIntService = (bool)ViewBag.ExtIntService;  
- @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
- @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
-
- @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
- @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
- @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
- @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
- @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
- @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
-
-
-
-
-
+    @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+    @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
+    @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
+    @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
+    @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
+    @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
+    @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+    @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
 
 
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
@@ -61,21 +55,13 @@
             @if (ExtIntService)
             {                 
 
-
-
                 <p style="width: 110%;">Deployed to Integration</p>
                 if (Model.IsDeployedToIntegration)
                 {
-
-
-
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to Integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
                 }
                 else
                 {
-
-
-
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Sync to Integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
                 }
             }
@@ -83,27 +69,14 @@
             <div class="cf width100" style="width: 244px;">
                 <div class="margin-right10 pull-left" style="width: 47%">
                     <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
-                         
-                       
-
-                       
-
-
 
                         @if (ViewBag.IsDiffrentStageType == true)
                         {
-
-
-
-
-
-
-
                             <span>
                                 <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
                         }</label>
-                    @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue resubmission", label = "Projected_Stage_Value", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                    @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue resubmission", label = @Model.StageTitle, maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
                 <div class="pull-left" style="width: 47%">
@@ -118,24 +91,12 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
+    
     <ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div" id="InspectTab">
         <li class="pull-right">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
-
-
-
-
-
-
 
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
         <div class="span3 margin-top10" style="clear: both;">
@@ -163,12 +124,6 @@
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 4, "addEdit")
     </div>   
 
-
-
-
-
-
-
     <div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
         <div class="span2 btn-save" style="width: 122px">
             <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save & Continue</button>
@@ -195,12 +150,16 @@
           $('#txtCost').attr("title", $('#txtCost').val());
           $(".selectBox select").selectbox();
 
+          $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+          $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+
+          //// Assign default values to controls having classname = .resubmission
+          assignDefaultValue(".resubmission");
+
           $("#txtRevenue").val('$' + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
           $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
-          $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
-          $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
 
           $('.dp').datepicker({
               format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
@@ -264,8 +223,7 @@
           var _customFieldValues = [];
           var _resubmissionLabelValues = [];
           hdnYear = @ViewBag.Year
-          
-          assignDefaultValue(".resubmission");
+
 
           $("#btnCancel").on("click", function (e) {
               var activeTab = $("#InspectTab li.active a").text()
@@ -274,6 +232,8 @@
               $('#lblTacticTitle').css('display', 'block');
               $("#lblTacticTitle").removeAttr("style");
 
+              $("#errorMessage").css("display", "none");
+              $("#successMessage").css("display", "none");
               $('#divTacticSaveCancel').css('display', 'none');
               $('#EditForm').css('display', 'block');
               $("#hdnTacticBudgetAllocationOpt").val("View");
@@ -281,122 +241,122 @@
           });
 
       });
-        
+
       $("#btnUploadResult").on("click", function (e) {
-          
+
           var isLowBudgeted = false;
           var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
-        var lowBudgetedMonths = "";
-        var removeLength = 0;
-        
-        var iserror = false;
-        $('form').find('input[type=text], select, textarea').each(function () {
-            if ($(this).attr('require') == 'true') {
-                if ($(this).val() == '') {
-                    $(this).addClass("error");
-                    iserror = true;
-                }
-                else {
-                    $(this).removeClass("error");
-                }
-            }
-        });
+          var lowBudgetedMonths = "";
+          var removeLength = 0;
 
-        //sbSelector
-        $('form').find('.sbSelector').each(function () {
-            if ($(this).parent().prev().attr('require') == 'true') {
-                if ($(this).text() == 'Please Select') {
-                    $(this).addClass("error");
-                    iserror = true;
-                }
-                else {
-                    $(this).removeClass("error");
-                }
-            }
-        });
+          var iserror = false;
+          $('form').find('input[type=text], select, textarea').each(function () {
+              if ($(this).attr('require') == 'true') {
+                  if ($(this).val() == '') {
+                      $(this).addClass("error");
+                      iserror = true;
+                  }
+                  else {
+                      $(this).removeClass("error");
+                  }
+              }
+          });
 
-        if (iserror) {
-            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
-            return false;
-        }
+          //sbSelector
+          $('form').find('.sbSelector').each(function () {
+              if ($(this).parent().prev().attr('require') == 'true') {
+                  if ($(this).text() == 'Please Select') {
+                      $(this).addClass("error");
+                      iserror = true;
+                  }
+                  else {
+                      $(this).removeClass("error");
+                  }
+              }
+          });
 
-        var sdate = $('#t_startdate').val();
-        var edate = $('#t_enddate').val();
-        if (!isDate(sdate)) {
-            alert('@Common.objCached.ValidateStartDate');
+          if (iserror) {
+              ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+              return false;
+          }
+
+          var sdate = $('#t_startdate').val();
+          var edate = $('#t_enddate').val();
+          if (!isDate(sdate)) {
+              alert('@Common.objCached.ValidateStartDate');
               return false;
           }
           if (!isDate(edate)) {
               alert('@Common.objCached.ValidateEndDate');
-                 return false;
-            }
+              return false;
+          }
 
 
-        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-        if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+          if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+          if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
 
-        $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
-        if ($("#txtmql").val() == 'N/A') {
-            $("#txtmql").val(0);
-            $("#txtmql").attr("title", "0");
-        }
-        else {
-            var mqlValue = ReplaceCC($("#txtmql").val());
-            $("#txtmql").val(mqlValue);
-            $("#txtmql").attr("title", mqlValue);
-        }
+          $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
+          if ($("#txtmql").val() == 'N/A') {
+              $("#txtmql").val(0);
+              $("#txtmql").attr("title", "0");
+          }
+          else {
+              var mqlValue = ReplaceCC($("#txtmql").val());
+              $("#txtmql").val(mqlValue);
+              $("#txtmql").attr("title", mqlValue);
+          }
 
-        $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));
-        
-        arrClosedTaskString = null;
-        if (typeof arrClosedTask != 'undefined') {
-            arrClosedTaskString = arrClosedTask.toString();
-        }
+          $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));
 
-        arLineitem = [];
-        var _Lineitems = $("#frm_campaigns #c_tactics select");
-        for (var l = 0; l < _Lineitems.length; l++) {
-            var typeid = $(_Lineitems[l]).val();
-            arLineitem[l] = typeid;
-        }
+          arrClosedTaskString = null;
+          if (typeof arrClosedTask != 'undefined') {
+              arrClosedTaskString = arrClosedTask.toString();
+          }
 
-        ////creating object which contains value of custom fields
-        _customFieldValues = [];
-        $('form').find('input[type=text], select').each(function () {
-            if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
-                _customFieldValues.push({
-                    Key: $(this).attr('cf_id').toString(),
-                    Value: htmlEncode($(this).val().toString())
-                });
-            }
-        });
+          arLineitem = [];
+          var _Lineitems = $("#frm_campaigns #c_tactics select");
+          for (var l = 0; l < _Lineitems.length; l++) {
+              var typeid = $(_Lineitems[l]).val();
+              arLineitem[l] = typeid;
+          }
 
-        _customFieldValues = JSON.stringify(_customFieldValues);
-        
-        var isAssortment = true;
-        $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
-        _resubmissionLabelValues = [];
-        if (checkChangeValue(".resubmission", true)) {
-            url = '@Url.Content("~/Home/LoadResubmission")';
-            $("#divResubmission").load(url + '?redirectionType=Tactic&labelValues=' + _resubmissionLabelValues);
-        } else {
-            saveTactic();
-        }
-    });
+          ////creating object which contains value of custom fields
+          _customFieldValues = [];
+          $('form').find('input[type=text], select').each(function () {
+              if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
+                  _customFieldValues.push({
+                      Key: $(this).attr('cf_id').toString(),
+                      Value: htmlEncode($(this).val().toString())
+                  });
+              }
+          });
 
-    function saveTactic() {
+          _customFieldValues = JSON.stringify(_customFieldValues);
+          var isAssortment = true;
+          $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
+          _resubmissionLabelValues = [];
 
-        var uId = $(window).attr('name');
+          if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
+              url = '@Url.Content("~/Home/LoadResubmission")';
+              $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
+          } else {
+              saveTactic();
+          }
+      });
 
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Home/SetupSaveTactic")',
+      function saveTactic() {
+
+          var uId = $(window).attr('name');
+
+          $.ajax({
+              type: 'POST',
+              url: '@Url.Content("~/Home/SetupSaveTactic")',
             data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues),
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
-                    }
-                    else {
+                }
+                else {
                     if (!data.IsDuplicate) {
 
                         if (data.redirect) {
@@ -417,159 +377,160 @@
                             RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                             return;
                         }
-                        }
-                        else {
-                            ShowError(data.Msg);
-                             $("#divBudgetError").slideUp(30);
-                             return;
-                         }
-
-                     }
-            }
-        });
-        }
-    
-        function ShowError(value) {
-            $("#errorMessage").css("display", "block");
-            $("#errorMessage").slideDown(400);
-            $("#spanMessageError").empty();
-            $("#spanMessageError").text(value);
-        }
-    
-        function assignDefaultValue(classname) {
-            $('form').find(classname).each(function () {
-                $(this).attr("oldValue", $(this).val());
-            });
-        }
-
-        function checkChangeValue(classname, withResubmissionLabel) {
-            var resubmit = false;
-            if (withResubmissionLabel) {
-                $('form').find(classname).each(function () {
-                    var oldValue = $(this).attr("oldValue");
-                    var value = $(this).val();
-                    if (oldValue != value) {
-                        _resubmissionLabelValues.push({
-                            Key: htmlEncode($(this).attr("label").toString()),
-                            Value: htmlEncode($(this).attr("label").toString())
-                        });
-
-                        resubmit = true;
-                    }
-                });
-                _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
-                return resubmit;
-            }
-            else {
-                $('form').find(classname).each(function () {
-                    var oldValue = $(this).attr("oldValue");
-                    var value = $(this).val();
-                    if (oldValue != value) {
-                        return resubmit = true;
-                    }
-                });
-            }
-        }
-    
-        $('#ddlTacticType').change(function () {
-            var tacticTypeId = $(this).val();
-            var pmql = 0;
-            var pcost = 0;
-            var projectedStageValue = 0;
-            if (tacticTypeId != '') {
-                if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {
-                    $.ajax({
-                        type: 'POST',
-                        url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
-                         data: { tacticTypeId: tacticTypeId },
-                         success: function (data) {
-                             pcost = data.revenue;
-                             projectedStageValue = data.projectedStageValue;
-                             $("#lblStageTitle").text(data.stageTitle);
-                             $("#hdnStageId").val(data.stageId);
-                             $("#txtProjectedStageValue").val(projectedStageValue);
-                             GetConversionRate(projectedStageValue, true);
-                             $("#TacticCost").val(pcost);
-
-                             $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                             $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                             
-                             if (data.IsDeployedToIntegration) {
-                                 $("#t_integration_status").val("Sync to integration");
-                                 $("#t_integration_status").addClass("icon-check-blue");
-                                 $("#t_integration_status").removeClass("icon-check-gray");
-                                 $("#hdnIsDeployedToIntegration").val(true);
-                             }
-                             else {
-                                 $("#t_integration_status").val("Not Sync to integration");
-                                 $("#t_integration_status").addClass("icon-check-gray");
-                                 $("#t_integration_status").removeClass("icon-check-blue");
-                                 $("#hdnIsDeployedToIntegration").val(false);
-                             }
-                             $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());  
-                         }
-                     });
-                 }
-             }
-             else {
-                 $("#txtProjectedStageValue").val(projectedStageValue);
-                 $("#txtmql").val(pmql);
-                 $("#txtRevenue").val('0');
-
-                 $("#TacticCost").val('0');
-                 $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                 $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                 $("#lblStageTitle").text("Stage");
-                 $("#hdnStageId").val("0");
-                 var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val());
-                 $('#hdnPrevTacticTypeId').val('0');
-             }
-
-             $('#ddlTacticType').next().find('.sbSelector').focus();
-         });
-
-         function FormatRemainingBudget() {
-             if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
-                 $("#txtRemainingBudget").addClass('error-text');
-             }
-             else {
-                 $("#txtRemainingBudget").removeClass('error-text');
-             }
-         }
-
-         $("#txtProjectedStageValue").focusout(function () {
-             var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
-             $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
-             GetConversionRate(projectedStageValue, false);
-             $("#txtProjectedStageValue").val(FormatCommas($("#txtProjectedStageValue").val(), false));
-         });
-
-         var isAssortment = true;
-         var mqlConversion = 0;
-         function GetConversionRate(projectedStageValue, isTacticTypeChange) {
-             if ($('#ddlTacticType').val() != '') {
-                 $.ajax({
-                     type: 'POST',
-                     url: '@Url.Content("~/Home/CalculateMQL")',
-                data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
-                success: function (data) {
-                    if (data.mql == 'N/A') {
-                        $("#txtmql").val(data.mql);
-                        $("#txtmql").attr("title", data.mql);
-                        $("#txtmql").removeClass('priceValue');
                     }
                     else {
-                        mqlConversion = data.mql;
-                        var mqlValue = FormatCommas(mqlConversion.toString(), false);
-                        $("#txtmql").val(mqlValue);
-                        $("#txtmql").attr("title", mqlValue);
+                        ShowError(data.Msg);
+                        $("#divBudgetError").slideUp(30);
+                        return;
                     }
 
-                    $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
-                    $("#txtRevenue").attr("title", $("#txtRevenue").val());
+                }
+            }
+        });
+    }
+
+    function ShowError(value) {
+        $("#modal-container-186470").scrollTop(0);
+        $("#errorMessage").css("display", "block");
+        $("#errorMessage").slideDown(400);
+        $("#spanMessageError").empty();
+        $("#spanMessageError").text(value);
+    }
+
+    function assignDefaultValue(classname) {
+        $('form').find(classname).each(function () {
+            $(this).attr("oldValue", $(this).val());
+        });
+    }
+
+    function checkChangeValue(classname, withResubmissionLabel) {
+        var resubmit = false;
+        if (withResubmissionLabel) {
+            $('form').find(classname).each(function () {
+                var oldValue = $(this).attr("oldValue");
+                var value = $(this).val();
+                if (oldValue != value) {
+                    _resubmissionLabelValues.push({
+                        Key: htmlEncode($(this).attr("label").toString()),
+                        Value: htmlEncode($(this).attr("label").toString())
+                    });
+
+                    resubmit = true;
+                }
+            });
+            _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
+            return resubmit;
+        }
+        else {
+            $('form').find(classname).each(function () {
+                var oldValue = $(this).attr("oldValue");
+                var value = $(this).val();
+                if (oldValue != value) {
+                    return resubmit = true;
                 }
             });
         }
     }
+
+    $('#ddlTacticType').change(function () {
+        var tacticTypeId = $(this).val();
+        var pmql = 0;
+        var pcost = 0;
+        var projectedStageValue = 0;
+        if (tacticTypeId != '') {
+            if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
+                    data: { tacticTypeId: tacticTypeId },
+                    success: function (data) {
+                        pcost = data.revenue;
+                        projectedStageValue = data.projectedStageValue;
+                        $("#lblStageTitle").text(data.stageTitle);
+                        $("#hdnStageId").val(data.stageId);
+                        $("#txtProjectedStageValue").val(projectedStageValue);
+                        GetConversionRate(projectedStageValue, true);
+                        $("#TacticCost").val(pcost);
+
+                        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+                        if (data.IsDeployedToIntegration) {
+                            $("#t_integration_status").val("Sync to integration");
+                            $("#t_integration_status").addClass("icon-check-blue");
+                            $("#t_integration_status").removeClass("icon-check-gray");
+                            $("#hdnIsDeployedToIntegration").val(true);
+                        }
+                        else {
+                            $("#t_integration_status").val("Not Sync to integration");
+                            $("#t_integration_status").addClass("icon-check-gray");
+                            $("#t_integration_status").removeClass("icon-check-blue");
+                            $("#hdnIsDeployedToIntegration").val(false);
+                        }
+                        $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());
+                    }
+                });
+            }
+        }
+        else {
+            $("#txtProjectedStageValue").val(projectedStageValue);
+            $("#txtmql").val(pmql);
+            $("#txtRevenue").val('0');
+
+            $("#TacticCost").val('0');
+            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $("#lblStageTitle").text("Stage");
+            $("#hdnStageId").val("0");
+            var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val());
+            $('#hdnPrevTacticTypeId').val('0');
+        }
+
+        $('#ddlTacticType').next().find('.sbSelector').focus();
+    });
+
+    function FormatRemainingBudget() {
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+    }
+
+    $("#txtProjectedStageValue").focusout(function () {
+        var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
+        $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
+        GetConversionRate(projectedStageValue, false);
+        $("#txtProjectedStageValue").val(FormatCommas($("#txtProjectedStageValue").val(), false));
+    });
+
+    var isAssortment = true;
+    var mqlConversion = 0;
+    function GetConversionRate(projectedStageValue, isTacticTypeChange) {
+        if ($('#ddlTacticType').val() != '') {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/CalculateMQL")',
+                    data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
+                    success: function (data) {
+                        if (data.mql == 'N/A') {
+                            $("#txtmql").val(data.mql);
+                            $("#txtmql").attr("title", data.mql);
+                            $("#txtmql").removeClass('priceValue');
+                        }
+                        else {
+                            mqlConversion = data.mql;
+                            var mqlValue = FormatCommas(mqlConversion.toString(), false);
+                            $("#txtmql").val(mqlValue);
+                            $("#txtmql").attr("title", mqlValue);
+                        }
+
+                        $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
+                        $("#txtRevenue").attr("title", $("#txtRevenue").val());
+                    }
+                });
+            }
+        }
 
 </script>

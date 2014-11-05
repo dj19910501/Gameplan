@@ -147,6 +147,8 @@
               var url;
               $("#successMessageViewProgram").slideUp(50);
               $("#errorMessageEditProgram").slideUp(50);
+              $("#successMessage").css("display", "none");
+              $("#txtProgramTitle").removeClass("error");
               $("#hdnProgramOpt").val("Edit");
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());

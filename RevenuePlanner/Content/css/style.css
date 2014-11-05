@@ -10704,6 +10704,8 @@ margin-right:-20px;
     padding: 0 !important;
 }
 
+/*Added By: Pratik Chauhan*/
+/*start: Ticket #895*/
 .popup-block {
 z-index :999999 !important;
 }
@@ -10732,8 +10734,10 @@ line-height:30px;
    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
 Font-size:13px !important;
 padding-bottom:5px;
-
+list-style-position:inside;
 }
+
+/*End: Ticket #895*/
 
 .SepraterStacticis 
 {
@@ -10747,7 +10751,6 @@ padding-bottom:5px;
     font-weight: normal !important;
 }
 
-/*Functional and Code Review Point*/
 .ProgramBudgetSection .budget-month input[readonly]
 {
     color: #666666 !important;
