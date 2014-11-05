@@ -307,6 +307,7 @@
             $("#txtProgramBudget").val(ReplaceCC($("#txtProgramBudget").val()));
             $("#lblProgramTitle").html(htmlEncode($('#txtProgramTitle').val()));
             $("#tactic-name").html(htmlEncode($('#txtProgramTitle').val()));
+            document.getElementById("Description").value = htmlEncode($('#Description').val());
 
             var _customFieldValues = [];
             $('form').find('input[type=text], select').each(function () {
@@ -324,23 +325,16 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Home/SetupSaveProgram")',
-                data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserId=' + uId + '&title=' + title ,
+                data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserId=' + uId + '&title=' + escape(title) ,
                 success: function (data) {
                     if (data.IsSaved) {
                         CancelEvent();
-                        var activeTab = $("#InspectTab li.active a").text()
-                        var planProgramId = $("#hdnPlanProgramId").val();
-                        $("#successMessage").css("display", "block");
-                        $("#spanMessageSuccess").empty();
-                        $("#spanMessageSuccess").text(data.Msg);
-                        $("#errorMessage").css("display", "none");
-                        //$("#errorMessageEditProgram").slideUp(50);
-                        //$("#spanMessageViewProgram").empty();
-                        //$("#successMessageViewProgram").slideDown(400);
-                        //$("#spanSuccessMessageViewProgram").empty();
-                        //$("#spanSuccessMessageViewProgram").html(data.Msg);
-                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", activeTab);
-                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        RefreshCurrentTab();
+                        $("#errorMessageEditProgram").slideUp(50);
+                        $("#spanMessageViewProgram").empty();
+                        $("#successMessageViewProgram").slideDown(400);
+                        $("#spanSuccessMessageViewProgram").empty();
+                        $("#spanSuccessMessageViewProgram").html(data.Msg);
                     }
                     else {
                         CancelEvent();

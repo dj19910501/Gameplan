@@ -364,20 +364,13 @@
                 }
                 else {
                     if (data.isSaved) {
-                       /// CancelEvent();
-                        var activeTab = $("#InspectTab li.active a").text()
-                        var planCampaignId = $("#PlanCampaignId").val();
-                        $("#successMessage").css("display", "block");
-                        $("#spanMessageSuccess").empty();
-                        $("#spanMessageSuccess").text(data.msg);
-                        $("#errorMessage").css("display", "none");
-                        loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab);
-                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
-                        //$("#errorMessageEditCampaign").slideUp(50);
-                        //$("#spanSuccessMessageViewCampaign").empty();
-                        //$("#successMessageViewCampaign").slideDown(400);
-                        //$("#spanSuccessMessageViewCampaign").empty();
-                        //$("#spanSuccessMessageViewCampaign").html(data.msg);
+                        CancelEvent();
+                        RefreshCurrentTab();
+                        $("#errorMessageEditCampaign").slideUp(50);
+                        $("#spanSuccessMessageViewCampaign").empty();
+                        $("#successMessageViewCampaign").slideDown(400);
+                        $("#spanSuccessMessageViewCampaign").empty();
+                        $("#spanSuccessMessageViewCampaign").html(data.msg);
                     }
                     else {
                         CancelEvent();

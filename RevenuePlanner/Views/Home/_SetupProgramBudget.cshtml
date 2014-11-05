@@ -473,7 +473,7 @@
          $.ajax({
              type: 'POST',
              url: '@Url.Content("~/Home/SaveProgramBudgetAllocation")',
-             data: $("form").serialize() + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + title ,
+             data: $("form").serialize() + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
              success: function (data) {
                  if (data.IsSaved) {
                      CancelEvent();

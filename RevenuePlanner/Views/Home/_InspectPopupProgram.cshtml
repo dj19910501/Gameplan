@@ -36,13 +36,13 @@
         <span class="icon-flag bg-purple" style="background-color:#@programMaster.ColorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight">
             <span>
-                <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
+                <span id="lblProgramTitle"  class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(programMaster.ProgramTitle)">@HttpUtility.HtmlDecode(programMaster.ProgramTitle)</span>
                 @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
                 {
                     @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large" })
                 }
             </span>
-            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programMaster.ProgramTitle), new { placeholder = "Program names goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = programMaster.ProgramTitle })
+            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programMaster.ProgramTitle), new { placeholder = "Program names goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = HttpUtility.HtmlDecode(programMaster.ProgramTitle) })
             @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
         </h2>
 
@@ -150,7 +150,7 @@
               $("#hdnProgramOpt").val("Edit");
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());
-              $("#txtProgramTitle").val($('#lblProgramTitle').html());
+              $("#txtProgramTitle").val($('#lblProgramTitle').text());
               if (tabtext == "Setup") {
                   url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
                   $("#divTab").empty();
@@ -165,7 +165,7 @@
               $("#EditProgram").css("display", "none");
               $('#txtProgramTitle').css('display', 'block');
               $('#lblProgramTitle').css('display', 'none');
-
+              $("#txtProgramTitle").prop('readonly', false);
               return false;
           });
 
