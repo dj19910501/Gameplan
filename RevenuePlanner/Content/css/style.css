@@ -10746,3 +10746,17 @@ padding-bottom:5px;
     font-size: 20px !important;
     font-weight: normal !important;
 }
+
+/*Functional and Code Review Point*/
+.ProgramBudgetSection .budget-month input[readonly]
+{
+    color: #666666 !important;
+    cursor: not-allowed;
+}
+
+.CampaignBudgetSection .budget-month input[readonly]
+{
+    color: #666666 !important;
+    cursor: not-allowed;
+}
+
