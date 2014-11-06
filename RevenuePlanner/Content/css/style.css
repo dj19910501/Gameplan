@@ -10763,3 +10763,8 @@ list-style-position:inside;
     cursor: not-allowed;
 }
 
+/* Added by Viral Kadiya on 11/5/2014 for PL ticket #884*/
+/* change dotted line position on Organization hierarchy*/
+.treeview > li > ul > li:last-child {
+    background-position: 0 -4975px !important;
+}

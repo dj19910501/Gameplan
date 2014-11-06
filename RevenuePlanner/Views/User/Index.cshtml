@@ -148,13 +148,11 @@
                     <a id="lnkAddUser" href="@Url.Action("Create", "User")" class="link-blue">Add New User</a>
                 </p>
             }
-        </div>
         @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
         @if ((bool)ViewBag.IsUserAdminAuthorized)
         {
-            <div class="span2 myaccount-colum"></div>   // Modified by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62
-            <div class="span10 content-colum-right">
-                @if ((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers != null)
+            @*<div class="span2 myaccount-colum"></div>*@   // Modified by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62
+            if ((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers != null)
                 {
                     if (((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers).Count > 0)
                     {
@@ -196,9 +194,9 @@
                     </table>
                     }
                 }
-            </div>
         }
         @* End- Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+            </div>
     </div>
 
     @* Start - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
@@ -265,10 +263,10 @@
     });
 
     // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-    function DeleteOnEdit(userId)
-    {
+    function DeleteOnEdit(userId) {
         alert('@ViewBag.NotifyBeforManagerDeletion');
-        window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam&isForDelete=true";
+        //window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam&isForDelete=true";
+        OnTeamMemberClick(userId);
     }
 
 
@@ -320,7 +318,7 @@
         //$("#successMessage").css('display', 'none');
         //$("#errorMessage").css('display', 'none');
         $.ajax({
-            url: '@Url.Content("~/user/edit")', type: "GET",
+            url: '@Url.Content("~/user/EditUserDetails")', type: "GET",
             data: { usrid: userid, src: 'myteam' },
             async: false,
             contentType: "application/json; charset=utf-8",

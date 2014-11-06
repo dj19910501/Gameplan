@@ -852,6 +852,11 @@ namespace RevenuePlanner.Controllers
             //ViewBag.PermRoleCodesForUpd = permRoleCodesForUpd;
             //ViewBag.PermRoleCodesForDel = permRoleCodesForDel;
         }
+        // Added by Viral Kadiya on 11/06/2014 for PL ticket #917 to implement Security Testing: Bulldog User Can Change Zebra User Details
+        public ActionResult Edit()
+        {
+            return View();
+        }
 
         /// <summary>
         /// Edit Existing User
@@ -860,7 +865,8 @@ namespace RevenuePlanner.Controllers
         /// <param name="src">source either "myaccount" or "myteam"</param>
         /// <param name="isForDelete">Added to give delete option, if user has selected the delete operation from user listing.</param> // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         /// <returns></returns>
-        public ActionResult Edit(string usrid = null, string src = "myaccount", string isForDelete = "false")
+        /// This method is common for MyAccount and Team Member edit page.
+        public ActionResult EditUserDetails(string usrid = null, string src = "myaccount", string isForDelete = "false")
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
@@ -985,10 +991,9 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
+            
             // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917
-            if (src.ToLower() == "myteam")          // if user clicked from TeamMembers page then return "Partialview" for update user details otherwise return "Edit" view.
-                return PartialView("_UpdateUserDetails", objUserModel);
-            return View(objUserModel);
+            return PartialView("_UpdateUserDetails", objUserModel); // Client can edit user details from myaccount or team member details.
         }
 
         /// <summary>
@@ -1190,7 +1195,7 @@ namespace RevenuePlanner.Controllers
             // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917
             if (form.UserId != Sessions.User.UserId)      // On User Details Save button click, if team member details updated then redirect to "Index" action to display Teamlist otherwise redirect to same page("Edit" view).
                 return RedirectToAction("Index");
-            return View(form);
+            return RedirectToAction("Edit");
         }
 
         #endregion
