@@ -150,7 +150,6 @@
         $(this).datepicker('hide');
         var sdate = $('#txtDate').val();
         if (!CheckDateYear(sdate, @hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-        //LoadImprovementTacticStages(false);
     });;
 
     //hide the other datepicker in add-on onclick
@@ -311,5 +310,41 @@ $("#t_integration_status").click(function () {
             }
         }
     });
-        
+    
+    $('#ddlTacticType').change(function () {
+        var tacticTypeId = $(this).val();
+        var pcost = 0;
+        if (tacticTypeId != '') {
+            LoadImprovementTacticTypeData();
+        }
+    });
+
+    var ValueCost = 0;
+    function LoadImprovementTacticTypeData() {
+        var ImprovementTacticTypeId = $('#ddlTacticType').val();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Home/LoadImprovementTacticTypeData?")' + 'ImprovementTacticTypeId=' + ImprovementTacticTypeId,
+            success: function (data) {
+                if (data.isSuccess) {
+                    ValueCost = data.cost;
+                    $("#txtCost").val(FormatCurrency((ValueCost).toString(), false));
+                    if (data.isDeployedToIntegration) {
+                        $("#t_integration_status").val("Sync to integration");
+                        $("#t_integration_status").addClass("icon-check-blue");
+                        $("#t_integration_status").removeClass("icon-check-gray");
+                        $("#hdnIsDeployedToIntegration").val(true);
+                    }
+                    else {
+                        $("#t_integration_status").val("Not Sync to integration");
+                        $("#t_integration_status").addClass("icon-check-gray");
+                        $("#t_integration_status").removeClass("icon-check-blue");
+                        $("#hdnIsDeployedToIntegration").val(false);
+                    }
+                }
+            }
+        });
+
+    }
+
 </script>

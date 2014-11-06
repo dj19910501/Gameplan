@@ -9000,6 +9000,28 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        /// <summary>
+        /// Get Improvement Tactic Type related value using Improvement Tactic Type id.
+        /// Added By : Sohel Pathan
+        /// Added Date : 06/11/2014
+        /// </summary>
+        /// <param name="ImprovementTacticTypeId">ImprovementTacticTypeId</param>
+        /// <returns>JsonResult.</returns>
+        public JsonResult LoadImprovementTacticTypeData(int ImprovementTacticTypeId)
+        {
+            try
+            {
+                var objImprovementTacticType = db.ImprovementTacticTypes.Where(itt => itt.ImprovementTacticTypeId == ImprovementTacticTypeId && itt.IsDeleted.Equals(false)).SingleOrDefault();
+                double Cost = objImprovementTacticType == null ? 0 : objImprovementTacticType.Cost;
+                bool isDeployedToIntegration = objImprovementTacticType == null ? false : objImprovementTacticType.IsDeployedToIntegration;
+
+                return Json(new { isSuccess = true, cost = Cost, isDeployedToIntegration = isDeployedToIntegration }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }
 
