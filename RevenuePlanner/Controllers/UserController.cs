@@ -1324,8 +1324,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">user</param>
         /// <param name="width">width of photo</param>
         /// <param name="height">height of photo</param>
+        /// <param name="src">Load Team Member Image</param>
         /// <returns></returns>
-        public ActionResult LoadUserImage(string id = null, int width = 35, int height = 35)
+        public ActionResult LoadUserImage(string id = null, int width = 35, int height = 35, string src = null)
         {
             Guid userId = new Guid();
             byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
@@ -1352,6 +1353,9 @@ namespace RevenuePlanner.Controllers
                         System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
                         image = Common.ImageResize(image, width, height, true, false);
                         imageBytes = Common.ImageToByteArray(image);
+                        // Modified by Viral Kadiya on 11/06/2014 for PL Ticket #917 to load team member profile image.
+                        if (src == "myteam")
+                            return Json(new { base64imgage = Convert.ToBase64String(imageBytes) }, JsonRequestBehavior.AllowGet);   // if src "myteam" then return json result for ajax query to display team member image.
                         return File(imageBytes, "image/jpg");
                     }
                 }
@@ -1374,13 +1378,15 @@ namespace RevenuePlanner.Controllers
                         System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
                         image = Common.ImageResize(image, width, height, true, false);
                         imageBytes = Common.ImageToByteArray(image);
+                        // Modified by Viral Kadiya on 11/06/2014 for PL Ticket #917 to load team member profile image.
+                        if (src == "myteam")
+                            return Json(new { base64imgage = Convert.ToBase64String(imageBytes) }, JsonRequestBehavior.AllowGet);   // if src "myteam" then return json result for ajax query to display team member image.
                         return File(imageBytes, "image/jpg");
                     }
                 }
             }
             return View();
         }
-
         /// <summary>
         /// To display user profile photo
         /// </summary>

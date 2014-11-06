@@ -202,7 +202,8 @@
     @* Start - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
     <div class="row" id="dvEditUser" style="display: none;">
         <div class="span2 content-colum-left content-img-user">
-            <img id="userImage" src="@Url.Action("LoadUserImage", "User", new { id = string.Empty, width = 60, height = 60 })" class="img-user" style="height:140px; width:140px;">
+            @*<img id="userImage" src="@Url.Action("LoadUserImage", "User", new { id = string.Empty, width = 60, height = 60 })" class="img-user" style="height:140px; width:140px;">*@
+            <div id="dvUserImage"></div>
 </div>
         <div id="dvEditUserDetails"></div>
     </div>
@@ -329,9 +330,29 @@
                     $("#hdrEditUser").css('display', 'block');
                     $("#dvEditUser").css('display', 'block');
                     $("#dvEditUserDetails").html(data);
+                    LoadUserImage(userid);
                 }
                 //alert(data);
                 //window.location.href = data;
+            }
+        });
+    }
+    
+    //Load Team Member profile image
+    function LoadUserImage(userid) {
+        $.ajax({
+            url: '@Url.Content("~/user/LoadUserImage")', type: "GET",
+            data: { id: userid, width: 60, height: 60, src: 'myteam' },
+            async: false,
+            cache: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data != null && data != 'undefined') {
+                    var imag = "<img  alt=''"
+                     + "src='" + "data:image/jpg;base64,"
+                     + data.base64imgage + "' class='img-user' style='height:140px; width:140px;'/>";
+                    $("#dvUserImage").html(imag);
+                }
             }
         });
     }
