@@ -130,7 +130,7 @@
 
     $("#btnSaveRevenueMappings").click(function (e) {
         var isError = false;
-        $('#frmRevenueDataMapping').find('.ddlStyle').each(function (e) {
+        $('#frmRevenueDataMapping').find('.ddlStyle').each(function (e) {   // Modified by Sohel Pathan on 06/11/2014 for PL ticket #863
             if ($(this).next('.sbHolder').hasClass("error")) {
                 isError = true;
                 return false;
@@ -159,7 +159,7 @@
                 else {
                     if (data.status == 0) {
                         $('#RevenueSuccessMessage').find('#spanMessageSuccess').html('');
-                        $("#RevenueSuccessMessage").hide()
+                        $("#RevenueSuccessMessage").hide();
                         $('#RevenueErrorMessage').find('#spanMessageError').html(data.Message);
                         $("#RevenueErrorMessage").slideDown(400);
                         return false;

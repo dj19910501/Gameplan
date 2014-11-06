@@ -195,7 +195,7 @@
                 else {
                     if (data.status == 0) {
                         $('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
-                        $("#DataMappingSuccessMessage").hide()
+                        $("#DataMappingSuccessMessage").hide();
                         $('#DataMappingErrorMessage').find('#spanMessageError').html(data.Message);
                         $("#DataMappingErrorMessage").slideDown(400);
                         return false;
