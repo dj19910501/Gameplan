@@ -40,13 +40,13 @@
                     <div class="gray-title-steps source-sans-probold">1.Plan definition</div>
                     <div class="spanPlanDefinition">
                         @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
-                        I'm using the <span class="source-sans-proregular">@pm.ModelTitle</span> model to create a plan called <span id="spanTitle" class="source-sans-proregular">@pm.Title</span> in <span class="source-sans-proregular">@pm.Year</span> 
+                        I'm using the <span class="source-sans-proregular">@pm.ModelTitle</span> model to create a plan called <span id="spanTitle" class="source-sans-proregular">@pm.Title</span> in <span class="source-sans-proregular">@pm.Year</span>
                         with a
                         <span id="spanGoalType" class="source-sans-proregular">@pm.GoalTypeDisplay</span>
                         goal of
-                        @if(@pm.GoalType.ToLower() == "revenue")
+                        @if (@pm.GoalType.ToLower() == "revenue")
                         {
-                            <span class="source-sans-proregular"> $ </span>
+                            <span class="source-sans-proregular">$ </span>
                         }
                         <span id="spanGoalValue" class="source-sans-proregular">@pm.GoalValue</span>
                         and a budget of
@@ -58,7 +58,7 @@
                         Based on my goal, this plan will require
                         <span id="input1" class="source-sans-prosemibold"></span>
                         <span id="msg1" class="source-sans-prosemibold"></span>
-                        @if(@pm.GoalType.ToLower() == "revenue")
+                        @if (@pm.GoalType.ToLower() == "revenue")
                         {
                             <span>and </span>
                         }
@@ -68,7 +68,7 @@
                         }
                         <span id="input2" class="source-sans-prosemibold"></span>
                         <span id="msg2" class="source-sans-prosemibold"></span>
-                        with an <span class="source-sans-prosemibold"> average deal size of</span>
+                        with an <span class="source-sans-prosemibold">average deal size of</span>
                         <span id="averageDealSize" class="source-sans-prosemibold"></span>.
                         @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                     </div>
@@ -84,15 +84,15 @@
 <script>
     var nlform = new NLForm(document.getElementById('nl-form'));
 </script>
- <div class=" margin5 padding15 element-disable">
-						<div class="gray-title-steps source-sans-probold cf">
-							<span class="pull-left width60">2. Allocate Plan Budgets</span>		
-							<a href="#" class="btn-gray" onclick="EditPlan();">Back</a>
-												
-						</div>
-						<!--Second Accordion-->
-						
-					</div>
+<div class=" margin5 padding15 element-disable">
+    <div class="gray-title-steps source-sans-probold cf">
+        <span class="pull-left width60">2. Allocate Plan Budgets</span>
+        <a href="#" class="btn-gray" onclick="EditPlan();">Back</a>
+
+    </div>
+    <!--Second Accordion-->
+
+</div>
 <div class="light-blue-background close-icon margin5 padding15 padding-bottom0">
     <div class="gray-title-steps source-sans-probold cf">
         <span class="pull-left width55">3.Marketing Activities</span>
@@ -115,34 +115,64 @@
     <!--end accordion-->
 </div>
 <div class="stripe-border improvement-area margin5">
-<div class="light-blue-background close-icon  padding15 padding-bottom0">
-    <div class="gray-title-steps source-sans-probold cf">
-        <span class="pull-left width55">4.Improvement Activities</span>
-        <span class="pull-right width100px text-right margin-right50">Programs</span>
-        <span class="pull-right width150px text-right">Cost</span>
-        <span class="pull-right width100px text-right">@Html.LabelForMQL("MQL")</span>
+    <div class="light-blue-background close-icon  padding15 padding-bottom0">
+        <div class="gray-title-steps source-sans-probold cf">
+            <span class="pull-left width55">4.Improvement Activities</span>
+            <span class="pull-right width100px text-right margin-right50">Programs</span>
+            <span class="pull-right width150px text-right">Cost</span>
+            <span class="pull-right width100px text-right">@Html.LabelForMQL("MQL")</span>
 
-
-    </div>
-    <!--Second Accordion-->
-    <div id="improvementaccordion" class="accordion-campaign">
-
-        <div class='accordion-group' id="improvementAccordionGroup">
-
-            <!--elements are add dynamically with javascript (view script.js file)-->
 
         </div>
-        <!--accordion-group-->
+        <!--Second Accordion-->
+        <div id="improvementaccordion" class="accordion-campaign">
+
+            <div class='accordion-group' id="improvementAccordionGroup">
+
+                <!--elements are add dynamically with javascript (view script.js file)-->
+
+            </div>
+            <!--accordion-group-->
+        </div>
+        <!--end accordion-->
     </div>
-    <!--end accordion-->
 </div>
-    </div>
-<div class="padding-content" style="padding-bottom:150px;" id="divSuggestionBox"> <!-- added by kapil - added padding for #415 -->
+<div class="padding-content" style="padding-bottom: 150px;" id="divSuggestionBox">
+    <!-- added by kapil - added padding for #415 -->
     <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular pull-left font-size14" type="button" id="btnSaveAndContinue">Save & Continue</button>
 </div>
 <div id="DivPartialViewForDeleteImpTactic">
 </div>
-<div id="divBackground" class="modal-backdrop fade in" style="display: none"></div>
+<div class="container-fluid all-height" id="modalMainContainer">
+    <div class="row-fluid calc-height">
+        <div class="container-fluid">
+            <div class="row-fluid ">
+                <div class="span12">
+
+                    <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed;">
+                        <div style="margin: 80px auto !important">
+                            <div id="successMessage" class="alert alert-success message-position-popup" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                                <a class="close">×</a>
+                                <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+                            </div>
+                            <div id="errorMessage" class="alert alert-error hide message-position-popup" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                                <a class="close">×</a>
+                                <strong>Error!</strong> <span id="spanMessageError">@Common.objCached.ValidateForEmptyField</span>
+                            </div>
+                            <div id="divPartial">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div id="divResubmission">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divBackground" class="modal-backdrop fade in" style="display: none; z-index: 2502 !important;"></div>
+@*<div id="divBackground" class="modal-backdrop fade in" style="display: none"></div>*@
 @Html.Hidden("hdnMsg", (string)ViewBag.Msg, new { id = "hdnMsg" })
 @Html.Hidden("hdnisError", (bool)ViewBag.isError, new { id = "hdnisError" })
 <script type="text/javascript">
@@ -165,7 +195,7 @@
     var isApply = false;
     CampaignID = @ViewBag.CampaignID
     ProgramID = @ViewBag.ProgramID
-    TacticID=@ViewBag.TacticID
+    TacticID =@ViewBag.TacticID
     ImprovementPlanProgramId = @ViewBag.ImprovementPlanProgramId
     $("#spanGoalValue").text(FormatCommas($("#spanGoalValue").text(), false));  @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
     /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
@@ -173,7 +203,7 @@
         var pid = parseInt('@Planid');
         var url = '@Url.Content("~/Plan/Create?isBackFromAssortment=true&id=")';
 
-        window.location.href =url.replace('amp;','') + pid;
+        window.location.href = url.replace('amp;', '') + pid;
     }
     /*End : Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
     //Added By : Kalpesh Sharma
@@ -187,11 +217,11 @@
         $("#spanTitle").prop('title', spantitle);
     }
 
-    
+
 
     var ismsg = $("#hdnMsg").val();
     var hdnisError = $("#hdnisError").val();
-    
+
     /*close x event on message*/
     $("#successMessageDuplicatePlan").find(".close").click(function (e) {
         e.stopPropagation();
@@ -292,7 +322,7 @@
             $.ajaxSetup({ cache: false });
             var IdLineItem = $(this).attr('id');
             var LineItemTitle = $(this).attr('titles');
-            DuplicateOpt(IdLineItem,LineItemTitle,'@Enums.DuplicationModule.LineItem')
+            DuplicateOpt(IdLineItem, LineItemTitle, '@Enums.DuplicationModule.LineItem')
             myApp.hidePleaseWait();
             e.preventDefault();
         });
@@ -411,24 +441,14 @@
             }
         });
 
-        $(document).on("click", ".add-icon.campaign", function (e) {
-            e.stopPropagation();
-            $.ajaxSetup({ cache: false });
-            $("#slidepanel").css("display", "block");
-            //$('#slidepanel').load('@Url.Content("~/Plan/CreateCampaign")');
-            $('#slidepanel-container').load('@Url.Content("~/Plan/CreateCampaign")', AssignDefaultValue);
-            $("#slidepanel").css("right", "0px");
-            $("#slidepanel").addClass('sidebar-wide');
-            myApp.hidePleaseWait();
-            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue 
-        });
+
 
         $(document).on("click", ".blue-bg-text", function (e) {
-            e.stopPropagation();
-            $.ajaxSetup({ cache: false });
+            //e.stopPropagation();
+            //$.ajaxSetup({ cache: false });
             var idCampaing = $(this).parent().attr('id');
-            //displayconfirmForCampaignEvent(idCampaing);
-            displayConfirmCommon('campaignCommonClick(' + idCampaing + ');');
+            ////displayconfirmForCampaignEvent(idCampaing);
+            //displayConfirmCommon('campaignCommonClick(' + idCampaing + ');');
 
             @*$("#slidepanel").css("display", "block");
             var idCampaing = $(this).parent().parent().attr('id');
@@ -442,7 +462,9 @@
             }
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();*@
-            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
+            // e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
+            var mode = "Edit";
+            ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", idCampaing);
         });
 
 
@@ -512,7 +534,7 @@
         });
         $(document).on("click", "#aBudgeting", function (e) {
             displayconfirm('@Url.Action("Budgeting", "Plan")');
-         });
+        });
         //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $("#header a").not("#ContactSupport").click(function () {
             //alert($(this).attr('href'));
@@ -551,22 +573,22 @@
                 eval(functionName);
             }
         }
-        
+
 
         //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $(document).on("click", ".gray-bg-text", function (e) {
-            e.stopPropagation();
-            $.ajaxSetup({ cache: false });
+            //e.stopPropagation();
+            //$.ajaxSetup({ cache: false });
             //$("#slidepanel").css("display", "block");
             var idProgram = $(this).parent().parent().attr('id');
 
-            if (idProgram == 0) {
-                $("a#0 span.gray-bg-text").removeClass('1');
-                $(this).addClass('1');
-            }
+            //if (idProgram == 0) {
+            //    $("a#0 span.gray-bg-text").removeClass('1');
+            //    $(this).addClass('1');
+            //}
 
-            //displayconfirmForProgramEvent(idProgram);
-            displayConfirmCommon('programCommonClick(' + idProgram + ');');
+            ////displayconfirmForProgramEvent(idProgram);
+            //displayConfirmCommon('programCommonClick(' + idProgram + ');');
 
             @*if (idProgram == 0) {
                 var idCampaing = $(this).parent().parent().attr('data-id-campaing');
@@ -581,7 +603,10 @@
             }
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();*@
-            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
+            // e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
+            var mode = "Edit";
+            ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", idProgram);
+
         });
 
         //Dharmraj Start 8July2014 Common function to handle tactic click event
@@ -623,7 +648,7 @@
 
         $(document).on("click", ".add-icon.program", function (e) {
             var idCampaing = $(this).parent().parent().attr('data-id-campaing');
-            e.stopPropagation();
+            @* e.stopPropagation();
             $.ajaxSetup({ cache: false });
             $("#slidepanel").css("display", "block");
             var url = '@Url.Content("~/Plan/CreateProgram")';
@@ -632,7 +657,10 @@
             $("#slidepanel").css("right", "0px");
             $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
-            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
+            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue*@
+            
+            var mode = "Add";
+            ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaing);
         });
 
         //Modified by Mitesh 24July2014 for pl ticket 619 
@@ -640,12 +668,12 @@
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var idTactic = $(this).parent().attr("index");
-           // alert(idTactic);
+            // alert(idTactic);
             if (idTactic == 0) {
                 $('div[index=0]').removeClass('1');
                 $(this).addClass('1');
             }
-            
+
             //displayconfirmForTacticEvent(idTactic);
             displayConfirmCommon('tacticCommonClick(' + idTactic + ');');
 
@@ -699,7 +727,7 @@
         };
         $(document).on("click", "#createlineitem", function (e) {
             var idtactic = $(this).parent().attr('data-id-tactic');
-           // alert(idtactic);
+            // alert(idtactic);
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             $("#slidepanel").css("display", "block");
@@ -717,7 +745,7 @@
             displayconfirmForDeleteEvent(idLineItem, 'lineitem');
             e.stopPropagation();
         });
-        
+
         /*End: Added by Mitesh Vaishnav */
         //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         //function displayconfirmForTacticEvent(id) {
@@ -780,7 +808,7 @@
                 return false;
             }*@
         });
-        
+
         // Change by Dharmraj to handle Warning of data loss during program deletion, #547
         $(document).on('click', '#delprogram', function (e) {
             //CheckUserSession(".program-level a.accordion-toggle .delete-program", true);
@@ -837,7 +865,7 @@
             e.stopPropagation();
             var idTactic = $(this).parent().attr('index');
             displayconfirmForDeleteEvent(idTactic, 'tactic');
-            
+
             e.stopPropagation();
             @*var uId = $(window).attr('name');
             if (confirm('Are you sure you want to delete this tactic?')) {
@@ -874,7 +902,7 @@
                 return false;
             }*@
         });
-      
+
         // Added By Bhavesh for Delete Improvement Tactic: Date 13-March-2014
         // Change by Dharmraj to handle Warning of data loss during imp tactic deletion, #547
         $(document).on('click', '#divimpTactic #delimpTactic', function (e) {
@@ -1199,7 +1227,7 @@
         ////Modified by Mitesh Vaishnav for PL ticket #619
         function LoadClickEvents() {
             if ('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0) {
-                
+
                 $('.tactictitle').each(function () {
                     if ($(this).parent().attr('index') == '@ViewBag.TacticId') {
                         $(this).click();
@@ -1212,14 +1240,14 @@
                 //alert("Hi");
                 $('.gray-bg-text').each(function () {
                     if ($(this).parent().parent().attr('id') == '@ViewBag.ProgramId') {
-                            $(this).click();
-                            return false;
-                        }
-                    });
-                }
-                else if ('@ViewBag.EditOjbect' == "Campaign" && '@ViewBag.CampaignId' != 0) {
-                    $('.blue-bg-text').each(function () {
-                        if ($(this).parent().attr('id') == '@ViewBag.CampaignId') {
+                        $(this).click();
+                        return false;
+                    }
+                });
+            }
+            else if ('@ViewBag.EditOjbect' == "Campaign" && '@ViewBag.CampaignId' != 0) {
+                $('.blue-bg-text').each(function () {
+                    if ($(this).parent().attr('id') == '@ViewBag.CampaignId') {
                             $(this).click();
                             return false;
                         }
@@ -1227,9 +1255,9 @@
                 }
                 else if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
                     $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").find("#divPanelImp").click();
-                return false;
-            }
-        }
+                    return false;
+                }
+}
 
         function LoadImprovementTactic() {
             $.ajax({
@@ -1252,15 +1280,15 @@
                         FillGrayImprovementContainerEmpty();
                         LoadClickEvents();
                     }
-                     //NumberFormatterTipsy(".tipsyclass", 9);
-                     
+                    //NumberFormatterTipsy(".tipsyclass", 9);
+
                     loadscript();
                 }
             });
         }
 
         $(document).on("click", ".add-icon.impTactic", function (e) {
-            
+
             if (!isMarketingTacticExits) {
                 $("#slidepanel").css("display", "none");
                 ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
@@ -1273,9 +1301,9 @@
             $("#slidepanel").css("display", "block");
             var idProgram = $(this).attr('data-id-program');
             var url = '@Url.Content("~/Plan/CreateImprovementTactic")';
-             $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
-             $("#slidepanel").css("right", "0px");
-             $("#slidepanel").addClass('sidebar-wide');
+            $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
+            $("#slidepanel").css("right", "0px");
+            $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
         });
 
@@ -1309,7 +1337,7 @@
                 $('#slidepanel-container').load(url + '?id=' + idTactic + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
              $("#slidepanel").css("right", "0px");*@
-             //myApp.hidePleaseWait();
+            //myApp.hidePleaseWait();
         });
 
         //Dharmraj Start 8July2014 Common function to handle tactic click event
@@ -1370,279 +1398,11 @@
             $("#aApplyToCalender").removeAttr("onclick");
             isApply = true;
         }
-        //fill campaign table with data from json
-        function fillCampaignsTable() {
-            if (typeof campaign != 'undefined') {
-                var $html = '';
-                
-                if (campaign.length) {
-                    for (i in campaign) {
-                        mqlTotal = mqlTotal + parseFloat(campaign[i].mqls);
-                        costTotal = costTotal + parseFloat(campaign[i].cost);
-                        programTotal = programTotal + parseFloat(campaign[i].programs.length);
-                        /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
-                         changed by : Nirav Shah on 13 feb 2014
-                         before changed : 
-                        */
-                        addRowCampaign(i, campaign[i].id, campaign[i].title, campaign[i].description, campaign[i].cost, campaign[i].mqls, campaign[i].isOwner, campaign[i].programs, campaign[i].programs.length);
-                    }
-                } else {
+        
 
-                    $html += '<div class="accordion-header campaign-default">' +
-                            '<a id="0" class="accordion-toggle chevron-right" data-toggle="collapse">' +
-                                '<span id="0" class="pull-left width55"><span class="pull-left font-black">1.</span><span class="blue-bg-text campaign-name campaign-name-span">Campaign Title</span></span>' +
-                                '<span class="pull-right width50px"><div class="add-icon campaign"></div></span>' +
-                                '<span class="pull-right width100px text-right font-black">' + 0 + '</span>' +
-                                '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
-                                '<span class="pull-right width100px text-right font-black tipsyclass">' + 0 + '</span>' +
-                            '</a>' +
-                        '</div>';
-                    CallForRedirectToApplyToCalender();
+       
 
-                }
-                $html += '<div class="cf padding-left20">' +
-                                '<div class="pull-left width55"></div>' +
-                                '<div class="height40 pull-right width50px"></div>' +
-                                //'<div class="total height40 pull-right width3"></div>' +
-                                '<div class="total markTotal pull-right width100px text-right">' + FormatCommas(programTotal.toString(), false) + '</div>' +
-                                '<div class="total markTotal pull-right width150px text-right tipsyclass costAssotment">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
-                                '<div class="total markTotal pull-right width100px text-right tipsyclass costAssotment">' +  FormatCommas(mqlTotal.toString(), false) + '</div>' +
-                            '</div>';
-
-                var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
-
-                $tableCampaigns.append($html);
-
-                addEventTriggerSlidepanel();
-
-                //Fetch all the row values from the tables
-                $('.costAssotment').each(function () {
-                    //Added By : Kalpesh Sharma
-                    //PL #508 Set format for label in tool tip
-                    //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                    SetLabelFormaterWithTitle($(this));
-                    //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                });
-
-            }
-        }
-
-        //add row in campaign table
-        /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
-                     changed by : Nirav Shah on 13 feb 2014
-                     before changed :        function addRowCampaign(_index, _id, _title, _description, _cost, _inqs, _mqls, _programs, _programCount) {
-                    */
-        function addRowCampaign(_index, _id, _title, _description, _cost, _mqls, _isOwner, _programs, _programCount) {
-            var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
-            var num = parseInt(_index) + 1;
-            var $html = '<div class="accordion-header">' +
-                        '<a id="' + _id + '" class="accordion-toggle';
-            if (CampaignID == _id) {
-                $html += ' chevron-down'
-            }
-            else {
-                $html += ' chevron-right'
-            }
-            /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
-                     changed by : Nirav Shah on 13 feb 2014
-                    */
-            $html += '" data-toggle="collapse" data-parent="#accordion" href="#collapse' + _index + '">';
-            if (_isOwner == 0) {
-                $html += '<span class="delete-program width5" id="delCampaign"></span>';
-            }
-            $html += '<span class="pull-left font-black">' + num + '.</span><span class="blue-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _title + '</span>' +
-                          '<span id="' + _id + '" class="duplicate-icon-campaignCopy" titles="' + _title + '" ></span>' +
-                               '<span class="pull-right width50px"><div class="add-icon campaign" ></div></span>' +
-                                '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_programCount.toString(), false) + '</span>' +
-                                '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_cost.toString(), false) + '</span>' +
-                                '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_mqls.toString(), false) + '</span>' +
-                            '</a>' +
-                        '</div>' +
-                        '<div id="collapse' + _index + '" class="accordion-body';
-            if (CampaignID == _id) {
-                $html += ' in'
-            }
-            $html += ' collapse program-level">' +
-                            '<div class="accordion-inner">' +
-                                '<div class="accordion-group">';
-
-
-            if (typeof _programs != 'undefined') {
-
-                if (_programs.length > 0) {
-                    for (i in _programs) {
-                        //collapseOne
-                        $html += '<div class="accordion-header">' +
-                                    '<a id="' + _programs[i].id + '" data-id-campaing="' + _id + '" class="accordion-toggle font-black';
-                        if (ProgramID == _programs[i].id) {
-                            $html += ' chevron-down'
-                        }
-                        else {
-                            $html += ' chevron-right'
-                        }
-                        $html += '" data-toggle="collapse" href="#collapseTwo' + _programs[i].id + '">';
-                        if (_programs[i].isOwner == 0) {
-                            $html += '<span class="delete-program width5" id="delprogram"></span>';
-                        }
-                        $html += '<span class="pull-left width55"><span class="gray-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _programs[i].title + '</span>' +
-                        '<span id="' + _programs[i].id + '" class="duplicate-icon-ProgramCopy" titles="' + _programs[i].title + '" ></span></span>' +
-                         '<span class="pull-right width50px"><div class="add-icon program" ></div></span>' +
-                         '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                         '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
-                         '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
-                     '</a>' +
-                 '</div>' +
-
-                 '<div id="collapseTwo' + _programs[i].id + '" class="accordion-body';
-                        if (ProgramID == _programs[i].id) {
-                            $html += ' in'
-                        }
-                        $html += ' collapse tactic-level">' +
-                     '<div class="accordion-inner">' +
-                         '<div class="accordion-group">';
-                        var pid = _programs[i].id;
-                        if (typeof _programs[i].tactics != 'undefined') {
-                            if (_programs[i].tactics.length > 0) {
-                                isMarketingTacticExits = true;
-                                for (k in _programs[i].tactics) {
-                                    //collapseThree
-                                    /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
-                  changed by : Nirav Shah on 13 feb 2014
-                  before changed : 
-                        $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-body collapse in">' +
-                                               '<div id="divTactic" class="accordion-inner tactic" index="' + _programs[i].tactics[k].id + '" data-slidepanel="panel">' +
-                                                  '<span class="underline">' + _programs[i].tactics[k].title + '</span>' +
-                                                 '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                              '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                            '<span class="pull-right width100px text-right font-black tipsyclass">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
-                                            '<span class="pull-right text-right font-black">' + FormatCommas(_programs[i].tactics[k].mqls.toString(), false) + '</span>' +
-                                                '</div>' +
-                                            '</div>';
-                */
-                                    $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-header">';
-                                    if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
-                                        if (_programs[i].tactics[k].lineitems.length > 0) {
-                                            $html += '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black';
-                                            if (TacticID == _programs[i].tactics[k].id) {
-                                                $html += ' chevron-down';
-                                            }
-                                            else {
-                                                $html += ' chevron-right';
-                                            }
-                                            $html +='"data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
-                                        }
-                                        else {
-                                            $html += '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black" data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
-                                        }
-                                    }
-                                    if (_programs[i].tactics[k].isOwner == 0) {
-                                        $html += '<span class="delete-program width5" id="delTactic"></span>';
-                                    }
-                                    $html += '<span class="pull-left" index="' + _programs[i].tactics[k].id + '"><span class="underline tipsyclassTitle tactictitle">' + _programs[i].tactics[k].title + '</span>' +
-                                         '<span id="' + _programs[i].tactics[k].id + '" class="duplicate-icon-TacticCopy" titles="' + _programs[i].tactics[k].title + '" ></span></span>' +
-                                                    '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
-                                              '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                              '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
-                                              '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + displayTacticMQL(_programs[i].tactics[k].mqls.toString()) + '</span>' +
-                                              '<span class="pull-right btn-gray" id="createlineitem">Add Line Item</span>' +
-                                                '</a>' +
-
-                                                '</div>' +
-
-                                    /*Line item area */
-                                    '<div id="collapseThree' + _programs[i].tactics[k].id + '" class="accordion-body ';
-                                    if (TacticID == _programs[i].tactics[k].id) {
-                                        $html += 'in ';
-                                    }
-                                    $html +='collapse lineitem-level "' + 'program_' + _programs[i].tactics[k].id + '>' +
-                                  '<div class="accordion-inner">' +
-                                      '<div class="accordion-group">';
-                                    /*  alert(_programs[i].tactics[k].lineitems);*/
-                                    if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
-
-                                        if (_programs[i].tactics[k].lineitems.length > 0) {
-                                            for (z in _programs[i].tactics[k].lineitems) {
-                                                $html += '<div id="lineitem_' + _programs[i].tactics[k].lineitems[z].id + '" class="accordion-body collapse in lineitem">' +
-                                                  '<div id="divlineitem" class="accordion-inner cursor-pointer" index="' + _programs[i].tactics[k].lineitems[z].id + '">';
-                                                  if (_programs[i].tactics[k].lineitems[z].title!='@Common.DefaultLineItemTitle'){
-                                                      $html += '<span class="delete-program width5 " id="delLineItem"></span>';
-                                                    }
-                                                $html += '<span class="LineItem-widthAuto"> <span id="tacticTitle" class="underline tipsyclassTitle ">' + _programs[i].tactics[k].lineitems[z].title + '</span>';
-                                                if (_programs[i].tactics[k].lineitems[z].title != "Other") {
-                                                    $html += '<span id="' + _programs[i].tactics[k].lineitems[z].id + '" class="duplicate-icon-LineItemCopy" titles="' + _programs[i].tactics[k].lineitems[z].title + '" ></span>';
-                                                }
-                                                $html += '</span><span class="pull-right width50px text-right font-black">&nbsp;</span>' +
-                                                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                                            '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].lineitems[z].cost.toString(), false) + '</span>' +
-                                                          '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                                  '</div>' +
-                                            '</div>';
-                                            }
-
-                                        }
-                                        else {
-                                          //  $html += '<div class="accordion-body collapse in ">' +
-                                          //  '<div class="accordion-inner tactic" grandparent="' + _id + '" parent="' + _programs[i].id + '" index="0" data-slidepanel="panel">' +
-                                          //            '<span class="underline">Select Tactic</span>' +
-                                          //  '</div>' +
-                                          //'</div>';
-                                        }
-
-                                    }
-
-                                    $html += '</div>' +
-                             '</div>' +
-                     '</div>';
-
-                                }
-                            }
-                            $html += '<div class="accordion-body collapse in" data-id-program="' + pid + '" index="0" >' +
-                                        '<div id="divTactic" class="accordion-inner CursorHand tactictitle" index="0">' +
-                                            '<span class="underline" style="padding-left:70px !important ;">Select Tactic</span>' +
-                                        '</div>' +
-                                    '</div>';
-
-                        }
-
-                        $html += '</div>' +
-                                '</div>' +
-                            '</div>';
-                    }
-                } else {
-
-                    $html += '<div class="accordion-header">' +
-                                '<a id="0" class="accordion-toggle" data-id-campaing="' + _id + '" font-black" data-toggle="collapse">' +
-                                    '<span class="pull-left width40"><span class="gray-bg-text campaign-name underline">Add Programs</span></span>' +
-                                    '<span class="pull-right width100px"><div class="add-icon program" ></div></span>' +
-                                '</a>' +
-                            '</div>';
-                }
-                $html += '</div>' +
-                            '</div>' +
-                        '</div>';
-            }
-            $tableCampaigns.append($html);
-
-        }
-
-        function displayTacticMQL(MQL)
-        {
-            if (MQL == 'N/A') {
-                return 'N/A';
-            }
-            else {
-                return FormatCommas(MQL, false);
-            }
-        }
-
-        function addEventTriggerSlidepanel() {
-
-            $('[data-slidepanel]').unbind('slidepanel');
-            $('[data-slidepanel]').slidepanel({
-                orientation: 'right',
-                mode: 'overlay'
-            });
-        }
+       
 
         //fill campaign table with data from json
         function fillImprovementTacticTable() {
@@ -1659,11 +1419,11 @@
                         costTotal = costTotal + parseFloat(ImprovementTactic[i].cost);
                         addRowImprovementTactic(i, ImprovementTactic[i].id, ImprovementTactic[i].title, ImprovementTactic[i].cost, ImprovementTactic[i].isOwner, ImprovementTactic[i].ImprovementProgramId);
                     }
-                } 
+                }
             }
 
             $html += '<div class="accordion-header campaign-default">' +
-                           '<a class="accordion-toggle" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId  + '" id="divimpTactic" index="0">' +
+                           '<a class="accordion-toggle" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId + '" id="divimpTactic" index="0">' +
                                '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">Select Improvement Tactic</span></span>' +
                                '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
                                '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
@@ -1688,27 +1448,27 @@
 										                    '</div>' +
                             '</div>';
 
-                var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
+            var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
 
-                $tableImprovementCampaigns.append($html);
-                if (!isImpCount) {
-                    $(".improvementTotal").each(function () {
-                        $(this).css("color", "#D4D4D4");
-                    });
-                }
-                addEventTriggerSlidepanel();
+            $tableImprovementCampaigns.append($html);
+            if (!isImpCount) {
+                $(".improvementTotal").each(function () {
+                    $(this).css("color", "#D4D4D4");
+                });
+            }
+            addEventTriggerSlidepanel();
 
             //Fetch all the row values from the tables
 
-                $('.Cost_Improvement_Activities').each(function () {
-                    //Added By : Kalpesh Sharma
-                    //PL #508 Set format for label in tool tip
-                    //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                    //SetLabelFormaterWithTipsy($(this));
-                    SetLabelFormaterWithTitle($(this));
-                    //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                });
-            
+            $('.Cost_Improvement_Activities').each(function () {
+                //Added By : Kalpesh Sharma
+                //PL #508 Set format for label in tool tip
+                //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                //SetLabelFormaterWithTipsy($(this));
+                SetLabelFormaterWithTitle($(this));
+                //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+            });
+
         }
 
 
@@ -1760,7 +1520,7 @@
             var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
             var $html = '';
             $html += '<div class="accordion-header campaign-default">' +
-                            '<a class="accordion-toggle" id="divimpTactic" index="' + _id + '" data-id-program="' + _programId  + '">';
+                            '<a class="accordion-toggle" id="divimpTactic" index="' + _id + '" data-id-program="' + _programId + '">';
             if (_isOwner == 0) {
                 $html += '<span class="delete-Improvement width5" id="delimpTactic"></span>';
             }
@@ -1802,7 +1562,7 @@
                         else {
                             $html += 'this improvement tactic';
                         }
-                        $html +=' could deliver...</p>' +
+                        $html += ' could deliver...</p>' +
                             '<p class="text2"><strong>';
                         var mqlValue = parseFloat(data.MQL);
                         if (mqlValue < 0) {
@@ -1822,7 +1582,7 @@
                         SetLabelFormaterWithTitle($("#DivImprovementTotal"));
                         //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
                         var mqltext = "@ViewBag.MQLLabel"
-                        $html += ' ' + mqltext +' yielding <strong>';
+                        $html += ' ' + mqltext + ' yielding <strong>';
                         var cwValue = parseFloat(data.CW);
                         if (cwValue < 0) {
                             $html += FormatCommas(Math.abs(cwValue).toString(), true) + '</strong> less';
@@ -1861,7 +1621,7 @@
 
                         $html += ' days in the funnel with</p>' +
                             '<p class="text3">Net Revenue Impact of ';
-                        
+
                         var revenueValue = parseFloat(data.Revenue);
                         if (revenueValue < 0) {
                             //Modified by : Kalpesh Sharma
@@ -1907,7 +1667,7 @@
                 }
             });
 
-            
+
         }
 
         // Added By Bhavesh
@@ -1931,7 +1691,7 @@
                     //padding-bottom:250px;
                     //$("#defaultSortingId").focus().click();
                 }
-    });
+            });
         }
 
         // Added By Bhavesh
@@ -1978,7 +1738,7 @@
             }
             $html += '><td data-column="1" class="left-text">' + ImprovementTacticTypeTitle + '</td>'
                                 + '	<td class="SuggestedSection" data-column="2"';
-            
+
             if (!isADS) {
                 $html += ' class="noRightBorder SuggestedSection"';
             }
@@ -2005,8 +1765,7 @@
 
             if (IsExits) {
                 $html += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '"';
-                if(IsOwner || isADS)
-                {
+                if (IsOwner || isADS) {
                     $html += ' class="circle-check-icon-blue"';
                 }
             }
@@ -2042,7 +1801,7 @@
                     if (!isLoadSuggestion) {
                         LoadScriptForSuggestion();
                     }
-                   // $("#defaultSortingId").focus().click();
+                    // $("#defaultSortingId").focus().click();
 
                     $.ajax({
                         type: 'POST',
@@ -2514,7 +2273,7 @@
         // Added By Bhavesh
         // PL Ticket 289,377,378
         function LoadScriptForConversion() {
-            
+
             $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").click(function () {
                 //blueHighlight
                 // Grab the column number
@@ -2631,7 +2390,7 @@
                     $('#tableImprovementTypeSuggested td[data-column=' + column + ']').addClass('blueHighlight');
                 });
             });
-                
+
         }
 
         // Added By Bhavesh
@@ -2679,4 +2438,279 @@
         });
     }
     @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+
+    $(document).on("click", ".add-icon.campaign", function (e) {
+        var mode = "Add";
+        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()","0");
+    });
+    //fill campaign table with data from json
+    function fillCampaignsTable() {
+        if (typeof campaign != 'undefined') {
+            var $html = '';
+
+            if (campaign.length) {
+                for (i in campaign) {
+                    mqlTotal = mqlTotal + parseFloat(campaign[i].mqls);
+                    costTotal = costTotal + parseFloat(campaign[i].cost);
+                    programTotal = programTotal + parseFloat(campaign[i].programs.length);
+                    /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
+                     changed by : Nirav Shah on 13 feb 2014
+                     before changed : 
+                    */
+                    addRowCampaign(i, campaign[i].id, campaign[i].title, campaign[i].description, campaign[i].cost, campaign[i].mqls, campaign[i].isOwner, campaign[i].programs, campaign[i].programs.length);
+                }
+            } else {
+
+                $html += '<div class="accordion-header campaign-default">' +
+                        '<a id="0" class="accordion-toggle chevron-right" data-toggle="collapse">' +
+                            '<span id="0" class="pull-left width55"><span class="pull-left font-black">1.</span><span class="blue-bg-text campaign-name campaign-name-span">Campaign Title</span></span>' +
+                            '<span class="pull-right width50px"><div class="add-icon campaign"></div></span>' +
+                            '<span class="pull-right width100px text-right font-black">' + 0 + '</span>' +
+                            '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
+                            '<span class="pull-right width100px text-right font-black tipsyclass">' + 0 + '</span>' +
+                        '</a>' +
+                    '</div>';
+                CallForRedirectToApplyToCalender();
+
+            }
+            $html += '<div class="cf padding-left20">' +
+                            '<div class="pull-left width55"></div>' +
+                            '<div class="height40 pull-right width50px"></div>' +
+                            //'<div class="total height40 pull-right width3"></div>' +
+                            '<div class="total markTotal pull-right width100px text-right">' + FormatCommas(programTotal.toString(), false) + '</div>' +
+                            '<div class="total markTotal pull-right width150px text-right tipsyclass costAssotment">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
+                            '<div class="total markTotal pull-right width100px text-right tipsyclass costAssotment">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
+                        '</div>';
+
+            var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
+
+            $tableCampaigns.append($html);
+
+            addEventTriggerSlidepanel();
+
+            //Fetch all the row values from the tables
+            $('.costAssotment').each(function () {
+                //Added By : Kalpesh Sharma
+                //PL #508 Set format for label in tool tip
+                //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                SetLabelFormaterWithTitle($(this));
+                //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+            });
+
+        }
+    }
+
+    //add row in campaign table
+    /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
+                 changed by : Nirav Shah on 13 feb 2014
+                 before changed :        function addRowCampaign(_index, _id, _title, _description, _cost, _inqs, _mqls, _programs, _programCount) {
+                */
+    function addRowCampaign(_index, _id, _title, _description, _cost, _mqls, _isOwner, _programs, _programCount) {
+        var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
+        var num = parseInt(_index) + 1;
+        var $html = '<div class="accordion-header">' +
+                    '<a id="' + _id + '" class="accordion-toggle';
+        if (CampaignID == _id) {
+            $html += ' chevron-down'
+        }
+        else {
+            $html += ' chevron-right'
+        }
+        /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
+                 changed by : Nirav Shah on 13 feb 2014
+                */
+        $html += '" data-toggle="collapse" data-parent="#accordion" href="#collapse' + _index + '">';
+        if (_isOwner == 0) {
+            $html += '<span class="delete-program width5" id="delCampaign"></span>';
+        }
+        $html += '<span class="pull-left font-black">' + num + '.</span><span class="blue-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _title + '</span>' +
+                      '<span id="' + _id + '" class="duplicate-icon-campaignCopy" titles="' + _title + '" ></span>' +
+                           '<span class="pull-right width50px"><div class="add-icon campaign" ></div></span>' +
+                            '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_programCount.toString(), false) + '</span>' +
+                            '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_cost.toString(), false) + '</span>' +
+                            '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_mqls.toString(), false) + '</span>' +
+                        '</a>' +
+                    '</div>' +
+                    '<div id="collapse' + _index + '" class="accordion-body';
+        if (CampaignID == _id) {
+            $html += ' in'
+        }
+        $html += ' collapse program-level">' +
+                        '<div class="accordion-inner">' +
+                            '<div class="accordion-group">';
+
+
+        if (typeof _programs != 'undefined') {
+
+            if (_programs.length > 0) {
+                for (i in _programs) {
+                    //collapseOne
+                    $html += '<div class="accordion-header">' +
+                                '<a id="' + _programs[i].id + '" data-id-campaing="' + _id + '" class="accordion-toggle font-black';
+                    if (ProgramID == _programs[i].id) {
+                        $html += ' chevron-down'
+                    }
+                    else {
+                        $html += ' chevron-right'
+                    }
+                    $html += '" data-toggle="collapse" href="#collapseTwo' + _programs[i].id + '">';
+                    if (_programs[i].isOwner == 0) {
+                        $html += '<span class="delete-program width5" id="delprogram"></span>';
+                    }
+                    $html += '<span class="pull-left width55"><span class="gray-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _programs[i].title + '</span>' +
+                    '<span id="' + _programs[i].id + '" class="duplicate-icon-ProgramCopy" titles="' + _programs[i].title + '" ></span></span>' +
+                     '<span class="pull-right width50px"><div class="add-icon program" ></div></span>' +
+                     '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                     '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
+                     '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
+                 '</a>' +
+             '</div>' +
+
+             '<div id="collapseTwo' + _programs[i].id + '" class="accordion-body';
+                    if (ProgramID == _programs[i].id) {
+                        $html += ' in'
+                    }
+                    $html += ' collapse tactic-level">' +
+                 '<div class="accordion-inner">' +
+                     '<div class="accordion-group">';
+                    var pid = _programs[i].id;
+                    if (typeof _programs[i].tactics != 'undefined') {
+                        if (_programs[i].tactics.length > 0) {
+                            isMarketingTacticExits = true;
+                            for (k in _programs[i].tactics) {
+                                //collapseThree
+                                /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
+              changed by : Nirav Shah on 13 feb 2014
+              before changed : 
+                    $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-body collapse in">' +
+                                           '<div id="divTactic" class="accordion-inner tactic" index="' + _programs[i].tactics[k].id + '" data-slidepanel="panel">' +
+                                              '<span class="underline">' + _programs[i].tactics[k].title + '</span>' +
+                                             '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                                          '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                                        '<span class="pull-right width100px text-right font-black tipsyclass">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
+                                        '<span class="pull-right text-right font-black">' + FormatCommas(_programs[i].tactics[k].mqls.toString(), false) + '</span>' +
+                                            '</div>' +
+                                        '</div>';
+            */
+                                $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-header">';
+                                if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
+                                    if (_programs[i].tactics[k].lineitems.length > 0) {
+                                        $html += '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black';
+                                        if (TacticID == _programs[i].tactics[k].id) {
+                                            $html += ' chevron-down';
+                                        }
+                                        else {
+                                            $html += ' chevron-right';
+                                        }
+                                        $html += '"data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
+                                    }
+                                    else {
+                                        $html += '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black" data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
+                                    }
+                                }
+                                if (_programs[i].tactics[k].isOwner == 0) {
+                                    $html += '<span class="delete-program width5" id="delTactic"></span>';
+                                }
+                                $html += '<span class="pull-left" index="' + _programs[i].tactics[k].id + '"><span class="underline tipsyclassTitle tactictitle">' + _programs[i].tactics[k].title + '</span>' +
+                                     '<span id="' + _programs[i].tactics[k].id + '" class="duplicate-icon-TacticCopy" titles="' + _programs[i].tactics[k].title + '" ></span></span>' +
+                                                '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
+                                          '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                                          '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
+                                          '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + displayTacticMQL(_programs[i].tactics[k].mqls.toString()) + '</span>' +
+                                          '<span class="pull-right btn-gray" id="createlineitem">Add Line Item</span>' +
+                                            '</a>' +
+
+                                            '</div>' +
+
+                                /*Line item area */
+                                '<div id="collapseThree' + _programs[i].tactics[k].id + '" class="accordion-body ';
+                                if (TacticID == _programs[i].tactics[k].id) {
+                                    $html += 'in ';
+                                }
+                                $html += 'collapse lineitem-level "' + 'program_' + _programs[i].tactics[k].id + '>' +
+                              '<div class="accordion-inner">' +
+                                  '<div class="accordion-group">';
+                                /*  alert(_programs[i].tactics[k].lineitems);*/
+                                if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
+
+                                    if (_programs[i].tactics[k].lineitems.length > 0) {
+                                        for (z in _programs[i].tactics[k].lineitems) {
+                                            $html += '<div id="lineitem_' + _programs[i].tactics[k].lineitems[z].id + '" class="accordion-body collapse in lineitem">' +
+                                              '<div id="divlineitem" class="accordion-inner cursor-pointer" index="' + _programs[i].tactics[k].lineitems[z].id + '">';
+                                            if (_programs[i].tactics[k].lineitems[z].title != '@Common.DefaultLineItemTitle') {
+                                                    $html += '<span class="delete-program width5 " id="delLineItem"></span>';
+                                                }
+                                                $html += '<span class="LineItem-widthAuto"> <span id="tacticTitle" class="underline tipsyclassTitle ">' + _programs[i].tactics[k].lineitems[z].title + '</span>';
+                                                if (_programs[i].tactics[k].lineitems[z].title != "Other") {
+                                                    $html += '<span id="' + _programs[i].tactics[k].lineitems[z].id + '" class="duplicate-icon-LineItemCopy" titles="' + _programs[i].tactics[k].lineitems[z].title + '" ></span>';
+                                                }
+                                                $html += '</span><span class="pull-right width50px text-right font-black">&nbsp;</span>' +
+                                                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                                                            '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].lineitems[z].cost.toString(), false) + '</span>' +
+                                                          '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                                                  '</div>' +
+                                            '</div>';
+                                            }
+
+                                        }
+                                        else {
+                                            //  $html += '<div class="accordion-body collapse in ">' +
+                                            //  '<div class="accordion-inner tactic" grandparent="' + _id + '" parent="' + _programs[i].id + '" index="0" data-slidepanel="panel">' +
+                                            //            '<span class="underline">Select Tactic</span>' +
+                                            //  '</div>' +
+                                            //'</div>';
+                                        }
+
+                                    }
+
+                                    $html += '</div>' +
+                             '</div>' +
+                     '</div>';
+
+                                }
+                            }
+                            $html += '<div class="accordion-body collapse in" data-id-program="' + pid + '" index="0" >' +
+                                        '<div id="divTactic" class="accordion-inner CursorHand tactictitle" index="0">' +
+                                            '<span class="underline" style="padding-left:70px !important ;">Select Tactic</span>' +
+                                        '</div>' +
+                                    '</div>';
+
+                        }
+
+                        $html += '</div>' +
+                                '</div>' +
+                            '</div>';
+                    }
+                } else {
+
+                    $html += '<div class="accordion-header">' +
+                                '<a id="0" class="accordion-toggle" data-id-campaing="' + _id + '" font-black" data-toggle="collapse">' +
+                                    '<span class="pull-left width40"><span class="gray-bg-text campaign-name underline">Add Programs</span></span>' +
+                                    '<span class="pull-right width100px"><div class="add-icon program" ></div></span>' +
+                                '</a>' +
+                            '</div>';
+                }
+                $html += '</div>' +
+                            '</div>' +
+                        '</div>';
+            }
+            $tableCampaigns.append($html);
+
+    }
+    function displayTacticMQL(MQL) {
+        if (MQL == 'N/A') {
+            return 'N/A';
+        }
+        else {
+            return FormatCommas(MQL, false);
+        }
+    }
+    function addEventTriggerSlidepanel() {
+
+        $('[data-slidepanel]').unbind('slidepanel');
+        $('[data-slidepanel]').slidepanel({
+            orientation: 'right',
+            mode: 'overlay'
+        });
+    }
 </script>

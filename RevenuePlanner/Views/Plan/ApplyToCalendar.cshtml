@@ -1,4 +1,5 @@
 ﻿@model RevenuePlanner.Models.HomePlanModel
+@using RevenuePlanner.Helpers
 @{
     ViewBag.Title = "Plan";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
@@ -343,6 +344,23 @@
 </div>
 <div id="DivPartialViewForDeleteImpTactic">
 </div>
+  <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed;">
+                        <div style="margin: 80px auto !important">
+                            <div id="successMessage" class="alert alert-success message-position-popup" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                                <a class="close">×</a>
+                                <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+                            </div>
+                            <div id="errorMessage" class="alert alert-error hide message-position-popup" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                                <a class="close">×</a>
+                                <strong>Error!</strong> <span id="spanMessageError">@Common.objCached.ValidateForEmptyField</span>
+                            </div>
+                            <div id="divPartial">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div id="divResubmission">
+                    </div>
 <div id="divBackground" class="modal-backdrop fade in" style="display: none"></div>
 @Html.Hidden("hdnMsg", (string)ViewBag.Msg, new { id = "hdnMsg" })
 @Html.Hidden("hdnisError", (bool)ViewBag.isError, new { id = "hdnisError" })
@@ -1014,25 +1032,29 @@
    });*/
 
    function ShowCampaign(id) {
-       $("#slidepanel").css("display", "block");
+       @*$("#slidepanel").css("display", "block");
        //  $("#slidepanel-container").css("display", "block");
        var url = '@Url.Content("~/Plan/EditCampaign")';
        //$('#slidepanel-container').load(url + '?id=' + id);
        $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
        $("#slidepanel").css("right", "0px");
        $("#slidepanel").addClass('sidebar-wide');
-       myApp.hidePleaseWait();
+       myApp.hidePleaseWait();*@
+       var mode = "Edit";
+       ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id);
    }
 
    function ShowProgram(id) {
-       $("#slidepanel").css("display", "block");
+       @*$("#slidepanel").css("display", "block");
        // $("#slidepanel-container").css("display", "block");
        var url = '@Url.Content("~/Plan/EditProgram")';
        //$('#slidepanel-container').load(url + '?id=' + id);
        $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
        $("#slidepanel").css("right", "0px");
        $("#slidepanel").addClass('sidebar-wide');
-       myApp.hidePleaseWait();
+       myApp.hidePleaseWait();*@
+       var mode = "Edit";
+       ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id);
    }
 
    function ShowTactic(id) {

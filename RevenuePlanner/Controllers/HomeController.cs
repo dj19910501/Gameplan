@@ -3445,10 +3445,28 @@ namespace RevenuePlanner.Controllers
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="TabValue">Tab value of Popup.</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
-        public ActionResult LoadInspectPopup(int id, string section, string TabValue = "Setup", string InspectPopupMode = "")
+        public ActionResult LoadInspectPopup(int id, string section, string TabValue = "Setup", string InspectPopupMode = "", int parentId = 0)
         {
             try
             {
+                if (id == 0)
+                {
+                    if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
+                    {
+                        ViewBag.PlanId = parentId;
+                        ViewBag.InspectPopup = TabValue;
+                        ViewBag.CampaignDetail = null;
+                        return PartialView("_InspectPopupCampaign", null);
+                    }
+                    else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
+                    {
+                        ViewBag.CampaignId = parentId;
+                        ViewBag.InspectPopup = TabValue;
+                        ViewBag.ProgramDetail = null;
+                        return PartialView("_InspectPopupProgram", null);
+                    }
+                }
+
                 // To get permission status for Add/Edit Actual, By dharmraj PL #519
                 ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
                 //Get all subordinates of current user upto n level
@@ -3463,7 +3481,7 @@ namespace RevenuePlanner.Controllers
                 Plan_Campaign_Program objPlan_Campaign_Program = null;
                 Plan_Campaign objPlan_Campaign = null;
                 Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
-                int planId = 0;
+                //int planId = 0;
                 bool IsPlanEditable = false;
                 Guid BusinessUnitId = Guid.Empty;
                 bool IsBusinessUnitEditable = false;
@@ -3472,6 +3490,7 @@ namespace RevenuePlanner.Controllers
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
+                        ViewBag.PlanId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                         //Added by Mitesh Vaishnav for PL ticket #926
                         //Add restriction of BU for edit button in inspect popup 
                         BusinessUnitId = objPlan_Campaign_Program_Tactic.BusinessUnitId;
@@ -3485,6 +3504,7 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
                         objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
+                        ViewBag.PlanId = objPlan_Campaign_Program.Plan_Campaign.PlanId;
                         //Added by Mitesh Vaishnav for PL ticket #926
                         //Add restriction of BU for edit button in inspect popup
                         BusinessUnitId = objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
@@ -3498,6 +3518,7 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         objPlan_Campaign = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
+                        ViewBag.PlanId = objPlan_Campaign.PlanId;
                         //Added by Mitesh Vaishnav for PL ticket #926
                         //Add restriction of BU for edit button in inspect popup
                         BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
@@ -3511,6 +3532,7 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
                         objPlan_Improvement_Campaign_Program_Tactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(picpobjw => picpobjw.ImprovementPlanTacticId.Equals(id)).FirstOrDefault();
+                        ViewBag.PlanId = objPlan_Improvement_Campaign_Program_Tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId;
                         //Added by Mitesh Vaishnav for PL ticket #926
                         //Add restriction of BU for edit button in inspect popup
                         BusinessUnitId = objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
@@ -5202,7 +5224,81 @@ namespace RevenuePlanner.Controllers
                 //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
 
+                if (form.PlanProgramId == 0)
+                {
                 using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                             var pcpvar = (from pcp in db.Plan_Campaign_Program
+                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                          where pc.PlanId == Sessions.PlanId && pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcp.IsDeleted.Equals(false)
+                                          && pc.PlanCampaignId == form.PlanCampaignId       //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
+                                          select pcp).FirstOrDefault();
+
+                             if (pcpvar != null)
+                             {
+                                 return Json(new { errormsg = Common.objCached.DuplicateProgramExits });
+                             }
+                             else
+                             {
+                                 Plan_Campaign_Program pcpobj = new Plan_Campaign_Program();
+                                 pcpobj.PlanCampaignId = form.PlanCampaignId;
+                                 pcpobj.Title = form.Title;
+                                 pcpobj.Description = form.Description;
+                                 pcpobj.StartDate = form.StartDate;
+                                 pcpobj.EndDate = form.EndDate;
+                                 pcpobj.CreatedBy = Sessions.User.UserId;
+                                 pcpobj.CreatedDate = DateTime.Now;
+                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); //status field added for Plan_Campaign_Program table
+                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                 pcpobj.ProgramBudget = form.ProgramBudget;
+
+                                 db.Entry(pcpobj).State = EntityState.Added;
+                                 int result = db.SaveChanges();
+                                 int programid = pcpobj.PlanProgramId;
+
+                                 if (customFields.Count != 0)
+                                 {
+                                     foreach (var item in customFields)
+                                     {
+                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                         objcustomFieldEntity.EntityId = programid;
+                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
+
+                                     }
+                                 }
+                                 Plan_Campaign pcp = db.Plan_Campaign.Where(pcobj => pcobj.PlanCampaignId.Equals(pcpobj.PlanCampaignId) && pcobj.IsDeleted.Equals(false)).SingleOrDefault();
+                                 if (pcp != null)
+                                 {
+                                     if (pcp.StartDate > form.StartDate)
+                                     {
+                                         pcp.StartDate = form.StartDate;
+                                     }
+
+                                     if (form.EndDate > pcp.EndDate)
+                                     {
+                                         pcp.EndDate = form.EndDate;
+                                     }
+                                     db.Entry(pcp).State = EntityState.Modified;
+                                     result = db.SaveChanges();
+                                 }
+                                 // End - Added by Sohel Pathan on 09/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                 result = Common.InsertChangeLog(Sessions.PlanId, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                                 Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                 scope.Complete();
+                                 return Json(new { IsSaved = true, Msg = "Program created successfully.", programID = programid }, JsonRequestBehavior.AllowGet);
+                             }
+                        }
+                    }
+                }
+                else
+                {
+                    using (MRPEntities mrp = new MRPEntities())
                 {
                     using (var scope = new TransactionScope())
                     {
@@ -5269,6 +5365,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
+            }
             }
             catch (Exception e)
             {
@@ -8302,6 +8399,7 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.OwnerName = userName.FirstName+" "+userName.LastName;
             ViewBag.Year = pc.Plan.Year;
+            ViewBag.PlanTitle = pc.Plan.Title;
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pc.Plan.Model);
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == pc.Plan.Model.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();
             Plan_CampaignModel pcm = new Plan_CampaignModel();
@@ -8401,7 +8499,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form,string title, string customFieldInputs, string UserId = "")
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string title, string customFieldInputs, string UserId = "", int planId = 0)
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -8413,13 +8511,68 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
-                using (MRPEntities mrp = new MRPEntities())
-                {
-                    using (var scope = new TransactionScope())
-                    {
                         var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
-                        //TODO
-                        int planId = db.Plan_Campaign.Where(p => p.PlanCampaignId.Equals(form.PlanCampaignId)).FirstOrDefault().PlanId;
+                if (form.PlanCampaignId == 0)
+                {
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+
+                            var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(form.PlanCampaignId))).FirstOrDefault();
+
+                            if (pc != null)
+                            {
+                                return Json(new { isSaved = false, msg = Common.objCached.DuplicateCampaignExits });
+                            }
+                            else
+                            {
+                                Plan_Campaign pcobj = new Plan_Campaign();
+
+                                pcobj.PlanId = Sessions.PlanId;
+                                pcobj.Title = form.Title;
+                                pcobj.Description = form.Description;
+                                pcobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                pcobj.StartDate = form.StartDate;
+                                pcobj.EndDate = form.EndDate;
+                                pcobj.CreatedBy = Sessions.User.UserId;
+                                pcobj.CreatedDate = DateTime.Now;
+                                pcobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign table 
+                                pcobj.CampaignBudget = form.CampaignBudget;
+                                db.Entry(pcobj).State = EntityState.Added;
+                                int result = db.SaveChanges();
+                                int campaignid = pcobj.PlanCampaignId;
+                                result = Common.InsertChangeLog(Sessions.PlanId, null, campaignid, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+
+                                if (customFields.Count != 0)
+                                {
+                                    foreach (var item in customFields)
+                                    {
+                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = campaignid;
+                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
+
+                                    }
+                                }
+
+                                db.SaveChanges();
+                                scope.Complete();
+                                return Json(new { isSaved = true, msg = "Campaign created successfully.", CampaignID = campaignid });
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                            planId = db.Plan_Campaign.Where(p => p.PlanCampaignId.Equals(form.PlanCampaignId)).FirstOrDefault().PlanId;
                         var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(form.PlanCampaignId))).FirstOrDefault();
 
                         if (pc != null)
@@ -8466,6 +8619,7 @@ namespace RevenuePlanner.Controllers
                         }
 
                     }
+                }
                 }
 
             }
@@ -9022,7 +9176,167 @@ namespace RevenuePlanner.Controllers
                 return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
             }
         }
-    }
+/// <summary>
+        /// Added By: Mitesh Vaishnav.
+        /// Action to Create Campaign.
+        /// </summary>
+        /// <returns>Returns Partial View Of Campaign.</returns>
+        public PartialViewResult CreateCampaign(int id)
+        {
+
+
+            //var objPlan = db.Plan_Campaign.Where(planCampaign => planCampaign.PlanCampaignId.Equals(id) && planCampaign.IsDeleted == false).FirstOrDefault().Plan;
+            int planId = id;
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == planId);
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
+            ViewBag.IsDeployedToIntegration = false;
+            ViewBag.IsCreated = true;
+            ViewBag.RedirectType = false;
+            ViewBag.IsOwner = true;
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(planId)).Year;
+            ViewBag.PlanTitle = objPlan.Title;
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    RedirectToAction("Index", "Login");
+                }
+            }
+            ViewBag.OwnerName = userName.FirstName + " " + userName.LastName;
+
+            Plan_CampaignModel pc = new Plan_CampaignModel();
+            pc.PlanId = planId;
+            pc.StartDate = GetCurrentDateBasedOnPlan();
+            pc.EndDate = GetCurrentDateBasedOnPlan(true);
+            pc.CampaignBudget = 0;
+            pc.AllocatedBy = objPlan.AllocatedBy;
+            pc.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Campaign.ToString());//Added by Mitesh Vaishnav for PL ticket #718
+
+            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == planId && c.IsDeleted == false).ToList();
+            double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
+            double planBudget = objPlan.Budget;
+            double planRemainingBudget = planBudget - allCampaignBudget;
+            ViewBag.planRemainingBudget = planRemainingBudget;
+
+            return PartialView("_EditSetupCampaign", pc);
+        }
+
+        /// <summary>
+        /// Added By: Mitesh Vaishnav.
+        /// Action to Create Program.
+        /// </summary>
+        /// <returns>Returns Partial View Of Program.</returns>
+        public PartialViewResult CreateProgram(int id = 0)
+        {
+            ViewBag.IsCreated = true;
+
+
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
+
+            Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
+            if (pcp == null)
+            {
+                return null;
+            }
+
+            ViewBag.CampaignTitle = pcp.Title;
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    RedirectToAction("Index", "Login");
+                }
+            }
+            ViewBag.OwnerName = userName.FirstName + " " + userName.LastName;
+
+            Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
+            pcpm.PlanCampaignId = id;
+            pcpm.IsDeployedToIntegration = false;
+
+            ViewBag.IsOwner = true;
+            ViewBag.RedirectType = false;
+
+            pcpm.StartDate = GetCurrentDateBasedOnPlan();
+            pcpm.EndDate = GetCurrentDateBasedOnPlan(true);
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            pcpm.CStartDate = pcp.StartDate;
+            pcpm.CEndDate = pcp.EndDate;
+
+
+            ////Start - Check if user has permission to create quick tactic
+            bool canCreateTactic = false;
+            var IsAudienceExists = db.Audiences.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).Any();
+            if (IsAudienceExists)
+            {
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId);
+                var isGeographyAllowed = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()
+                    && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
+                if (isGeographyAllowed)
+                {
+                    var isVerticalAllowed = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()
+                                            && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
+
+                    if (isVerticalAllowed)
+                        canCreateTactic = true;
+                }
+            }
+            if (canCreateTactic == false)
+            {
+                ViewBag.CannotCreateQuickTacticMessage = string.Format(Common.objCached.CannotCreateQuickTacticMessage, Common.CustomLabelFor(Enums.CustomLabelCode.Audience));
+            }
+            ViewBag.CanCreateTactic = canCreateTactic;
+            ////End - Check if user has permission to create quick tactic
+
+            pcpm.ProgramBudget = 0;
+            pcpm.AllocatedBy = objPlan.AllocatedBy;
+
+            pcpm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Program.ToString());//Added by Mitesh Vaishnav for PL ticket #719
+
+            return PartialView("_EditSetupProgram", pcpm);
+        }
+
+
+
+        private DateTime GetCurrentDateBasedOnPlan(bool isEndDate = false)
+        {
+            string Year = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.Year).SingleOrDefault();
+            DateTime CurrentDate = DateTime.Now;
+            int CurrentYear = CurrentDate.Year;
+            int diffYear = Convert.ToInt32(Year) - CurrentYear;
+            DateTime returnDate = DateTime.Now;
+            if (isEndDate)
+            {
+                DateTime lastEndDate = new DateTime(CurrentDate.AddYears(diffYear).Year, 12, 31);
+                DateTime endDate = CurrentDate.AddYears(diffYear).AddMonths(1);
+                returnDate = endDate > lastEndDate ? lastEndDate : endDate;
+            }
+            else
+            {
+                returnDate = DateTime.Now.AddYears(diffYear);
+            }
+            return returnDate;
+        }   
+ }
 }
 
 #region Commented

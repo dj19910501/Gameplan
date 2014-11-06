@@ -6,12 +6,28 @@
 @Html.Display(popupvalue)
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 @{
-    var programMaster = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
-    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+    var planProgramId = 0;
+    var programStatus = "";
+    string colorCode = "#C6EBF3";
+    string programTitle = "";
+    var campaignId=Convert.ToString(ViewBag.CampaignId);
+    RevenuePlanner.Models.InspectModel programMaster=null;
+    if (ViewBag.ProgramDetail!=null){
+    programMaster = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
+    planProgramId = programMaster.PlanProgramId;
+    programStatus = programMaster.Status;
+    colorCode = programMaster.ColorCode;
+    programTitle = programMaster.ProgramTitle;
+    }
+    bool IsPlanEditable = false;
+    if (ViewBag.IsPlanEditable!=null){
+        IsPlanEditable =(bool)ViewBag.IsPlanEditable;
+    }
+    
     //bool IsPlanOwner = (bool)ViewBag.InspectPopUpIsOwner;
 }
-@Html.Hidden("hdnPlanProgramId", programMaster.PlanProgramId, new { id = "hdnPlanProgramId" })
-@Html.Hidden("hdnProgramStatus", programMaster.Status, new { id = "hdnProgramStatus" })
+@Html.Hidden("hdnPlanProgramId", planProgramId, new { id = "hdnPlanProgramId" })
+@Html.Hidden("hdnProgramStatus", programStatus, new { id = "hdnProgramStatus" })
 @Html.Hidden("hdnProgramOpt", "View", new { id = "hdnProgramOpt" })
 
 <style type="text/css">
@@ -33,21 +49,26 @@
 </div>
 <form>
     <div class="modal-popup-title">
-        <span class="icon-flag bg-purple" style="background-color:#@programMaster.ColorCode !important;"></span>
+        <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight">
+            @if(programMaster!=null)
+            {
             <span>
-                <span id="lblProgramTitle"  class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(programMaster.ProgramTitle)">@HttpUtility.HtmlDecode(programMaster.ProgramTitle)</span>
+                <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
                 @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
                 {
                     @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large" })
                 }
             </span>
-            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programMaster.ProgramTitle), new { placeholder = "Program names goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = HttpUtility.HtmlDecode(programMaster.ProgramTitle) })
+            }
+            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { placeholder = "Program name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;", title = programTitle })
             @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
         </h2>
 
     </div>
 </form>
+@if (programMaster!=null)
+{
 <div class="modal-popup-summary">
     <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
     <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
@@ -81,7 +102,7 @@
         </p>
     </div>
 </div>
-
+}
 <div>
 
     <ul class="nav nav-tabs new-margin" id="InspectTab">
@@ -126,7 +147,8 @@
           var tabtext = ($("#li" + InspectValue).children('a').text());
           $('#div' + tabtext).css({ display: "block" });
 
-          loadReview(planProgramId, tabtext);
+         
+          
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liBudget").on("click", function () {
@@ -142,17 +164,22 @@
               loadReview(planProgramId, tabtext);
 
           });
+          if ($("#hdnPlanProgramId").val() != '0') {
+              loadReview(planProgramId, tabtext);
+          }
+          else {
 
+              $("#liReview,#liBudget,#liSetup").unbind('click');
+              loadAddSetup();
+          }
           $("#EditProgram").on("click", function () {
               var url;
               $("#successMessageViewProgram").slideUp(50);
               $("#errorMessageEditProgram").slideUp(50);
-              $("#successMessage").css("display", "none");
-              $("#txtProgramTitle").removeClass("error");
               $("#hdnProgramOpt").val("Edit");
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());
-              $("#txtProgramTitle").val($('#lblProgramTitle').text());
+
               if (tabtext == "Setup") {
                   url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
                   $("#divTab").empty();
@@ -163,11 +190,19 @@
                       $("#divTab").empty();
                       $("#divTab").load(url + '?id=' + planProgramId);
                   }
+              else if (tabtext == "Review") {
+                  url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
+                  $("#divTab").empty();
+                  $("#divTab").load(url + '?id=' + planProgramId);
+                  RemoveTabClass();
+                  $("#liSetup").removeClass('pull-left');
+                  $("#liSetup").addClass('active pull-left');
+              }
 
               $("#EditProgram").css("display", "none");
               $('#txtProgramTitle').css('display', 'block');
               $('#lblProgramTitle').css('display', 'none');
-              $("#txtProgramTitle").prop('readonly', false);
+
               return false;
           });
 
@@ -206,6 +241,8 @@
           var ProgramOpt = $("#hdnProgramOpt").val();
           if (tabValue == TabSetup) {
               if (ProgramOpt == "Edit") {
+                  $('#txtProgramTitle').css('display', 'block');
+                  $('#lblProgramTitle').css('display', 'none');
                   url = '@Url.Content("~/Home/LoadSetupProgramEdit/")';
               }
               else {
@@ -213,10 +250,18 @@
               }
           }
           if (tabValue == TabReview) {
+              if (ProgramOpt == "Edit") {
+                  $('#txtProgramTitle').css('display', 'none');
+                  $('#lblProgramTitle').css('display', 'block');
+              }
               url = '@Url.Content("~/Home/LoadReviewProgram/")';
         }
 
         if (tabValue == TabBudget) {
+              if (ProgramOpt == "Edit") {
+                  $('#txtProgramTitle').css('display', 'block');
+                  $('#lblProgramTitle').css('display', 'none');
+              }
             url = '@Url.Content("~/Home/LoadSetupProgramBudget/")';
           }
 
@@ -229,6 +274,23 @@
 
           $("#divTab").load(url + '?id=' + id);
       }
-
+    function loadAddSetup() {
+        $("#errorMessage").css("display", "none");
+        $("#successMessage").css("display", "none");
+        $("#hdnCampaignOpt").val("Edit");
+        var InspectValue = $("#hdnInspectPopup").val();
+        var tabtext = ($("#li" + InspectValue).children('a').text());
+        if (tabtext == "Setup") {
+            url = '@Url.Content("~/Home/CreateProgram/")';
+            $("#divTab").empty();
+            $("#divTab").load(url + '?id=@campaignId');
+              }
+        $("#EditProgram").css("display", "none");
+              //$("#btnAddCampaign").css("display", "none");
+        $('#txtProgramTitle').css('display', 'block');
+        $('#txtProgramTitle').text('');
+        $('#lblProgramTitle').css('display', 'none');
+              return false;
+          }
 
 </script>

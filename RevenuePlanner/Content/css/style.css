@@ -10817,3 +10817,59 @@ list-style-position:inside;
 {
     color: gray !important;
 }
+	  .add-icon-white {
+    padding-left: 2px;
+    width: 55px;
+    float: right;
+}
+
+.add-icon-white:after 
+{
+        background-image: url("../images/add-large.png");
+        background-position: 0 3px;
+        background-repeat: no-repeat;
+        content: "Add";
+        font-size: 15px;
+        height: 14px;
+        line-height: 34px;
+        margin-left: 10px;
+        margin-top: 12px;
+        padding-left: 24px;
+        vertical-align: top;
+}
+
+.delete-icon-white 
+{
+    padding-left: 2px;
+    width: 68px;
+    float: right;
+}
+
+.delete-icon-white:after 
+{
+        background-image: url("../images/delete-large.png");
+        background-position: 0 3px;
+        background-repeat: no-repeat;
+        content: "Delete";
+        font-size: 15px;
+        height: 14px;
+        line-height: 34px;
+        margin-left: 10px;
+        margin-top: 12px;
+        padding-left: 24px;
+        vertical-align: top;
+}
+.popup-button {
+    background: url("../images/add-large.png")no-repeat;
+    padding-left: 25px;
+    padding-right: 5px;
+    width: auto !important;
+}
+.btn-dropdwn{min-width:140px; border-radius:4px; border:1px solid #dbded7; padding:3px 0; float:left;}
+.btn-dropdwn ul li{padding:3px 15px 3px 25px; list-style:none; color:#000;font-family: 'source_sans_prosemibold',Arial,"sans-serif";
+    font-size: 14px; }
+.btn-dropdwn ul li:hover{background:#2485af; color:#fff;}
+.btn-dropdwn ul li.new-prog{background-image:url(../images/add-small.png); background-position: 7px 7px; background-repeat:no-repeat;}
+.btn-dropdwn ul li.new-prog:hover{background-position: 7px -15px;}
+.btn-dropdwn ul li.copy-camp{background-image:url(../images/copy.png); background-position: 7px 7px; background-repeat:no-repeat;}
+.btn-dropdwn ul li.copy-camp:hover{background-position: 7px -11px;}

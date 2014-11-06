@@ -290,6 +290,8 @@
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.svg" />
     <Content Include="Content\images\add-icon-blue.png" />
     <Content Include="Content\images\add-icon-white.png" />
+    <Content Include="Content\images\add-large.png" />
+    <Content Include="Content\images\add-small.png" />
     <Content Include="Content\images\ajax-loader.gif" />
     <Content Include="Content\images\apple-touch-icon-114-precomposed.png" />
     <Content Include="Content\images\apple-touch-icon-144-precomposed.png" />
@@ -353,6 +355,7 @@
     <Content Include="Content\images\close-x-big.png" />
     <Content Include="Content\images\close-x.png" />
     <Content Include="Content\images\comment_icon.png" />
+    <Content Include="Content\images\copy.png" />
     <Content Include="Content\images\deal-icon-active.png" />
     <Content Include="Content\images\deal-icon-blue.png" />
     <Content Include="Content\images\deal-icon.png" />

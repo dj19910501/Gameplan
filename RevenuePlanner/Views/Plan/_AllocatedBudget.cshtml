@@ -57,6 +57,23 @@
         </div>
     </div>
 </div>
+  <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed;">
+                        <div style="margin: 80px auto !important">
+                            <div id="successMessage" class="alert alert-success message-position-popup" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                                <a class="close">×</a>
+                                <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+                            </div>
+                            <div id="errorMessage" class="alert alert-error hide message-position-popup" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                                <a class="close">×</a>
+                                <strong>Error!</strong> <span id="spanMessageError">@Common.objCached.ValidateForEmptyField</span>
+                            </div>
+                            <div id="divPartial">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div id="divResubmission">
+                    </div>
 <script type="text/javascript">
   
     var heights = $('.column1').find('div').map(function () {
@@ -420,24 +437,28 @@ else {
         });
     }
     $("[linktype=campaign]").click(function (e) {
-        var id = $(this).attr('id');
-        var url = '@Url.Content("~/Plan/EditCampaign")';
+         var id = $(this).attr('id');
+      @*  var url = '@Url.Content("~/Plan/EditCampaign")';
         $("#slidepanel").css("display", "block");
         $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=allocated', AssignDefaultValue);
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
-        e.preventDefault();
+        e.preventDefault();*@
+        var mode = "Edit";
+        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id);
     });
 
     $("[linktype=program]").click(function (e) {
         var id = $(this).attr('id');
-        var url = '@Url.Content("~/Plan/EditProgram")';
+        @*var url = '@Url.Content("~/Plan/EditProgram")';
         $("#slidepanel").css("display", "block");
         $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=allocated', AssignDefaultValue);
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
-        e.preventDefault();
+        e.preventDefault();*@
+        var mode = "Edit";
+        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id);
     });
 </script>

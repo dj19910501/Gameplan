@@ -2736,11 +2736,12 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
 // Inspect Popup
 /// Start Script Of Inspect Popup
 /// Modified by Kunal to add  section parameter to open popup campaign, program or tactic wise
-function loadInspectPopup(id, section, tabValue) {
+    function loadInspectPopup(id, section, tabValue, parentId) {
+        parentId = typeof parentId !== 'undefined' ? parentId : '0';
     var url = '@Url.Content("~/Home/LoadInspectPopup")';
     $("#divPartial").empty();
     //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
-    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue);
+    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&parentId='+parentId);
 }
 
 //End Script Of Bhaveh

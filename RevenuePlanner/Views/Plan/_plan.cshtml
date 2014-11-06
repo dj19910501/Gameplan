@@ -23,92 +23,94 @@
 
 
 
-    <div class="padding-content padding-bottom0 ">
-        <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
+<div class="padding-content padding-bottom0 ">
+    <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
 
-        <div class="wraper-btns cf">
-            @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
-            {
-                <div class="span6">
-                    <div class="btn-group ">
-                        <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
-                            New Plan
-                        </button>
-                        <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu source-sans-prolight">
-                            <li>
-                                <a href="#">Create New</a>
-                            </li>
-                            @if (ViewBag.PageTitle == "Create")
+    <div class="wraper-btns cf">
+        @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
+        {
+            <div class="span6">
+                <div class="btn-group ">
+                    <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
+                        New Plan
+                    </button>
+                    <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu source-sans-prolight">
+                        <li>
+                            <a href="#">Create New</a>
+                        </li>
+                        @if (ViewBag.PageTitle == "Create")
+                        {
+                            if (Sessions.PlanId != 0 && (bool)ViewBag.IsBusinessUnitEditable == true)
                             {
-                                if (Sessions.PlanId != 0 && (bool)ViewBag.IsBusinessUnitEditable == true)
-                                {
-                                <li>
-                                    <a id="spanPlanDuplicate">Duplicate</a>
-                                </li>
-                                }
+                            <li>
+                                <a id="spanPlanDuplicate">Duplicate</a>
+                            </li>
                             }
-                            else if (ViewBag.PageTitle == "Assortment")
-                            {  
-                                <li>
-                                    <a id="spanPlanDuplicate">Duplicate</a>
-                                </li>
-                            }
-                            else if (ViewBag.PageTitle == "ApplyToCallender")
-                            {    
-                                <li>
-                                    <a id="spanPlanDuplicate">Duplicate</a>
-                                </li>  
-                            }
-                            @* Start - Added by Sohel Pathan on 19/08/2014 for Internal Review Points *@
-                            else if (ViewBag.PageTitle == "Budgeting")
-                            {    
-                                <li>
-                                    <a id="spanPlanDuplicate">Duplicate</a>
-                                </li>  
-                            }
-                            @* End - Added by Sohel Pathan on 19/08/2014 for Internal Review Points *@
-                        </ul>
-                    </div>
+                        }
+                        else if (ViewBag.PageTitle == "Assortment")
+                        {  
+                            <li>
+                                <a id="spanPlanDuplicate">Duplicate</a>
+                            </li>
+                        }
+                        else if (ViewBag.PageTitle == "ApplyToCallender")
+                        {    
+                            <li>
+                                <a id="spanPlanDuplicate">Duplicate</a>
+                            </li>  
+                        }
+@* Start - Added by Sohel Pathan on 19/08/2014 for Internal Review Points *@
+                        else if (ViewBag.PageTitle == "Budgeting")
+                        {    
+                            <li>
+                                <a id="spanPlanDuplicate">Duplicate</a>
+                            </li>  
+                        }
+@* End - Added by Sohel Pathan on 19/08/2014 for Internal Review Points *@
+                    </ul>
                 </div>
-                <div id="Addactivityarea" class="span6">
-                    <button id="LeftNavAddActivity" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Add Activity</button>
-                </div>
-            }
-        </div>
-
+            </div>
+            <div id="Addactivityarea" class="span6">
+                <button id="LeftNavAddActivity" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Add Activity</button>
+            </div>
+        }
     </div>
 
-
-
-    <ul id="ulplan" class="nav nav-list nav-gray-plan">
-        <li id="liDefination" class="item ">
-            @*<a class="source-sans-probold inputs" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = Planid })'"><span></span>@Html.Raw("PLAN DEFINITION")</a>*@
-            <a class="source-sans-probold inputs" id="LeftNavInput"><span></span>@Html.Raw("PLAN DEFINITION")</a>
-        </li>
-        <li id="liCampaign" class="item">
-            @*<a class="source-sans-probold audience" onclick="window.location.href='@Url.Action("Assortment", "Plan")'"><span></span>@Html.Raw("CAMPAIGNS")</a>*@
-            <a class="source-sans-probold audience" id="LeftNavCampaigns"><span></span>@Html.Raw("CAMPAIGNS")</a>
-        </li>
-        <li id="liCalender" class="item">
-            <a class="source-sans-probold calendar" id="aApplyToCalender"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
-        </li>
-        <li id="liBudgeting" class="item">
-            <a class="source-sans-probold budget" id="aBudgeting"><span></span>@Html.Raw("BUDGETING")</a>
-        </li>
-    </ul>
+</div>
 
 
 
+<ul id="ulplan" class="nav nav-list nav-gray-plan">
+    <li id="liDefination" class="item ">
+        @*<a class="source-sans-probold inputs" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = Planid })'"><span></span>@Html.Raw("PLAN DEFINITION")</a>*@
+        <a class="source-sans-probold inputs" id="LeftNavInput"><span></span>@Html.Raw("PLAN DEFINITION")</a>
+    </li>
+    <li id="liCampaign" class="item">
+        @*<a class="source-sans-probold audience" onclick="window.location.href='@Url.Action("Assortment", "Plan")'"><span></span>@Html.Raw("CAMPAIGNS")</a>*@
+        <a class="source-sans-probold audience" id="LeftNavCampaigns"><span></span>@Html.Raw("CAMPAIGNS")</a>
+    </li>
+    <li id="liCalender" class="item">
+        <a class="source-sans-probold calendar" id="aApplyToCalender"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
+    </li>
+    <li id="liBudgeting" class="item">
+        <a class="source-sans-probold budget" id="aBudgeting"><span></span>@Html.Raw("BUDGETING")</a>
+    </li>
+</ul>
 
-    <ul class="nav nav-list nav-gray-plan">
-        <li id="change-log" class="nav-header">
-            <span>Change Log</span>
-             <div class="changes"><div class="change">  <span class="action">None</span></div></div>
-        </li>
-    </ul>
+
+
+
+<ul class="nav nav-list nav-gray-plan">
+    <li id="change-log" class="nav-header">
+        <span>Change Log</span>
+        <div class="changes">
+            <div class="change"><span class="action">None</span></div>
+        </div>
+    </li>
+</ul>
 
 <script>
     $(document).ready(function () {
@@ -159,8 +161,7 @@
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';
                     }
-                    else
-                    {
+                    else {
                         if (data.redirect) {
                             window.location.href = data.redirect;
                             return;
@@ -188,10 +189,10 @@
         $(document).on("click", "#aApplyToCalender", function (e) {
             displayconfirm('@Url.Action("ApplyToCalendar", "Plan")');
         });*@
-            $('.nav nav-list nav-gray-plan li').each(function () {
-                $(this).removeClass('active');
-            });
-            if ('@ViewBag.PageTitle' == 'Create') {
+        $('.nav nav-list nav-gray-plan li').each(function () {
+            $(this).removeClass('active');
+        });
+        if ('@ViewBag.PageTitle' == 'Create') {
 
                 $('#LeftNavAddActivity').attr("disabled", "disabled");
                 if (!$('#liDefination').hasClass('active')) {
@@ -201,9 +202,9 @@
                         $('#aApplyToCalender').attr('style', 'cursor:default !important');
                         $('#aBudgeting').attr('style', 'cursor:default !important');
 
-                    $('#liCampaign').attr('style', 'on:default !important');
-                    $('#ulplan').removeClass();
-                    $('#ulplan').addClass('nav nav-list nav-gray-planc');
+                        $('#liCampaign').attr('style', 'on:default !important');
+                        $('#ulplan').removeClass();
+                        $('#ulplan').addClass('nav nav-list nav-gray-planc');
                         $('#LeftNavCampaigns').removeAttr('id');
                         $('#LeftNavCampaigns').attr('href', '#');
                         $('#aApplyToCalender').removeAttr('id');
@@ -211,18 +212,18 @@
                         $('#aBudgeting').removeAttr('id');
                         $('#aBudgeting').attr('href', '#');
 
-                    $('#LeftNavInput').removeAttr('id');
+                        $('#LeftNavInput').removeAttr('id');
                     }
                     else {
                         //$('#ulplan').removeClass();
                         //$('#ulplan').addClass('nav nav-listc nav-gray-plan');
                         $('#LeftNavCampaigns').attr("id", "LeftNavCampaigns");
-                        $('#LeftNavCampaigns').removeAttr('href','#');
+                        $('#LeftNavCampaigns').removeAttr('href', '#');
                         $('#aApplyToCalender').attr("id", "aApplyToCalender");
                         $('#aApplyToCalender').removeAttr('href', '#');
                         $('#aBudgeting').attr("id", "aBudgeting");
                         $('#aBudgeting').removeAttr('href', '#');
-                    $('#LeftNavInput').removeAttr('id');
+                        $('#LeftNavInput').removeAttr('id');
                     }
                 }
 
@@ -233,7 +234,7 @@
                     $('#liCampaign').addClass('active');
                     $('#LeftNavCampaigns').removeAttr('id');
                     $('#LeftNavCampaigns').attr("href", "#");
-                $('#LeftNavCampaigns').removeAttr('id');
+                    $('#LeftNavCampaigns').removeAttr('id');
                 }
             }
             else if ('@ViewBag.PageTitle' == 'ApplyToCallender') {
@@ -242,7 +243,7 @@
                     $('#liCalender').addClass('active');
                     $('#aApplyToCalender').removeAttr('id');
                     $('#aApplyToCalender').attr("href", "#");
-                $('#aApplyToCalender').removeAttr('id');
+                    $('#aApplyToCalender').removeAttr('id');
                 }
                 if (isplanEdit == 'false') {
                     $('#Addactivityarea').hide();
@@ -260,30 +261,98 @@
                 }
             }
     });
-    //function displayconfirm(strURL) {
-    //    if (isDataChanged()) {
-    //        $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a><a id='aclose' class='close confirmClose'>×</a>");
-    //        $("#errorMessage").slideDown(3000);
-    //    }
-    //    else {
-    //        window.location.href = strURL;
-    //    }
-    //};
-    //function isDataChanged() {
-    //    var changed = false;
-    //    $('.myValue').each(function () {
-    //        var iv = $(this).attr("placeholder");
-    //        if ($(this).val() != iv) {
-    //            changed = true;
-    //        }
-    //    });
-    //    $('.myValueFormat').each(function () {
-    //        var iv = $(this).attr("placeholder");
-    //        if (ReplaceCC($(this).val()) != ReplaceCC(iv)) {
-    //            changed = true;
-    //        }
-    //    });
-    //    return changed;
-    //}
+//function displayconfirm(strURL) {
+//    if (isDataChanged()) {
+//        $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a><a id='aclose' class='close confirmClose'>×</a>");
+//        $("#errorMessage").slideDown(3000);
+//    }
+//    else {
+//        window.location.href = strURL;
+//    }
+//};
+//function isDataChanged() {
+//    var changed = false;
+//    $('.myValue').each(function () {
+//        var iv = $(this).attr("placeholder");
+//        if ($(this).val() != iv) {
+//            changed = true;
+//        }
+//    });
+//    $('.myValueFormat').each(function () {
+//        var iv = $(this).attr("placeholder");
+//        if (ReplaceCC($(this).val()) != ReplaceCC(iv)) {
+//            changed = true;
+//        }
+//    });
+//    return changed;
+//}
+
+
+function ShowModel(mode, section, id,ParentId) {
+    modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
+
+    $('.modal-backdrop').addClass('modalFull-backdrop');
+    $('.modal-backdrop').attr("style", "display:none !important;");
+    $("#successMessage").css("display", "none");
+    $("#errorMessage").css("display", "none");
+    $("#modal-container-186470").modal('show');
+    ParentId = typeof ParentId != 'undefined' ? ParentId : '0';
+    if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()") {
+        if (mode == "Add") {
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup",'@Planid');
+        }
+        else {
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup");
+        }
+    }
+    else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()") {
+        if (mode == "Add") {
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", ParentId);
+         }
+         else {
+             loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup");
+         }
+    }
+        modalBackdropDisplayNone();
+    };
+
+    function loadInspectPopup(id, section, tabValue, parentId) {
+        parentId = typeof parentId != 'undefined' ? parentId : '0';
+        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+        $("#divPartial").empty();
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&parentId='+parentId);
+    }
+
+    function CloseIconClick() {
+        $('.close-x-big-icon').click(function () {
+            $('body').removeClass('bodyOverflow');
+                @*//window.location = '@Url.Content("~/Plan/Assortment")';*@
+            });
+        }
+    function modalBackdropDisplayNone() {
+        setTimeout(function () {
+            $('.modal-backdrop').each(function () {
+                if (typeof ($(this).attr('id')) == 'undefined') {
+                    $(this).attr("style", "display:none !important;");
+                }
+            });
+        }, 500);
+    };
+    function RefreshCurrentTab() {
+        //type = $('#ddlTabViewBy').val();
+        //AjaxRequest();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetCampaign/")',
+                    data: {
+                    },
+                    success: function (r) {
+                        campaign = r;
+                        var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
+                        $tableCampaigns.html('');
+                        fillCampaignsTable();
+                    }
+                });
+            }
 </script>
 

@@ -7,6 +7,7 @@
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     //deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     string OwnerName = ViewBag.OwnerName;
+    string PlanTitle = ViewBag.PlanTitle;
 }
 
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>   
@@ -34,6 +35,8 @@
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
 
         <div class="span6" id="inspect-modal-left-column1">
+            <p>@Html.Raw("Parent Plan")</p>
+            @Html.TextBox("txtPlan", HttpUtility.HtmlDecode(PlanTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = PlanTitle })
             <p>@Html.Raw("Description")</p>
             @Html.TextAreaFor(model=>model.Description, new {id="txtDescription", @class = "span12 text-area-size", style = "height:92px;" })
             
@@ -165,9 +168,16 @@
     //<---  End Document.ready Event --->
 
     $("#btnCancel").click(function () {
+        if ($('#PlanCampaignId').val() != '0') {
         CancelEvent();
         $("#successMessageViewCampaign").slideUp(50);
         $("#errorMessageEditCampaign").slideUp(50);
+        }
+        else {
+            
+            $("#modalMainContainer").hide();
+           
+        }
     });
 
 
@@ -357,25 +367,34 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/home/SaveCampaign")',
-            data: formData + '&UserId=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues),
+            data: formData + '&UserId=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues)+ '&planId=@Model.PlanId',
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
                     if (data.isSaved) {
-                        CancelEvent();
-                        RefreshCurrentTab();
-                        $("#errorMessageEditCampaign").slideUp(50);
-                        $("#spanSuccessMessageViewCampaign").empty();
-                        $("#successMessageViewCampaign").slideDown(400);
-                        $("#spanSuccessMessageViewCampaign").empty();
-                        $("#spanSuccessMessageViewCampaign").html(data.msg);
-			$("#lblCampaignTitle").html(htmlEncode($('#txtTitle').val()));
-                        $("#tactic-name").html(htmlEncode($('#txtTitle').val()));
+                        /// CancelEvent();
+                        var activeTab = $("#InspectTab li.active a").text()
+                        var planCampaignId = $("#PlanCampaignId").val();
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessage").css("display", "none");
+                        $("#liReview,#liBudget,#liSetup").bind('click');
+                        if (planCampaignId == '0') {
+                            planCampaignId = data.CampaignID;
+                        }
+                        loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab);
+                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        //$("#errorMessageEditCampaign").slideUp(50);
+                        //$("#spanSuccessMessageViewCampaign").empty();
+                        //$("#successMessageViewCampaign").slideDown(400);
+                        //$("#spanSuccessMessageViewCampaign").empty();
+                        //$("#spanSuccessMessageViewCampaign").html(data.msg);
                     }
                     else {
-                        //CancelEvent();
+                        CancelEvent();
                         ShowError(data.msg);
                     }
                 }

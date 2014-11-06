@@ -7,6 +7,7 @@
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     string CampaignTitle = ViewBag.CampaignTitle;
     string OwnerName = ViewBag.OwnerName;
+    
 }
 
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
@@ -328,17 +329,26 @@
                 success: function (data) {
                     if (data.IsSaved) {
                         CancelEvent();
-                        RefreshCurrentTab();
-                        $("#errorMessageEditProgram").slideUp(50);
-                        $("#spanMessageViewProgram").empty();
-                        $("#successMessageViewProgram").slideDown(400);
-                        $("#spanSuccessMessageViewProgram").empty();
-                        $("#spanSuccessMessageViewProgram").html(data.Msg);
-			$("#lblProgramTitle").html(htmlEncode($('#txtProgramTitle').val()));
-	               $("#tactic-name").html(htmlEncode($('#txtProgramTitle').val()));			
+                        var activeTab = $("#InspectTab li.active a").text()
+                        var planProgramId = $("#hdnPlanProgramId").val();
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.Msg);
+                        $("#errorMessage").css("display", "none");
+                        if (planProgramId == '0') {
+                            planProgramId = data.programID;
+                        }
+                        $("#liReview,#liBudget,#liSetup").bind('click');
+                        //$("#errorMessageEditProgram").slideUp(50);
+                        //$("#spanMessageViewProgram").empty();
+                        //$("#successMessageViewProgram").slideDown(400);
+                        //$("#spanSuccessMessageViewProgram").empty();
+                        //$("#spanSuccessMessageViewProgram").html(data.Msg);
+                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", activeTab);
+                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                     }
                     else {
-                        //CancelEvent();
+                        CancelEvent();
                         ShowError(data.Msg);
                     }
                 }
@@ -358,9 +368,14 @@
     });
 
     $("#cancelProgramEditSection").click(function () {
+        if ($("#hdnPlanProgramId").val() != '0') {
         CancelEvent();
         $("#successMessageViewProgram").slideUp(50);
         $("#errorMessageEditProgram").slideUp(50);
+        }
+        else {
+            $("#modalMainContainer").hide();
+        }
     });
 
 
