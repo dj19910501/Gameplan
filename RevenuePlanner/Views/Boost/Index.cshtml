@@ -50,7 +50,24 @@
     }
 </div>
 
-
+<div style="clear:both;"></div>
+  <div class="container-fluid all-height" id="modalMainContainer">
+    <div class="row-fluid calc-height">
+        <div class="container-fluid">
+            <div class="row-fluid ">
+                <div class="span12">
+                    <div id="modal-container-186470" class="modal-inspect-review hide modal-full-view modal-inspect-TacticType-height" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none;position:fixed;">
+                     <div style="margin: 80px auto !important">
+                        <div id="divPartial">
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divBackground" class="modal-backdrop fade in" style="display: none;z-index:2502 !important;" ></div>
 <!--End sidebar-->
 
 <script type="text/javascript">
@@ -107,6 +124,14 @@
         }
     });
 
+    $("#modal-container-186470").on("show", function (e) {
+        $("#modalMainContainer").show();
+    });
+    function CloseIconClick() {
+        $('.close-x-big-icon').click(function () {
+            $('body').removeClass('bodyOverflow');
+        });
+    }
 
     $(document).on('click', '#table_boost tbody tr td span.circle-check-icon-gray-integration', function (e) {
         e.stopPropagation();

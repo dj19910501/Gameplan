@@ -46,7 +46,7 @@
         </div>
     </div>
     <div class="CampaignBudgetSection">
-        @if (@Model.AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+        @if (IsBudgetAllocated)
         {
             <div class="budget-section">
                 <div class="budget-head clearfix">
@@ -102,6 +102,8 @@
 }
 
 <script type="text/javascript">
+
+    var SaveCampaignFlag = true;
 
     function FormatRemainingBudget() {
         if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
@@ -453,6 +455,42 @@
 
                  ShowError(errorMsg);
                  return false;
+             }
+
+            if (SaveCampaignFlag) {
+                var lstAllocInputs = $(".budget-section input.low-budgeted").not('.unallocated-text-BudgetPopUp');
+                if (lstAllocInputs.length > 0) {
+                    var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CampaignBudgetIsLowerthanTotalAllocatedPrograms ";
+                        // Added by Dharmraj 25-8-2014, for Internal review points
+                        errorMsg = errorMsg.replace("month", "@(Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "month" : "quarter")");
+
+                        var removeLength = 0;
+                        var inputLength = lstAllocInputs.length;
+                        for (var i = 0; i < lstAllocInputs.length; i++) {
+                            if (inputLength == 1) {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
+                            }
+                            else if (inputLength == 2) {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                                removeLength = 4;
+                            }
+                            else if (inputLength > 2) {
+                                if (i == inputLength - 2) {
+                                    errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                                    removeLength = 4;
+                                }
+                                else {
+                                    errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
+                                    removeLength = 2;
+                                }
+                            }
+                        }
+                        errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
+                        errorMsg += '. <br />If you want to continue, hit Save below.';
+                        ShowError(errorMsg);
+                        SaveCampaignFlag = false;
+                        return false;
+                    }
              }
 
              if ($("#lblTotalAllocated").hasClass('error-text')) {

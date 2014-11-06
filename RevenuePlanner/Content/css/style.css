@@ -10767,4 +10767,49 @@ list-style-position:inside;
 /* change dotted line position on Organization hierarchy*/
 .treeview > li > ul > li:last-child {
     background-position: 0 -4975px !important;
+}	 
+
+.Improvement-Width-TacticType input
+{
+     width: 150px !important;
 }
+
+.Improvement-Width-TacticType-ADS
+{
+     margin-left: 14px;
+     width: 92% !important;
+}
+
+.modal-inspect-TacticType-height {
+    height: 100% !important;
+}
+
+.row-fluid .impromentTacticType-span12 {
+    width: 97.4%;
+}
+
+#ImprovHeaderTitle , #ImprovHeaderWeight
+{
+    border-bottom: 1px solid #b3b3b3;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+#cancelImporvementTacticPopup {
+    color: gray;
+    margin-top: 6px;
+    float: left;
+    margin-left: 20px;
+    margin-top: 30px !important
+}
+
+.delete-btn-tab{background: url("../images/delete-btn.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    clear: both;
+    height: 37px;
+    width: 87px;}
+.delete-btn-gray{ background: url("../images/delete-large.png") no-repeat scroll 7px center rgba(0, 0, 0, 0);
+    border: 0 none;
+    color: #ffffff;
+    height: 37px;
+    padding-left: 18px;
+    width: 87px;}

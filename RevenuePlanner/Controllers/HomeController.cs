@@ -8074,7 +8074,7 @@ namespace RevenuePlanner.Controllers
 
             pcpm.ProgramBudget = pcp.ProgramBudget;
 
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == pcp.Plan_Campaign.PlanId);
             pcpm.AllocatedBy = objPlan.AllocatedBy;
 
             var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
@@ -8258,7 +8258,7 @@ namespace RevenuePlanner.Controllers
                             int result = db.SaveChanges();
                             result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                             scope.Complete();
-                            return Json(new { IsSaved = true, msg = "Saved Successfully.", JsonRequestBehavior.AllowGet });
+                            return Json(new { IsSaved = true, msg = "Changes Saved.", JsonRequestBehavior.AllowGet });
                         }
                     }
                 }
@@ -8497,10 +8497,10 @@ namespace RevenuePlanner.Controllers
 
             pcpm.CampaignBudget = pcp.CampaignBudget;
 
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == pcp.PlanId);
             pcpm.AllocatedBy = objPlan.AllocatedBy;
 
-            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
+            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == pcp.PlanId && c.IsDeleted == false).ToList();
             double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
             double planBudget = objPlan.Budget;
             double planRemainingBudget = planBudget - allCampaignBudget;
@@ -8681,7 +8681,7 @@ namespace RevenuePlanner.Controllers
                             
                             db.SaveChanges();
                             scope.Complete();
-                            return Json(new { IsSaved = true, msg = "Saved Successfully.", JsonRequestBehavior.AllowGet });
+                            return Json(new { IsSaved = true, msg = "Changes Saved.", JsonRequestBehavior.AllowGet });
                         }
                     }
                 }
@@ -8713,7 +8713,7 @@ namespace RevenuePlanner.Controllers
             pcpm.PlanProgramId = pcp.PlanProgramId;
             pcpm.PlanTacticId = pcp.PlanTacticId;
             pcpm.TacticCost = pcp.Cost;
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == pcp.Plan_Campaign_Program.Plan_Campaign.PlanId);
             pcpm.AllocatedBy = objPlan.AllocatedBy;
 
             //Added By : Kalpesh Sharma Functioan and code review #693
@@ -8948,7 +8948,7 @@ namespace RevenuePlanner.Controllers
                             
                             db.SaveChanges();
                             scope.Complete();
-                            return Json(new { IsSaved = true, msg = "Saved Successfully.", JsonRequestBehavior.AllowGet });
+                            return Json(new { IsSaved = true, msg = "Changes Saved.", JsonRequestBehavior.AllowGet });
                         }
                     }
                 }

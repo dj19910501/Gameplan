@@ -135,6 +135,7 @@
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liBudget").on("click", function () {
               $("#successMessageViewCampaign").slideUp(50);
+              $("#errorMessageEditCampaign").slideUp(50);
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");
@@ -150,6 +151,9 @@
           $("#btnEditCampaign").on("click", function () {
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
+              $("#successMessageViewCampaign").slideUp(50);
+              $("#errorMessageEditCampaign").slideUp(50);
+
               $("#hdnCampaignOpt").val("Edit");
               $("#txtTitle").removeClass("error");
               var InspectValue = $("#hdnInspectPopup").val();
