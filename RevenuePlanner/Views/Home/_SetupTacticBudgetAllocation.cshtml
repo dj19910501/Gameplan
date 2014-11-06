@@ -93,7 +93,7 @@
         }
     </div>
     
-    <div class="wraper-btns cf border-top-div-CampaignPopUp" id="SaveTacticBudgetSection">
+    <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveTacticBudgetSection">
         <div class="span2 btn-save">
             <button id="save_Tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
         </div>
@@ -209,6 +209,10 @@
                             if (parseInt(remainingMonthlyBudget) < 0) {
                                 $("#" + r[i].periodTitle).addClass('error-text');
                             }
+                            else {
+                                $("#" + r[i].periodTitle).addClass('Tactic-Budget-Allocation');
+                            }
+
                             if (parseFloat($("#" + r[i].periodTitle).attr('ov')) < parseFloat(r[i].programMonthlyBudget)) {
                                 $("#" + r[i].periodTitle).addClass('error-text');
                             }
