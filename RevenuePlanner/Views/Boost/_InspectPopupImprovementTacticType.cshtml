@@ -41,16 +41,16 @@
 
 @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
 {
-    <div class="modal-popup-title">
+    <div class="modal-popup-title" style="float:left;width:100%;">
         <span class="icon-flag bg-purple" style="background-color:#@Model.ColorCode !important;"></span>
-        <h2 class="title-simple source-sans-prolight">
+        <h2 class="title-simple source-sans-prolight" style="float: left;margin-top:0;">
             <span>
                 <span id="lblProgramTitle"  class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(Model.Title)">Improvement Tactic Type</span>
-                <div class="delete-btn-tab">
-                    <button class="delete-btn-gray" id="deleteImprovementTactic">Delete</button>
-                </div>
             </span>
         </h2>
+        <div class="delete-btn-tab" style="float: right;">
+            <button class="delete-btn-gray" id="deleteImprovementTactic">Delete</button>
+        </div>
     </div>
 
     <div id="divTab">

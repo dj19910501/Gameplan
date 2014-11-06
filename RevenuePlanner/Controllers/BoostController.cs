@@ -299,7 +299,7 @@ namespace RevenuePlanner.Controllers
 
             bittobj.listMetrics = listMetrics;
             bittobj.listMetricssize = listMetricssize;
-            return PartialView("CreateImprovementTactic", bittobj);
+            return PartialView("_InspectPopupImprovementTacticType", bittobj);
         }
 
         /// <summary>

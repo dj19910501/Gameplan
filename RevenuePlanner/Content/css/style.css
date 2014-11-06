@@ -10804,7 +10804,6 @@ list-style-position:inside;
 }
 
 .delete-btn-tab{background: url("../images/delete-btn.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
-    clear: both;
     height: 37px;
     width: 87px;}
 .delete-btn-gray{ background: url("../images/delete-large.png") no-repeat scroll 7px center rgba(0, 0, 0, 0);

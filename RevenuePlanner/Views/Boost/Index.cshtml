@@ -108,19 +108,26 @@
     }
 
     $("#create_new_tactic").click(function () {
-        $("#slidepanel").css("display", "block");
+        $('#divPartial').empty();
+        $('body').css('overflow', 'hidden');
+        $('body').removeClass('bodyOverflow');
         var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
-        $('#slidepanel-container').load(url + '?id=' + 0);
-        $("#slidepanel").css("right", "0px");
+        $('#divPartial').load(url + '?id=' + 0);
+        $("#modal-container-186470").modal('show');
+        $('.modal-backdrop').addClass('modalFull-backdrop');
+        $('.modal-backdrop').attr("style", "display:none !important;");
+        
     });
 
     $(document).on('click', '#table_boost tbody tr', function (e) {
         var id = $(this).attr("id");
         if (typeof id != "undefined") {
-            $("#slidepanel").css("display", "block");
+            $('#divPartial').empty();
             var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
-            $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);//added by uday for internal point 2-7-2014);
-            $("#slidepanel").css("right", "0px");
+            $('#divPartial').load(url + '?id=' + id, AssignDefaultValue);
+            $("#modal-container-186470").modal('show');
+            //$('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
+            //$("#slidepanel").css("right", "0px");
         }
     });
 
