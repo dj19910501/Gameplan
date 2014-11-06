@@ -40,7 +40,7 @@
         @if (IsPlanEditable && !(InspectMode == Enums.InspectPopupMode.Edit.ToString()))
         {
             @*@Html.ActionLink(" ", "Assortment", "Plan", new { tacticId = tacticMaster.PlanTacticId, EditObject = "ImprovementTactic", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large"})*@
-            <a id="lnkEdit" class="edit-icon-white btn-blue btn-large"></a>
+            <a id="lnkEdit" class="edit-icon-white btn-blue btn-large" style="cursor: pointer;"></a>
         }
         </h2>
     </div>
