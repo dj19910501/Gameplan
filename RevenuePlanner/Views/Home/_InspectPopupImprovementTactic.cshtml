@@ -108,8 +108,7 @@
     var TabActual = "Impact";
     var divTab = "#divTab";
 
-    $(document).ready(
-      function () {
+    $(document).ready(function () {
           CloseIconClick();
           NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
           var InspectValue = $("#hdnInspectPopup").val();
@@ -129,8 +128,7 @@
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");
-              $("#errorMessageImprovementTactic").css("display", "none");
-              $("#successMessageImprovementTactic").css("display", "none");
+              HideAllMessages();
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
               var tabtext = ($(this).children('a').text());
               var planTacticId = $("#hdnPlanTacticId").val();
@@ -189,20 +187,22 @@
     }
 
     $('#lnkEdit').click(function () {
-        @*@{ViewBag.InspectMode = Enums.InspectPopupMode.Edit;}*@
-        //window.location.reload();
-        //loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
-
+        HideAllMessages();
         var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
-        //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
         $("#divPartial").load(url + '?id=' + @tacticMaster.PlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()");
     });
 
-   @* $('.close-x-big-icon').click(function () {
-        if ('@InspectMode' == '@Enums.InspectPopupMode.Edit.ToString()')
-        {
-            returnToReadOnlyMode();
-        }
-    })*@
+    function HideAllMessages()
+    {
+        $("#successMessageImprovementTactic").css("display", "none");
+        $("#spanSuccMessageImprovementTactic").empty();
+        $("#errorMessageImprovementTactic").css("display", "none");
+        $("#spanErrMessageImprovementTactic").empty();
+        $("#successMessage").css("display", "none");
+        $("#spanMessageSuccess").empty();
+        $("#errorMessage").css("display", "none");
+        $("#spanMessageError").empty();
+    }
+
 </script>
