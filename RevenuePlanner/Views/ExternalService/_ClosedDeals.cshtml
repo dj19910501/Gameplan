@@ -130,7 +130,7 @@
 
     $("#btnSaveCloseDealMappings").click(function (e) {
         var isError = false;
-        $('.ddlStyle').each(function (e) {
+        $('#frmClosedDealDataMapping').find('.ddlStyle').each(function (e) {
             if ($(this).next('.sbHolder').hasClass("error")) {
                 isError = true;
                 return false;
