@@ -2714,6 +2714,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
     function CloseIconClick() {
         $('.close-x-big-icon').click(function () {
             $('body').removeClass('bodyOverflow');
+            gantt.refreshData();
         });
     }
     @*$("#modal-container-186470").on("hide", function (e) {
