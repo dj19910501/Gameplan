@@ -107,38 +107,18 @@
         $('.accordion').on('shown', function () {
             var expandedTab = $('.integrationAccordion').find('.collapse.in');
             if ($(expandedTab).attr('id') == 'collapseGrp1') {
-                $('#integrationForm').find("#cSuccessGeneralSettings").html('');
-                $('#integrationForm').find("#successMessageGeneralSettings").hide();
-                $('#integrationForm').find('#cErrorGeneralSettings').html('');
-                $('#integrationForm').find("#errorMessageGeneralSettings").hide();
                 $('#integrationForm').find('#Instance').focus();
             }
             else if ($(expandedTab).attr('id') == 'collapseGrpDataMapping') {
-                $("#frmDataMapping").find('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
-                $("#frmDataMapping").find("#DataMappingSuccessMessage").hide();
-                $("#frmDataMapping").find('#DataMappingErrorMessage').find('#spanMessageError').html('');
-                $("#frmDataMapping").find("#DataMappingErrorMessage").hide();
                 $("#frmDataMapping #0").next().find('.sbSelector').focus();
             }
             else if ($(expandedTab).attr('id') == 'collapseGrpServer') {
-                $('#extServer').find("#sucExtSrv").hide();
-                $('#extServer').find('#cSucExtSrv').html('');
-                $('#extServer').find("#errExtSrv").hide();
-                $('#extServer').find('#cErrExtSrv').html('');
                 $('#extServer').find('#SFTPServerName').focus();
             }
             else if ($(expandedTab).attr('id') == 'collapseRevenue') {
-                $("#frmRevenueDataMapping").find('#RevenueSuccessMessage').find('#spanMessageSuccess').html('');
-                $("#frmRevenueDataMapping").find("#RevenueSuccessMessage").hide();
-                $("#frmRevenueDataMapping").find('#RevenueErrorMessage').find('#spanMessageError').html('');
-                $("#frmRevenueDataMapping").find("#RevenueErrorMessage").hide();
                 $("#frmRevenueDataMapping #0").next().find('.sbSelector').focus();
             }
             else if ($(expandedTab).attr('id') == 'collapseCloseDeal') {
-                $("#frmClosedDealDataMapping").find('#ClosedDealErrorMessage').find('#spanMessageError').html('');
-                $("#frmClosedDealDataMapping").find("#ClosedDealErrorMessage").hide();
-                $("#frmClosedDealDataMapping").find('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
-                $("#frmClosedDealDataMapping").find("#ClosedDealSuccessMessage").hide();
                 $("#frmClosedDealDataMapping #0").next().find('.sbSelector').focus();
             }
         });
@@ -186,19 +166,6 @@
         }
 
         $('#hdnIsActiveIntact').val($('#IsActive').val());
-
-        //$('#content :input').each(function () {
-        //    if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-        //        if (this.id != 'importActuals' && this.id != 'integrationStatus') {
-        //            var input = $(this).val();
-        //            if (input == '') {
-        //                $(this).addClass("error");
-        //            } else {
-        //                $(this).removeClass("error");
-        //            }
-        //        }
-        //    }
-        //});
 
         var selectedSpan = $('#ddlSyncFrequency').val();
         if (selectedSpan != "") {
@@ -390,5 +357,38 @@
     });
     // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
 
+    // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #863
+    $('.accordion-body').on('hide', function () {
+        clearAllMessages();
+    });
 
+    function clearAllMessages()
+    {
+        $('#integrationForm').find("#cSuccessGeneralSettings").html('');
+        $('#integrationForm').find("#successMessageGeneralSettings").hide();
+        $('#integrationForm').find('#cErrorGeneralSettings').html('');
+        $('#integrationForm').find("#errorMessageGeneralSettings").hide();
+        
+        $("#frmDataMapping").find('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
+        $("#frmDataMapping").find("#DataMappingSuccessMessage").hide();
+        $("#frmDataMapping").find('#DataMappingErrorMessage').find('#spanMessageError').html('');
+        $("#frmDataMapping").find("#DataMappingErrorMessage").hide();
+        
+        $('#extServer').find("#sucExtSrv").hide();
+        $('#extServer').find('#cSucExtSrv').html('');
+        $('#extServer').find("#errExtSrv").hide();
+        $('#extServer').find('#cErrExtSrv').html('');
+        
+        $("#frmRevenueDataMapping").find('#RevenueSuccessMessage').find('#spanMessageSuccess').html('');
+        $("#frmRevenueDataMapping").find("#RevenueSuccessMessage").hide();
+        $("#frmRevenueDataMapping").find('#RevenueErrorMessage').find('#spanMessageError').html('');
+        $("#frmRevenueDataMapping").find("#RevenueErrorMessage").hide();
+
+        $("#frmClosedDealDataMapping").find('#ClosedDealErrorMessage').find('#spanMessageError').html('');
+        $("#frmClosedDealDataMapping").find("#ClosedDealErrorMessage").hide();
+        $("#frmClosedDealDataMapping").find('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
+        $("#frmClosedDealDataMapping").find("#ClosedDealSuccessMessage").hide();
+        
+    }
+    // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #863
 </script>
