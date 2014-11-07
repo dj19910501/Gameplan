@@ -175,6 +175,7 @@
       function () {
           CloseIconClick();
           $("#btnEditCampaign").css("display", "block");
+          $("#AddForm").css("display", "block");
           NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
           var InspectValue = $("#hdnInspectPopup").val();
           var planCampaignId = $("#hdnPlanCampaignId").val();
@@ -238,6 +239,7 @@
                       }
 
               $("#btnEditCampaign").css("display", "none");
+              $("#AddForm").css("display", "none");
               $('#txtTitle').css('display', 'block');
               $('#lblCampaignTitle').css('display', 'none');
               $("#txtTitle").prop('readonly', false);
@@ -351,6 +353,7 @@
             $("#divTab").load(url + '?id=@planId');
               }
               $("#btnEditCampaign").css("display", "none");
+        $("#AddForm").css("display", "none");
               $(".btn-group").css("display", "none");
         //$("#btnAddCampaign").css("display", "none");
               $('#txtTitle').css('display', 'block');
@@ -370,7 +373,7 @@
         var popup = $('#popupnewprogram');
         var button = $('#AddForm');
         if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
-            $('#popupnewprogram').css('display', 'none');
+            $('#popupnewprogram').css("display", "none");
         }
     });
 
