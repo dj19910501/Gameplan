@@ -57,7 +57,17 @@
                 <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
                 @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
                 {
-                    @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large" })
+                    <div style="float: right;position:relative;">
+                    <span class="delete-icon-white delete-btn-gray delete-btn-tab" style="display: block; cursor: pointer;" id="DeleteForm"></span>
+                    <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer;margin-right:10px;" id="AddForm"></span>
+                    <div class="btn-dropdwn" style="display:none;position:absolute;top:35px;" id="popupnewprogram">
+                                <ul style="margin:0;">
+                                    <li class="new-prog" id="NewTactic">New Tactic</li>
+                                    <li class="copy-camp">Copy Tactic</li>
+                                </ul>
+                            </div>
+                        </div>
+                    @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
                 }
             </span>
             }
@@ -176,6 +186,8 @@
               var url;
               $("#successMessageViewProgram").slideUp(50);
               $("#errorMessageEditProgram").slideUp(50);
+              $("#successMessage").css("display", "none");
+              $("#txtProgramTitle").removeClass("error");
               $("#hdnProgramOpt").val("Edit");
               var InspectValue = $("#hdnInspectPopup").val();
               var tabtext = ($("#li" + InspectValue).children('a').text());
@@ -199,10 +211,12 @@
                   $("#liSetup").addClass('active pull-left');
               }
 
-              $("#EditProgram").css("display", "none");
+              $("#EditProgram").css("display", "none"); 
+              $("#DeleteForm").css("display", "none");
+              $("#AddForm").css("display", "none");
               $('#txtProgramTitle').css('display', 'block');
               $('#lblProgramTitle').css('display', 'none');
-
+              $("#txtProgramTitle").prop('readonly', false);
               return false;
           });
 
@@ -223,6 +237,10 @@
           });
 
 
+          $("#NewTactic").on("click", function () {
+              loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', planProgramId);
+              return false;
+          });
       });
 
       function RemoveTabClass() {
@@ -292,5 +310,22 @@
         $('#lblProgramTitle').css('display', 'none');
               return false;
           }
+
+    $('#AddForm').click(function () {
+        if ($('#popupnewprogram').css('display') == 'none') {
+            $('#popupnewprogram').css('display', 'block')
+        }
+        else {
+            $('#popupnewprogram').css('display', 'none')
+        }
+    });
+
+    $(document).mouseup(function (e) {
+        var popup = $('#popupnewprogram');
+        var button = $('#AddForm');
+        if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
+            $('#popupnewprogram').css('display', 'none');
+        }
+    });
 
 </script>

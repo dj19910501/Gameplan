@@ -3,20 +3,21 @@
 
 @using (Html.BeginForm())
 {
-
     <script src="~/Scripts/js/bootstrap-datepicker.js"></script> 
  
     bool ExtIntService = (bool)ViewBag.ExtIntService;  
-    @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
-    @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
-    @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
-    @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
-    @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
-    @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
-    @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
-    @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
-
-
+ @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+ @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
+ @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
+ @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
+ @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
+ @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
+ @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+ @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
+ @Html.HiddenFor(model => model.BusinessUnitId, new { id = "hdnBusinessUnitId" })
+ @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
+ @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
+     
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
         <div class="span6" id="inspect-modal-left-column1">
             <p>Parent Campaign</p>
@@ -144,8 +145,7 @@
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
           $('#divTacticSaveCancel').css('display', 'block');
-          $('#EditForm').css('display', 'none');
-
+          $('#EditForm').css('display', 'none');          
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val());
           $(".selectBox select").selectbox();
@@ -160,6 +160,9 @@
           $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
+          if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+              $("#liSetup,#liReview,#liBudget,#liActuals").unbind("click");
+          }
 
           $('.dp').datepicker({
               format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
@@ -237,13 +240,22 @@
               $('#divTacticSaveCancel').css('display', 'none');
               $('#EditForm').css('display', 'block');
               $("#hdnTacticBudgetAllocationOpt").val("View");
-              loadReview(planTacticId, activeTab);
+              if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+                  loadReview(planTacticId, activeTab);
+              }
+              else {
+                  $('#modal-container-186470').modal("hide");
+              }
           });
 
       });
 
-      $("#btnUploadResult").on("click", function (e) {
-
+      $("#btnUploadResult").on("click", function (e) {          
+          document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
+          document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
+          document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
+          document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
+          
           var isLowBudgeted = false;
           var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
           var lowBudgetedMonths = "";
@@ -333,7 +345,7 @@
 
           _customFieldValues = JSON.stringify(_customFieldValues);
           var isAssortment = true;
-          $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
+          
           _resubmissionLabelValues = [];
 
           if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
@@ -361,9 +373,7 @@
 
                         if (data.redirect) {
                             var activeTab = $("#InspectTab li.active a").text()
-                            var planTacticId = $("#hdnPlanTacticId").val();
-                            $("#lblTacticTitle").val($("#hdnPlanTacticTitle").val());
-                            $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
+                            var planTacticId = data.planTacticId;                            
                             $('#txtTacticTitle').css('display', 'none');
                             $('#lblTacticTitle').css('display', 'block');
                             $("#lblTacticTitle").removeAttr("style");
@@ -373,7 +383,8 @@
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.Msg);
                             $("#errorMessage").css("display", "none");
-                            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab);
+                            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()");
+                            $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
                             RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                             return;
                         }
@@ -383,7 +394,6 @@
                         $("#divBudgetError").slideUp(30);
                         return;
                     }
-
                 }
             }
         });

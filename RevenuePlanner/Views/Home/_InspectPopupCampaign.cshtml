@@ -370,7 +370,7 @@
         var popup = $('#popupnewprogram');
         var button = $('#AddForm');
         if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
-            $('#popupnewprogram').attr("style", "display:none;")
+            $('#popupnewprogram').css('display', 'none');
         }
     });
 

@@ -348,7 +348,7 @@
                         RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                     }
                     else {
-                        CancelEvent();
+                        //CancelEvent();
                         ShowError(data.Msg);
                     }
                 }
@@ -383,6 +383,8 @@
         $("#hdnProgramOpt").val("View");
         loadReview('@Model.PlanProgramId', "Setup");
         $("#EditProgram").css("display", "block");
+        $("#DeleteForm").css("display", "block");
+        $("#AddForm").css("display", "block");
         $('#txtProgramTitle').css('display', 'none');
         $('#lblProgramTitle').css('display', 'block');
         $("#lblProgramTitle").removeAttr("style");

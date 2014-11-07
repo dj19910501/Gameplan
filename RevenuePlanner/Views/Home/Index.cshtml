@@ -2669,7 +2669,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
                 $("#errorMessage").css("display", "none");
 				$("#modal-container-186470").modal('show');
                
-                loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
+	    	loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()");
                 modalBackdropDisplayNone();
 
                
@@ -2736,12 +2736,14 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
 // Inspect Popup
 /// Start Script Of Inspect Popup
 /// Modified by Kunal to add  section parameter to open popup campaign, program or tactic wise
-    function loadInspectPopup(id, section, tabValue, parentId) {
+    function loadInspectPopup(id, section, tabValue, mode, parentId) {
+        
         parentId = typeof parentId !== 'undefined' ? parentId : '0';
+        alert("parentId -" + parentId);
     var url = '@Url.Content("~/Home/LoadInspectPopup")';
     $("#divPartial").empty();
     //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
-    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&parentId='+parentId);
+    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId);
 }
 
 //End Script Of Bhaveh

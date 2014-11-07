@@ -463,8 +463,8 @@
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();*@
             // e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
-            var mode = "Edit";
-            ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", idCampaing);
+            
+            ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", idCampaing);
         });
 
 
@@ -604,8 +604,8 @@
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();*@
             // e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
-            var mode = "Edit";
-            ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", idProgram);
+            
+            ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", idProgram);
 
         });
 
@@ -658,9 +658,8 @@
             $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue*@
-            
-            var mode = "Add";
-            ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaing);
+                       
+            ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaing);
         });
 
         //Modified by Mitesh 24July2014 for pl ticket 619 
@@ -668,7 +667,6 @@
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var idTactic = $(this).parent().attr("index");
-            // alert(idTactic);
             if (idTactic == 0) {
                 $('div[index=0]').removeClass('1');
                 $(this).addClass('1');
@@ -677,36 +675,19 @@
             //displayconfirmForTacticEvent(idTactic);
             displayConfirmCommon('tacticCommonClick(' + idTactic + ');');
 
-            @*$("#slidepanel").css("display", "block");
-            if (idTactic == 0) {
-                var idProgram = $(this).parent().attr('data-id-program');
-                var url = '@Url.Content("~/Plan/CreateTactic")';
-                $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
-            }
-            else {
-                var url = '@Url.Content("~/Plan/EditTactic")';
-                $('#slidepanel-container').load(url + '?id=' + idTactic + '&RedirectType=' + Assortment, AssignDefaultValue);
-            }
-            $("#slidepanel").css("right", "0px");
-            myApp.hidePleaseWait();*@
         });
 
         //Dharmraj Start 8July2014 Common function to handle tactic click event
         function tacticCommonClick(id) {
-            $("#slidepanel").css("display", "block");
             if (id == 0) {
                 var idProgram = $('div.1[index=' + id + ']').parent().attr('data-id-program');
-                var url = '@Url.Content("~/Plan/CreateTactic")';
-                $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
+                ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, idProgram);
+                return false;
             }
             else {
-                var url = '@Url.Content("~/Plan/EditTactic")';
-                $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
+                ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id);
+                return false;
             }
-            $("#slidepanel").css("right", "0px");
-            //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-            $("#slidepanel").addClass('sidebar-wide');
-            myApp.hidePleaseWait();
         }
         /*Added by Mitesh Vaishnav */
         $(document).on("click", "#divlineitem", function (e) {
@@ -2439,9 +2420,8 @@
     }
     @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
 
-    $(document).on("click", ".add-icon.campaign", function (e) {
-        var mode = "Add";
-        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()","0");
+    $(document).on("click", ".add-icon.campaign", function (e) {        
+        ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0");
     });
     //fill campaign table with data from json
     function fillCampaignsTable() {

@@ -167,6 +167,8 @@ namespace RevenuePlanner.Models
         public int AudienceId { get; set; }
         public Guid GeographyId { get; set; }
 
+        public Guid BusinessUnitId { get; set; }
+
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public double MQLs { get; set; }

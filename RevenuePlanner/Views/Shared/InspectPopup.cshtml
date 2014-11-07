@@ -6,42 +6,73 @@
 @Html.Display(popupvalue)
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 @{
+    var TacticTitle = "";
+    var Status = "";
+    var PlanTacticId = 0;
+    var IsResubmitableStatus = false;
+    bool IsPlanEditable = false;
     var tacticMaster = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+    var PlanProgramId = 0;
+    var colorCode = "";
+    if (ViewBag.TacticDetail != null)
+    {        
+        IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+        IsResubmitableStatus = (bool)Common.CheckAfterApprovedStatus(tacticMaster.Status);
+        TacticTitle = tacticMaster.TacticTitle;
+        PlanTacticId = tacticMaster.PlanTacticId;
+        Status = tacticMaster.Status;
+        colorCode = tacticMaster.ColorCode;
+    }
+    else
+    {
+        if (ViewBag.PlanProgrameId != null)
+        {
+            PlanProgramId = ViewBag.PlanProgrameId;
+        }
+    }
+
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
-    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
-    var IsResubmitableStatus = (bool)Common.CheckAfterApprovedStatus(tacticMaster.Status);
-}
-@Html.Hidden("hdnPlanTacticTitle", tacticMaster.TacticTitle, new { id = "hdnPlanTacticTitle" })
-@Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
-@Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
+    string InspectMode = ViewBag.InspectMode;
+        
+    }
+
+
+@Html.Hidden("hdnPlanTacticId", PlanTacticId, new { id = "hdnPlanTacticId" })
+@Html.Hidden("hdnTacticStatus", Status, new { id = "hdnTacticStatus" })
 @Html.Hidden("hdnTacticBudgetAllocationOpt", "View", new { id = "hdnTacticBudgetAllocationOpt" })
 @Html.Hidden("hdnIsResubmitableStatus", IsResubmitableStatus, new { id = "hdnIsResubmitableStatus" })
+@Html.Hidden("hdnInspectMode", InspectMode, new { id = "hdnInspectMode" })
 
 <form>
 <div class="modal-popup-title">
-    <span class="icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
+    <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>
     <h2 class="title-simple source-sans-prolight">
+        @if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
+        {            
         <span>
-         <span id="lblTacticTitle" class="tipsyclassTitle" title="@Html.Raw(tacticMaster.TacticTitle)">@Html.Raw(tacticMaster.TacticTitle)</span>
-    @if (IsPlanEditable)
-    {
-        @*@Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = tacticMaster.PlanCampaignId, programId = tacticMaster.PlanProgramId, tacticId = tacticMaster.PlanTacticId, EditObject = "Tactic", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large"})   *@
-        <span class="edit-icon-white btn-blue btn-large" style="display:block;cursor: pointer;" id="EditForm"></span>
-    }
-     </span>
-    @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticMaster.TacticTitle), new {placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = tacticMaster.TacticTitle })
-    @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
+         <span id="lblTacticTitle" class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
+            @if (IsPlanEditable)
+            {
+                <span class="edit-icon-white btn-blue btn-large" style="display:block;cursor: pointer;" id="EditForm"></span>
+            }
+         </span>
+        }
+
+        @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(TacticTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none", title = HttpUtility.HtmlDecode(TacticTitle) })
+        @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
     </h2>
 </div>
 </form>
 
+@if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
+{
 <div class="modal-popup-summary">
     <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
     <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
         I'm running 
-            <span id="tactic-type" class="source-sans-prosemibold color5693B3">@*Email*@ @tacticMaster.TacticTypeTitle</span>
+            <span id="tactic-type" class="source-sans-prosemibold color5693B3">@tacticMaster.TacticTypeTitle</span>
         tactic called 
-            <span id="tactic-name" class="source-sans-prosemibold color5693B3">@tacticMaster.TacticTitle</span>
+            <span id="tactic-name" class="source-sans-prosemibold color5693B3">@HttpUtility.HtmlDecode(TacticTitle)</span>
         from
             <span id="start-date" class="source-sans-prosemibold color5693B3">@tacticMaster.StartDate.ToString(Common.DateFormateForInspectPopupDescription) </span>
         to
@@ -71,6 +102,7 @@
             }</p>
     </div>
 </div>
+}
 
 <div>
 
@@ -83,6 +115,7 @@
         </li>
         @if (IsTacticActualsAddEditAuthorized)
         {
+        
         <li class="pull-left" id="liActuals">
             <a>Actuals</a>
         </li>
@@ -109,8 +142,7 @@
 
     $(document).ready(
       function () {
-          CloseIconClick();
-          $("#hdnPlanTacticTitle").val($("#txtTacticTitle").val());
+          CloseIconClick();          
           NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
           var InspectValue = $("#hdnInspectPopup").val();
           var planTacticId = $("#hdnPlanTacticId").val();
@@ -162,12 +194,12 @@
           $("#EditForm").on("click", function (e) {
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
-              $("#txtTacticTitle").removeClass("error");
-              $("#txtTacticTitle").val($("#hdnPlanTacticTitle").val());
+              $("#txtTacticTitle").removeClass("error");              
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();
               $("#hdnTacticBudgetAllocationOpt").val("Edit");
               $('#txtTacticTitle').css('display', 'block');
+              $("#txtTacticTitle").val($("#lblTacticTitle").text());
               $('#lblTacticTitle').css('display', 'none');
               $('#EditForm').css('display', 'none');
               loadReview(planTacticId, activeTab);
@@ -208,7 +240,11 @@
         $('#div' + tabValue).css({ display: "block" });
         $("#divTab").empty();
         if (tabValue == TabSetup) {
-            if (ProgramOpt == "Edit") {
+            if ('@InspectMode' == "Add") {
+                url = '@Url.Content("~/Home/CreateTactic/")';
+                $("#divTab").load(url + '?id=' + "@PlanProgramId");
+            }
+            else if (ProgramOpt == "Edit") {
                 url = '@Url.Content("~/Home/EditTactic/")';
                 $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""');
             }
@@ -257,7 +293,6 @@
             $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
             $("#errorMessage").css("display", "block");
             $("#btnConfirmOK").click(function () {
-                //alert(id);
                 $('#spanMessageError').html("");
                 $("#errorMessage").hide();
                 $('#modal-container-186470').modal("hide");
@@ -273,7 +308,6 @@
             $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
             $("#errorMessage").css("display", "block");
             $("#btnConfirmOK").click(function () {
-                //alert(id);
                 $('#spanMessageError').html("");
                 $("#errorMessage").hide();
                 eval(functionName);
