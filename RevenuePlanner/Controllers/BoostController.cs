@@ -499,9 +499,8 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="improvementId"></param>
         /// <returns></returns>
-        [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult deleteImprovementTactic(int improvementId)
+        public JsonResult deleteImprovementTactic(int improvementId)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
@@ -533,7 +532,7 @@ namespace RevenuePlanner.Controllers
                             }
 
                             scope.Complete();
-                            return Json(new { status = 0, succMsg = successMessage }, JsonRequestBehavior.AllowGet);
+                            return Json(new { status = 0, succMsg = successMessage, redirect = Url.Action("Index") }, JsonRequestBehavior.AllowGet);
                         }
                         else
                         {

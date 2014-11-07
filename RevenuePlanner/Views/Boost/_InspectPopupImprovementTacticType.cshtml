@@ -49,7 +49,7 @@
             </span>
         </h2>
         <div class="delete-btn-tab" style="float: right;">
-            <button class="delete-btn-gray" id="deleteImprovementTactic">Delete</button>
+            <button class="delete-btn-gray" id="btndeleteImprovementTactic" type="button">Delete</button>
         </div>
     </div>
 
@@ -154,7 +154,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-
+        $("#successMessage").slideUp(10);
         $(".priceValue").keydown(function (e) { priceFormatKeydown(e); });
         $(".priceValue").change(function (e) { priceFormatChange(e) });
 
@@ -349,7 +349,36 @@
             return false;
         }
         TruncateMetricName();
-    });
+});
+
+    $("#btndeleteImprovementTactic").click(function () {
+        if (confirm('Are you sure you want to delete this improvement tactic type?')) {
+            var idTactic = $("#ImprovementTacticTypeId").val();
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                dataType: "json",
+                url: '@Url.Content("~/Boost/deleteImprovementTactic")',
+                    data: { improvementId: idTactic },
+                    success: function (data) {
+                        if (typeof data.status != undefined && data.status != 'undefined') {
+                            if (parseInt(data.status) == 0) {
+                                $("#modal-container-186470").modal('hide');
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                            else {
+                                ShowError(data.errormsg);
+                                return false;
+                            }
+                        }
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+     });
 
     @* Added By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
     function TruncateMetricName() {
@@ -374,40 +403,12 @@
         });
     }
 
-    @* Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
-    $("#deleteImprovementTactic").click(function () {
-        if (confirm('Are you sure you want to delete this improvement tactic type?')) {
-            var idTactic = $("#ImprovementTacticTypeId").val();
-            $.ajax({
-                type: 'POST',
-                cache: false,
-                url: '@Url.Content("~/Boost/deleteImprovementTactic")',
-                data: { improvementId: idTactic },
-                success: function (data) {
-                    if (data != null) {
-                        if (typeof data.status != undefined && data.status != 'undefined') {
-                            if (parseInt(data.status) == 0) {
-                                $('.close-form', this.$panel).click();
-                                window.location.reload(true);
-                            }
-                            else {
-                                ShowError(data.errormsg);
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        else {
-            return false;
-        }
-    });
-
+    
     @* Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
     function ShowError(value) {
         $("#errorMessageImprovmentTacticType").slideDown(400);
         $("#spanMessageImprovmentTacticType").empty();
-        $("#spanspanMessageImprovmentTacticTypeMessage").text(value);
+        $("#spanMessageImprovmentTacticType").text(value);
     }
 
     $('.close').click(function () {
