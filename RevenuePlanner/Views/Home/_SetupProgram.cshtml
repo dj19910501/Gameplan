@@ -4,6 +4,7 @@
     var program = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
     deployStatus = program.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus;////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+    string programBudget = Convert.ToString(ViewBag.ProgramBudget);
 }
 
 
@@ -27,13 +28,34 @@
             @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate", @readonly = "true", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat) })
              <p>End Date</p>
             @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
+             <p style="width: 110%;">@Html.Raw("Deployed to Integration")</p>
+            @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
   
         </div>
         <div class="span3" id="inspect-modal-left-column3">
-             <p>@Html.Raw("Cost")</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
-            <p style="width: 110%;">@Html.Raw("Deployed to Integration")</p>
-            @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
+             <p>@Html.Raw("Program Budget")</p>
+            @Html.TextBox("txtprogramBudget",programBudget, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
+           
+             <div class="content dark inline-ellipsis">
+                       
+                            <div class="cf width100">
+                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                    <p title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</p>
+                                    @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                                </div>
+
+                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                    <p title="Cost">Cost</p>
+                                    @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                                </div>
+
+                                <div class="width65px pull-left" style="width:40%;">
+                                    <p title="Revenue">Revenue</p>
+                                    @Html.TextBoxFor(model => model.Revenues, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                                </div>
+                            </div>
+                       
+                    </div>
         </div>
     </div>                        
     //Start - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section

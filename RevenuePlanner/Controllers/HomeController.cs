@@ -3995,7 +3995,7 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
 
-            return Json(new { result = returnValue, msg = "Result Updated Successfully" }, JsonRequestBehavior.AllowGet);
+            return Json(new { result = returnValue, msg = section+" updated successfully" }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -4791,7 +4791,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                    return Json(new { id = planTacticId, TabValue = "Review", msg = Common.objCached.CommentSuccessfully });
+                    return Json(new { id = planTacticId, TabValue = "Review", msg = section+" updated successfully." });
                 }
             }
             catch (Exception e)
@@ -5099,7 +5099,8 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.LastSync = string.Empty;
             }
-
+            var objPlan = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == id).FirstOrDefault();
+            ViewBag.ProgramBudget = objPlan != null ? objPlan.ProgramBudget : 0;
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
 
@@ -5558,6 +5559,8 @@ namespace RevenuePlanner.Controllers
             }
 
             ViewBag.CampaignDetail = im;
+            var objCampaign=db.Plan_Campaign.Where(pc => pc.PlanCampaignId == id).FirstOrDefault();
+            ViewBag.CampaignBudget = objCampaign!=null?objCampaign.CampaignBudget:0;
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
 
@@ -9013,7 +9016,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCreated = true;
 
 
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            var objPlan = db.Plan_Campaign.Where(pc=>pc.PlanCampaignId==id).FirstOrDefault().Plan;
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
 
             Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
@@ -9021,7 +9024,7 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
-
+            ViewBag.BudinessUnitTitle = objPlan.Model.BusinessUnit.Title;
             ViewBag.CampaignTitle = pcp.Title;
             User userName = new User();
             try
@@ -9151,6 +9154,7 @@ namespace RevenuePlanner.Controllers
             //var objPlan = db.Plan_Campaign.Where(planCampaign => planCampaign.PlanCampaignId.Equals(id) && planCampaign.IsDeleted == false).FirstOrDefault().Plan;
             int planId = id;
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == planId);
+            ViewBag.BudinessUnitTitle = objPlan.Model.BusinessUnit.Title;
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
             ViewBag.IsDeployedToIntegration = false;
             ViewBag.IsCreated = true;

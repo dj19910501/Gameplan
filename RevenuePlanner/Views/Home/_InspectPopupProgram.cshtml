@@ -8,7 +8,7 @@
 @{
     var planProgramId = 0;
     var programStatus = "";
-    string colorCode = "";
+    string colorCode = "C6EBF3";
     string programTitle = "";
     var campaignId=Convert.ToString(ViewBag.CampaignId);
     RevenuePlanner.Models.InspectModel programMaster=null;
@@ -45,6 +45,7 @@
 
 <div id="errorMessageEditProgram" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
+    <strong>Error.</strong>
     <span id="spanMessageEditProgram"></span>
 </div>
 <form>

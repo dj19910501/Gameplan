@@ -4,6 +4,7 @@
     var campaign = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
     deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+    string campaignBudget = Convert.ToString(ViewBag.CampaignBudget);
 }
 
 @using (Html.BeginForm())
@@ -28,8 +29,28 @@
             @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
         </div>
         <div class="span3" id="inspect-modal-left-column3">
-            <p>@Html.Raw("Cost")</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
+            <p>@Html.Raw("Campaign Budget")</p>
+            @Html.TextBox("txtcampaignBudget",campaignBudget, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
+               <div class="content dark inline-ellipsis">
+                       
+                            <div class="cf width100">
+                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+            <p>@Html.LabelForMQL("MQL")</p>
+            @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
+                   </div>
+
+                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+            <p>Cost</p>
+            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+            </div>
+
+                                <div class="width65px pull-left" style="width:40%;">
+                                    <p>Revenue</p>
+            @Html.TextBoxFor(model => model.Revenues, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+                                     </div>
+                            </div>
+                        
+                    </div>
         </div>
     </div>
     

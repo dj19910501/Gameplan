@@ -8,7 +8,7 @@
 @{
     var planCampaignId = 0;
     var campaignStatus = "";
-    string colorCode = "#C6EBF3";
+    string colorCode = "C6EBF3";
     string planId = Convert.ToString(ViewBag.PlanId);
     string campaignTitle = "";
 
@@ -52,6 +52,7 @@
 
 <div id="errorMessageEditCampaign" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
+    <strong>Error.</strong>
     <span id="spanMessageEditCampaign"></span>
 </div>
 
@@ -267,7 +268,7 @@
               $('#txtTitle').text('');
                $('#lblCampaignTitle').css('display', 'none');
                return false;*@
-              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@planCampaignId');
+              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup",'@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId');
           });
 
           @*$('#BtnGroup1').click(function () {
@@ -278,7 +279,8 @@
               return false;
           });*@
           $('#NewProgram').click(function () {
-              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@planCampaignId');
+              
+              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup",'@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanCampaignId').val());
           });
 
           // Close event for Error Message & Success Message Close button 
