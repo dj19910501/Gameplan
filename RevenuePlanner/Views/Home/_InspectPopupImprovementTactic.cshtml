@@ -29,7 +29,7 @@
         <h2 class="title-simple source-sans-prolight">
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
             {
-                @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(tacticMaster.TacticTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class="span12 input-small truncate", style="width: 95%; height: 28px;", title = tacticMaster.TacticTitle })
+                @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(tacticMaster.TacticTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class="span12 input-small truncate font20", style="width: 95%; height: 28px;", title = tacticMaster.TacticTitle })
                 @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
             }
             else

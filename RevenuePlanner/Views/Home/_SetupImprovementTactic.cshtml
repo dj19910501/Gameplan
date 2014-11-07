@@ -57,13 +57,14 @@
                 <p>Effective Date</p>
                 @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "input-small truncate", style = "background:#F2F2F2;", id = "txtDate", @readonly = "true" })
             }
-            <p>Business Unit</p>
-            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
         </div>
         <div class="span3" id="inspect-modal-left-column3">
             <p>Owner</p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
-            
+
+            <p>Business Unit</p>
+            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
+                        
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
             {
                 if (@ExtIntService)
@@ -316,6 +317,10 @@ $("#t_integration_status").click(function () {
         if (tacticTypeId != '') {
             LoadImprovementTacticTypeData();
         }
+        else {
+            $("#txtCost").val(FormatCurrency((0).toString(), false));
+            $('#txtCost').attr("title", $('#txtCost').val());
+        }
     });
 
     var ValueCost = 0;
@@ -328,6 +333,7 @@ $("#t_integration_status").click(function () {
                 if (data.isSuccess) {
                     ValueCost = data.cost;
                     $("#txtCost").val(FormatCurrency((ValueCost).toString(), false));
+                    $('#txtCost').attr("title", $('#txtCost').val());
                     if (data.isDeployedToIntegration) {
                         $("#t_integration_status").val("Sync to integration");
                         $("#t_integration_status").addClass("icon-check-blue");
