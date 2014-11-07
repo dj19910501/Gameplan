@@ -10869,7 +10869,7 @@ list-style-position:inside;
     padding-right: 5px;
     width: auto !important;
 }
-.btn-dropdwn{min-width:140px; border-radius:4px; border:1px solid #dbded7; padding:3px 0; float:left;}
+.btn-dropdwn{min-width:140px; border-radius:4px; border:1px solid #dbded7; padding:3px 0; float:left;background-color:white;}
 .btn-dropdwn ul li{padding:3px 15px 3px 25px; list-style:none; color:#000;font-family: 'source_sans_prosemibold',Arial,"sans-serif";
     font-size: 14px; }
 .btn-dropdwn ul li:hover{background:#2485af; color:#fff;}
