@@ -189,6 +189,7 @@
     }
 
     function fillBudgetAllocationData() {
+        var IsEditables = $("#hdnTacticBudgetAllocationOpt").val();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/GetBudgetAllocationTactics/")',
@@ -210,7 +211,9 @@
                                 $("#" + r[i].periodTitle).addClass('error-text');
                             }
                             else {
-                                $("#" + r[i].periodTitle).addClass('Tactic-Budget-Allocation');
+                                if (IsEditables == "View") {
+                                    $("#" + r[i].periodTitle).addClass('Tactic-Budget-Allocation');
+                                }
                             }
 
                             if (parseFloat($("#" + r[i].periodTitle).attr('ov')) < parseFloat(r[i].programMonthlyBudget)) {

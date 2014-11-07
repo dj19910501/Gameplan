@@ -56,8 +56,8 @@
         <div class="container-fluid">
             <div class="row-fluid ">
                 <div class="span12">
-                    <div id="modal-container-186470" class="modal-inspect-review hide modal-full-view modal-inspect-TacticType-height" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none;position:fixed;">
-                     <div style="margin: 80px auto !important">
+                    <div id="modal-container-186470" class="modal-inspect-review hide modal-full-view modal-inspect-TacticType-height" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none;position:fixed;overflow: auto;">
+                     <div style="margin: 80px auto !important;padding-bottom: 30px;">
                         <div id="divPartial">
                         </div>
                         </div>
@@ -122,12 +122,11 @@
     $(document).on('click', '#table_boost tbody tr', function (e) {
         var id = $(this).attr("id");
         if (typeof id != "undefined") {
+            $('body').css('overflow', 'hidden');
             $('#divPartial').empty();
             var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
             $('#divPartial').load(url + '?id=' + id, AssignDefaultValue);
             $("#modal-container-186470").modal('show');
-            //$('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
-            //$("#slidepanel").css("right", "0px");
         }
     });
 

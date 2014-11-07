@@ -9,7 +9,7 @@
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 
 <style type="text/css">
-    #errorMessageEditProgram
+    #errorMessageImprovmentTacticType
     {
         margin-bottom: 15px !important;
     }
@@ -140,7 +140,7 @@
                     </div>
                 </div>
             </div>
-            <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
+            <div style="width: 100%; clear: both; margin-bottom: 90px;" class="wraper-btns cf border-top-div ">
                 <div class="span2 btn-save" style="width: 122px">
                     <button id="save_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save</button>
                 </div>
@@ -152,6 +152,7 @@
     </div>
 }
 <script type="text/javascript">
+
     $(document).ready(function () {
 
         $(".priceValue").keydown(function (e) { priceFormatKeydown(e); });
@@ -187,9 +188,7 @@
             $("#frm_tactics #t_status").val("Active");
             $("#frm_tactics #t_status").addClass("icon-check-blue");
         }
-        $('.close').click(function () {
-            $("#errorMsg").css("display", "none");
-        });
+
         $("#frm_tactics #t_status").click(function () {
             if ($(this).hasClass("icon-check-blue")) {
                 $(this).val("Not Active");
@@ -412,7 +411,19 @@
     }
 
     $('.close').click(function () {
+        $("#errorMsg").css("display", "none");
         $("#errorMessageImprovmentTacticType").slideUp(50);
         $("#spanMessageImprovmentTacticType").empty();
+        //$('body').css('overflow', 'auto');
     });
+
+    $('.close-x-big-icon').click(function () {
+        $('body').css('overflow', 'auto');
+    });
+
+    $('#cancelImporvementTacticPopup').click(function () {
+        $('body').css('overflow', 'auto');
+    });
+
+    
 </script>
