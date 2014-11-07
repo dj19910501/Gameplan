@@ -9233,7 +9233,7 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
 
-            return Json(new { });
+            return Json(new { IsSuccess = false, msg = Common.objCached.ErrorOccured });
         }
 
         /// <summary>

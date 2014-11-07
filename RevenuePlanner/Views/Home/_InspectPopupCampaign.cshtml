@@ -65,8 +65,8 @@
                     <span id="lblCampaignTitle" class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)" >@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)</span>
                     @if (IsPlanEditable)
                     {
-                        <div class="delete-btn-tab" style="float: right;">
-                            <button class="delete-btn-gray" id="btndeleteImprovementTactic" type="button">Delete</button>
+                        <div class="delete-btn-tab" style="float: right;" id="divDeleteCampaign">
+                            <button class="delete-btn-gray" id="deleteCampaign" type="button">Delete</button>
                         </div>
                         <div style="float: right; position: relative;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
@@ -244,6 +244,7 @@
               $('#txtTitle').css('display', 'block');
               $('#lblCampaignTitle').css('display', 'none');
               $("#txtTitle").prop('readonly', false);
+              $('#divDeleteCampaign').css('display', 'none');
               return false;
           });
 
@@ -419,18 +420,13 @@
     $("#deleteCampaign").click(function () {
         if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
              var campaignId = $("#hdnPlanCampaignId").val();
-             var isAssortment = false;
-             var arrClosedTaskString = null;
              var uId = $(window).attr('name');
              $.ajax({
                  type: 'POST',
-                 url: '@Url.Content("~/Plan/DeleteCampaign")',
+                 url: '@Url.Content("~/Home/DeleteCampaign")',
                     data: {
-                          ID: campaignId,
-                          RedirectType: isAssortment,
-                          closedTask: arrClosedTaskString
-                        , UserId: uId     
-                        , CalledFromBudget: ''
+                          ID: campaignId
+                        , UserId: uId
                     },
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -443,7 +439,7 @@
                                 $("#spanMessageSuccess").empty();
                                 $("#spanMessageSuccess").text(htmlDecode(data.msg));
                                 $("#errorMessage").css("display", "none");
-                                loadInspectPopup(idPlanCamaign, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab);
+                                loadInspectPopup(campaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab);
                                 RefreshCurrentTab();
                         }
                         else {
