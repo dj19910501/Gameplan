@@ -1925,27 +1925,27 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
                       $("#table_activities").show();
                       FillTacticTableForRequest(data);
 
-                      if ($('.gantt_ver_scroll').is(":visible")) {
-                          //$(".shadow-scroll-gantt").removeClass("full-width");
-                          if (w1 - w3 == 0) {
-                              if ($('.gantt_task').length > 0) {
-                                  var widthMain = $('.gantt_task').css('width');
-                                  widthMain = widthMain.replace('px', '');
-                                  widthMain = (parseInt(widthMain) - 17);
-                                  if (!isNaN(widthMain)) {
-                                      if ($('.gantt_task_scale').length > 0)
-                                          $('.gantt_task_scale').css('width', widthMain + 'px');
-                                      if ($('.gantt_data_area').length > 0)
-                                          $('.gantt_data_area').css('width', widthMain + 'px');
-                                  }
-                              }
-                          }
-                      }
-                      else {
-                          //$(".shadow-scroll-gantt").addClass("full-width");
-                          var ganntWidth = $(".gantt-padding").width();
-                          $(".shadow-scroll-gantt").width(ganntWidth);
-                      }
+                      //if ($('.gantt_ver_scroll').is(":visible")) {
+                      //    //$(".shadow-scroll-gantt").removeClass("full-width");
+                      //    if (w1 - w3 == 0) {
+                      //        if ($('.gantt_task').length > 0) {
+                      //            var widthMain = $('.gantt_task').css('width');
+                      //            widthMain = widthMain.replace('px', '');
+                      //            widthMain = (parseInt(widthMain) - 17);
+                      //            if (!isNaN(widthMain)) {
+                      //                if ($('.gantt_task_scale').length > 0)
+                      //                    $('.gantt_task_scale').css('width', widthMain + 'px');
+                      //                if ($('.gantt_data_area').length > 0)
+                      //                    $('.gantt_data_area').css('width', widthMain + 'px');
+                      //            }
+                      //        }
+                      //    }
+                      //}
+                      //else {
+                      //    //$(".shadow-scroll-gantt").addClass("full-width");
+                      //    var ganntWidth = $(".gantt-padding").width();
+                      //    $(".shadow-scroll-gantt").width(ganntWidth);
+                      //}
 
                   } else {
                       $("#table_activities").hide();
@@ -2714,7 +2714,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
     function CloseIconClick() {
         $('.close-x-big-icon').click(function () {
             $('body').removeClass('bodyOverflow');
-            gantt.refreshData();
+            gantt.refreshData();	//Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
         });
     }
     @*$("#modal-container-186470").on("hide", function (e) {

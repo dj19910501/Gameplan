@@ -335,6 +335,9 @@ function ShowModel(mode, section, id,ParentId) {
         $('.close-x-big-icon').click(function () {
             $('body').removeClass('bodyOverflow');
                 @*//window.location = '@Url.Content("~/Plan/Assortment")';*@
+            //Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
+            if (gantt != null)
+                gantt.refreshData();
             });
         }
     function modalBackdropDisplayNone() {
