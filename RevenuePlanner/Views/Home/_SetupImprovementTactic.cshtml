@@ -16,7 +16,6 @@
     @Html.HiddenFor(model => model.ImprovementPlanProgramId)
     @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
     @Html.HiddenFor(model => model.TacticTitle)
-@*@Html.HiddenFor(model => model.IsDeployedToIntegration)*@
     @Html.HiddenFor(model => model.Title)
     <div class="inspect-column-parent source-sans-proregular">
         <div class="span6" id="inspect-modal-left-column1">
@@ -37,68 +36,68 @@
             }
         </div>
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
-            <p>Owner</p>
-            @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
-            <p>Effective Date</p>
+            <p>Improvement Tactic Type</p>
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
             {
-                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })</span>
+                <p style="margin-top:11px;">Cost</p>    
+                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate resubmission", style = "", id = "txtCost", label = "Cost" })
+                <p>Effective Date</p>
+                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker" style="padding:0 0 4px;">
                     @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate resubmission", id = "txtDate", label = "Effective_Date" })
                     <span class="add-on">
                         <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png"></span>
                 </div>
+            }
+            else
+            {
+                @Html.TextBox("txtTacticType", HttpUtility.HtmlDecode(tactic.TacticTypeTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.TacticTypeTitle })   
+                <p>Cost</p>
+                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
+                <p>Effective Date</p>
+                @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "input-small truncate", style = "background:#F2F2F2;", id = "txtDate", @readonly = "true" })
+            }
+            <p>Business Unit</p>
+            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
+        </div>
+        <div class="span3" id="inspect-modal-left-column3">
+            <p>Owner</p>
+            @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
+            
+            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            {
                 if (@ExtIntService)
                 {
-                <p>Deployed to Integration</p>
+                    <p>Deployed to Integration</p>
                     if (Model.IsDeployedToIntegration)
                     {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" readonly="true" />
+                        <input id="t_integration_status" name="t_status" type="text" class="span12 icon-check-blue" placeholder="Sync to integration" readonly="true" />
                     }
                     else
                     {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" readonly="true" />
+                        <input id="t_integration_status" name="t_status" type="text" class="span12 icon-check-gray" placeholder="Not Sync to integration" readonly="true" />
                     }
                 }
             }
             else
             {
-                @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDate", @readonly = "true" })
                 <p>Deployed to Integration</p>
-                @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
+                @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })   
             }
         </div>
-        <div class="span3" id="inspect-modal-left-column3">
-            <p>Business Unit</p>
-            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
-            <p>Cost</p>
-            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
-            {
-                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "span12 input-small truncate resubmission", style = "", id = "txtCost", label = "Cost" })
-            }
-            else
-            {
-                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
-            }
-        </div>
-        @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
-        {
-            <div class="span3" id="inspect-modal-left-column4">
-                <p>Improvement Tactic Type</p>
-                <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })</span>
-            </div>  
-        }
+
     </div>  
-        if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
-        {
-    <div class="wraper-btns cf" style="width: 100%; clear: both">
-        <div style="width: 122px" class="span2 btn-save">
-            <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
+    if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+    {
+        <div class="wraper-btns cf" style="width: 100%; clear: both">
+            <div style="width: 122px" class="span2 btn-save">
+                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
+            </div>
+            <div class="span2">
+                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button" style="float: left; margin-left: 20px; margin-top: 5px">Cancel</button>
+            </div>
         </div>
-        <div class="span2">
-            <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button" style="float: left; margin-left: 20px; margin-top: 5px">Cancel</button>
-        </div>
-    </div>
-        }                        
+    }                        
     <span class="flag-icon"></span>
 }
 
