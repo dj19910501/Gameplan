@@ -509,6 +509,10 @@
     }
 
     $("#txtProjectedStageValue").focusout(function () {
+        document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
+        document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
+        document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
+        document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
         var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
         $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
         GetConversionRate(projectedStageValue, false);

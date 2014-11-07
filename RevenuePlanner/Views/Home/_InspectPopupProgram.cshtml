@@ -8,7 +8,7 @@
 @{
     var planProgramId = 0;
     var programStatus = "";
-    string colorCode = "#C6EBF3";
+    string colorCode = "";
     string programTitle = "";
     var campaignId=Convert.ToString(ViewBag.CampaignId);
     RevenuePlanner.Models.InspectModel programMaster=null;
@@ -49,7 +49,7 @@
 </div>
 <form>
     <div class="modal-popup-title">
-        <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
+        <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight">
             @if(programMaster!=null)
             {
