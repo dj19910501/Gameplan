@@ -234,12 +234,13 @@
               $('#txtTacticTitle').css('display', 'none');
               $('#lblTacticTitle').css('display', 'block');
               $("#lblTacticTitle").removeAttr("style");
-
+              $('#divDeleteTactic').css('display', 'block');
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
               $('#divTacticSaveCancel').css('display', 'none');
               $('#EditForm').css('display', 'block');
               $("#hdnTacticBudgetAllocationOpt").val("View");
+              $("#AddForm").css("display", "block");
               if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
                   loadReview(planTacticId, activeTab);
               }
