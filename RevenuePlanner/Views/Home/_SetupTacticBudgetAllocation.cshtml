@@ -146,6 +146,7 @@
         }
 
         $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
+        $("#txtTacticBudget").val(FormatCommasBudget($("#txtTacticBudget").val(), false, true));
         FormatRemainingBudget();
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
@@ -501,7 +502,8 @@
                     RefreshCurrentTab();
                 }
                 else {
-                   // CancelEvent();
+                    // CancelEvent();
+                    $("#txtTacticBudget").val(FormatCommasBudget($("#txtTacticBudget").val(), false, true));
                     ShowError(data.msg);
                 }
 
