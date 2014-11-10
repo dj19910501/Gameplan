@@ -605,7 +605,8 @@ namespace RevenuePlanner.Helpers
             Program,
             Tactic,
             ImprovementTactic,
-            LineItem
+            LineItem,
+            Plan
         }
         #endregion
 

@@ -133,7 +133,7 @@
     </div>   
 
     <div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
-        <div class="span2 btn-save" style="width: 122px">
+        <div class="span2 btn-save" style="width: 80px;">
             <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save</button>
         </div>
         <div class="span2">
@@ -255,7 +255,7 @@
                   $('#modal-container-186470').modal("hide");
               }
               //Start- Added by Viral Kadiya on 11/10/2014 for PL ticket #941 to refresh gantt data on cancel button click.
-              if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) // if current view is for Add then add class bodyOverflow to resolve scroll issue.
+              if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) // if current view is for Add then remove class bodyOverflow to resolve scroll issue.
                   $('body').removeClass('bodyOverflow');
               var hdnRefresh = $("#hdnRefresh").val();      // This hidden value set from ApplyToCalendar page, to check flag, whether this page called from ApplyTocalender or not.
               if (hdnRefresh != null && gantt != null) {

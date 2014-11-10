@@ -1,0 +1,213 @@
+﻿@using RevenuePlanner.Helpers;
+@{
+    var popupvalue = (string)ViewBag.InspectPopup;
+    var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
+    var planDetails = (RevenuePlanner.Models.InspectModel)ViewBag.PlanDetails;
+    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+    bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
+}
+@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
+@Html.Display(popupvalue)
+@Html.Hidden("hdnPlanId", planDetails.PlanId, new { id = "hdnPlanId" })
+<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+
+<div id="successMessagePlan" class="alert hide alert-success message-position-small">
+    <a class="close">×</a>
+    <span id="spanSuccMessagePlan"></span>
+</div>
+
+<div id="errorMessagePlan" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <span id="spanErrMessagePlan"></span>
+</div>
+
+<form>
+    <div class="modal-popup-title">
+        <span class="icon-flag bg-purple" style="background-color:#@planDetails.ColorCode !important;"></span>
+        <h2 class="title-simple source-sans-prolight">
+            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(planDetails.Title), new { placeholder = "Required", require = "true", maxlength = "255", @class="span12 input-small truncate", style="width: 95%; height: 28px;", title = planDetails.Title })
+                @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
+            }
+            else
+            {
+                <span class="tipsyclassTitle" title="@Html.Raw(planDetails.Title)">@Html.Raw(planDetails.Title)</span>
+            }
+            @if (IsPlanEditable)
+            {
+                <div id="divDeletePlan" style="float: right;" class="delete-btn-tab">
+                    <button type="button" id="deletePlan" class="delete-btn-gray">Delete</button>
+                </div>
+            }
+            @if (IsPlanCreateAuthorized)
+            {
+                <div style="float: right; position: relative;">
+                    <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;" class="add-icon-white btn-blue btn-large"></span>
+                    <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
+                        <ul style="margin: 0;">
+                            <li id="NewCampaign" class="new-prog">New Campaign</li>
+                            <li id="ClonePlan" class="copy-camp">Copy Plan</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            @if (IsPlanEditable && !(InspectMode == Enums.InspectPopupMode.Edit.ToString()))
+            {
+                <a id="lnkEdit" class="edit-icon-white btn-blue btn-large" style="cursor: pointer; margin-right: 15px;"></a>
+            }
+        </h2>
+    </div>
+</form>
+
+<div class="margin-top60">
+    <ul class="nav nav-tabs new-margin" id="InspectTab">
+        <li class="active pull-left" id="liSetup">
+            <a>Setup</a>
+        </li>
+        <li class="pull-left" id="liBudget">
+            <a>Budget</a>
+        </li>
+         <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>          
+        </li>
+    </ul>
+    <div id="divTab">
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var divPartial = "#divPartial";
+    var TabSetup = "Setup";
+    var TabBudget = "Budget";
+    var divTab = "#divTab";
+
+    $(document).ready(function () {
+        CloseIconClick();
+        NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
+        var InspectValue = $("#hdnInspectPopup").val();
+        var planId = $("#hdnPlanId").val();
+        // Call Remove Tabclass
+        RemoveTabClass();
+
+        $("#li" + InspectValue).removeClass("pull-left");
+        $("#li" + InspectValue).addClass("active pull-left");
+        var tabtext = ($("#li" + InspectValue).children('a').text());
+        $('#div' + tabtext).css({ display: "block" });
+
+        loadInnerTabs(planId, tabtext);
+    });
+
+    function RemoveTabClass() {
+        $('#InspectTab').children().each(function () {
+            if ($(this).hasClass('active pull-left')) {
+                $(this).removeClass("active pull-left");
+                $(this).addClass("pull-left");
+            }
+        });
+    }
+
+    function loadInnerTabs(id, tabValue) {
+        $.ajaxSetup({ cache: false });
+        var url;
+        if (tabValue == TabSetup) {
+            url = '@Url.Content("~/Home/LoadPlanSetup/")';
+        }
+        else if (tabValue == TabBudget) {
+            url = '@Url.Content("~/Home/LoadPlanBudget/")';
+        }
+
+        RemoveTabClass();
+        $("#li" + tabValue).removeClass("pull-left");
+        $("#li" + tabValue).addClass("active pull-left");
+        $('#div' + tabValue).css({ display: "block" });
+
+        $("#divTab").empty();
+        $("#divTab").load(url + '?id=' + id + '&InspectPopupMode=' + '@InspectMode');
+    }
+
+    // Click on Tab Partialview Refresh Based On Selected Tab
+    $("#liSetup,#liBudget").on("click", function () {
+        RemoveTabClass();
+        $(this).removeClass("pull-left");
+        $(this).addClass("active pull-left");
+        HideAllMessages();
+        var tabtext = ($(this).children('a').text());
+        var planId = $("#hdnPlanId").val();
+        loadInnerTabs(planId, tabtext);
+    });
+
+    // Close event for Error Message & Success Message Close button 
+    $(".alert").find(".close").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").css("display", "none");
+    });
+
+    function HideAllMessages() {
+        $("#successMessagePlan").css("display", "none");
+        $("#spanSuccMessagePlan").empty();
+        $("#errorMessagePlan").css("display", "none");
+        $("#spanErrMessagePlan").empty();
+        $("#successMessage").css("display", "none");
+        $("#spanMessageSuccess").empty();
+        $("#errorMessage").css("display", "none");
+        $("#spanMessageError").empty();
+    }
+
+    $('#AddForm').click(function () {
+        if ($('#popupnewplan').css('display') == 'none') {
+            $('#popupnewplan').css('display', 'block')
+        }
+        else {
+            $('#popupnewplan').css('display', 'none')
+        }
+    });
+
+    $(document).mouseup(function (e) {
+        var popup = $('#popupnewplan');
+        var button = $('#AddForm');
+        if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
+            $('#popupnewplan').css("display", "none");
+        }
+    });
+
+    $('#NewCampaign').click(function () {
+        var planId = $("#hdnPlanId").val();
+        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", planId);
+    });
+
+    $('#ClonePlan').click(function () {
+        var planId = $("#hdnPlanId").val();
+        if (parseInt(planId) > 0) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/Clone")',
+                data: {
+                    CloneType: '@Enums.DuplicationModule.Plan',
+                    Id: '@Model.PlanId',
+                    title: ''
+                },
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data.redirect) {
+                            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html());
+                            CurrentPlanId = data.planId;
+                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val();
+                            window.location.href = url;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html());
+                            return;
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>

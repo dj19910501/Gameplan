@@ -94,7 +94,7 @@
     </div>
     
     <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveTacticBudgetSection">
-        <div class="span2 btn-save">
+        <div class="span2 btn-save"  style="width: 80px">
             <button id="save_Tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
         </div>
         <div class="span2">
@@ -146,6 +146,7 @@
         }
 
         $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
+        $("#txtTacticBudget").val(FormatCommasBudget($("#txtTacticBudget").val(), false, true));
         FormatRemainingBudget();
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
@@ -483,9 +484,7 @@
          }
 
          $("#txtTacticBudget").val(ReplaceCC($("#txtTacticBudget").val()));
-         $("#lblTacticTitle").html(htmlEncode($('#txtTacticTitle').val()));
-         $("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
-
+        
          var uId = $(window).attr('name');
          $.ajax({
              type: 'POST',
@@ -494,6 +493,8 @@
             success: function (data) {
                 if (data.IsSaved) {
                     CancelEvent();
+                    $("#lblTacticTitle").html(htmlEncode($('#txtTacticTitle').val()));
+                    $("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
                     $("#errorMessage").slideUp(50);
                     $("#successMessage").slideDown(400);
                     $("#spanMessageSuccess").empty(); 
@@ -501,7 +502,8 @@
                     RefreshCurrentTab();
                 }
                 else {
-                    CancelEvent();
+                    // CancelEvent();
+                    $("#txtTacticBudget").val(FormatCommasBudget($("#txtTacticBudget").val(), false, true));
                     ShowError(data.msg);
                 }
 

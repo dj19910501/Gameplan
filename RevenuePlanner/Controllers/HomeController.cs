@@ -38,6 +38,7 @@ namespace RevenuePlanner.Controllers
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;
         private const string Campaign_InspectPopup_Flag_Color = "C6EBF3";
+        private const string Plan_InspectPopup_Flag_Color = "C6EBF3";       // Added by Sohel Pathan on 07/11/2014 for PL ticket #811
         private const string Program_InspectPopup_Flag_Color = "3DB9D3";
         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
         private const string GameplanIntegrationService = "Gameplan Integration Service";
@@ -3500,6 +3501,8 @@ namespace RevenuePlanner.Controllers
                 Plan_Campaign_Program objPlan_Campaign_Program = null;
                 Plan_Campaign objPlan_Campaign = null;
                 Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
+                Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
+                Plan objPlan = null;    // Added by Sohel Pathan on 07/11/2014 for PL ticket #811
                 //int planId = 0;
                 bool IsPlanEditable = false;
                 Guid BusinessUnitId = Guid.Empty;
@@ -3562,6 +3565,34 @@ namespace RevenuePlanner.Controllers
                             IsPlanEditable = true;
                         }
                     }
+                    else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
+                    {
+                        objPlan_Campaign_Program_Tactic_LineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => pcptl.PlanLineItemId.Equals(id)).FirstOrDefault();
+                        ViewBag.LineItemId = objPlan_Campaign_Program_Tactic_LineItem.PlanLineItemId;
+                        ViewBag.LineItemTitle = objPlan_Campaign_Program_Tactic_LineItem.Title;
+                        ViewBag.PlanId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                        BusinessUnitId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
+                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        {
+                            IsPlanEditable = true;
+                        }
+                    }
+                    // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
+                    else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        //objPlan = db.Plans.Where(p => p.PlanId.Equals(id)).FirstOrDefault();
+                        ViewBag.PlanId = id;
+                        //Added by Mitesh Vaishnav for PL ticket #926
+                        //Add restriction of BU for edit button in inspect popup
+                        //BusinessUnitId = objPlan.Model.BusinessUnitId != null ? objPlan.Model.BusinessUnitId : BusinessUnitId;
+                        //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        //if (objPlan.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        //{
+                        //    IsPlanEditable = true;
+                        //}
+                    }
+                    // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
                 }
 
                 // var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == planId);
@@ -3665,7 +3696,7 @@ namespace RevenuePlanner.Controllers
                     }
 
                     //47.	Check only for tactic, bhavesh internal review point, modified by Dharmraj
-                    if (IsPlanEditable && Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
+                    if (IsPlanEditable && (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower() || Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower()))
                     {
                         // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
                         var lstUserCustomRestriction = Common.GetUserCustomRestriction();
@@ -3730,6 +3761,56 @@ namespace RevenuePlanner.Controllers
                 }
                 return PartialView("_InspectPopupImprovementTactic", im);
             }
+            else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
+            {
+                return PartialView("_InspectPopupLineitem");
+            }
+            // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
+            else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                //Get all subordinates of current user upto n level
+                var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                // Get current user permission for edit own and subordinates plans.
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                // To get permission status for Plan Edit, By dharmraj PL #519
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(im.BusinessUnitId);
+                bool IsPlanEditable = false;
+                ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
+                // Added to check edit status for current user by dharmraj for #538
+                if (IsBusinessUnitEditable)
+                {
+                    if (im.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+                    {
+                        IsPlanEditable = true;
+                    }
+                    else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    {
+                        IsPlanEditable = true;
+                    }
+                    else if (IsPlanEditSubordinatesAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    {
+                        if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
+                        {
+                            IsPlanEditable = true;
+                        }
+                    }
+                }
+
+                ViewBag.IsPlanEditable = IsPlanEditable;
+                ViewBag.PlanDetails = im;
+                if (InspectPopupMode == Enums.InspectPopupMode.ReadOnly.ToString())
+                {
+                    ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
+                }
+                else
+                {
+                    ViewBag.InspectMode = "";
+                }
+                return PartialView("_InspectPopupPlan", im);
+            }
+            // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
             return PartialView("InspectPopup", im);
         }
 
@@ -4116,7 +4197,7 @@ namespace RevenuePlanner.Controllers
 
                     imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(db.Plan_Campaign_Program_Tactic.SingleOrDefault(varT => varT.PlanTacticId == id).TacticType.Model);
                 }
-                if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                 {
                     var objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == id && pcp.IsDeleted == false).FirstOrDefault();
 
@@ -4167,8 +4248,7 @@ namespace RevenuePlanner.Controllers
 
                     imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(objPlan_Campaign_Program.Plan_Campaign.Plan.Model);
                 }
-
-                if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                 {
 
                     var objPlan_Campaign = db.Plan_Campaign.Where(pcp => pcp.PlanCampaignId == id && pcp.IsDeleted == false).FirstOrDefault();
@@ -4232,8 +4312,7 @@ namespace RevenuePlanner.Controllers
                     imodel.LastSyncDate = objPlan_Campaign.LastSyncDate;
 
                 }
-
-                if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                 {
                     imodel = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
                               where pcpt.ImprovementPlanTacticId == id && pcpt.IsDeleted == false
@@ -4266,6 +4345,27 @@ namespace RevenuePlanner.Controllers
                     imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(db.Plan_Improvement_Campaign_Program_Tactic.SingleOrDefault(varT => varT.ImprovementPlanTacticId == id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model);
 
                 }
+				// Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
+                else if (section.Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    var objPlan = (from p in db.Plans
+                                  where p.PlanId == id && p.IsDeleted == false
+                                  select p).SingleOrDefault();
+                    
+                    imodel.PlanId = objPlan.PlanId;
+                    imodel.ColorCode = Plan_InspectPopup_Flag_Color;
+                    imodel.Description = objPlan.Description;
+                    imodel.OwnerId = objPlan.CreatedBy;
+                    imodel.BusinessUnitId = objPlan.Model.BusinessUnitId;
+                    imodel.Title = objPlan.Title;
+                    imodel.ModelId = objPlan.ModelId;
+                    imodel.ModelTitle = objPlan.Model.Title;
+                    imodel.GoalType = objPlan.GoalType;
+                    imodel.GoalValue = objPlan.GoalValue.ToString();
+                    imodel.Budget = objPlan.Budget;
+                    imodel.AllocatedBy = objPlan.AllocatedBy;
+                }
+                // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
 
             }
             catch (Exception e)
@@ -9443,6 +9543,11 @@ namespace RevenuePlanner.Controllers
         public ActionResult Clone(string CloneType, int Id, string title, string CalledFromBudget = "", string RequsetedModule = "")
         {
             int rtResult = 0;
+            int cid = 0;
+            int pid = 0;
+            bool IsCampaign = (CloneType == Enums.Section.Campaign.ToString()) ? true : false;
+            bool IsProgram = (CloneType == Enums.Section.Program.ToString()) ? true : false; ;
+            bool IsTactic = (CloneType == Enums.Section.Tactic.ToString()) ? true : false; ;
 
             if (Sessions.User == null)
             {
@@ -9455,8 +9560,8 @@ namespace RevenuePlanner.Controllers
                 if (!string.IsNullOrEmpty(CloneType) && Id > 0)
                 {
                     Clonehelper objClonehelper = new Clonehelper();
-                    //rtResult = objClonehelper.ToClone("", CloneType, Id);
-                    rtResult = 1;
+                    rtResult = objClonehelper.ToClone("", CloneType, Id);
+                    //rtResult = 1;
                     if (CloneType == Enums.DuplicationModule.Plan.ToString())
                     {
                         Plan objPlan = db.Plans.Where(p => p.PlanId == Id).FirstOrDefault();
@@ -9471,6 +9576,7 @@ namespace RevenuePlanner.Controllers
 
                 if (rtResult >= 1)
                 {
+                    title = HttpUtility.HtmlDecode(title);
                     string strMessage = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
 
                     if (!string.IsNullOrEmpty(CalledFromBudget))
@@ -9584,7 +9690,7 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        int returnValue = 1;
+                        int returnValue = 0;
                         string Title = "";
                         string strMessage = "";
                         int cid = 0;
@@ -9595,30 +9701,30 @@ namespace RevenuePlanner.Controllers
 
                         if (IsCampaign)
                         {
-                            //returnValue = Common.PlanTaskDelete(Enums.Section.Campaign.ToString(), id);    
+                            returnValue = Common.PlanTaskDelete(Enums.Section.Campaign.ToString(), id);    
                             if (returnValue != 0)
                             {
                                 Plan_Campaign pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).SingleOrDefault();
                                 Title = pc.Title;
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanCampaignId, pc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                strMessage = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
+                                strMessage = string.Format(Common.objCached.CampaignDeleteSuccess, HttpUtility.HtmlDecode(Title));
                             }
                         }
                         else if (IsProgram)
                         {
-                            //returnValue = Common.PlanTaskDelete(Enums.Section.Program.ToString(), id);
+                            returnValue = Common.PlanTaskDelete(Enums.Section.Program.ToString(), id);
                             if (returnValue != 0)
                             {
                                 Plan_Campaign_Program pc = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == id).SingleOrDefault();
                                 cid = pc.PlanCampaignId;
                                 Title = pc.Title;
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                strMessage = string.Format(Common.objCached.ProgramDeleteSuccess, Title);
+                                strMessage = string.Format(Common.objCached.ProgramDeleteSuccess, HttpUtility.HtmlDecode(Title));
                             }
                         }
                         else if (IsTactic)
                         {
-                             //returnValue = Common.PlanTaskDelete(Enums.Section.Tactic.ToString(), id);
+                             returnValue = Common.PlanTaskDelete(Enums.Section.Tactic.ToString(), id);
 
                              if (returnValue != 0)
                              {
@@ -9627,26 +9733,26 @@ namespace RevenuePlanner.Controllers
                                  pid = pcpt.PlanProgramId;
                                  Title = pcpt.Title;
                                  returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.PlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                 strMessage = string.Format(Common.objCached.TacticDeleteSuccess, Title);
+                                 strMessage = string.Format(Common.objCached.TacticDeleteSuccess, HttpUtility.HtmlDecode(Title));
                              }
                         }
                         
                             if (returnValue >= 1)
                             {
-                                scope.Complete();
-
                                 if (IsProgram)
                                 {
-                                    //Common.ChangeCampaignStatus(cid);     
+                                    Common.ChangeCampaignStatus(cid);     
                                 }
                                 
                                 if (IsTactic)
 	                            {
-		                            //Common.ChangeProgramStatus(pid);
+		                            Common.ChangeProgramStatus(pid);
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pid).Select(a => a.PlanCampaignId).Single();
-                                    //Common.ChangeCampaignStatus(PlanCampaignId);
+                                    Common.ChangeCampaignStatus(PlanCampaignId);
 	                            }
-                                
+
+                                scope.Complete();
+
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = strMessage;
@@ -10179,6 +10285,174 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        /// <summary>
+        /// Added By: Mitesh Vaishnav.
+        /// Action to Load Lineitem Setup Tab.
+        /// </summary>
+        /// <param name="id">Plan Lineitem Id.</param>
+        /// <returns>Returns Partial View Of Setup Tab.</returns>
+        public ActionResult LoadSetupLineitem(int id)
+        {
+           
+            ViewBag.IsCreated = false;
+            
+           
+            Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobj => pcpobj.PlanLineItemId.Equals(id));
+            if (pcptl == null)
+            {
+                return null;
+            }
+
+            Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
+            //if (Sessions.User.UserId == pcptl.CreatedBy)
+            //{
+            //    ViewBag.IsOwner = true;
+            //}
+            //else
+            //{
+            //    ViewBag.IsOwner = false;
+            //}
+            //List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            //Added By : Kalpesh Sharma #697 08/26/2014
+            //bool isallowrestriction = Common.GetRightsForTactic(lstUserCustomRestriction, pcptl.Plan_Campaign_Program_Tactic.VerticalId, pcptl.Plan_Campaign_Program_Tactic.GeographyId);
+            //ViewBag.IsAllowCustomRestriction = isallowrestriction;
+
+            //if (pcptl.LineItemTypeId == null)
+            //{
+            //    pcptlm.IsOtherLineItem = true;
+            //}
+            //else
+            //{
+            //    pcptlm.IsOtherLineItem = false;
+            //}
+
+            //ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcptl.Plan_Campaign_Program_Tactic.Status);
+            ViewBag.TacticTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Title);
+            ViewBag.ProgramTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title);
+            ViewBag.CampaignTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);
+            ViewBag.PlanTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title);
+
+            double totalLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+            double TacticCost = pcptl.Plan_Campaign_Program_Tactic.Cost;
+            double diffCost = TacticCost - totalLineItemCost;
+            double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
+
+            ViewBag.tacticCost = TacticCost;
+            ViewBag.totalLineItemCost = totalLineItemCost;
+            ViewBag.otherLineItemCost = otherLineItemCost;
+
+            pcptlm.PlanLineItemId = pcptl.PlanLineItemId;
+            pcptlm.PlanTacticId = pcptl.PlanTacticId;
+            pcptlm.LineItemTypeId = pcptl.LineItemTypeId == null ? 0 : Convert.ToInt32(pcptl.LineItemTypeId);
+            pcptlm.Title = HttpUtility.HtmlDecode(pcptl.Title);
+            pcptlm.Description = HttpUtility.HtmlDecode(pcptl.Description);
+            pcptlm.StartDate = Convert.ToDateTime(pcptl.StartDate);
+            pcptlm.EndDate = Convert.ToDateTime(pcptl.EndDate);
+            pcptlm.Cost = pcptl.Cost;
+            pcptlm.TStartDate = pcptl.Plan_Campaign_Program_Tactic.StartDate;
+            pcptlm.TEndDate = pcptl.Plan_Campaign_Program_Tactic.EndDate;
+            pcptlm.PStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.StartDate;
+            pcptlm.PEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.EndDate;
+            pcptlm.CStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.StartDate;
+            pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+
+            return PartialView("_SetupLineitem", pcptlm);
+        }
+
+        #region Inspect Popup Plan
+
+        #region Load Setup tab for Plan Inspect Pop up
+        /// <summary>
+        /// Added By : Sohel Pathan
+        /// Added Date : 07/11/2014
+        /// Action to Load Setup Tab for Plan.
+        /// </summary>
+        /// <param name="id">Plan Id.</param>
+        /// <returns>Returns Partial View Of Setup Tab.</returns>
+        public ActionResult LoadPlanSetup(int id, string InspectPopupMode = "")
+        {
+            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Plan).ToLower());
+            List<Guid> userListId = new List<Guid>();
+            userListId.Add(im.OwnerId);
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+            ViewBag.PlanDetails = im;
+
+            if (InspectPopupMode == Enums.InspectPopupMode.ReadOnly.ToString())
+            {
+                ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
+            }
+            else
+            {
+                ViewBag.InspectMode = "";
+            }
+
+            return PartialView("_SetupPlan", im);
+        }
+        #endregion
+
+        #region Load Budget tab for Plan Inspect Pop up
+        /// <summary>
+        /// Added By : Sohel Pathan
+        /// Added Date : 07/11/2014
+        /// Action to Load Budget Tab for Plan.
+        /// </summary>
+        /// <param name="id">Plan Id.</param>
+        /// <returns>Returns Partial View Of Budget Tab.</returns>
+        public ActionResult LoadPlanBudget(int id, string InspectPopupMode = "")
+        {
+            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Plan).ToLower());
+            List<Guid> userListId = new List<Guid>();
+            userListId.Add(im.OwnerId);
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+            ViewBag.PlanDetails = im;
+
+            if (InspectPopupMode == Enums.InspectPopupMode.ReadOnly.ToString())
+            {
+                ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
+            }
+            else
+            {
+                ViewBag.InspectMode = "";
+            }
+
+            return PartialView("_BudgetPlan", im);
+        }
+        #endregion
+
+        #endregion
     }
 }
 

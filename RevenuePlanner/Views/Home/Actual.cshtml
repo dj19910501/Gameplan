@@ -13,6 +13,13 @@
     .border-none {
     border:none!important;
     }
+
+    .disabled-input-ActualPopup {
+        background-color: #f2f2f2 !important;
+        color: #666666;
+        padding: 0 !important;
+        border: 1px solid #ccc !important;
+    }
 </style>
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
@@ -108,10 +115,10 @@
                             {
                                 string ids = s + "-Y" + j;
                                 string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
-                                string classes = "backgroundC6EBF3 text-align-right width75px input-table priceValue";
+                                string classes = "input-actual text-align-right width75px input-table priceValue";
                                 if (s == "Revenue")
                                 {
-                                    classes = "backgroundC6EBF3 text-align-right width75px currency_dollar input-table";
+                                    classes = "input-actual text-align-right width75px currency_dollar input-table";
                                     maxL = RevenuePlanner.Helpers.Common.maxLengthDollar;
                                 }
                                 <th class="border-r font3F3F3F ">
@@ -130,7 +137,7 @@
                              if (lineItemList.Count <= 0)
                              {
                             <th class="border-r font3F3F3F ">
-                                    <input id="@costIds" class= "backgroundC6EBF3 text-align-right width75px currency_dollar input-table" placeholder="- - -" maxlength="@maxL">
+                                    <input id="@costIds" class= "input-actual text-align-right width75px currency_dollar input-table" placeholder="- - -" maxlength="@maxL">
                             </th>
                              }
                              else
@@ -155,7 +162,7 @@
                             string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
                             
                             <th class="border-r font3F3F3F ">
-                                    <input id="@lineItemIds" class= "backgroundC6EBF3 text-align-right width75px currency_dollar input-table" placeholder="- - -" maxlength="@maxL">
+                                    <input id="@lineItemIds" class= "input-actual text-align-right width75px currency_dollar input-table" placeholder="- - -" maxlength="@maxL">
                             </th>
                             
                         }
@@ -257,8 +264,14 @@
             </div>
                 @if (IsTacticEditable)
                 {
-                    <div class="btn-group dropup  border-top-div" style="width:100%;">
-                        <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left;" type="button">Update Actuals</button>
+                    //Modiefied by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
+                    <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveTacticActualSection">
+                        <div class="span2 btn-save">
+                            <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left;" type="button">Update Actuals</button>
+                        </div>
+                        <div class="span2">
+                            <button id="cancelTacticActuals" class="close-form btn-link source-sans-proregular margin-top23" type="button">Cancel</button>
+                        </div>
                     </div>
                 }
     </div>
@@ -773,6 +786,40 @@
 
 
         });
+        //Start-Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
+        $("#cancelTacticActuals").click(function () {
+            CancelEvent();
+            $("#successMessage").slideUp(50);
+            $("#errorMessage").slideUp(50);
+        });
+        function CancelEvent() {
+            var planTacticId = $("#hdnPlanTacticId").val();
+            $("#hdnTacticBudgetAllocationOpt").val("View");
+            loadReview(planTacticId, "Actuals");
+            $("#EditForm").css("display", "block");
+            $('#txtTacticTitle').css('display', 'none');
+            $('#lblTacticTitle').css('display', 'block');
+            $("#lblTacticTitle").removeAttr("style");
+            $('#divDeleteTactic').css('display', 'block');
+            $("#AddForm").css("display", "block");
+        }
+        $("#SaveTacticActualSection").css("display", "none");
 
+        var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();  
+        if (IsEditable == 'View') {                                 // check current page mode is editable or not.
+            $('.input-actual').removeClass('backgroundC6EBF3');
+            $('.input-actual').removeClass('input-table');
+            $('.input-actual').addClass('disabled-input-ActualPopup');
+            $('.input-actual').prop('readonly', true);                  
+            $("#SaveTacticActualSection").css("display", "none");       // hide Update & Cancel button
+        }
+        else {
+            $('.input-actual').addClass('backgroundC6EBF3');
+            $('.input-actual').addClass('input-table');
+            $('.input-actual').removeClass('disabled-input-ActualPopup');
+            $('.input-actual').prop('readonly', false);
+            $("#SaveTacticActualSection").css("display", "block");
+        }
+        //End - Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
     });
 </script>

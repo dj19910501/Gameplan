@@ -692,10 +692,11 @@
         }
         /*Added by Mitesh Vaishnav */
         $(document).on("click", "#divlineitem", function (e) {
-            e.stopPropagation();
-            $.ajaxSetup({ cache: false });
+            
             var idLineItem = $(this).attr("index");
-            displayConfirmCommon('lineCommonClick(' + idLineItem + ');');
+            ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", idLineItem);
+            return false;
+           
         });
         function lineCommonClick(id) {
             $("#slidepanel").css("display", "block");
@@ -1374,21 +1375,6 @@
                 }
             }
         }
-
-        function CallForRedirectToApplyToCalender() {
-            //add css class to disable hover on left navigation link when no data found
-            //Start : date : 01/21/2014
-            $("#aApplyToCalender").parent().parent().addClass("navdisable");
-            $("#aApplyToCalender").css('cssText', 'cursor: default !important');
-            //End : date : 01/21/2014
-            $("#aApplyToCalender").removeAttr("onclick");
-            isApply = true;
-        }
-        
-
-       
-
-       
 
         //fill campaign table with data from json
         function fillImprovementTacticTable() {
@@ -2697,5 +2683,16 @@
             orientation: 'right',
             mode: 'overlay'
         });
+    }
+
+    //// Modified By Maninder 11/10/2014 to resolve internal issue of campaing tab loading issue.
+    function CallForRedirectToApplyToCalender() {
+        //add css class to disable hover on left navigation link when no data found
+        //Start : date : 01/21/2014
+        $("#aApplyToCalender").parent().parent().addClass("navdisable");
+        $("#aApplyToCalender").css('cssText', 'cursor: default !important');
+        //End : date : 01/21/2014
+        $("#aApplyToCalender").removeAttr("onclick");
+        isApply = true;
     }
 </script>

@@ -95,7 +95,7 @@
     <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
     <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
         I'm running a program called 
-            <span id="tactic-name" class="source-sans-prosemibold color5693B3">@programMaster.ProgramTitle</span>
+            <span id="tactic-name" class="source-sans-prosemibold color5693B3">@HttpUtility.HtmlDecode(programMaster.ProgramTitle)</span>
         from
             <span id="start-date" class="source-sans-prosemibold color5693B3">@programMaster.StartDate.ToString(Common.DateFormateForInspectPopupDescription)</span>
         to

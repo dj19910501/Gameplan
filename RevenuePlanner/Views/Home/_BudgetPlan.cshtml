@@ -1,0 +1,163 @@
+﻿@using RevenuePlanner.Helpers
+@{
+    var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
+    var planDetails = (RevenuePlanner.Models.InspectModel)ViewBag.PlanDetails;
+    string AllocatedBy = planDetails != null ? planDetails.AllocatedBy : "";
+    bool IsBudgetAllocated = false;
+    if (!AllocatedBy.Equals(Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
+    {
+        IsBudgetAllocated = true;
+    }
+}
+@using (Html.BeginForm())
+{
+    @Html.Hidden("hdnIsBudgetAllocated",IsBudgetAllocated)
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+        <div id="inspect-modal-left-column1" class="span3">
+            <p>Plan Budget</p>
+            @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+            {
+                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id="txtPlanBudget", @class = "span11 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })
+            }
+        </div>
+        <div id="inspect-modal-left-column2" class="InspectPopupBudgetSection">
+            @if (!AllocatedBy.Equals(Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+	            <div class="budget-section">
+                    <div class="budget-head clearfix">
+                        <p>Budget Allocation</p>
+                    </div>
+                    <div class="budget-collapse">
+                        <div class="white-bg-InspectPopup-Budget">
+                            @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
+                            <div class="budget-month">
+                                <span class="month">@Common.UnallocatedBudgetLabelText</span>
+                                <span class="unallocated-span"><input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
+                            </div>
+                            <div class="SepraterStacticis"></div>
+                            <div class="budget-result source-sans-prolight">
+                                <p class="font-size16">
+                                    Allocated Campaign Budget (this @(AllocatedBy.Equals(Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString(), StringComparison.OrdinalIgnoreCase) ? "Month" : "Quarter")): 
+                                                <span id="lblAllocatedCampaignsBudget" class="source-sans-proregular"></span>
+                                </p>
+                                <p class="font-size16">
+                                    Total Allocated:
+                                                <span id="lblTotalAllocated" class="source-sans-proregular"></span>
+                                </p>
+                                <p class="font-size16">
+                                    Total Budgeted:
+                                                <span id="lblTotalBudget" class="source-sans-proregular">@planDetails.Budget</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="InspectPopup-DefaultBudget">@Common.objCached.DefaultPlanAllocationMessage</div>
+            }
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+
+        if ($("#hdnIsBudgetAllocated").val() == "True" && $("#lblTotalBudget").html() != '') {
+            $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
+        }
+
+        $("#txtPlanBudget").val(FormatCommasBudget($("#txtPlanBudget").val(), false, true));
+        $("#txtPlanBudget").attr('title', $("#txtPlanBudget").val());
+
+        if ($("#hdnIsBudgetAllocated").val() == "True") {
+            fillBudgetAllocationData();
+        }
+
+        if ('@InspectMode' == '@Enums.InspectPopupMode.ReadOnly.ToString()')
+        {
+            $(".budget-section input").not('.unallocated-text').each(function () {
+                $(this).prop('readonly', true);
+                $(this).parent().removeClass('light-blue-background');
+                $(this).parent().addClass('unallocated-span');
+                $(this).addClass('unallocated-text-BudgetPopUp');
+                $(this).prop('disabled', 'disabled');
+            });
+        }
+
+        //// Set ui for unallocated input
+        $(".budget-month").last().addClass('source-sans-prolight');
+        $(".budget-month").last().find('input').prop('readonly', true);
+        $(".budget-month").last().find('input').prop('disabled', 'disabled');
+    });
+
+    function fillBudgetAllocationData() {
+        var hdnPlanId = $("#hdnPlanId").val();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Plan/GetBudgetAllocationPlanData/")',
+            data: {
+                id: hdnPlanId
+            },
+            success: function (data) {
+                var r = data.budgetData;
+                if (typeof r != 'undefined') {
+                    if (r.length) {
+                        for (i in r) {
+                            var budgetValue = r[i].budgetValue == '' ? '0' : r[i].budgetValue;
+                            var campaignMonthlyBudget = r[i].campaignMonthlyBudget == '' ? '0' : r[i].campaignMonthlyBudget;
+                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue.toString(), false));
+                            $("#" + r[i].periodTitle).attr('ov', r[i].budgetValue == '' ? '0' : r[i].budgetValue);
+                            $("#" + r[i].periodTitle).attr('cmb', r[i].campaignMonthlyBudget);
+                            $("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
+                            if (parseInt(campaignMonthlyBudget) > budgetValue) {
+                                $(this).addClass('low-budgeted');
+                                $("#lblAllocatedCampaignsBudget").addClass('error-text');
+                            }
+                            else {
+                                $(this).removeClass('low-budgeted');
+                                $("#lblAllocatedCampaignsBudget").removeClass('error-text');
+                            }
+                        }
+                    }
+                }
+
+                var TotalallocationValue = 0;
+                var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+                for (var i = 0; i < lstAllocInputs.length; i++) {
+                    TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+                }
+                if (TotalallocationValue.toString() != '') {
+                    $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+                }
+                calculateUnallocatedBudget();
+                $("#Y1").focus();
+            },
+            error: function () {
+                ShowError('');
+                return false;
+            }
+        });
+    }
+
+    function calculateUnallocatedBudget() {
+        var CampaignBudgetValue = $("#txtPlanBudget").val().trim().replace(/,/g, '').replace('$', '');
+        var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
+        var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
+        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true));
+        if (unallocatedBudget < 0) {
+            $("#lblUnallocatedBudget").addClass('error-text');
+            $("#lblTotalAllocated").addClass('error-text');
+
+        }
+        else {
+            $("#lblUnallocatedBudget").removeClass('error-text');
+            $("#lblTotalAllocated").removeClass('error-text');
+        }
+    }
+</script>

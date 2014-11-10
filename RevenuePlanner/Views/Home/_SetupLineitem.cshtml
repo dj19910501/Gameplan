@@ -1,0 +1,77 @@
+﻿@model RevenuePlanner.Models.Plan_Campaign_Program_Tactic_LineItemModel
+@using RevenuePlanner.Helpers
+@{
+    //var campaign = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
+    
+    //var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
+    //deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+    //string campaignBudget = Convert.ToString(ViewBag.CampaignBudget);
+    string planTitle=Convert.ToString(ViewBag.PlanTitle);
+    string campaignTitle = Convert.ToString(ViewBag.CampaignTitle);
+    string programTitle = Convert.ToString(ViewBag.ProgramTitle);
+    string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
+    string owner = Convert.ToString(ViewBag.Owner);
+}
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.PlanLineItemId)
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="padding-top:15px;">
+        <div class="span6" id="inspect-modal-left-column1">
+            <p>@Html.Raw("Parent Plan")</p>
+             @Html.TextBox("txtPlanTitle",planTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtPlanTitle", @readonly = "true" })
+             <p>@Html.Raw("Parent Campaign")</p>
+             @Html.TextBox("txtCampaignTitle",campaignTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCampaignTitle", @readonly = "true" })
+             <p>@Html.Raw("Parent Program")</p>
+             @Html.TextBox("txtProgramTitle",programTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtProgramTitle", @readonly = "true" })
+            <p>@Html.Raw("Description")</p>
+            @Html.TextAreaFor(model=>model.Description, new { @class = "span12 text-area-size", style = "background:#F2F2F2;height:92px;", @readonly = "true",value= HttpUtility.HtmlDecode(Model.Description) })
+           
+            <div style="clear: both; width: 250%;">
+                <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
+            </div>
+        </div>
+        <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
+             <p>@Html.Raw("Parent Tactic")</p>
+             @Html.TextBox("txtTacticTitle",tacticTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTitle", @readonly = "true" })
+             <p>@Html.Raw("Cost")</p>
+            @Html.TextBoxFor(model=>model.Cost, new { @class = "span12 input-small currency_dollar truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
+            
+        </div>
+        <div class="span3" id="inspect-modal-left-column3">
+           <p>@Html.Raw("Owner")</p>
+            @Html.TextBox("txtOwner",owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = owner })
+        </div>
+    </div>
+    
+    //Start - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section
+      @*<ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div" id="InspectTab">
+        <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
+        </li>
+    </ul>
+          <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+        
+         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(campaign.PlanCampaignId, Enums.EntityType.Campaign.ToString(),1)
+    </div>     
+    //End - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section    
+                                        
+    *@<span class="flag-icon"></span>
+    <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
+        id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;" />
+}
+<script type="text/javascript">
+    $(document).ready(
+      function () {
+          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
+          $(".selectBox select").selectbox();
+
+          $('form').find(".sbSelector").each(function () {
+              $(this).unbind("click");
+              $(this).removeAttr("href");
+              $(this).prev().unbind("click");
+              $(this).prev().removeAttr("href");
+          });
+      });
+</script>

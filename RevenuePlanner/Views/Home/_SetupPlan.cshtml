@@ -1,0 +1,103 @@
+﻿@model RevenuePlanner.Models.InspectModel
+@{
+    var planDetails = (RevenuePlanner.Models.InspectModel)ViewBag.PlanDetails;
+    var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
+}
+@using RevenuePlanner.Helpers
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.PlanId)
+    @Html.HiddenFor(model => model.Title)
+    @Html.HiddenFor(model => model.ModelId)
+    @Html.HiddenFor(model => model.GoalType)
+    @Html.HiddenFor(model => model.GoalValue)
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+        <div class="span6" id="inspect-modal-left-column1">
+            <p>Description</p>
+            @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+            {
+                @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;height:93px;", @readonly = "true" })
+            }
+        </div>
+        <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
+            <p>Model</p>
+            @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+            {
+                @Html.TextBoxFor(model => model.ModelTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.ModelTitle })
+
+                <p>Owner</p>
+                @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Owner })
+            }
+        </div>
+        <div class="span3" id="inspect-modal-left-column3">
+            @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+            {
+                <div style="width:50%; float:left;">
+                    <label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>
+                    @Html.TextBox("txtINQ", "", new { placeholder = "$0", id = "txtINQ", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })    
+                </div>
+                <div style="width:50%; float:left;">
+                    <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
+                    @Html.TextBox("txtMQL", "", new { placeholder = "$0", id = "txtMQL", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })    
+                </div>
+                <div style="width:50%; float:left;">
+                    <p>Revenue</p>
+                    @Html.TextBox("txtRevenue", "", new { placeholder = "$0", id = "txtRevenue", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })    
+                </div>
+            }
+        </div>
+    </div>  
+    if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+    {
+        <div class="wraper-btns cf" style="width: 100%; clear: both">
+            <div style="width: 122px" class="span2 btn-save">
+                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
+            </div>
+            <div class="span2">
+                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button" style="float: left; margin-left: 20px; margin-top: 5px">Cancel</button>
+            </div>
+        </div>
+    }                        
+    <span class="flag-icon"></span>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+        var modelId = $('#ModelId').val();
+        var goalType = $('#GoalType').val();
+        var goalValue = $('#GoalValue').val();
+
+        calculateBudget(modelId, goalType, goalValue);
+    });
+
+    function calculateBudget(_modelId, _goalType, _goalValue) {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Plan/CalculateBudget/")',
+            dataType: "json",
+            data: { modelId: _modelId, goalType: _goalType, goalValue: _goalValue },
+            success: function (data) {
+                if (_goalType.toLowerCase() == '@Enums.PlanGoalType.INQ.ToString().ToLower()') {
+                    $('#txtINQ').val(number_format(_goalValue.toString(), 0, '.', ','));
+                    $('#txtMQL').val(number_format(data.input1.toString(), 0, '.', ','));
+                    $('#txtRevenue').val('$' + number_format(data.input2.toString(), 0, '.', ','));
+                }
+                else if (_goalType.toLowerCase() == '@Enums.PlanGoalType.MQL.ToString().ToLower()') {
+                    $('#txtMQL').val(number_format(_goalValue.toString(), 0, '.', ','));
+                    $('#txtINQ').val(number_format(data.input1.toString(), 0, '.', ','));
+                    $('#txtRevenue').val('$' + number_format(data.input2.toString(), 0, '.', ','));
+                }
+                else if (_goalType.toLowerCase() == '@Enums.PlanGoalType.Revenue.ToString().ToLower()') {
+                    $('#txtRevenue').val('$' + number_format(_goalValue.toString(), 0, '.', ','));
+                    $('#txtINQ').val(number_format(data.input1.toString(), 0, '.', ','));
+                    $('#txtMQL').val(number_format(data.input2.toString(), 0, '.', ','));
+                }
+            }
+        });
+    }
+
+</script>

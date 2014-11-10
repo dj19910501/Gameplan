@@ -91,7 +91,7 @@
     <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
     <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
         I'm running 
-            <span id="tactic-type" class="source-sans-prosemibold color5693B3">@tacticMaster.TacticTypeTitle</span>
+            <span id="tactic-type" class="source-sans-prosemibold color5693B3">@HttpUtility.HtmlDecode(tacticMaster.TacticTypeTitle)</span>
         tactic called 
             <span id="tactic-name" class="source-sans-prosemibold color5693B3">@HttpUtility.HtmlDecode(TacticTitle)</span>
         from
