@@ -4,6 +4,13 @@
     string MetricType_CR = Enums.MetricType.CR.ToString();
     string MetricType_SV = Enums.MetricType.SV.ToString();
     string MetricType_Size = Enums.MetricType.Size.ToString();
+    string colorCode = "C6EBF3";
+
+    if (!string.IsNullOrEmpty(Model.ColorCode))
+    {
+        colorCode = Model.ColorCode;
+    }
+    
 }
 
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
@@ -46,7 +53,7 @@
 @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
 {
     <div class="modal-popup-title" style="float:left;width:100%;">
-        <span class="icon-flag bg-purple flagcolor" style="background-color:#@Model.ColorCode !important;"></span>
+        <span class="icon-flag bg-purple " style="background-color:#@colorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight" style="float: left;margin-top:0;">
             <span>
                 <span id="lblProgramTitle"  class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(Model.Title)">Improvement Tactic Type</span>

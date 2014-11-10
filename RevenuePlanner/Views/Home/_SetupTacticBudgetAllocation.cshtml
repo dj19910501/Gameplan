@@ -483,9 +483,7 @@
          }
 
          $("#txtTacticBudget").val(ReplaceCC($("#txtTacticBudget").val()));
-         $("#lblTacticTitle").html(htmlEncode($('#txtTacticTitle').val()));
-         $("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
-
+        
          var uId = $(window).attr('name');
          $.ajax({
              type: 'POST',
@@ -494,6 +492,8 @@
             success: function (data) {
                 if (data.IsSaved) {
                     CancelEvent();
+                    $("#lblTacticTitle").html(htmlEncode($('#txtTacticTitle').val()));
+                    $("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
                     $("#errorMessage").slideUp(50);
                     $("#successMessage").slideDown(400);
                     $("#spanMessageSuccess").empty(); 
@@ -501,7 +501,7 @@
                     RefreshCurrentTab();
                 }
                 else {
-                    CancelEvent();
+                   // CancelEvent();
                     ShowError(data.msg);
                 }
 
