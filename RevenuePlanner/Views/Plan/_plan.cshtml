@@ -348,8 +348,10 @@ function loadInspectPopup(id, section, tabValue, mode, parentId, RequsedtedModul
 
                 @*//window.location = '@Url.Content("~/Plan/Assortment")';*@
             //Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
-            //if (gantt != null)
-            //    gantt.refreshData();
+            var hdnRefresh = $("#hdnRefresh").val();    // This hidden value set from ApplyToCalendar page, to check flag, whether this page called from ApplyTocalender or not.
+            if (hdnRefresh != null && gantt != null) {
+                gantt.refreshData();
+            }
         });
     }
     function modalBackdropDisplayNone() {
