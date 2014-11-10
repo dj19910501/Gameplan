@@ -3767,7 +3767,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
             ViewBag.IsTackticAddEdit = false;
-            if (Mode == "View" || Mode.ToLower() == "undefined")
+            if (Mode.ToLower() == "view" || Mode.ToLower() == "undefined")
             {
                 ViewBag.IsTackticAddEdit = false;
                 return PartialView("SetUp", im);

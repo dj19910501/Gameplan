@@ -43,7 +43,7 @@
         <label class="padding-left4" title="Tactic Planned Cost">Tactic Planned Cost</label>
         @Html.TextBoxFor(model => model.TacticCost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtTacticBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
         <div>
-            <label title="Remaining Campaign Budget">Remaining Budget</label>
+            <label title="Remaining Campaign Budget">Remaining Program Budget</label>
             @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
         </div>
     </div>
@@ -95,7 +95,7 @@
     
     <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveTacticBudgetSection">
         <div class="span2 btn-save">
-            <button id="save_Tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
+            <button id="save_Tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
         </div>
         <div class="span2">
             <button id="cancelTacticBudget" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
@@ -233,6 +233,8 @@
                 }
 
                 $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+                $("#txtTacticBudget").attr('title', $("#txtTacticBudget").val());
+
                 var TotalallocationValue = 0;
                 var lstAllocInputs = $(".budget-section input").not('#lblUnallocatedBudget');
                 for (var i = 0; i < lstAllocInputs.length; i++) {
@@ -369,6 +371,7 @@
 
         $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
         $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+        $("#txtTacticBudget").attr('title', $("#txtTacticBudget").val());
 
         $("#hdnOldTacticBudget").val(ProgramBudgetValue);
         if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
