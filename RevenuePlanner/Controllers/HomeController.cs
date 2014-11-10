@@ -9625,8 +9625,6 @@ namespace RevenuePlanner.Controllers
                         
                             if (returnValue >= 1)
                             {
-                                scope.Complete();
-
                                 if (IsProgram)
                                 {
                                     Common.ChangeCampaignStatus(cid);     
@@ -9638,7 +9636,9 @@ namespace RevenuePlanner.Controllers
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pid).Select(a => a.PlanCampaignId).Single();
                                     Common.ChangeCampaignStatus(PlanCampaignId);
 	                            }
-                                
+
+                                scope.Complete();
+
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = strMessage;
