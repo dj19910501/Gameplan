@@ -1,6 +1,10 @@
 ﻿@using RevenuePlanner.Helpers;
 @{
     var popupvalue = (string)ViewBag.InspectPopup;
+    var RedirectType = (string)ViewBag.RedirectType;
+    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? ( RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index .ToString() ? true : false) : true);
+    var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Display(popupvalue)
@@ -391,21 +395,22 @@
             data: {
                 CloneType: '@Enums.DuplicationModule.Campaign',
                     Id: idPlanCamaign,
-                    title: Title
+                    title: Title,
+                    CalledFromBudget: '@CalledFromBudget',
+                    RequsetedModule: '@RedirectType'
                 },
             success: function (data) {
-                if (data.IsSucesss != 'undefined' && data.IsSucesss == '#') {
+                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                     }
+                    else if (data.IsSuccess) {
+                        if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                            SaveMessageOnParent(data.msg);
+                        }
                     else {
-                        if (data.IsSucesss) {
-                            var activeTab = $("#InspectTab li.active a").text()
-                            $("#successMessage").css("display", "block");
-                            $("#spanMessageSuccess").empty();
-                            $("#spanMessageSuccess").text(htmlDecode(data.msg));
-                            $("#errorMessage").css("display", "none");
-                            loadInspectPopup(idPlanCamaign, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab);
-                            RefreshCurrentTab();
+                            window.location.href = data.redirect;
+                            return;
+                        }
                         }
                         else {
                             $("#successMessageViewCampaign").slideUp(50);
@@ -415,34 +420,53 @@
                             return false;
                         }
                     }
-                }
         });
     });
+
+    function SaveMessageOnParent(value)
+    {
+        $("#modal-container-186470").modal('hide');
+        $("#errorMessageDuplicatePlan").slideUp(50);
+        $("#successMessageDuplicatePlan").slideDown(400);
+        $("#cSuccessDuplicatePlan").empty();
+        $("#cSuccessDuplicatePlan").text(htmlDecode(value));
+        $("#successMessageDuplicatePlan").removeClass("message-position");
+        $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
+        RefreshCurrentTab();
+                }
 
     $("#deleteCampaign").click(function () {
         if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
              var campaignId = $("#hdnPlanCampaignId").val();
              var uId = $(window).attr('name');
+             var arrClosedTaskString = null;
+             if (typeof arrClosedTask != 'undefined') {
+                 arrClosedTaskString = arrClosedTask.toString();
+             }
              $.ajax({
                  type: 'POST',
                  url: '@Url.Content("~/Home/DeleteCampaign")',
                     data: {
                           ID: campaignId
                         , UserId: uId
+                        , closedTask: arrClosedTaskString
+                        , CalledFromBudget: '@CalledFromBudget'
+                        , IsIndex: '@isIndex'
+                        , RedirectType: '@RedirectTypeMode'
                     },
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
                             window.location = '@Url.Content("~/Login/Index")';
                         }
                         else {
-                            if (data.IsSucesss) {
-                                var activeTab = $("#InspectTab li.active a").text()
-                                $("#successMessage").css("display", "block");
-                                $("#spanMessageSuccess").empty();
-                                $("#spanMessageSuccess").text(htmlDecode(data.msg));
-                                $("#errorMessage").css("display", "none");
-                                loadInspectPopup(campaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab);
-                                RefreshCurrentTab();
+                            if (data.IsSuccess) {
+                                if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                                    SaveMessageOnParent(data.msg);
+                                }
+                                else {
+                                    window.location.href = data.redirect;
+                                    return;
+                                }
                         }
                         else {
                             $("#successMessageViewCampaign").slideUp(50);

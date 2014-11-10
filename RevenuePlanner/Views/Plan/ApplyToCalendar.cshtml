@@ -1059,7 +1059,7 @@
        $("#slidepanel").addClass('sidebar-wide');
        myApp.hidePleaseWait();*@
        var mode = "Edit";
-       ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id);
+       ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id,"0",'@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    function ShowProgram(id) {
@@ -1072,7 +1072,7 @@
        $("#slidepanel").addClass('sidebar-wide');
        myApp.hidePleaseWait();*@
        var mode = "Edit";
-       ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id);
+       ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    function ShowTactic(id) {

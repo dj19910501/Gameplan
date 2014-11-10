@@ -457,7 +457,7 @@ else {
         myApp.hidePleaseWait();
         e.preventDefault();*@
         var mode = "Edit";
-        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id);
+        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 
     $("[linktype=program]").click(function (e) {
@@ -470,6 +470,6 @@ else {
         myApp.hidePleaseWait();
         e.preventDefault();*@
         var mode = "Edit";
-        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id);
+        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 </script>

@@ -3446,7 +3446,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="TabValue">Tab value of Popup.</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
-        public ActionResult LoadInspectPopup(int id, string section, string TabValue = "Setup", string InspectPopupMode = "", int parentId = 0)
+        public ActionResult LoadInspectPopup(int id, string section, string TabValue = "Setup", string InspectPopupMode = "", int parentId = 0,string RequestedModule = "" )
         {
             try
             {
@@ -3697,6 +3697,12 @@ namespace RevenuePlanner.Controllers
             InspectModel im = GetInspectModel(id, section, false);      //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             ViewBag.TacticDetail = im;
             ViewBag.InspectPopup = TabValue;
+
+            if (!string.IsNullOrEmpty(RequestedModule))
+            {
+                ViewBag.RedirectType = RequestedModule;
+            }
+
             if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
             {
                 ViewBag.ProgramDetail = im;
@@ -9420,7 +9426,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="Id"></param>
         /// <param name="title"></param>
         /// <returns></returns>
-        public ActionResult Clone(string CloneType, int Id, string title)
+        public ActionResult Clone(string CloneType, int Id, string title, string CalledFromBudget = "", string RequsetedModule = "")
         {
             int rtResult = 0;
 
@@ -9435,8 +9441,8 @@ namespace RevenuePlanner.Controllers
                 if (!string.IsNullOrEmpty(CloneType) && Id > 0)
                 {
                     Clonehelper objClonehelper = new Clonehelper();
-                    rtResult = objClonehelper.ToClone("", CloneType, Id);
-                    //rtResult = 1;
+                    //rtResult = objClonehelper.ToClone("", CloneType, Id);
+                    rtResult = 1;
                     if (CloneType == Enums.DuplicationModule.Plan.ToString())
                     {
                         Plan objPlan = db.Plans.Where(p => p.PlanId == Id).FirstOrDefault();
@@ -9452,15 +9458,44 @@ namespace RevenuePlanner.Controllers
                 if (rtResult >= 1)
                 {
                     string strMessage = string.Format("{0} {1} successfully Duplicated.", CloneType,title);
-                    return Json(new { IsSucesss = true, msg = strMessage });
+
+                    if (!string.IsNullOrEmpty(CalledFromBudget))
+                    {
+                        TempData["SuccessMessage"] = strMessage;
+                        TempData["SuccessMessageDeletedPlan"] = "";
+                        
+                        string expand = CloneType.ToLower().Replace(" ", "");
+                        if (expand == "campaign")
+                            return Json(new { IsSuccess = true, redirect = Url.Action("Budgeting","Plan", new { type = CalledFromBudget }) });
+                        else
+                            return Json(new { IsSuccess = true, redirect = Url.Action("Budgeting","Plan", new { type = CalledFromBudget, expand = expand + Id.ToString() }) });
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(RequsetedModule) && RequsetedModule == Enums.InspectPopupRequestedModules.Index.ToString())
+                        {
+                            return Json(new { IsSuccess = true, redirect = Url.Action("Index"), msg = strMessage, opt = Enums.InspectPopupRequestedModules.Index.ToString() });
+                        }
+                        else if (!string.IsNullOrEmpty(RequsetedModule) && RequsetedModule == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString())
+                        {
+                            TempData["SuccessMessageDeletedPlan"] = strMessage;
+                            return Json(new { IsSuccess = true, msg = strMessage, redirect = Url.Action("ApplyToCalendar","Plan") });
+                        }
+                            TempData["SuccessMessageDeletedPlan"] = strMessage;
+                            return Json(new { IsSuccess = true, redirect = Url.Action("Assortment","Plan"), planId = Sessions.PlanId, opt = Enums.InspectPopupRequestedModules.Assortment.ToString() });    
+                    }
                 }
+                else
+                {
                 string strErrorMessage = string.Format("{0} {1} not successfully Duplicated.", CloneType, title);
-                return Json(new { IsSucesss = false, msg = strErrorMessage });
+                    return Json(new { IsSuccess = false, msg = strErrorMessage, opt = RequsetedModule });
+
+                }
             }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
-                return Json(new { IsSucesss = false, msg = e.Message.ToString() });
+                return Json(new { IsSuccess = false, msg = e.Message.ToString(), opt = RequsetedModule });
             }
         }
 
@@ -9519,7 +9554,7 @@ namespace RevenuePlanner.Controllers
             return PartialView("_EditSetupCampaign", pc);
         }
 
-        public ActionResult DeleteCampaign(int id = 0,string UserId = "")
+        public ActionResult DeleteCampaign(int id = 0, string UserId = "", string closedTask = null,  string CalledFromBudget = "", bool IsIndex = false, bool RedirectType = false)
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -9535,7 +9570,8 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        int returnValue = Common.PlanTaskDelete(Enums.Section.Campaign.ToString(), id);
+                        //int returnValue = Common.PlanTaskDelete(Enums.Section.Campaign.ToString(), id);
+                        int returnValue = 1;
                         string Title = "";
 
                         if (returnValue != 0)
@@ -9543,12 +9579,38 @@ namespace RevenuePlanner.Controllers
                             Plan_Campaign pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).SingleOrDefault();
                             Title = pc.Title;
                             returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanCampaignId, pc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                            string strMessage = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
+                           
                             if (returnValue >= 1)
                             {
                                 scope.Complete();
-                                string strMessage = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
-                                return Json(new { IsSuccess = true, msg = strMessage });
+                                if (!string.IsNullOrEmpty(CalledFromBudget))
+                                {
+                                    TempData["SuccessMessage"] = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
+                                    return Json(new { IsSuccess = true, msg = strMessage, redirect = Url.Action("Budgeting" ,"Plan", new { type = CalledFromBudget }) });
+                                }
+                                else if (IsIndex)
+                                {
+                                    return Json(new { IsSucesss = true, redirect = Url.Action("Index"), msg = strMessage, opt = Enums.InspectPopupRequestedModules.Index.ToString() });
+                                }
+                                else 
+                                {
+                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
+                                    if (RedirectType)
+                                    {
+                                        if (closedTask != null)
+                                        {
+                                            TempData["ClosedTask"] = closedTask;
+                                        }
+                                        return Json(new { IsSuccess = true, msg = strMessage, redirect = Url.Action("ApplyToCalendar","Plan") });
+                                    }
+                                    else
+                                    {
+                                        return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Assortment.ToString(), redirect = Url.Action("Assortment", "Plan", new { campaignId = 0, programId = 0 }) });
+                                    }
+                                }
                             }
+
                             return Json(new { IsSuccess = false, msg = Common.objCached.ErrorOccured});
                         }
                     }

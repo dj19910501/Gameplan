@@ -830,6 +830,15 @@ namespace RevenuePlanner.Helpers
             ReadOnly
         }
 
+        public enum InspectPopupRequestedModules
+        {
+            Index,
+            Assortment,
+            ApplyToCalendar,
+            Budgeting
+        }
+
+
         /// <summary>
         /// Added By : Pratik
         /// Added Date : 05/11/2014

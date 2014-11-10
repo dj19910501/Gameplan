@@ -2655,7 +2655,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
 				  $("#modal-container-186470").modal('show');
                  
                 
-                  loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
+				  loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
                   modalBackdropDisplayNone();
             }
                 //// Checking whether current task is tactic or not.
@@ -2669,7 +2669,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
                 $("#errorMessage").css("display", "none");
 				$("#modal-container-186470").modal('show');
                
-	    	loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()");
+				loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()",0,"@Enums.InspectPopupRequestedModules.Index.ToString()");
                 modalBackdropDisplayNone();
 
                
@@ -2687,7 +2687,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
 				$("#modal-container-186470").modal('show');
                 
                 
-                loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup");
+				loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
                 modalBackdropDisplayNone();
             }
 
@@ -2703,7 +2703,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
 				$("#modal-container-186470").modal('show');
                 
                
-                loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup");
+				loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
                 modalBackdropDisplayNone();
             }
 }
@@ -2742,7 +2742,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
     var url = '@Url.Content("~/Home/LoadInspectPopup")';
     $("#divPartial").empty();
     //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
-    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId);
+    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()');
 }
 
 //End Script Of Bhaveh

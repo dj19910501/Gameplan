@@ -288,7 +288,7 @@
 //}
 
 
-function ShowModel(mode, section, id,ParentId) {
+function ShowModel(mode, section, id,ParentId,RequsedtedModule) {
     modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
     $('.modal-backdrop').addClass('modalFull-backdrop');
@@ -297,25 +297,27 @@ function ShowModel(mode, section, id,ParentId) {
     $("#errorMessage").css("display", "none");
     $("#modal-container-186470").modal('show');
     ParentId = typeof ParentId != 'undefined' ? ParentId : '0';
+    RequsedtedModule = typeof RequsedtedModule != 'undefined' ? RequsedtedModule : '';
+
     if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@Planid');
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@Planid', RequsedtedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup");
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "", 0, RequsedtedModule);
         }
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId);
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
          }
          else {
-             loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup");
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "", 0, RequsedtedModule);
          }
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId);
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
         }
         else {
             loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
@@ -332,11 +334,12 @@ function ShowModel(mode, section, id,ParentId) {
     modalBackdropDisplayNone();
 };
 
-    function loadInspectPopup(id, section, tabValue, mode, parentId) {
+    function loadInspectPopup(id, section, tabValue, mode, parentId, RequsedtedModule) {
         parentId = typeof parentId != 'undefined' ? parentId : '0';
+        RequsedtedModule = typeof RequsedtedModule != 'undefined' ? RequsedtedModule : '';
         var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
-        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId);
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + RequsedtedModule);
     }
 
     function CloseIconClick() {
