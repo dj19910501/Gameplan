@@ -869,6 +869,9 @@
     <Content Include="Views\Boost\_InspectPopupImprovementTacticType.cshtml" />
     <Content Include="Views\Home\_InspectPopupLineitem.cshtml" />
     <Content Include="Views\Home\_SetupLineitem.cshtml" />
+    <Content Include="Views\Home\_BudgetPlan.cshtml" />
+    <Content Include="Views\Home\_InspectPopupPlan.cshtml" />
+    <Content Include="Views\Home\_SetupPlan.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

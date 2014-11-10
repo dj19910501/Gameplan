@@ -2620,12 +2620,13 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
 
           //// Modified By Maninder Singh Wadhva PL Ticket#47
           function ShowModel(taskId, isShowInspect) {
-              var task, planTacticId, planProgramId, planCampaignId;
+              var task, planTacticId, planProgramId, planCampaignId, planId;
               var isImprovement = false;
               if (taskId != null) {
                   task = gantt.getTask(taskId);
                   planCampaignId = task.plancampaignid;
                   planProgramId = task.planprogramid;
+                  planId = task.planid;
 
                   isImprovement = (typeof task.isImprovement != 'undefined' && task.isImprovement == true)
 
@@ -2705,6 +2706,16 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
                
 				loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
                 modalBackdropDisplayNone();
+            }
+            else if (typeof planId != 'undefined' && planId != 0) {
+                modalFullPosition();
+                $('.modal-backdrop').addClass('modalFull-backdrop');
+                $('.modal-backdrop').attr("style", "display:none !important;");
+                $("#successMessage").css("display", "none");
+                $("#errorMessage").css("display", "none");
+                $("#modal-container-186470").modal('show');
+                loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()");
+				modalBackdropDisplayNone();
             }
 }
 

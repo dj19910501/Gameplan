@@ -152,6 +152,13 @@ namespace RevenuePlanner.Models
         public int ImprovementTacticTypeId { get; set; }
         public DateTime EffectiveDate { get; set; }
         public string Title { get; set; }
+        public int PlanId { get; set; }
+        public int ModelId { get; set; }
+        public string ModelTitle { get; set; }
+        public string GoalType { get; set; }
+        public string GoalValue { get; set; }
+        public double Budget { get; set; }
+        public string AllocatedBy { get; set; }
     }
 
     public class InspectReviewModel

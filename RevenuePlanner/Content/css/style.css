@@ -10881,3 +10881,64 @@ list-style-position:inside;
 .successMessage-InspectPopUpSections {
     margin-bottom: 0 !important;
 }
+
+.InspectPopupBudgetSection {
+    float: left;
+    margin-bottom: 50px;
+    width: 70%;
+}
+
+.white-bg-InspectPopup-Budget {
+    background: none repeat scroll 0 0 #fff;
+    float: left;
+    overflow: auto;
+    padding: 8px 20px 0;
+    width: 97%;
+    border: 1px solid #ccc;
+    border-radius:10px;
+}
+
+.InspectPopupBudgetSection .budget-month input[readonly]
+{
+    color: #666666 !important;
+    cursor: not-allowed;
+}
+
+.InspectPopupBudgetSection .budget-section {
+    padding:0 17px 10px 0 !important;
+}
+
+.InspectPopupBudgetSection .budget-head {
+    color: #343434;
+    font-family: "source_sans_prosemibold",Arial,"sans-serif";
+    font-size: 13px
+}
+
+.white-bg-InspectPopup-Budget .unallocated-span {
+    box-sizing: border-box;
+    display: block;
+    float: left;
+    margin-left: 0;
+    min-height: 23px;
+    width: 100%;
+}
+
+.white-bg-InspectPopup-Budget .budget-result .font-size16 {
+    font-size: 16px;
+}
+
+.white-bg-InspectPopup-Budget .budget-month {
+    margin: 0px 20px 0px 0px;
+}
+
+.white-bg-InspectPopup-Budget .budget-month .month {
+    margin-right: -7px;
+    margin-bottom: 0px;
+}
+
+.InspectPopup-DefaultBudget {
+    font-size: 20px !important;
+    font-weight: normal !important;
+    line-height: 90px;
+    text-align: center;
+}
