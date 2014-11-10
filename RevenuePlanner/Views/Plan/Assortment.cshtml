@@ -1329,11 +1329,11 @@
                 var idProgram = $("a#divimpTactic.1").attr('data-id-program');
                 @*var url = '@Url.Content("~/Plan/CreateImprovementTactic")';
                 $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);*@
-                ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram);
+                ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
                 return false;
             }
             else {
-                ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram);
+                ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
                 return false;
                @* var url = '@Url.Content("~/Plan/EditImprovementTactic")';
                 $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);*@
