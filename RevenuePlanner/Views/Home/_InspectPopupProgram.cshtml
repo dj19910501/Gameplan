@@ -44,6 +44,7 @@
 
 <div id="successMessageViewProgram" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
+      <strong>Success.</strong>
     <span id="spanSuccessMessageViewProgram"></span>
 </div>
 
@@ -71,7 +72,7 @@
                     <div style="float: right;position:relative;">
                     @*<span class="delete-icon-white delete-btn-gray delete-btn-tab" style="display: block; cursor: pointer;" id="DeleteForm"></span>*@
                     <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer;margin-right:10px;" id="AddForm"></span>
-                    <div class="btn-dropdwn" style="display:none;position:absolute;top:35px;" id="popupnewprogram">
+                    <div class="btn-dropdwn" style="display:none;position:absolute;top:40px;" id="popupnewprogram">
                                 <ul style="margin:0;">
                                     <li class="new-prog" id="NewTactic">New Tactic</li>
                                     <li class="copy-camp" id="CloneProgram">Copy Program</li>
@@ -82,7 +83,7 @@
                 }
             </span>
             }
-            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { placeholder = "Program name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;", title = programTitle })
+            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { placeholder = "Program name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = programTitle })
             @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
         </h2>
 

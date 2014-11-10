@@ -35,11 +35,23 @@
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
 
         <div class="span6" id="inspect-modal-left-column1">
-            <p>@Html.Raw("Parent Plan")</p>
-            @Html.TextBox("txtPlan", HttpUtility.HtmlDecode(PlanTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = PlanTitle })
+            @*<p>@Html.Raw("Parent Plan")</p>
+            @Html.TextBox("txtPlan", HttpUtility.HtmlDecode(PlanTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = PlanTitle })*@
             <p>@Html.Raw("Description")</p>
             @Html.TextAreaFor(model=>model.Description, new {id="txtDescription", @class = "span12 text-area-size", style = "height:92px;" })
-            
+            <p class="clear-section" style="line-height: 11px; padding-bottom: 8px;">@Html.Raw("Deployed to Integration")</p>
+            @* @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", id = "txtDeployStatus"})*@
+            @if (ExtIntService)
+            {
+                if (Model.IsDeployedToIntegration)
+                {
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                }
+                else
+                {    
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
+                }
+            }
             <div style="clear: both; width: 250%;">
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
@@ -59,19 +71,7 @@
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
-            <p class="clear-section" style=" padding-top: 6px;">@Html.Raw("Deployed to Integration")</p>
-            @* @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", id = "txtDeployStatus"})*@
-            @if (ExtIntService)
-            {
-                if (Model.IsDeployedToIntegration)
-                {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
-                }
-                else
-                {    
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
-                }
-            }
+            
         </div>
         <div class="span3" id="inspect-modal-left-column3">
              <p>@Html.Raw("Campaign Budget")</p>
@@ -172,6 +172,7 @@
         CancelEvent();
         $("#successMessageViewCampaign").slideUp(50);
         $("#errorMessageEditCampaign").slideUp(50);
+        $('#txtTitle').val($('#lblCampaignTitle').text());
         }
         else {
             $('.close-x-big-icon').trigger('click');

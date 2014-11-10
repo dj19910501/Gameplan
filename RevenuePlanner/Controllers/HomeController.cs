@@ -5117,6 +5117,15 @@ namespace RevenuePlanner.Controllers
                 ViewBag.LastSync = string.Empty;
             }
             var objPlan = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == id).FirstOrDefault();
+            
+            ViewBag.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId ==id && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
+            ViewBag.Cost = Common.CalculateProgramCost(id); //pcp.Cost; modified for PL #440 by dharmraj 
+
+            //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
+            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t =>t.Plan_Campaign_Program.PlanProgramId == id && t.IsDeleted == false).ToList());
+            ViewBag.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
+
+
             ViewBag.ProgramBudget = objPlan != null ? objPlan.ProgramBudget : 0;
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
@@ -5574,6 +5583,10 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.LastSync = string.Empty;
             }
+            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted == false).ToList());
+            ViewBag.MQLs = PlanTacticValuesList.Sum(tm => tm.MQL);
+            ViewBag.Cost = Common.CalculateCampaignCost(id); //pc.Cost; // Modified for PL#440 by Dharmraj
+            ViewBag.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); //  Update by Bhavesh to Display Revenue
 
             ViewBag.CampaignDetail = im;
             var objCampaign = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == id).FirstOrDefault();
@@ -8815,6 +8828,7 @@ namespace RevenuePlanner.Controllers
             var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList();
             double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
             ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
+
 
             return PartialView("_SetupProgramBudget", pcpm);
         }

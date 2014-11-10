@@ -5,6 +5,9 @@
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
     deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     string campaignBudget = Convert.ToString(ViewBag.CampaignBudget);
+    string cost = Convert.ToString(ViewBag.Cost);
+    string MQLs = Convert.ToString(ViewBag.MQLs);
+    string revenue = Convert.ToString(ViewBag.Revenue);
 }
 
 @using (Html.BeginForm())
@@ -36,17 +39,17 @@
                             <div class="cf width100">
                                 <div class="width65px margin-right20 pull-left" style="width:40%;">
             <p>@Html.LabelForMQL("MQL")</p>
-            @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
+            @Html.TextBox("txtmql",MQLs, new { @class = "span12 input-small priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
                    </div>
 
                                 <div class="width65px margin-right20 pull-left" style="width:40%;">
             <p>Cost</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+            @Html.TextBox("txtcost",cost, new { @class = "span12 input-small currency_dollar",  @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
             </div>
 
                                 <div class="width65px pull-left" style="width:40%;">
                                     <p>Revenue</p>
-            @Html.TextBoxFor(model => model.Revenues, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+            @Html.TextBox("txtRevenue",revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
                                      </div>
                             </div>
                         
@@ -80,7 +83,9 @@
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $(".selectBox select").selectbox();
-
+          $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
           $('form').find(".sbSelector").each(function () {
               $(this).unbind("click");
               $(this).removeAttr("href");
