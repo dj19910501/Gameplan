@@ -123,7 +123,8 @@
               $("#liSetup,#liReview,#liImpact").bind("click");
           }
 
-          $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
+          $("#txtCost").val(FormatCurrency($('#txtCost').val().toString(), false));
+          $('#txtCost').attr("title", $('#txtCost').val());
           $('#txtDate').val($('#txtDate').val().split(" ")[0].toString());
 
           $('form').find(".sbSelector").each(function () {
