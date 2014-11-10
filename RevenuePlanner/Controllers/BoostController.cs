@@ -229,7 +229,7 @@ namespace RevenuePlanner.Controllers
                 bittobj.Cost = ittobj.Cost;
                 bittobj.IsDeployed = ittobj.IsDeployed;
                 bittobj.ImprovementTacticTypeId = id;
-
+                bittobj.ColorCode = ittobj.ColorCode;
                 bittobj.IsDeployedToIntegration = ittobj.IsDeployedToIntegration;
 
                 ViewBag.Title = "Tactic Detail";
