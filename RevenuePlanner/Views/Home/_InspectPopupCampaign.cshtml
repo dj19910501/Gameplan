@@ -2,8 +2,8 @@
 @{
     var popupvalue = (string)ViewBag.InspectPopup;
     var RedirectType = (string)ViewBag.RedirectType;
-    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? ( RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
-    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index .ToString() ? true : false) : true);
+    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
     var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
@@ -68,11 +68,14 @@
             {
                 <span>
                     <span id="lblCampaignTitle" class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)" >@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)</span>
-                    @if (IsPlanEditable)
+                    @if (campaignMaster.OwnerId == Sessions.User.UserId)
                     {
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteCampaign">
                             <button class="delete-btn-gray" id="deleteCampaign" type="button">Delete</button>
                         </div>
+                    }
+                    @if (IsPlanEditable)
+                    {
                         <div style="float: right; position: relative;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                             <div class="btn-dropdwn" style="display: none; position: absolute; top: 35px;" id="popupnewprogram">
@@ -236,13 +239,13 @@
               }
               else if (tabtext == "Review") {
                   url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
-                          $("#divTab").empty();
-                          $("#divTab").load(url + '?id=' + planCampaignId);
-                          RemoveTabClass();
-                          $("#liSetup").removeClass('pull-left');
-                          $("#liSetup").addClass('active pull-left');
+                      $("#divTab").empty();
+                      $("#divTab").load(url + '?id=' + planCampaignId);
+                      RemoveTabClass();
+                      $("#liSetup").removeClass('pull-left');
+                      $("#liSetup").addClass('active pull-left');
 
-                      }
+                  }
 
               $("#btnEditCampaign").css("display", "none");
               $("#AddForm").css("display", "none");
@@ -272,7 +275,7 @@
               $('#txtTitle').text('');
                $('#lblCampaignTitle').css('display', 'none');
                return false;*@
-              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup",'@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId');
+              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId');
           });
 
           @*$('#BtnGroup1').click(function () {
@@ -283,8 +286,8 @@
               return false;
           });*@
           $('#NewProgram').click(function () {
-              
-              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup",'@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanCampaignId').val());
+
+              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanCampaignId').val());
           });
 
           // Close event for Error Message & Success Message Close button 
@@ -321,14 +324,14 @@
               }
               else {
                   url = '@Url.Content("~/Home/LoadSetupCampaign/")';
-            }
-        }
-        if (tabValue == TabReview) {
-            if (CampaignOpt == "Edit") {
-                $('#txtTitle').css('display', 'none');
-                $('#lblCampaignTitle').css('display', 'block');
-            }
-            url = '@Url.Content("~/Home/LoadReviewCampaign/")';
+              }
+          }
+          if (tabValue == TabReview) {
+              if (CampaignOpt == "Edit") {
+                  $('#txtTitle').css('display', 'none');
+                  $('#lblCampaignTitle').css('display', 'block');
+              }
+              url = '@Url.Content("~/Home/LoadReviewCampaign/")';
         }
 
         if (tabValue == TabBudget) {
@@ -394,37 +397,36 @@
             url: '@Url.Content("~/Home/Clone")',
             data: {
                 CloneType: '@Enums.DuplicationModule.Campaign',
-                    Id: idPlanCamaign,
-                    title: Title,
-                    CalledFromBudget: '@CalledFromBudget',
+                Id: idPlanCamaign,
+                title: Title,
+                CalledFromBudget: '@CalledFromBudget',
                     RequsetedModule: '@RedirectType'
-                },
+            },
             success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
-                    }
-                    else if (data.IsSuccess) {
-                        if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                }
+                else if (data.IsSuccess) {
+                    if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                             SaveMessageOnParent(data.msg);
                         }
-                    else {
+                        else {
                             window.location.href = data.redirect;
                             return;
                         }
-                        }
-                        else {
-                            $("#successMessageViewCampaign").slideUp(50);
-                            $("#errorMessageEditCampaign").slideDown(400);
-                            $("#spanMessageEditCampaign").empty();
-                            $("#spanMessageEditCampaign").val(data.msg);
-                            return false;
-                        }
                     }
+                    else {
+                        $("#successMessageViewCampaign").slideUp(50);
+                        $("#errorMessageEditCampaign").slideDown(400);
+                        $("#spanMessageEditCampaign").empty();
+                        $("#spanMessageEditCampaign").val(data.msg);
+                        return false;
+                    }
+            }
         });
     });
 
-    function SaveMessageOnParent(value)
-    {
+    function SaveMessageOnParent(value) {
         $("#modal-container-186470").modal('hide');
         $("#errorMessageDuplicatePlan").slideUp(50);
         $("#successMessageDuplicatePlan").slideDown(400);
@@ -433,51 +435,52 @@
         $("#successMessageDuplicatePlan").removeClass("message-position");
         $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
         RefreshCurrentTab();
-                }
+    }
 
     $("#deleteCampaign").click(function () {
         if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
-             var campaignId = $("#hdnPlanCampaignId").val();
-             var uId = $(window).attr('name');
-             var arrClosedTaskString = null;
-             if (typeof arrClosedTask != 'undefined') {
-                 arrClosedTaskString = arrClosedTask.toString();
-             }
-             $.ajax({
-                 type: 'POST',
-                 url: '@Url.Content("~/Home/DeleteCampaign")',
-                    data: {
-                          ID: campaignId
-                        , UserId: uId
-                        , closedTask: arrClosedTaskString
-                        , CalledFromBudget: '@CalledFromBudget'
+            var campaignId = $("#hdnPlanCampaignId").val();
+            var uId = $(window).attr('name');
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/DeleteSection")',
+                 data: {
+                     ID: campaignId
+                     , DeleteType: '@Enums.DuplicationModule.Campaign'
+                     , UserId: uId
+                     , closedTask: arrClosedTaskString
+                     , CalledFromBudget: '@CalledFromBudget'
                         , IsIndex: '@isIndex'
                         , RedirectType: '@RedirectTypeMode'
                     },
-                    success: function (data) {
-                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                            window.location = '@Url.Content("~/Login/Index")';
+                 success: function (data) {
+                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                         window.location = '@Url.Content("~/Login/Index")';
                         }
                         else {
-                            if (data.IsSuccess) {
-                                if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                         if (data.IsSuccess && data.opt != 'undefined') {
+                                if ( data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                                     SaveMessageOnParent(data.msg);
                                 }
                                 else {
                                     window.location.href = data.redirect;
                                     return;
                                 }
+                            }
+                            else {
+                                $("#successMessageViewCampaign").slideUp(50);
+                                $("#errorMessageEditCampaign").slideDown(400);
+                                $("#spanMessageEditCampaign").empty();
+                                $("#spanMessageEditCampaign").val(data.msg);
+                                return false;
+                            }
                         }
-                        else {
-                            $("#successMessageViewCampaign").slideUp(50);
-                            $("#errorMessageEditCampaign").slideDown(400);
-                            $("#spanMessageEditCampaign").empty();
-                            $("#spanMessageEditCampaign").val(data.msg);
-                            return false;
-                        }   
-                      }
                     }
-                });
+             });
             }
-     });
+    });
 </script>

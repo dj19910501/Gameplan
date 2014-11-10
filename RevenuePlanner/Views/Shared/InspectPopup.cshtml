@@ -1,7 +1,12 @@
 ﻿@using RevenuePlanner.Helpers;
 @{
     var popupvalue = (string)ViewBag.InspectPopup;
+    var RedirectType = (string)ViewBag.RedirectType;
+    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
+    var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
+
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Display(popupvalue)
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
@@ -51,8 +56,24 @@
         {            
         <span>
          <span id="lblTacticTitle" class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
-            @if (IsPlanEditable)
+           
+             @if (tacticMaster.OwnerId == Sessions.User.UserId)
+                    {
+                        <div class="delete-btn-tab" style="float: right;" id="divDeleteTactic">
+                            <button class="delete-btn-gray" id="deleteTactic" type="button">Delete</button>
+                        </div>
+                    }
+             @if (IsPlanEditable)
             {
+                 <div style="float: right; position: relative;margin-left:10px;">
+                            <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
+                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 35px;" id="popupnewTactic">
+                                <ul style="margin: 0;">
+                                    <li class="new-prog" id="NewTactic">New Line Item</li>
+                                    <li class="copy-camp" id="CloneTactic">Copy Tactic</li>
+                                </ul>
+                            </div>
+                 </div>
                 <span class="edit-icon-white btn-blue btn-large" style="display:block;cursor: pointer;" id="EditForm"></span>
             }
          </span>
@@ -142,6 +163,7 @@
 
     $(document).ready(
       function () {
+          $("#AddForm").css("display", "block");
           CloseIconClick();          
           NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
           var InspectValue = $("#hdnInspectPopup").val();
@@ -205,6 +227,7 @@
               loadReview(planTacticId, activeTab);
               //// Added By Kalpesh on 11/06/2014 to Non-Editable Tactic Name.mp4 mentioned in resolve ticket #868
               $("#txtTacticTitle").prop('readonly', false);
+              $("#AddForm").css("display", "none");
           });
           
       });
@@ -220,6 +243,15 @@
         var planTacticId = $("#hdnPlanTacticId").val();
         loadReview(planTacticId, tabtext);
     }
+
+    $('#AddForm').click(function () {
+        if ($('#popupnewTactic').css('display') == 'none') {
+            $('#popupnewTactic').css('display', 'block')
+        }
+        else {
+            $('#popupnewTactic').css('display', 'none')
+        }
+    });
 
     function RemoveTabClass() {
         $('#InspectTab').children().each(function () {
@@ -319,5 +351,101 @@
     }
 
     //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
+
+
+    $('#CloneTactic').click(function () {
+        var idPlanTactic = $("#hdnPlanTacticId").val();
+        var Title = $("#lblTacticTitle").html();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/Clone")',
+            data: {
+                CloneType: '@Enums.DuplicationModule.Tactic',
+                Id: idPlanTactic,
+                title: Title,
+                CalledFromBudget: '@CalledFromBudget',
+                RequsetedModule: '@RedirectType'
+            },
+            success: function (data) {
+                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else if (data.IsSuccess) {
+                    if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                        SaveMessageOnParent(data.msg);
+                    }
+                    else {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                }
+                else {
+                    $("#successMessage").slideUp(50);
+                    $("#errorMessage").slideDown(400);
+                    $("#spanMessageError").empty();
+                    $("#spanMessageError").val(data.msg);
+                    return false;
+                }
+            }
+        });
+     });
+
+function SaveMessageOnParent(value) {
+    $("#modal-container-186470").modal('hide');
+    $("#errorMessageDuplicatePlan").slideUp(50);
+    $("#successMessageDuplicatePlan").slideDown(400);
+    $("#cSuccessDuplicatePlan").empty();
+    $("#cSuccessDuplicatePlan").text(htmlDecode(value));
+    $("#successMessageDuplicatePlan").removeClass("message-position");
+    $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
+    RefreshCurrentTab();
+}
+
+$("#deleteTactic").click(function () {
+    if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
+        var ProgramId = $("#hdnPlanTacticId").val();
+            var uId = $(window).attr('name');
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/DeleteSection")',
+                data: {
+                    ID: ProgramId
+                    , DeleteType: '@Enums.DuplicationModule.Tactic'
+                     , UserId: uId
+                     , closedTask: arrClosedTaskString
+                     , CalledFromBudget: '@CalledFromBudget'
+                        , IsIndex: '@isIndex'
+                        , RedirectType: '@RedirectTypeMode'
+                 },
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                     }
+                     else {
+                         if (data.IsSuccess && data.opt != 'undefined') {
+                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                                 SaveMessageOnParent(data.msg);
+                             }
+                             else {
+                                 window.location.href = data.redirect;
+                                 return;
+                             }
+                         }
+                         else {
+                             $("#successMessage").slideUp(50);
+                             $("#errorMessage").slideDown(400);
+                             $("#spanMessageError").empty();
+                             $("#spanMessageError").val(data.msg);
+                             return false;
+                         }
+                     }
+                 }
+            });
+         }
+    });
 
 </script>

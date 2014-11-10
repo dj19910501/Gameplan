@@ -1,6 +1,10 @@
 ﻿@using RevenuePlanner.Helpers;
 @{
     var popupvalue = (string)ViewBag.InspectPopup;
+    var RedirectType = (string)ViewBag.RedirectType;
+    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
+    var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Display(popupvalue)
@@ -56,15 +60,21 @@
             {
             <span>
                 <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
+                  @if (programMaster.OwnerId == Sessions.User.UserId)
+                    {
+                        <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
+                            <button class="delete-btn-gray" id="deleteProgram" type="button">Delete</button>
+                        </div>
+                    }
                 @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
                 {
                     <div style="float: right;position:relative;">
-                    <span class="delete-icon-white delete-btn-gray delete-btn-tab" style="display: block; cursor: pointer;" id="DeleteForm"></span>
+                    @*<span class="delete-icon-white delete-btn-gray delete-btn-tab" style="display: block; cursor: pointer;" id="DeleteForm"></span>*@
                     <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer;margin-right:10px;" id="AddForm"></span>
                     <div class="btn-dropdwn" style="display:none;position:absolute;top:35px;" id="popupnewprogram">
                                 <ul style="margin:0;">
                                     <li class="new-prog" id="NewTactic">New Tactic</li>
-                                    <li class="copy-camp">Copy Tactic</li>
+                                    <li class="copy-camp" id="CloneProgram">Copy Program</li>
                                 </ul>
                             </div>
                         </div>
@@ -329,4 +339,98 @@
         }
     });
 
+    $('#CloneProgram').click(function () {
+        var idPlanProgram = $("#hdnPlanProgramId").val();
+        var Title = $("#lblProgramTitle").html();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/Clone")',
+            data: {
+                CloneType: '@Enums.DuplicationModule.Program',
+                Id: idPlanProgram,
+                title: Title,
+                CalledFromBudget: '@CalledFromBudget',
+                    RequsetedModule: '@RedirectType'
+            },
+            success: function (data) {
+                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else if (data.IsSuccess) {
+                    if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                            SaveMessageOnParent(data.msg);
+                        }
+                        else {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                    }
+                    else {
+                        $("#successMessageViewProgram").slideUp(50);
+                        $("#errorMessageEditProgram").slideDown(400);
+                        $("#spanMessageEditProgram").empty();
+                        $("#spanMessageEditProgram").val(data.msg);
+                        return false;
+                    }
+            }
+        });
+      });
+
+    function SaveMessageOnParent(value) {
+        $("#modal-container-186470").modal('hide');
+        $("#errorMessageDuplicatePlan").slideUp(50);
+        $("#successMessageDuplicatePlan").slideDown(400);
+        $("#cSuccessDuplicatePlan").empty();
+        $("#cSuccessDuplicatePlan").text(htmlDecode(value));
+        $("#successMessageDuplicatePlan").removeClass("message-position");
+        $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
+        RefreshCurrentTab();
+    }
+
+    $("#deleteProgram").click(function () {
+        if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
+            var ProgramId = $("#hdnPlanProgramId").val();
+            var uId = $(window).attr('name');
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/DeleteSection")',
+                 data: {
+                     ID: ProgramId
+                     , DeleteType: '@Enums.DuplicationModule.Program'
+                     , UserId: uId
+                     , closedTask: arrClosedTaskString
+                     , CalledFromBudget: '@CalledFromBudget'
+                        , IsIndex: '@isIndex'
+                        , RedirectType: '@RedirectTypeMode'
+                    },
+                 success: function (data) {
+                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                         window.location = '@Url.Content("~/Login/Index")';
+                        }
+                        else {
+                         if (data.IsSuccess && data.opt != 'undefined') {
+                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                                    SaveMessageOnParent(data.msg);
+                                }
+                                else {
+                                    window.location.href = data.redirect;
+                                    return;
+                                }
+                            }
+                            else {
+                                $("#successMessageViewProgram").slideUp(50);
+                                $("#errorMessageEditProgram").slideDown(400);
+                                $("#spanMessageEditProgram").empty();
+                                $("#spanMessageEditProgram").val(data.msg);
+                                return false;
+                            }
+                        }
+                    }
+             });
+            }
+    });
 </script>
