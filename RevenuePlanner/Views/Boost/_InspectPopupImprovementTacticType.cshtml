@@ -14,6 +14,10 @@
         margin-bottom: 15px !important;
     }
 
+    #spanMessageImprovmentTacticType {
+    margin-left: 5px;
+    }
+
     #save_tactic
     {
         width: 80px;
@@ -35,14 +39,14 @@
 
 <div id="errorMessageImprovmentTacticType" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
-    <span id="spanMessageImprovmentTacticType"></span>
+    <strong>Error! </strong><span id="spanMessageImprovmentTacticType"></span>
 </div>
 @Html.HiddenFor(model => model.ImprovementTacticTypeId, new { id = "ImprovementTacticTypeId" })
 
 @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
 {
     <div class="modal-popup-title" style="float:left;width:100%;">
-        <span class="icon-flag bg-purple" style="background-color:#@Model.ColorCode !important;"></span>
+        <span class="icon-flag bg-purple flagcolor" style="background-color:#@Model.ColorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight" style="float: left;margin-top:0;">
             <span>
                 <span id="lblProgramTitle"  class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(Model.Title)">Improvement Tactic Type</span>
