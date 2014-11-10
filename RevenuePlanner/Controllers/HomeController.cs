@@ -3581,16 +3581,16 @@ namespace RevenuePlanner.Controllers
                     // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
                     else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        objPlan = db.Plans.Where(p => p.PlanId.Equals(id)).FirstOrDefault();
+                        //objPlan = db.Plans.Where(p => p.PlanId.Equals(id)).FirstOrDefault();
                         ViewBag.PlanId = id;
                         //Added by Mitesh Vaishnav for PL ticket #926
                         //Add restriction of BU for edit button in inspect popup
-                        BusinessUnitId = objPlan.Model.BusinessUnitId != null ? objPlan.Model.BusinessUnitId : BusinessUnitId;
-                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
-                        if (objPlan.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
-                        {
-                            IsPlanEditable = true;
-                        }
+                        //BusinessUnitId = objPlan.Model.BusinessUnitId != null ? objPlan.Model.BusinessUnitId : BusinessUnitId;
+                        //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        //if (objPlan.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        //{
+                        //    IsPlanEditable = true;
+                        //}
                     }
                     // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
                 }
@@ -3768,6 +3768,37 @@ namespace RevenuePlanner.Controllers
             // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
             else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
             {
+                //Get all subordinates of current user upto n level
+                var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                // Get current user permission for edit own and subordinates plans.
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                // To get permission status for Plan Edit, By dharmraj PL #519
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(im.BusinessUnitId);
+                bool IsPlanEditable = false;
+                ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
+                // Added to check edit status for current user by dharmraj for #538
+                if (IsBusinessUnitEditable)
+                {
+                    if (im.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+                    {
+                        IsPlanEditable = true;
+                    }
+                    else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    {
+                        IsPlanEditable = true;
+                    }
+                    else if (IsPlanEditSubordinatesAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    {
+                        if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
+                        {
+                            IsPlanEditable = true;
+                        }
+                    }
+                }
+
+                ViewBag.IsPlanEditable = IsPlanEditable;
                 ViewBag.PlanDetails = im;
                 if (InspectPopupMode == Enums.InspectPopupMode.ReadOnly.ToString())
                 {

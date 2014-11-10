@@ -4,6 +4,7 @@
     var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
     var planDetails = (RevenuePlanner.Models.InspectModel)ViewBag.PlanDetails;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+    bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Display(popupvalue)
@@ -33,22 +34,28 @@
             {
                 <span class="tipsyclassTitle" title="@Html.Raw(planDetails.Title)">@Html.Raw(planDetails.Title)</span>
             }
-            <div id="divDeletePlan" style="float: right;" class="delete-btn-tab">
-                <button type="button" id="deletePlan" class="delete-btn-gray">Delete</button>
-            </div>
-            <div style="float: right; position: relative;">
-                <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;" class="add-icon-white btn-blue btn-large"></span>
-                <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
-                    <ul style="margin: 0;">
-                        <li id="NewCampaign" class="new-prog">New Campaign</li>
-                        <li id="ClonePlan" class="copy-camp">Copy Plan</li>
-                    </ul>
+            @if (IsPlanEditable)
+            {
+                <div id="divDeletePlan" style="float: right;" class="delete-btn-tab">
+                    <button type="button" id="deletePlan" class="delete-btn-gray">Delete</button>
                 </div>
-            </div>
-        @if (IsPlanEditable && !(InspectMode == Enums.InspectPopupMode.Edit.ToString()))
-        {
-            <a id="lnkEdit" class="edit-icon-white btn-blue btn-large" style="cursor: pointer; margin-right: 15px;"></a>
-        }
+            }
+            @if (IsPlanCreateAuthorized)
+            {
+                <div style="float: right; position: relative;">
+                    <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;" class="add-icon-white btn-blue btn-large"></span>
+                    <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
+                        <ul style="margin: 0;">
+                            <li id="NewCampaign" class="new-prog">New Campaign</li>
+                            <li id="ClonePlan" class="copy-camp">Copy Plan</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            @if (IsPlanEditable && !(InspectMode == Enums.InspectPopupMode.Edit.ToString()))
+            {
+                <a id="lnkEdit" class="edit-icon-white btn-blue btn-large" style="cursor: pointer; margin-right: 15px;"></a>
+            }
         </h2>
     </div>
 </form>
