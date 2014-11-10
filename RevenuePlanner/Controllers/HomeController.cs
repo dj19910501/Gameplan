@@ -9429,6 +9429,11 @@ namespace RevenuePlanner.Controllers
         public ActionResult Clone(string CloneType, int Id, string title, string CalledFromBudget = "", string RequsetedModule = "")
         {
             int rtResult = 0;
+            int cid = 0;
+            int pid = 0;
+            bool IsCampaign = (CloneType == Enums.Section.Campaign.ToString()) ? true : false;
+            bool IsProgram = (CloneType == Enums.Section.Program.ToString()) ? true : false; ;
+            bool IsTactic = (CloneType == Enums.Section.Tactic.ToString()) ? true : false; ;
 
             if (Sessions.User == null)
             {
@@ -9441,8 +9446,8 @@ namespace RevenuePlanner.Controllers
                 if (!string.IsNullOrEmpty(CloneType) && Id > 0)
                 {
                     Clonehelper objClonehelper = new Clonehelper();
-                    //rtResult = objClonehelper.ToClone("", CloneType, Id);
-                    rtResult = 1;
+                    rtResult = objClonehelper.ToClone("", CloneType, Id);
+                    //rtResult = 1;
                     if (CloneType == Enums.DuplicationModule.Plan.ToString())
                     {
                         Plan objPlan = db.Plans.Where(p => p.PlanId == Id).FirstOrDefault();
@@ -9457,6 +9462,7 @@ namespace RevenuePlanner.Controllers
 
                 if (rtResult >= 1)
                 {
+                    title = HttpUtility.HtmlDecode(title);
                     string strMessage = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
 
                     if (!string.IsNullOrEmpty(CalledFromBudget))
@@ -9570,7 +9576,7 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        int returnValue = 1;
+                        int returnValue = 0;
                         string Title = "";
                         string strMessage = "";
                         int cid = 0;
@@ -9581,30 +9587,30 @@ namespace RevenuePlanner.Controllers
 
                         if (IsCampaign)
                         {
-                            //returnValue = Common.PlanTaskDelete(Enums.Section.Campaign.ToString(), id);    
+                            returnValue = Common.PlanTaskDelete(Enums.Section.Campaign.ToString(), id);    
                             if (returnValue != 0)
                             {
                                 Plan_Campaign pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).SingleOrDefault();
                                 Title = pc.Title;
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanCampaignId, pc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                strMessage = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
+                                strMessage = string.Format(Common.objCached.CampaignDeleteSuccess, HttpUtility.HtmlDecode(Title));
                             }
                         }
                         else if (IsProgram)
                         {
-                            //returnValue = Common.PlanTaskDelete(Enums.Section.Program.ToString(), id);
+                            returnValue = Common.PlanTaskDelete(Enums.Section.Program.ToString(), id);
                             if (returnValue != 0)
                             {
                                 Plan_Campaign_Program pc = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == id).SingleOrDefault();
                                 cid = pc.PlanCampaignId;
                                 Title = pc.Title;
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                strMessage = string.Format(Common.objCached.ProgramDeleteSuccess, Title);
+                                strMessage = string.Format(Common.objCached.ProgramDeleteSuccess, HttpUtility.HtmlDecode(Title));
                             }
                         }
                         else if (IsTactic)
                         {
-                             //returnValue = Common.PlanTaskDelete(Enums.Section.Tactic.ToString(), id);
+                             returnValue = Common.PlanTaskDelete(Enums.Section.Tactic.ToString(), id);
 
                              if (returnValue != 0)
                              {
@@ -9613,7 +9619,7 @@ namespace RevenuePlanner.Controllers
                                  pid = pcpt.PlanProgramId;
                                  Title = pcpt.Title;
                                  returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.PlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                 strMessage = string.Format(Common.objCached.TacticDeleteSuccess, Title);
+                                 strMessage = string.Format(Common.objCached.TacticDeleteSuccess, HttpUtility.HtmlDecode(Title));
                              }
                         }
                         
@@ -9623,14 +9629,14 @@ namespace RevenuePlanner.Controllers
 
                                 if (IsProgram)
                                 {
-                                    //Common.ChangeCampaignStatus(cid);     
+                                    Common.ChangeCampaignStatus(cid);     
                                 }
                                 
                                 if (IsTactic)
 	                            {
-		                            //Common.ChangeProgramStatus(pid);
+		                            Common.ChangeProgramStatus(pid);
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pid).Select(a => a.PlanCampaignId).Single();
-                                    //Common.ChangeCampaignStatus(PlanCampaignId);
+                                    Common.ChangeCampaignStatus(PlanCampaignId);
 	                            }
                                 
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
