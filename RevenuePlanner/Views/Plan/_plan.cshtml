@@ -194,10 +194,10 @@
         });
         if ('@ViewBag.PageTitle' == 'Create') {
 
-                $('#LeftNavAddActivity').attr("disabled", "disabled");
-                if (!$('#liDefination').hasClass('active')) {
-                    $('#liDefination').addClass('active');
-                    if ('@strPlanid' == '' || '@strPlanid' == '0') {
+            $('#LeftNavAddActivity').attr("disabled", "disabled");
+            if (!$('#liDefination').hasClass('active')) {
+                $('#liDefination').addClass('active');
+                if ('@strPlanid' == '' || '@strPlanid' == '0') {
                         $('#LeftNavCampaigns').attr('style', 'cursor:default !important');
                         $('#aApplyToCalender').attr('style', 'cursor:default !important');
                         $('#aBudgeting').attr('style', 'cursor:default !important');
@@ -229,15 +229,15 @@
 
             }
             else if ('@ViewBag.PageTitle' == 'Assortment') {
-                $('#LeftNavAddActivity').removeAttr("disabled", "disabled");
-                if (!$('#liCampaign').hasClass('active')) {
-                    $('#liCampaign').addClass('active');
-                    $('#LeftNavCampaigns').removeAttr('id');
-                    $('#LeftNavCampaigns').attr("href", "#");
-                    $('#LeftNavCampaigns').removeAttr('id');
-                }
+            $('#LeftNavAddActivity').removeAttr("disabled", "disabled");
+            if (!$('#liCampaign').hasClass('active')) {
+                $('#liCampaign').addClass('active');
+                $('#LeftNavCampaigns').removeAttr('id');
+                $('#LeftNavCampaigns').attr("href", "#");
+                $('#LeftNavCampaigns').removeAttr('id');
             }
-            else if ('@ViewBag.PageTitle' == 'ApplyToCallender') {
+        }
+        else if ('@ViewBag.PageTitle' == 'ApplyToCallender') {
                 var isplanEdit = '@IsPlanEditable.ToString()';
                 if (!$('#liCalender').hasClass('active')) {
                     $('#liCalender').addClass('active');
@@ -288,7 +288,7 @@
 //}
 
 
-function ShowModel(mode, section, id,ParentId,RequsedtedModule) {
+function ShowModel(mode, section, id, ParentId, RequsedtedModule) {
     modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
     $('.modal-backdrop').addClass('modalFull-backdrop');
@@ -310,10 +310,10 @@ function ShowModel(mode, section, id,ParentId,RequsedtedModule) {
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
             loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
-         }
-         else {
+        }
+        else {
             loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "", 0, RequsedtedModule);
-         }
+        }
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
@@ -325,7 +325,7 @@ function ShowModel(mode, section, id,ParentId,RequsedtedModule) {
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId,RequsedtedModule);
+            loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
         }
         else {
             loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "", 0, RequsedtedModule);
@@ -334,10 +334,10 @@ function ShowModel(mode, section, id,ParentId,RequsedtedModule) {
     modalBackdropDisplayNone();
 };
 
-    function loadInspectPopup(id, section, tabValue, mode, parentId, RequsedtedModule) {
-        parentId = typeof parentId != 'undefined' ? parentId : '0';
-        RequsedtedModule = typeof RequsedtedModule != 'undefined' ? RequsedtedModule : '';
-        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+function loadInspectPopup(id, section, tabValue, mode, parentId, RequsedtedModule) {
+    parentId = typeof parentId != 'undefined' ? parentId : '0';
+    RequsedtedModule = typeof RequsedtedModule != 'undefined' ? RequsedtedModule : '';
+    var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
         $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + RequsedtedModule);
     }
@@ -345,12 +345,13 @@ function ShowModel(mode, section, id,ParentId,RequsedtedModule) {
     function CloseIconClick() {
         $('.close-x-big-icon').click(function () {
             $('body').removeClass('bodyOverflow');
+
                 @*//window.location = '@Url.Content("~/Plan/Assortment")';*@
             //Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
-            if (gantt != null)
-                gantt.refreshData();
-            });
-        }
+            //if (gantt != null)
+            //    gantt.refreshData();
+        });
+    }
     function modalBackdropDisplayNone() {
         setTimeout(function () {
             $('.modal-backdrop').each(function () {
@@ -363,18 +364,20 @@ function ShowModel(mode, section, id,ParentId,RequsedtedModule) {
     function RefreshCurrentTab() {
         //type = $('#ddlTabViewBy').val();
         //AjaxRequest();
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/GetCampaign/")',
-                    data: {
-                    },
-                    success: function (r) {
-                        campaign = r;
-                        var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
-                        $tableCampaigns.html('');
-                        fillCampaignsTable();
-                    }
-                });
-            }
+        if (gantt == null && typeof gantt == 'undefined') {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/GetCampaign/")',
+                data: {
+                },
+                success: function (r) {
+                    campaign = r;
+                    var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
+                    $tableCampaigns.html('');
+                    fillCampaignsTable();
+                }
+            });
+        }
+    }
 </script>
 
