@@ -867,6 +867,8 @@
     <Content Include="Views\Home\_SetupTacticBudgetAllocation.cshtml" />
     <Content Include="Views\User\_UpdateUserDetails.cshtml" />
     <Content Include="Views\Boost\_InspectPopupImprovementTacticType.cshtml" />
+    <Content Include="Views\Home\_InspectPopupLineitem.cshtml" />
+    <Content Include="Views\Home\_SetupLineitem.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

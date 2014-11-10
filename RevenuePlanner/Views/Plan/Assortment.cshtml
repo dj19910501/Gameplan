@@ -692,10 +692,11 @@
         }
         /*Added by Mitesh Vaishnav */
         $(document).on("click", "#divlineitem", function (e) {
-            e.stopPropagation();
-            $.ajaxSetup({ cache: false });
+            
             var idLineItem = $(this).attr("index");
-            displayConfirmCommon('lineCommonClick(' + idLineItem + ');');
+            ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", idLineItem);
+            return false;
+           
         });
         function lineCommonClick(id) {
             $("#slidepanel").css("display", "block");

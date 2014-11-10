@@ -1,0 +1,161 @@
+﻿@using RevenuePlanner.Helpers;
+@{
+    var popupvalue = (string)ViewBag.InspectPopup;
+}
+@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
+@Html.Display(popupvalue)
+<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+@{
+    var planLineItemId = 0;
+    string colorCode = "#C6EBF3";
+    string tacticId = Convert.ToString(ViewBag.tacticId);
+    string lineitemTitle = "";
+    bool IsPlanEditable = false;
+    if (ViewBag.IsPlanEditable != null)
+    {
+        IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+    }
+    planLineItemId = ViewBag.LineItemId;
+    lineitemTitle = ViewBag.LineItemTitle;
+}
+
+@Html.Hidden("hdnPlanLineItemID", planLineItemId, new { id = "hdnPlanLineItemID" })
+@Html.Hidden("hdnLineitemOpt", "View", new { id = "hdnLineitemOpt" })
+
+<style type="text/css">
+    #successMessageViewCampaign, #errorMessageEditCampaign {
+        margin-bottom: 15px !important;
+    }
+</style>
+
+<div id="successMessageViewCampaign" class="alert hide alert-success message-position-small">
+    <a class="close">×</a>
+    <span id="spanSuccessMessageViewCampaign"></span>
+</div>
+
+<div id="errorMessageEditCampaign" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <strong>Error.</strong>
+    <span id="spanMessageEditCampaign"></span>
+</div>
+
+<form>
+    <div class="modal-popup-title">
+        <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
+        <h2 class="title-simple source-sans-prolight">
+            @if (lineitemTitle != string.Empty)
+            {
+                <span>
+                    <span id="lblLineitemTitle" class="tipsyclassTitle" title="@Html.Raw(lineitemTitle)" >@Html.Raw(lineitemTitle)</span>
+                    @if (IsPlanEditable)
+                    {
+                        <div style="float: right; position: relative;">
+                            <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
+                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 35px;" id="popupLineitem">
+                                <ul style="margin: 0;">
+
+                                    <li class="copy-camp">Copy Lineitem</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;"></a>
+                    }
+                </span> 
+            }
+            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(lineitemTitle), new { placeholder = "Lineitem name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;", title = lineitemTitle, id = "txtTitle" })
+            @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
+        </h2>
+    </div>
+</form>
+
+<div>
+    <ul class="nav nav-tabs new-margin" id="InspectTab">
+        <li class="active pull-left" id="liSetup">
+            <a>Setup</a>
+        </li>
+        <li class="pull-left" id="liReview">
+            <a>Review</a>
+        </li>
+        <li class="pull-left" id="liBudget">
+            <a>Budget</a>
+        </li>
+        <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
+        </li>
+    </ul>
+    <div id="divTab">
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    var TabSetup = "Setup";
+    $(document).ready(
+     function () {
+         CloseIconClick();
+         $("#btnEditlineItem").css("display", "block");
+         $("#AddForm").css("display", "block");
+         NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
+         var InspectValue = $("#hdnInspectPopup").val();
+         var planLineitemId = $("#hdnPlanLineItemID").val();
+
+         // Call Remove Tabclass which will handle style of tabs
+         RemoveTabClass();
+
+         $("#li" + InspectValue).removeClass("pull-left");
+         $("#li" + InspectValue).addClass("active pull-left");
+         var tabtext = ($("#li" + InspectValue).children('a').text());
+         $('#div' + tabtext).css({ display: "block" });
+
+         if (planLineitemId != '0') {
+             loadReview(planLineitemId, tabtext);
+         }
+         else {
+             $("#liReview ,#liBudget,#liSetup").unbind('click');
+             loadAddSetup();
+         }
+     });
+
+    //<--- End Document.ready event --->
+
+
+    function RemoveTabClass() {
+        $('#InspectTab').children().each(function () {
+            if ($(this).hasClass('active pull-left')) {
+                $(this).removeClass("active pull-left");
+                $(this).addClass("pull-left");
+            }
+        });
+    }
+    function loadReview(id, tabValue) {
+
+        $("#hdnInspectPopup").val(tabValue);
+        $.ajaxSetup({ cache: false });
+        var url;
+
+        var LineitemOpt = $("#hdnLineitemOpt").val();
+        if (tabValue == TabSetup) {
+            if (LineitemOpt == "Edit") {
+                $('#txtTitle').css('display', 'block');
+                $('#lblLineitemTitle').css('display', 'none');
+                url = '@Url.Content("~/Home/LoadEditSetupLineitem/")';
+            }
+            else {
+                url = '@Url.Content("~/Home/LoadSetupLineitem/")';
+            }
+        }
+        RemoveTabClass();
+        $("#li" + tabValue).removeClass("pull-left");
+        $("#li" + tabValue).addClass("active pull-left");
+        $('#div' + tabValue).css({ display: "block" });
+        $("#divTab").empty();
+        $("#divTab").load(url + '?id=' + id);
+    }
+    // Close event for Error Message & Success Message Close button 
+    $(".alert").find(".close").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").css("display", "none");
+    });
+</script>
+

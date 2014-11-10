@@ -3500,6 +3500,7 @@ namespace RevenuePlanner.Controllers
                 Plan_Campaign_Program objPlan_Campaign_Program = null;
                 Plan_Campaign objPlan_Campaign = null;
                 Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
+                Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
                 //int planId = 0;
                 bool IsPlanEditable = false;
                 Guid BusinessUnitId = Guid.Empty;
@@ -3558,6 +3559,19 @@ namespace RevenuePlanner.Controllers
                         IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
                         // planId = db.Plan_Improvement_Campaign.Where(picobjw => picobjw.ImprovementPlanCampaignId.Equals(db.Plan_Improvement_Campaign_Program.Where(picpobjw => picpobjw.ImprovementPlanProgramId.Equals(objPlan_Improvement_Campaign_Program_Tactic.ImprovementPlanProgramId)).Select(r => r.ImprovementPlanCampaignId).FirstOrDefault())).Select(r => r.ImprovePlanId).FirstOrDefault();
                         if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        {
+                            IsPlanEditable = true;
+                        }
+                    }
+                    else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
+                    {
+                        objPlan_Campaign_Program_Tactic_LineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => pcptl.PlanLineItemId.Equals(id)).FirstOrDefault();
+                        ViewBag.LineItemId = objPlan_Campaign_Program_Tactic_LineItem.PlanLineItemId;
+                        ViewBag.LineItemTitle = objPlan_Campaign_Program_Tactic_LineItem.Title;
+                        ViewBag.PlanId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                        BusinessUnitId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
+                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
                         {
                             IsPlanEditable = true;
                         }
@@ -3665,7 +3679,7 @@ namespace RevenuePlanner.Controllers
                     }
 
                     //47.	Check only for tactic, bhavesh internal review point, modified by Dharmraj
-                    if (IsPlanEditable && Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
+                    if (IsPlanEditable && (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower() || Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower()))
                     {
                         // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
                         var lstUserCustomRestriction = Common.GetUserCustomRestriction();
@@ -3729,6 +3743,10 @@ namespace RevenuePlanner.Controllers
                     ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
                 }
                 return PartialView("_InspectPopupImprovementTactic", im);
+            }
+            else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
+            {
+                return PartialView("_InspectPopupLineitem");
             }
             return PartialView("InspectPopup", im);
         }
@@ -10170,6 +10188,81 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #endregion
+
+        /// <summary>
+        /// Added By: Mitesh Vaishnav.
+        /// Action to Load Lineitem Setup Tab.
+        /// </summary>
+        /// <param name="id">Plan Lineitem Id.</param>
+        /// <returns>Returns Partial View Of Setup Tab.</returns>
+        public ActionResult LoadSetupLineitem(int id)
+        {
+           
+            ViewBag.IsCreated = false;
+            
+           
+            Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobj => pcpobj.PlanLineItemId.Equals(id));
+            if (pcptl == null)
+            {
+                return null;
+            }
+
+            Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
+            //if (Sessions.User.UserId == pcptl.CreatedBy)
+            //{
+            //    ViewBag.IsOwner = true;
+            //}
+            //else
+            //{
+            //    ViewBag.IsOwner = false;
+            //}
+            //List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            //Added By : Kalpesh Sharma #697 08/26/2014
+            //bool isallowrestriction = Common.GetRightsForTactic(lstUserCustomRestriction, pcptl.Plan_Campaign_Program_Tactic.VerticalId, pcptl.Plan_Campaign_Program_Tactic.GeographyId);
+            //ViewBag.IsAllowCustomRestriction = isallowrestriction;
+
+            //if (pcptl.LineItemTypeId == null)
+            //{
+            //    pcptlm.IsOtherLineItem = true;
+            //}
+            //else
+            //{
+            //    pcptlm.IsOtherLineItem = false;
+            //}
+
+            //ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcptl.Plan_Campaign_Program_Tactic.Status);
+            ViewBag.TacticTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Title);
+            ViewBag.ProgramTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title);
+            ViewBag.CampaignTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);
+            ViewBag.PlanTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title);
+
+            double totalLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+            double TacticCost = pcptl.Plan_Campaign_Program_Tactic.Cost;
+            double diffCost = TacticCost - totalLineItemCost;
+            double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
+
+            ViewBag.tacticCost = TacticCost;
+            ViewBag.totalLineItemCost = totalLineItemCost;
+            ViewBag.otherLineItemCost = otherLineItemCost;
+
+            pcptlm.PlanLineItemId = pcptl.PlanLineItemId;
+            pcptlm.PlanTacticId = pcptl.PlanTacticId;
+            pcptlm.LineItemTypeId = pcptl.LineItemTypeId == null ? 0 : Convert.ToInt32(pcptl.LineItemTypeId);
+            pcptlm.Title = HttpUtility.HtmlDecode(pcptl.Title);
+            pcptlm.Description = HttpUtility.HtmlDecode(pcptl.Description);
+            pcptlm.StartDate = Convert.ToDateTime(pcptl.StartDate);
+            pcptlm.EndDate = Convert.ToDateTime(pcptl.EndDate);
+            pcptlm.Cost = pcptl.Cost;
+            pcptlm.TStartDate = pcptl.Plan_Campaign_Program_Tactic.StartDate;
+            pcptlm.TEndDate = pcptl.Plan_Campaign_Program_Tactic.EndDate;
+            pcptlm.PStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.StartDate;
+            pcptlm.PEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.EndDate;
+            pcptlm.CStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.StartDate;
+            pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+
+            return PartialView("_SetupLineitem", pcptlm);
+        }
 
     }
 }
