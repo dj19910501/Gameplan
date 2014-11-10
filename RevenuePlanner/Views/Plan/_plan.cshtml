@@ -321,8 +321,16 @@ function ShowModel(mode, section, id,ParentId) {
             loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
         }
     }
-        modalBackdropDisplayNone();
-    };
+    else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()") {
+        if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
+            loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId);
+        }
+        else {
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
+        }
+    }
+    modalBackdropDisplayNone();
+};
 
     function loadInspectPopup(id, section, tabValue, mode, parentId) {
         parentId = typeof parentId != 'undefined' ? parentId : '0';

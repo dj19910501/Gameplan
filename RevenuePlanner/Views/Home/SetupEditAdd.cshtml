@@ -508,7 +508,17 @@
         }
     }
 
+    var txtCampaignValue = '';
+    var txtProgramValue = '';
+    var txtTacticValue = '';
+    var txtDescriptionValue = '';
+
     $("#txtProjectedStageValue").focusout(function () {
+        txtCampaignValue = $("#txtCampaign").val();
+        txtProgramValue = $("#txtProgram").val();
+        txtTacticValue = $("#txtTacticTitle").val();
+        txtDescriptionValue = $("#Description").val();
+
         document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
         document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
         document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
@@ -542,6 +552,11 @@
 
                         $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
                         $("#txtRevenue").attr("title", $("#txtRevenue").val());
+
+                        $("#txtCampaign").val(txtCampaignValue);
+                        $("#txtProgram").val(txtProgramValue);
+                        $("#txtTacticTitle").val(txtTacticValue);
+                        $("#Description").val(txtDescriptionValue);
                     }
                 });
             }

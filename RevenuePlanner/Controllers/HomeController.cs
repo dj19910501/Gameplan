@@ -3477,6 +3477,13 @@ namespace RevenuePlanner.Controllers
                         ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
                         return PartialView("InspectPopup", null);
                     }
+                    else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    {
+                        ViewBag.PlanProgrameId = parentId;
+                        ViewBag.InspectPopup = TabValue;
+                        ViewBag.TacticDetail = null;
+                        return PartialView("_InspectPopupImprovementTactic", null);
+                    }
                 }
 
                 // To get permission status for Add/Edit Actual, By dharmraj PL #519
@@ -3551,9 +3558,9 @@ namespace RevenuePlanner.Controllers
                         IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
                         // planId = db.Plan_Improvement_Campaign.Where(picobjw => picobjw.ImprovementPlanCampaignId.Equals(db.Plan_Improvement_Campaign_Program.Where(picpobjw => picpobjw.ImprovementPlanProgramId.Equals(objPlan_Improvement_Campaign_Program_Tactic.ImprovementPlanProgramId)).Select(r => r.ImprovementPlanCampaignId).FirstOrDefault())).Select(r => r.ImprovePlanId).FirstOrDefault();
                         if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
-                    {
-                        IsPlanEditable = true;
-                    }
+                        {
+                            IsPlanEditable = true;
+                        }
                     }
                 }
 
@@ -3707,6 +3714,10 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
                 }
+                else if (InspectPopupMode == Enums.InspectPopupMode.Add.ToString())
+                {
+                    ViewBag.InspectMode = Enums.InspectPopupMode.Add.ToString();
+                }
                 else
                 {
                     ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
@@ -3746,7 +3757,7 @@ namespace RevenuePlanner.Controllers
             }
             im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
             ViewBag.TacticDetail = im;
-           
+
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
             ViewBag.IsTackticAddEdit = false;
@@ -6712,6 +6723,255 @@ namespace RevenuePlanner.Controllers
             return PartialView("_ResubmissionPopup");
         }
 
+        /// <summary>
+        /// Added By: Pratik Chauhan.
+        /// Action to Create Improvement Tactic.
+        /// </summary>
+        /// <returns>Returns Partial View Of Tactic.</returns>
+        public PartialViewResult CreateImprovementTactic(int id = 0)
+        {
+            List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false).Select(it => it.ImprovementTacticTypeId).ToList();
+            ViewBag.Tactics = from t in db.ImprovementTacticTypes
+                              where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
+                              && t.IsDeleted == false
+                              orderby t.Title
+                              select t;
+            ViewBag.IsCreated = true;
+
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
+            PlanImprovementTactic pitm = new PlanImprovementTactic();
+            pitm.ImprovementPlanProgramId = id;
+            // Set today date as default for effective date.
+            pitm.EffectiveDate = DateTime.Now;
+            pitm.IsDeployedToIntegration = false;
+
+            ViewBag.IsOwner = true;
+            ViewBag.RedirectType = false;
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            return PartialView("_SetupImprovementTactic", pitm);
+        }
+
+        /// <summary>
+        /// Added By: Pratik Chauhan.
+        /// Action to Save Improvement Tactic.
+        /// </summary>
+        /// <param name="form">Form object of PlanImprovementTactic.</param>
+        /// <param name="RedirectType">Redirect Type.</param>
+        /// <returns>Returns Action Result.</returns>
+        [HttpPost]
+        public ActionResult SaveImprovementTactic(InspectModel form, bool RedirectType)
+        {
+            try
+            {
+                if (form.ImprovementPlanTacticId == 0)
+                {
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                            //// Check for duplicate exits or not.
+                            var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
+                                          where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcpt.IsDeleted.Equals(false)
+                                          select pcpt).FirstOrDefault();
+
+                            if (pcpvar != null)
+                            {
+                                //return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                return Json(new { isSaved = true, redirect = Url.Action("Assortment"), errormsg = Common.objCached.DuplicateTacticExits });
+                            }
+                            else
+                            {
+                                Plan_Improvement_Campaign_Program_Tactic picpt = new Plan_Improvement_Campaign_Program_Tactic();
+                                picpt.ImprovementPlanProgramId = form.ImprovementPlanProgramId;
+                                picpt.Title = form.Title;
+                                picpt.ImprovementTacticTypeId = form.ImprovementTacticTypeId;
+                                picpt.Description = form.Description;
+                                picpt.Cost = form.Cost?? 0;
+                                picpt.EffectiveDate = form.EffectiveDate;
+                                picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
+                                //// Get Businessunit id from model.
+                                picpt.BusinessUnitId = (from m in db.Models
+                                                        join p in db.Plans on m.ModelId equals p.ModelId
+                                                        where p.PlanId == Sessions.PlanId
+                                                        select m.BusinessUnitId).FirstOrDefault();
+                                picpt.CreatedBy = Sessions.User.UserId;
+                                picpt.CreatedDate = DateTime.Now;
+                                picpt.IsDeployedToIntegration = form.IsDeployedToIntegration;
+
+                                db.Entry(picpt).State = EntityState.Added;
+                                int result = db.SaveChanges();
+
+                                // Set isDeployedToIntegration in improvement program and improvement campaign
+                                var objIProgram = db.Plan_Improvement_Campaign_Program.SingleOrDefault(varP => varP.ImprovementPlanProgramId == picpt.ImprovementPlanProgramId);
+                                var objICampaign = db.Plan_Improvement_Campaign.SingleOrDefault(varC => varC.ImprovementPlanCampaignId == objIProgram.ImprovementPlanCampaignId);
+                                if (form.IsDeployedToIntegration)
+                                {
+                                    objIProgram.IsDeployedToIntegration = true;
+                                    db.Entry(objIProgram).State = EntityState.Modified;
+                                    db.SaveChanges();
+
+                                    objICampaign.IsDeployedToIntegration = true;
+                                    db.Entry(objICampaign).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                                else
+                                {
+                                    bool flag = false;
+                                    flag = objIProgram.Plan_Improvement_Campaign_Program_Tactic.Any(varT => varT.IsDeployedToIntegration == true && varT.IsDeleted == false);
+                                    if (!flag)
+                                    {
+                                        objIProgram.IsDeployedToIntegration = false;
+                                        db.Entry(objIProgram).State = EntityState.Modified;
+                                        db.SaveChanges();
+
+                                        objICampaign.IsDeployedToIntegration = false;
+                                        db.Entry(objICampaign).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
+
+                                //// Insert change log entry.
+                                result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                                if (result >= 1)
+                                {
+                                    scope.Complete();
+                                    return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Improvement Tactic created successfully.", id = picpt.ImprovementPlanTacticId });
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                            //// Check for Duplicate or not.
+                            var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
+                                          where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.ImprovementPlanTacticId.Equals(form.ImprovementPlanTacticId) && pcpt.IsDeleted.Equals(false)
+                                          select pcpt).FirstOrDefault();
+
+                            if (pcpvar != null)
+                            {
+                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                            }
+                            else
+                            {
+                                bool isReSubmission = false;
+                                //bool isDirectorLevelUser = false;
+                                bool isManagerLevelUser = false;
+                                string status = string.Empty;
+                                //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                                //{
+                                //    isDirectorLevelUser = true;
+                                //}
+                                Plan_Improvement_Campaign_Program_Tactic pcpobj = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.ImprovementPlanTacticId.Equals(form.ImprovementPlanTacticId)).SingleOrDefault();
+
+                                //If improvement tacitc modified by immediate manager then no resubmission will take place, By dharmraj, Ticket #537
+                                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                                var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                                var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).Select(u => u.UserId).ToList();
+                                if (lstSubordinates.Contains(pcpobj.CreatedBy))
+                                {
+                                    isManagerLevelUser = true;
+                                }
+
+                                pcpobj.Title = form.Title;
+                                status = pcpobj.Status;
+
+                                if (pcpobj.ImprovementTacticTypeId != form.ImprovementTacticTypeId)
+                                {
+                                    pcpobj.ImprovementTacticTypeId = form.ImprovementTacticTypeId;
+                                    if (!isManagerLevelUser) isReSubmission = true;
+                                }
+                                pcpobj.Description = form.Description;
+
+                                if (pcpobj.EffectiveDate != form.EffectiveDate)
+                                {
+                                    pcpobj.EffectiveDate = form.EffectiveDate;
+                                    if (!isManagerLevelUser) isReSubmission = true;
+                                }
+
+                                if (pcpobj.Cost != form.Cost)
+                                {
+                                    pcpobj.Cost = form.Cost??0;
+                                    if (!isManagerLevelUser) isReSubmission = true;
+                                }
+
+                                pcpobj.ModifiedBy = Sessions.User.UserId;
+                                pcpobj.ModifiedDate = DateTime.Now;
+                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                db.Entry(pcpobj).State = EntityState.Modified;
+                                int result;
+                                if (Common.CheckAfterApprovedStatus(pcpobj.Status))
+                                {
+                                    result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.ImprovementPlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                                }
+                                if (isReSubmission && Common.CheckAfterApprovedStatus(status))
+                                {
+                                    pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                    Common.mailSendForTactic(pcpobj.ImprovementPlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                                }
+                                result = db.SaveChanges();
+
+
+                                // Set isDeployedToIntegration in improvement program and improvement campaign
+                                var objIProgram = db.Plan_Improvement_Campaign_Program.SingleOrDefault(varP => varP.ImprovementPlanProgramId == pcpobj.ImprovementPlanProgramId);
+                                var objICampaign = db.Plan_Improvement_Campaign.SingleOrDefault(varC => varC.ImprovementPlanCampaignId == objIProgram.ImprovementPlanCampaignId);
+                                if (form.IsDeployedToIntegration)
+                                {
+                                    objIProgram.IsDeployedToIntegration = true;
+                                    db.Entry(objIProgram).State = EntityState.Modified;
+                                    db.SaveChanges();
+
+                                    objICampaign.IsDeployedToIntegration = true;
+                                    db.Entry(objICampaign).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                                else
+                                {
+                                    bool flag = false;
+                                    flag = objIProgram.Plan_Improvement_Campaign_Program_Tactic.Any(varT => varT.IsDeployedToIntegration == true && varT.IsDeleted == false);
+                                    if (!flag)
+                                    {
+                                        objIProgram.IsDeployedToIntegration = false;
+                                        db.Entry(objIProgram).State = EntityState.Modified;
+                                        db.SaveChanges();
+
+                                        objICampaign.IsDeployedToIntegration = false;
+                                        db.Entry(objICampaign).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
+
+                                if (result >= 1)
+                                {
+                                    scope.Complete();
+                                    if (RedirectType)
+                                    {
+                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
+                                    }
+                                    else
+                                    {
+                                        return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Changes saved." });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { });
+        }
+
         #endregion
 
         #region "Home-Zero"
@@ -7901,17 +8161,78 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadImprovementSetup(int id, string InspectPopupMode = "")
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
-            List<Guid> userListId = new List<Guid>();
-            userListId.Add(im.OwnerId);
-            User userName = new User();
-            try
+            ViewBag.InspectMode = InspectPopupMode;
+
+            if (InspectPopupMode == Enums.InspectPopupMode.Add.ToString())
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+                var planId = (from pc in db.Plan_Improvement_Campaign where pc.ImprovementPlanCampaignId == ((from pcp in db.Plan_Improvement_Campaign_Program where pcp.ImprovementPlanProgramId == id select pcp.ImprovementPlanCampaignId).FirstOrDefault()) select pc.ImprovePlanId).SingleOrDefault();
+
+                List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false).Select(it => it.ImprovementTacticTypeId).ToList();
+                ViewBag.Tactics = from t in db.ImprovementTacticTypes
+                                  where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
+                                  && t.IsDeleted == false
+                                  orderby t.Title
+                                  select t;
+                ViewBag.IsCreated = true;
+
+
+                var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+                ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
+
+                InspectModel pitm = new InspectModel();
+                pitm.ImprovementPlanProgramId = id;
+                pitm.CampaignTitle = (from pc in db.Plan_Improvement_Campaign where pc.ImprovePlanId == planId select pc.Title).SingleOrDefault().ToString();
+                // Set today date as default for effective date.
+                pitm.EffectiveDate = DateTime.Now;
+                pitm.IsDeployedToIntegration = false;
+
+                var businessUnitId = (from m in db.Models
+                                      join p in db.Plans on m.ModelId equals p.ModelId
+                                      where p.PlanId == Sessions.PlanId
+                                      select m.BusinessUnitId).FirstOrDefault();
+
+                ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == (businessUnitId) && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();
+
+                ViewBag.IsOwner = true;
+                ViewBag.RedirectType = false;
+                ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+                
+
+                User userName = new User();
+                try
+                {
+                    userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+
+                    //To handle unavailability of BDSService
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                        return RedirectToAction("Index", "Login");
+                    }
+                }
+
+                pitm.Owner = userName.FirstName + " " + userName.LastName;
+                ViewBag.TacticDetail = pitm;
+
+                return PartialView("_SetupImprovementTactic", pitm);
             }
-            catch (Exception e)
+            else
             {
-                ErrorSignal.FromCurrentContext().Raise(e);
+                InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                List<Guid> userListId = new List<Guid>();
+                userListId.Add(im.OwnerId);
+                User userName = new User();
+                try
+                {
+                    userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
 
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
@@ -7981,26 +8302,27 @@ namespace RevenuePlanner.Controllers
 
                 }
 
-                ViewBag.Tactics = tactics;
-                ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
+                    ViewBag.Tactics = tactics;                    
+                    ViewBag.InspectMode = InspectPopupMode;
 
-                if (Sessions.User.UserId == im.OwnerId)
-                {
-                    ViewBag.IsOwner = true;
+                    if (Sessions.User.UserId == im.OwnerId)
+                    {
+                        ViewBag.IsOwner = true;
+                    }
+                    else
+                    {
+                        ViewBag.IsOwner = false;
+                    }
+                    ViewBag.Year = objPlan.Year;
                 }
-                else
-                {
-                    ViewBag.IsOwner = false;
-                }
-                ViewBag.Year = objPlan.Year;
-            }
-            
-            if (ViewBag.Year == null)
-            {
-                ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(planId) && p.IsDeleted == false).Year;
-            }
 
-            return PartialView("_SetupImprovementTactic", im);
+                if (ViewBag.Year == null)
+                {
+                    ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(planId) && p.IsDeleted == false).Year;
+                }
+
+                return PartialView("_SetupImprovementTactic", im);
+            }
         }
 
         /// <summary>

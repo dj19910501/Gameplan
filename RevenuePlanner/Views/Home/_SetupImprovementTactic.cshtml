@@ -1,9 +1,15 @@
 ﻿@model RevenuePlanner.Models.InspectModel
 @{
-    var tactic = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
-    var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
-    deployStatus = tactic.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
+
+    var tactic = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+    var deployStatus = "";
+    if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
+    {
+        deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
+        deployStatus = tactic.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+    }
+    
     string hdnYear = ViewBag.Year != null ? (string)ViewBag.Year : string.Empty;
     bool ExtIntService = ViewBag.ExtIntService != null ? (bool)ViewBag.ExtIntService : false;
     bool isOwner = ViewBag.IsOwner != null ? (bool)ViewBag.IsOwner : false;
@@ -22,13 +28,16 @@
             <p>Parent Campaign</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
             <p>Description</p>
-            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
             {
                 @Html.TextAreaFor(model => model.Description, new { id = "txtDescription", @class = "span12 text-area-size", style = "height:93px;" })
-                <div style="clear: both; width: 100%;">
+                if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
+                {
+                    <div style="clear: both; width: 100%;">
                     <label style="color: #808080">This improvement tactics boosts @ViewBag.NoOfTacticBoosts activities.</label>
                     <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
                 </div>
+                }
             }
             else
             {
@@ -37,7 +46,7 @@
         </div>
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
             <p>Improvement Tactic Type</p>
-            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
             {
                 <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })</span>
                 <p style="margin-top:11px;">Cost</p>    
@@ -57,15 +66,14 @@
                 <p>Effective Date</p>
                 @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "input-small truncate", style = "background:#F2F2F2;", id = "txtDate", @readonly = "true" })
             }
+            <p>Business Unit</p>
+            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
         </div>
         <div class="span3" id="inspect-modal-left-column3">
             <p>Owner</p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
-
-            <p>Business Unit</p>
-            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
-                        
-            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            
+            @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
             {
                 if (@ExtIntService)
                 {
@@ -88,7 +96,7 @@
         </div>
 
     </div>  
-    if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+    if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
     {
         <div class="wraper-btns cf" style="width: 100%; clear: both">
             <div style="width: 122px" class="span2 btn-save">
@@ -106,6 +114,15 @@
     $(document).ready(
       function () {
           
+          if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()')
+          {
+              $("#liSetup,#liReview,#liImpact").unbind("click");
+          }
+          else
+          {
+              $("#liSetup,#liReview,#liImpact").bind("click");
+          }
+
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $('#txtDate').val($('#txtDate').val().split(" ")[0].toString());
 
@@ -159,14 +176,30 @@
     })
 
     $('#btnEditCancel').click(function () {
-        returnToReadOnlyMode();
+        if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()') {
+            $('#modal-container-186470').modal("hide");
+        }else
+        {
+            returnToReadOnlyMode();
+        }
     })
 
-    function returnToReadOnlyMode()
+    function returnToReadOnlyMode(id)
     {
         var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
-        $("#divPartial").load(url + '?id=' + @Model.PlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()");
+        
+        var ImprovementPlanTacticId;
+
+        if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()') {
+            ImprovementPlanTacticId=id;
+        }
+        else
+        {
+            ImprovementPlanTacticId='@Model.PlanTacticId';
+        }
+
+        $("#divPartial").load(url + '?id=' + ImprovementPlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()");
     }
 
     assignDefaultValue(".resubmission");
@@ -267,11 +300,11 @@
         var isAssortment = false;
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/Plan/SaveImprovementTactic")',
+            url: '@Url.Content("~/Home/SaveImprovementTactic")',
                 data: $("form").serialize() + '&RedirectType=' + isAssortment,
                 success: function (data) {
                     if (data.isSaved) {
-                        returnToReadOnlyMode();
+                        returnToReadOnlyMode(data.id);
                         RefreshCurrentTab();
                         InspectSuccMsg = data.msg;
                         return;
