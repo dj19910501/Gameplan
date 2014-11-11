@@ -10813,6 +10813,7 @@ list-style-position:inside;
     padding-left: 20px;
     width: 70px;
     margin-top: -5px;
+    outline:none;
 }
 
 .Tactic-Budget-Allocation

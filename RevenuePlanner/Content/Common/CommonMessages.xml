@@ -303,7 +303,7 @@
 	</Field>
 	<Field>
 		<Name>DuplicateImprovementTacticExits</Name>
-		<value>Improvement tactic with same title exits.</value>
+		<value>Improvement tactic type with same title exits.</value>
 	</Field>
 	<Field>
 		<Name>StageNotExist</Name>
