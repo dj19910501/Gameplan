@@ -47,7 +47,7 @@
         </li>
     </ul>
 
-      <div class="summary-btns">
+      <div class="summary-btns" style="margin-right:0px;"> @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934 *@
         <p>View By:</p>
            <span>
              @Html.DropDownList("ddlParentConversionPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text", Common.RevenueAudience.ToString()))
@@ -135,6 +135,13 @@
             }).multiselectfilter();
             }
         });
+
+        // Start - Added by Sohel Pathan on 11/11/2014 for PL ticket #934
+        //NOTE : Please don't change class name, it is used in js.
+        $('.summary-btns').find('select').each(function () {
+            $(this).multiselect({ classes: 'custom-right-pos' }).multiselectfilter();
+        });
+        // End - Added by Sohel Pathan on 11/11/2014 for PL ticket #934
 
         GenerateCustomizeMultiselect(ddlChildConversionPlanId, true, false, false);
         GenerateCustomizeMultiselect('ddlParentConversionPerformance', false, false, false);
