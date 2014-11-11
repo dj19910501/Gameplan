@@ -355,6 +355,7 @@
             success: function (data) {
                 if (data.IsSaved) {
                     CancelEvent();
+                    var activeTab = $("#InspectTab li.active a").text()
                     $("#lblLineitemTitle").html(htmlEncode($('#txtTitle').val()));
                     //$("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
                     $("#errorMessage").slideUp(50);
@@ -362,8 +363,8 @@
                     $("#spanMessageSuccess").empty();
                     $("#spanMessageSuccess").html(data.msg);
                     var planLineItemId = $("#hdnPlanLineItemId").val();
-                    loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
-                    RefreshCurrentTab(requestedModule, 0, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                    var requestedModule = $("#hdnRedirectType").val();
+                    RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', 0, 0, 0); 
                 }
                 else {
                     // CancelEvent();
