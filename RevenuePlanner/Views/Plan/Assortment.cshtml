@@ -1197,6 +1197,7 @@
 
         $(document).on("click", ".add-icon.impTactic", function (e) {
             $("#slidepanel").css("display", "none");
+            var idProgram = $(this).parent().parent().attr('data-id-program');
            @* if (!isMarketingTacticExits) {
                 $("#slidepanel").css("display", "none");
                 ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
