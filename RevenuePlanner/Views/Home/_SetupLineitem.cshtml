@@ -16,10 +16,11 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanLineItemId)
+     @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="padding-top:15px;">
         <div class="span6" id="inspect-modal-left-column1">
-            <p>@Html.Raw("Parent Plan")</p>
-             @Html.TextBox("txtPlanTitle",planTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtPlanTitle", @readonly = "true" })
+          @*  <p>@Html.Raw("Parent Plan")</p>
+             @Html.TextBox("txtPlanTitle",planTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtPlanTitle", @readonly = "true" })*@
              <p>@Html.Raw("Parent Campaign")</p>
              @Html.TextBox("txtCampaignTitle",campaignTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCampaignTitle", @readonly = "true" })
              <p>@Html.Raw("Parent Program")</p>
@@ -34,13 +35,18 @@
         <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
              <p>@Html.Raw("Parent Tactic")</p>
              @Html.TextBox("txtTacticTitle",tacticTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTitle", @readonly = "true" })
-             <p>@Html.Raw("Cost")</p>
-            @Html.TextBoxFor(model=>model.Cost, new { @class = "span12 input-small currency_dollar truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
+            <p>Type</p>
+            <span class="verticalIdSelectBox" style="margin-left: -2px;">
+                @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Type" })
+            </span>
+             
             
         </div>
         <div class="span3" id="inspect-modal-left-column3">
            <p>@Html.Raw("Owner")</p>
             @Html.TextBox("txtOwner",owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = owner })
+            <p>@Html.Raw("Cost")</p>
+            @Html.TextBoxFor(model=>model.Cost, new { @class = "span12 input-small currency_dollar truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
         </div>
     </div>
     
@@ -65,7 +71,7 @@
       function () {
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
-          $(".selectBox select").selectbox();
+          $(".verticalIdSelectBox select").selectbox();
 
           $('form').find(".sbSelector").each(function () {
               $(this).unbind("click");

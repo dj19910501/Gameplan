@@ -10395,7 +10395,17 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId);
 
+            var lineItemTypes = from lit in db.LineItemTypes
+                                where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
+                                orderby lit.Title
+                                select lit;
+            foreach (var item in lineItemTypes)
+            {
+                item.Title = HttpUtility.HtmlDecode(item.Title);
+            }
+            ViewBag.lineItemTypes = lineItemTypes;
             Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
             //if (Sessions.User.UserId == pcptl.CreatedBy)
             //{
@@ -10425,14 +10435,14 @@ namespace RevenuePlanner.Controllers
             ViewBag.CampaignTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);
             ViewBag.PlanTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title);
 
-            double totalLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-            double TacticCost = pcptl.Plan_Campaign_Program_Tactic.Cost;
-            double diffCost = TacticCost - totalLineItemCost;
-            double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
+            //double totalLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+            //double TacticCost = pcptl.Plan_Campaign_Program_Tactic.Cost;
+            //double diffCost = TacticCost - totalLineItemCost;
+            //double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
 
-            ViewBag.tacticCost = TacticCost;
-            ViewBag.totalLineItemCost = totalLineItemCost;
-            ViewBag.otherLineItemCost = otherLineItemCost;
+            //ViewBag.tacticCost = TacticCost;
+            //ViewBag.totalLineItemCost = totalLineItemCost;
+            //ViewBag.otherLineItemCost = otherLineItemCost;
 
             pcptlm.PlanLineItemId = pcptl.PlanLineItemId;
             pcptlm.PlanTacticId = pcptl.PlanTacticId;
@@ -10450,7 +10460,307 @@ namespace RevenuePlanner.Controllers
             pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
 
+
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(pcptl.CreatedBy, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+            ViewBag.Owner = userName.FirstName + " " + userName.LastName;
             return PartialView("_SetupLineitem", pcptlm);
+        }
+
+        /// <summary>
+        /// Added By: Mitesh Vaishnav.
+        /// Action to Load Lineitem Setup Tab in edit mode.
+        /// </summary>
+        /// <param name="id">Plan Lineitem Id.</param>
+        /// <returns>Returns Partial View Of edit Setup Tab.</returns>
+        public ActionResult LoadEditSetupLineitem(int id)
+        {
+            ViewBag.IsCreated = false;
+
+
+            Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobj => pcpobj.PlanLineItemId.Equals(id));
+            if (pcptl == null)
+            {
+                return null;
+            }
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId);
+            
+            var lineItemTypes = from lit in db.LineItemTypes
+                                where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
+                                orderby lit.Title
+                                select lit;
+            foreach (var item in lineItemTypes)
+            {
+                item.Title = HttpUtility.HtmlDecode(item.Title);
+            }
+            ViewBag.lineItemTypes = lineItemTypes;
+            Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
+
+            ViewBag.TacticTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Title);
+            ViewBag.ProgramTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title);
+            ViewBag.CampaignTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);
+
+            pcptlm.PlanLineItemId = pcptl.PlanLineItemId;
+            pcptlm.PlanTacticId = pcptl.PlanTacticId;
+            pcptlm.LineItemTypeId = pcptl.LineItemTypeId == null ? 0 : Convert.ToInt32(pcptl.LineItemTypeId);
+            pcptlm.Title = HttpUtility.HtmlDecode(pcptl.Title);
+            pcptlm.Description = HttpUtility.HtmlDecode(pcptl.Description);
+            pcptlm.StartDate = Convert.ToDateTime(pcptl.StartDate);
+            pcptlm.EndDate = Convert.ToDateTime(pcptl.EndDate);
+            pcptlm.Cost = pcptl.Cost;
+            pcptlm.TStartDate = pcptl.Plan_Campaign_Program_Tactic.StartDate;
+            pcptlm.TEndDate = pcptl.Plan_Campaign_Program_Tactic.EndDate;
+            pcptlm.PStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.StartDate;
+            pcptlm.PEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.EndDate;
+            pcptlm.CStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.StartDate;
+            pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(pcptl.CreatedBy, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+            ViewBag.Owner = userName.FirstName + " " + userName.LastName;
+            return PartialView("_EditSetupLineitem", pcptlm);
+        }
+        [HttpPost]
+        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string UserId = "", int tacticId = 0)
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            try
+            {
+                int cid = 0;
+                int pid = 0;
+                int tid = 0;
+                var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == form.PlanTacticId);
+                if (objTactic != null)
+                {
+                    cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
+                     pid = objTactic.PlanProgramId;
+                     tid = form.PlanTacticId;
+                }
+
+                if (form.PlanLineItemId == 0)
+                {
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                            var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
+                                           join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                           where pc.PlanId == Sessions.PlanId && pcptl.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcptl.IsDeleted.Equals(false)
+                                           && pcpt.PlanTacticId == form.PlanTacticId
+                                           select pcpt).FirstOrDefault();
+
+                            if (pcptvar != null)
+                            {
+                                return Json(new { errormsg = Common.objCached.DuplicateLineItemExits });
+                            }
+                            else
+                            {
+                                Plan_Campaign_Program_Tactic_LineItem objLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                objLineitem.PlanTacticId = form.PlanTacticId;
+                                objLineitem.Title = form.Title;
+                                objLineitem.LineItemTypeId = form.LineItemTypeId;
+                                objLineitem.Description = form.Description;
+                                //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
+                                // objLineitem.Cost = UpdateBugdetAllocationCost(arrCostInputValues, form.Cost);
+                                //Added By :Kalpesh Sharma #890 Line Item Dates need to go away
+                                objLineitem.StartDate = null;
+                                objLineitem.EndDate = null;
+                                objLineitem.CreatedBy = Sessions.User.UserId;
+                                objLineitem.CreatedDate = DateTime.Now;
+                                db.Entry(objLineitem).State = EntityState.Added;
+                                int result = db.SaveChanges();
+
+                                int lineitemId = objLineitem.PlanLineItemId;
+
+                                var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == form.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
+                                double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+                                if (objTactic.Cost > totalLoneitemCost)
+                                {
+                                    double diffCost = objTactic.Cost - totalLoneitemCost;
+                                    if (objOtherLineItem == null)
+                                    {
+                                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                        objNewLineitem.PlanTacticId = form.PlanTacticId;
+                                        objNewLineitem.Title = Common.DefaultLineItemTitle;
+                                        objNewLineitem.Cost = diffCost;
+                                        objNewLineitem.Description = string.Empty;
+                                        objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                        objNewLineitem.CreatedDate = DateTime.Now;
+                                        db.Entry(objNewLineitem).State = EntityState.Added;
+                                        db.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        objOtherLineItem.IsDeleted = false;
+                                        objOtherLineItem.Cost = diffCost;
+                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
+                                else
+                                {
+                                    if (objOtherLineItem != null)
+                                    {
+                                        objOtherLineItem.IsDeleted = true;
+                                        objOtherLineItem.Cost = 0;
+                                        objOtherLineItem.Description = string.Empty;
+                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                        List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                                        objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+                                        objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
+                                        db.SaveChanges();
+                                    }
+                                }
+
+                                result = Common.InsertChangeLog(Sessions.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                                db.SaveChanges();
+
+                            }
+                            scope.Complete();
+                            return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
+                        }
+                    }
+                }
+                else
+                {
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                            var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
+                                           join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                           where pc.PlanId == Sessions.PlanId && pcptl.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(form.PlanLineItemId) && pcptl.IsDeleted.Equals(false)
+                                           && pcpt.PlanTacticId == form.PlanTacticId
+                                           select pcpt).FirstOrDefault();
+
+                            if (pcptvar != null)
+                            {
+                                return Json(new { errormsg = Common.objCached.DuplicateLineItemExits });
+                            }
+                            else
+                            {
+                                Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(form.PlanLineItemId));
+
+                                objLineitem.Description = form.Description;
+                                if (!form.IsOtherLineItem)
+                                {
+                                    objLineitem.Title = form.Title;
+                                    objLineitem.LineItemTypeId = form.LineItemTypeId;
+                                    objLineitem.Cost = form.Cost;
+                                    //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
+                                    //objLineitem.Cost = UpdateBugdetAllocationCost(arrCostInputValues, form.Cost);
+                                    //objLineitem.StartDate = null;
+                                    //objLineitem.EndDate = null;
+                                }
+
+                                objLineitem.ModifiedBy = Sessions.User.UserId;
+                                objLineitem.ModifiedDate = DateTime.Now;
+                                db.Entry(objLineitem).State = EntityState.Modified;
+                                int result;
+
+                                result = Common.InsertChangeLog(Sessions.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                                result = db.SaveChanges();
+
+                                //if (!form.IsOtherLineItem)
+                                //{
+                                //    var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == form.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
+                                //    double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+                                //    if (objTactic.Cost > totalLoneitemCost)
+                                //    {
+                                //        double diffCost = objTactic.Cost - totalLoneitemCost;
+                                //        if (objOtherLineItem == null)
+                                //        {
+                                //            Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                //            objNewLineitem.PlanTacticId = form.PlanTacticId;
+                                //            objNewLineitem.Title = Common.DefaultLineItemTitle;
+                                //            objNewLineitem.Cost = diffCost;
+                                //            objNewLineitem.Description = string.Empty;
+                                //            objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                //            objNewLineitem.CreatedDate = DateTime.Now;
+                                //            db.Entry(objNewLineitem).State = EntityState.Added;
+                                //            db.SaveChanges();
+                                //        }
+                                //        else
+                                //        {
+                                //            if (diffCost != objOtherLineItem.Cost)
+                                //            {
+                                //                objOtherLineItem.IsDeleted = false;
+                                //                objOtherLineItem.Cost = diffCost;
+                                //                db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                //                db.SaveChanges();
+                                //            }
+                                //        }
+                                //    }
+                                //    else
+                                //    {
+                                //        if (objOtherLineItem != null)
+                                //        {
+                                //            objOtherLineItem.IsDeleted = true;
+                                //            objOtherLineItem.Cost = 0;
+                                //            objOtherLineItem.Description = string.Empty;
+                                //            db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                //            List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                                //            objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+                                //            objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
+                                //            db.SaveChanges();
+                                //        }
+                                //    }
+                                //}
+
+                               
+                                    scope.Complete();
+                                    return Json(new { isSaved = true,msg="Lineitem created." });
+                               
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { });
         }
 
         #region Inspect Popup Plan

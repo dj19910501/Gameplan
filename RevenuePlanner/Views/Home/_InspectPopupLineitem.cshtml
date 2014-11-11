@@ -39,15 +39,15 @@
     }
 </style>
 
-<div id="successMessageViewCampaign" class="alert hide alert-success message-position-small">
+<div id="successMessageViewLineItem" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
-    <span id="spanSuccessMessageViewCampaign"></span>
+    <span id="spanSuccessMessageViewLineitem"></span>
 </div>
 
-<div id="errorMessageEditCampaign" class="alert alert-error hide message-position-small">
+<div id="errorMessageEditLineitem" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
     <strong>Error.</strong>
-    <span id="spanMessageEditCampaign"></span>
+    <span id="spanMessageEditLineitem"></span>
 </div>
 
 <form>
@@ -68,7 +68,7 @@
                     {
                         <div style="float: right; position: relative;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
-                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 35px;" id="popupLineitem">
+                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupLineitem">
                                 <ul style="margin: 0;">
 
                                     <li class="copy-camp" id="CloneLineItem">Copy Lineitem</li>
@@ -118,7 +118,8 @@
     var TabReview = "Review";
     var TabBudget = "Budget";
     var divTab = "#divTab";
-    var TabActual = "Actuals";
+    var TabActual = "Actuals";	
+ var PlanLineItemId = $("#hdnPlanLineItemID").val();
 
     $(document).ready(
      function () {
@@ -151,8 +152,12 @@
              $("#hdnLineitemOpt").val("Edit");
              var InspectValue = $("#hdnInspectPopup").val();
              var tabtext = ($("#li" + InspectValue).children('a').text());
-
-            if (tabtext == "Budget") {
+			  if (tabtext == "Setup") {
+            url = '@Url.Content("~/Home/LoadEditSetupLineitem/")';
+                  $("#divTab").empty();
+                  $("#divTab").load(url + '?id=' + PlanLineItemId);
+              }
+            else if (tabtext == "Budget") {
                   url = '@Url.Content("~/Home/LoadLineItemBudgetAllocation/")';
                   $("#divTab").empty();
                   $("#divTab").load(url + '?id=' + planLineitemId);

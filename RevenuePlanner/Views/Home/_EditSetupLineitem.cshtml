@@ -1,0 +1,204 @@
+﻿@model RevenuePlanner.Models.Plan_Campaign_Program_Tactic_LineItemModel
+@using RevenuePlanner.Helpers
+@{
+    
+    string OwnerName = ViewBag.OwnerName;
+    string campaignTitle = Convert.ToString(ViewBag.CampaignTitle);
+    string programTitle = Convert.ToString(ViewBag.ProgramTitle);
+    string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
+    string owner = Convert.ToString(ViewBag.Owner);
+}
+
+<script src="~/Scripts/js/bootstrap-datepicker.js"></script>
+<style type="text/css">
+    #btnCancel {
+        color: gray;
+        margin-top: 6px;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    
+    @Html.HiddenFor(model => model.PlanLineItemId, new { id = "PlanLineItemId" })
+     @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
+
+        <div class="span6" id="inspect-modal-left-column1">
+            <p>@Html.Raw("Parent Campaign")</p>
+            @Html.TextBox("txtCamapignTitle", HttpUtility.HtmlDecode(campaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = campaignTitle })
+            <p>@Html.Raw("Parent Program")</p>
+            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = programTitle })
+
+            <p>@Html.Raw("Description")</p>
+            @Html.TextAreaFor(model => model.Description, new { id = "txtDescription", @class = "span12 text-area-size", style = "height:92px;" })
+            <div style="clear: both; width: 250%;">
+                <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
+            </div>
+        </div>
+        <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
+            <p>@Html.Raw("Parent Tactic")</p>
+            @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticTitle })
+              <p>Type</p>
+            <span class="verticalIdSelectBox" style="margin-left: -2px;">
+                @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Type" })
+            </span>
+
+
+        </div>
+        <div class="span3" id="inspect-modal-left-column3">
+            <p>@Html.Raw("Owner")</p>
+            @Html.TextBox("txtOwner", owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
+            <p>@Html.Raw("Cost")</p>
+            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate", id = "txtLineItemCost" })
+
+        </div>
+    </div>
+          
+    <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
+        <div class="span2 btn-save" style="width: 80px;">
+            <button id="save_LineItem" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save </button>
+        </div>
+        <div class="span2">
+            <button id="btnCancel" class="close-form btn-link source-sans-proregular" style="float: left; margin-left: 20px; margin-top: 30px !important" type="button">Cancel</button>
+        </div>
+    </div>
+    
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#successMessageViewLineItem").slideUp(50);
+        $("#errorMessageEditLineitem").slideUp(50);
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $(".verticalIdSelectBox select").selectbox();
+
+    });
+
+
+    //<--- End Document.ready event  --->
+
+    $("#btnCancel").click(function () {
+        if ($('#PlanLineItemId').val() != '0') {
+            CancelEvent();
+            $("#successMessageViewLineItem").slideUp(50);
+            $("#errorMessageEditLineitem").slideUp(50);
+            $('#txtTitle').val($('#lblLineitemTitle').text());
+        }
+        else {
+            $('.close-x-big-icon').trigger('click');
+        }
+    });
+
+    function CancelEvent() {
+        $("#hdnLineitemOpt").val("View");
+        loadReview('@Model.PlanLineItemId', "Setup");
+        $("#btnEditlineItem").css("display", "block");
+        $("#AddForm").css("display", "block");
+        $('#txtTitle').css('display', 'none');
+        $('#lblLineitemTitle').css('display', 'block');
+        $("#lblLineitemTitle").removeAttr("style");
+       // $('#divDeleteCampaign').css('display', 'block');
+    }
+    $(".alert").find(".close").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
+    });
+    function ShowError(value) {
+        $("#modal-container-186470").scrollTop(0);
+        $("#successMessageViewLineItem").slideUp(400);
+        $("#spanSuccessMessageViewLineitem").empty();
+        $("#errorMessageEditLineitem").slideDown(400);
+        $("#spanMessageEditLineitem").empty();
+        $("#spanMessageEditLineitem").html(value);
+    }
+    $("#save_LineItem").click(function () {
+        var iserror = false;
+        var lineItemTitle = htmlEncode($('#txtTitle').val());
+        $('form').find('input[type=text], select, textarea').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        $('form').find('.sbSelector').each(function () {
+            if ($(this).parent().prev().attr('require') == 'true') {
+                if ($(this).text() == 'Please Select') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
+
+        $("#txtLineItemCost").val(ReplaceCC($("#txtLineItemCost").val()));
+        //var arrClosedTaskString = null;
+        //if (typeof arrClosedTask != 'undefined') {
+        //    arrClosedTaskString = arrClosedTask.toString();
+        //}
+
+        //var allocationValue = [];
+        //var lstAllocInputs = $(".budget-section input");
+        //for (var i = 0; i < lstAllocInputs.length; i++) {
+        //    allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
+        //}
+
+        //Added By : Kalpesh Sharma #697 08/26/2014
+        //var ActualallocationValue = [];
+        //var lstActualAllocInputs = $(".budget-section-Actual input");
+        //for (var i = 0; i < lstActualAllocInputs.length; i++) {
+        //    ActualallocationValue.push(ReplaceCC($(lstActualAllocInputs[i]).val()));
+        //}
+        document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
+        var uId = $(window).attr('name');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/home/SaveLineitem")',
+            data: $("form").serialize() + '&title='+escape(lineItemTitle)+'&tacticId=@Model.PlanTacticId'+'&UserId='+uId,
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.isSaved) {
+                        /// CancelEvent();
+                        var activeTab = $("#InspectTab li.active a").text()
+                        var planLineItemId = $("#PlanLineItemId").val();
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessage").css("display", "none");
+                        $("#liReview,#liBudget,#liSetup").bind('click');
+                        if (planLineItemId == '0') {
+                            planLineItemId = data.planLineitemID;
+                        }
+                        loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab);
+                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        //$("#errorMessageEditCampaign").slideUp(50);
+                        //$("#spanSuccessMessageViewCampaign").empty();
+                        //$("#successMessageViewCampaign").slideDown(400);
+                        //$("#spanSuccessMessageViewCampaign").empty();
+                        //$("#spanSuccessMessageViewCampaign").html(data.msg);
+                    }
+                    else {
+                        //CancelEvent();
+                        ShowError(data.msg);
+                    }
+                }
+            }
+        });
+    });
+
+</script>
