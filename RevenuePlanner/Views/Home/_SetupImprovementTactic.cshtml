@@ -311,11 +311,9 @@
                 data: $("form").serialize() + '&RedirectType=' + isAssortment,
                 success: function (data) {
                     if (data.isSaved) {
-                        $("#successMessageImprovementTactic").css("display", "block");
-                        $("#spanSuccMessageImprovementTactic").empty();
-                        $("#spanSuccMessageImprovementTactic").text(data.msg);
-                        $("#errorMessageImprovementTactic").css("display", "none");
-                        $("#spanErrMessageImprovementTactic").empty();
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
                         returnToReadOnlyMode(data.id);
                         RefreshCurrentTab(requestedModule, 0, 0, 0);
                         return;

@@ -1196,8 +1196,8 @@
         getCampaign();
 
         $(document).on("click", ".add-icon.impTactic", function (e) {
-
-            if (!isMarketingTacticExits) {
+            $("#slidepanel").css("display", "none");
+           @* if (!isMarketingTacticExits) {
                 $("#slidepanel").css("display", "none");
                 ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
                 hdnisError = 'True';
@@ -1212,7 +1212,7 @@
             $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
             $("#slidepanel").css("right", "0px");
             $("#slidepanel").addClass('sidebar-wide');
-            myApp.hidePleaseWait();
+            myApp.hidePleaseWait();*@
         });
 
         //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)

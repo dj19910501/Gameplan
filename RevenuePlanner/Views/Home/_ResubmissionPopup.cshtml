@@ -53,6 +53,14 @@
             $("#divBackground").fadeOut("slow", function () {
                 $('#divBackground').attr('style', 'display: none !important;');
             });
+
+            if ('@redirectionType' == '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)') {
+                $("#TacticCost").val(FormatCurrency(($("#TacticCost").val()).toString(), false));
+                $("#txtProjectedStageValue").val(FormatCommas($("#txtProjectedStageValue").val(), false));
+            }
+            else {
+                $("#txtCost").val(FormatCurrency(($("#txtCost").val()).toString(), false));
+            }
         });
 
         //// Proceed to save data.

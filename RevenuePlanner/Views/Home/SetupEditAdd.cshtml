@@ -110,7 +110,7 @@
         <div class="span3 margin-top10" style="clear: both;">
             <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", label = "Audience", require = "true" })
+                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", label = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience), require = "true" })
             </span>
         </div>
         <div class="span3 margin-top10 paddingleft25px">
@@ -444,8 +444,8 @@
                 var value = $(this).val();
                 if (oldValue != value) {
                     _resubmissionLabelValues.push({
-                        Key: htmlEncode($(this).attr("label").toString()),
-                        Value: htmlEncode($(this).attr("label").toString())
+                        Key: htmlEncode($(this).attr("label").replace(/ /g,"_").toString()),
+                        Value: htmlEncode($(this).attr("label").replace(/ /g, "_").toString())
                     });
 
                     resubmit = true;
