@@ -14,6 +14,7 @@
     var PlanTacticId=0;
     var Status = "";
     var ColorCode = "";
+    string RequestedModule = (ViewBag.RedirectType != "") ? ViewBag.RedirectType : "";
     if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
     {
         tacticMaster = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
@@ -34,13 +35,16 @@
 @Html.Hidden("hdnPlanTacticId", PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", Status, new { id = "hdnTacticStatus" })
 @Html.Hidden("hdnIsResubmitableStatus", IsResubmitableStatus, new { id = "hdnIsResubmitableStatus" })
+@Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
 <div id="successMessageImprovementTactic" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
+    <strong>Success.</strong>
     <span id="spanSuccMessageImprovementTactic"></span>
 </div>
 
 <div id="errorMessageImprovementTactic" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
+    <strong>Error!</strong>
     <span id="spanErrMessageImprovementTactic"></span>
 </div>
 <form>
@@ -166,15 +170,7 @@
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
           });
 
-          if (InspectSuccMsg != '')
-          {
-              $("#successMessageImprovementTactic").css("display", "block");
-              $("#spanSuccMessageImprovementTactic").empty();
-              $("#spanSuccMessageImprovementTactic").text(InspectSuccMsg);
-              $("#errorMessageImprovementTactic").css("display", "none");
-              $("#spanErrMessageImprovementTactic").empty();
-              InspectSuccMsg = '';
-          }
+         
       });
 
     function RemoveTabClass() {
@@ -218,7 +214,7 @@
         HideAllMessages();
         var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
-        $("#divPartial").load(url + '?id=' + @PlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()");
+        $("#divPartial").load(url + '?id=' + @PlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()" + '&RequestedModule=' + '@RequestedModule');
     });       
 
     function HideAllMessages()

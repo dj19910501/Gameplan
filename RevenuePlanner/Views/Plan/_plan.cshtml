@@ -320,7 +320,7 @@ function ShowModel(mode, section, id, ParentId, RequsedtedModule) {
             loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequsedtedModule);
         }
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()") {
@@ -328,7 +328,7 @@ function ShowModel(mode, section, id, ParentId, RequsedtedModule) {
             loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "", 0, RequsedtedModule);
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequsedtedModule);
         }
     } 
  else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()") {
@@ -371,23 +371,6 @@ function loadInspectPopup(id, section, tabValue, mode, parentId, RequsedtedModul
             });
         }, 500);
     };
-    function RefreshCurrentTab() {
-        //type = $('#ddlTabViewBy').val();
-        //AjaxRequest();
-        if (gantt == null && typeof gantt == 'undefined') {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/GetCampaign/")',
-                data: {
-                },
-                success: function (r) {
-                    campaign = r;
-                    var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
-                    $tableCampaigns.html('');
-                    fillCampaignsTable();
-                }
-            });
-        }
-    }
+    
 </script>
 

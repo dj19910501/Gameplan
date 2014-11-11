@@ -100,8 +100,8 @@
     if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
     {
         <div class="wraper-btns cf" style="width: 100%; clear: both">
-            <div style="width: 122px" class="span2 btn-save">
-                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save & Continue</button>
+            <div class="span2 btn-save">
+                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" style="min-width:115px;"  type="button">Save</button>
             </div>
             <div class="span2">
                 <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button" style="float: left; margin-left: 20px; margin-top: 5px">Cancel</button>
@@ -112,6 +112,9 @@
 }
 
 <script type="text/javascript">
+
+    var requestedModule=$("#hdnRequestedModule").val();
+
     $(document).ready(
       function () {
           
@@ -201,7 +204,7 @@
             ImprovementPlanTacticId='@Model.PlanTacticId';
         }
 
-        $("#divPartial").load(url + '?id=' + ImprovementPlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()");
+        $("#divPartial").load(url + '?id=' + ImprovementPlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()"+ '&RequestedModule=' + requestedModule);
     }
 
     assignDefaultValue(".resubmission");
@@ -306,9 +309,13 @@
                 data: $("form").serialize() + '&RedirectType=' + isAssortment,
                 success: function (data) {
                     if (data.isSaved) {
+                        $("#successMessageImprovementTactic").css("display", "block");
+                        $("#spanSuccMessageImprovementTactic").empty();
+                        $("#spanSuccMessageImprovementTactic").text(data.msg);
+                        $("#errorMessageImprovementTactic").css("display", "none");
+                        $("#spanErrMessageImprovementTactic").empty();
                         returnToReadOnlyMode(data.id);
-                        RefreshCurrentTab();
-                        InspectSuccMsg = data.msg;
+                        RefreshCurrentTab(requestedModule, 0, 0, 0);
                         return;
                     }
                     else{
@@ -327,6 +334,15 @@ function ShowError(value) {
     $("#errorMessageImprovementTactic").slideDown(400);
     $("#spanErrMessageImprovementTactic").empty();
     $("#spanErrMessageImprovementTactic").text(value);
+}
+
+function ShowMessage(InspectSuccMsg) {
+    $("#successMessageImprovementTactic").css("display", "block");
+    $("#spanSuccMessageImprovementTactic").empty();
+    $("#spanSuccMessageImprovementTactic").text(InspectSuccMsg);
+    $("#errorMessageImprovementTactic").css("display", "none");
+    $("#spanErrMessageImprovementTactic").empty();
+    InspectSuccMsg = '';
 }
 
 $("#t_integration_status").click(function () {

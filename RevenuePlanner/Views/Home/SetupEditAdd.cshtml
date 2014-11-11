@@ -133,8 +133,8 @@
     </div>   
 
     <div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
-        <div class="span2 btn-save" style="width: 80px;">
-            <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save</button>
+        <div class="span2 btn-save">
+            <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" style="min-width: 115px;" type="button">Save</button>
         </div>
         <div class="span2">
             <button id="btnCancel" class="close-form btn-link source-sans-proregular" style="float: left; margin-left: 20px; margin-top: 30px !important" type="button">Cancel</button>
@@ -167,8 +167,11 @@
           $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
+          $("#liSetup,#liReview,#liBudget,#liActuals").removeClass('setdefultcursor');
+
           if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
               $("#liSetup,#liReview,#liBudget,#liActuals").unbind("click");
+              $("#liSetup,#liReview,#liBudget,#liActuals").addClass('setdefultcursor');
           }
 
           $('.dp').datepicker({
@@ -390,7 +393,10 @@
 
                         if (data.redirect) {
                             var activeTab = $("#InspectTab li.active a").text()
-                            var planTacticId = data.planTacticId;                            
+                            var planTacticId = data.planTacticId;
+                            var planCampaignId = data.planCampaignId;
+                            var planProgramId = data.planProgramId;
+                            var requestedModule = $("#hdnRequestedModule").val();
                             $('#txtTacticTitle').css('display', 'none');
                             $('#lblTacticTitle').css('display', 'block');
                             $("#lblTacticTitle").removeAttr("style");
@@ -400,9 +406,9 @@
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.Msg);
                             $("#errorMessage").css("display", "none");
-                            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()");
+                            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
                             $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
-                            RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                             return;
                         }
                     }
@@ -464,6 +470,15 @@
         var pmql = 0;
         var pcost = 0;
         var projectedStageValue = 0;
+        txtCampaignValue = $("#txtCampaign").val();
+        txtProgramValue = $("#txtProgram").val();
+        txtTacticValue = $("#txtTacticTitle").val();
+        txtDescriptionValue = $("#Description").val();
+        document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
+        document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
+        document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
+        document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
+
         if (tacticTypeId != '') {
             if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {
                 $.ajax({
@@ -495,6 +510,10 @@
                             $("#hdnIsDeployedToIntegration").val(false);
                         }
                         $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());
+                        $("#txtCampaign").val(txtCampaignValue);
+                        $("#txtProgram").val(txtProgramValue);
+                        $("#txtTacticTitle").val(txtTacticValue);
+                        $("#Description").val(txtDescriptionValue);
                     }
                 });
             }

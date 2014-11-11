@@ -1193,82 +1193,7 @@
         }
         //Dharmraj End 11July2014 : 547 (Warning of data loss during save and comtinue)
 
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/GetCampaign/")',
-            data: {
-            },
-            success: function (r) {
-                campaign = r;
-                fillCampaignsTable();
-                // call load improvement tactic beacuase it execute after campaign activity process over.
-                LoadImprovementTactic();
-                NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
-                Showmsg();
-            }
-        });
-        ////Modified by Mitesh Vaishnav for PL ticket #619
-        function LoadClickEvents() {
-            if ('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0) {
-
-                $('.tactictitle').each(function () {
-                    if ($(this).parent().attr('index') == '@ViewBag.TacticId') {
-                        $(this).click();
-                        return false;
-                    }
-                });
-                return false;
-            }
-            else if ('@ViewBag.EditOjbect' == "Program" && '@ViewBag.ProgramId' != 0) {
-                //alert("Hi");
-                $('.gray-bg-text').each(function () {
-                    if ($(this).parent().parent().attr('id') == '@ViewBag.ProgramId') {
-                        $(this).click();
-                        return false;
-                    }
-                });
-            }
-            else if ('@ViewBag.EditOjbect' == "Campaign" && '@ViewBag.CampaignId' != 0) {
-                $('.blue-bg-text').each(function () {
-                    if ($(this).parent().attr('id') == '@ViewBag.CampaignId') {
-                            $(this).click();
-                            return false;
-                        }
-                    });
-                }
-                else if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
-                    $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").find("#divPanelImp").click();
-                    return false;
-                }
-}
-
-        function LoadImprovementTactic() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/GetImprovementTactic/")',
-                data: {
-                },
-                success: function (r) {
-                    ImprovementTactic = r;
-                    fillImprovementTacticTable();
-                    var isImp = false;
-                    if (typeof ImprovementTactic != 'undefined') {
-                        if (ImprovementTactic.length) {
-                            isImp = true;
-                            FillGrayImprovementContainer(ImprovementTactic.length);
-                            LoadClickEvents();
-                        }
-                    }
-                    if (!isImp) {
-                        FillGrayImprovementContainerEmpty();
-                        LoadClickEvents();
-                    }
-                    //NumberFormatterTipsy(".tipsyclass", 9);
-
-                    loadscript();
-                }
-            });
-        }
+        getCampaign();
 
         $(document).on("click", ".add-icon.impTactic", function (e) {
 
@@ -1362,151 +1287,18 @@
         //    }
         //}
 
-        function Showmsg() {
-            if (ismsg != '') {
-                if (hdnisError == 'True') {
-                    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + ismsg);
-                    $("#errorMessageDuplicatePlan").slideDown(3000);
-                }
-                else {
-                    $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + ismsg);
-                    $("#successMessageDuplicatePlan").slideDown(3000);
-                    //$("#successMessageDuplicatePlan").slideUp(1200);
-                }
-            }
+
+
+        function CallForRedirectToApplyToCalender() {
+            //add css class to disable hover on left navigation link when no data found
+            //Start : date : 01/21/2014
+            $("#aApplyToCalender").parent().parent().addClass("navdisable");
+            $("#aApplyToCalender").css('cssText', 'cursor: default !important');
+            //End : date : 01/21/2014
+            $("#aApplyToCalender").removeAttr("onclick");
+            isApply = true;
         }
 
-        //fill campaign table with data from json
-        function fillImprovementTacticTable() {
-            var isImpCount = false;
-            if (typeof ImprovementTactic != 'undefined') {
-                var $html = '';
-                if (ImprovementTactic.length) {
-                    isImprovementTacticExits = true;
-                    isImpCount = true;
-                    $(".markTotal").each(function () {
-                        $(this).css("color", "#D4D4D4");
-                    });
-                    for (i in ImprovementTactic) {
-                        costTotal = costTotal + parseFloat(ImprovementTactic[i].cost);
-                        addRowImprovementTactic(i, ImprovementTactic[i].id, ImprovementTactic[i].title, ImprovementTactic[i].cost, ImprovementTactic[i].isOwner, ImprovementTactic[i].ImprovementProgramId);
-                    }
-                }
-            }
-
-            $html += '<div class="accordion-header campaign-default">' +
-                           '<a class="accordion-toggle" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId + '" id="divimpTactic" index="0">' +
-                               '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">Select Improvement Tactic</span></span>' +
-                               '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
-                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                               '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
-                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                           '</a>' +
-                       '</div>';
-
-            $html += '<div class="cf border-cf improvement-activities">' +
-                                    '<div class="pull-left first-columns font_size16 border-cf-right suggested-tactics" data-id="1"><span class="cf-arrow">SUGGESTED</span><span class="border-bottom"></span></div>' +
-									'<div class="pull-left first-columns font_size16 border-cf-right" data-id="2"><span class="cf-arrow"><span class="cf-icon ads-icon"></span><span id="spanSuggestedADS">+$0</span></span><span class="border-bottom"></span></div>' +
-									'<div class="pull-left first-columns font_size16 border-cf-right" data-id="3"><span class="cf-arrow"><span class="cf-icon velocity-icon"></span><span id="spanSuggestedCW">+0</span> CWs</span><span class="border-bottom"></span></div>' +
-									'<div class="pull-left first-columns font_size16" data-id="4"><span class="cf-arrow"><span class="cf-icon conversion-icon"></span><span id="spanSuggestedVelocity">-0</span> DAYS</span><span class="border-bottom"></span></div>' +
-                                    '<div class="pull-right-assortment width50px total"><span class="cf-arrow cf-arrow-blue pull-right"></span></div>' +
-                                //'<div class="pull-left width55"></div>' +
-                                //'<div class="height40 pull-right width50px"></div>' +
-                                '<div class="total improvementTotal pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
-                                '<div class="total improvementTotal pull-right width150px text-right tipsyclass Cost_Improvement_Activities">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
-                                '<div class="total improvementTotal pull-right width100px text-right border-cf-left" id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
-                                '<div class="gray-add-container border-cf" id="grayImprovementContainer"></div>' +
-                                '<div class="grey-container-full" id="grayFullContainer">' +
-										                    '</div>' +
-                            '</div>';
-
-            var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
-
-            $tableImprovementCampaigns.append($html);
-            if (!isImpCount) {
-                $(".improvementTotal").each(function () {
-                    $(this).css("color", "#D4D4D4");
-                });
-            }
-            addEventTriggerSlidepanel();
-
-            //Fetch all the row values from the tables
-
-            $('.Cost_Improvement_Activities').each(function () {
-                //Added By : Kalpesh Sharma
-                //PL #508 Set format for label in tool tip
-                //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                //SetLabelFormaterWithTipsy($(this));
-                SetLabelFormaterWithTitle($(this));
-                //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-            });
-
-        }
-
-
-        function loadscript() {
-            $('.total .cf-arrow').click(function () {
-                $('.grey-container-full').fadeOut();
-                $('.first-columns').removeClass('active-column');
-                $(this).toggleClass('cf-arrow-blue');
-                $('.gray-add-container').slideDown(200);
-                $("#btnSaveAndContinue").css("display", "block");
-                $("#divSuggestionBox").css("padding-bottom", "150px");
-                /*if($('.grey-container-full').is(':visible')){
-                    $('.gray-add-container').slideDown();
-                }*/
-            });
-
-            $('.first-columns').click(function () {
-                $("#btnSaveAndContinue").css("display", "none");
-                var dataId = $(this).attr('data-id');
-                FillFullContainer(dataId);
-                $('.gray-add-container').slideUp();
-
-                $('.improvement-activities').find('.active-column').each(function () {
-                    $(this).removeClass('active-column');
-                });
-                $(this).addClass('active-column');
-                /*$(this).toggleClass('cf-arrow-blue');*/
-                $('.grey-container-full').slideDown(200);
-                $(this).find('.border-bottom').css('display', 'block');
-
-                var dataId = $(this).attr('data-id');
-                $('.grey-container-content > div').fadeOut(50);
-                $('.grey-container-content > div').fadeIn(200);
-
-                /*if ($('.gray-add-container').is(':visible')) {
-                    //alert('small DIV');
-                    $(this).toggleClass('cf-arrow-blue');
-                    $('.gray-add-container').slideUp();
-                }
-                else if($('.grey-container-full').is(':visible')){
-                    $(this).toggleClass('cf-arrow-blue');
-                    $('.gray-add-container').slideDown();
-                }*/
-
-            });
-        }
-
-        function addRowImprovementTactic(_index, _id, _title, _cost, _isOwner, _programId) {
-            var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
-            var $html = '';
-            $html += '<div class="accordion-header campaign-default">' +
-                            '<a class="accordion-toggle" id="divimpTactic" index="' + _id + '" data-id-program="' + _programId + '">';
-            if (_isOwner == 0) {
-                $html += '<span class="delete-Improvement width5" id="delimpTactic"></span>';
-            }
-            $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">' + _title + '</span></span>' +
-                                '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
-                                '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
-                                '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities">$' + FormatCommas(_cost.toString(), false) + '</span>' +
-                                '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                            '</a>' +
-                        '</div>';
-
-            $tableImprovementCampaigns.append($html);
-
-        }
 
         function FillGrayImprovementContainerEmpty() {
             var $html = '<p class="text1">Adding improvement tactics can boost your planned efforts.</p>' +
@@ -1518,129 +1310,7 @@
             $ContainerImprovement.append($html);
         }
 
-        function FillGrayImprovementContainer(impcount) {
 
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/GetImprovementContainerValue/")',
-                data: {
-                },
-                success: function (data) {
-                    if (typeof data != 'undefined') {
-                        var $html = '<p class="text1">Executing ';
-                        if (impcount > 1) {
-                            $html += 'these improvement tactics';
-                        }
-                        else {
-                            $html += 'this improvement tactic';
-                        }
-                        $html += ' could deliver...</p>' +
-                            '<p class="text2"><strong>';
-                        var mqlValue = parseFloat(data.MQL);
-                        if (mqlValue < 0) {
-                            $html += FormatCommas(Math.abs(mqlValue).toString(), false) + '</strong> less';
-                        }
-                        else {
-                            $html += FormatCommas(mqlValue.toString(), false) + '</strong> more';
-                        }
-
-                        var withImprovedMQL = mqlTotal + mqlValue;
-                        $('#DivImprovementTotal').html(FormatCommas(withImprovedMQL.toString(), false))
-
-
-                        //Added by : Kalpesh Sharma
-                        //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                        //SetLabelFormaterWithTipsyNumbers("#DivImprovementTotal");
-                        SetLabelFormaterWithTitle($("#DivImprovementTotal"));
-                        //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                        var mqltext = "@ViewBag.MQLLabel"
-                        $html += ' ' + mqltext + ' yielding <strong>';
-                        var cwValue = parseFloat(data.CW);
-                        if (cwValue < 0) {
-                            $html += FormatCommas(Math.abs(cwValue).toString(), true) + '</strong> less';
-                            $("#spanSuggestedCW").text("-" + Math.abs(cwValue).toString());
-                        }
-                        else {
-                            $html += FormatCommas(cwValue.toString(), true) + '</strong> more';
-                            $("#spanSuggestedCW").text("+" + Math.abs(cwValue).toString());
-                        }
-                        if (cwValue <= 1) {
-                            $html += ' CW,<br><strong>';
-                        }
-                        else {
-                            $html += ' CWs,<br><strong>';
-                        }
-                        var adsValue = parseFloat(data.ADS);
-                        if (adsValue < 0) {
-                            $html += FormatCurrency(Math.abs(adsValue).toString(), false) + '</strong> less';
-                            $("#spanSuggestedADS").text("-$" + Math.abs(adsValue).toString());
-                        }
-                        else {
-                            $html += FormatCurrency(adsValue.toString(), false) + '</strong> larger';
-                            $("#spanSuggestedADS").text("+$" + Math.abs(adsValue).toString());
-                        }
-
-                        $html += ' Average Deal Size and<br><strong>';
-                        var velocityValue = parseFloat(data.Velocity);
-                        if (velocityValue <= 0) {
-                            $html += FormatCommas(Math.abs(velocityValue).toString(), false) + '</strong> less';
-                            $("#spanSuggestedVelocity").text("-" + Math.abs(velocityValue).toString());
-                        }
-                        else {
-                            $html += FormatCommas(velocityValue.toString(), false) + '</strong> more';
-                            $("#spanSuggestedVelocity").text("+" + Math.abs(velocityValue).toString());
-                        }
-
-                        $html += ' days in the funnel with</p>' +
-                            '<p class="text3">Net Revenue Impact of ';
-
-                        var revenueValue = parseFloat(data.Revenue);
-                        if (revenueValue < 0) {
-                            //Modified by : Kalpesh Sharma
-                            //PL #508 Set format for label in tool tip
-                            $html += '<span id="spanRevenueImpact" >' + '-' + FormatCurrency(Math.abs(revenueValue).toString(), true) + '</span>';
-                            //$html += '-' + FormatCurrency(Math.abs(revenueValue).toString(), true);
-                        }
-                        else {
-                            $html += '<span id="spanRevenueImpact" >' + '' + FormatCurrency(revenueValue.toString(), true) + '</span>';
-                            //$html += '' + FormatCurrency(revenueValue.toString(), true);
-                        }
-
-                        $html += '<br> on ';
-
-                        var costValue = parseFloat(data.Cost);
-                        if (costValue < 0) {
-                            //$html += FormatCurrency(Math.abs(costValue).toString(), false) + ' decreased';
-                            $html += '<span id="spanRevenuecostValue" >' + '-' + FormatCurrency(Math.abs(costValue).toString(), false) + '</span>' + ' decreased';
-                        }
-                        else {
-                            $html += '<span id="spanRevenuecostValue" >' + FormatCurrency(costValue.toString(), false) + '</span>' + ' decreased';
-                            //$html += FormatCurrency(costValue.toString(), false) + ' increased';
-                        }
-
-                        $html += ' spend.</p>';
-
-                        var $ContainerImprovement = $('#grayImprovementContainer');
-
-                        $ContainerImprovement.append($html);
-
-                        //Fetch all the row values from the tables
-                        //Added By : Kalpesh Sharma
-                        //PL #508 Set format for label in tool tip
-                        //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                        //SetLabelFormaterWithTipsy("#spanRevenuecostValue");
-                        //SetLabelFormaterWithTipsy("#spanRevenueImpact");
-                        SetLabelFormaterWithTitle($("#spanRevenuecostValue"));
-                        SetLabelFormaterWithTitle($("#spanRevenueImpact"));
-                        //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-
-                    }
-
-                }
-            });
-
-
-        }
 
         // Added By Bhavesh
         // PL Ticket 289,377,378
@@ -2685,14 +2355,373 @@
         });
     }
 
-    //// Modified By Maninder 11/10/2014 to resolve internal issue of campaing tab loading issue.
-    function CallForRedirectToApplyToCalender() {
-        //add css class to disable hover on left navigation link when no data found
-        //Start : date : 01/21/2014
-        $("#aApplyToCalender").parent().parent().addClass("navdisable");
-        $("#aApplyToCalender").css('cssText', 'cursor: default !important');
-        //End : date : 01/21/2014
-        $("#aApplyToCalender").removeAttr("onclick");
-        isApply = true;
+
+    function LoadImprovementTactic() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetImprovementTactic/")',
+            data: {
+            },
+            success: function (r) {
+                ImprovementTactic = r;
+                fillImprovementTacticTable();
+                var isImp = false;
+                if (typeof ImprovementTactic != 'undefined') {
+                    if (ImprovementTactic.length) {
+                        isImp = true;
+                        FillGrayImprovementContainer(ImprovementTactic.length);
+                        LoadClickEvents();
+                    }
+                }
+                if (!isImp) {
+                    FillGrayImprovementContainerEmpty();
+                    LoadClickEvents();
+                }
+                //NumberFormatterTipsy(".tipsyclass", 9);
+
+                loadscript();
+            }
+        });
+    }
+
+    //fill campaign table with data from json
+    function fillImprovementTacticTable() {
+        var isImpCount = false;
+        if (typeof ImprovementTactic != 'undefined') {
+            var $html = '';
+            if (ImprovementTactic.length) {
+                isImprovementTacticExits = true;
+                isImpCount = true;
+                $(".markTotal").each(function () {
+                    $(this).css("color", "#D4D4D4");
+                });
+                for (i in ImprovementTactic) {
+                    costTotal = costTotal + parseFloat(ImprovementTactic[i].cost);
+                    addRowImprovementTactic(i, ImprovementTactic[i].id, ImprovementTactic[i].title, ImprovementTactic[i].cost, ImprovementTactic[i].isOwner, ImprovementTactic[i].ImprovementProgramId);
+                }
+            }
+        }
+
+        $html += '<div class="accordion-header campaign-default">' +
+                       '<a class="accordion-toggle" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId + '" id="divimpTactic" index="0">' +
+                           '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">Select Improvement Tactic</span></span>' +
+                           '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
+                           '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                           '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
+                           '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                       '</a>' +
+                   '</div>';
+
+        $html += '<div class="cf border-cf improvement-activities">' +
+                                '<div class="pull-left first-columns font_size16 border-cf-right suggested-tactics" data-id="1"><span class="cf-arrow">SUGGESTED</span><span class="border-bottom"></span></div>' +
+                                '<div class="pull-left first-columns font_size16 border-cf-right" data-id="2"><span class="cf-arrow"><span class="cf-icon ads-icon"></span><span id="spanSuggestedADS">+$0</span></span><span class="border-bottom"></span></div>' +
+                                '<div class="pull-left first-columns font_size16 border-cf-right" data-id="3"><span class="cf-arrow"><span class="cf-icon velocity-icon"></span><span id="spanSuggestedCW">+0</span> CWs</span><span class="border-bottom"></span></div>' +
+                                '<div class="pull-left first-columns font_size16" data-id="4"><span class="cf-arrow"><span class="cf-icon conversion-icon"></span><span id="spanSuggestedVelocity">-0</span> DAYS</span><span class="border-bottom"></span></div>' +
+                                '<div class="pull-right-assortment width50px total"><span class="cf-arrow cf-arrow-blue pull-right"></span></div>' +
+                            //'<div class="pull-left width55"></div>' +
+                            //'<div class="height40 pull-right width50px"></div>' +
+                            '<div class="total improvementTotal pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
+                            '<div class="total improvementTotal pull-right width150px text-right tipsyclass Cost_Improvement_Activities">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
+                            '<div class="total improvementTotal pull-right width100px text-right border-cf-left" id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
+                            '<div class="gray-add-container border-cf" id="grayImprovementContainer"></div>' +
+                            '<div class="grey-container-full" id="grayFullContainer">' +
+                                                        '</div>' +
+                        '</div>';
+
+        var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
+
+        $tableImprovementCampaigns.append($html);
+        if (!isImpCount) {
+            $(".improvementTotal").each(function () {
+                $(this).css("color", "#D4D4D4");
+            });
+        }
+        addEventTriggerSlidepanel();
+
+        //Fetch all the row values from the tables
+
+        $('.Cost_Improvement_Activities').each(function () {
+            //Added By : Kalpesh Sharma
+            //PL #508 Set format for label in tool tip
+            //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+            //SetLabelFormaterWithTipsy($(this));
+            SetLabelFormaterWithTitle($(this));
+            //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+        });
+
+    }
+
+    function FillGrayImprovementContainer(impcount) {
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetImprovementContainerValue/")',
+            data: {
+            },
+            success: function (data) {
+                if (typeof data != 'undefined') {
+                    var $html = '<p class="text1">Executing ';
+                    if (impcount > 1) {
+                        $html += 'these improvement tactics';
+                    }
+                    else {
+                        $html += 'this improvement tactic';
+                    }
+                    $html += ' could deliver...</p>' +
+                        '<p class="text2"><strong>';
+                    var mqlValue = parseFloat(data.MQL);
+                    if (mqlValue < 0) {
+                        $html += FormatCommas(Math.abs(mqlValue).toString(), false) + '</strong> less';
+                    }
+                    else {
+                        $html += FormatCommas(mqlValue.toString(), false) + '</strong> more';
+                    }
+
+                    var withImprovedMQL = mqlTotal + mqlValue;
+                    $('#DivImprovementTotal').html(FormatCommas(withImprovedMQL.toString(), false))
+
+
+                    //Added by : Kalpesh Sharma
+                    //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                    //SetLabelFormaterWithTipsyNumbers("#DivImprovementTotal");
+                    SetLabelFormaterWithTitle($("#DivImprovementTotal"));
+                    //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                    var mqltext = "@ViewBag.MQLLabel"
+                    $html += ' ' + mqltext + ' yielding <strong>';
+                    var cwValue = parseFloat(data.CW);
+                    if (cwValue < 0) {
+                        $html += FormatCommas(Math.abs(cwValue).toString(), true) + '</strong> less';
+                        $("#spanSuggestedCW").text("-" + Math.abs(cwValue).toString());
+                    }
+                    else {
+                        $html += FormatCommas(cwValue.toString(), true) + '</strong> more';
+                        $("#spanSuggestedCW").text("+" + Math.abs(cwValue).toString());
+                    }
+                    if (cwValue <= 1) {
+                        $html += ' CW,<br><strong>';
+                    }
+                    else {
+                        $html += ' CWs,<br><strong>';
+                    }
+                    var adsValue = parseFloat(data.ADS);
+                    if (adsValue < 0) {
+                        $html += FormatCurrency(Math.abs(adsValue).toString(), false) + '</strong> less';
+                        $("#spanSuggestedADS").text("-$" + Math.abs(adsValue).toString());
+                    }
+                    else {
+                        $html += FormatCurrency(adsValue.toString(), false) + '</strong> larger';
+                        $("#spanSuggestedADS").text("+$" + Math.abs(adsValue).toString());
+                    }
+
+                    $html += ' Average Deal Size and<br><strong>';
+                    var velocityValue = parseFloat(data.Velocity);
+                    if (velocityValue <= 0) {
+                        $html += FormatCommas(Math.abs(velocityValue).toString(), false) + '</strong> less';
+                        $("#spanSuggestedVelocity").text("-" + Math.abs(velocityValue).toString());
+                    }
+                    else {
+                        $html += FormatCommas(velocityValue.toString(), false) + '</strong> more';
+                        $("#spanSuggestedVelocity").text("+" + Math.abs(velocityValue).toString());
+                    }
+
+                    $html += ' days in the funnel with</p>' +
+                        '<p class="text3">Net Revenue Impact of ';
+
+                    var revenueValue = parseFloat(data.Revenue);
+                    if (revenueValue < 0) {
+                        //Modified by : Kalpesh Sharma
+                        //PL #508 Set format for label in tool tip
+                        $html += '<span id="spanRevenueImpact" >' + '-' + FormatCurrency(Math.abs(revenueValue).toString(), true) + '</span>';
+                        //$html += '-' + FormatCurrency(Math.abs(revenueValue).toString(), true);
+                    }
+                    else {
+                        $html += '<span id="spanRevenueImpact" >' + '' + FormatCurrency(revenueValue.toString(), true) + '</span>';
+                        //$html += '' + FormatCurrency(revenueValue.toString(), true);
+                    }
+
+                    $html += '<br> on ';
+
+                    var costValue = parseFloat(data.Cost);
+                    if (costValue < 0) {
+                        //$html += FormatCurrency(Math.abs(costValue).toString(), false) + ' decreased';
+                        $html += '<span id="spanRevenuecostValue" >' + '-' + FormatCurrency(Math.abs(costValue).toString(), false) + '</span>' + ' decreased';
+                    }
+                    else {
+                        $html += '<span id="spanRevenuecostValue" >' + FormatCurrency(costValue.toString(), false) + '</span>' + ' decreased';
+                        //$html += FormatCurrency(costValue.toString(), false) + ' increased';
+                    }
+
+                    $html += ' spend.</p>';
+
+                    var $ContainerImprovement = $('#grayImprovementContainer');
+
+                    $ContainerImprovement.append($html);
+
+                    //Fetch all the row values from the tables
+                    //Added By : Kalpesh Sharma
+                    //PL #508 Set format for label in tool tip
+                    //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                    //SetLabelFormaterWithTipsy("#spanRevenuecostValue");
+                    //SetLabelFormaterWithTipsy("#spanRevenueImpact");
+                    SetLabelFormaterWithTitle($("#spanRevenuecostValue"));
+                    SetLabelFormaterWithTitle($("#spanRevenueImpact"));
+                    //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+
+                }
+
+            }
+        });
+
+
+    }
+
+    ////Modified by Mitesh Vaishnav for PL ticket #619
+    function LoadClickEvents() {
+        if ('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0) {
+
+                $('.tactictitle').each(function () {
+                    if ($(this).parent().attr('index') == '@ViewBag.TacticId') {
+                    $(this).click();
+                    return false;
+                }
+            });
+            return false;
+        }
+        else if ('@ViewBag.EditOjbect' == "Program" && '@ViewBag.ProgramId' != 0) {
+                //alert("Hi");
+                $('.gray-bg-text').each(function () {
+                    if ($(this).parent().parent().attr('id') == '@ViewBag.ProgramId') {
+                    $(this).click();
+                    return false;
+                }
+            });
+        }
+        else if ('@ViewBag.EditOjbect' == "Campaign" && '@ViewBag.CampaignId' != 0) {
+                $('.blue-bg-text').each(function () {
+                    if ($(this).parent().attr('id') == '@ViewBag.CampaignId') {
+                        $(this).click();
+                        return false;
+                    }
+                });
+            }
+            else if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
+                $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").find("#divPanelImp").click();
+                return false;
+            }
+}
+
+
+
+
+function loadscript() {
+    $('.total .cf-arrow').click(function () {
+        $('.grey-container-full').fadeOut();
+        $('.first-columns').removeClass('active-column');
+        $(this).toggleClass('cf-arrow-blue');
+        $('.gray-add-container').slideDown(200);
+        $("#btnSaveAndContinue").css("display", "block");
+        $("#divSuggestionBox").css("padding-bottom", "150px");
+        /*if($('.grey-container-full').is(':visible')){
+            $('.gray-add-container').slideDown();
+        }*/
+    });
+
+    $('.first-columns').click(function () {
+        $("#btnSaveAndContinue").css("display", "none");
+        var dataId = $(this).attr('data-id');
+        FillFullContainer(dataId);
+        $('.gray-add-container').slideUp();
+
+        $('.improvement-activities').find('.active-column').each(function () {
+            $(this).removeClass('active-column');
+        });
+        $(this).addClass('active-column');
+        /*$(this).toggleClass('cf-arrow-blue');*/
+        $('.grey-container-full').slideDown(200);
+        $(this).find('.border-bottom').css('display', 'block');
+
+        var dataId = $(this).attr('data-id');
+        $('.grey-container-content > div').fadeOut(50);
+        $('.grey-container-content > div').fadeIn(200);
+
+        /*if ($('.gray-add-container').is(':visible')) {
+            //alert('small DIV');
+            $(this).toggleClass('cf-arrow-blue');
+            $('.gray-add-container').slideUp();
+        }
+        else if($('.grey-container-full').is(':visible')){
+            $(this).toggleClass('cf-arrow-blue');
+            $('.gray-add-container').slideDown();
+        }*/
+
+    });
+}
+
+function Showmsg() {
+    if (ismsg != '') {
+        if (hdnisError == 'True') {
+            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + ismsg);
+            $("#errorMessageDuplicatePlan").slideDown(3000);
+        }
+        else {
+            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + ismsg);
+            $("#successMessageDuplicatePlan").slideDown(3000);
+            //$("#successMessageDuplicatePlan").slideUp(1200);
+        }
+    }
+}
+
+function addRowImprovementTactic(_index, _id, _title, _cost, _isOwner, _programId) {
+    var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
+    var $html = '';
+    $html += '<div class="accordion-header campaign-default">' +
+                    '<a class="accordion-toggle" id="divimpTactic" index="' + _id + '" data-id-program="' + _programId + '">';
+    if (_isOwner == 0) {
+        $html += '<span class="delete-Improvement width5" id="delimpTactic"></span>';
+    }
+    $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">' + _title + '</span></span>' +
+                        '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
+                        '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
+                        '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities">$' + FormatCommas(_cost.toString(), false) + '</span>' +
+                        '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                    '</a>' +
+                '</div>';
+
+    $tableImprovementCampaigns.append($html);
+
+}
+
+function getCampaign(planCampaignId, planProgramId, planTacticId) {
+    $.ajax({
+        type: 'POST',
+        url: '@Url.Content("~/Plan/GetCampaign/")',
+        data: {
+        },
+        success: function (r) {
+            var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
+            $tableCampaigns.html('');
+            var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
+            $tableImprovementCampaigns.html('');
+            CampaignID = planCampaignId;
+            ProgramID = planProgramId;
+            TacticID = planTacticId;
+            campaign = r;
+            fillCampaignsTable();
+            // call load improvement tactic beacuase it execute after campaign activity process over.
+            LoadImprovementTactic();
+            NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
+            Showmsg();
+        }
+    });
+}
+
+    function RefreshCurrentTab(RequsedtedModule, planCampaignId, planProgramId, planTacticId) {
+    var planCampaignId = typeof planCampaignId != 'undefined' ? planCampaignId : '0';
+    var planProgramId = typeof planProgramId != 'undefined' ? planProgramId : '0';
+    var planTacticId = typeof planTacticId != 'undefined' ? planTacticId : '0';
+
+    if ('@Enums.InspectPopupRequestedModules.Assortment.ToString()' == RequsedtedModule) {
+        getCampaign(planCampaignId, planProgramId, planTacticId);
+        }
     }
 </script>

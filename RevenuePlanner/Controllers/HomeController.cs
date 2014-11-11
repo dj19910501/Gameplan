@@ -3453,6 +3453,11 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.InspectMode = InspectPopupMode;
 
+                if (!string.IsNullOrEmpty(RequestedModule))
+                {
+                    ViewBag.RedirectType = RequestedModule;
+                }
+
                 if (id == 0)
                 {
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
@@ -3729,10 +3734,6 @@ namespace RevenuePlanner.Controllers
             ViewBag.TacticDetail = im;
             ViewBag.InspectPopup = TabValue;
 
-            if (!string.IsNullOrEmpty(RequestedModule))
-            {
-                ViewBag.RedirectType = RequestedModule;
-            }
 
             if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
             {
@@ -6110,7 +6111,7 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits, planCampaignId = cid, planProgramId = pid });
                             }
                             else
                             {
@@ -6205,7 +6206,7 @@ namespace RevenuePlanner.Controllers
 
                                     scope.Complete();
 
-                                    return Json(new { redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = "Tactic created successfully.", planTacticId = pcpobj.PlanTacticId });
+                                    return Json(new { redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = "Tactic created.", planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid });
                                 }
                             }
                         }
@@ -6482,7 +6483,7 @@ namespace RevenuePlanner.Controllers
 
                                     scope.Complete();
 
-                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = "Changes saved.", planTacticId = pcpobj.PlanTacticId });
+                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = "Tactic updated.", planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid });
                                 }
                             }
                         }
@@ -6955,7 +6956,7 @@ namespace RevenuePlanner.Controllers
                                 if (result >= 1)
                                 {
                                     scope.Complete();
-                                    return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Improvement Tactic created successfully.", id = picpt.ImprovementPlanTacticId });
+                                    return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Improvement Tactic created.", id = picpt.ImprovementPlanTacticId });
                                 }
                             }
                         }
@@ -7075,7 +7076,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-                                        return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Changes saved." });
+                                        return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Improvement Tactic updated." });
                                     }
                                 }
                             }

@@ -19,6 +19,8 @@
     var tacticMaster = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     var PlanProgramId = 0;
     var colorCode = "";
+    string RequestedModule = (ViewBag.RedirectType != "") ? ViewBag.RedirectType : "";
+    
     if (ViewBag.TacticDetail != null)
     {        
         IsPlanEditable = (bool)ViewBag.IsPlanEditable;
@@ -47,6 +49,7 @@
 @Html.Hidden("hdnTacticBudgetAllocationOpt", "View", new { id = "hdnTacticBudgetAllocationOpt" })
 @Html.Hidden("hdnIsResubmitableStatus", IsResubmitableStatus, new { id = "hdnIsResubmitableStatus" })
 @Html.Hidden("hdnInspectMode", InspectMode, new { id = "hdnInspectMode" })
+@Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
 
 <form>
 <div class="modal-popup-title">
@@ -219,6 +222,10 @@
               $("#txtTacticTitle").removeClass("error");              
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();
+              if (activeTab == TabReview) {
+                  activeTab = TabSetup;
+              }
+
               $("#hdnTacticBudgetAllocationOpt").val("Edit");
               $('#txtTacticTitle').css('display', 'block');
               $("#txtTacticTitle").val($("#lblTacticTitle").text());
@@ -273,11 +280,11 @@
         $('#div' + tabValue).css({ display: "block" });
         $("#divTab").empty();
         if (tabValue == TabSetup) {
-            if ('@InspectMode' == "Add") {
+            if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()') {
                 url = '@Url.Content("~/Home/CreateTactic/")';
                 $("#divTab").load(url + '?id=' + "@PlanProgramId");
             }
-            else if (ProgramOpt == "Edit") {
+            else if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
                 url = '@Url.Content("~/Home/EditTactic/")';
                 $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""');
             }
@@ -288,15 +295,30 @@
         }
 
         if (tabValue == TabReview) {
+            $('#txtTacticTitle').css('display', 'none');
+            $('#lblTacticTitle').css('display', 'block');
+            $("#lblTacticTitle").removeAttr("style");
+               
             url = '@Url.Content("~/Home/LoadReview/")';
             $("#divTab").load(url + '?id=' + id );
         }
         if (tabValue == TabActual) {
+
+            if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+                $('#txtTacticTitle').css('display', 'block');
+                $('#lblTacticTitle').css('display', 'none');
+            }
+
             url = '@Url.Content("~/Home/LoadActuals/")';
             $("#divTab").load(url + '?id=' + id );
         }
 
         if (tabValue == TabBudget) {
+            if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+                $('#txtTacticTitle').css('display', 'block');
+                $('#lblTacticTitle').css('display', 'none');
+            }
+
             url = '@Url.Content("~/Home/LoadTacticBudgetAllocation/")';
             $("#divTab").load(url + '?id=' + id);
         }

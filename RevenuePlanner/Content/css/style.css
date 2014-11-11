@@ -10944,3 +10944,8 @@ list-style-position:inside;
     line-height: 90px;
     text-align: center;
 }
+
+/* Added By - Pratik for #871*/
+#InspectTab > .setdefultcursor > a, #InspectTab  > .setdefultcursor > a:hover, #InspectTab  > .setdefultcursor > a:focus,#InspectTab  > .setdefultcursor > li > a:hover, #InspectTab  > .setdefultcursor > li > a:focus {
+cursor:context-menu !important;
+}
