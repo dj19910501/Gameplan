@@ -3921,8 +3921,9 @@ namespace RevenuePlanner.Controllers
             if (im.StageLevel < MQLStageLevel)
             {
                 ViewBag.ShowMQL = true;
-                // Comment By Bhavesh #927
-                //im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));
+               // Comment By Bhavesh #927  
+                //im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));  
+
             }
             else
             {
@@ -4186,7 +4187,7 @@ namespace RevenuePlanner.Controllers
                         imodel.MQLs = 0;
                         TempData["TacticMQL"] = "N/A";
                     }
-                    imodel.MQLs = Math.Round((double)imodel.MQLs, 0, MidpointRounding.AwayFromZero);
+                    imodel.MQLs = Math.Round((double)imodel.MQLs, 0, MidpointRounding.AwayFromZero); 
                     // Set Revenue
                     if (varTacticStageValue.Count > 0)
                     {
@@ -4440,8 +4441,8 @@ namespace RevenuePlanner.Controllers
             string modifiedBy = string.Empty;
             modifiedBy = Common.TacticModificationMessage(im.PlanTacticId);////Modified by Mitesh Vaishnav for PL ticket #743 Actuals Inspect: User Name for Scheduler Integration
             ViewBag.UpdatedBy = modifiedBy != string.Empty ? modifiedBy : null;////Modified by Mitesh Vaishnav for PL ticket #743 Actuals Inspect: User Name for Scheduler Integration
-            // Comment By Bhavesh #927
-            //im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));
+            // Comment By Bhavesh #927 
+            // im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));
 
             // Modified by dharmraj for implement new formula to calculate ROI, #533
             if (im.Cost > 0)
@@ -5998,7 +5999,7 @@ namespace RevenuePlanner.Controllers
                 ippctm.MQLs = 0;
                 TempData["TacticMQL"] = "N/A";
             }
-            ippctm.MQLs = Math.Round((double)ippctm.MQLs, 0, MidpointRounding.AwayFromZero);
+            ippctm.MQLs = Math.Round((double)ippctm.MQLs, 0, MidpointRounding.AwayFromZero); 
             // Set Revenue
             if (varTacticStageValue.Count > 0)
             {
@@ -6732,7 +6733,7 @@ namespace RevenuePlanner.Controllers
                 {
                     calculatedMQL = CalculatedRevenue = 0;
                 }
-                calculatedMQL = Math.Round(calculatedMQL, 0, MidpointRounding.AwayFromZero);
+                calculatedMQL = Math.Round(calculatedMQL, 0, MidpointRounding.AwayFromZero); 
                 if (tacticStageLevel < levelMQL)
                 {
                     return Json(new { mql = calculatedMQL, revenue = CalculatedRevenue });
