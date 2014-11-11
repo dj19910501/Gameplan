@@ -48,7 +48,7 @@
             <p>Improvement Tactic Type</p>
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
             {
-                <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })</span>
+                <span class="Inspect-Popup-ImprovementTactic verticalIdSelectBox">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })</span>
                 <p style="margin-top:11px;">Cost</p>    
                 @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate resubmission", style = "", id = "txtCost", label = "Cost" })
                 <p>Effective Date</p>
@@ -163,6 +163,8 @@
           {
               $('.inspect-column-parent').addClass('remove-bottom-border');
           }
+
+          $('.Inspect-Popup-ImprovementTactic .sbSelector').attr('title', $('.Inspect-Popup-ImprovementTactic .sbSelector').html());
       });
 
       $('.dp').datepicker({
@@ -372,6 +374,8 @@ $("#t_integration_status").click(function () {
             $("#txtCost").val(FormatCurrency((0).toString(), false));
             $('#txtCost').attr("title", $('#txtCost').val());
         }
+        
+        $('.Inspect-Popup-ImprovementTactic .sbSelector').attr('title', $('.Inspect-Popup-ImprovementTactic .sbSelector').html());
     });
 
     var ValueCost = 0;

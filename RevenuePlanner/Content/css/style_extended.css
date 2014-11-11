@@ -3429,3 +3429,10 @@ a:focus {
 .targetStageclick {
     cursor:pointer !important;/*14-7-2014  PL Ticket #591*/
 }
+
+/* Start - Added by Sohel Pathan on 11/11/2014 for PL ticket #908 */
+.Inspect-Popup-ImprovementTactic .sbSelector {
+    font-size: 14px;
+    width:90%;
+}
+/* End - Added by Sohel Pathan on 11/11/2014 for PL ticket #908 */
