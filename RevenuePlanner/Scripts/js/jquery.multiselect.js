@@ -703,15 +703,39 @@
           var popupLeftPosition = this.menu.width();
         var pos = this.button.offset();
 
+        /* Start - Added by Sohel Pathan on 11/11/2014 for PL ticket #934 */
+        var rightPos = windowWidth - (pos.left + this.button.width()) - 30;
+        if (rightPos < 5)
+        { rightPos = 5; }
+        else if (rightPos > 57)
+        {
+            rightPos = 57;
+        }
+        /* End - Added by Sohel Pathan on 11/11/2014 for PL ticket #934 */
+
           popupLeftPosition += pos.left;
           if (popupLeftPosition > windowWidth) {
               pos.left = (pos.left + this.button.width()) - (this.menu.width());
           }
-
-        this.menu.css({
-          top: pos.top + this.button.outerHeight(),
-          left: pos.left
-        });
+          
+          /* Start - Added by Sohel Pathan on 11/11/2014 for PL ticket #934 */
+          if (rightPos == 5) {
+              pos.left -= 30;
+          }
+          if (this.options.classes.toString() == 'custom-right-pos') {
+              this.menu.css({
+                  top: pos.top + this.button.outerHeight(),
+                  left: pos.left,
+                  right: rightPos
+              });
+          }
+          else {
+          /* End - Added by Sohel Pathan on 11/11/2014 for PL ticket #934 */
+              this.menu.css({
+                  top: pos.top + this.button.outerHeight(),
+                  left: pos.left
+              });
+          }
       }
     },
 

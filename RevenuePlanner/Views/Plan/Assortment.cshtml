@@ -694,7 +694,7 @@
         $(document).on("click", "#divlineitem", function (e) {
             
             var idLineItem = $(this).attr("index");
-            ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", idLineItem);
+            ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", idLineItem, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
             return false;
            
         });

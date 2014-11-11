@@ -52,7 +52,8 @@
         $("#ddlTabViewBy").multiselect({
             multiple: false,
             CustomName: '@Common.CustomTitle',
-            selectedList: 1
+            selectedList: 1,
+            classes: 'custom-right-pos' // Added by Sohel Pathan on 11/11/2014 for PL ticket #934, NOTE : Please don't change class name, it is used in js.
         }).multiselectfilter();
         $("#ddlTabViewBy").multiselect('refresh');
         $(".budgetCompareInner").mCustomScrollbar({
