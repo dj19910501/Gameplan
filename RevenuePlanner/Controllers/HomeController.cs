@@ -5363,7 +5363,7 @@ namespace RevenuePlanner.Controllers
             {
                 //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
-
+                int campaignId=form.PlanCampaignId;
                 if (form.PlanProgramId == 0)
                 {
                     using (MRPEntities mrp = new MRPEntities())
@@ -5397,7 +5397,6 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
                                 int programid = pcpobj.PlanProgramId;
-
                                 if (customFields.Count != 0)
                                 {
                                     foreach (var item in customFields)
@@ -5431,7 +5430,7 @@ namespace RevenuePlanner.Controllers
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                 Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
-                                return Json(new { IsSaved = true, Msg = "Program created successfully.", programID = programid }, JsonRequestBehavior.AllowGet);
+                                return Json(new { IsSaved = true, Msg = "Program created successfully.", programID = programid, campaignID = campaignId }, JsonRequestBehavior.AllowGet);
                             }
                         }
                     }
@@ -5500,7 +5499,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);
                                     scope.Complete();
-                                    return Json(new { IsSaved = true, Msg = "Changes saved." }, JsonRequestBehavior.AllowGet);
+                                    return Json(new { IsSaved = true, Msg = "Changes saved.", campaignID = campaignId }, JsonRequestBehavior.AllowGet);
                                 }
                             }
                         }

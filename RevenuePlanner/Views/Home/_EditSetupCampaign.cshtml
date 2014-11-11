@@ -382,12 +382,13 @@
                         $("#spanMessageSuccess").empty();
                         $("#spanMessageSuccess").text(data.msg);
                         $("#errorMessage").css("display", "none");
+                        var requestedModule = $("#hdnRedirectType").val();
                         $("#liReview,#liBudget,#liSetup").bind('click');
                         if (planCampaignId == '0') {
                             planCampaignId = data.CampaignID;
                         }
-                        loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab);
-                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                        RefreshCurrentTab(requestedModule, 0, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         //$("#errorMessageEditCampaign").slideUp(50);
                         //$("#spanSuccessMessageViewCampaign").empty();
                         //$("#successMessageViewCampaign").slideDown(400);

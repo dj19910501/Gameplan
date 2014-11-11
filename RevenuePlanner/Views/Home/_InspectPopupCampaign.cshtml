@@ -41,6 +41,7 @@
 @Html.Hidden("hdnCampaignStatus", campaignStatus, new { id = "hdnCampaignStatus" })
 @Html.Hidden("hdnCampaignOpt", "View", new { id = "hdnCampaignOpt" })
 @Html.Hidden("hdnCampaignTitle", HttpUtility.HtmlDecode(campaignTitle), new { id = "hdnCampaignTitle" })
+@Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
 
 <style type="text/css">
     #successMessageViewCampaign, #errorMessageEditCampaign
@@ -258,25 +259,7 @@
           });
 
           $("#btnAddCampaign").on("click", function () {
-              @* $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
-              $("#hdnCampaignOpt").val("Edit");
-              var InspectValue = $("#hdnInspectPopup").val();
-              var tabtext = ($("#li" + InspectValue).children('a').text());
-
-              if (tabtext == "Setup") {
-                  
-                  url = '@Url.Content("~/Home/CreateCampaign/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=@planId');
-              }
-              $("#btnEditCampaign").css("display", "none");
-              $("#btnAddCampaign").css("display", "none");
-              $('#txtTitle').css('display', 'block');
-              $('#txtTitle').text('');
-               $('#lblCampaignTitle').css('display', 'none');
-               return false;*@
-              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId');
+              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId', $("#hdnRedirectType").val());
           });
 
           @*$('#BtnGroup1').click(function () {
@@ -288,7 +271,7 @@
           });*@
           $('#NewProgram').click(function () {
 
-              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanCampaignId').val());
+              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanCampaignId').val(), $("#hdnRedirectType").val());
           });
 
           // Close event for Error Message & Success Message Close button 

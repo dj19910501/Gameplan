@@ -304,7 +304,7 @@ function ShowModel(mode, section, id, ParentId, RequsedtedModule) {
             loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@Planid', RequsedtedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "", 0, RequsedtedModule);
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, RequsedtedModule);
         }
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()") {
@@ -312,7 +312,7 @@ function ShowModel(mode, section, id, ParentId, RequsedtedModule) {
             loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "", 0, RequsedtedModule);
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, RequsedtedModule);
         }
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()") {

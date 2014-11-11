@@ -338,14 +338,16 @@
                         if (planProgramId == '0') {
                             planProgramId = data.programID;
                         }
+                        var campaignId = data.campaignID;
+                        var requestedModule = $("#hdnRedirectType").val();
                         $("#liReview,#liBudget,#liSetup").bind('click');
                         //$("#errorMessageEditProgram").slideUp(50);
                         //$("#spanMessageViewProgram").empty();
                         //$("#successMessageViewProgram").slideDown(400);
                         //$("#spanSuccessMessageViewProgram").empty();
                         //$("#spanSuccessMessageViewProgram").html(data.Msg);
-                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", activeTab);
-                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", activeTab,"@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                        RefreshCurrentTab(requestedModule, campaignId, 0, 0);  //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                     }
                     else {
                         //CancelEvent();

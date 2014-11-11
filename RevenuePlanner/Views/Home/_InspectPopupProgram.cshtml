@@ -33,6 +33,7 @@
 @Html.Hidden("hdnPlanProgramId", planProgramId, new { id = "hdnPlanProgramId" })
 @Html.Hidden("hdnProgramStatus", programStatus, new { id = "hdnProgramStatus" })
 @Html.Hidden("hdnProgramOpt", "View", new { id = "hdnProgramOpt" })
+@Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
 
 <style type="text/css">
     #successMessageViewProgram, #errorMessageEditProgram
@@ -251,7 +252,7 @@
 
 
           $("#NewTactic").on("click", function () {
-              loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', planProgramId);
+              loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', planProgramId, $("#hdnRedirectType").val());
               return false;
           });
       });
