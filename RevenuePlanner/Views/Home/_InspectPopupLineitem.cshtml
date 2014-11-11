@@ -1,6 +1,10 @@
 ﻿@using RevenuePlanner.Helpers;
 @{
     var popupvalue = (string)ViewBag.InspectPopup;
+    var RedirectType = (string)ViewBag.RedirectType;
+    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
+    var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Display(popupvalue)
@@ -28,7 +32,7 @@
 
 @Html.Hidden("hdnPlanLineItemID", planLineItemId, new { id = "hdnPlanLineItemID" })
 @Html.Hidden("hdnLineitemOpt", "View", new { id = "hdnLineitemOpt" })
-
+@Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
 <style type="text/css">
     #successMessageViewCampaign, #errorMessageEditCampaign {
         margin-bottom: 15px !important;
@@ -54,6 +58,12 @@
             {
                 <span>
                     <span id="lblLineitemTitle" class="tipsyclassTitle" title="@Html.Raw(lineitemTitle)" >@Html.Raw(lineitemTitle)</span>
+                     @if (true)
+                    {
+                        <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
+                            <button class="delete-btn-gray" id="deleteLineItem" type="button">Delete</button>
+                        </div>
+                    }
                     @if (IsPlanEditable)
                     {
                         <div style="float: right; position: relative;">
@@ -61,7 +71,7 @@
                             <div class="btn-dropdwn" style="display: none; position: absolute; top: 35px;" id="popupLineitem">
                                 <ul style="margin: 0;">
 
-                                    <li class="copy-camp">Copy Lineitem</li>
+                                    <li class="copy-camp" id="CloneLineItem">Copy Lineitem</li>
                                 </ul>
                             </div>
                         </div>
@@ -178,6 +188,24 @@
             }
         });
     }
+
+    $('#AddForm').click(function () {
+        if ($('#popupLineitem').css('display') == 'none') {
+            $('#popupLineitem').css('display', 'block')
+        }
+        else {
+            $('#popupLineitem').css('display', 'none')
+        }
+    });
+
+    $(document).mouseup(function (e) {
+        var popup = $('#popupLineitem');
+        var button = $('#AddForm');
+        if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
+            $('#popupLineitem').css('display', 'none');
+        }
+    });
+
     function loadReview(id, tabValue) {
 
         $("#hdnInspectPopup").val(tabValue);
@@ -217,5 +245,101 @@
         e.preventDefault();
         $(this).closest(".alert").css("display", "none");
     });
+
+    $('#CloneLineItem').click(function () {
+        var idPlanProgram = $("#hdnPlanLineItemID").val();
+        var Title = $("#lblLineitemTitle").html();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/Clone")',
+            data: {
+                CloneType: '@Enums.DuplicationModule.LineItem',
+                Id: idPlanProgram,
+                title: Title,
+                CalledFromBudget: '@CalledFromBudget',
+                RequsetedModule: '@RedirectType'
+            },
+            success: function (data) {
+                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else if (data.IsSuccess) {
+                    if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                        SaveMessageOnParent(data.msg);
+                    }
+                    else {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                }
+                else {
+                    $("#successMessageViewProgram").slideUp(50);
+                    $("#errorMessageEditProgram").slideDown(400);
+                    $("#spanMessageEditProgram").empty();
+                    $("#spanMessageEditProgram").val(data.msg);
+                    return false;
+                }
+            }
+        });
+     });
+
+function SaveMessageOnParent(value) {
+    $("#modal-container-186470").modal('hide');
+    $("#errorMessageDuplicatePlan").slideUp(50);
+    $("#successMessageDuplicatePlan").slideDown(400);
+    $("#cSuccessDuplicatePlan").empty();
+    $("#cSuccessDuplicatePlan").text(htmlDecode(value));
+    $("#successMessageDuplicatePlan").removeClass("message-position");
+    $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
+    RefreshCurrentTab();
+}
+
+$("#deleteLineItem").click(function () {
+    if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
+        var ProgramId = $("#hdnPlanLineItemID").val();
+            var uId = $(window).attr('name');
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/DeleteSection")',
+                data: {
+                    ID: ProgramId
+                    , DeleteType: '@Enums.DuplicationModule.LineItem'
+                     , UserId: uId
+                     , closedTask: arrClosedTaskString
+                     , CalledFromBudget: '@CalledFromBudget'
+                        , IsIndex: '@isIndex'
+                        , RedirectType: '@RedirectTypeMode'
+                 },
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                     }
+                     else {
+                         if (data.IsSuccess && data.opt != 'undefined') {
+                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                                 SaveMessageOnParent(data.msg);
+                             }
+                             else {
+                                 window.location.href = data.redirect;
+                                 return;
+                             }
+                         }
+                         else {
+                             $("#successMessageViewProgram").slideUp(50);
+                             $("#errorMessageEditProgram").slideDown(400);
+                             $("#spanMessageEditProgram").empty();
+                             $("#spanMessageEditProgram").val(data.msg);
+                             return false;
+                         }
+                     }
+                 }
+            });
+         }
+    });
+
 </script>
 

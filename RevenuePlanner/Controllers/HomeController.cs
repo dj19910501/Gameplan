@@ -9709,9 +9709,12 @@ namespace RevenuePlanner.Controllers
                         string strMessage = "";
                         int cid = 0;
                         int pid = 0;
+                        int tid = 0;
+                        int tempLocalVariable = 0;
                         bool IsCampaign = (DeleteType == Enums.Section.Campaign.ToString()) ? true : false;
-                        bool IsProgram = (DeleteType == Enums.Section.Program.ToString()) ? true : false;;
-                        bool IsTactic = (DeleteType == Enums.Section.Tactic.ToString()) ? true : false;;
+                        bool IsProgram = (DeleteType == Enums.Section.Program.ToString()) ? true : false;
+                        bool IsTactic = (DeleteType == Enums.Section.Tactic.ToString()) ? true : false;
+                        bool IsLineItem = (DeleteType == Enums.Section.LineItem.ToString()) ? true : false;
 
                         if (IsCampaign)
                         {
@@ -9750,6 +9753,64 @@ namespace RevenuePlanner.Controllers
                                  strMessage = string.Format(Common.objCached.TacticDeleteSuccess, HttpUtility.HtmlDecode(Title));
                              }
                         }
+                        else if (IsLineItem)
+                        {
+                            returnValue = Common.PlanTaskDelete(Enums.Section.LineItem.ToString(), id);
+                            if (returnValue != 0)
+                            {
+                                Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.Where(p => p.PlanLineItemId == id).SingleOrDefault();
+                                var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
+                                double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+                                if (pcptl.Plan_Campaign_Program_Tactic.Cost > totalLoneitemCost)
+                                {
+                                    double diffCost = pcptl.Plan_Campaign_Program_Tactic.Cost - totalLoneitemCost;
+                                    if (objOtherLineItem == null)
+                                    {
+                                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                        objNewLineitem.PlanTacticId = pcptl.Plan_Campaign_Program_Tactic.PlanTacticId;
+                                        objNewLineitem.Title = Common.DefaultLineItemTitle;
+                                        objNewLineitem.Cost = diffCost;
+                                        objNewLineitem.Description = string.Empty;
+                                        objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                        objNewLineitem.CreatedDate = DateTime.Now;
+                                        db.Entry(objNewLineitem).State = EntityState.Added;
+                                        db.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        if (diffCost != objOtherLineItem.Cost)
+                                        {
+                                            objOtherLineItem.IsDeleted = false;
+                                            objOtherLineItem.Cost = diffCost;
+                                            db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                            db.SaveChanges();
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (objOtherLineItem != null)
+                                    {
+                                        objOtherLineItem.IsDeleted = true;
+                                        objOtherLineItem.Cost = 0;
+                                        objOtherLineItem.Description = string.Empty;
+                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                        List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                                        objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+                                        objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
+                                        db.SaveChanges();
+                                    }
+                                }
+                                
+                                cid = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
+                                pid = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
+                                tid = pcptl.PlanTacticId;
+                                Title = pcptl.Title;
+                                returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcptl.PlanLineItemId, pcptl.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                                strMessage = string.Format("Line Item {0} deleted successfully", HttpUtility.HtmlDecode(Title));
+                                tempLocalVariable = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
+                            }
+                        }
                         
                             if (returnValue >= 1)
                             {
@@ -9764,6 +9825,14 @@ namespace RevenuePlanner.Controllers
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pid).Select(a => a.PlanCampaignId).Single();
                                     Common.ChangeCampaignStatus(PlanCampaignId);
 	                            }
+
+                                if (IsLineItem)
+                                {
+                                    var planProgramId = tempLocalVariable;
+                                    Common.ChangeProgramStatus(planProgramId);
+                                    var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == tempLocalVariable).Select(a => a.PlanCampaignId).Single();
+                                    Common.ChangeCampaignStatus(PlanCampaignId);
+                                }
 
                                 scope.Complete();
 
@@ -9782,6 +9851,11 @@ namespace RevenuePlanner.Controllers
 	                                {
                                         return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget, expand = "program" + pid.ToString() }) });     
 	                                }
+                                    else if (IsLineItem)
+                                    {
+                                        return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget, expand = "tactic" + tid.ToString() }) });     
+                                    }
+
                                 }
                                 else if (IsIndex)
                                 {
@@ -9800,6 +9874,11 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
+                                        if (IsLineItem)
+                                        {
+                                            return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Assortment.ToString(), redirect = Url.Action("Assortment", "Plan", new { campaignId = cid, programId = pid ,tacticId = tid}) });    
+                                        }
+
                                         return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Assortment.ToString(), redirect = Url.Action("Assortment", "Plan", new { campaignId = cid, programId = pid }) });
                                     }
                                 }
