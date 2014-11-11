@@ -147,6 +147,7 @@
               $("#btnEditlineItem").css("display", "none");
               $('#txtTitle').css('display', 'block');
               $('#lblLineitemTitle').css('display', 'none');
+              $("#txtTitle").val($('#lblLineitemTitle').text());
               $("#txtTitle").prop('readonly', false);
               $("#AddForm").css("display", "none");
               return false;

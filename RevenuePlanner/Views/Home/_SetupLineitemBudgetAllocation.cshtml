@@ -268,6 +268,7 @@
         $('#txtTitle').css('display', 'none');
         $('#lblLineitemTitle').css('display', 'block');
         $("#lblLineitemTitle").removeAttr("style");
+        $('#AddForm').css('display', 'block');
     }
 
 
@@ -334,6 +335,7 @@
 
 
         $("#txtLineItemCost").val(ReplaceCC($("#txtLineItemCost").val()));
+
         var arrClosedTaskString = null;
         if (typeof arrClosedTask != 'undefined') {
             arrClosedTaskString = arrClosedTask.toString();
@@ -353,17 +355,19 @@
             success: function (data) {
                 if (data.IsSaved) {
                     CancelEvent();
-                    $("#lblTacticTitle").html(htmlEncode($('#txtTacticTitle').val()));
-                    $("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
+                    $("#lblLineitemTitle").html(htmlEncode($('#txtTitle').val()));
+                    //$("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
                     $("#errorMessage").slideUp(50);
                     $("#successMessage").slideDown(400);
                     $("#spanMessageSuccess").empty();
                     $("#spanMessageSuccess").html(data.msg);
-                    RefreshCurrentTab();
+                    var planLineItemId = $("#hdnPlanLineItemId").val();
+                    loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                    RefreshCurrentTab(requestedModule, 0, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                 }
                 else {
                     // CancelEvent();
-                    $("#txtTacticBudget").val(FormatCommasBudget($("#txtTacticBudget").val(), false, true));
+                    $("#txtLineItemCost").val(FormatCommasBudget($("#txtLineItemCost").val(), false, true));
                     ShowError(data.msg);
                 }
 
