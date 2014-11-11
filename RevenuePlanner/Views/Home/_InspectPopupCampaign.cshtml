@@ -69,7 +69,7 @@
             @if (campaignMaster != null)
             {
                 <span>
-                    <span id="lblCampaignTitle" class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)" >@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)</span>
+                    <span id="lblCampaignTitle" class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(campaignTitle)" >@HttpUtility.HtmlDecode(campaignTitle)</span>
                     @if (campaignMaster.OwnerId == Sessions.User.UserId)
                     {
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteCampaign">
@@ -108,7 +108,7 @@
                     }
                 </span> 
             }
-            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), new { placeholder = "Campaign name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = HttpUtility.HtmlDecode(campaignMaster.CampaignTitle), id = "txtTitle" })
+            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignTitle), new { placeholder = "Campaign name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = HttpUtility.HtmlDecode(campaignTitle), id = "txtTitle" })
             @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
         </h2>
     </div>

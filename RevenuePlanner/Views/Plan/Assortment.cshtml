@@ -1300,15 +1300,7 @@
         }
 
 
-        function FillGrayImprovementContainerEmpty() {
-            var $html = '<p class="text1">Adding improvement tactics can boost your planned efforts.</p>' +
-											'<p class="text2">Add your marketing activities first, then add</br> improvement tactics.' +
-											'The impact of improvement tactics across Average Deal Size,' +
-											'Stage Velocity and Funnel Conversion can be seen here.</p>';
-            var $ContainerImprovement = $('#grayImprovementContainer');
-
-            $ContainerImprovement.append($html);
-        }
+       
 
 
 
@@ -2723,5 +2715,14 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
     if ('@Enums.InspectPopupRequestedModules.Assortment.ToString()' == RequsedtedModule) {
         getCampaign(planCampaignId, planProgramId, planTacticId);
         }
+    }
+    function FillGrayImprovementContainerEmpty() {
+        var $html = '<p class="text1">Adding improvement tactics can boost your planned efforts.</p>' +
+                                        '<p class="text2">Add your marketing activities first, then add</br> improvement tactics.' +
+                                        'The impact of improvement tactics across Average Deal Size,' +
+                                        'Stage Velocity and Funnel Conversion can be seen here.</p>';
+        var $ContainerImprovement = $('#grayImprovementContainer');
+
+        $ContainerImprovement.append($html);
     }
 </script>
