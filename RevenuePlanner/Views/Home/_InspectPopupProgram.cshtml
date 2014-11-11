@@ -252,6 +252,8 @@
 
 
           $("#NewTactic").on("click", function () {
+              $("#errorMessage").css("display", "none");
+              $("#successMessage").css("display", "none");
               loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', planProgramId, $("#hdnRedirectType").val());
               return false;
           });
