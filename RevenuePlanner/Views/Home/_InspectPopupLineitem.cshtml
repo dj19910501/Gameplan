@@ -83,6 +83,9 @@
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
+         <li class="pull-left" id="liActuals">
+            <a>Actuals</a>
+        </li>
         @if (!IsOtherLineItem)
         {
             <li class="pull-left" id="liBudget">
@@ -105,6 +108,7 @@
     var TabReview = "Review";
     var TabBudget = "Budget";
     var divTab = "#divTab";
+    var TabActual = "Actuals";
 
     $(document).ready(
      function () {
@@ -142,7 +146,10 @@
                   url = '@Url.Content("~/Home/LoadLineItemBudgetAllocation/")';
                   $("#divTab").empty();
                   $("#divTab").load(url + '?id=' + planLineitemId);
-              }
+            }
+            else if (tabtext == "Actuals") {
+                loadReview(planLineitemId, tabtext);
+            }
             
               $("#btnEditlineItem").css("display", "none");
               $('#txtTitle').css('display', 'block');
@@ -153,7 +160,7 @@
               return false;
           });
 
-         $("#liSetup,#liReview,#liBudget").on("click", function () {
+         $("#liSetup,#liReview,#liBudget,#liActuals").on("click", function () {
              $("#successMessageViewCampaign").slideUp(50);
              $("#errorMessageEditCampaign").slideUp(50);
              RemoveTabClass();
@@ -202,6 +209,9 @@
                 $('#lblLineitemTitle').css('display', 'none');
             }
             url = '@Url.Content("~/Home/LoadLineItemBudgetAllocation/")';
+        }
+        if (tabValue == TabActual) {
+            url = '@Url.Content("~/Home/LoadActualsLineItem/")';
         }
 
         RemoveTabClass();

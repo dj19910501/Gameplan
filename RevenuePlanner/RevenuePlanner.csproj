@@ -873,6 +873,7 @@
     <Content Include="Views\Home\_InspectPopupPlan.cshtml" />
     <Content Include="Views\Home\_SetupPlan.cshtml" />
     <Content Include="Views\Home\_SetupLineitemBudgetAllocation.cshtml" />
+    <Content Include="Views\Home\_ActualLineitem.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
@@ -923,7 +924,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>53667</DevelopmentServerPort>
+          <DevelopmentServerPort>58479</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

@@ -4380,6 +4380,73 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+
+
+        /// <summary>
+        /// Function to generate message for modification of LineItem of Actuals.
+        /// Added by Viral Kadiya on 11/11/2014
+        /// </summary>
+        /// <param name="PlanLineItemId">Plan Tactic Id.</param>
+        /// <param name="userList">List of user object.</param>
+        /// <returns>If any LineItem actual exist then it return string message else empty string </returns>
+        public static string ActualLineItemModificationMessageByPlanLineItemId(int PlanLineItemId, List<User> userList = null)
+        {
+            MRPEntities db = new MRPEntities();
+            string lastModifiedMessage = string.Empty;
+            string createdBy = null;
+            DateTime? modifiedDate = null;
+
+            //// Checking whether line item actuals exists.
+            var lineItemListActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineitemActual => lineitemActual.PlanLineItemId == PlanLineItemId)
+                                                                                     .OrderByDescending(la => la.CreatedDate)
+                                                                                     .ToList();
+            if (lineItemListActuals.Count != 0)
+            {
+                modifiedDate = lineItemListActuals.FirstOrDefault().CreatedDate;
+                createdBy = lineItemListActuals.FirstOrDefault().CreatedBy.ToString();
+            }
+
+            if (createdBy != null && modifiedDate != null)
+            {
+                ////Checking if created by is empty then system generated modification
+                if (Guid.Parse(createdBy) == Guid.Empty)
+                {
+                    lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
+                    return lastModifiedMessage;
+                }
+                else
+                {
+                    bool isGetFromBDSService = false;////functiona perameter userList have "createdby" user
+                    if (userList != null && userList.Count != 0)
+                    {
+                        User user = userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault();
+                        if (user != null)
+                        {
+                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().FirstName, userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().LastName);
+                            return lastModifiedMessage;
+                        }
+                        else
+                        {
+                            isGetFromBDSService = true;
+                        }
+                    }
+                    else
+                    {
+                        isGetFromBDSService = true;
+                    }
+
+                    if (isGetFromBDSService)
+                    {
+                        BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                        User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
+                        lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), objUser.FirstName, objUser.LastName);
+                        return lastModifiedMessage;
+                    }
+                }
+            }
+
+            return lastModifiedMessage;
+        }
     }
 
     /// <summary>

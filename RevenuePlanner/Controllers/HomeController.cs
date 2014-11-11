@@ -10883,6 +10883,25 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        #region "Actuals Tab for LineItem"
+        /// <summary>
+        /// Added By: Viral Kadiya on 11/11/2014.
+        /// Action to Get Actuals cost Value Of line item.
+        /// </summary>
+        /// <param name="id">Plan line item Id.</param>
+        /// <returns>Returns PartialView Result of line item actuals Value.</returns>
+        public ActionResult LoadActualsLineItem(int id)
+        {
+            try
+            {
+                return PartialView("_ActualLineitem");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }
 

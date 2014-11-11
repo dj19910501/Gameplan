@@ -1,0 +1,259 @@
+﻿@using RevenuePlanner.Helpers
+
+<style type="text/css">
+    .disabled-row > th {
+        background-color: #EEE!important;
+    }
+
+    .border-none {
+        border: none!important;
+    }
+
+    .disabled-input-ActualPopup {
+        background-color: #f2f2f2 !important;
+        color: #666666;
+        padding: 0 !important;
+        border: 1px solid #ccc !important;
+    }
+</style>
+<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
+<div id="divActualInner" class="content-panel-tab">
+    <div class="cf">
+        <div class="pull-left" style="float: left; width: 150px;">
+            <table class="table table-striped mystats table-style">
+                <thead>
+                    <tr class="height42">
+                        <th class="font908D88 actual-popup-tile">Title</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr class="height42" id="tr_titleCost">
+                        <th class="font3F3F3F actual-popup-tile table-head">Cost</th>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <div id="months_container" class="container-table" style="float: left; width: 670px; overflow-x: scroll;">
+            <table class="table table-striped mystats table-style " id="tblActual">
+                <thead>
+                    <tr class="text-align-right height42">
+                        <th class="border-r font908D88 padding-left55 text-align-right">Jan</th>
+                        <th class="font908D88 padding-left55 text-align-right">Feb</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Mar</th>
+                        <th class="font908D88 padding-left55 text-align-right">Apr</th>
+                        <th class="font908D88 padding-left55 text-align-right">May</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Jun</th>
+                        <th class="font908D88 padding-left55 text-align-right">Jul</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Aug</th>
+                        <th class="font908D88 padding-left55 text-align-right">Sept</th>
+                        <th class="font908D88 padding-left55 text-align-right">Oct</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Nov</th>
+                        <th class="font908D88 padding-left55 text-align-right">Dec</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="height42" id="trActualCost">
+                        @for (int j = 1; j <= 12; j++)
+                        {
+                            string actualIds = "txtActual-Y" + j;
+                            string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
+                            string classes = "input-actual text-align-right width75px currency_dollar input-table";
+                            <th class="border-r font3F3F3F ">
+                                <input id="@actualIds" class= "@classes" placeholder="- - -" maxlength="@maxL">
+                            </th>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pull-left" style="float: left; width: 150px;">
+            <table class="table table-striped mystats table-style shadow-table">
+                <thead>
+                    <tr class="height42">
+                        <th class="font908D88 text-align-right" style="width: 75px;">Projected</th>
+                        @*removing padding-left55 class by mitesh vaishnav for pl ticket 812*@
+                        <th class="border-r font908D88 text-align-right" style="width: 75px;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="height42" id="tr_rightCost">
+                        <th id="cP" class="text-align-right projected font3F3F3F setBudget border-none"></th>
+                        <th class="border-r font3F3F3F text-align-right border-none setBudget" id="lblTotalCost">0</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+    <div class="cf ">
+        <div class="pull-left" style="width: 100%">
+            <label id="last-updated" class="pull-left last-updated" style="Width: 45%;"></label>
+        </div>
+        <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveLineitemActualSection">
+            <div class="span2 btn-save">
+                <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float: left;" type="button">Update Actuals</button>
+            </div>
+            <div class="span2">
+                <button id="cancelLineitemActuals" class="close-form btn-link source-sans-proregular margin-top23" type="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end content-panel-tab-->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+
+        var TacticActual;
+        var planLineItemId = $("#hdnPlanLineItemID").val();
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetActualsLineitemData/")',
+                data: {
+                    planLineItemId: planLineItemId
+                },
+                success: function (data) {
+
+                    if (typeof data != 'undefined') {
+                        var actualData = data.ActualData;
+                        if (actualData.length) {
+                            for (i in actualData) {
+                                var indx = parseInt(i) + 1;
+                                var actVal =actualData[i].costValue;
+                                $("#txtActual-Y" + indx).val(FormatCurrency(actVal, false));
+                            }
+                        }
+                        var projectedval = data.ProjectedValue;
+                        if (projectedval != null)
+                        $("#cP").text(projectedval);
+                        var lastupdatedby = data.LastUpdatedBy;
+                        if(lastupdatedby != null)
+                        $("#last-updated").text(lastupdatedby);
+                    }
+                    CalculateTotalCost();
+                    $('.setBudget').each(function () {
+                        var cntrlid = ("#" + $(this).attr('id'));
+                        setLabelToolTip(cntrlid, $(cntrlid).html(), 5, true);
+                    });
+                },
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    $("#spanMessageError").empty();
+                    GoToLogin();
+                    return false;
+                }
+            });
+
+        $(".modal-backdrop.in").unbind('click');
+        $(".modal-backdrop.in").bind('click', function () {
+            displayConfirmCommon();
+        });
+
+        $('#tblActual').find('input').each(function () {
+            //debugger;
+            $(this).keyup(function () {
+                CalculateTotalCost();
+            });
+            $(this).val(FormatCurrency($(this).val(), false));
+        });
+        function CalculateTotalCost()
+        {
+            var totalvalue = 0;
+            $('#trActualCost').find('input').each(function () {
+                var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                if (!isNaN(cvalue)) {
+                    totalvalue = cvalue + parseFloat(totalvalue);
+                }
+            });
+            //alert($(cntrlid).html());
+            $("#lblTotalCost").text(totalvalue);
+            var cntrlid = "#lblTotalCost";
+            setLabelToolTip(cntrlid, totalvalue, 5, true);
+        }
+
+        //Start-Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
+        $("#cancelLineitemActuals").click(function () {
+            CancelEvent();
+            $("#successMessage").slideUp(50);
+            $("#errorMessage").slideUp(50);
+        });
+        function CancelEvent() {
+            var planLineItemId = $("#hdnPlanLineItemID").val();
+            $("#hdnLineitemOpt").val("View");
+            loadReview(planLineItemId, "Actuals");
+            $("#btnEditlineItem").css("display", "block");
+            $("#AddForm").css("display", "block");
+            $('#txtTitle').css('display', 'none');
+            $('#lblLineitemTitle').css('display', 'block');
+            $("#lblLineitemTitle").removeAttr("style");
+            //$('#divDeleteTactic').css('display', 'block');
+        }
+        $("#SaveLineitemActualSection").css("display", "none");
+
+        var IsEditable = $("#hdnLineitemOpt").val();
+        if (IsEditable == 'View') {                                 // check current page mode is editable or not.
+            $('.input-actual').removeClass('backgroundC6EBF3');
+            $('.input-actual').removeClass('input-table');
+            $('.input-actual').addClass('disabled-input-ActualPopup');
+            $('.input-actual').prop('readonly', true);
+            $("#SaveLineitemActualSection").css("display", "none");       // hide Update & Cancel button
+        }
+        else {
+            $('.input-actual').addClass('backgroundC6EBF3');
+            $('.input-actual').addClass('input-table');
+            $('.input-actual').removeClass('disabled-input-ActualPopup');
+            $('.input-actual').prop('readonly', false);
+            $("#SaveLineitemActualSection").css("display", "block");
+        }
+        //End - Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
+
+        $("#btnUploadResult").click(function () {
+            var _stractualsData = '';
+            $('#trActualCost').find('input').each(function () {
+                var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                _stractualsData = _stractualsData + "," + cvalue;
+            });
+            var _strPlanLineitemId = $("#hdnPlanLineItemID").val();
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Content("~/Plan/SaveActualsLineitemData/")',
+                data: JSON.stringify({ strActualsData: _stractualsData, strPlanItemId: _strPlanLineitemId }),
+                success: function (data) {
+                    if (data != 'undefined') {
+                        if (data.id != 0) {
+                            $("#successMessage").css("display", "block");
+                            // var topsize = $(document).scrollTop() + 41;
+                            //  $("#modal-container-186470").css("top", topsize + "px");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", data.TabValue);
+                        }
+                        else {
+                            $("#errorMessage").css("display", "block");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                        }
+                    }
+                },
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    $("#spanMessageError").empty();
+                    GoToLogin();
+                    return false;
+                }
+            });
+
+
+        });
+
+    });
+
+</script>

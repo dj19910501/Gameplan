@@ -9407,5 +9407,90 @@ namespace RevenuePlanner.Controllers
             return enteredCost;
         }
 
+        #region "Actuals Tab of LineItem related functions"
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Action to Get Actuals cost Value Of line item.
+        /// </summary>
+        /// <param name="planLineItemId">Plan line item Id.</param>
+        /// <returns>Returns Json Result of line item actuals Value.</returns>
+        public JsonResult GetActualsLineitemData(int planLineItemId)
+        {
+            try
+            {
+                string modifiedBy = string.Empty;
+                modifiedBy = Common.ActualLineItemModificationMessageByPlanLineItemId(planLineItemId);
+                string strLastUpdatedBy = modifiedBy != string.Empty ? modifiedBy : null;
+
+                List<string> lstActualAllocationMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
+
+
+                var lstActualLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => c.PlanLineItemId.Equals(planLineItemId)).ToList()
+                                                              .Select(c => new
+                                                              {
+                                                                  c.PlanLineItemId,
+                                                                  c.Period,
+                                                                  c.Value
+                                                              }).ToList();
+
+                //Set the custom array for fecthed Line item Actual data .
+                var ActualCostData = lstActualAllocationMonthly.Select(m => new
+                {
+                    periodTitle = m,
+                    costValue = lstActualLineItemCost.SingleOrDefault(c => c.Period == m && c.PlanLineItemId == planLineItemId) == null ? "" : lstActualLineItemCost.SingleOrDefault(c => c.Period == m && c.PlanLineItemId == planLineItemId).Value.ToString()
+                });
+                var projectedData = db.Plan_Campaign_Program_Tactic_LineItem.SingleOrDefault(p => p.PlanLineItemId.Equals(planLineItemId));
+                double projectedval = projectedData != null ? projectedData.Cost : 0;
+
+                var returndata = new { ActualData = ActualCostData, ProjectedValue = projectedval, LastUpdatedBy = strLastUpdatedBy };
+
+                return Json(returndata, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Action to Get Actuals cost Value Of line item.
+        /// </summary>
+        /// <param name="planLineItemId">Plan line item Id.</param>
+        /// <returns>Returns Json Result of line item actuals Value.</returns>
+        public JsonResult SaveActualsLineitemData(string strActualsData, string strPlanItemId)
+        {
+            string[] arrActualCostInputValues = strActualsData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            int PlanLineItemId = int.Parse(strPlanItemId);
+            var PrevActualAllocationListTactics = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => c.PlanLineItemId == PlanLineItemId).Select(c => c).ToList();
+            if (PrevActualAllocationListTactics != null && PrevActualAllocationListTactics.Count > 0)
+            {
+                PrevActualAllocationListTactics.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                int result = db.SaveChanges();
+            }
+            //Insert actual cost of tactic
+            int saveresult = 0;
+            for (int i = 0; i < arrActualCostInputValues.Length; i++)
+            {
+                if (arrActualCostInputValues[i] != "")
+                {
+                    Plan_Campaign_Program_Tactic_LineItem_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
+                    obPlanCampaignProgramTacticActual.PlanLineItemId = PlanLineItemId;
+                    obPlanCampaignProgramTacticActual.Period = "Y" + (i + 1);
+                    obPlanCampaignProgramTacticActual.Value = Convert.ToDouble(arrActualCostInputValues[i]);
+                    obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
+                    obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
+                    db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;
+                }
+            }
+            saveresult = db.SaveChanges();
+            if (saveresult > 0)
+                return Json(new { id = strPlanItemId, TabValue = "Actuals", msg = "Result Updated Successfully." });
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
     }
 }
