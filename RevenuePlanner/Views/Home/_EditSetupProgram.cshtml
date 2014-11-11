@@ -44,7 +44,7 @@
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(CampaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = CampaignTitle })
 
             <p>Description</p>
-            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
+            @Html.TextAreaFor(model => model.Description, new {@class = "span12 text-area-size", placeholder = "Optional", rows = "3", maxlength = "4000" })
 
                </div>
                 <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
