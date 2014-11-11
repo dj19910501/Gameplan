@@ -1,0 +1,374 @@
+﻿@model RevenuePlanner.Models.Plan_Campaign_Program_Tactic_LineItemModel
+@using RevenuePlanner.Helpers;
+@{
+    bool IsBudgetAllocated = false;
+    if (Model.AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+    {
+        IsBudgetAllocated = true;
+    }
+    bool IsOtherLineItem = Model.IsOtherLineItem;
+    string tacticCost = Convert.ToString(ViewBag.tacticCost);
+    string totalLineItemCost = Convert.ToString(ViewBag.totalLineItemCost);
+    string otherLineItemCost = Convert.ToString(ViewBag.otherLineItemCost);
+}
+
+<style type="text/css">
+    #cancelLineItemBudget
+    {
+        color: gray;
+        margin-top: 6px;
+    }
+
+    .border-top-div-LineItemPopUp
+    {
+        border-top: 1px solid #a8a8a8;
+        clear: both;
+        padding-top: 30px;
+    }
+
+    .font-size16
+    {
+        font-size: 16px;
+    }
+
+    #divTab
+    {
+        margin-top: 30px;
+    }
+
+    .LineItemBudgetSection
+    {
+        width: 70%;
+        float: left;
+        margin-bottom: 50px;
+    }
+</style>
+
+@using (Html.BeginForm(new { @id = "frmLineItemBudgetAllocation" }))
+{
+   @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
+   @Html.HiddenFor(model => model.PlanLineItemId, new { id = "hdnPlanLineItemId" })
+   @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
+   @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
+   @Html.Hidden("hdnTacticCost", tacticCost)
+   @Html.Hidden("hdnTotalLineItemCost", totalLineItemCost)
+    @Html.HiddenFor(model => model.Cost, new { id = "hdnOldLineitemCost" })
+   
+    <div style="width: 30%; float: left;">
+        <label class="padding-left4" title="Tactic Planned Cost">Line Item Cost</label>
+        @Html.TextBoxFor(model => model.Cost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtLineItemCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+        <div>
+            <label title="Remaining Campaign Budget">Other Line Item Cost</label>
+            @Html.TextBox("txtOtherLineItemCost", otherLineItemCost, new { @class = "margin-top3px", id = "txtOtherLineItemCost", @readonly = "true" })
+        </div>
+    </div>
+    <div class="LineItemBudgetSection">
+   
+       @if (Model.AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+       {
+            <div class="budget-section">
+                <div class="budget-head clearfix">
+                    <p>Planned Cost Allocation</p>
+                </div>
+                <div class="budget-collapse">
+                    <div class="white-bg-edirProgram">
+                        @HtmlHelpers.GenerateBudgetAllocationControl(@Model.AllocatedBy)
+                    <div class="SepraterStacticis"></div>
+                    <div class="budget-result source-sans-prolight">
+                          <p>
+                        Total Line Item Cost: 
+                                    <span id="lblTotalLineItemCost" class="source-sans-proregular"></span>
+                    </p>
+                    </div>
+                </div>
+                    </div>
+            </div>
+       }
+       else
+       {
+            <div class="font20 alignCenter" id="divDefaultBudget">
+                @Common.objCached.DefaultPlanAllocationMessage
+            </div>
+       }
+
+    </div>
+    
+   if ((bool)ViewBag.IsOwner && (bool)ViewBag.IsAllowCustomRestriction)
+   {
+    <div class="wraper-btns cf border-top-div-LineItemPopUp" id="SaveLineItemBudgetSection">
+        <div class="span2 btn-save"  style="width: 80px">
+            <button id="save_LineItem" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+        </div>
+        <div class="span2">
+            <button id="cancelLineItemBudget" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+        </div>
+    </div>   
+   }
+}
+
+<script type="text/javascript">
+
+    function FormatRemainingBudget() {
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+    }
+
+    $(document).ready(
+    function () {
+        var IsEditable = $("#hdnLineitemOpt").val();
+        if (IsEditable == 'View') {
+            $('form').find(".sbSelector").each(function () {
+                $(this).unbind("click");
+                $(this).removeAttr("href");
+                $(this).prev().unbind("click");
+                $(this).prev().removeAttr("href");
+            });
+            $('form').find("input[type=text], textarea").each(function () {
+                $(this).prop('readonly', true);
+            });
+            $('form .budget-month').find("input").each(function () {
+                $(this).parent().removeClass('light-blue-background');
+                $(this).parent().addClass('unallocated-span');
+                $(this).addClass('unallocated-text');
+                $(this).prop('readonly', true);
+            });
+
+            $('form').find(".add-on").each(function () {
+                $(this).unbind("click");
+            });
+
+            $("#SaveLineItemBudgetSection").css("display", "none");
+        }
+        else {
+            $("#SaveLineItemBudgetSection").css("display", "block");
+            $("#txtTitle").prop('readonly', false);
+        }
+
+        //$("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
+        //$("#txtTacticBudget").val(FormatCommasBudget($("#txtTacticBudget").val(), false, true));
+        //FormatRemainingBudget();
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+
+        fillCostAllocationData();
+
+    });
+
+    $(".alert").find(".close").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").slideUp(400);
+    });
+
+    function fillCostAllocationData() {
+        var hdnPlanLineItemId = $("#hdnPlanLineItemId").val();
+        var hdnPlanTacticId = $("#hdnPlanTacticId").val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetCostAllocationLineItemData/")',
+            data: {
+                id: hdnPlanLineItemId,
+                tid: hdnPlanTacticId
+            },
+            success: function (data) {
+                var r = data.costData;
+                if (typeof r != 'undefined') {
+                    if (r.length) {
+                        for (i in r) {
+                            var remainingMonthlyCost = r[i].remainingMonthlyCost == '' ? '0' : r[i].remainingMonthlyCost;
+                            $(".budget-section").find("#" + r[i].periodTitle).val(FormatCommas(r[i].costValue, false));
+                            $(".budget-section").find("#" + r[i].periodTitle).attr('ov', r[i].costValue == '' ? '0' : r[i].costValue);
+                            $(".budget-section").find("#" + r[i].periodTitle).attr('rmb', remainingMonthlyCost);
+                            $(".budget-section").find("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
+                            if (parseInt(remainingMonthlyCost) < 0) {
+                                $(".budget-section").find("#" + r[i].periodTitle).addClass('error-text');
+                            }
+                        }
+                    }
+                }
+
+                if (typeof data.otherLineItemCost != 'undefined') {
+                    $("#txtOtherLineItemCost").val(FormatCommasBudget(data.otherLineItemCost.toString(), false, true));
+                    $("#txtOtherLineItemCost").attr('title', $("#txtOtherLineItemCost").val());
+                    $("#txtOtherLineItemCost").attr('myvalue', $("#txtOtherLineItemCost").val());
+                }
+
+                var TotalallocationValue = 0;
+                var lstAllocInputs = $(".budget-section input");
+                for (var i = 0; i < lstAllocInputs.length; i++) {
+                    TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+                }
+                $("#lblTotalLineItemCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+
+            },
+            error: function () {
+                ShowError('');
+                return false;
+            }
+        });
+    }
+
+    $('.budget-section').find('input').each(function () {
+        $(this).keyup(function () {
+
+            //Modified By Kalpesh Sharma #761 CAMPAIGNS View: Campaign/Plan Budget field is clearing Remaining Budget/Remaining
+            var GetCurrentvalue = $(this).val().trim();
+            if (GetCurrentvalue == '') {
+                GetCurrentvalue = '0';
+            }
+            var currentValue = GetCurrentvalue.replace(/,/g, '').replace('$', '');
+            if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+
+                var OldBudgetValue = parseInt($(this).attr("ov"));
+                var RemainingBudgetValue = parseInt($(this).attr("rmb"));
+                var differenceVal = OldBudgetValue - parseInt(currentValue);
+                var newRemainingBudgetValue = RemainingBudgetValue + differenceVal;
+                $(this).attr("rmb", newRemainingBudgetValue);
+                $(this).attr("ov", currentValue);
+                if (newRemainingBudgetValue < 0) {
+                    $(this).addClass('error-text');
+                }
+                else {
+                    $(this).removeClass('error-text');
+                }
+
+
+                var TotalallocationValue = 0;
+                var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+                for (var i = 0; i < lstAllocInputs.length; i++) {
+                    TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+                }
+                $("#lblTotalLineItemCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+            }
+        });
+    });
+
+    $("#cancelLineItemBudget").click(function () {
+        CancelEvent();
+        $("#successMessage").slideUp(50);
+        $("#errorMessage").slideUp(50);
+    });
+
+    function ShowError(value) {
+        $("#successMessage").slideUp(50);
+        $("#errorMessage").slideDown(400);
+        $("#spanMessageError").empty();
+        $("#spanMessageError").text(value);
+    }
+
+    function CancelEvent() {
+        $("#hdnLineitemOpt").val("View");
+        loadReview('@Model.PlanLineItemId', "Budget");
+        $("#btnEditlineItem").css("display", "block");
+        $('#txtTitle').css('display', 'none');
+        $('#lblLineitemTitle').css('display', 'block');
+        $("#lblLineitemTitle").removeAttr("style");
+    }
+
+
+    $("#txtLineItemCost").keyup(function () {
+        $("#txtLineItemCost").attr('title', $("#txtLineItemCost").val());
+        var LineitemCostValue = ReplaceCC($("#txtLineItemCost").val());
+        var OldLineitemCostValue = $("#hdnOldLineitemCost").val();
+        var totalLineItemCost = $("#hdnTotalLineItemCost").val();
+        var differenceVal = parseInt(totalLineItemCost) - parseInt(OldLineitemCostValue);
+
+        var newAllLineItemCost = parseInt(differenceVal) + parseInt(LineitemCostValue);
+        var newDifferenceCost = parseInt($("#hdnTacticCost").val()) - newAllLineItemCost;
+
+        if (newDifferenceCost > 0) {
+            $("#txtOtherLineItemCost").val(FormatCommasBudget(newDifferenceCost.toString(), false, true));
+            $("#txtOtherLineItemCost").attr('title', $("#txtOtherLineItemCost").val());
+        }
+        else {
+            $("#txtOtherLineItemCost").val("$0");
+            $("#txtOtherLineItemCost").attr('title', $("#txtOtherLineItemCost").val());
+        }
+
+        $("#hdnTotalLineItemCost").val(newAllLineItemCost);
+        $("#hdnOldLineitemCost").val(LineitemCostValue);
+        //$("#lblTotalLineItemCost").html($("#txtLineItemCost").val());
+    });
+
+
+    $("#save_LineItem").click(function () {
+        var title = htmlEncode($('#txtTitle').val());
+        var iserror = false;
+        $('form').find('input[type=text], select, textarea').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        $('form').find('.sbSelector').each(function () {
+            if ($(this).parent().prev().attr('require') == 'true') {
+                if ($(this).text() == 'Please Select') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        if (title == '') {
+            iserror = true;
+        }
+
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
+
+
+        $("#txtLineItemCost").val(ReplaceCC($("#txtLineItemCost").val()));
+        var arrClosedTaskString = null;
+        if (typeof arrClosedTask != 'undefined') {
+            arrClosedTaskString = arrClosedTask.toString();
+        }
+
+        var allocationValue = [];
+        var lstAllocInputs = $(".budget-section input");
+        for (var i = 0; i < lstAllocInputs.length; i++) {
+            allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
+        }
+
+        var uId = $(window).attr('name');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/SaveLineItemBudgetAllocation")',
+            data: $("form").serialize() + '&CostInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
+            success: function (data) {
+                if (data.IsSaved) {
+                    CancelEvent();
+                    $("#lblTacticTitle").html(htmlEncode($('#txtTacticTitle').val()));
+                    $("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
+                    $("#errorMessage").slideUp(50);
+                    $("#successMessage").slideDown(400);
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").html(data.msg);
+                    RefreshCurrentTab();
+                }
+                else {
+                    // CancelEvent();
+                    $("#txtTacticBudget").val(FormatCommasBudget($("#txtTacticBudget").val(), false, true));
+                    ShowError(data.msg);
+                }
+
+            }
+        });
+    });
+
+</script>

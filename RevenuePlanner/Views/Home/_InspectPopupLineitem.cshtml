@@ -11,6 +11,13 @@
     string tacticId = Convert.ToString(ViewBag.tacticId);
     string lineitemTitle = "";
     bool IsPlanEditable = false;
+    bool IsOtherLineItem = false;
+    
+    if (ViewBag.IsOtherLineItem != null)
+	{
+		 IsOtherLineItem = (bool)ViewBag.IsOtherLineItem;
+	}
+    
     if (ViewBag.IsPlanEditable != null)
     {
         IsPlanEditable = (bool)ViewBag.IsPlanEditable;
@@ -76,9 +83,12 @@
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
-        <li class="pull-left" id="liBudget">
+        @if (!IsOtherLineItem)
+        {
+            <li class="pull-left" id="liBudget">
             <a>Budget</a>
-        </li>
+            </li>
+        }      
         <li class="pull-right">
             <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
         </li>
@@ -89,7 +99,13 @@
 </div>
 
 <script type="text/javascript">
+
+    var divPartial = "#divPartial";
     var TabSetup = "Setup";
+    var TabReview = "Review";
+    var TabBudget = "Budget";
+    var divTab = "#divTab";
+
     $(document).ready(
      function () {
          CloseIconClick();
@@ -114,6 +130,40 @@
              $("#liReview ,#liBudget,#liSetup").unbind('click');
              loadAddSetup();
          }
+
+         $("#btnEditlineItem").on("click", function () {
+             $("#errorMessage").css("display", "none");
+             $("#successMessage").css("display", "none");
+             $("#hdnLineitemOpt").val("Edit");
+             var InspectValue = $("#hdnInspectPopup").val();
+             var tabtext = ($("#li" + InspectValue).children('a').text());
+
+            if (tabtext == "Budget") {
+                  url = '@Url.Content("~/Home/LoadLineItemBudgetAllocation/")';
+                  $("#divTab").empty();
+                  $("#divTab").load(url + '?id=' + planLineitemId);
+              }
+            
+              $("#btnEditlineItem").css("display", "none");
+              $('#txtTitle').css('display', 'block');
+              $('#lblLineitemTitle').css('display', 'none');
+              $("#txtTitle").prop('readonly', false);
+              $("#AddForm").css("display", "none");
+              return false;
+          });
+
+         $("#liSetup,#liReview,#liBudget").on("click", function () {
+             $("#successMessageViewCampaign").slideUp(50);
+             $("#errorMessageEditCampaign").slideUp(50);
+             RemoveTabClass();
+             $(this).removeClass("pull-left");
+             $(this).addClass("active pull-left");
+             $("#errorMessage").css("display", "none");
+             $("#successMessage").css("display", "none");
+             var tabtext = ($(this).children('a').text());
+             loadReview(planLineitemId, tabtext);
+         });
+
      });
 
     //<--- End Document.ready event --->
@@ -144,6 +194,15 @@
                 url = '@Url.Content("~/Home/LoadSetupLineitem/")';
             }
         }
+
+        if (tabValue == TabBudget) {
+            if (LineitemOpt == "Edit") {
+                $('#txtTitle').css('display', 'block');
+                $('#lblLineitemTitle').css('display', 'none');
+            }
+            url = '@Url.Content("~/Home/LoadLineItemBudgetAllocation/")';
+        }
+
         RemoveTabClass();
         $("#li" + tabValue).removeClass("pull-left");
         $("#li" + tabValue).addClass("active pull-left");
