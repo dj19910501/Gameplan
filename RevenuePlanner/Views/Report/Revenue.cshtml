@@ -1751,10 +1751,13 @@
         function LoadRevenueContributionData() {
             var buid = 0;
             // if (parentLabelContribution != "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
+            if ($("#ddlBusinessUnitContribution").length > 0) {
             buid = $("#ddlBusinessUnitContribution").val();
+            }
             // }
             var isBusiness = true;
-            if (buid == 0) {
+            if (buid == 0)
+            {
                 isBusiness = false;
             }
             $.ajax({

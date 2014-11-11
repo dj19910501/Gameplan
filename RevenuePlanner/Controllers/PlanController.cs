@@ -2054,7 +2054,8 @@ namespace RevenuePlanner.Controllers
         {
             // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
             List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            var campaign = db.Plan_Campaign.ToList().Where(pc => pc.PlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
+            List<Plan_Tactic_Values> ListTactic = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId)).Select(pcpt => pcpt).ToList(), true);
+            var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var campaignobj = campaign.Select(p => new
             {
                 id = p.PlanCampaignId,
@@ -2082,7 +2083,7 @@ namespace RevenuePlanner.Controllers
                         description = pcptj.Description,
                         cost = db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc => lc.PlanTacticId.Equals(pcptj.PlanTacticId) && lc.IsDeleted.Equals(false)).Select(lc => lc.Cost).Sum() > pcptj.Cost ? db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc => lc.PlanTacticId.Equals(pcptj.PlanTacticId) && lc.IsDeleted.Equals(false)).Select(lc => lc.Cost).Sum() : pcptj.Cost,//Modified by mitesh Vaishnav on 29-07-2014 for PL ticket #619
                         //inqs = pcptj.INQs,
-                        mqls = GetTacticMQL(pcptj),
+                        mqls = ListTactic.Where(lt => lt.PlanTacticId == pcptj.PlanTacticId).Sum(tm => tm.MQL),
                         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
                          changed by : Nirav Shah on 13 feb 2014*/
                         // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
@@ -4875,6 +4876,7 @@ namespace RevenuePlanner.Controllers
                 {
                     calculatedMQL = CalculatedRevenue = 0;
                 }
+                calculatedMQL = Math.Round(calculatedMQL, 0, MidpointRounding.AwayFromZero);
                 if (tacticStageLevel < levelMQL)
                 {
                     //if (RedirectType)
