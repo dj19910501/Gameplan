@@ -6,6 +6,9 @@
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
+    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+    bool isIndex = (bool)(!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
+    var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Hidden("hdnPlanId", planDetails.PlanId, new { id = "hdnPlanId" })
@@ -54,7 +57,10 @@
                         <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;" class="add-icon-white btn-blue btn-large"></span>
                         <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
                             <ul style="margin: 0;">
-                                <li id="NewCampaign" class="new-prog">New Campaign</li>
+                                @if (IsPlanEditable)
+                                {
+                                    <li id="NewCampaign" class="new-prog">New Campaign</li>
+                                }
                                 <li id="ClonePlan" class="copy-camp">Copy Plan</li>
                             </ul>
                         </div>
@@ -230,4 +236,62 @@
         $("#divPartial").empty();
         $("#divPartial").load(url + '?id=' + planId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()");
     });
+
+    $("#deletePlan").click(function () {
+        if (confirm('@Common.objCached.PlanDeleteConfirmMessage')) {
+            var planId = $("#hdnPlanId").val();
+            var uId = $(window).attr('name');
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/DeleteSection")',
+                data: {
+                    ID: planId,
+                    DeleteType: '@Enums.DuplicationModule.Plan',
+                    UserId: uId,
+                    closedTask: arrClosedTaskString,
+                    CalledFromBudget: '@CalledFromBudget',
+                    IsIndex: '@isIndex',
+                    RedirectType: '@RedirectTypeMode'
+                },
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data.IsSuccess && data.opt != 'undefined') {
+                            if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                                 SaveMessageOnParent(data.msg);
+                             }
+                             else {
+                                 window.location.href = data.redirect;
+                                 return;
+                             }
+                         }
+                         else {
+                            $("#successMessagePlan").slideUp(50);
+                             $("#errorMessagePlan").slideDown(400);
+                             $("#spanErrMessagePlan").empty();
+                             $("#spanErrMessagePlan").val(data.msg);
+                             return false;
+                         }
+                     }
+                }
+            });
+         }
+    });
+
+    function SaveMessageOnParent(value) {
+        $("#modal-container-186470").modal('hide');
+        $("#errorMessageDuplicatePlan").slideUp(50);
+        $("#successMessageDuplicatePlan").slideDown(400);
+        $("#cSuccessDuplicatePlan").empty();
+        $("#cSuccessDuplicatePlan").text(htmlDecode(value));
+        $("#successMessageDuplicatePlan").removeClass("message-position");
+        $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
+        RefreshCurrentTab();
+    }
 </script>

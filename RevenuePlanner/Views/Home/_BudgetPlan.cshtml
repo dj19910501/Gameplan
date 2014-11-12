@@ -16,9 +16,9 @@
     @Html.HiddenFor(model => model.PlanId)
     @Html.HiddenFor(model => model.Title)
     @Html.Hidden("hdnIsBudgetAllocated",IsBudgetAllocated)
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div class="inspect-column-parent remove-bottom-border">
         <div id="inspect-modal-left-column1" class="span3">
-            <p>Plan Budget</p>
+            <label class="padding-left4">Plan Budget</label>
             @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
             {
                 @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id="txtPlanBudget", @class = "span11 input-small truncate currency_dollar", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })

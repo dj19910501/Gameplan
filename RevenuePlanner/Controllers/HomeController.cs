@@ -3603,16 +3603,7 @@ namespace RevenuePlanner.Controllers
                     // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
                     else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        //objPlan = db.Plans.Where(p => p.PlanId.Equals(id)).FirstOrDefault();
                         ViewBag.PlanId = id;
-                        //Added by Mitesh Vaishnav for PL ticket #926
-                        //Add restriction of BU for edit button in inspect popup
-                        //BusinessUnitId = objPlan.Model.BusinessUnitId != null ? objPlan.Model.BusinessUnitId : BusinessUnitId;
-                        //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
-                        //if (objPlan.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
-                        //{
-                        //    IsPlanEditable = true;
-                        //}
                     }
                     // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
                 }
@@ -3786,6 +3777,7 @@ namespace RevenuePlanner.Controllers
             // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
             else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
             {
+                bool IsPlanEditable = false;
                 //Get all subordinates of current user upto n level
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
                 // Get current user permission for edit own and subordinates plans.
@@ -3793,21 +3785,18 @@ namespace RevenuePlanner.Controllers
                 // To get permission status for Plan Edit, By dharmraj PL #519
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(im.BusinessUnitId);
-                bool IsPlanEditable = false;
-                ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
 
-                // Added to check edit status for current user by dharmraj for #538
                 if (IsBusinessUnitEditable)
                 {
-                    if (im.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+                    if (im.OwnerId.Equals(Sessions.User.UserId))
                     {
                         IsPlanEditable = true;
                     }
-                    else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    else if (IsPlanEditAllAuthorized)
                     {
                         IsPlanEditable = true;
                     }
-                    else if (IsPlanEditSubordinatesAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    else if (IsPlanEditSubordinatesAuthorized)
                     {
                         if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
                         {
@@ -3817,6 +3806,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 ViewBag.IsPlanEditable = IsPlanEditable;
+                ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
                 ViewBag.PlanDetails = im;
                 if (InspectPopupMode == Enums.InspectPopupMode.ReadOnly.ToString())
                 {
@@ -9741,12 +9731,25 @@ namespace RevenuePlanner.Controllers
                         int pid = 0;
                         int tid = 0;
                         int tempLocalVariable = 0;
+                        bool IsPlan = (DeleteType == Enums.Section.Plan.ToString()) ? true : false; // Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                         bool IsCampaign = (DeleteType == Enums.Section.Campaign.ToString()) ? true : false;
                         bool IsProgram = (DeleteType == Enums.Section.Program.ToString()) ? true : false;
                         bool IsTactic = (DeleteType == Enums.Section.Tactic.ToString()) ? true : false;
                         bool IsLineItem = (DeleteType == Enums.Section.LineItem.ToString()) ? true : false;
 
-                        if (IsCampaign)
+                        // Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+                        if (IsPlan)
+                        {
+                            returnValue = Common.PlanTaskDelete(Enums.Section.Plan.ToString(), id);
+                            if (returnValue != 0)
+                            {
+                                var planTitle = db.Plans.Where(p => p.PlanId == id).ToList().Select(p => p.Title).FirstOrDefault();
+                                returnValue = Common.InsertChangeLog(Sessions.PlanId, null, id, planTitle, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                                strMessage = string.Format(Common.objCached.PlanDeleteSuccessful, HttpUtility.HtmlDecode(planTitle));
+                            }
+                        }
+                        // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+                        else if (IsCampaign)
                         {
                             returnValue = Common.PlanTaskDelete(Enums.Section.Campaign.ToString(), id);    
                             if (returnValue != 0)
@@ -9873,7 +9876,13 @@ namespace RevenuePlanner.Controllers
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = strMessage;
-                                    if (IsCampaign)
+                                    // Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+                                    if (IsPlan)
+                                    {
+                                        return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }) });
+                                    }
+                                    // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+                                    else if (IsCampaign)
 	                                {
                                         return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }) });
 	                                }
