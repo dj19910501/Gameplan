@@ -377,6 +377,14 @@
       });
 
       function saveTactic() {
+         var txtCampaignValue = $("#txtCampaign").val();
+         var  txtProgramValue = $("#txtProgram").val();
+          var txtTacticValue = $("#txtTacticTitle").val();
+          var txtDescriptionValue = $("#Description").val();
+          document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
+          document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
+          document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
+          document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
 
           var uId = $(window).attr('name');
 
@@ -409,6 +417,10 @@
                             loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
                             $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
                             RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            $("#txtCampaign").val(txtCampaignValue);
+                            $("#txtProgram").val(txtProgramValue);
+                            $("#txtTacticTitle").val(txtTacticValue);
+                            $("#Description").val(txtDescriptionValue);
                             return;
                         }
                     }

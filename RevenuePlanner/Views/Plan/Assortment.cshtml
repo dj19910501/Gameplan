@@ -550,13 +550,14 @@
         //Dharmraj End 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
 
         function displayconfirm(strURL) {
-            if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
-            }
-            else {
-                window.location.href = strURL;
-            }
+            window.location.href = strURL;
+            //if (isDataChanged()) {
+            //    $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+            //    $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
+            //}
+            //else {
+            //    window.location.href = strURL;
+            //}
         }
         //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
 
