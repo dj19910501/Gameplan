@@ -338,7 +338,16 @@ function ShowModel(mode, section, id, ParentId, RequsedtedModule) {
         else {
             loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "", "0", RequsedtedModule);
         }
-    }
+ }
+ else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()") {
+     if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId);
+        }
+        else {
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", "Setup");
+        }
+ }
+
     modalBackdropDisplayNone();
 };
 

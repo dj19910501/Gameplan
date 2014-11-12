@@ -459,13 +459,15 @@
         return changed;
     }
     function displayconfirm(strURL) {
-        if (isDataChanged()) {
-            $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-            $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
-        }
-        else {
-            window.location.href = strURL;
-        }
+        window.location.href = strURL;
+
+        //if (isDataChanged()) {
+        //    $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+        //    $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
+        //}
+        //else {
+        //    window.location.href = strURL;
+        //}
     }
     $(document).on("click", "#confirmClose", function (e) {
         $("#errorMessageDuplicatePlan").slideUp(400);       // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
@@ -1071,25 +1073,27 @@
    }
 
    function ShowTactic(id) {
-       $("#slidepanel").css("display", "block");
+       @*$("#slidepanel").css("display", "block");
        //         $("#slidepanel-container").css("display", "block");
        var url = '@Url.Content("~/Plan/EditTactic")';
        //$('#slidepanel-container').load(url + '?id=' + id);
        $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
        $("#slidepanel").css("right", "0px");
        $("#slidepanel").addClass('sidebar-wide');
-       myApp.hidePleaseWait();
+       myApp.hidePleaseWait();*@
+       ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    //// Modified By Maninder Singh Wadhva PL Ticket#47
    function ShowImprovementTactic(id) {
-       $("#slidepanel").css("display", "block");
+       @*$("#slidepanel").css("display", "block");
        //         $("#slidepanel-container").css("display", "block");
        var url = '@Url.Content("~/Plan/EditImprovementTactic")';
         //$('#slidepanel-container').load(url + '?id=' + id);
         $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
         $("#slidepanel").css("right", "0px");
-        myApp.hidePleaseWait();
+        myApp.hidePleaseWait();*@
+        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
     }
 
     //// Function to set common properties of gantt.
@@ -1236,8 +1240,11 @@
          });
     }
 
-    function RefreshCurrentTab() {
-        //RefreshCalendar();
+    function RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId) {
+        if (requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
+            RefreshCalendar();
+        }
+        
         return false;
     }
 

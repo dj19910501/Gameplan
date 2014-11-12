@@ -432,7 +432,7 @@ else {
     }
     var Assortment = 'Budgeting';
     $('#aPlanDetails').click(function (e) {
-        e.stopPropagation();
+        @*e.stopPropagation();
         $.ajaxSetup({ cache: false });
         $("#slidepanel").css("display", "block");
         var url = '@Url.Content("~/Plan/PlanDetails")';
@@ -446,7 +446,9 @@ else {
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
-        e.preventDefault();
+        e.preventDefault();*@
+        var id = CurrentPlanId;
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
     function AssignDefaultValue() {
         $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
@@ -489,7 +491,7 @@ else {
     $("[linktype=tactic]").click(function (e) {
         var id = $(this).attr('id');
         id = id.replace('cpt_', '');
-        var url = '@Url.Content("~/Plan/EditTactic")';
+        @*var url = '@Url.Content("~/Plan/EditTactic")';
         $("#slidepanel").css("display", "block");
         if (currentTab == 'aActuals')
             $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
@@ -499,12 +501,13 @@ else {
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
-        e.preventDefault();
+        e.preventDefault();*@
+        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
      });
     $("[linktype=lineitem]").click(function (e) {
         var id = $(this).attr('id');
         id = id.replace('cptl_', '');
-        var url = '@Url.Content("~/Plan/EditLineItem")';
+        @*var url = '@Url.Content("~/Plan/EditLineItem")';
         $("#slidepanel").css("display", "block");
         if (currentTab == 'aActuals')
             $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
@@ -513,7 +516,9 @@ else {
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
-        e.preventDefault();
+        e.preventDefault();*@
+
+        ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id);
     });
 </script>
 

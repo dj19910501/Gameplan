@@ -430,7 +430,7 @@ else {
 
     var Assortment = 'Budgeting';
     $('#aPlanDetails').click(function (e) {
-        e.stopPropagation();
+   @*     e.stopPropagation();
         $.ajaxSetup({ cache: false });
         $("#slidepanel").css("display", "block");
         var url = '@Url.Content("~/Plan/PlanDetails")';
@@ -440,7 +440,10 @@ else {
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
-        e.preventDefault();
+        e.preventDefault();*@
+
+        var id = CurrentPlanId;
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
     function AssignDefaultValue() {
         $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
@@ -456,8 +459,7 @@ else {
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
         e.preventDefault();*@
-        var mode = "Edit";
-        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 
     $("[linktype=program]").click(function (e) {
@@ -469,7 +471,6 @@ else {
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
         e.preventDefault();*@
-        var mode = "Edit";
-        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 </script>
