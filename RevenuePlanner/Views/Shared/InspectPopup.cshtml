@@ -471,4 +471,12 @@ $("#deleteTactic").click(function () {
          }
     });
 
+
+    $(document).mouseup(function (e) {
+        var popup = $('#popupnewTactic');
+        var button = $('#AddForm');
+        if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
+            $('#popupnewTactic').css("display", "none");
+        }
+    });
 </script>
