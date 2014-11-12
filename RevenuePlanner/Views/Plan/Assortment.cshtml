@@ -445,7 +445,8 @@
 
 
         $(document).on("click", ".blue-bg-text", function (e) {
-            //e.stopPropagation();
+            
+            e.stopPropagation();
             //$.ajaxSetup({ cache: false });
             var idCampaing = $(this).parent().attr('id');
             ////displayconfirmForCampaignEvent(idCampaing);
@@ -463,7 +464,7 @@
             }
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();*@
-            // e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
+             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
             
             ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", idCampaing, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
         });
@@ -579,7 +580,7 @@
 
         //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $(document).on("click", ".gray-bg-text", function (e) {
-            //e.stopPropagation();
+            e.stopPropagation();
             //$.ajaxSetup({ cache: false });
             //$("#slidepanel").css("display", "block");
             var idProgram = $(this).parent().parent().attr('id');
@@ -605,7 +606,7 @@
             }
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();*@
-            // e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
+             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
             
             ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", idProgram, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
 

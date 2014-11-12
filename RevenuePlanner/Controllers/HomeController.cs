@@ -10702,6 +10702,7 @@ namespace RevenuePlanner.Controllers
                                 //Added By :Kalpesh Sharma #890 Line Item Dates need to go away
                                 objLineitem.StartDate = null;
                                 objLineitem.EndDate = null;
+                                objLineitem.Cost = form.Cost;
                                 objLineitem.CreatedBy = Sessions.User.UserId;
                                 objLineitem.CreatedDate = DateTime.Now;
                                 db.Entry(objLineitem).State = EntityState.Added;
