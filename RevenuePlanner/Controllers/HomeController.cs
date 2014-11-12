@@ -9542,6 +9542,12 @@ namespace RevenuePlanner.Controllers
             pcpm.ProgramBudget = 0;
             pcpm.AllocatedBy = objPlan.AllocatedBy;
 
+
+            var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == id);
+            var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == id && p.IsDeleted == false).ToList();
+            double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
+            ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
+
             pcpm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Program.ToString());//Added by Mitesh Vaishnav for PL ticket #719
 
             return PartialView("_EditSetupProgram", pcpm);
