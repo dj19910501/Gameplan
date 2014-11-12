@@ -250,8 +250,8 @@
 
     $("#cancelLineItemBudget").click(function () {
         CancelEvent();
-        $("#successMessage").slideUp(50);
         $("#errorMessage").slideUp(50);
+
     });
 
     function ShowError(value) {
@@ -269,6 +269,7 @@
         $('#lblLineitemTitle').css('display', 'block');
         $("#lblLineitemTitle").removeAttr("style");
         $('#AddForm').css('display', 'block');
+        $("#divDeleteProgram").css("display", "block");
     }
 
 

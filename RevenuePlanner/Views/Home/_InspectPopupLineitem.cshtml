@@ -172,6 +172,8 @@
               $("#txtTitle").val($('#lblLineitemTitle').text());
               $("#txtTitle").prop('readonly', false);
               $("#AddForm").css("display", "none");
+              $("#divDeleteProgram").css("display", "none");
+              $("#txtTitle").removeClass('error');
               return false;
           });
 
