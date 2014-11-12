@@ -11,6 +11,7 @@
     string programTitle = Convert.ToString(ViewBag.ProgramTitle);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
     string owner = Convert.ToString(ViewBag.Owner);
+    
 }
 
 @using (Html.BeginForm())
@@ -35,8 +36,8 @@
         <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
              <p>@Html.Raw("Parent Tactic")</p>
              @Html.TextBox("txtTacticTitle",tacticTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTitle", @readonly = "true" })
-            <p>Type</p>
-            <span class="verticalIdSelectBox" style="margin-left: -2px;">
+            <p id="lblType">Type</p>
+            <span class="verticalIdSelectBox" style="margin-left: -2px;" id="ddlTypeArea">
                 @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Type" })
             </span>
              
@@ -72,12 +73,19 @@
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $(".verticalIdSelectBox select").selectbox();
-
+          
           $('form').find(".sbSelector").each(function () {
               $(this).unbind("click");
               $(this).removeAttr("href");
               $(this).prev().unbind("click");
               $(this).prev().removeAttr("href");
           });
+          $(".sbHolder").attr("style", "cursor:default !important;")
+          if ('@Model.IsOtherLineItem.ToString().ToLower()' == 'true') {
+              $("#lblType").css("display", "none");
+              $("#ddlTypeArea").css("display", "none");
+          }
+
       });
+       
 </script>

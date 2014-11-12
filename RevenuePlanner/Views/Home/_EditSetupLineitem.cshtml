@@ -43,8 +43,8 @@
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
             <p>@Html.Raw("Parent Tactic")</p>
             @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticTitle })
-              <p>Type</p>
-            <span class="verticalIdSelectBox" style="margin-left: -2px;">
+              <p id="lblType">Type</p>
+            <span class="verticalIdSelectBox" style="margin-left: -2px;" id="ddlTypeArea">
                 @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Type" })
             </span>
 
@@ -77,13 +77,15 @@
         $(".verticalIdSelectBox select").selectbox();
 
         if ('@isOtherLineitem.ToString().ToLower()' == 'true') {
-            $('form').find(".sbSelector").each(function () {
-                $(this).unbind("click");
-                $(this).removeAttr("href");
-                $(this).prev().unbind("click");
-                $(this).prev().removeAttr("href");
+    //        $('form').find(".sbSelector").each(function () {
+    //            $(this).unbind("click");
+    //            $(this).removeAttr("href");
+    //            $(this).prev().unbind("click");
+    //            $(this).prev().removeAttr("href");
 
-    });
+            //});
+            $("#lblType").css("display", "none");
+            $("#ddlTypeArea").css("display", "none");
             $('#txtLineItemCost').attr('readonly', true);
             $("#lblLineitemTitle").css('display', 'block');
             $("#txtTitle").css('display', 'none');
