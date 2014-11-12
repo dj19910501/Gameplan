@@ -55,11 +55,11 @@
     if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
     {
         <div class="wraper-btns cf" style="width: 100%; clear: both">
-            <div style="width: 122px" class="span2 btn-save">
+            <div style="width: 80px" class="span2 btn-save">
                 <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
             </div>
             <div class="span2">
-                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button" style="float: left; margin-left: 20px; margin-top: 5px">Cancel</button>
+                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
             </div>
         </div>
     }                        
@@ -240,8 +240,15 @@
     }
 
     function returnToReadOnlyMode(id) {
+        var InspectValue = $("#hdnInspectPopup").val();
+        var tabtext = ($("#li" + InspectValue).children('a').text());
         var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
-        $("#divPartial").load(url + '?id=' + id + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()" + '&RequestedModule=' + requestedModule);
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()" + '&RequestedModule=' + requestedModule);
     }
+
+    $('#btnEditCancel').click(function () {
+        var hdnPlanId = $("#hdnPlanId").val();
+        returnToReadOnlyMode(hdnPlanId);
+    });
 </script>

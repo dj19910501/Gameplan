@@ -321,7 +321,7 @@
                     ShowBudgetError(errorMsg);
                     return false;
                 }
-                debugger;
+                
                 if ($("#lblTotalAllocated").hasClass('error-text')) {
                     errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted";
                     ShowBudgetError(errorMsg);
@@ -368,7 +368,7 @@
                 }
 
             }
-            debugger;
+            
             var allocationValue = [];
             var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
             for (var i = 0; i < lstAllocInputs.length; i++) {
@@ -405,7 +405,6 @@
 
                             }
                             else {
-                                debugger;
                                 $("#successMessage").css("display", "block");
                                 $("#spanMessageSuccess").empty();
                                 $("#spanMessageSuccess").text(data.succmsg);
@@ -443,4 +442,9 @@
         $("#spanErrMessagePlan").empty();
         $("#errorMessagePlan").slideUp(1);
     }
+
+    $('#btnEditCancel').click(function () {
+        var hdnPlanId = $("#hdnPlanId").val();
+        returnToReadOnlyMode(hdnPlanId);
+    });
 </script>
