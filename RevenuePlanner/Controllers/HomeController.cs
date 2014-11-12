@@ -9842,6 +9842,10 @@ namespace RevenuePlanner.Controllers
 
                                 scope.Complete();
 
+                                 ViewBag.CampaignID = cid;
+                                 ViewBag.ProgramID = pid;
+                                 ViewBag.TacticID = tid;
+
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = strMessage;
@@ -9885,7 +9889,7 @@ namespace RevenuePlanner.Controllers
                                             return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Assortment.ToString(), redirect = Url.Action("Assortment", "Plan", new { campaignId = cid, programId = pid ,tacticId = tid}) });    
                                         }
 
-                                        return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Assortment.ToString(), redirect = Url.Action("Assortment", "Plan", new { campaignId = cid, programId = pid }) });
+                                        return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Assortment.ToString(), redirect = Url.Action("Assortment","Plan" , new { campaignId = cid, programId = pid }) });
                                     }
                                 }
                             }
