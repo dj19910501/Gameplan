@@ -31,6 +31,7 @@
     planLineItemId = ViewBag.LineItemId;
     lineitemTitle = ViewBag.LineItemTitle;
     }
+    bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
 }
 
 @Html.Hidden("hdnPlanLineItemID", planLineItemId, new { id = "hdnPlanLineItemID" })
@@ -94,9 +95,13 @@
         <li class="active pull-left" id="liSetup">
             <a>Setup</a>
         </li>
+        
+        @if (IsTacticActualsAddEditAuthorized)
+        {
          <li class="pull-left" id="liActuals">
             <a>Actuals</a>
         </li>
+        }
         @if (!IsOtherLineItem)
         {
             <li class="pull-left" id="liBudget">

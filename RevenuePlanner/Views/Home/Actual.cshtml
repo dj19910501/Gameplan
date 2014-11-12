@@ -310,6 +310,11 @@
         if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
             $("#divActualInner").empty();
             $("#divActualInner").append(ActualTab());
+            $("#lblTacticTitle").show();
+            $("#txtTacticTitle").hide();
+            $("#EditForm").on("click", function (e) {
+                loadReview(planTacticId, "Setup");
+            });
         }
         else {
             $.ajax({
@@ -772,6 +777,7 @@
                 data: JSON.stringify({ tacticactual: _tactic, lineItemActual: _LineItems, tactictitle: title }),    // Modified by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
                 success: function (data) {
                     if (data != 'undefined') {
+                        if (!data.IsDuplicate) {
                         if (data.id != 0) {
                             $("#successMessage").css("display", "block");
                            // var topsize = $(document).scrollTop() + 41;
@@ -779,12 +785,19 @@
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
                             loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);
+                                RefreshCurrentTab();
                         }
                         else {
                             $("#errorMessage").css("display", "block");
                             $("#spanMessageError").empty();
                             $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                         }
+                        }
+                    }
+                    else {
+                        ShowError(data.Msg);
+                        $("#errorMessage").slideUp(30);
+                        return;
                     }
                 },
                 error: function () {

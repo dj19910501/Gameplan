@@ -1,5 +1,11 @@
 ﻿@using RevenuePlanner.Helpers
-
+@{
+    string TacticStatus = string.Empty;
+    if (ViewBag.ParentTacticStatus != null)
+    {
+        TacticStatus = ViewBag.ParentTacticStatus;
+    }
+ }
 <style type="text/css">
     .disabled-row > th {
         background-color: #EEE!important;
@@ -15,17 +21,20 @@
         padding: 0 !important;
         border: 1px solid #ccc !important;
     }
+
     .actual_cancel {
         color: gray;
         margin-top: 30px !important;
         margin-left: 28px;
     }
+
     .actual_cancel:hover, .actual_cancel:focus {
             color: gray;
         }
 </style>
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
+@Html.Hidden("hdnParentTacticStatus", TacticStatus, new { id = "hdnParentTacticStatus" })
 <div id="divActualInner" class="content-panel-tab">
     <div class="cf">
         <div class="pull-left" style="float: left; width: 150px;">
@@ -69,6 +78,7 @@
                             string actualIds = "txtActual-Y" + j;
                             string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
                             string classes = "input-actual text-align-right width75px currency_dollar input-table";
+
                             <th class="border-r font3F3F3F ">
                                 <input id="@actualIds" class= "@classes" placeholder="- - -" maxlength="@maxL">
                             </th>
@@ -116,10 +126,27 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
-
+        function ActualTab() {
+            html = '<div class="bold padding-top16 font-size18">Tactic should be "Approved" for adding actuals.</div>'
+            return html;
+        }
         var TacticActual;
         var planLineItemId = $("#hdnPlanLineItemID").val();
 
+        var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+        var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+        var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+        var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+        if ((hdnTacticStatus == null || hdnTacticStatus == '') || (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus)) {
+            $("#divActualInner").empty();
+            $("#divActualInner").append(ActualTab());
+            $("#lblLineitemTitle").show();
+            $("#txtTitle").hide();
+            $("#btnEditlineItem").on("click", function (e) {
+                loadReview(planLineItemId, "Setup");
+            });
+        }
+        else {
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/GetActualsLineitemData/")',
@@ -157,7 +184,7 @@
                     return false;
                 }
             });
-
+        }
         $(".modal-backdrop.in").unbind('click');
         $(".modal-backdrop.in").bind('click', function () {
             displayConfirmCommon();
@@ -170,8 +197,7 @@
             });
             $(this).val(FormatCurrency($(this).val(), false));
         });
-        function CalculateTotalCost()
-        {
+        function CalculateTotalCost() {
             var totalvalue = 0;
             $('#trActualCost').find('input').each(function () {
                 var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));

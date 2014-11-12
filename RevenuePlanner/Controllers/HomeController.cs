@@ -3495,6 +3495,7 @@ namespace RevenuePlanner.Controllers
                         ViewBag.tacticId = parentId;
                         ViewBag.InspectPopup = TabValue;
                         ViewBag.TacticDetail = null;
+                        ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
                         return PartialView("_InspectPopupLineitem", null);
                     }
                 }
@@ -4617,6 +4618,26 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
+                if (tacticactual != null)
+                {
+                    var actualResult = (from t in tacticactual
+                                        select new { t.PlanTacticId, t.TotalProjectedStageValueActual, t.TotalMQLActual, t.TotalCWActual, t.TotalRevenueActual, t.TotalCostActual, t.ROI, t.ROIActual, t.IsActual }).FirstOrDefault();
+                    var objpcpt = db.Plan_Campaign_Program_Tactic.Where(s => s.PlanTacticId == actualResult.PlanTacticId).FirstOrDefault();
+                    
+                    var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
+                                  join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                  join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                  where pc.PlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(tactictitle.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(actualResult.PlanTacticId) && pcpt.IsDeleted.Equals(false)
+                                  && pcp.PlanProgramId == objpcpt.PlanProgramId
+                                  select pcp).FirstOrDefault();
+
+                    if (pcpvar != null)
+                    {
+                        return Json(new { IsDuplicate = true, errormsg = Common.objCached.DuplicateTacticExits});
+                    }
+                    else
+                    {
+                        #region " If Duplicate name does not exist"
                 if (lineItemActual != null && lineItemActual.Count > 0)
                 {
                     lineItemActual.ForEach(al => { al.CreatedBy = Sessions.User.UserId; al.CreatedDate = DateTime.Now; });
@@ -4642,8 +4663,7 @@ namespace RevenuePlanner.Controllers
                     {
                         isMQL = true;
                     }
-                    var actualResult = (from t in tacticactual
-                                        select new { t.PlanTacticId, t.TotalProjectedStageValueActual, t.TotalMQLActual, t.TotalCWActual, t.TotalRevenueActual, t.TotalCostActual, t.ROI, t.ROIActual, t.IsActual }).FirstOrDefault();
+
                     using (MRPEntities mrp = new MRPEntities())
                     {
                         using (var scope = new TransactionScope())
@@ -4729,6 +4749,9 @@ namespace RevenuePlanner.Controllers
                             scope.Complete();
                             return Json(new { id = actualResult.PlanTacticId, TabValue = "Actuals", msg = "Result Updated Successfully." });
                         }
+                    }
+                }
+                        #endregion
                     }
                 }
             }
@@ -11588,12 +11611,38 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
+                ViewBag.ParentTacticStatus = GetTacticStatusByPlanLineItemId(id);
                 return PartialView("_ActualLineitem");
             }
             catch (Exception ex)
             {
                 throw ex;
             }
+        }
+
+        /// <summary>
+        /// Added By: Viral Kadiya on 11/11/2014.
+        /// Action to Get Actuals cost Value Of line item.
+        /// </summary>
+        /// <param name="id">Plan line item Id.</param>
+        /// <returns>Returns Parent Tactic Status.</returns>
+        public string GetTacticStatusByPlanLineItemId(int planlineitemid)
+        {
+            string strTacticStatus =string.Empty;
+            try
+            {
+                var lstPCPT =  (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
+                                join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                                where pcptl.PlanLineItemId == planlineitemid && pcpt.IsDeleted == false
+                                select pcpt).SingleOrDefault();
+                if (lstPCPT != null)
+                    strTacticStatus = lstPCPT.Status;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return strTacticStatus;
         }
         #endregion
 
