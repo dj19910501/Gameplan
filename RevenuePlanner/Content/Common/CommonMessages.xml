@@ -783,4 +783,10 @@
     <value>Stages configured for your organization doesn't match with those defined as benchmark stages. Please contact system administrator.</value>
   </Field>
   <!-- End - Added by Pratik on 24/09/2014 for PL ticket #754 -->
+  <!-- Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933 -->
+  <Field>
+    <Name>ChangesSaved</Name>
+    <value>Changes Saved.</value>
+  </Field>
+  <!-- End - Added by Sohel on 12/11/2014 for PL ticket #933 -->
 </Messages>

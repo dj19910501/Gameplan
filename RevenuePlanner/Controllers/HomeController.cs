@@ -3822,6 +3822,10 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
                 }
+                else if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
+                {
+                    ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
+                }
                 else
                 {
                     ViewBag.InspectMode = "";
@@ -10833,6 +10837,10 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
             }
+            else if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
+            }
             else
             {
                 ViewBag.InspectMode = "";
@@ -10878,17 +10886,237 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
             }
+            else if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
+            }
             else
             {
                 ViewBag.InspectMode = "";
             }
 
+            double TotalAllocatedCampaignBudget = 0;
+            var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == im.PlanId && pcb.Plan_Campaign.IsDeleted == false).Select(a => a.Value).ToList();
+            if (PlanCampaignBudgetList.Count > 0)
+            {
+                TotalAllocatedCampaignBudget = PlanCampaignBudgetList.Sum();
+            }
+            ViewBag.TotalAllocatedCampaignBudget = TotalAllocatedCampaignBudget;
+
             return PartialView("_BudgetPlan", im);
         }
         #endregion
 
+        #region Save Plan Details other than Budget Allocation
+        /// <summary>
+        /// Save Plan Details other than Budget Allocation
+        /// </summary>
+        /// <param name="objPlanModel"></param>
+        /// <param name="BudgetInputValues"></param>
+        /// <param name="planBudget"></param>
+        /// <param name="RedirectType"></param>
+        /// <param name="UserId"></param> Added by Sohel Pathan on 07/08/2014 for PL ticket #672
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult SavePlanDetails(InspectModel objPlanModel, string BudgetInputValues = "", string planBudget = "", string RedirectType = "", string UserId = "")
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    Plan plan = new Plan();
+                    if (objPlanModel.PlanId > 0)
+                    {
+                        plan = db.Plans.Where(m => m.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
+
+                        plan.Title = objPlanModel.Title.Trim();
+                        plan.ModifiedBy = Sessions.User.UserId;
+                        plan.ModifiedDate = System.DateTime.Now;
+
+                        if (BudgetInputValues == "")
+                        {
+                            plan.Description = objPlanModel.Description;    /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
+                        }
+                        else
+                        {
+                            plan.Budget = Convert.ToDouble(planBudget.ToString().Trim().Replace(",", "").Replace("$", ""));
+
+                            #region Update Budget Allocation Value
+                            if (BudgetInputValues != "")
+                            {
+                                string[] arrBudgetInputValues = BudgetInputValues.Split(',');
+
+                                var PrevPlanBudgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == objPlanModel.PlanId).Select(pb => pb).ToList();
+                                
+                                if (arrBudgetInputValues.Length == 12)
+                                {
+                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
+                                    {
+                                        // Start - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
+                                        bool isExists = false;
+                                        if (PrevPlanBudgetAllocationList != null)
+                                        {
+                                            if (PrevPlanBudgetAllocationList.Count > 0)
+                                            {
+                                                var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                                if (updatePlanBudget != null)
+                                                {
+                                                    if (arrBudgetInputValues[i] != "")
+                                                    {
+                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                        if (updatePlanBudget.Value != newValue)
+                                                        {
+                                                            updatePlanBudget.Value = newValue;
+                                                            db.Entry(updatePlanBudget).State = EntityState.Modified;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        db.Entry(updatePlanBudget).State = EntityState.Deleted;
+                                                    }
+                                                    isExists = true;
+                                                }
+                                            }
+                                        }
+                                        if (!isExists && arrBudgetInputValues[i] != "")
+                                        {
+                                            // End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
+                                            Plan_Budget objPlanBudget = new Plan_Budget();
+                                            objPlanBudget.PlanId = objPlanModel.PlanId;
+                                            objPlanBudget.Period = "Y" + (i + 1);
+                                            objPlanBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                            objPlanBudget.CreatedBy = Sessions.User.UserId;
+                                            objPlanBudget.CreatedDate = DateTime.Now;
+                                            db.Entry(objPlanBudget).State = EntityState.Added;
+                                        }
+                                    }
+                                }
+                                else if (arrBudgetInputValues.Length == 4)
+                                {
+                                    int QuarterCnt = 1;
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        // Start - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
+                                        bool isExists = false;
+                                        if (PrevPlanBudgetAllocationList != null)
+                                        {
+                                            if (PrevPlanBudgetAllocationList.Count > 0)
+                                            {
+                                                var thisQuartersMonthList = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt)) || pb.Period == ("Y" + (QuarterCnt + 1)) || pb.Period == ("Y" + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                                var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
+
+                                                if (thisQuarterFirstMonthBudget != null)
+                                                {
+                                                    if (arrBudgetInputValues[i] != "")
+                                                    {
+                                                        var thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
+                                                        var thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
+                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+
+                                                        if (thisQuarterTotalBudget != newValue)
+                                                        {
+                                                            var BudgetDiff = newValue - thisQuarterTotalBudget;
+                                                            if (BudgetDiff > 0)
+                                                            {
+                                                                thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+                                                                db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+                                                            }
+                                                            else
+                                                            {
+                                                                int j = 1;
+                                                                while (BudgetDiff < 0)
+                                                                {
+                                                                    if (thisQuarterFirstMonthBudget != null)
+                                                                    {
+                                                                        BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+
+                                                                        if (BudgetDiff <= 0)
+                                                                            thisQuarterFirstMonthBudget.Value = 0;
+                                                                        else
+                                                                            thisQuarterFirstMonthBudget.Value = BudgetDiff;
+
+                                                                        db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+                                                                    }
+                                                                    if ((QuarterCnt + j) <= (QuarterCnt + 2))
+                                                                    {
+                                                                        thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt + j))).FirstOrDefault();
+                                                                    }
+
+                                                                    j = j + 1;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                                    }
+                                                    isExists = true;
+                                                }
+                                            }
+                                        }
+                                        if (!isExists && arrBudgetInputValues[i] != "")
+                                        {
+                                            // End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
+                                            Plan_Budget objPlanBudget = new Plan_Budget();
+                                            objPlanBudget.PlanId = objPlanModel.PlanId;
+                                            objPlanBudget.Period = "Y" + QuarterCnt;
+                                            objPlanBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                            objPlanBudget.CreatedBy = Sessions.User.UserId;
+                                            objPlanBudget.CreatedDate = DateTime.Now;
+                                            db.Entry(objPlanBudget).State = EntityState.Added;
+                                        }
+                                        QuarterCnt = QuarterCnt + 3;
+                                    }
+                                }
+                            }
+                            #endregion
+                        }
+                        db.Entry(plan).State = EntityState.Modified;
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    }
+
+                    int result = db.SaveChanges();
+                    if (result > 0)
+                    {
+                        if (RedirectType.ToLower() == "budgeting")
+                        {
+                            TempData["SuccessMessage"] = "Plan Saved Successfully";
+                            return Json(new { id = plan.PlanId, redirect = Url.Action("Budgeting") });
+                        }
+                        else if (RedirectType.ToLower() == "")
+                        {
+                            return Json(new { id = plan.PlanId, succmsg = Common.objCached.ChangesSaved.ToString(), redirect = "" });
+                        }
+                        else
+                        {
+                            return Json(new { id = plan.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
+                        }
+                    }
+                    else
+                    {
+                        return Json(new { id = 0, errormsg = Common.objCached.ErrorOccured.ToString() });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { id = 0 });
+        }
         #endregion
 
+        #endregion
 
         #region Budget Allocation for Line Item Tab
         /// <summary>

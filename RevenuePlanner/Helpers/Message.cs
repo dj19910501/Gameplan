@@ -2153,6 +2153,14 @@ private string _CannotAllocateMorethanRemainingBudgeted;
         }
         //End - Added by Pratik for PL ticket #754
 
+        // Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+        private string _ChangesSaved;
+        public string ChangesSaved
+        {
+            get { return _ChangesSaved; }
+            set { _ChangesSaved = value; }
+        }
+        // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
         #endregion
 
         #region  Functions
@@ -2808,6 +2816,12 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _StagesConfigurationMissMatch = strMsgValue;
                                             break;
                                         // End - Added by Pratik on 24/09/2014 for PL ticket #754.
+                                        // Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933.
+                                        case "ChangesSaved":
+                                            _ChangesSaved = strMsgValue;
+                                            break;
+                                        // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933.
+                                        
                                     }
                                 }
                                 i = i + 1;

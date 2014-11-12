@@ -1,4 +1,5 @@
-﻿@using RevenuePlanner.Helpers
+﻿@model RevenuePlanner.Models.InspectModel
+@using RevenuePlanner.Helpers
 @{
     var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
     var planDetails = (RevenuePlanner.Models.InspectModel)ViewBag.PlanDetails;
@@ -8,16 +9,23 @@
     {
         IsBudgetAllocated = true;
     }
+    var TotalAllocatedCampaignBudget = ViewBag.TotalAllocatedCampaignBudget != null ? (double)ViewBag.TotalAllocatedCampaignBudget : 0;
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(model => model.PlanId)
+    @Html.HiddenFor(model => model.Title)
     @Html.Hidden("hdnIsBudgetAllocated",IsBudgetAllocated)
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
         <div id="inspect-modal-left-column1" class="span3">
             <p>Plan Budget</p>
             @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
             {
-                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id="txtPlanBudget", @class = "span11 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })
+                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id="txtPlanBudget", @class = "span11 input-small truncate currency_dollar", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })
+            }
+            else if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id = "txtPlanBudget", @class = "span11 input-small truncate currency_dollar", style = "", title = planDetails.Budget, require = "true", })
             }
         </div>
         <div id="inspect-modal-left-column2" class="InspectPopupBudgetSection">
@@ -59,10 +67,27 @@
             }
         </div>
     </div>
+    if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+    {
+        <div class="wraper-btns cf" style="width: 100%; clear: both">
+            <div id="divBudgetError" class="alert alert-error hide error-msg">
+                <a class="close">×</a>
+                <p id="BudgetErrorMessage" class="source-sans-probold">You cannot allocate more than budgeted for Jan and May .</p>
+            </div>
+            <div style="width: 80px" class="span2 btn-save">
+                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+            </div>
+            <div class="span2">
+                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+            </div>
+        </div>
+    }                        
+    <span class="flag-icon"></span>
 }
 
 <script type="text/javascript">
-
+    var SavePlanFlag = true;
+    var requestedModule = $("#hdnRequestedModule").val();
     $(document).ready(function () {
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
@@ -71,8 +96,8 @@
         if ($("#hdnIsBudgetAllocated").val() == "True" && $("#lblTotalBudget").html() != '') {
             $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
         }
-
-        $("#txtPlanBudget").val(FormatCommasBudget($("#txtPlanBudget").val(), false, true));
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        //$("#txtPlanBudget").val(FormatCommasBudget($("#txtPlanBudget").val(), false, true));
         $("#txtPlanBudget").attr('title', $("#txtPlanBudget").val());
 
         if ($("#hdnIsBudgetAllocated").val() == "True") {
@@ -114,7 +139,7 @@
                             $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue.toString(), false));
                             $("#" + r[i].periodTitle).attr('ov', r[i].budgetValue == '' ? '0' : r[i].budgetValue);
                             $("#" + r[i].periodTitle).attr('cmb', r[i].campaignMonthlyBudget);
-                            $("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
+                            $("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val());
                             if (parseInt(campaignMonthlyBudget) > budgetValue) {
                                 $(this).addClass('low-budgeted');
                                 $("#lblAllocatedCampaignsBudget").addClass('error-text');
@@ -159,5 +184,263 @@
             $("#lblUnallocatedBudget").removeClass('error-text');
             $("#lblTotalAllocated").removeClass('error-text');
         }
+    }
+
+    function returnToReadOnlyMode(id) {
+        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+        $("#divPartial").empty();
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + "Budget" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()" + '&RequestedModule=' + requestedModule);
+    }
+
+    $('.budget-section').find('input').not('.unallocated-text').each(function () {
+        $(this).keyup(function () {
+            if ($(this).val().trim() != '') {
+                var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                    var OldBudgetValue = parseInt($(this).attr("ov"));
+                    var differenceVal = OldBudgetValue - parseInt(currentValue);
+                    $(this).attr("ov", currentValue);
+
+                    var CampaignBudgetValue = parseInt($(this).attr("cmb"));
+                    if (parseInt(currentValue) < CampaignBudgetValue) {
+                        $(this).addClass('low-budgeted');
+                        $("#lblAllocatedCampaignsBudget").addClass('error-text');
+                    }
+                    else {
+                        $(this).removeClass('low-budgeted');
+                        $("#lblAllocatedCampaignsBudget").removeClass('error-text');
+                    }
+
+                    var TotalallocationValue = 0;
+                    var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+                    for (var i = 0; i < lstAllocInputs.length; i++) {
+                        TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+                    }
+                    $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+                    calculateUnallocatedBudget();
+                }
+            }
+        });
+    });
+
+    $('.budget-section').find('input').not('.unallocated-text').each(function () {
+        $(this).focus(function () {
+            $('.budget-section').find('input').not('.unallocated-text').parent().removeClass('border000000');
+            $(this).parent().addClass('border000000');
+
+            var AllocatedCampaignsBudget = parseInt($(this).attr("cmb"));
+            var currentValue = parseInt($(this).attr("ov"));
+
+            if (currentValue < AllocatedCampaignsBudget) {
+                $(this).addClass('low-budgeted');
+                $("#lblAllocatedCampaignsBudget").addClass('error-text');
+            }
+            else {
+                $(this).removeClass('low-budgeted');
+                $("#lblAllocatedCampaignsBudget").removeClass('error-text');
+            }
+
+            $("#lblAllocatedCampaignsBudget").html(FormatCommasBudget(AllocatedCampaignsBudget.toString(), false, true));
+
+        });
+    });
+
+    $("#btnEditSave").click(function () {
+        var iserror = false;
+        $('form').find('input[type=text], select').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val().toString().trim() == '' || (this.id.toString() == 'txtPlanBudget' && $(this).val() == '$0')) {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        //sbSelector
+        $('form').find('.sbSelector').each(function () {
+            if ($(this).parent().prev().attr('require') == 'true') {
+                if ($(this).text() == 'Please Select') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+        
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+        }
+        else {
+            $("#errorMessage").css("display", "none");
+            var TotalAllocatedCampaignBudget = '@TotalAllocatedCampaignBudget';
+            var totalBudget = parseInt(ReplaceCC($("#txtPlanBudget").val()));
+            if (TotalAllocatedCampaignBudget > totalBudget) {
+                $('#divErrLessBudget').css("display", "block");
+                iserror = true;
+            }
+            else {
+                $("#divErrLessBudget").css("display", "none");
+            }
+        }
+
+        if (!iserror) {
+            if ($("#hdnIsBudgetAllocated").val() == "True") {
+                var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
+                if (lstAllocInputs.length > 0) {
+                    var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
+                    var inputLength = lstAllocInputs.length;
+                    var removeLength = 0;
+                    for (var i = 0; i < lstAllocInputs.length; i++) {
+                        if (inputLength == 1) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
+                        }
+                        else if (inputLength == 2) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                            removeLength = 4;
+                        }
+                        else if (inputLength > 2) {
+                            if (i == inputLength - 2) {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                                removeLength = 4;
+                            }
+                            else {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
+                                removeLength = 2;
+                            }
+                        }
+                    }
+
+                    errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
+                    errorMsg += '.';
+
+                    ShowBudgetError(errorMsg);
+                    return false;
+                }
+                debugger;
+                if ($("#lblTotalAllocated").hasClass('error-text')) {
+                    errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted";
+                    ShowBudgetError(errorMsg);
+                    return false;
+                }
+
+                if (parseInt(ReplaceCC($("#lblUnallocatedBudget").val())) < 0) {
+                    errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotSetBudgetLessthanAllocated";
+                    ShowBudgetError(errorMsg);
+                    return false;
+                }
+
+                if (SavePlanFlag) {
+                    var lstAllocInputs = $(".budget-section input.low-budgeted").not('.unallocated-text');
+                    if (lstAllocInputs.length > 0) {
+                        var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.ErrMsgLessCampaignBudget ";
+                        var removeLength = 0;
+                        var inputLength = lstAllocInputs.length;
+                        for (var i = 0; i < lstAllocInputs.length; i++) {
+                            if (inputLength == 1) {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
+                            }
+                            else if (inputLength == 2) {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                                removeLength = 4;
+                            }
+                            else if (inputLength > 2) {
+                                if (i == inputLength - 2) {
+                                    errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                                    removeLength = 4;
+                                }
+                                else {
+                                    errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
+                                    removeLength = 2;
+                                }
+                            }
+                        }
+                        errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
+                        errorMsg += '. <br />If you want to continue, hit Save below.';
+                        ShowBudgetError(errorMsg);
+                        SavePlanFlag = false;
+                        return false;
+                    }
+                }
+
+            }
+            debugger;
+            var allocationValue = [];
+            var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+            for (var i = 0; i < lstAllocInputs.length; i++) {
+                allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
+            }
+
+            $("#txtTitle").value = htmlEncode($('#txtTitle').val());
+            $('#Title').val($('#txtTitle').val());
+            $("#txtPlanBudget").val(ReplaceCC($("#txtPlanBudget").val()));
+            $("#txtPlanBudget").attr('title', $("#txtPlanBudget").val());
+            var formData = $("form").serialize();
+            var RedirectType = "";
+            var planBudget = $("#txtPlanBudget").val();
+            var uId = $(window).attr('name');
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/SavePlanDetails")',
+                //data: formData + '&RedirectType=' + RedirectType + '&UserId=' + uId,
+                data: formData + '&BudgetInputValues=' + allocationValue.toString() + '&planBudget=' + planBudget + '&RedirectType=' + RedirectType + '&UserId=' + uId,
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data.succmsg != "") {
+                            if (data.redirect != "") {
+                                @*if ('@CalledFromBudget' != '') {
+                                    var strURL = '@Url.Content("~/Plan/Budgeting")';
+                                    window.location.href = strURL + '?type=' + '@CalledFromBudget';
+                                }
+                                else {
+                                    window.location.href = data.redirect;
+                                }*@
+
+                            }
+                            else {
+                                debugger;
+                                $("#successMessage").css("display", "block");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.succmsg);
+                                returnToReadOnlyMode(data.id);
+                                RefreshCurrentTab(requestedModule, 0, 0, 0);
+                            }
+                            return;
+                        }
+                        if (data.errormsg != "") {
+                            $("#txtTitle").value = htmlDecode($('#txtTitle').val());
+                            ShowError(data.errormsg);
+                            return false;
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    function ShowBudgetError(value) {
+        $("#divBudgetError").slideDown(400);
+        $("#BudgetErrorMessage").empty();
+        $("#BudgetErrorMessage").html(value);
+        HideError();
+    }
+
+    $(".alert").find(".close").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        SavePlanFlag = true;
+        $(this).closest(".alert").slideUp(400);
+    });
+
+    function HideError(value) {
+        $("#spanErrMessagePlan").empty();
+        $("#errorMessagePlan").slideUp(1);
     }
 </script>

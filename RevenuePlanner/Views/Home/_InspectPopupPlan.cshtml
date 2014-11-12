@@ -5,56 +5,65 @@
     var planDetails = (RevenuePlanner.Models.InspectModel)ViewBag.PlanDetails;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
+    string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-@Html.Display(popupvalue)
 @Html.Hidden("hdnPlanId", planDetails.PlanId, new { id = "hdnPlanId" })
+@Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 
 <div id="successMessagePlan" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
+    <strong>Success.</strong>
     <span id="spanSuccMessagePlan"></span>
 </div>
 
 <div id="errorMessagePlan" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
+    <strong>Error!</strong>
     <span id="spanErrMessagePlan"></span>
 </div>
-
+<div id="divErrLessBudget" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <strong>Error!</strong> <span>@Common.objCached.ErrMsgLessPlanBudget</span>
+</div>
 <form>
     <div class="modal-popup-title">
         <span class="icon-flag bg-purple" style="background-color:#@planDetails.ColorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight">
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
             {
-                @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(planDetails.Title), new { placeholder = "Required", require = "true", maxlength = "255", @class="span12 input-small truncate", style="width: 95%; height: 28px;", title = planDetails.Title })
-                @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
+                @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(planDetails.Title), new { placeholder = "Required", require = "true", maxlength = "255", @class="span12 input-small truncate font20", style="width: 95%; height: 28px;", title = planDetails.Title })
+                @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle1" })
             }
             else
             {
                 <span class="tipsyclassTitle" title="@Html.Raw(planDetails.Title)">@Html.Raw(planDetails.Title)</span>
             }
-            @if (IsPlanEditable)
+            @if(!(InspectMode == Enums.InspectPopupMode.Edit.ToString()))
             {
-                <div id="divDeletePlan" style="float: right;" class="delete-btn-tab">
-                    <button type="button" id="deletePlan" class="delete-btn-gray">Delete</button>
-                </div>
-            }
-            @if (IsPlanCreateAuthorized)
-            {
-                <div style="float: right; position: relative;">
-                    <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;" class="add-icon-white btn-blue btn-large"></span>
-                    <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
-                        <ul style="margin: 0;">
-                            <li id="NewCampaign" class="new-prog">New Campaign</li>
-                            <li id="ClonePlan" class="copy-camp">Copy Plan</li>
-                        </ul>
+                if (IsPlanEditable)
+                {
+                    <div id="divDeletePlan" style="float: right;" class="delete-btn-tab">
+                        <button type="button" id="deletePlan" class="delete-btn-gray">Delete</button>
                     </div>
-                </div>
-            }
-            @if (IsPlanEditable && !(InspectMode == Enums.InspectPopupMode.Edit.ToString()))
-            {
-                <a id="lnkEdit" class="edit-icon-white btn-blue btn-large" style="cursor: pointer; margin-right: 15px;"></a>
+                }
+                if (IsPlanCreateAuthorized)
+                {
+                    <div style="float: right; position: relative;">
+                        <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;" class="add-icon-white btn-blue btn-large"></span>
+                        <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
+                            <ul style="margin: 0;">
+                                <li id="NewCampaign" class="new-prog">New Campaign</li>
+                                <li id="ClonePlan" class="copy-camp">Copy Plan</li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+                if (IsPlanEditable)
+                {
+                    <a id="lnkEdit" class="edit-icon-white btn-blue btn-large" style="cursor: pointer; margin-right: 15px;"></a>
+                }
             }
         </h2>
     </div>
@@ -109,6 +118,7 @@
     }
 
     function loadInnerTabs(id, tabValue) {
+        $("#hdnInspectPopup").val(tabValue);
         $.ajaxSetup({ cache: false });
         var url;
         if (tabValue == TabSetup) {
@@ -209,5 +219,16 @@
                 }
             });
         }
+    });
+
+    $('#lnkEdit').click(function () {
+        debugger;
+        var InspectValue = $("#hdnInspectPopup").val();
+        var tabtext = ($("#li" + InspectValue).children('a').text());
+        var planId = $("#hdnPlanId").val();
+        HideAllMessages();
+        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+        $("#divPartial").empty();
+        $("#divPartial").load(url + '?id=' + planId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()");
     });
 </script>
