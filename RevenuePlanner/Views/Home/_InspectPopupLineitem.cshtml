@@ -11,7 +11,7 @@
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 @{
     var planLineItemId = 0;
-    string colorCode = "#C6EBF3";
+    string colorCode = "C6EBF3";
     string tacticId = Convert.ToString(ViewBag.tacticId);
     string lineitemTitle = "";
     bool IsPlanEditable = false;
@@ -57,12 +57,13 @@
     <div class="modal-popup-title">
         <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight">
-            @if (lineitemTitle != string.Empty && !IsOtherLineItem)
+            @if (lineitemTitle != string.Empty)
             {
                 <span>
                     <span id="lblLineitemTitle" class="tipsyclassTitle" title="@Html.Raw(lineitemTitle)" >@Html.Raw(lineitemTitle)</span>
                     @if (IsPlanEditable)
-                    {  
+                    {
+                        if(!IsOtherLineItem){  
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
                             <button class="delete-btn-gray" id="deleteLineItem" type="button">Delete</button>
                         </div>
@@ -73,15 +74,16 @@
                             <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupLineitem">
                                 <ul style="margin: 0;">
 
-                                    <li class="copy-camp" id="CloneLineItem">Copy Lineitem</li>
+                                    <li class="copy-camp" id="CloneLineItem">Copy Line Item</li>
                                 </ul>
                             </div>
                         </div>
+                        }
                         <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;"></a>
                     }
                 </span> 
             }
-            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(lineitemTitle), new { placeholder = "Lineitem name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = lineitemTitle, id = "txtTitle" })
+            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(lineitemTitle), new { placeholder = "Line Item name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = lineitemTitle, id = "txtTitle" })
             @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
         </h2>
     </div>
@@ -91,9 +93,6 @@
     <ul class="nav nav-tabs new-margin" id="InspectTab">
         <li class="active pull-left" id="liSetup">
             <a>Setup</a>
-        </li>
-        <li class="pull-left" id="liReview">
-            <a>Review</a>
         </li>
          <li class="pull-left" id="liActuals">
             <a>Actuals</a>
@@ -117,7 +116,7 @@
 
     var divPartial = "#divPartial";
     var TabSetup = "Setup";
-    var TabReview = "Review";
+    
     var TabBudget = "Budget";
     var divTab = "#divTab";
     var TabActual = "Actuals";	
@@ -128,6 +127,7 @@
          CloseIconClick();
          $("#btnEditlineItem").css("display", "block");
          $("#AddForm").css("display", "block");
+         $("#divDeleteProgram").css("display", "block");
          NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
          var InspectValue = $("#hdnInspectPopup").val();
          var planLineitemId = $("#hdnPlanLineItemID").val();
@@ -139,46 +139,6 @@
          $("#li" + InspectValue).addClass("active pull-left");
          var tabtext = ($("#li" + InspectValue).children('a').text());
          $('#div' + tabtext).css({ display: "block" });
-
-         if (planLineitemId != '0') {
-             loadReview(planLineitemId, tabtext);
-         }
-         else {
-             $("#liReview ,#liBudget,#liSetup").unbind('click');
-             loadAddSetup();
-         }
-
-         $("#btnEditlineItem").on("click", function () {
-             $("#errorMessage").css("display", "none");
-             $("#successMessage").css("display", "none");
-             $("#hdnLineitemOpt").val("Edit");
-             var InspectValue = $("#hdnInspectPopup").val();
-             var tabtext = ($("#li" + InspectValue).children('a').text());
-			  if (tabtext == "Setup") {
-            url = '@Url.Content("~/Home/LoadEditSetupLineitem/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + PlanLineItemId);
-              }
-            else if (tabtext == "Budget") {
-                  url = '@Url.Content("~/Home/LoadLineItemBudgetAllocation/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + planLineitemId);
-            }
-            else if (tabtext == "Actuals") {
-                loadReview(planLineitemId, tabtext);
-            }
-            
-              $("#btnEditlineItem").css("display", "none");
-              $('#txtTitle').css('display', 'block');
-              $('#lblLineitemTitle').css('display', 'none');
-              $("#txtTitle").val($('#lblLineitemTitle').text());
-              $("#txtTitle").prop('readonly', false);
-              $("#AddForm").css("display", "none");
-              $("#divDeleteProgram").css("display", "none");
-              $("#txtTitle").removeClass('error');
-              return false;
-          });
-
          $("#liSetup,#liReview,#liBudget,#liActuals").on("click", function () {
              $("#successMessageViewCampaign").slideUp(50);
              $("#errorMessageEditCampaign").slideUp(50);
@@ -188,13 +148,51 @@
              $("#errorMessage").css("display", "none");
              $("#successMessage").css("display", "none");
              var tabtext = ($(this).children('a').text());
-             loadReview(planLineitemId, tabtext);
+             loadReview(PlanLineItemId, tabtext);
          });
+         if (planLineitemId != '0') {
+             loadReview(planLineitemId, tabtext);
+         }
+         else {
+             $("#liActuals ,#liBudget,#liSetup").unbind('click');
+             loadAddSetup();
+         }
+       
 
      });
 
     //<--- End Document.ready event --->
+  
+    $("#btnEditlineItem").on("click", function () {
+        $("#errorMessage").css("display", "none");
+        $("#successMessage").css("display", "none");
+        $("#hdnLineitemOpt").val("Edit");
+        var InspectValue = $("#hdnInspectPopup").val();
+        var tabtext = ($("#li" + InspectValue).children('a').text());
+        if (tabtext == "Setup") {
+            url = '@Url.Content("~/Home/LoadEditSetupLineitem/")';
+			      $("#divTab").empty();
+			      $("#divTab").load(url + '?id=' + PlanLineItemId);
+			  }
+			  else if (tabtext == "Budget") {
+			      url = '@Url.Content("~/Home/LoadLineItemBudgetAllocation/")';
+                      $("#divTab").empty();
+                      $("#divTab").load(url + '?id=' + PlanLineItemId);
+                  }
+                  else if (tabtext == "Actuals") {
+                      loadReview(PlanLineItemId, tabtext);
+                  }
 
+           $("#btnEditlineItem").css("display", "none");
+           $('#txtTitle').css('display', 'block');
+           $('#lblLineitemTitle').css('display', 'none');
+           $("#txtTitle").val($('#lblLineitemTitle').text());
+           $("#txtTitle").prop('readonly', false);
+           $("#AddForm").css("display", "none");
+           $("#divDeleteProgram").css("display", "none");
+           $("#txtTitle").removeClass('error');
+           return false;
+       });
 
     function RemoveTabClass() {
         $('#InspectTab').children().each(function () {

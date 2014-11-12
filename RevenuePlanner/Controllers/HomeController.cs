@@ -10617,6 +10617,8 @@ namespace RevenuePlanner.Controllers
                 {
                     objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == tacticId);
                     tid = tacticId;
+                    cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
+                    pid = objTactic.PlanProgramId;
                 }
 
                 if (form.PlanLineItemId == 0)
@@ -10798,7 +10800,7 @@ namespace RevenuePlanner.Controllers
 
                                
                                     scope.Complete();
-                                    return Json(new { isSaved = true,msg="Lineitem updated successfully." });
+                                    return Json(new { isSaved = true, msg = "Lineitem updated successfully.", planCampaignID = cid, planProgramID = pid, planTacticID = tid });
                                
                             }
                         }

@@ -76,6 +76,19 @@
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $(".verticalIdSelectBox select").selectbox();
 
+        if ('@isOtherLineitem.ToString().ToLower()' == 'true') {
+            $('form').find(".sbSelector").each(function () {
+                $(this).unbind("click");
+                $(this).removeAttr("href");
+                $(this).prev().unbind("click");
+                $(this).prev().removeAttr("href");
+
+    });
+            $('#txtLineItemCost').attr('readonly', true);
+            $("#lblLineitemTitle").css('display', 'block');
+            $("#txtTitle").css('display', 'none');
+        }
+
     });
 
 
@@ -98,6 +111,7 @@
         loadReview('@Model.PlanLineItemId', "Setup");
         $("#btnEditlineItem").css("display", "block");
         $("#AddForm").css("display", "block");
+        $("#divDeleteProgram").css("display", "block");
         $('#txtTitle').css('display', 'none');
         $('#lblLineitemTitle').css('display', 'block');
         $("#lblLineitemTitle").removeAttr("style");
@@ -119,11 +133,13 @@
     $("#save_LineItem").click(function () {
         var iserror = false;
         var lineItemTitle = htmlEncode($('#txtTitle').val());
-        if (lineItemTitle == '@Common.DefaultLineItemTitle') {
+
+        if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
             var errorMsg = "You can't use 'Other' as title.";
             ShowError(errorMsg);
             return false;
         }
+        if ($('#txtTitle').val().toString().toLowerCase().trim() != '@Common.DefaultLineItemTitle.ToLower()') {
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
                 if ($(this).val() == '') {
@@ -147,6 +163,7 @@
                 }
             }
         });
+        }
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
@@ -194,13 +211,13 @@
                         var plancampaignId = 0;
                         var planProgramId = 0;
                         var planTacticId = 0;
-                        $("#liReview,#liBudget,#liSetup").bind('click');
+                        $("#liActuals,#liBudget,#liSetup").bind('click');
                         if (planLineItemId == '0') {
                             planLineItemId = data.planLineitemID;
+                        }
                             plancampaignId = data.planCampaignID;
                             planProgramId = data.planProgramID;
                             planTacticId = data.planTacticID;
-                        }
                         loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
                         RefreshCurrentTab(requestedModule,plancampaignId,planProgramId,planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         //$("#errorMessageEditCampaign").slideUp(50);
