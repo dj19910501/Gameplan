@@ -126,9 +126,7 @@
           {
               $("#liSetup,#liReview,#liImpact").bind("click");
           }
-
-          $("#txtCost").val(FormatCurrency($('#txtCost').val().toString(), false));
-          $('#txtCost').attr("title", $('#txtCost').val());
+          
           $('#txtDate').val($('#txtDate').val().split(" ")[0].toString());
 
           $('form').find(".sbSelector").each(function () {
@@ -138,6 +136,13 @@
               $(this).prev().removeAttr("href");
           });
           $("#txtDate").val($("#txtDate").val().split(' ')[0]);
+
+          assignDefaultValue(".resubmission");
+
+          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $("#txtCost").val(FormatCurrency($('#txtCost').val().toString(), false));
+          $('#txtCost').attr("title", $('#txtCost').val());
+
           $('.datepicker.dropdown-menu').css("display", "none");
                     
           $(".verticalIdSelectBox select").selectbox();
@@ -209,8 +214,7 @@
         $("#divPartial").load(url + '?id=' + ImprovementPlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()"+ '&RequestedModule=' + requestedModule);
     }
 
-    assignDefaultValue(".resubmission");
-    $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+   
 
     function assignDefaultValue(classname) {
         $('form').find(classname).each(function () {
