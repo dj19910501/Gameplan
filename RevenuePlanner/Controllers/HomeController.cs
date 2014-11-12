@@ -4137,6 +4137,9 @@ namespace RevenuePlanner.Controllers
             string statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
             string statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
             string statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
+            string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
+            string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+
 
             try
             {
@@ -4163,8 +4166,9 @@ namespace RevenuePlanner.Controllers
                                   BusinessUnitId = pcpt.BusinessUnitId,
                                   //Modified By : Kalpesh Sharma #864 Add Actuals: Unable to update actuals % 864_Actuals.jpg %
                                   // If tactic has a line item at that time we have consider Project cost as sum of all the active line items
-                                  Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0 ?
-                                            (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost) : pcpt.Cost,
+                                  Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0
+                                   && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
+                                   ? (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost) : pcpt.Cost,
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,
                                   VerticalTitle = pcpt.Vertical.Title,
@@ -6033,9 +6037,10 @@ namespace RevenuePlanner.Controllers
                 ippctm.Revenue = 0;
             }
 
-
-            ippctm.Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0 ?
-                                            (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost) : pcpt.Cost;
+            string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
+            string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+            ippctm.Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0 && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault 
+                ? (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost) : pcpt.Cost;
 
             ippctm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
 
@@ -6375,7 +6380,13 @@ namespace RevenuePlanner.Controllers
                                 //    if (!isDirectorLevelUser) isReSubmission = true;
                                 //}
                                 /* TFS Bug 207 : end changes */
+
+                                if ((db.Plan_Campaign_Program_Tactic_Cost.Where(t=> t.PlanTacticId == form.PlanTacticId).ToList()).Count() == 0 ||
+                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
+                                    || pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+                                {
                                 pcpobj.Cost = form.Cost;
+                                }
 
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcpobj.StageId = form.StageId;
@@ -10722,11 +10733,13 @@ namespace RevenuePlanner.Controllers
                                 {
                                     objLineitem.Title = form.Title;
                                     objLineitem.LineItemTypeId = form.LineItemTypeId;
+
+                                    if ((db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(t => t.PlanLineItemId == form.PlanLineItemId).ToList()).Count() == 0  ||
+                                        objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
+                                    || objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+                                    {
                                     objLineitem.Cost = form.Cost;
-                                    //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
-                                    //objLineitem.Cost = UpdateBugdetAllocationCost(arrCostInputValues, form.Cost);
-                                    //objLineitem.StartDate = null;
-                                    //objLineitem.EndDate = null;
+                                    }
                                 }
 
                                 objLineitem.ModifiedBy = Sessions.User.UserId;

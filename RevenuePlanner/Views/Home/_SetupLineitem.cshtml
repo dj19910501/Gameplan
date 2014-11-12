@@ -45,7 +45,7 @@
         <div class="span3" id="inspect-modal-left-column3">
            <p>@Html.Raw("Owner")</p>
             @Html.TextBox("txtOwner",owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = owner })
-            <p>@Html.Raw("Cost")</p>
+            <p>@Html.Raw("Line Item Cost")</p>
             @Html.TextBoxFor(model=>model.Cost, new { @class = "span12 input-small currency_dollar truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
         </div>
     </div>
