@@ -365,7 +365,7 @@
                     $("#spanMessageSuccess").html(data.msg);
                     var planLineItemId = $("#hdnPlanLineItemId").val();
                     var requestedModule = $("#hdnRedirectType").val();
-                    RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', 0, 0, 0); 
+                    RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', data.CamapignId, data.ProgramId, data.TacticId, 0, 0); 
                 }
                 else {
                     // CancelEvent();
