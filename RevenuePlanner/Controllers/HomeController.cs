@@ -4135,6 +4135,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
+                    double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(s=>s.PlanTacticId == id).ToList().Sum(s=>s.Value);
                     imodel = (from pcpt in db.Plan_Campaign_Program_Tactic
                               where pcpt.PlanTacticId == id && pcpt.IsDeleted == false
                               select new InspectModel
@@ -4158,7 +4159,9 @@ namespace RevenuePlanner.Controllers
                                   // If tactic has a line item at that time we have consider Project cost as sum of all the active line items
                                   Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0
                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
-                                   ? (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost) : pcpt.Cost,
+                                   ?
+                                   (budgetAllocation > 0 ? budgetAllocation : (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
+                                    : pcpt.Cost,
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,
                                   VerticalTitle = pcpt.Vertical.Title,
@@ -6029,8 +6032,13 @@ namespace RevenuePlanner.Controllers
 
             string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
-            ippctm.Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0 && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault 
-                ? (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost) : pcpt.Cost;
+            double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(s => s.PlanTacticId == id).ToList().Sum(s => s.Value);
+
+            ippctm.Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0 
+                && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault 
+                ?
+                (budgetAllocation > 0 ? budgetAllocation : (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
+                : pcpt.Cost;
 
             ippctm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
 
@@ -9165,7 +9173,17 @@ namespace RevenuePlanner.Controllers
             Plan_Campaign_Program_TacticModel pcpm = new Plan_Campaign_Program_TacticModel();
             pcpm.PlanProgramId = pcp.PlanProgramId;
             pcpm.PlanTacticId = pcp.PlanTacticId;
-            pcpm.TacticCost = pcp.Cost;
+
+            string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
+            string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+            double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(s => s.PlanTacticId == id).ToList().Sum(s => s.Value);
+
+            pcpm.TacticCost  = (pcp.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcp.PlanTacticId && s.IsDeleted == false)).Count() > 0 &&
+                pcp.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcp.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
+                ?
+                (budgetAllocation > 0 ? budgetAllocation : (pcp.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcp.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
+                : pcp.Cost;
+
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == pcp.Plan_Campaign_Program.Plan_Campaign.PlanId);
             pcpm.AllocatedBy = objPlan.AllocatedBy;
 
