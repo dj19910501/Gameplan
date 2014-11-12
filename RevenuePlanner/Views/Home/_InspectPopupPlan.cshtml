@@ -41,7 +41,7 @@
             }
             else
             {
-                <span class="tipsyclassTitle" title="@Html.Raw(planDetails.Title)">@Html.Raw(planDetails.Title)</span>
+                <span class="tipsyclassTitle ConcatTextlength" title="@Html.Raw(planDetails.Title)">@Html.Raw(planDetails.Title)</span>
             }
             @if(!(InspectMode == Enums.InspectPopupMode.Edit.ToString()))
             {
@@ -264,7 +264,8 @@
                     else {
                         if (data.IsSuccess && data.opt != 'undefined') {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                 SaveMessageOnParent(data.msg);
+                                SaveMessageOnParent(data.msg);
+                                $('body').removeClass('bodyOverflow');
                              }
                              else {
                                  window.location.href = data.redirect;

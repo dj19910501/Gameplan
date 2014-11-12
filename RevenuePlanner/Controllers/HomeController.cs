@@ -5402,7 +5402,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
-                    return Json(new { IsSaved = false, Msg = Common.objCached.LoginWithSameSession }, JsonRequestBehavior.AllowGet);
+                    return Json(new { IsSaved = false, errormsg = Common.objCached.LoginWithSameSession }, JsonRequestBehavior.AllowGet);
                 }
             }
             try
@@ -5557,7 +5557,7 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
 
-            return Json(new { IsSaved = false, Msg = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+            return Json(new { IsSaved = false, errormsg = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -6280,7 +6280,7 @@ namespace RevenuePlanner.Controllers
                             if (pcpvar != null)
                             {
                                 //return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
-                                return Json(new { IsDuplicate = true, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = Common.objCached.DuplicateTacticExits });
+                                return Json(new { IsDuplicate = true, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), errormsg = Common.objCached.DuplicateTacticExits });
                             }
                             else
                             {

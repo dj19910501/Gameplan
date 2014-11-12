@@ -61,7 +61,7 @@
             @if(programMaster!=null)
             {
             <span>
-                <span id="lblProgramTitle"  class="tipsyclassTitle" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
+                <span id="lblProgramTitle"  class="tipsyclassTitle ConcatTextlength" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
                   @if (programMaster.OwnerId == Sessions.User.UserId)
                     {
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
@@ -363,10 +363,11 @@
                 }
                 else if (data.IsSuccess) {
                     if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                            SaveMessageOnParent(data.msg);
+                        SaveMessageOnParent(data.msg);
+                        $('body').removeClass('bodyOverflow');
                         }
                         else {
-                            window.location.href = data.redirect;
+                        window.location.href = data.redirect;
                             return;
                         }
                     }
@@ -393,7 +394,7 @@
     }
 
     $("#deleteProgram").click(function () {
-        if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
+        if (confirm('@Common.objCached.ConfirmationForDeleteProgram')) {
             var ProgramId = $("#hdnPlanProgramId").val();
             var uId = $(window).attr('name');
             var arrClosedTaskString = null;
@@ -419,7 +420,8 @@
                         else {
                          if (data.IsSuccess && data.opt != 'undefined') {
                              if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                    SaveMessageOnParent(data.msg);
+                                 SaveMessageOnParent(data.msg);
+                                 $('body').removeClass('bodyOverflow');
                                 }
                                 else {
                                     window.location.href = data.redirect;

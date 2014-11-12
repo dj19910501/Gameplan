@@ -396,6 +396,7 @@
                 else if (data.IsSuccess) {
                     if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                         SaveMessageOnParent(data.msg);
+                        $('body').removeClass('bodyOverflow');
                     }
                     else {
                         window.location.href = data.redirect;
@@ -452,6 +453,7 @@ $("#deleteTactic").click(function () {
                          if (data.IsSuccess && data.opt != 'undefined') {
                              if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                                  SaveMessageOnParent(data.msg);
+                                 $('body').removeClass('bodyOverflow');
                              }
                              else {
                                  window.location.href = data.redirect;

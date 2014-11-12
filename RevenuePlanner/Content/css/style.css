@@ -10950,3 +10950,11 @@ list-style-position:inside;
 #InspectTab > .setdefultcursor > a, #InspectTab  > .setdefultcursor > a:hover, #InspectTab  > .setdefultcursor > a:focus,#InspectTab  > .setdefultcursor > li > a:hover, #InspectTab  > .setdefultcursor > li > a:focus {
 cursor:context-menu !important;
 }
+
+.ConcatTextlength
+{
+     display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 500px;
+}

@@ -288,6 +288,7 @@
                 else if (data.IsSuccess) {
                     if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                         SaveMessageOnParent(data.msg);
+                        $('body').removeClass('bodyOverflow');
                     }
                     else {
                         window.location.href = data.redirect;
@@ -317,7 +318,7 @@ function SaveMessageOnParent(value) {
 }
 
 $("#deleteLineItem").click(function () {
-    if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
+    if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
         var ProgramId = $("#hdnPlanLineItemID").val();
             var uId = $(window).attr('name');
             var arrClosedTaskString = null;
@@ -344,6 +345,7 @@ $("#deleteLineItem").click(function () {
                          if (data.IsSuccess && data.opt != 'undefined') {
                              if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                                  SaveMessageOnParent(data.msg);
+                                 $('body').removeClass('bodyOverflow');
                              }
                              else {
                                  window.location.href = data.redirect;
