@@ -478,5 +478,9 @@ $("#deleteTactic").click(function () {
         if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
             $('#popupnewTactic').css("display", "none");
         }
-    });
+    });		
+ $('#NewTactic').click(function () {
+
+        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val());
+});
 </script>

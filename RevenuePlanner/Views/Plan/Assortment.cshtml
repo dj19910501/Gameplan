@@ -711,7 +711,7 @@
         $(document).on("click", "#createlineitem", function (e) {
             var idtactic = $(this).parent().attr('data-id-tactic');
             // alert(idtactic);
-            e.stopPropagation();
+            @* e.stopPropagation();
             $.ajaxSetup({ cache: false });
             $("#slidepanel").css("display", "block");
             var url = '@Url.Content("~/Plan/createLine")';
@@ -719,7 +719,8 @@
             $("#slidepanel").css("right", "0px");
             $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
-            e.preventDefault();
+            e.preventDefault();*@
+            ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "0",idtactic, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
         });
         $(document).on('click', '#delLineItem', function (e) {
 

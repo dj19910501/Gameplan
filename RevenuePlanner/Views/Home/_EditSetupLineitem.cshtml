@@ -2,11 +2,15 @@
 @using RevenuePlanner.Helpers
 @{
     
-    string OwnerName = ViewBag.OwnerName;
     string campaignTitle = Convert.ToString(ViewBag.CampaignTitle);
     string programTitle = Convert.ToString(ViewBag.ProgramTitle);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
     string owner = Convert.ToString(ViewBag.Owner);
+    bool isOtherLineitem = false;
+    if (Model!=null)
+    {
+        isOtherLineitem = Model.IsOtherLineItem;
+    }
 }
 
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
@@ -20,6 +24,7 @@
 {
     
     @Html.HiddenFor(model => model.PlanLineItemId, new { id = "PlanLineItemId" })
+    @Html.HiddenFor(model => model.PlanTacticId, new { id = "PlanTacticId" })
      @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
 
@@ -114,6 +119,11 @@
     $("#save_LineItem").click(function () {
         var iserror = false;
         var lineItemTitle = htmlEncode($('#txtTitle').val());
+        if (lineItemTitle == '@Common.DefaultLineItemTitle') {
+            var errorMsg = "You can't use 'Other' as title.";
+            ShowError(errorMsg);
+            return false;
+        }
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
                 if ($(this).val() == '') {
@@ -180,12 +190,19 @@
                         $("#spanMessageSuccess").empty();
                         $("#spanMessageSuccess").text(data.msg);
                         $("#errorMessage").css("display", "none");
+                        var requestedModule = $("#hdnRedirectType").val();
+                        var plancampaignId = 0;
+                        var planProgramId = 0;
+                        var planTacticId = 0;
                         $("#liReview,#liBudget,#liSetup").bind('click');
                         if (planLineItemId == '0') {
                             planLineItemId = data.planLineitemID;
+                            plancampaignId = data.planCampaignID;
+                            planProgramId = data.planProgramID;
+                            planTacticId = data.planTacticID;
                         }
-                        loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab);
-                        RefreshCurrentTab();    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                        RefreshCurrentTab(requestedModule,plancampaignId,planProgramId,planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         //$("#errorMessageEditCampaign").slideUp(50);
                         //$("#spanSuccessMessageViewCampaign").empty();
                         //$("#successMessageViewCampaign").slideDown(400);
