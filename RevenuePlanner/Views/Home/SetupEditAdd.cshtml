@@ -489,6 +489,7 @@
                         pcost = data.revenue;
                         projectedStageValue = data.projectedStageValue;
                         $("#lblStageTitle").text(data.stageTitle);
+                        $("#txtProjectedStageValue").attr("label", data.stageTitle)
                         $("#hdnStageId").val(data.stageId);
                         $("#txtProjectedStageValue").val(projectedStageValue);
                         GetConversionRate(projectedStageValue, true);

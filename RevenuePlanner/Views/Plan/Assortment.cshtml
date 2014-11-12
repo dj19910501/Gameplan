@@ -1287,24 +1287,7 @@
         //        impTacticCommonClick(id);
         //    }
         //}
-
-
-
-        function CallForRedirectToApplyToCalender() {
-            //add css class to disable hover on left navigation link when no data found
-            //Start : date : 01/21/2014
-            $("#aApplyToCalender").parent().parent().addClass("navdisable");
-            $("#aApplyToCalender").css('cssText', 'cursor: default !important');
-            //End : date : 01/21/2014
-            $("#aApplyToCalender").removeAttr("onclick");
-            isApply = true;
-        }
-
-
-       
-
-
-
+        
         // Added By Bhavesh
         // PL Ticket 289,377,378
         function LoadRecommendedGrid() {
@@ -2726,4 +2709,15 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
 
         $ContainerImprovement.append($html);
     }
+
+    function CallForRedirectToApplyToCalender() {
+        //add css class to disable hover on left navigation link when no data found
+        //Start : date : 01/21/2014
+        $("#aApplyToCalender").parent().parent().addClass("navdisable");
+        $("#aApplyToCalender").css('cssText', 'cursor: default !important');
+        //End : date : 01/21/2014
+        $("#aApplyToCalender").removeAttr("onclick");
+        isApply = true;
+    }
+
 </script>
