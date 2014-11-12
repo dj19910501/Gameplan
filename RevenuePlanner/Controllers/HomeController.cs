@@ -4627,7 +4627,7 @@ namespace RevenuePlanner.Controllers
                     var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
                                   join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                   join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                  where pc.PlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(tactictitle.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(actualResult.PlanTacticId) && pcpt.IsDeleted.Equals(false)
+                                  where pcpt.Title.Trim().ToLower().Equals(tactictitle.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(actualResult.PlanTacticId) && pcpt.IsDeleted.Equals(false)
                                   && pcp.PlanProgramId == objpcpt.PlanProgramId
                                   select pcp).FirstOrDefault();
 
@@ -11614,6 +11614,11 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.ParentTacticStatus = GetTacticStatusByPlanLineItemId(id);
+                Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobj => pcpobj.PlanLineItemId.Equals(id));
+                bool isotherlineitem = true;
+                if (pcptl != null && pcptl.LineItemTypeId != null)
+                    isotherlineitem = false;
+                ViewBag.IsOtherLineItem = isotherlineitem;
                 return PartialView("_ActualLineitem");
             }
             catch (Exception ex)

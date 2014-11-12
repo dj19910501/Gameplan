@@ -5,6 +5,11 @@
     {
         TacticStatus = ViewBag.ParentTacticStatus;
     }
+    bool IsOtherLineItem = false;
+    if (ViewBag.IsOtherLineItem != null)
+    {
+        IsOtherLineItem = ViewBag.IsOtherLineItem;
+    }
  }
 <style type="text/css">
     .disabled-row > th {
@@ -35,6 +40,7 @@
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
 @Html.Hidden("hdnParentTacticStatus", TacticStatus, new { id = "hdnParentTacticStatus" })
+@Html.Hidden("hdnIsOtherLineItem", IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
 <div id="divActualInner" class="content-panel-tab">
     <div class="cf">
         <div class="pull-left" style="float: left; width: 150px;">
@@ -132,7 +138,11 @@
         }
         var TacticActual;
         var planLineItemId = $("#hdnPlanLineItemID").val();
-
+        var isotherlineitem = $("#hdnIsOtherLineItem").val();
+        if (isotherlineitem.toLowerCase() == 'true') {
+            $("#lblLineitemTitle").show();
+            $("#txtTitle").hide();
+        }
         var hdnTacticStatus = $("#hdnParentTacticStatus").val();
         var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
         var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
@@ -252,6 +262,11 @@
             var iserror = false;
             var _lineitemtitle = htmlEncode($('#txtTitle').val());
             var _stractualsData = '';
+            if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
+                var errorMsg = "You can't use 'Other' as title.";
+                ShowError(errorMsg);
+                return false;
+            }
             $('#trActualCost').find('input').each(function () {
                 var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
                 _stractualsData = _stractualsData + "," + cvalue;
@@ -273,6 +288,7 @@
                 data: JSON.stringify({ strActualsData: _stractualsData, strPlanItemId: _strPlanLineitemId, LineItemTitle: _lineitemtitle }),
                 success: function (data) {
                     if (data != 'undefined') {
+                        if (!data.IsDuplicate) {
                         if (data.id != 0) {
                             $("#successMessage").css("display", "block");
                             // var topsize = $(document).scrollTop() + 41;
@@ -280,11 +296,18 @@
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
                             loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", data.TabValue);
+                            RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
                         }
                         else {
                             $("#errorMessage").css("display", "block");
                             $("#spanMessageError").empty();
                             $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                        }
+                    }
+                    else {
+                            ShowError(data.errormsg);
+                            //$("#errorMessage").slideUp(30);
+                        return;
                         }
                     }
                 },

@@ -9464,6 +9464,21 @@ namespace RevenuePlanner.Controllers
         {
             string[] arrActualCostInputValues = strActualsData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             int PlanLineItemId = int.Parse(strPlanItemId);
+            int tid = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanLineItemId == PlanLineItemId).SingleOrDefault().PlanTacticId;
+            var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
+                                           join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                           where  pcptl.Title.Trim().ToLower().Equals(LineItemTitle.Trim().ToLower()) && pcptl.IsDeleted.Equals(false)
+                                           && pcpt.PlanTacticId == tid
+                                           select pcpt).FirstOrDefault();
+
+            if (pcptvar != null)
+            {
+                return Json(new { IsDuplicate = true, errormsg = Common.objCached.DuplicateLineItemExits });
+            }
+            else
+            {
             Plan_Campaign_Program_Tactic_LineItem objPCPTL = db.Plan_Campaign_Program_Tactic_LineItem.Where(c => c.PlanLineItemId == PlanLineItemId).SingleOrDefault();
             if (objPCPTL != null && !string.IsNullOrEmpty(LineItemTitle))
             {
@@ -9495,8 +9510,12 @@ namespace RevenuePlanner.Controllers
                 }
             }
             saveresult = db.SaveChanges();
+                
+                int pid = db.Plan_Campaign_Program_Tactic.Where(s => s.PlanTacticId == tid).SingleOrDefault().PlanProgramId;
+                int cid = db.Plan_Campaign_Program.Where(s => s.PlanProgramId == pid).SingleOrDefault().PlanCampaignId;
             if (saveresult > 0)
-                return Json(new { id = strPlanItemId, TabValue = "Actuals", msg = "Result Updated Successfully." });
+                    return Json(new { id = strPlanItemId, TabValue = "Actuals", msg = "Result Updated Successfully.", planCampaignID = cid, planProgramID = pid, planTacticID = tid });
+            }
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
         #endregion

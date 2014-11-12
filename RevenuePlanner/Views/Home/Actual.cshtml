@@ -793,11 +793,11 @@
                             $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                         }
                         }
-                    }
                     else {
-                        ShowError(data.Msg);
-                        $("#errorMessage").slideUp(30);
+                            ShowError(data.errormsg);
+                            //$("#errorMessage").slideUp(30);
                         return;
+                    }
                     }
                 },
                 error: function () {
@@ -849,4 +849,11 @@
         }
         //End - Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
     });
+function ShowError(value) {
+    $("#modal-container-186470").scrollTop(0);
+    $("#errorMessage").css("display", "block");
+    $("#errorMessage").slideDown(400);
+    $("#spanMessageError").empty();
+    $("#spanMessageError").text(value);
+}
 </script>
