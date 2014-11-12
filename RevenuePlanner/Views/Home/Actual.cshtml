@@ -20,6 +20,12 @@
         padding: 0 !important;
         border: 1px solid #ccc !important;
     }
+
+    .actual_cancel {
+        color: gray;
+        margin-top: 30px !important;
+        margin-left: 28px;
+    }
 </style>
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
@@ -270,7 +276,7 @@
                             <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left;" type="button">Update Actuals</button>
                         </div>
                         <div class="span2">
-                            <button id="cancelTacticActuals" class="close-form btn-link source-sans-proregular margin-top23" type="button">Cancel</button>
+                    <button id="cancelTacticActuals" class="close-form btn-link source-sans-proregular margin-top23 actual_cancel" type="button">Cancel</button>
                         </div>
                     </div>
                 }
@@ -642,6 +648,7 @@
         }
 
         $("#btnUploadResult").click(function () {
+            var title = htmlEncode($('#txtTacticTitle').val()); // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
             var _tactic = [];
             var _LineItems = [];
             var isError = false;
@@ -715,6 +722,10 @@
                 }
                 
             });
+            // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
+            if (title == '') {
+                isError = true;
+            }
             if (isError) {
                 $("#errorMessage").css("display", "block");
                 /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
@@ -755,7 +766,7 @@
                 dataType: 'json',
                 type: 'POST',
                 url: '@Url.Content("~/Home/UploadResult/")',
-                data: JSON.stringify({ tacticactual:_tactic,lineItemActual:_LineItems}),
+                data: JSON.stringify({ tacticactual: _tactic, lineItemActual: _LineItems, tactictitle: title }),    // Modified by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
                 success: function (data) {
                     if (data != 'undefined') {
                         if (data.id != 0) {

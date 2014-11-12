@@ -15,6 +15,11 @@
         padding: 0 !important;
         border: 1px solid #ccc !important;
     }
+    .actual_cancel {
+        color: gray;
+        margin-top: 30px !important;
+        margin-left: 28px;
+    }
 </style>
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
@@ -98,7 +103,7 @@
                 <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float: left;" type="button">Update Actuals</button>
             </div>
             <div class="span2">
-                <button id="cancelLineitemActuals" class="close-form btn-link source-sans-proregular margin-top23" type="button">Cancel</button>
+                <button id="cancelLineitemActuals" class="close-form btn-link source-sans-proregular margin-top23 actual_cancel" type="button">Cancel</button>
             </div>
         </div>
     </div>
@@ -215,18 +220,28 @@
         //End - Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
 
         $("#btnUploadResult").click(function () {
+            var iserror = false;
+            var _lineitemtitle = htmlEncode($('#txtTitle').val());
             var _stractualsData = '';
             $('#trActualCost').find('input').each(function () {
                 var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
                 _stractualsData = _stractualsData + "," + cvalue;
             });
             var _strPlanLineitemId = $("#hdnPlanLineItemID").val();
+            if (_lineitemtitle == '') {
+                iserror = true;
+            }
+
+            if (iserror) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
             $.ajax({
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveActualsLineitemData/")',
-                data: JSON.stringify({ strActualsData: _stractualsData, strPlanItemId: _strPlanLineitemId }),
+                data: JSON.stringify({ strActualsData: _stractualsData, strPlanItemId: _strPlanLineitemId, LineItemTitle: _lineitemtitle }),
                 success: function (data) {
                     if (data != 'undefined') {
                         if (data.id != 0) {

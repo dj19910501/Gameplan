@@ -9460,10 +9460,19 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="planLineItemId">Plan line item Id.</param>
         /// <returns>Returns Json Result of line item actuals Value.</returns>
-        public JsonResult SaveActualsLineitemData(string strActualsData, string strPlanItemId)
+        public JsonResult SaveActualsLineitemData(string strActualsData, string strPlanItemId, string LineItemTitle = "")
         {
             string[] arrActualCostInputValues = strActualsData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             int PlanLineItemId = int.Parse(strPlanItemId);
+            Plan_Campaign_Program_Tactic_LineItem objPCPTL = db.Plan_Campaign_Program_Tactic_LineItem.Where(c => c.PlanLineItemId == PlanLineItemId).SingleOrDefault();
+            if (objPCPTL != null && !string.IsNullOrEmpty(LineItemTitle))
+            {
+                objPCPTL.Title = LineItemTitle;
+                objPCPTL.ModifiedBy = Sessions.User.UserId;
+                objPCPTL.ModifiedDate = DateTime.Now;
+                db.Entry(objPCPTL).State = EntityState.Modified;
+                db.SaveChanges();
+            }
             var PrevActualAllocationListTactics = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => c.PlanLineItemId == PlanLineItemId).Select(c => c).ToList();
             if (PrevActualAllocationListTactics != null && PrevActualAllocationListTactics.Count > 0)
             {

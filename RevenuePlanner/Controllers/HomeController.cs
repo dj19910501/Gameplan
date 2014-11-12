@@ -4603,7 +4603,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="tacticactual">List of InspectActual.</param>
         /// <returns>Returns JsonResult.</returns>
         [HttpPost]
-        public JsonResult UploadResult(List<InspectActual> tacticactual, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActual, string UserId = "")
+        public JsonResult UploadResult(List<InspectActual> tacticactual, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActual, string UserId = "", string tactictitle = "")
         {
             bool isLineItemForTactic = false;
             if (!string.IsNullOrEmpty(UserId))
@@ -4718,6 +4718,8 @@ namespace RevenuePlanner.Controllers
 
                             Plan_Campaign_Program_Tactic objPCPT = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == actualResult.PlanTacticId).SingleOrDefault();
                             //objPCPT.CostActual = actualResult.TotalCostActual;
+                            if (!string.IsNullOrEmpty(tactictitle)) // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
+                                objPCPT.Title = tactictitle;
                             objPCPT.ModifiedBy = Sessions.User.UserId;
                             objPCPT.ModifiedDate = DateTime.Now;
                             db.Entry(objPCPT).State = EntityState.Modified;
