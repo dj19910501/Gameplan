@@ -211,13 +211,13 @@
                     }
                     else {
                         if (data.redirect) {
-                            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html());
+                            //$('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html());
                             CurrentPlanId = data.planId;
                             var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val();
                             window.location.href = url;
                             return;
                         }
-                        if (data.errormsg) {
+                        if (data.errormsg != '') {
                             $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html());
                             return;
                         }

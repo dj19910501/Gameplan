@@ -10958,3 +10958,7 @@ cursor:context-menu !important;
     text-overflow: ellipsis;
     width: 500px;
 }
+
+#divTab {
+    margin-top: 30px;
+}

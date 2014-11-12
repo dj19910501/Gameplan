@@ -16,19 +16,19 @@
     @Html.HiddenFor(model => model.PlanId)
     @Html.HiddenFor(model => model.Title)
     @Html.Hidden("hdnIsBudgetAllocated",IsBudgetAllocated)
-    <div class="inspect-column-parent remove-bottom-border">
-        <div id="inspect-modal-left-column1" class="span3">
+    
+        <div style="width: 30%; float: left;">
             <label class="padding-left4">Plan Budget</label>
             @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
             {
-                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id="txtPlanBudget", @class = "span11 input-small truncate currency_dollar", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })
+                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id="txtPlanBudget", @class = "margin-top3px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })
             }
             else if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
             {
-                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id = "txtPlanBudget", @class = "span11 input-small truncate currency_dollar", style = "", title = planDetails.Budget, require = "true", })
+                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id = "txtPlanBudget", @class = "margin-top3px currency_dollar", style = "", title = planDetails.Budget, require = "true", })
             }
         </div>
-        <div id="inspect-modal-left-column2" class="InspectPopupBudgetSection">
+        <div class="InspectPopupBudgetSection">
             @if (!AllocatedBy.Equals(Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
             {
 	            <div class="budget-section">
@@ -66,19 +66,19 @@
                 <div class="InspectPopup-DefaultBudget">@Common.objCached.DefaultPlanAllocationMessage</div>
             }
         </div>
-    </div>
+    
     if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
     {
-        <div class="wraper-btns cf" style="width: 100%; clear: both">
+        <div class="wraper-btns cf border-top-div" style="width: 100%; padding-right:2%; clear: both;">
             <div id="divBudgetError" class="alert alert-error hide error-msg">
                 <a class="close">×</a>
                 <p id="BudgetErrorMessage" class="source-sans-probold">You cannot allocate more than budgeted for Jan and May .</p>
             </div>
             <div style="width: 80px" class="span2 btn-save">
-                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save</button>
             </div>
             <div class="span2">
-                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button" style="float: left; margin-top: 30px;">Cancel</button>
             </div>
         </div>
     }                        
