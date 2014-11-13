@@ -10911,12 +10911,6 @@ list-style-position:inside;
     padding:0 17px 10px 0 !important;
 }
 
-.InspectPopupBudgetSection .budget-head {
-    color: #343434;
-    font-family: "source_sans_prosemibold",Arial,"sans-serif";
-    font-size: 13px
-}
-
 .white-bg-InspectPopup-Budget .unallocated-span {
     box-sizing: border-box;
     display: block;
