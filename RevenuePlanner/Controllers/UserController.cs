@@ -855,6 +855,9 @@ namespace RevenuePlanner.Controllers
         // Added by Viral Kadiya on 11/06/2014 for PL ticket #917 to implement Security Testing: Bulldog User Can Change Zebra User Details
         public ActionResult Edit()
         {
+            // Added by Viral Kadiya on 11/13/2014 for PL ticket #945 
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
             return View();
         }
 
