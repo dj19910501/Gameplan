@@ -33,7 +33,7 @@
         margin-left: 28px;
     }
 
-    .actual_cancel:hover, .actual_cancel:focus {
+        .actual_cancel:hover, .actual_cancel:focus {
             color: gray;
         }
 </style>
@@ -84,6 +84,8 @@
                             string actualIds = "txtActual-Y" + j;
                             string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
                             string classes = "input-actual text-align-right width75px currency_dollar input-table";
+
+
 
                             <th class="border-r font3F3F3F ">
                                 <input id="@actualIds" class= "@classes" placeholder="- - -" maxlength="@maxL">
@@ -152,17 +154,26 @@
             $("#divActualInner").append(ActualTab());
             $("#lblLineitemTitle").show();
             $("#txtTitle").hide();
+            $("#btnEditlineItem").unbind('click');
             $("#btnEditlineItem").on("click", function (e) {
+                $("#errorMessage").css("display", "none");
+                $("#successMessage").css("display", "none");
                 $("#hdnLineitemOpt").val("Edit");
-                $('#txtTitle').show();
-                $('#lblLineitemTitle').hide();
                 loadReview(planLineItemId, "Setup");
+                $("#btnEditlineItem").css("display", "none");
+                $('#txtTitle').css('display', 'block');
+                $('#lblLineitemTitle').css('display', 'none');
+                $("#txtTitle").val($('#lblLineitemTitle').text());
+                $("#txtTitle").prop('readonly', false);
+                $("#AddForm").css("display", "none");
+                $("#divDeleteProgram").css("display", "none");
+                $("#txtTitle").removeClass('error');
             });
         }
         else {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/GetActualsLineitemData/")',
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/GetActualsLineitemData/")',
                 data: {
                     planLineItemId: planLineItemId
                 },
@@ -173,16 +184,16 @@
                         if (actualData.length) {
                             for (i in actualData) {
                                 var indx = parseInt(i) + 1;
-                                var actVal =actualData[i].costValue;
+                                var actVal = actualData[i].costValue;
                                 $("#txtActual-Y" + indx).val(FormatCurrency(actVal, false));
                             }
                         }
                         var projectedval = data.ProjectedValue;
                         if (projectedval != null)
-                        $("#cP").text(projectedval);
+                            $("#cP").text(projectedval);
                         var lastupdatedby = data.LastUpdatedBy;
-                        if(lastupdatedby != null)
-                        $("#last-updated").text(lastupdatedby);
+                        if (lastupdatedby != null)
+                            $("#last-updated").text(lastupdatedby);
                     }
                     CalculateTotalCost();
                     $('.setBudget').each(function () {
@@ -267,10 +278,10 @@
             var _stractualsData = '';
             var isotherlineitem = $("#hdnIsOtherLineItem").val();
             if (isotherlineitem.toLowerCase() == 'false') {
-            if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
-                var errorMsg = "You can't use 'Other' as title.";
-                ShowError(errorMsg);
-                return false;
+                if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
+                    var errorMsg = "You can't use 'Other' as title.";
+                    ShowError(errorMsg);
+                    return false;
                 }
             }
             $('#trActualCost').find('input').each(function () {
@@ -284,8 +295,8 @@
 
             if (iserror) {
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
-            return false;
-        }
+                return false;
+            }
             $.ajax({
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -295,27 +306,27 @@
                 success: function (data) {
                     if (data != 'undefined') {
                         if (!data.IsDuplicate) {
-                        if (data.id != 0) {
-                            $("#successMessage").css("display", "block");
-                            // var topsize = $(document).scrollTop() + 41;
-                            //  $("#modal-container-186470").css("top", topsize + "px");
-                            $("#spanMessageSuccess").empty();
-                            $("#spanMessageSuccess").text(data.msg);
-                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", data.TabValue);
-                            RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
-                        }
-                        else {
-                            $("#errorMessage").css("display", "block");
-                            $("#spanMessageError").empty();
-                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                            if (data.id != 0) {
+                                $("#successMessage").css("display", "block");
+                                // var topsize = $(document).scrollTop() + 41;
+                                //  $("#modal-container-186470").css("top", topsize + "px");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.msg);
+                                loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", data.TabValue);
+                                RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
+                            }
+                            else {
+                                $("#errorMessage").css("display", "block");
+                                $("#spanMessageError").empty();
+                                $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                         }
                     }
                     else {
-                            ShowError(data.errormsg);
+                        ShowError(data.errormsg);
                             //$("#errorMessage").slideUp(30);
                         return;
-                        }
                     }
+                }
                 },
                 error: function () {
                     $("#errorMessage").css("display", "block");
