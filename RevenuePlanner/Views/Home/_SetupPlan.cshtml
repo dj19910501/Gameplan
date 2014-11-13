@@ -98,8 +98,8 @@
                 }
                 else if (_goalType.toLowerCase() == '@Enums.PlanGoalType.Revenue.ToString().ToLower()') {
                     $('#txtRevenue').val('$' + number_format(_goalValue.toString(), 0, '.', ','));
-                    $('#txtINQ').val(number_format(data.input1.toString(), 0, '.', ','));
-                    $('#txtMQL').val(number_format(data.input2.toString(), 0, '.', ','));
+                    $('#txtINQ').val(number_format(data.input2.toString(), 0, '.', ','));
+                    $('#txtMQL').val(number_format(data.input1.toString(), 0, '.', ','));
                 }
             }
         });
@@ -218,6 +218,7 @@
                                     $("#spanMessageSuccess").text(data.succmsg);
                                     returnToReadOnlyMode(data.id);
                                     RefreshCurrentTab(requestedModule, 0, 0, 0);
+                                    isDataModified = true;
                                 }
                                 return;
                             }

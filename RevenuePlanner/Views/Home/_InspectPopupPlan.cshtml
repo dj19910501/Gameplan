@@ -30,6 +30,10 @@
     <a class="close">×</a>
     <strong>Error!</strong> <span>@Common.objCached.ErrMsgLessPlanBudget</span>
 </div>
+<div id="divBudgetError" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <p id="BudgetErrorMessage">You cannot allocate more than budgeted for Jan and May .</p>
+</div>
 <form>
     <div class="modal-popup-title">
         <span class="icon-flag bg-purple" style="background-color:#@planDetails.ColorCode !important;"></span>
@@ -211,9 +215,14 @@
                     }
                     else {
                         if (data.redirect) {
-                            //$('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html());
-                            CurrentPlanId = data.planId;
-                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val();
+                            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html());
+                            if (data.planId) {
+                                CurrentPlanId = data.planId;
+                            }
+                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() 
+                            if ($('#ActiveMenu').val() == '@Enums.ActiveMenu.Plan.ToString()') {
+                                url = url + '&currentPlanId=' + data.planId;
+                            }
                             window.location.href = url;
                             return;
                         }
@@ -264,8 +273,11 @@
                     else {
                         if (data.IsSuccess && data.opt != 'undefined') {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                SaveMessageOnParent(data.msg);
-                                $('body').removeClass('bodyOverflow');
+                                //SaveMessageOnParent(data.msg);
+                                //$('body').removeClass('bodyOverflow');
+                                $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + data.msg);
+                                var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val();
+                                window.location.href = url;
                              }
                              else {
                                  window.location.href = data.redirect;

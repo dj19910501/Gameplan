@@ -46,7 +46,10 @@
                             <div class="budget-result source-sans-prolight">
                                 <p class="font-size16">
                                     Allocated Campaign Budget (this @(AllocatedBy.Equals(Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString(), StringComparison.OrdinalIgnoreCase) ? "Month" : "Quarter")): 
+                                    @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+                                    {
                                                 <span id="lblAllocatedCampaignsBudget" class="source-sans-proregular"></span>
+                                    }
                                 </p>
                                 <p class="font-size16">
                                     Total Allocated:
@@ -70,10 +73,6 @@
     if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
     {
         <div class="wraper-btns cf border-top-div" style="width: 100%; padding-right:2%; clear: both;">
-            <div id="divBudgetError" class="alert alert-error hide error-msg">
-                <a class="close">×</a>
-                <p id="BudgetErrorMessage" class="source-sans-probold">You cannot allocate more than budgeted for Jan and May .</p>
-            </div>
             <div style="width: 80px" class="span2 btn-save">
                 <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save</button>
             </div>
@@ -174,7 +173,7 @@
         var CampaignBudgetValue = $("#txtPlanBudget").val().trim().replace(/,/g, '').replace('$', '');
         var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
         var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
-        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true));
+        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true).replace('$', ''));
         if (unallocatedBudget < 0) {
             $("#lblUnallocatedBudget").addClass('error-text');
             $("#lblTotalAllocated").addClass('error-text');
@@ -410,6 +409,7 @@
                                 $("#spanMessageSuccess").text(data.succmsg);
                                 returnToReadOnlyMode(data.id);
                                 RefreshCurrentTab(requestedModule, 0, 0, 0);
+                                isDataModified = true;
                             }
                             return;
                         }

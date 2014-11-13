@@ -9920,6 +9920,7 @@ namespace RevenuePlanner.Controllers
                                     // Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                                     if (IsPlan)
                                     {
+                                        TempData["SuccessMessageDeletedPlan"] = strMessage;
                                         return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }) });
                                     }
                                     // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
@@ -9943,6 +9944,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (IsIndex)
                                 {
+                                    TempData["SuccessMessageDeletedPlan"] = strMessage;
                                     return Json(new { IsSuccess = true, redirect = Url.Action("Index"), msg = strMessage, opt = Enums.InspectPopupRequestedModules.Index.ToString() });
                                 }
                                 else 
@@ -11009,11 +11011,11 @@ namespace RevenuePlanner.Controllers
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
 
-                        if (BudgetInputValues == "")
+                        if (BudgetInputValues == "" && planBudget.ToString() == "") // Setup Tab
                         {
-                            plan.Description = objPlanModel.Description;    /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
+                            plan.Description = objPlanModel.Description;
                         }
-                        else
+                        else   // Budget Tab
                         {
                             plan.Budget = Convert.ToDouble(planBudget.ToString().Trim().Replace(",", "").Replace("$", ""));
 

@@ -9329,11 +9329,15 @@ namespace RevenuePlanner.Controllers
                 if (!string.IsNullOrEmpty(CloneType) && Id > 0)
                 {
                     Clonehelper objClonehelper = new Clonehelper();
-                    rtResult = objClonehelper.ToClone("", CloneType, Id);
                     if (CloneType == Enums.DuplicationModule.Plan.ToString())
                     {
+                        rtResult = objClonehelper.ToClone("", CloneType, Id, Id);
                         Plan objPlan = db.Plans.Where(p => p.PlanId == Id).FirstOrDefault();
                         title = objPlan != null ? objPlan.Title : string.Empty;
+                    }
+                    else
+                    {
+                        rtResult = objClonehelper.ToClone("", CloneType, Id);
                     }
                     if (CloneType == Enums.DuplicationModule.LineItem.ToString())
                     {
@@ -9346,22 +9350,20 @@ namespace RevenuePlanner.Controllers
                 {
                     if (!string.IsNullOrEmpty(CalledFromBudget))
                     {
-                        string DuplicateSuccMsg = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
-                        TempData["SuccessMessage"] = DuplicateSuccMsg;
+                        TempData["SuccessMessage"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
                         TempData["SuccessMessageDeletedPlan"] = "";
                         //return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
 
                         string expand = CloneType.ToLower().Replace(" ", "");
                         if (expand == "campaign")
-                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, duplicateSuccMsg = DuplicateSuccMsg }) });
+                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
                         else
-                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + Id.ToString() }), duplicateSuccMsg = DuplicateSuccMsg });
+                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + Id.ToString() }) });
                     }
                     else
                     {
-                        string DuplicateSuccMsg = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
-                        TempData["SuccessMessageDeletedPlan"] = DuplicateSuccMsg;
-                        return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId, duplicateSuccMsg = DuplicateSuccMsg });
+                        TempData["SuccessMessageDeletedPlan"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
+                        return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId });
                     }
                 }
                 return Json(new { });
