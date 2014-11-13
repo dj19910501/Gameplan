@@ -267,13 +267,15 @@ namespace RevenuePlanner.Helpers
                         programCustomField.ForEach(a => { a.EntityId = clonedProgram.PlanProgramId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
                         var tacticList=program.Plan_Campaign_Program_Tactic.Where(a=>a.IsDeleted==false).ToList();
 
-                        foreach (var tactic in tacticList)
+                        if (clonedProgram != null && clonedProgram.Plan_Campaign_Program_Tactic.Count > 0)
                         {
-                            var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
-                            int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
-                            tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                            foreach (var tactic in tacticList)
+                            {
+                                var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
+                                int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
+                                tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                            }    
                         }
-                        
                     }
 
                     db.SaveChanges();

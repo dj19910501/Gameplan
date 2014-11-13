@@ -5424,7 +5424,7 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateProgramExits });
+                                return Json(new { IsSaved = false, errormsg = Common.objCached.DuplicateProgramExits });
                             }
                             else
                             {
@@ -5495,7 +5495,7 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { IsSaved = false, Msg = Common.objCached.DuplicateProgramExits }, JsonRequestBehavior.AllowGet);
+                                return Json(new { IsSaved = false, errormsg = Common.objCached.DuplicateProgramExits }, JsonRequestBehavior.AllowGet);
                             }
                             else
                             {
