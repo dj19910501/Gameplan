@@ -220,8 +220,14 @@
                             plancampaignId = data.planCampaignID;
                             planProgramId = data.planProgramID;
                             planTacticId = data.planTacticID;
-                        loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
-                        RefreshCurrentTab(requestedModule,plancampaignId,planProgramId,planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                            $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
+                        }
+                        else {
+                            RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        }
                         //$("#errorMessageEditCampaign").slideUp(50);
                         //$("#spanSuccessMessageViewCampaign").empty();
                         //$("#successMessageViewCampaign").slideDown(400);

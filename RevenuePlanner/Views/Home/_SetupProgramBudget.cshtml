@@ -478,12 +478,19 @@
              success: function (data) {
                  if (data.IsSaved) {
                      CancelEvent();
+                     var requestedModule = $("#hdnRedirectType").val();
                      $("#errorMessageEditProgram").slideUp(50);
                      $("#spanMessageViewProgram").empty();
                      $("#successMessageViewProgram").slideDown(400);
                      $("#spanSuccessMessageViewProgram").empty();
                      $("#spanSuccessMessageViewProgram").html(data.msg);
-                     RefreshCurrentTab();
+
+                     if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                         $("#hdnBudgetingExpandId").val("program" + data.PlanProgramId);
+                     }
+                     else {
+                         RefreshCurrentTab();
+                     }
                  }
                  else {
                      CancelEvent();

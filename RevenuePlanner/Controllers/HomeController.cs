@@ -9442,7 +9442,7 @@ namespace RevenuePlanner.Controllers
 
                             db.SaveChanges();
                             scope.Complete();
-                            return Json(new { IsSaved = true, msg = "Changes Saved.", JsonRequestBehavior.AllowGet });
+                            return Json(new { IsSaved = true, msg = "Changes Saved.", planTacticId = form.PlanTacticId, JsonRequestBehavior.AllowGet });
                         }
                     }
                 }
@@ -10445,7 +10445,7 @@ namespace RevenuePlanner.Controllers
 
                             db.SaveChanges();
                             scope.Complete();
-                            return Json(new { IsSaved = true, msg = "Changes Saved.", JsonRequestBehavior.AllowGet });
+                            return Json(new { IsSaved = true, msg = "Changes Saved.", planCampaignId = form.PlanCampaignId, JsonRequestBehavior.AllowGet });
                         }
                     }
                 }
@@ -10850,10 +10850,10 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
 
-                               
-                                    scope.Complete();
-                                    return Json(new { isSaved = true, msg = "Lineitem updated successfully.", planCampaignID = cid, planProgramID = pid, planTacticID = tid });
-                               
+
+                                scope.Complete();
+                                return Json(new { isSaved = true, msg = "Lineitem updated successfully.", planLineitemID = form.PlanLineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
+
                             }
                         }
                     }

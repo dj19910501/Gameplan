@@ -19,9 +19,19 @@
         }
     }
     string strPlanid = ViewBag.strplanid;
+    
+    var BudgetingBussinessUnitId = 0;
+    var BudgetingCurrentTab = "aAllocated";
+    var BudgetingCurrentPlanId = 0;
+    var RequsedtedModule="";
+    var BudgetingExpandId = 0;
 }
 
-
+@Html.Hidden("hdnBudgetingBussinessUnitId", BudgetingBussinessUnitId)
+@Html.Hidden("hdnBudgetingCurrentTab", BudgetingCurrentTab)
+@Html.Hidden("hdnBudgetingCurrentPlanId", BudgetingCurrentPlanId)
+@Html.Hidden("hdnRequsedtedModule", RequsedtedModule)
+@Html.Hidden("hdnBudgetingExpandId", BudgetingExpandId)
 
 <div class="padding-content padding-bottom0 ">
     <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
@@ -299,6 +309,8 @@ function ShowModel(mode, section, id, ParentId, RequsedtedModule) {
     ParentId = typeof ParentId != 'undefined' ? ParentId : '0';
     RequsedtedModule = typeof RequsedtedModule != 'undefined' ? RequsedtedModule : '';
 
+    $("#hdnRequsedtedModule").val(RequsedtedModule);
+
     if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
             loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@Planid', RequsedtedModule);
@@ -363,6 +375,10 @@ function loadInspectPopup(id, section, tabValue, mode, parentId, RequsedtedModul
         $('.close-x-big-icon').click(function () {
             $('body').removeClass('bodyOverflow');
 
+            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == $("#hdnRequsedtedModule").val()) {
+                $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + $("#hdnBudgetingBussinessUnitId").val(), function () { TabLoad($("#hdnBudgetingCurrentTab").val()); ShowChangeLog($("#hdnBudgetingCurrentPlanId").val()); hideAllMessages = true; });
+            }
+            
                 @*//window.location = '@Url.Content("~/Plan/Assortment")';*@
             //Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
             var hdnRefresh = $("#hdnRefresh").val();    // This hidden value set from ApplyToCalendar page, to check flag, whether this page called from ApplyTocalender or not.

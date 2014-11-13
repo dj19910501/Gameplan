@@ -357,6 +357,7 @@
                 if (data.IsSaved) {
                     CancelEvent();
                     var activeTab = $("#InspectTab li.active a").text()
+                    var requestedModule = $("#hdnRedirectType").val();
                     $("#lblLineitemTitle").html(htmlEncode($('#txtTitle').val()));
                     //$("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
                     $("#errorMessage").slideUp(50);
@@ -365,7 +366,12 @@
                     $("#spanMessageSuccess").html(data.msg);
                     var planLineItemId = $("#hdnPlanLineItemId").val();
                     var requestedModule = $("#hdnRedirectType").val();
-                    RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', data.CamapignId, data.ProgramId, data.TacticId, 0, 0); 
+                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                        $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
+                    }
+                    else {
+                        RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', data.CamapignId, data.ProgramId, data.TacticId, 0, 0);
+                    }
                 }
                 else {
                     // CancelEvent();

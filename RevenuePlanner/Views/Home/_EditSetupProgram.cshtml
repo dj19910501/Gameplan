@@ -347,7 +347,14 @@
                         //$("#spanSuccessMessageViewProgram").empty();
                         //$("#spanSuccessMessageViewProgram").html(data.Msg);
                         loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", activeTab,"@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
-                        RefreshCurrentTab(requestedModule, campaignId, 0, 0);  //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                            $("#hdnBudgetingExpandId").val("program"+planProgramId);
+                        }
+                        else {
+                            RefreshCurrentTab(requestedModule, campaignId, 0, 0);  //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        }
+                        
                     }
                     else {
                         //CancelEvent();

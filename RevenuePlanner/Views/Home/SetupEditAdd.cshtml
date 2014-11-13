@@ -415,7 +415,12 @@
                             $("#errorMessage").css("display", "none");
                             loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
                             $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
-                            RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                                $("#hdnBudgetingExpandId").val("tactic" + planTacticId);
+                            }
+                            else {
+                                RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            }
                             $("#txtCampaign").val(txtCampaignValue);
                             $("#txtProgram").val(txtProgramValue);
                             $("#txtTacticTitle").val(txtTacticValue);

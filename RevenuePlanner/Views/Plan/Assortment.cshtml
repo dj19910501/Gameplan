@@ -194,10 +194,16 @@
     var costTotal = 0;
     var programTotal = 0;
     var isApply = false;
+
+    // Added By Bhavesh
+    // PL Ticket 289,377,378
+    var globledataid = 0;
+
     CampaignID = @ViewBag.CampaignID
     ProgramID = @ViewBag.ProgramID
     TacticID =@ViewBag.TacticID
     ImprovementPlanProgramId = @ViewBag.ImprovementPlanProgramId
+
     $("#spanGoalValue").text(FormatCommas($("#spanGoalValue").text(), false));  @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
     /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
     function EditPlan() {
@@ -466,7 +472,7 @@
             myApp.hidePleaseWait();*@
              e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
             
-            ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", idCampaing, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+            ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", idCampaing, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
         });
 
 
@@ -583,7 +589,7 @@
             e.stopPropagation();
             //$.ajaxSetup({ cache: false });
             //$("#slidepanel").css("display", "block");
-            var idProgram = $(this).parent().parent().attr('id');
+            var idCampaign = $(this).parent().parent().attr('data-id-campaing');
 
             //if (idProgram == 0) {
             //    $("a#0 span.gray-bg-text").removeClass('1');
@@ -605,11 +611,10 @@
                 $('#slidepanel-container').load(url + '?id=' + idProgram + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
             $("#slidepanel").css("right", "0px");
-            myApp.hidePleaseWait();*@
-             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
+            myApp.hidePleaseWait();
+             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue*@
             
-            ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", idProgram, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
-
+            ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaign, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
         });
 
         //Dharmraj Start 8July2014 Common function to handle tactic click event
@@ -1292,753 +1297,11 @@
         //    else {
         //        impTacticCommonClick(id);
         //    }
-        //}
-        
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function LoadRecommendedGrid() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/GetRecommendedImprovementTacticType/")',
-                data: {
-                },
-                success: function (data) {
-                    RecommendedImprovementTacticType = data;
-                    fillRecommendedImprovementTacticType(false);
-                    if (!isLoadSuggestion) {
-                        LoadScriptForSuggestion();
-                    }
-                    var divsuggstedheight = $(".grey-container-content").outerHeight();
-                    var finalheight = 50 + parseFloat(divsuggstedheight);
-                    $("#divSuggestionBox").css("padding-bottom", finalheight);
-                    //divSuggestionBox
-                    //padding-bottom:250px;
-                    //$("#defaultSortingId").focus().click();
-                }
-            });
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function fillRecommendedImprovementTacticType() {
-            $('#tableImprovementTypeSuggested > tbody').empty();
-            if (typeof RecommendedImprovementTacticType != 'undefined') {
-                //alert('1');
-                var $html = '';
-                //alert(JSON.stringify(RecommendedImprovementTacticType));
-                if (RecommendedImprovementTacticType.data.length) {
-                    for (i in RecommendedImprovementTacticType.data) {
-                        addRowRecommendedImprovementTacticType(RecommendedImprovementTacticType.data[i].ImprovementPlanTacticId, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeTitle, RecommendedImprovementTacticType.data[i].ProjectedRevenueWithoutTactic, RecommendedImprovementTacticType.data[i].Cost, RecommendedImprovementTacticType.data[i].ProjectedRevenueWithTactic, RecommendedImprovementTacticType.data[i].ProjectedRevenueLift, RecommendedImprovementTacticType.data[i].RevenueToCostRatio, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeId, RecommendedImprovementTacticType.data[i].IsExits, RecommendedImprovementTacticType.data[i].IsOwner);
-                    }
-                }
-            }
-            if (!isADS) {
-                LoadScriptForTableRow();
-            }
-            if (isADS) {
-                LoadScriptForADS(1);
-            }
-
-            //Fetch all the row values from the tables
-            $('.SuggestedSection').each(function () {
-                //Added By : Kalpesh Sharma
-                //PL #508 Set format for label in tool tip
-                //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                //SetLabelFormaterWithTipsy($(this));
-                SetLabelFormaterWithTitle($(this));
-                //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-            });
-
-
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function addRowRecommendedImprovementTacticType(ImprovementPlanTacticId, ImprovementTacticTypeTitle, ProjectedRevenueWithoutTactic, Cost, ProjectedRevenueWithTactic, ProjectedRevenueLift, RevenueToCostRatio, ImprovementTacticTypeId, IsExits, IsOwner) {
-            var $tableImprovementTactic = $('#tableImprovementTypeSuggested > tbody');
-            var $html = '<tr';
-            if (IsExits) {
-                $html += ' class="added"';
-            }
-            $html += '><td data-column="1" class="left-text">' + ImprovementTacticTypeTitle + '</td>'
-                                + '	<td class="SuggestedSection" data-column="2"';
-
-            if (!isADS) {
-                $html += ' class="noRightBorder SuggestedSection"';
-            }
-            $html += ' >$' + FormatCommas(Cost.toString(), false) + '</td>';
-            var isDashedDisplay = false;
-            if (isADS) {
-                if (ProjectedRevenueWithoutTactic == ProjectedRevenueWithTactic) {
-                    isDashedDisplay = true;
-                }
-            }
-
-            if (isDashedDisplay) {
-                $html += '<td data-column="3" class="noRightBorder">---  </td>'
-                                + '	<td data-column="4" >---  </td>';
-            }
-            else {
-                $html += '<td data-column="3" class="noRightBorder SuggestedSection">$' + FormatCommas(ProjectedRevenueWithoutTactic.toString(), true) + '</td>'
-                             + '	<td class="SuggestedSection" data-column="4" >$' + FormatCommas(ProjectedRevenueWithTactic.toString(), true) + '</td>';
-            }
-
-            $html += '	<td data-column="5">' + ProjectedRevenueLift + '%</td>'
-                                + '	<td data-column="6">' + RevenueToCostRatio + '</td>'
-                                + '	<td data-column="7" class="text-center noRightBorder addToPlan"><span';
-
-            if (IsExits) {
-                $html += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '"';
-                if (IsOwner || isADS) {
-                    $html += ' class="circle-check-icon-blue"';
-                }
-            }
-            else {
-                if (isADS) {
-                    $html += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '" class="circle-check-icon-gray"';
-                }
-                else {
-                    $html += ' IMPTacticTypeId="' + ImprovementTacticTypeId + '" class="circle-check-icon-gray"';
-                }
-
-            }
-            $html += '></span></td>'
-									+ '</tr>';
-            $tableImprovementTactic.append($html);
-
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function LoadADSGrid() {
-            // SuggestionIMPTacticIdList = JSON.stringify({ 'SuggestionIMPTacticIdList': SuggestionIMPTacticIdList });
-            // alert(SuggestionIMPTacticIdList);
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/GetADSImprovementTacticType/")',
-                data: {
-                    SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
-                },
-                success: function (data) {
-                    RecommendedImprovementTacticType = data;
-                    fillRecommendedImprovementTacticType();
-                    if (!isLoadSuggestion) {
-                        LoadScriptForSuggestion();
-                    }
-                    // $("#defaultSortingId").focus().click();
-
-                    $.ajax({
-                        type: 'POST',
-                        url: '@Url.Content("~/Plan/GetHeaderValueForSuggestedImprovement/")',
-                        data: {
-                            SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
-                        },
-                        success: function (data) {
-                            if (typeof data != 'undefined') {
-                                var adsValue = parseFloat(data.ADS);
-                                if (adsValue < 0) {
-                                    $("#spanSuggestedADS").text("-$" + Math.abs(adsValue).toString());
-                                }
-                                else {
-                                    $("#spanSuggestedADS").text("+$" + Math.abs(adsValue).toString());
-                                }
-
-                                var cwValue = parseFloat(data.CW);
-                                if (cwValue < 0) {
-                                    $("#spanSuggestedCW").text("-" + Math.abs(cwValue).toString());
-                                }
-                                else {
-                                    $("#spanSuggestedCW").text("+" + Math.abs(cwValue).toString());
-                                }
-
-
-                                var velocityValue = parseFloat(data.Velocity);
-                                if (velocityValue <= 0) {
-                                    $("#spanSuggestedVelocity").text("-" + Math.abs(velocityValue).toString());
-                                }
-                                else {
-                                    $("#spanSuggestedVelocity").text("+" + Math.abs(velocityValue).toString());
-                                }
-
-                            }
-
-                        }
-                    });
-
-                    var divsuggstedheight = $(".grey-container-content").outerHeight();
-                    var finalheight = 50 + parseFloat(divsuggstedheight);
-                    $("#divSuggestionBox").css("padding-bottom", finalheight);
-                }
-            });
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function LoadConversionGrid() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/GetConversionImprovementTacticType/")',
-                data: {
-                    SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString(),
-                    isConversion: isConversion
-                },
-                success: function (data) {
-                    RecommendedImprovementTacticType = data;
-                    fillRecommendedConversionImprovement();
-                    //  fillRecommendedImprovementTacticType();
-
-                    //  $("#defaultSortingId").focus().click();
-
-                    $.ajax({
-                        type: 'POST',
-                        url: '@Url.Content("~/Plan/GetHeaderValueForSuggestedImprovement/")',
-                        data: {
-                            SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
-                        },
-                        success: function (data) {
-                            if (typeof data != 'undefined') {
-                                var adsValue = parseFloat(data.ADS);
-                                if (adsValue < 0) {
-                                    $("#spanSuggestedADS").text("-$" + Math.abs(adsValue).toString());
-                                }
-                                else {
-                                    $("#spanSuggestedADS").text("+$" + Math.abs(adsValue).toString());
-                                }
-
-                                var cwValue = parseFloat(data.CW);
-                                if (cwValue < 0) {
-                                    $("#spanSuggestedCW").text("-" + Math.abs(cwValue).toString());
-                                }
-                                else {
-                                    $("#spanSuggestedCW").text("+" + Math.abs(cwValue).toString());
-                                }
-
-
-                                var velocityValue = parseFloat(data.Velocity);
-                                if (velocityValue <= 0) {
-                                    $("#spanSuggestedVelocity").text("-" + Math.abs(velocityValue).toString());
-                                }
-                                else {
-                                    $("#spanSuggestedVelocity").text("+" + Math.abs(velocityValue).toString());
-                                }
-
-                            }
-
-                        }
-                    });
-                    var divsuggstedheight = $(".grey-container-content").outerHeight();
-                    var finalheight = 50 + parseFloat(divsuggstedheight);
-                    $("#divSuggestionBox").css("padding-bottom", finalheight);
-                }
-            });
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function fillRecommendedConversionImprovement() {
-            $('#conversion').empty();
-            if (typeof RecommendedImprovementTacticType != 'undefined') {
-                var html = '';
-                html += '<h2 class="source-sans-probold">';
-                if (isConversion) {
-                    html += 'Conversion Improvement</h2>';
-                }
-                else {
-                    html += 'Velocity Improvement</h2>';
-                }
-                html += '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">';
-
-                html += '<thead><tr>' +
-								'<th class="left-text">Improvement Tactic Type</th>' +
-								'<th class="tacticTable-arrow-icon arrow-bottom" width="9%" data-column="2" sortText="Cost">Cost</th>';
-
-                if (RecommendedImprovementTacticType.datametriclist.length) {
-                    var maxLength = RecommendedImprovementTacticType.datametriclist.length;
-                    for (i in RecommendedImprovementTacticType.datametriclist) {
-                        var title = RecommendedImprovementTacticType.datametriclist[i].Title.toString();
-                        if (isConversion) {
-                            var arrTitle = title.split("->");
-                            if (i == 0) {
-                                html += '<th class="noRightBorder" width="10%">Weight<br>' + arrTitle[0] + '<span class="arrow-right-icon"></span>' + arrTitle[1] + '</th>';
-                            }
-                            else if (i == maxLength - 1) {
-                                html += '<th width="9%">' + arrTitle[0] + '<span class="arrow-right-icon"></span>' + arrTitle[1] + '</th>';
-                            }
-                            else {
-                                html += '<th class="noRightBorder" width="9%">' + arrTitle[0] + '<span class="arrow-right-icon"></span>' + arrTitle[1] + '</th>';
-                            }
-                        }
-                        else {
-                            if (i == 0) {
-                                html += '<th class="noRightBorder" width="8%">Weight<br>' + title + '</th>';
-                            }
-                            else if (i == maxLength - 1) {
-                                html += '<th width="8%">' + title + '</th>';
-                            }
-                            else {
-                                html += '<th class="noRightBorder" width="8%">' + title + '</th>';
-                            }
-                        }
-                    }
-                }
-
-                html += '<th class="text-center noRightBorder" width="7%">Add to Plan</th>' +
-								'						</tr></thead><tbody>';
-
-                if (RecommendedImprovementTacticType.data.length) {
-                    for (i in RecommendedImprovementTacticType.data) {
-                        var htmlOut = addRowRecommendedConversion(RecommendedImprovementTacticType.data[i].ImprovementPlanTacticId, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeTitle, RecommendedImprovementTacticType.data[i].Cost, RecommendedImprovementTacticType.data[i].MetricList, RecommendedImprovementTacticType.data[i].IsExits);
-                        html += htmlOut;
-                    }
-                }
-
-                html += '<tr>' +
-                    '<th class="noRightBorder left-text"></th>' +
-                    '<th></th>';
-                if (RecommendedImprovementTacticType.datafinalmetriclist.length) {
-                    var maxLength = RecommendedImprovementTacticType.datafinalmetriclist.length;
-                    for (i in RecommendedImprovementTacticType.datafinalmetriclist) {
-                        var mvalue;
-                        if (isConversion) {
-                            mvalue = FormatNumber((Math.round(parseFloat(RecommendedImprovementTacticType.datafinalmetriclist[i].Value) * 100) / 100), true);
-                        }
-                        else {
-                            mvalue = (Math.round(parseFloat(RecommendedImprovementTacticType.datafinalmetriclist[i].Value) * 100) / 100) + " Days";
-                        }
-
-                        if (i == maxLength - 1) {
-                            html += '<th>' + mvalue + '</th>';
-                        }
-                        else {
-                            html += '<th class="noRightBorder">' + mvalue + '</th>';
-                        }
-                    }
-                }
-                html += '<th class="text-center noRightBorder"></th>' +
-                    '</tr>';
-                html += '</tbody></table>';
-                var $htmlFinal = html;
-                $('#conversion').append($htmlFinal);
-                //$('#tableImprovementTypeConversion').appendTo('</tbody>');
-            }
-            LoadScriptForConversion();
-            LoadScriptForADS();
-
-
-            //Fetch all the row values from the tables
-            $('.SuggestedSection').each(function () {
-                //Added By : Kalpesh Sharma
-                //PL #508 Set format for label in tool tip
-                //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                //SetLabelFormaterWithTipsy($(this));
-                SetLabelFormaterWithTitle($(this));
-                //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-            });
-
-
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function addRowRecommendedConversion(ImprovementPlanTacticId, ImprovementTacticTypeTitle, Cost, MetricList, IsExits) {
-            var htmlInner = '<tr';
-            if (IsExits) {
-                htmlInner += ' class="added"';
-            }
-            htmlInner += '><td data-column="1" class="left-text">' + ImprovementTacticTypeTitle + '</td>'
-                                 + '	<td class="SuggestedSection" data-column="2">$' + FormatCommas(Cost.toString(), false) + '</td>';
-            if (typeof MetricList != 'undefined') {
-
-                if (MetricList.length > 0) {
-                    var metricMax = MetricList.length - 1;
-                    for (i in MetricList) {
-                        var mvalue = MetricList[i].Value;
-                        var displayMvalue;
-                        if (mvalue == 0) {
-                            displayMvalue = "---";
-                        }
-                        else {
-                            displayMvalue = mvalue;
-                        }
-                        if (i == metricMax) {
-                            htmlInner += '<td>' + displayMvalue + '</td>';
-                        }
-                        else {
-                            htmlInner += '<td class="noRightBorder">' + displayMvalue + '</td>';
-                        }
-                    }
-                }
-            }
-            htmlInner += '<td data-column="7" class="text-center noRightBorder addToPlan"><span';
-            if (IsExits) {
-                htmlInner += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '" class="circle-check-icon-blue"';
-            }
-            else {
-                htmlInner += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '" class="circle-check-icon-gray"';
-            }
-            htmlInner += '></span></td>'
-									+ '</tr>';
-            return htmlInner;
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        var globledataid = 0;
-        function FillFullContainer(dataid) {
-            // alert('1');
-            var $html = '';
-            if (dataid == 1) {
-                $html += '<div class="grey-container-content">' +
-                                               '<div id="suggested-tactics">' +
-                                                   '<h2 class="source-sans-probold">Suggested Improvement Activities</h2>' +
-                                                   '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">' +
-                                                   '<thead>' +
-                                                       '<tr>' +
-                                                           '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
-                                                           '<th data-column="2" class="noRightBorder tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
-                                                           '<th data-column="3" class="noRightBorder" width="15%">Projected Revenue Without Tactic</th>' +
-                                                           '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected Revenue With Tactic<!--<span class="tacticTable-arrow-icon arrow-bottom"></span> --></th>' +
-                                                           '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
-                                                           '<th data-column="6" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="RevenueToCostRatio">Revenue to Cost Ratio</th>' +
-                                                           '<th data-column="7" class="text-center noRightBorder" width="7%">Add to Plan</th>' +
-                                                       '</tr>' +
-                                                       '</thead>' +
-                                                       '<tbody>' +
-                                                       '</tbody>' +
-                                                   '</table>' +
-                                               '</div></div>';
-            }
-            else if (dataid == 2) {
-                $html += '<div class="grey-container-content">' +
-                                             '<div id="ads">' +
-                                                 '<h2 class="source-sans-probold">Average Dollor Sale Improvement</h2>' +
-                                                 '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">' +
-                                                 '<thead>' +
-                                                     '<tr>' +
-                                                         '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
-                                                         '<th data-column="2" class="tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
-                                                         '<th data-column="3" class="noRightBorder" width="15%">Projected ADS Without Tactic</th>' +
-                                                         '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected ADS With Tactic</th>' +
-                                                         '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
-                                                         '<th data-column="6" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="RevenueToCostRatio">Revenue to Cost Ratio</th>' +
-                                                         '<th data-column="7" class="text-center noRightBorder" width="7%">Add to Plan</th>' +
-                                                     '</tr>' +
-                                                     '</thead>' +
-                                                     '<tbody>' +
-                                                     '</tbody>' +
-                                                 '</table>' +
-                                             '</div></div>';
-            }
-            else if (dataid == 3) {
-                $html += '<div class="grey-container-content">' +
-                                            '<div id="conversion">' +
-                                            '</div></div>';
-            }
-            else if (dataid == 4) {
-                $html += '<div class="grey-container-content">' +
-                                            '<div id="conversion">' +
-                                            '</div></div>';
-            }
-
-            var $ContainerGreyFullImprovement = $('#grayFullContainer');
-            $ContainerGreyFullImprovement.empty();
-            $ContainerGreyFullImprovement.append($html);
-            isADS = false;
-            isLoadSuggestion = false;
-            globledataid = dataid;
-            if (dataid == 1) {
-                if (!isMarketingTacticExits) {
-                    $("#suggested-tactics").empty();
-                    $("#suggested-tactics").html('<h2 class="source-sans-probold">No marketing activities exits.</h2>');
-                }
-                else {
-                    LoadRecommendedGrid();
-                }
-            }
-            else if (dataid == 2) {
-                if (!isImprovementTacticExits) {
-                    $("#ads").empty();
-                    $("#ads").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
-                }
-                else {
-                    isADS = true;
-                    LoadADSGrid();
-                }
-            }
-            else if (dataid == 3) {
-                if (!isImprovementTacticExits) {
-                    $("#conversion").empty();
-                    $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
-                }
-                else {
-                    isConversion = true;
-                    LoadConversionGrid();
-                }
-            }
-            else if (dataid == 4) {
-                if (!isImprovementTacticExits) {
-                    $("#conversion").empty();
-                    $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
-                }
-                else {
-                    isConversion = false;
-                    LoadConversionGrid();
-                }
-            }
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function LoadScriptForADS(tabvalue) {
-            //SuggestionIMPTacticIdList
-            $("#tableImprovementTypeSuggested").find(".addToPlan span").click(function () {
-                if ($(this).hasClass('circle-check-icon-gray')) {
-                    // Add in plan
-                    $(this).removeClass('circle-check-icon-gray');
-                    $(this).addClass('circle-check-icon-blue');
-                    var impTacticId = $(this).attr('IMPTacticTypeId');
-                    SuggestionIMPTacticIdList = $.grep(SuggestionIMPTacticIdList, function (value) {
-                        return value != parseFloat(impTacticId);
-                    });
-                }
-                else {
-                    // Remove from Plan
-                    $(this).removeClass('circle-check-icon-blue');
-                    $(this).addClass('circle-check-icon-gray');
-                    var impTacticId = $(this).attr('IMPTacticTypeId');
-                    SuggestionIMPTacticIdList.push(parseFloat(impTacticId));
-                }
-                //alert(sortText);
-                //alert(isasc);
-                //alert(SuggestionIMPTacticIdList);
-                if (tabvalue == 1) {
-                    LoadADSGrid();
-                }
-                else {
-                    LoadConversionGrid();
-                }
-                LoadTableImprovementSort();
-            });
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function LoadScriptForTableRow() {
-
-            $("#tableImprovementTypeSuggested").find(".addToPlan span").click(function () {
-                if ($(this).hasClass('circle-check-icon-gray')) {
-                    // Add in plan
-                    $(this).removeClass('circle-check-icon-gray');
-                    $(this).addClass('circle-check-icon-blue');
-                    var impTacticId = $(this).attr('IMPTacticTypeId');
-                    AddImprovementTactic(impTacticId);
-                }
-                else {
-                    // Remove from Plan
-                    //$(this).removeClass('circle-check-icon-blue');
-                    //$(this).addClass('circle-check-icon-gray');
-                    var impTacticId = $(this).attr('IMPTacticTypeId');
-                    var idTactic = impTacticId;
-                    $("#DivPartialViewForDeleteImpTactic").empty();
-                    var AssortmentType = true;
-                    $("#divBackground").css("display", "block");
-                    var url = '@Url.Content("~/Plan/ShowDeleteImprovementTactic/")';
-                    $("#DivPartialViewForDeleteImpTactic").load(url + '?id=' + idTactic + '&AssortmentType=' + AssortmentType + '&RedirectType=' + false);
-                }
-                //LoadTableImprovementSort();
-                //alert(sortText);
-                //alert(isasc);
-            });
-
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function AddImprovementTactic(impTacticId) {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/AddSuggestedImprovementTactic")',
-                data:
-                    {
-                        improvementPlanProgramId: ImprovementPlanProgramId,
-                        improvementTacticTypeId: impTacticId
-                    },
-                success: function (data) {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                        return;
-                    }
-                    if (data.errormsg) {
-                        ismsg = data.errormsg;
-                        hdnisError = true;
-                        Showmsg();
-                    }
-                }
-            });
-        }
-
-        function LoadTableImprovementSort() {
-            $("#tableImprovementTypeSuggested").find(".arrow-blue-top").each(function () {
-                $(this).removeClass('arrow-blue-top');
-            });
-            $("#tableImprovementTypeSuggested").find(".arrow-blue-bottom").each(function () {
-                $(this).removeClass('arrow-blue-bottom');
-            });
-            $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").each(function () {
-                if ($(this).hasClass('blueHighlight')) {
-                    $(this).removeClass('blueHighlight');
-                }
-                if (!$(this).hasClass('arrow-bottom')) {
-                    $(this).addClass('arrow-bottom');
-                }
-            });
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function LoadScriptForConversion() {
-
-            $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").click(function () {
-                //blueHighlight
-                // Grab the column number
-                var column = $(this).attr('data-column');
-                var isTop = false;
-                if ($(this).hasClass('arrow-blue-top')) {
-                    isTop = false;
-                }
-                if ($(this).hasClass('arrow-blue-bottom')) {
-                    isTop = true;
-                }
-                $("#tableImprovementTypeSuggested").find(".arrow-top").each(function () {
-                    $(this).removeClass('arrow-top');
-                });
-                $("#tableImprovementTypeSuggested").find(".arrow-bottom").each(function () {
-                    $(this).removeClass('arrow-bottom');
-                });
-                $("#tableImprovementTypeSuggested").find(".arrow-blue-top").each(function () {
-                    $(this).removeClass('arrow-blue-top');
-                });
-                $("#tableImprovementTypeSuggested").find(".arrow-blue-bottom").each(function () {
-                    $(this).removeClass('arrow-blue-bottom');
-                });
-                $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").each(function () {
-                    if ($(this).hasClass('blueHighlight')) {
-                        $(this).removeClass('blueHighlight');
-                    }
-                    if (!$(this).hasClass('arrow-bottom')) {
-                        $(this).addClass('arrow-bottom');
-                    }
-                });
-                if ($(this).hasClass('arrow-bottom')) {
-                    $(this).removeClass('arrow-bottom');
-                }
-
-
-                sortText = $(this).attr('sortText');
-                isasc = true;
-
-                if (isTop) {
-                    isasc = false;
-                }
-                else {
-                    isasc = true;
-                }
-                sortResults(sortText, isasc);
-                $('.tacticTable-arrow-icon').removeClass('arrow-bottom');
-                $('.tacticTable-arrow-icon').addClass('blueHighlight');
-                if (isTop) {
-                    $('.tacticTable-arrow-icon').addClass('arrow-blue-top');
-                }
-                else {
-                    $('.tacticTable-arrow-icon').addClass('arrow-blue-bottom');
-                }
-                // Set all columns with the same column number to have the highlight class
-                $('#tableImprovementTypeSuggested td[data-column=' + column + ']').addClass('blueHighlight');
-            });
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function LoadScriptForSuggestion() {
-            isLoadSuggestion = true;
-
-            $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").each(function () {
-                $(this).click(function () {
-                    //blueHighlight
-                    // Grab the column number
-                    var column = $(this).attr('data-column');
-                    var isTop = false;
-                    if ($(this).hasClass('arrow-blue-top')) {
-                        isTop = false;
-                    }
-                    if ($(this).hasClass('arrow-blue-bottom')) {
-                        isTop = true;
-                    }
-                    $("#tableImprovementTypeSuggested").find(".arrow-top").each(function () {
-                        $(this).removeClass('arrow-top');
-                    });
-                    $("#tableImprovementTypeSuggested").find(".arrow-bottom").each(function () {
-                        $(this).removeClass('arrow-bottom');
-                    });
-                    $("#tableImprovementTypeSuggested").find(".arrow-blue-top").each(function () {
-                        $(this).removeClass('arrow-blue-top');
-                    });
-                    $("#tableImprovementTypeSuggested").find(".arrow-blue-bottom").each(function () {
-                        $(this).removeClass('arrow-blue-bottom');
-                    });
-                    $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").each(function () {
-                        if ($(this).hasClass('blueHighlight')) {
-                            $(this).removeClass('blueHighlight');
-                        }
-                        if (!$(this).hasClass('arrow-bottom')) {
-                            $(this).addClass('arrow-bottom');
-                        }
-                    });
-                    if ($(this).hasClass('arrow-bottom')) {
-                        $(this).removeClass('arrow-bottom');
-                    }
-
-                    $(this).addClass('blueHighlight');
-                    sortText = $(this).attr('sortText');
-                    isasc = true;
-                    if (isTop) {
-                        $(this).addClass('arrow-blue-top');
-                        isasc = false;
-                    }
-                    else {
-                        $(this).addClass('arrow-blue-bottom');
-                        isasc = true;
-                    }
-                    sortResults(sortText, isasc);
-                    // Set all columns with the same column number to have the highlight class
-                    $('#tableImprovementTypeSuggested td[data-column=' + column + ']').addClass('blueHighlight');
-                });
-            });
-
-        }
-
-        // Added By Bhavesh
-        // PL Ticket 289,377,378
-        function sortResults(prop, asc, dataid) {
-            RecommendedImprovementTacticType.data = RecommendedImprovementTacticType.data.sort(function (a, b) {
-                if (asc) return (a[prop] > b[prop]) ? 1 : ((a[prop] < b[prop]) ? -1 : 0);
-                else return (b[prop] > a[prop]) ? 1 : ((b[prop] < a[prop]) ? -1 : 0);
-            });
-            if (globledataid == 1) {
-                fillRecommendedImprovementTacticType();
-            }
-            else if (globledataid == 2) {
-                fillRecommendedImprovementTacticType();
-            }
-            else if (globledataid == 3) {
-                fillRecommendedConversionImprovement();
-            }
-            else if (globledataid == 4) {
-                fillRecommendedConversionImprovement();
-            }
-        }
-
+        //}           
+           
     });
+
+    /////////////////////////// Document Ready End ////////////////////////////////////////////////
 
     @* Start - Added by Sohel Pathan on 14/07/2014 for PL ticket #566 *@
     function calculateBudget(_modelId, _goalType, _goalValue) {
@@ -2706,6 +1969,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
         getCampaign(planCampaignId, planProgramId, planTacticId);
         }
     }
+
     function FillGrayImprovementContainerEmpty() {
         var $html = '<p class="text1">Adding improvement tactics can boost your planned efforts.</p>' +
                                         '<p class="text2">Add your marketing activities first, then add</br> improvement tactics.' +
@@ -2725,5 +1989,748 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
         $("#aApplyToCalender").removeAttr("onclick");
         isApply = true;
     }
+
+    function FillFullContainer(dataid) {
+        // alert('1');
+        var $html = '';
+        if (dataid == 1) {
+            $html += '<div class="grey-container-content">' +
+                                           '<div id="suggested-tactics">' +
+                                               '<h2 class="source-sans-probold">Suggested Improvement Activities</h2>' +
+                                               '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">' +
+                                               '<thead>' +
+                                                   '<tr>' +
+                                                       '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
+                                                       '<th data-column="2" class="noRightBorder tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
+                                                       '<th data-column="3" class="noRightBorder" width="15%">Projected Revenue Without Tactic</th>' +
+                                                       '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected Revenue With Tactic<!--<span class="tacticTable-arrow-icon arrow-bottom"></span> --></th>' +
+                                                       '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
+                                                       '<th data-column="6" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="RevenueToCostRatio">Revenue to Cost Ratio</th>' +
+                                                       '<th data-column="7" class="text-center noRightBorder" width="7%">Add to Plan</th>' +
+                                                   '</tr>' +
+                                                   '</thead>' +
+                                                   '<tbody>' +
+                                                   '</tbody>' +
+                                               '</table>' +
+                                           '</div></div>';
+        }
+        else if (dataid == 2) {
+            $html += '<div class="grey-container-content">' +
+                                         '<div id="ads">' +
+                                             '<h2 class="source-sans-probold">Average Dollor Sale Improvement</h2>' +
+                                             '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">' +
+                                             '<thead>' +
+                                                 '<tr>' +
+                                                     '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
+                                                     '<th data-column="2" class="tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
+                                                     '<th data-column="3" class="noRightBorder" width="15%">Projected ADS Without Tactic</th>' +
+                                                     '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected ADS With Tactic</th>' +
+                                                     '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
+                                                     '<th data-column="6" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="RevenueToCostRatio">Revenue to Cost Ratio</th>' +
+                                                     '<th data-column="7" class="text-center noRightBorder" width="7%">Add to Plan</th>' +
+                                                 '</tr>' +
+                                                 '</thead>' +
+                                                 '<tbody>' +
+                                                 '</tbody>' +
+                                             '</table>' +
+                                         '</div></div>';
+        }
+        else if (dataid == 3) {
+            $html += '<div class="grey-container-content">' +
+                                        '<div id="conversion">' +
+                                        '</div></div>';
+        }
+        else if (dataid == 4) {
+            $html += '<div class="grey-container-content">' +
+                                        '<div id="conversion">' +
+                                        '</div></div>';
+        }
+
+        var $ContainerGreyFullImprovement = $('#grayFullContainer');
+        $ContainerGreyFullImprovement.empty();
+        $ContainerGreyFullImprovement.append($html);
+        isADS = false;
+        isLoadSuggestion = false;
+        globledataid = dataid;
+        if (dataid == 1) {
+            if (!isMarketingTacticExits) {
+                $("#suggested-tactics").empty();
+                $("#suggested-tactics").html('<h2 class="source-sans-probold">No marketing activities exits.</h2>');
+            }
+            else {
+                LoadRecommendedGrid();
+            }
+        }
+        else if (dataid == 2) {
+            if (!isImprovementTacticExits) {
+                $("#ads").empty();
+                $("#ads").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
+            }
+            else {
+                isADS = true;
+                LoadADSGrid();
+            }
+        }
+        else if (dataid == 3) {
+            if (!isImprovementTacticExits) {
+                $("#conversion").empty();
+                $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
+            }
+            else {
+                isConversion = true;
+                LoadConversionGrid();
+            }
+        }
+        else if (dataid == 4) {
+            if (!isImprovementTacticExits) {
+                $("#conversion").empty();
+                $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
+            }
+            else {
+                isConversion = false;
+                LoadConversionGrid();
+            }
+        }
+    }
+
+    // Added By Bhavesh
+    // PL Ticket 289,377,378
+    function LoadRecommendedGrid() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetRecommendedImprovementTacticType/")',
+                data: {
+                },
+                success: function (data) {
+                    RecommendedImprovementTacticType = data;
+                    fillRecommendedImprovementTacticType(false);
+                    if (!isLoadSuggestion) {
+                        LoadScriptForSuggestion();
+                    }
+                    var divsuggstedheight = $(".grey-container-content").outerHeight();
+                    var finalheight = 50 + parseFloat(divsuggstedheight);
+                    $("#divSuggestionBox").css("padding-bottom", finalheight);
+                    //divSuggestionBox
+                    //padding-bottom:250px;
+                    //$("#defaultSortingId").focus().click();
+                }
+            });
+        }
+
+    // Added By Bhavesh
+    // PL Ticket 289,377,378
+    function fillRecommendedImprovementTacticType() {
+        $('#tableImprovementTypeSuggested > tbody').empty();
+        if (typeof RecommendedImprovementTacticType != 'undefined') {
+            //alert('1');
+            var $html = '';
+            //alert(JSON.stringify(RecommendedImprovementTacticType));
+            if (RecommendedImprovementTacticType.data.length) {
+                for (i in RecommendedImprovementTacticType.data) {
+                    addRowRecommendedImprovementTacticType(RecommendedImprovementTacticType.data[i].ImprovementPlanTacticId, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeTitle, RecommendedImprovementTacticType.data[i].ProjectedRevenueWithoutTactic, RecommendedImprovementTacticType.data[i].Cost, RecommendedImprovementTacticType.data[i].ProjectedRevenueWithTactic, RecommendedImprovementTacticType.data[i].ProjectedRevenueLift, RecommendedImprovementTacticType.data[i].RevenueToCostRatio, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeId, RecommendedImprovementTacticType.data[i].IsExits, RecommendedImprovementTacticType.data[i].IsOwner);
+                }
+            }
+        }
+        if (!isADS) {
+            LoadScriptForTableRow();
+        }
+        if (isADS) {
+            LoadScriptForADS(1);
+        }
+
+        //Fetch all the row values from the tables
+        $('.SuggestedSection').each(function () {
+            //Added By : Kalpesh Sharma
+            //PL #508 Set format for label in tool tip
+            //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+            //SetLabelFormaterWithTipsy($(this));
+            SetLabelFormaterWithTitle($(this));
+            //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+        });
+
+
+    }
+
+
+    // Added By Bhavesh
+    // PL Ticket 289,377,378
+    function addRowRecommendedImprovementTacticType(ImprovementPlanTacticId, ImprovementTacticTypeTitle, ProjectedRevenueWithoutTactic, Cost, ProjectedRevenueWithTactic, ProjectedRevenueLift, RevenueToCostRatio, ImprovementTacticTypeId, IsExits, IsOwner) {
+        var $tableImprovementTactic = $('#tableImprovementTypeSuggested > tbody');
+        var $html = '<tr';
+        if (IsExits) {
+            $html += ' class="added"';
+        }
+        $html += '><td data-column="1" class="left-text">' + ImprovementTacticTypeTitle + '</td>'
+                            + '	<td class="SuggestedSection" data-column="2"';
+
+        if (!isADS) {
+            $html += ' class="noRightBorder SuggestedSection"';
+        }
+        $html += ' >$' + FormatCommas(Cost.toString(), false) + '</td>';
+        var isDashedDisplay = false;
+        if (isADS) {
+            if (ProjectedRevenueWithoutTactic == ProjectedRevenueWithTactic) {
+                isDashedDisplay = true;
+            }
+        }
+
+        if (isDashedDisplay) {
+            $html += '<td data-column="3" class="noRightBorder">---  </td>'
+                            + '	<td data-column="4" >---  </td>';
+        }
+        else {
+            $html += '<td data-column="3" class="noRightBorder SuggestedSection">$' + FormatCommas(ProjectedRevenueWithoutTactic.toString(), true) + '</td>'
+                         + '	<td class="SuggestedSection" data-column="4" >$' + FormatCommas(ProjectedRevenueWithTactic.toString(), true) + '</td>';
+        }
+
+        $html += '	<td data-column="5">' + ProjectedRevenueLift + '%</td>'
+                            + '	<td data-column="6">' + RevenueToCostRatio + '</td>'
+                            + '	<td data-column="7" class="text-center noRightBorder addToPlan"><span';
+
+        if (IsExits) {
+            $html += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '"';
+            if (IsOwner || isADS) {
+                $html += ' class="circle-check-icon-blue"';
+            }
+        }
+        else {
+            if (isADS) {
+                $html += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '" class="circle-check-icon-gray"';
+            }
+            else {
+                $html += ' IMPTacticTypeId="' + ImprovementTacticTypeId + '" class="circle-check-icon-gray"';
+            }
+
+        }
+        $html += '></span></td>'
+                                + '</tr>';
+        $tableImprovementTactic.append($html);
+
+    }
+
+
+    // Added By Bhavesh
+    // PL Ticket 289,377,378
+    function LoadADSGrid() {
+        // SuggestionIMPTacticIdList = JSON.stringify({ 'SuggestionIMPTacticIdList': SuggestionIMPTacticIdList });
+        // alert(SuggestionIMPTacticIdList);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetADSImprovementTacticType/")',
+                data: {
+                    SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
+                },
+                success: function (data) {
+                    RecommendedImprovementTacticType = data;
+                    fillRecommendedImprovementTacticType();
+                    if (!isLoadSuggestion) {
+                        LoadScriptForSuggestion();
+                    }
+                    // $("#defaultSortingId").focus().click();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/GetHeaderValueForSuggestedImprovement/")',
+                        data: {
+                            SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
+                        },
+                        success: function (data) {
+                            if (typeof data != 'undefined') {
+                                var adsValue = parseFloat(data.ADS);
+                                if (adsValue < 0) {
+                                    $("#spanSuggestedADS").text("-$" + Math.abs(adsValue).toString());
+                                }
+                                else {
+                                    $("#spanSuggestedADS").text("+$" + Math.abs(adsValue).toString());
+                                }
+
+                                var cwValue = parseFloat(data.CW);
+                                if (cwValue < 0) {
+                                    $("#spanSuggestedCW").text("-" + Math.abs(cwValue).toString());
+                                }
+                                else {
+                                    $("#spanSuggestedCW").text("+" + Math.abs(cwValue).toString());
+                                }
+
+
+                                var velocityValue = parseFloat(data.Velocity);
+                                if (velocityValue <= 0) {
+                                    $("#spanSuggestedVelocity").text("-" + Math.abs(velocityValue).toString());
+                                }
+                                else {
+                                    $("#spanSuggestedVelocity").text("+" + Math.abs(velocityValue).toString());
+                                }
+
+                            }
+
+                        }
+                    });
+
+                    var divsuggstedheight = $(".grey-container-content").outerHeight();
+                    var finalheight = 50 + parseFloat(divsuggstedheight);
+                    $("#divSuggestionBox").css("padding-bottom", finalheight);
+                }
+            });
+        }
+
+        // Added By Bhavesh
+        // PL Ticket 289,377,378
+        function LoadConversionGrid() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/GetConversionImprovementTacticType/")',
+                data: {
+                    SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString(),
+                    isConversion: isConversion
+                },
+                success: function (data) {
+                    RecommendedImprovementTacticType = data;
+                    fillRecommendedConversionImprovement();
+                    //  fillRecommendedImprovementTacticType();
+
+                    //  $("#defaultSortingId").focus().click();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/GetHeaderValueForSuggestedImprovement/")',
+                        data: {
+                            SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
+                        },
+                        success: function (data) {
+                            if (typeof data != 'undefined') {
+                                var adsValue = parseFloat(data.ADS);
+                                if (adsValue < 0) {
+                                    $("#spanSuggestedADS").text("-$" + Math.abs(adsValue).toString());
+                                }
+                                else {
+                                    $("#spanSuggestedADS").text("+$" + Math.abs(adsValue).toString());
+                                }
+
+                                var cwValue = parseFloat(data.CW);
+                                if (cwValue < 0) {
+                                    $("#spanSuggestedCW").text("-" + Math.abs(cwValue).toString());
+                                }
+                                else {
+                                    $("#spanSuggestedCW").text("+" + Math.abs(cwValue).toString());
+                                }
+
+
+                                var velocityValue = parseFloat(data.Velocity);
+                                if (velocityValue <= 0) {
+                                    $("#spanSuggestedVelocity").text("-" + Math.abs(velocityValue).toString());
+                                }
+                                else {
+                                    $("#spanSuggestedVelocity").text("+" + Math.abs(velocityValue).toString());
+                                }
+
+                            }
+
+                        }
+                    });
+                    var divsuggstedheight = $(".grey-container-content").outerHeight();
+                    var finalheight = 50 + parseFloat(divsuggstedheight);
+                    $("#divSuggestionBox").css("padding-bottom", finalheight);
+                }
+            });
+        }
+
+        // Added By Bhavesh
+        // PL Ticket 289,377,378
+        function fillRecommendedConversionImprovement() {
+            $('#conversion').empty();
+            if (typeof RecommendedImprovementTacticType != 'undefined') {
+                var html = '';
+                html += '<h2 class="source-sans-probold">';
+                if (isConversion) {
+                    html += 'Conversion Improvement</h2>';
+                }
+                else {
+                    html += 'Velocity Improvement</h2>';
+                }
+                html += '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">';
+
+                html += '<thead><tr>' +
+								'<th class="left-text">Improvement Tactic Type</th>' +
+								'<th class="tacticTable-arrow-icon arrow-bottom" width="9%" data-column="2" sortText="Cost">Cost</th>';
+
+                if (RecommendedImprovementTacticType.datametriclist.length) {
+                    var maxLength = RecommendedImprovementTacticType.datametriclist.length;
+                    for (i in RecommendedImprovementTacticType.datametriclist) {
+                        var title = RecommendedImprovementTacticType.datametriclist[i].Title.toString();
+                        if (isConversion) {
+                            var arrTitle = title.split("->");
+                            if (i == 0) {
+                                html += '<th class="noRightBorder" width="10%">Weight<br>' + arrTitle[0] + '<span class="arrow-right-icon"></span>' + arrTitle[1] + '</th>';
+                            }
+                            else if (i == maxLength - 1) {
+                                html += '<th width="9%">' + arrTitle[0] + '<span class="arrow-right-icon"></span>' + arrTitle[1] + '</th>';
+                            }
+                            else {
+                                html += '<th class="noRightBorder" width="9%">' + arrTitle[0] + '<span class="arrow-right-icon"></span>' + arrTitle[1] + '</th>';
+                            }
+                        }
+                        else {
+                            if (i == 0) {
+                                html += '<th class="noRightBorder" width="8%">Weight<br>' + title + '</th>';
+                            }
+                            else if (i == maxLength - 1) {
+                                html += '<th width="8%">' + title + '</th>';
+                            }
+                            else {
+                                html += '<th class="noRightBorder" width="8%">' + title + '</th>';
+                            }
+                        }
+                    }
+                }
+
+                html += '<th class="text-center noRightBorder" width="7%">Add to Plan</th>' +
+								'						</tr></thead><tbody>';
+
+                if (RecommendedImprovementTacticType.data.length) {
+                    for (i in RecommendedImprovementTacticType.data) {
+                        var htmlOut = addRowRecommendedConversion(RecommendedImprovementTacticType.data[i].ImprovementPlanTacticId, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeTitle, RecommendedImprovementTacticType.data[i].Cost, RecommendedImprovementTacticType.data[i].MetricList, RecommendedImprovementTacticType.data[i].IsExits);
+                        html += htmlOut;
+                    }
+                }
+
+                html += '<tr>' +
+                    '<th class="noRightBorder left-text"></th>' +
+                    '<th></th>';
+                if (RecommendedImprovementTacticType.datafinalmetriclist.length) {
+                    var maxLength = RecommendedImprovementTacticType.datafinalmetriclist.length;
+                    for (i in RecommendedImprovementTacticType.datafinalmetriclist) {
+                        var mvalue;
+                        if (isConversion) {
+                            mvalue = FormatNumber((Math.round(parseFloat(RecommendedImprovementTacticType.datafinalmetriclist[i].Value) * 100) / 100), true);
+                        }
+                        else {
+                            mvalue = (Math.round(parseFloat(RecommendedImprovementTacticType.datafinalmetriclist[i].Value) * 100) / 100) + " Days";
+                        }
+
+                        if (i == maxLength - 1) {
+                            html += '<th>' + mvalue + '</th>';
+                        }
+                        else {
+                            html += '<th class="noRightBorder">' + mvalue + '</th>';
+                        }
+                    }
+                }
+                html += '<th class="text-center noRightBorder"></th>' +
+                    '</tr>';
+                html += '</tbody></table>';
+                var $htmlFinal = html;
+                $('#conversion').append($htmlFinal);
+                //$('#tableImprovementTypeConversion').appendTo('</tbody>');
+            }
+            LoadScriptForConversion();
+            LoadScriptForADS();
+
+
+            //Fetch all the row values from the tables
+            $('.SuggestedSection').each(function () {
+                //Added By : Kalpesh Sharma
+                //PL #508 Set format for label in tool tip
+                //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+                //SetLabelFormaterWithTipsy($(this));
+                SetLabelFormaterWithTitle($(this));
+                //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
+            });
+
+
+        }
+
+        // Added By Bhavesh
+        // PL Ticket 289,377,378
+        function addRowRecommendedConversion(ImprovementPlanTacticId, ImprovementTacticTypeTitle, Cost, MetricList, IsExits) {
+            var htmlInner = '<tr';
+            if (IsExits) {
+                htmlInner += ' class="added"';
+            }
+            htmlInner += '><td data-column="1" class="left-text">' + ImprovementTacticTypeTitle + '</td>'
+                                 + '	<td class="SuggestedSection" data-column="2">$' + FormatCommas(Cost.toString(), false) + '</td>';
+            if (typeof MetricList != 'undefined') {
+
+                if (MetricList.length > 0) {
+                    var metricMax = MetricList.length - 1;
+                    for (i in MetricList) {
+                        var mvalue = MetricList[i].Value;
+                        var displayMvalue;
+                        if (mvalue == 0) {
+                            displayMvalue = "---";
+                        }
+                        else {
+                            displayMvalue = mvalue;
+                        }
+                        if (i == metricMax) {
+                            htmlInner += '<td>' + displayMvalue + '</td>';
+                        }
+                        else {
+                            htmlInner += '<td class="noRightBorder">' + displayMvalue + '</td>';
+                        }
+                    }
+                }
+            }
+            htmlInner += '<td data-column="7" class="text-center noRightBorder addToPlan"><span';
+            if (IsExits) {
+                htmlInner += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '" class="circle-check-icon-blue"';
+            }
+            else {
+                htmlInner += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '" class="circle-check-icon-gray"';
+            }
+            htmlInner += '></span></td>'
+									+ '</tr>';
+            return htmlInner;
+        }
+
+        // Added By Bhavesh
+        // PL Ticket 289,377,378
+        function LoadScriptForADS(tabvalue) {
+            //SuggestionIMPTacticIdList
+            $("#tableImprovementTypeSuggested").find(".addToPlan span").click(function () {
+                if ($(this).hasClass('circle-check-icon-gray')) {
+                    // Add in plan
+                    $(this).removeClass('circle-check-icon-gray');
+                    $(this).addClass('circle-check-icon-blue');
+                    var impTacticId = $(this).attr('IMPTacticTypeId');
+                    SuggestionIMPTacticIdList = $.grep(SuggestionIMPTacticIdList, function (value) {
+                        return value != parseFloat(impTacticId);
+                    });
+                }
+                else {
+                    // Remove from Plan
+                    $(this).removeClass('circle-check-icon-blue');
+                    $(this).addClass('circle-check-icon-gray');
+                    var impTacticId = $(this).attr('IMPTacticTypeId');
+                    SuggestionIMPTacticIdList.push(parseFloat(impTacticId));
+                }
+                //alert(sortText);
+                //alert(isasc);
+                //alert(SuggestionIMPTacticIdList);
+                if (tabvalue == 1) {
+                    LoadADSGrid();
+                }
+                else {
+                    LoadConversionGrid();
+                }
+                LoadTableImprovementSort();
+            });
+        }
+
+        // Added By Bhavesh
+        // PL Ticket 289,377,378
+        function LoadScriptForTableRow() {
+
+            $("#tableImprovementTypeSuggested").find(".addToPlan span").click(function () {
+                if ($(this).hasClass('circle-check-icon-gray')) {
+                    // Add in plan
+                    $(this).removeClass('circle-check-icon-gray');
+                    $(this).addClass('circle-check-icon-blue');
+                    var impTacticId = $(this).attr('IMPTacticTypeId');
+                    AddImprovementTactic(impTacticId);
+                }
+                else {
+                    // Remove from Plan
+                    //$(this).removeClass('circle-check-icon-blue');
+                    //$(this).addClass('circle-check-icon-gray');
+                    var impTacticId = $(this).attr('IMPTacticTypeId');
+                    var idTactic = impTacticId;
+                    $("#DivPartialViewForDeleteImpTactic").empty();
+                    var AssortmentType = true;
+                    $("#divBackground").css("display", "block");
+                    var url = '@Url.Content("~/Plan/ShowDeleteImprovementTactic/")';
+                    $("#DivPartialViewForDeleteImpTactic").load(url + '?id=' + idTactic + '&AssortmentType=' + AssortmentType + '&RedirectType=' + false);
+                }
+                //LoadTableImprovementSort();
+                //alert(sortText);
+                //alert(isasc);
+            });
+
+        }
+
+        // Added By Bhavesh
+        // PL Ticket 289,377,378
+        function AddImprovementTactic(impTacticId) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/AddSuggestedImprovementTactic")',
+                data:
+                    {
+                        improvementPlanProgramId: ImprovementPlanProgramId,
+                        improvementTacticTypeId: impTacticId
+                    },
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ismsg = data.errormsg;
+                        hdnisError = true;
+                        Showmsg();
+                    }
+                }
+            });
+        }
+
+        function LoadTableImprovementSort() {
+            $("#tableImprovementTypeSuggested").find(".arrow-blue-top").each(function () {
+                $(this).removeClass('arrow-blue-top');
+            });
+            $("#tableImprovementTypeSuggested").find(".arrow-blue-bottom").each(function () {
+                $(this).removeClass('arrow-blue-bottom');
+            });
+            $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").each(function () {
+                if ($(this).hasClass('blueHighlight')) {
+                    $(this).removeClass('blueHighlight');
+                }
+                if (!$(this).hasClass('arrow-bottom')) {
+                    $(this).addClass('arrow-bottom');
+                }
+            });
+        }
+
+        // Added By Bhavesh
+        // PL Ticket 289,377,378
+        function LoadScriptForConversion() {
+
+            $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").click(function () {
+                //blueHighlight
+                // Grab the column number
+                var column = $(this).attr('data-column');
+                var isTop = false;
+                if ($(this).hasClass('arrow-blue-top')) {
+                    isTop = false;
+                }
+                if ($(this).hasClass('arrow-blue-bottom')) {
+                    isTop = true;
+                }
+                $("#tableImprovementTypeSuggested").find(".arrow-top").each(function () {
+                    $(this).removeClass('arrow-top');
+                });
+                $("#tableImprovementTypeSuggested").find(".arrow-bottom").each(function () {
+                    $(this).removeClass('arrow-bottom');
+                });
+                $("#tableImprovementTypeSuggested").find(".arrow-blue-top").each(function () {
+                    $(this).removeClass('arrow-blue-top');
+                });
+                $("#tableImprovementTypeSuggested").find(".arrow-blue-bottom").each(function () {
+                    $(this).removeClass('arrow-blue-bottom');
+                });
+                $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").each(function () {
+                    if ($(this).hasClass('blueHighlight')) {
+                        $(this).removeClass('blueHighlight');
+                    }
+                    if (!$(this).hasClass('arrow-bottom')) {
+                        $(this).addClass('arrow-bottom');
+                    }
+                });
+                if ($(this).hasClass('arrow-bottom')) {
+                    $(this).removeClass('arrow-bottom');
+                }
+
+
+                sortText = $(this).attr('sortText');
+                isasc = true;
+
+                if (isTop) {
+                    isasc = false;
+                }
+                else {
+                    isasc = true;
+                }
+                sortResults(sortText, isasc);
+                $('.tacticTable-arrow-icon').removeClass('arrow-bottom');
+                $('.tacticTable-arrow-icon').addClass('blueHighlight');
+                if (isTop) {
+                    $('.tacticTable-arrow-icon').addClass('arrow-blue-top');
+                }
+                else {
+                    $('.tacticTable-arrow-icon').addClass('arrow-blue-bottom');
+                }
+                // Set all columns with the same column number to have the highlight class
+                $('#tableImprovementTypeSuggested td[data-column=' + column + ']').addClass('blueHighlight');
+            });
+        }
+
+        // Added By Bhavesh
+        // PL Ticket 289,377,378
+        function LoadScriptForSuggestion() {
+            isLoadSuggestion = true;
+
+            $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").each(function () {
+                $(this).click(function () {
+                    //blueHighlight
+                    // Grab the column number
+                    var column = $(this).attr('data-column');
+                    var isTop = false;
+                    if ($(this).hasClass('arrow-blue-top')) {
+                        isTop = false;
+                    }
+                    if ($(this).hasClass('arrow-blue-bottom')) {
+                        isTop = true;
+                    }
+                    $("#tableImprovementTypeSuggested").find(".arrow-top").each(function () {
+                        $(this).removeClass('arrow-top');
+                    });
+                    $("#tableImprovementTypeSuggested").find(".arrow-bottom").each(function () {
+                        $(this).removeClass('arrow-bottom');
+                    });
+                    $("#tableImprovementTypeSuggested").find(".arrow-blue-top").each(function () {
+                        $(this).removeClass('arrow-blue-top');
+                    });
+                    $("#tableImprovementTypeSuggested").find(".arrow-blue-bottom").each(function () {
+                        $(this).removeClass('arrow-blue-bottom');
+                    });
+                    $("#tableImprovementTypeSuggested").find(".tacticTable-arrow-icon").each(function () {
+                        if ($(this).hasClass('blueHighlight')) {
+                            $(this).removeClass('blueHighlight');
+                        }
+                        if (!$(this).hasClass('arrow-bottom')) {
+                            $(this).addClass('arrow-bottom');
+                        }
+                    });
+                    if ($(this).hasClass('arrow-bottom')) {
+                        $(this).removeClass('arrow-bottom');
+                    }
+
+                    $(this).addClass('blueHighlight');
+                    sortText = $(this).attr('sortText');
+                    isasc = true;
+                    if (isTop) {
+                        $(this).addClass('arrow-blue-top');
+                        isasc = false;
+                    }
+                    else {
+                        $(this).addClass('arrow-blue-bottom');
+                        isasc = true;
+                    }
+                    sortResults(sortText, isasc);
+                    // Set all columns with the same column number to have the highlight class
+                    $('#tableImprovementTypeSuggested td[data-column=' + column + ']').addClass('blueHighlight');
+                });
+            });
+
+        }
+
+        // Added By Bhavesh
+        // PL Ticket 289,377,378
+        function sortResults(prop, asc, dataid) {
+            RecommendedImprovementTacticType.data = RecommendedImprovementTacticType.data.sort(function (a, b) {
+                if (asc) return (a[prop] > b[prop]) ? 1 : ((a[prop] < b[prop]) ? -1 : 0);
+                else return (b[prop] > a[prop]) ? 1 : ((b[prop] < a[prop]) ? -1 : 0);
+            });
+            if (globledataid == 1) {
+                fillRecommendedImprovementTacticType();
+            }
+            else if (globledataid == 2) {
+                fillRecommendedImprovementTacticType();
+            }
+            else if (globledataid == 3) {
+                fillRecommendedConversionImprovement();
+            }
+            else if (globledataid == 4) {
+                fillRecommendedConversionImprovement();
+            }
+        }
 
 </script>

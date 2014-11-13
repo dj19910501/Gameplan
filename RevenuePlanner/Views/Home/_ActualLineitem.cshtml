@@ -306,19 +306,26 @@
                 success: function (data) {
                     if (data != 'undefined') {
                         if (!data.IsDuplicate) {
-                            if (data.id != 0) {
-                                $("#successMessage").css("display", "block");
-                                // var topsize = $(document).scrollTop() + 41;
-                                //  $("#modal-container-186470").css("top", topsize + "px");
-                                $("#spanMessageSuccess").empty();
-                                $("#spanMessageSuccess").text(data.msg);
-                                loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", data.TabValue);
-                                RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
+                        if (data.id != 0) {
+                            $("#successMessage").css("display", "block");
+                            // var topsize = $(document).scrollTop() + 41;
+                            //  $("#modal-container-186470").css("top", topsize + "px");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
+                            var requestedModule = $("#hdnRedirectType").val();
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", data.TabValue);
+
+                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                                $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
                             }
                             else {
-                                $("#errorMessage").css("display", "block");
-                                $("#spanMessageError").empty();
-                                $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                                RefreshCurrentTab(requestedModule, data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
+                            }
+                        }
+                        else {
+                            $("#errorMessage").css("display", "block");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                         }
                     }
                     else {

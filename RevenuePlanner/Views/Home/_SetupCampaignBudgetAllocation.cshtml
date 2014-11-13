@@ -537,11 +537,18 @@
              success: function (data) {
                  if (data.IsSaved) {
                      CancelEvent();
+                     var requestedModule = $("#hdnRedirectType").val();
                      $("#errorMessageEditCampaign").slideUp(50);
                      $("#successMessageViewCampaign").slideDown(400);
                      $("#spanSuccessMessageViewCampaign").empty();
                      $("#spanSuccessMessageViewCampaign").html(data.msg);
-                     RefreshCurrentTab();
+
+                     if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                         $("#hdnBudgetingExpandId").val("campaign" + data.planCampaignId);
+                     }
+                     else {
+                         RefreshCurrentTab();
+                     }
                  }
                  else {
                      CancelEvent();

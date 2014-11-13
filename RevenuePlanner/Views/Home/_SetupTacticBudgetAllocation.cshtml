@@ -493,13 +493,22 @@
             success: function (data) {
                 if (data.IsSaved) {
                     CancelEvent();
+                    var requestedModule = $("#hdnRequestedModule").val();
+                    var planTacticId = data.planTacticId;
                     $("#lblTacticTitle").html(htmlEncode($('#txtTacticTitle').val()));
                     $("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
                     $("#errorMessage").slideUp(50);
                     $("#successMessage").slideDown(400);
                     $("#spanMessageSuccess").empty(); 
                     $("#spanMessageSuccess").html(data.msg);
-                    RefreshCurrentTab();
+
+                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule)
+                    {
+                        $("#hdnBudgetingExpandId").val("tactic" + planTacticId);
+                    }
+                    else {
+                        RefreshCurrentTab();
+                    }
                 }
                 else {
                     // CancelEvent();
