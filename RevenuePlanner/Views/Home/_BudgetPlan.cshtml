@@ -173,7 +173,7 @@
         var CampaignBudgetValue = $("#txtPlanBudget").val().trim().replace(/,/g, '').replace('$', '');
         var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
         var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
-        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true).replace('$', ''));
+        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true));
         if (unallocatedBudget < 0) {
             $("#lblUnallocatedBudget").addClass('error-text');
             $("#lblTotalAllocated").addClass('error-text');
