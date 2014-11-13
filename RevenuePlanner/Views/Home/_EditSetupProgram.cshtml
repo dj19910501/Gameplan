@@ -328,7 +328,7 @@
                 data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserId=' + uId + '&title=' + escape(title) ,
                 success: function (data) {
                     if (data.IsSaved) {
-                        CancelEvent();
+                        //CancelEvent();
                         var activeTab = $("#InspectTab li.active a").text()
                         var planProgramId = $("#hdnPlanProgramId").val();
                         $("#successMessage").css("display", "block");
