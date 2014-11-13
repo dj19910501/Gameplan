@@ -53,6 +53,12 @@
         width:158px;
         margin-left:24px !important;
     }
+    .sbOptions li a {
+    color:#333 !important;
+}
+    .sbSelector{
+        color: #6d6d6d !important;
+    }
 </style>
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
@@ -606,7 +612,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         <div class=" pl20 cf">
             @if (activeMenu.ToLower() == "plan") //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
             {
-                <div class="margin-left9 pull-left" id="divCollaborator" style="position: relative;">
+                <div class="pull-left" id="divCollaborator" style="position: relative;">
                     <!-- position:relative = added by kapil -->
                 </div>
 @* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
