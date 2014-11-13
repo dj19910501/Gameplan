@@ -5418,13 +5418,13 @@ namespace RevenuePlanner.Controllers
                         {
                             var pcpvar = (from pcp in db.Plan_Campaign_Program
                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcp.IsDeleted.Equals(false)
+                                          where  pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcp.IsDeleted.Equals(false)
                                           && pc.PlanCampaignId == form.PlanCampaignId       //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
                                           select pcp).FirstOrDefault();
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateProgramExits });
+                                return Json(new { Msg = Common.objCached.DuplicateProgramExits });
                             }
                             else
                             {
@@ -5489,7 +5489,7 @@ namespace RevenuePlanner.Controllers
                         {
                             var pcpvar = (from pcp in db.Plan_Campaign_Program
                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
+                                          where pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
                                           && pc.PlanCampaignId == form.PlanCampaignId
                                           select pcp).FirstOrDefault();
 
@@ -6156,7 +6156,7 @@ namespace RevenuePlanner.Controllers
                             var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.TacticTitle.Trim().ToLower()) && pcpt.IsDeleted.Equals(false)
+                                          where pcpt.Title.Trim().ToLower().Equals(form.TacticTitle.Trim().ToLower()) && pcpt.IsDeleted.Equals(false)
                                           && pcp.PlanProgramId == form.PlanProgramId
                                           select pcp).FirstOrDefault();
 
@@ -6273,7 +6273,7 @@ namespace RevenuePlanner.Controllers
                             var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.TacticTitle.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(form.PlanTacticId) && pcpt.IsDeleted.Equals(false)
+                                          where pcpt.Title.Trim().ToLower().Equals(form.TacticTitle.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(form.PlanTacticId) && pcpt.IsDeleted.Equals(false)
                                           && pcp.PlanProgramId == form.PlanProgramId    //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
                                           select pcp).FirstOrDefault();
 
@@ -6669,7 +6669,7 @@ namespace RevenuePlanner.Controllers
             string[] lineitem = lineitems.Split(',');
 
             // Fetch the current plan object and based on it's ModelID we have fetch the lineitems.
-            Plan objPlan = db.Plans.Where(p => p.PlanId == Sessions.PlanId).SingleOrDefault();
+           Plan objPlan = db.Plans.Where(p => p.PlanId == (db.Plan_Campaign.Where(pc=>pc.PlanCampaignId == form.PlanCampaignId && pc.PlanCampaignId.Equals(false)).Select(pc=> pc.PlanId).SingleOrDefault())).SingleOrDefault();
             var lineItemType = db.LineItemTypes.Where(l => l.ModelId == objPlan.ModelId).ToList();
 
             //Iterating the collection of lineitems that we hasd perviously fetch.
@@ -6696,7 +6696,7 @@ namespace RevenuePlanner.Controllers
                 int liid = pcptlobj.PlanLineItemId;
 
                 //insert chnage log into the database 
-                Result = Common.InsertChangeLog(Sessions.PlanId, null, liid, pcptlobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                Result = Common.InsertChangeLog(objPlan.PlanId, null, liid, pcptlobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
             }
 
             //retturn the reuslt status
@@ -9016,7 +9016,7 @@ namespace RevenuePlanner.Controllers
                     {
                         var pcpvar = (from pcp in db.Plan_Campaign_Program
                                       join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                      where pc.PlanId == Sessions.PlanId && pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
+                                      where pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
                                       && pc.PlanCampaignId == form.PlanCampaignId   //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
                                       select pcp).FirstOrDefault();
 
@@ -9246,7 +9246,7 @@ namespace RevenuePlanner.Controllers
                         var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
                                       join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                       join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                      where pc.PlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(form.PlanTacticId) && pcpt.IsDeleted.Equals(false)
+                                      where pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(form.PlanTacticId) && pcpt.IsDeleted.Equals(false)
                                       && pcp.PlanProgramId == form.PlanProgramId
                                       select pcp).FirstOrDefault();
 
@@ -10296,7 +10296,7 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(Sessions.PlanId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(form.PlanCampaignId))).FirstOrDefault();
+                        var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(db.Plan_Campaign.Where(pc1 => pc1.PlanCampaignId == form.PlanCampaignId).Select(pc1=>pc1.PlanId).FirstOrDefault()) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(form.PlanCampaignId))).FirstOrDefault();
                         string[] arrBudgetInputValues = BudgetInputValues.Split(',');
 
                         if (pc != null)
@@ -11378,7 +11378,7 @@ namespace RevenuePlanner.Controllers
                                        join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
                                        join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                        join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                       where pc.PlanId == Sessions.PlanId && pcptl.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(form.PlanLineItemId) && pcptl.IsDeleted.Equals(false)
+                                       where pcptl.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(form.PlanLineItemId) && pcptl.IsDeleted.Equals(false)
                                        && pcpt.PlanTacticId == form.PlanTacticId
                                        select pcpt).FirstOrDefault();
 
