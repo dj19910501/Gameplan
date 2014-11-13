@@ -699,29 +699,49 @@
 
         // otherwise fallback to custom positioning
       } else {
+          /* Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #934 */
+          var btnLeftPos = this.button.offset().left;
+          var btnWidth = this.button.width();
+          var bthRightPos = (btnLeftPos + btnWidth);
+          var leftAdjusted = false;
+          /* End - Added by Sohel Pathan on 12/11/2014 for PL ticket #934 */
           var windowWidth = $(window).width();
           var popupLeftPosition = this.menu.width();
-        var pos = this.button.offset();
-
-        /* Start - Added by Sohel Pathan on 11/11/2014 for PL ticket #934 */
-        var rightPos = windowWidth - (pos.left + this.button.width()) - 30;
-        if (rightPos < 5)
-        { rightPos = 5; }
-        else if (rightPos > 57)
-        {
-            rightPos = 57;
-        }
-        /* End - Added by Sohel Pathan on 11/11/2014 for PL ticket #934 */
-
+          var pos = this.button.offset();
+          
+          /* Start - Added by Sohel Pathan on 11/11/2014 for PL ticket #934 */
+          var rightPos = windowWidth - (pos.left + this.button.width()) - 30;
+          if (rightPos < 5) {
+              rightPos = 5;
+          }
+          else if (rightPos > 70)
+          {
+              rightPos = 70;
+          }
+          /* End - Added by Sohel Pathan on 11/11/2014 for PL ticket #934 */
+          
           popupLeftPosition += pos.left;
+          
           if (popupLeftPosition > windowWidth) {
+              leftAdjusted = true;
               pos.left = (pos.left + this.button.width()) - (this.menu.width());
           }
           
           /* Start - Added by Sohel Pathan on 11/11/2014 for PL ticket #934 */
           if (rightPos == 5) {
-              pos.left -= 30;
+              var menuLeftPos = this.menu.offset().left;
+              var menuWidth = this.menu.width();
+              var menuRightPos = (menuLeftPos + menuWidth);
+              
+              if ((menuRightPos >= bthRightPos)) {
+                  pos.left -= 30;
+              }
+              if (!leftAdjusted)
+              {
+                  pos.left -= 30;
+              }
           }
+
           if (this.options.classes.toString() == 'custom-right-pos') {
               this.menu.css({
                   top: pos.top + this.button.outerHeight(),

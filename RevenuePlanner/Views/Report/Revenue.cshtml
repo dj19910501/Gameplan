@@ -163,7 +163,7 @@
             <h4 class="title-header">Revenue Contribution</h4>
         </li>
     </ul>
-    <div class="summary-btns">
+    <div class="summary-btns" style="margin-right:0px;"> @* Modified by Sohel Pathan on 12/11/2014 for PL ticket #934 *@
         <p>View By:</p>
             <span>
              @Html.DropDownList("ddlParentRevenueContribution", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueContribution, "Value", "Text", Common.RevenueAudience.ToString()))
