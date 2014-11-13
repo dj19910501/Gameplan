@@ -23,20 +23,23 @@ namespace RevenuePlanner.Helpers
         /// <param name="CopyClone"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public  int ToClone(string Suffix = "", string CopyClone = "", int ID = 0)
+        public  int ToClone(string Suffix = "", string CopyClone = "", int ID = 0 ,int PlanId = 0)
         {
             Guid UserId = Sessions.User.UserId;
-            int PlanID = Sessions.PlanId;
+            if (PlanId == 0)
+            {
+                PlanId = Sessions.PlanId;                
+            }
             Suffix = !string.IsNullOrEmpty(Suffix) ? Suffix : Common.copySuffix + Common.GetTimeStamp();
             string PlanStatus = Enums.PlanStatus.Draft.ToString();
             string TacticStatus = Enums.TacticStatus.Created.ToString();
             switch (CopyClone)
             {
                 case "Plan":
-                    return PlanClone(PlanID, Suffix, UserId, PlanStatus, TacticStatus);
+                    return PlanClone(PlanId, Suffix, UserId, PlanStatus, TacticStatus);
 
                 case "Campaign":
-                    return CampaignClone(PlanID, Suffix, UserId, ID, TacticStatus);
+                    return CampaignClone(PlanId, Suffix, UserId, ID, TacticStatus);
 
                 case "Program":
                     return ProgramClone(Suffix, UserId, ID, TacticStatus);
@@ -275,8 +278,8 @@ namespace RevenuePlanner.Helpers
 
                     db.SaveChanges();
                     ////End Added by Mitesh Vaishnav for PL ticket #718
-                    
-                    Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+
+                    Common.InsertChangeLog(PlanId, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                     returnFlag = 1;
                     return returnFlag;
                 }
@@ -300,7 +303,8 @@ namespace RevenuePlanner.Helpers
         public  int ProgramClone(string Suffix, Guid UserId, int ID , string TacticStatus)
         {
             int returnFlag = 0;
-            
+            int planId = Sessions.PlanId;
+
             if (ID == 0)
                 return returnFlag;
 
@@ -311,6 +315,7 @@ namespace RevenuePlanner.Helpers
 
                 if (objPlanCampaignPrograms != null)
                 {
+                            planId = objPlanCampaignPrograms.Plan_Campaign.PlanId;
                             objPlanCampaignPrograms.CreatedBy = UserId;
                             objPlanCampaignPrograms.CreatedDate = DateTime.Now;
                             objPlanCampaignPrograms.Title = (objPlanCampaignPrograms.Title + Suffix);
@@ -367,7 +372,7 @@ namespace RevenuePlanner.Helpers
                             db.SaveChanges();
                             ////End Added by Mitesh Vaishnav for PL ticket #719
 
-                            Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                            Common.InsertChangeLog(planId, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                     returnFlag = 1;
                     return returnFlag;
                 }
@@ -393,7 +398,7 @@ namespace RevenuePlanner.Helpers
         public  int TacticClone(string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
-
+            int planid = Sessions.PlanId;
             if (ID == 0)
                 return returnFlag;
             try
@@ -402,6 +407,7 @@ namespace RevenuePlanner.Helpers
 
                 if (objPlanCampaignProgramTactic != null)
                 {
+                    planid = objPlanCampaignProgramTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                     objPlanCampaignProgramTactic.Stage = null;
                     objPlanCampaignProgramTactic.Status = TacticStatus;
                     objPlanCampaignProgramTactic.CreatedBy = UserId;
@@ -438,7 +444,7 @@ namespace RevenuePlanner.Helpers
                 db.SaveChanges();
                 ////End Added by Mitesh Vaishnav for PL ticket #720
 
-                Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, objPlanCampaignProgramTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                 returnFlag = 1;
                 return returnFlag;
             }
@@ -461,6 +467,7 @@ namespace RevenuePlanner.Helpers
         public  int LineItemClone(string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
+            int planid = Sessions.PlanId;
 
             if (ID == 0)
                 return returnFlag;
@@ -469,6 +476,7 @@ namespace RevenuePlanner.Helpers
                 Plan_Campaign_Program_Tactic_LineItem objPlanCampaignProgramTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.AsNoTracking().First(p => p.PlanLineItemId == ID && p.IsDeleted == false);
                 if (objPlanCampaignProgramTacticLineItem != null)
                 {
+                    planid = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                     int TacticId = objPlanCampaignProgramTacticLineItem.PlanTacticId;
                     objPlanCampaignProgramTacticLineItem.CreatedBy = UserId;
                     objPlanCampaignProgramTacticLineItem.CreatedDate = DateTime.Now;
@@ -480,7 +488,7 @@ namespace RevenuePlanner.Helpers
                     db.SaveChanges();
                     returnFlag = objPlanCampaignProgramTacticLineItem.PlanLineItemId;
                     CostCalculacation(TacticId);
-                    Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, objPlanCampaignProgramTacticLineItem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTacticLineItem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                 }
                 return returnFlag;
             }

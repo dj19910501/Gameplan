@@ -5424,7 +5424,7 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { Msg = Common.objCached.DuplicateProgramExits });
+                                return Json(new { errormsg = Common.objCached.DuplicateProgramExits });
                             }
                             else
                             {
@@ -6162,7 +6162,7 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits, planCampaignId = cid, planProgramId = pid });
+                                return Json(new { IsDuplicate = true, errormsg = Common.objCached.DuplicateTacticExits, planCampaignId = cid, planProgramId = pid });
                             }
                             else
                             {
@@ -6257,7 +6257,7 @@ namespace RevenuePlanner.Controllers
 
                                     scope.Complete();
 
-                                    return Json(new { redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = "Tactic created.", planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid });
+                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = "Tactic created.", planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid });
                                 }
                             }
                         }
@@ -9615,7 +9615,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="Id"></param>
         /// <param name="title"></param>
         /// <returns></returns>
-        public ActionResult Clone(string CloneType, int Id, string title, string CalledFromBudget = "", string RequsetedModule = "")
+        public ActionResult Clone(string CloneType,int Id, string title, string CalledFromBudget = "", string RequsetedModule = "",int planid = 0)
         {
             int rtResult = 0;
             int cid = 0;
@@ -9635,7 +9635,7 @@ namespace RevenuePlanner.Controllers
                 if (!string.IsNullOrEmpty(CloneType) && Id > 0)
                 {
                     Clonehelper objClonehelper = new Clonehelper();
-                    rtResult = objClonehelper.ToClone("", CloneType, Id);
+                    rtResult = objClonehelper.ToClone("", CloneType, Id,planid);
                     //rtResult = 1;
                     if (CloneType == Enums.DuplicationModule.Plan.ToString())
                     {

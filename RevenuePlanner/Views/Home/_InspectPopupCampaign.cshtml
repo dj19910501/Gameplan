@@ -380,11 +380,12 @@
             type: 'POST',
             url: '@Url.Content("~/Home/Clone")',
             data: {
-                CloneType: '@Enums.DuplicationModule.Campaign',
+                CloneType: '@Enums.DuplicationModule.Campaign', 
                 Id: idPlanCamaign,
                 title: Title,
                 CalledFromBudget: '@CalledFromBudget',
-                    RequsetedModule: '@RedirectType'
+                RequsetedModule: '@RedirectType',
+                planId : '@planId'
             },
             success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
