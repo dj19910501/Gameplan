@@ -9471,7 +9471,7 @@ namespace RevenuePlanner.Controllers
                                            join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
                                            join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                            join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                           where  pcptl.Title.Trim().ToLower().Equals(LineItemTitle.Trim().ToLower()) && pcptl.IsDeleted.Equals(false)
+                           where pcptl.Title.Trim().ToLower().Equals(LineItemTitle.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(PlanLineItemId) && pcptl.IsDeleted.Equals(false)
                                            && pcpt.PlanTacticId == tid
                                            select pcpt).FirstOrDefault();
 

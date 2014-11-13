@@ -153,6 +153,9 @@
             $("#lblLineitemTitle").show();
             $("#txtTitle").hide();
             $("#btnEditlineItem").on("click", function (e) {
+                $("#hdnLineitemOpt").val("Edit");
+                $('#txtTitle').show();
+                $('#lblLineitemTitle').hide();
                 loadReview(planLineItemId, "Setup");
             });
         }
@@ -262,10 +265,13 @@
             var iserror = false;
             var _lineitemtitle = htmlEncode($('#txtTitle').val());
             var _stractualsData = '';
+            var isotherlineitem = $("#hdnIsOtherLineItem").val();
+            if (isotherlineitem.toLowerCase() == 'false') {
             if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
                 var errorMsg = "You can't use 'Other' as title.";
                 ShowError(errorMsg);
                 return false;
+                }
             }
             $('#trActualCost').find('input').each(function () {
                 var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));

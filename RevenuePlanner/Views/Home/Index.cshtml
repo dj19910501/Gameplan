@@ -49,6 +49,10 @@
         float: right;
         margin: 7px -3px 0 0 !important;
     }
+    .cmbxplan_businessunit {
+        width:158px;
+        margin-left:24px !important;
+    }
 </style>
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
@@ -541,7 +545,7 @@
 @{
     if (showBid == true && (activeMenu.ToLower() == Enums.ActiveMenu.Plan.ToString().ToLower()))
     {
-    <span class="selectBox" id="dropdown-business-unit" style="width: 158px;">
+    <span class="selectBox cmbxplan_businessunit" id="dropdown-business-unit">
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
         {
             @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId))
