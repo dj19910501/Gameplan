@@ -134,6 +134,11 @@
          $("#divDeleteProgram").css("display", "block");
          NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
          var InspectValue = $("#hdnInspectPopup").val();
+
+         if ('@IsOtherLineItem' && (InspectValue == "Budget")) {
+             InspectValue = "Setup";
+         }
+         
          var planLineitemId = $("#hdnPlanLineItemID").val();
 
          // Call Remove Tabclass which will handle style of tabs
