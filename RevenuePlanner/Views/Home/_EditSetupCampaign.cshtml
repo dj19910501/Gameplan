@@ -39,10 +39,9 @@
             @Html.TextBox("txtPlan", HttpUtility.HtmlDecode(PlanTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = PlanTitle })*@
             <p>@Html.Raw("Description")</p>
             @Html.TextAreaFor(model=>model.Description, new {id="txtDescription", @class = "span12 text-area-size", style = "height:92px;" })
-            <p class="clear-section" style="line-height: 11px; padding-bottom: 8px;">@Html.Raw("Deployed to Integration")</p>
-            @* @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", id = "txtDeployStatus"})*@
             @if (ExtIntService)
             {
+               <p class="clear-section" style="line-height: 11px; padding-bottom: 8px;">@Html.Raw("Deployed to Integration")</p>
                 if (Model.IsDeployedToIntegration)
                 {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />

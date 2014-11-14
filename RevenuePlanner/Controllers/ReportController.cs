@@ -952,7 +952,7 @@ namespace RevenuePlanner.Controllers
                 returnData = returnData.Where(s => !string.IsNullOrEmpty(s.title)).OrderBy(s => s.title, new AlphaNumericComparer()).ToList();
                 return Json(returnData, JsonRequestBehavior.AllowGet);
             }
-            else if (ParentLabel.Contains(Common.CustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
+            else if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
             {
                 int customfieldId = 0;
                 bool IsCampaign = false;
@@ -960,9 +960,9 @@ namespace RevenuePlanner.Controllers
                 bool IsTactic = false;
 
 
-                if (ParentLabel.Contains(Common.CustomTitle))
+                if (ParentLabel.Contains(Common.TacticCustomTitle))
                 {
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CustomTitle, ""));
+                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
                     IsTactic = true;
                 }
                 else if (ParentLabel.Contains(Common.CampaignCustomTitle))
@@ -1213,10 +1213,10 @@ namespace RevenuePlanner.Controllers
                 int verticalid = Convert.ToInt32(Id);
                 Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.VerticalId == verticalid).ToList();
             }
-            else if (ParentTab.Contains(Common.CustomTitle))
+            else if (ParentTab.Contains(Common.TacticCustomTitle))
             {
                 List<int> entityids = new List<int>();
-                int customfieldId = Convert.ToInt32(ParentTab.Replace(Common.CustomTitle, ""));
+                int customfieldId = Convert.ToInt32(ParentTab.Replace(Common.TacticCustomTitle, ""));
                 string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 entityids = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == Id).Select(c => c.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(pcpt => entityids.Contains(pcpt.TacticObj.PlanTacticId)).ToList();
@@ -1643,9 +1643,9 @@ namespace RevenuePlanner.Controllers
             bool IsTacticCustomField = false;
 
             //Custom
-            if (ParentConversionSummaryTab.Contains(Common.CustomTitle))
+            if (ParentConversionSummaryTab.Contains(Common.TacticCustomTitle))
             {
-                int customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.CustomTitle, ""));
+                int customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.TacticCustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(e => e.CustomFieldId == customfieldId).Select(e => e.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(t => entityids.Contains(t.TacticObj.PlanTacticId)).ToList();
                 IsTacticCustomField = true;
@@ -1717,7 +1717,7 @@ namespace RevenuePlanner.Controllers
                 List<int> entityids = new List<int>();
                 if (IsTacticCustomField)
                 {
-                    customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.CustomTitle, ""));
+                    customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.TacticCustomTitle, ""));
                     entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
                 }
                 else if (IsCampaignCustomField)
@@ -1987,12 +1987,12 @@ namespace RevenuePlanner.Controllers
             List<int> entityids = new List<int>();
             //Check the custom field typa and replace the id with eliminate extra word 
             // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report 
-            if (ParentLabel.Contains(Common.CustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
+            if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
             {
                 int customfieldId = 0;
-                if (ParentLabel.Contains(Common.CustomTitle))
+                if (ParentLabel.Contains(Common.TacticCustomTitle))
                 {
-                   customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CustomTitle, ""));    
+                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));    
                 }
                 else if (ParentLabel.Contains(Common.CampaignCustomTitle))
                 {
@@ -2014,7 +2014,7 @@ namespace RevenuePlanner.Controllers
                 (ParentLabel == Common.RevenueAudience && pcpt.TacticObj.AudienceId == Convert.ToInt32(id)) ||
                 (ParentLabel == Common.RevenueVertical && pcpt.TacticObj.VerticalId == Convert.ToInt32(id)) ||
                 (ParentLabel == Common.RevenuePlans && pcpt.TacticObj.Plan_Campaign_Program.Plan_Campaign.PlanId == Convert.ToInt32(id)) ||
-                (ParentLabel.Contains(Common.CustomTitle) && entityids.Contains(pcpt.TacticObj.PlanTacticId)) ||
+                (ParentLabel.Contains(Common.TacticCustomTitle) && entityids.Contains(pcpt.TacticObj.PlanTacticId)) ||
                 (ParentLabel.Contains(Common.CampaignCustomTitle) && entityids.Contains(pcpt.TacticObj.Plan_Campaign_Program.PlanCampaignId)) ||
                 (ParentLabel.Contains(Common.ProgramCustomTitle) && entityids.Contains(pcpt.TacticObj.PlanProgramId))
                 )).ToList();
@@ -2288,9 +2288,9 @@ namespace RevenuePlanner.Controllers
             }
             //Modified By : Kalpesh Sharma #960 Filter changes for Revenue report - Revenue Report
             // Check the custom field type and remove extra string for get Custom Field Id
-            if (parentlabel.Contains(Common.CustomTitle))
+            if (parentlabel.Contains(Common.TacticCustomTitle))
             {
-                int customfieldId = Convert.ToInt32(parentlabel.Replace(Common.CustomTitle, ""));
+                int customfieldId = Convert.ToInt32(parentlabel.Replace(Common.TacticCustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(e => e.CustomFieldId == customfieldId).Select(e => e.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(t => entityids.Contains(t.TacticObj.PlanTacticId)).ToList();
                 IsTacticCustomField = true;
@@ -2372,13 +2372,13 @@ namespace RevenuePlanner.Controllers
             }
             
             //Check the custom field type and filter tactic based on Custom field Id
-            else if (parentlabel.Contains(Common.CustomTitle) || parentlabel.Contains(Common.CampaignCustomTitle) || parentlabel.Contains(Common.ProgramCustomTitle))
+            else if (parentlabel.Contains(Common.TacticCustomTitle) || parentlabel.Contains(Common.CampaignCustomTitle) || parentlabel.Contains(Common.ProgramCustomTitle))
             {
                 int customfieldId = 0;
                 List<int> entityids = new List<int>();
                 if (IsTacticCustomField)
                 {
-                    customfieldId = Convert.ToInt32(parentlabel.Replace(Common.CustomTitle, ""));
+                    customfieldId = Convert.ToInt32(parentlabel.Replace(Common.TacticCustomTitle, ""));
                     entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
                 }
                 else if (IsCampaignCustomField)
@@ -2583,9 +2583,9 @@ namespace RevenuePlanner.Controllers
             List<string> includeMonth = GetMonthListForReport(selectOption, true);
             //Custom
             List<int> entityids = new List<int>();
-            if (ParentLabel.Contains(Common.CustomTitle))
+            if (ParentLabel.Contains(Common.TacticCustomTitle))
             {
-                customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CustomTitle, ""));
+                customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
                 isCustomField = true;
             }
             else if(ParentLabel.Contains(Common.CampaignCustomTitle) )
@@ -2610,7 +2610,7 @@ namespace RevenuePlanner.Controllers
                                                                 (ParentLabel == Common.RevenueGeography && pcpt.TacticObj.GeographyId == new Guid(id)) ||
                                                                 (ParentLabel == Common.RevenueVertical && pcpt.TacticObj.VerticalId == Convert.ToInt32(id) ||
                                                                 (ParentLabel == Common.RevenueOrganization) ||
-                                                                (ParentLabel.Contains(Common.CustomTitle) && entityids.Contains(pcpt.TacticObj.PlanTacticId))
+                                                                (ParentLabel.Contains(Common.TacticCustomTitle) && entityids.Contains(pcpt.TacticObj.PlanTacticId))
                                                                 || (ParentLabel.Contains(Common.CampaignCustomTitle) && entityids.Contains(pcpt.TacticObj.Plan_Campaign_Program.PlanCampaignId))
                                                                 || (ParentLabel.Contains(Common.ProgramCustomTitle) && entityids.Contains(pcpt.TacticObj.PlanProgramId))
                                                                 ))).ToList();

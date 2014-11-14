@@ -145,9 +145,10 @@ namespace RevenuePlanner.Helpers
         public static string DateFormateForInspectPopupDescription = "MMMM dd";
 
         //Added By Kalpesh Sharma
-        public const string CustomTitle = "TacticCustom";
+        public const string CustomTitle = "Custom";
         public const string CampaignCustomTitle = "CampaignCustom";
         public const string ProgramCustomTitle = "ProgramCustom";
+        public const string TacticCustomTitle = "TacticCustom";
 
         //Added By Sohel Pathan
         public static string ColorCodeForCustomField = "";
@@ -4469,6 +4470,7 @@ namespace RevenuePlanner.Helpers
             }
             else 
             {
+                CustomTitleName = TacticCustomTitle;
                 CustomFields = (from cf in db.CustomFields
                                 join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
                                 join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId

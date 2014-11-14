@@ -43,7 +43,8 @@
         ////Added by Mitesh Vaishnav - Additional perameter to identify customfields Ids
             CustomCampaignName: "",
             CustomProgramName: "",
-            CustomTacticName: ""
+            CustomTacticName: "",
+            CustomName: ""
     },
 
     _create: function() {
@@ -143,6 +144,7 @@
             var isCampaignCustomField = false;
             var isProgramCustomField = false;
             var isTacticCustomField = false;
+            var isCustomField = false;
         //End: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
       // build items
       el.find('option').each(function(i) {
@@ -157,6 +159,17 @@
         var labelClasses = [ 'ui-corner-all' ];
         var liClasses = (isDisabled ? 'ui-multiselect-disabled ' : ' ') + this.className;
         var optLabel;
+          ////start Added by Mitesh for creating border between custom fields and other 
+        var borderTopClass = "";
+        if (o.CustomName != '') {
+            if (!isCustomField) {
+                if (value.substring(0, o.CustomName.length) == o.CustomName) {
+                    borderTopClass = "borderTop1px";
+                    isCustomField = true;
+                }
+            }
+        }
+          ////End Added by Mitesh for creating border between custom fields and other 
         // is this an optgroup?
         if(parent.tagName === 'OPTGROUP') {
           optLabel = parent.getAttribute('label');
@@ -197,7 +210,7 @@
                     }
                 }
           //End: Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
-                html += '<li class="' + liClasses + '">';
+                html += '<li class="' + liClasses + ' ' + borderTopClass + '">';
 
         // create the label
         html += '<label for="' + inputID + '" title="' + title + '" class="' + labelClasses.join(' ') + '">';
