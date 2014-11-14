@@ -385,7 +385,8 @@ namespace RevenuePlanner.Helpers
             ImprovementTacticDeclined,
             ImprovementTacticSubmitted,
             ShareImprovementTactic,
-            ResetPasswordLink // Added by : Dharmraj Mangukiya
+            ResetPasswordLink, // Added by : Dharmraj Mangukiya
+            TacticOwnerChanged  // Added by : Sohel Pathan on 14/11/2014 for PL ticket #708
         }
         #endregion
 

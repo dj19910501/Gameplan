@@ -2279,6 +2279,18 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/AssignUser", ReplyAction="http://tempuri.org/IBDSService/AssignUserResponse")]
         System.Threading.Tasks.Task<int> AssignUserAsync(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictions", ReplyAction="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictionsResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictions(System.Guid userId, System.Guid clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictions", ReplyAction="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictionsResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListWithCustomRestrictionsAsync(System.Guid userId, System.Guid clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberName", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberName(string userIdList);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberName", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberNameAsync(string userIdList);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -2722,6 +2734,22 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<int> AssignUserAsync(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy) {
             return base.Channel.AssignUserAsync(UserId, RoleId, applicationId, createdBy);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictions(System.Guid userId, System.Guid clientId, System.Guid applicationId) {
+            return base.Channel.GetUserListWithCustomRestrictions(userId, clientId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListWithCustomRestrictionsAsync(System.Guid userId, System.Guid clientId, System.Guid applicationId) {
+            return base.Channel.GetUserListWithCustomRestrictionsAsync(userId, clientId, applicationId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberName(string userIdList) {
+            return base.Channel.GetMultipleTeamMemberName(userIdList);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberNameAsync(string userIdList) {
+            return base.Channel.GetMultipleTeamMemberNameAsync(userIdList);
         }
     }
 }

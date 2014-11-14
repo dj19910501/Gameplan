@@ -2564,5 +2564,74 @@ namespace BDSService
         }
 
         #endregion
+
+        #region Get List of Users with Custom Restriction ViewOnly and ViewEdit Rights
+        /// <summary>
+        /// Rerurns list of user who have viewOnly and viewEdit rights for Vertical, BU and Geography.
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>14/11/2014</CreatedDate>
+        /// <param name="userId">User ID</param>
+        /// <param name="clientId">Client ID</param>
+        /// <param name="applicationId">Application ID</param>
+        /// <returns>List of user with Firstname and Lastname details.</returns>
+        public List<BDSEntities.User> GetUserListWithCustomRestrictions(Guid userId, Guid clientId, Guid applicationId)
+        {
+            List<BDSEntities.User> teamMemberList = new List<BDSEntities.User>();
+            List<User> lstUser = (from u in db.Users
+                                  join ua in db.User_Application on u.UserId equals ua.UserId
+                                  where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && ua.IsDeleted == false
+                                  select u).OrderBy(q => new { q.FirstName, q.LastName }).Distinct().ToList();
+
+            if (lstUser.Count > 0)
+            {
+                var lstUserIds = lstUser.Select(u => u.UserId).ToList();
+
+                var Verticals = Enums.CustomRestrictionType.Verticals.ToString();
+                var BusinessUnit = Enums.CustomRestrictionType.BusinessUnit.ToString();
+                var Geography = Enums.CustomRestrictionType.Geography.ToString();
+
+                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                int ViewPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+
+                var usercustomRestrictionList = db.CustomRestrictions
+                                                .Where(crl => lstUserIds.Contains(crl.UserId) && crl.ApplicationId == applicationId &&
+                                                ((crl.CustomField == Verticals || crl.CustomField == BusinessUnit || crl.CustomField == Geography) &&
+                                                crl.Permission == ViewEditPermission || crl.Permission == ViewPermission))
+                                                .Select(crl => crl.UserId).ToList().Distinct();
+
+                teamMemberList = lstUser.Where(u => usercustomRestrictionList.Contains(u.UserId)).ToList().Select(u => new BDSEntities.User()
+                {
+                    UserId = u.UserId,
+                    DisplayName = u.FirstName + " " + u.LastName
+                }).ToList();
+            }
+            
+            return teamMemberList;
+        }
+        #endregion
+
+        /// <summary>
+        /// Function to get details for list for specific users.
+        /// </summary>
+        /// <param name="userIdList">comma seperated list of users</param>
+        /// <param name="applicationId">application</param>
+        /// <returns>Returns client list for sepcific users.</returns>
+        public List<BDSEntities.User> GetMultipleTeamMemberName(string userIdList)
+        {
+            List<BDSEntities.User> teamMemberList = new List<BDSEntities.User>();
+            if (!string.IsNullOrWhiteSpace(userIdList))
+            {
+                List<Guid> UserList = new List<Guid>();
+                userIdList.Split(',').ToList().ForEach(a => UserList.Add(new Guid(a)));
+                if (UserList.Count() > 0)
+                {
+                    teamMemberList = db.Users.Where(u => UserList.Contains(u.UserId)).Select(u => new BDSEntities.User { UserId = u.UserId, FirstName = u.FirstName, LastName = u.LastName }).ToList();
+                }
+            }
+            return teamMemberList;
+        }
+
+
     }
 }

@@ -550,6 +550,42 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        /// <summary>
+        /// Send email to new owner when tactic owner changed.
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>14/11/2014</CreatedDate>
+        /// <param name="EmailIds">Email id to whom email to be sent</param>
+        /// <param name="NewOwnerName">New tactic owmner name</param>
+        /// <param name="ModifierName">Name of user who changed the tactic owner</param>
+        /// <param name="TacticName">Tactic name for which owner has been changed</param>
+        /// <param name="ProgramName">Program name of tactic for which owner has been changed</param>
+        /// <param name="CampaignName">Campaign name of tactic for which owner has been changed</param>
+        /// <param name="PlanName">Plan name of tactic for which owner has been changed</param>
+        public static void SendNotificationMailForTacticOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName)
+        {
+            for (int i = 0; i <= EmailIds.Count - 1; i++)
+            {
+                string emailBody = "";
+                MRPEntities db = new MRPEntities();
+                string TacticOwnerChanged = Enums.Custom_Notification.TacticOwnerChanged.ToString();
+                Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(TacticOwnerChanged));
+                emailBody = notification.EmailContent;
+                emailBody = emailBody.Replace("[NameToBeReplaced]", NewOwnerName);
+                emailBody = emailBody.Replace("[ModifierName]", ModifierName);
+                emailBody = emailBody.Replace("[tacticname]", TacticName);
+                emailBody = emailBody.Replace("[programname]", ProgramName);
+                emailBody = emailBody.Replace("[campaignname]", CampaignName);
+                emailBody = emailBody.Replace("[planname]", PlanName);
+                
+                string email = EmailIds.ElementAt(i);
+                ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
+                Thread thread = new Thread(threadStart);
+                thread.Start();
+            }
+        }
+
+
         public static List<string> GetCollaboratorForTactic(int PlanTacticId)
         {
             MRPEntities db = new MRPEntities();

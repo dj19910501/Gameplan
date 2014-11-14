@@ -1,6 +1,8 @@
 ﻿@model RevenuePlanner.Models.Inspect_Popup_Plan_Campaign_Program_TacticModel
 @using RevenuePlanner.Helpers;
-
+@{
+    var IsTackticAddEdit = ViewBag.IsTackticAddEdit != null ? (bool)ViewBag.IsTackticAddEdit : false;
+}
  <style type="text/css">
     #btnCancel
     {
@@ -58,7 +60,16 @@
         </div>
         <div class="span3" id="inspect-modal-left-column3">
             <p>Owner</p>
+            @if (IsTackticAddEdit)
+            {
+                <span style="min-width:100%;">
+                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlOwner", label = "Owner" }) 
+                </span>
+            }
+            else
+            {
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = Model.Owner })
+            }
 
             @if (ExtIntService)
             {                 
@@ -268,6 +279,15 @@
               //End- Added by Viral Kadiya on 11/10/2014 for PL ticket #941 to refresh gantt data on cancel button click.
           });
 
+          $('#ddlOwner').multiselect({
+                multiple: false,
+                noneSelectedText: "Please Select",
+                selectedList: 1,
+                CustomName: '@Common.CustomTitle'
+          }).multiselectfilter();
+
+          $('#ddlOwner').next().css('width', '95%');
+          $('#ddlOwner').next().css('min-height', '30px');
       });
 
       $("#btnUploadResult").on("click", function (e) {          

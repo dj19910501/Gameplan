@@ -130,6 +130,7 @@
     </Compile>
     <Compile Include="EnumFile.cs" />
     <Compile Include="Helpers\Common.cs" />
+    <Compile Include="Helpers\Enums.cs" />
     <Compile Include="IBDSService.cs" />
     <Compile Include="Menu_Application.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>

@@ -338,6 +338,18 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.AssignUser(UserId, RoleId, applicationId, createdBy);
         }
+
+        public List<BDSEntities.User> GetUserListWithCustomRestrictions(Guid userId, Guid clientId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetUserListWithCustomRestrictions(userId, clientId, applicationId);
+        }
+
+        public List<BDSEntities.User> GetMultipleTeamMemberName(string userIdList)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetMultipleTeamMemberName(userIdList);
+        }
     }
 
 }
