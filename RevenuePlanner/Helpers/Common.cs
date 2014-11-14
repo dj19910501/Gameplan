@@ -145,7 +145,9 @@ namespace RevenuePlanner.Helpers
         public static string DateFormateForInspectPopupDescription = "MMMM dd";
 
         //Added By Kalpesh Sharma
-        public const string CustomTitle = "Custom";
+        public const string CustomTitle = "TacticCustom";
+        public const string CampaignCustomTitle = "CampaignCustom";
+        public const string ProgramCustomTitle = "ProgramCustom";
 
         //Added By Sohel Pathan
         public static string ColorCodeForCustomField = "";
@@ -4388,6 +4390,60 @@ namespace RevenuePlanner.Helpers
             }
             return lstCustomFieldsViewByTab;
         }
+
+
+        /// <summary>
+        /// Fetch the Custom fields based upon it's PlanTactic id
+        /// </summary>
+        /// <param name="planTacticIds">List of Plan Tactic id</param>
+        /// <returns>List of ViewbyModel</returns>
+        public static List<ViewByModel> GetCustomFields(List<int> Ids , string type)
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
+            string CustomTitleName = CustomTitle;
+            if (Ids == null)
+            {
+                Ids = new List<int>();
+            }
+            
+            var CustomFields = (dynamic)null;
+            
+            if (type == Enums.Section.Campaign.ToString())
+            {
+                CustomTitleName = CampaignCustomTitle;
+                CustomFields = (from cf in db.CustomFields
+                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
+                                join t in db.Plan_Campaign on cfe.EntityId equals t.PlanCampaignId
+                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Campaign" && cf.ClientId == Sessions.User.ClientId && Ids.Contains(t.PlanCampaignId)
+                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+            }
+            else if (type == Enums.Section.Program.ToString())
+            {
+                CustomTitleName = ProgramCustomTitle;
+                CustomFields = (from cf in db.CustomFields
+                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
+                                join t in db.Plan_Campaign_Program on cfe.EntityId equals t.PlanProgramId
+                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Program" && cf.ClientId == Sessions.User.ClientId && Ids.Contains(t.PlanProgramId)
+                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+            }
+            else 
+            {
+                CustomFields = (from cf in db.CustomFields
+                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
+                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
+                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId && Ids.Contains(t.PlanTacticId)
+                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+            }
+
+            //ittrate the custom fields and insert into the temp list
+            foreach (var item in CustomFields)
+            {
+                lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", CustomTitleName, item.CustomFieldId.ToString()) });
+            }
+            return lstCustomFieldsViewByTab;
+        }
+
 
         /// <summary>
         /// Get the list of Tactic by passing the multiple Plan Ids
