@@ -454,7 +454,6 @@
             
             e.stopPropagation();
             //$.ajaxSetup({ cache: false });
-            var idCampaing = $(this).parent().attr('id');
             ////displayconfirmForCampaignEvent(idCampaing);
             //displayConfirmCommon('campaignCommonClick(' + idCampaing + ');');
 
@@ -471,8 +470,13 @@
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();*@
              e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
-            
-            ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", idCampaing, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+             if ($(this).text() == "Campaign Title") {
+                 ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0","0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+             }
+             else {
+                 var idCampaing = $(this).parent().attr('id');
+                 ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", idCampaing, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+             }
         });
 
 
@@ -589,7 +593,7 @@
             e.stopPropagation();
             //$.ajaxSetup({ cache: false });
             //$("#slidepanel").css("display", "block");
-            var idCampaign = $(this).parent().parent().attr('data-id-campaing');
+            
 
             //if (idProgram == 0) {
             //    $("a#0 span.gray-bg-text").removeClass('1');
@@ -613,8 +617,14 @@
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();
              e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue*@
-            
-            ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaign, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+            if ($(this).text() == "Add Programs") {
+                var idCampaign = $(this).parent().parent().attr('data-id-campaing');
+                ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaign, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+            }
+            else {
+                var idProgram = $(this).parent().parent().attr('id');
+                ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", idProgram, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+            }
         });
 
         //Dharmraj Start 8July2014 Common function to handle tactic click event
@@ -693,7 +703,7 @@
                 return false;
             }
             else {
-                ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+                ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
                 return false;
             }
         }
@@ -701,7 +711,7 @@
         $(document).on("click", "#divlineitem", function (e) {
             
             var idLineItem = $(this).attr("index");
-            ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", idLineItem, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+            ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", idLineItem, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
             return false;
            
         });
@@ -1327,7 +1337,7 @@
     @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
 
     $(document).on("click", ".add-icon.campaign", function (e) {        
-        ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0",'@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+        ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0","0",'@Enums.InspectPopupRequestedModules.Assortment.ToString()');
     });
     //fill campaign table with data from json
     function fillCampaignsTable() {

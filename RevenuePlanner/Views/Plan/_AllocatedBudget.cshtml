@@ -459,7 +459,7 @@ else {
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
         e.preventDefault();*@
-        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 
     $("[linktype=program]").click(function (e) {
@@ -471,6 +471,6 @@ else {
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
         e.preventDefault();*@
-        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 </script>

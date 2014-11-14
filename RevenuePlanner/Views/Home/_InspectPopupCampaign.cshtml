@@ -7,7 +7,6 @@
     var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-@Html.Display(popupvalue)
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 @{
     var planCampaignId = 0;

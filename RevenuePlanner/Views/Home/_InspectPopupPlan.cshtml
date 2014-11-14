@@ -243,7 +243,7 @@
         HideAllMessages();
         var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
-        $("#divPartial").load(url + '?id=' + planId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()");
+        $("#divPartial").load(url + '?id=' + planId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()" + '&RequestedModule=' + '@RequestedModule');
     });
 
     $("#deletePlan").click(function () {

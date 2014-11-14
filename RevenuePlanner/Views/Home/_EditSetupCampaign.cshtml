@@ -390,6 +390,7 @@
                         loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
                         if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                             $("#hdnBudgetingExpandId").val("campaign" + planCampaignId);
+                            $("#hdnBudgetingIsSave").val("true");
                         }
                         else {
                             RefreshCurrentTab(requestedModule, 0, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points

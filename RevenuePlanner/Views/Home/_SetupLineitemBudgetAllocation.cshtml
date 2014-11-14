@@ -367,10 +367,11 @@
                     var planLineItemId = $("#hdnPlanLineItemId").val();
                     var requestedModule = $("#hdnRedirectType").val();
                     if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
-                        $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
+                        $("#hdnBudgetingExpandId").val("lineitem" + data.PlanLineItemId);
+                        $("#hdnBudgetingIsSave").val("true");
                     }
                     else {
-                        RefreshCurrentTab('@Enums.InspectPopupRequestedModules.Assortment.ToString()', data.CamapignId, data.ProgramId, data.TacticId, 0, 0);
+                        RefreshCurrentTab(requestedModule, data.CamapignId, data.ProgramId, data.TacticId, 0, 0);
                     }
                 }
                 else {

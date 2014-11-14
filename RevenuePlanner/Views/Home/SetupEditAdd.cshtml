@@ -417,6 +417,7 @@
                             $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                 $("#hdnBudgetingExpandId").val("tactic" + planTacticId);
+                                $("#hdnBudgetingIsSave").val("true");
                             }
                             else {
                                 RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points

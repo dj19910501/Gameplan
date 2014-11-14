@@ -11585,10 +11585,16 @@ namespace RevenuePlanner.Controllers
 
                                 db.SaveChanges();
                                 scope.Complete();
-                                return Json(new { IsSaved = true, CamapignId = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId,
-                                       ProgramId =  objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId ,
-                                                  TacticId = objLineitem.PlanTacticId,
-                                                  msg = "Changes Saved.", JsonRequestBehavior.AllowGet});
+                                return Json(new
+                                {
+                                    IsSaved = true,
+                                    CamapignId = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId,
+                                    ProgramId = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId,
+                                    TacticId = objLineitem.PlanTacticId,
+                                    PlanLineItemId = form.PlanLineItemId,
+                                    msg = "Changes Saved.",
+                                    JsonRequestBehavior.AllowGet
+                                });
                             }
                         }
                     }

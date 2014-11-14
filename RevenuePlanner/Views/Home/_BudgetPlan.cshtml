@@ -408,7 +408,13 @@
                                 $("#spanMessageSuccess").empty();
                                 $("#spanMessageSuccess").text(data.succmsg);
                                 returnToReadOnlyMode(data.id);
-                                RefreshCurrentTab(requestedModule, 0, 0, 0);
+                                if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                                    $("#hdnBudgetingIsSave").val("true");
+                                    $("#hdnBudgetingExpandId").val("0");
+                                }
+                                else {
+                                    RefreshCurrentTab(requestedModule, 0, 0, 0);
+                                }
                                 isDataModified = true;
                             }
                             return;

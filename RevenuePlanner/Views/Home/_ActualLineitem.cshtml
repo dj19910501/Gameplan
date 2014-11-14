@@ -317,6 +317,7 @@
 
                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                 $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
+                                $("#hdnBudgetingIsSave").val("true");
                             }
                             else {
                                 RefreshCurrentTab(requestedModule, data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);

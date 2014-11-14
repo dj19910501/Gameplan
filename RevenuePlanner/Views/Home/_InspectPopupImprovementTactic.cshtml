@@ -4,7 +4,6 @@
     var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-@Html.Display(popupvalue)
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 @{
     var tacticMaster = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;

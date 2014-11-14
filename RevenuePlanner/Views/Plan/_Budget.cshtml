@@ -468,8 +468,7 @@ else {
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
         e.preventDefault();*@
-        var mode = "Edit";
-        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 
     $("[linktype=program]").click(function (e) {
@@ -485,8 +484,7 @@ else {
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
         e.preventDefault();*@
-        var mode = "Edit";
-        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
     $("[linktype=tactic]").click(function (e) {
         var id = $(this).attr('id');
@@ -502,7 +500,7 @@ else {
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
         e.preventDefault();*@
-        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
      });
     $("[linktype=lineitem]").click(function (e) {
         var id = $(this).attr('id');
@@ -518,7 +516,7 @@ else {
         myApp.hidePleaseWait();
         e.preventDefault();*@
 
-        ShowModel("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id);
+        ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 </script>
 
