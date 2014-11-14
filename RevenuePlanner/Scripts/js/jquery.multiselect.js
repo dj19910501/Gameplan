@@ -41,7 +41,9 @@
       position: {},
       appendTo: "body",
         ////Added by Mitesh Vaishnav - Additional perameter to identify customfields Ids
-        CustomName:""
+            CustomCampaignName: "",
+            CustomProgramName: "",
+            CustomTacticName: ""
     },
 
     _create: function() {
@@ -137,7 +139,11 @@
       var optgroups = [];
       var html = "";
       var id = el.attr('id') || multiselectID++; // unique ID for the label & option tags
-      var isCustomField = false;
+        //Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
+            var isCampaignCustomField = false;
+            var isProgramCustomField = false;
+            var isTacticCustomField = false;
+        //End: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
       // build items
       el.find('option').each(function(i) {
         var $this = $(this);
@@ -151,17 +157,6 @@
         var labelClasses = [ 'ui-corner-all' ];
         var liClasses = (isDisabled ? 'ui-multiselect-disabled ' : ' ') + this.className;
         var optLabel;
-          ////start Added by Mitesh for creating border between custom fields and other 
-        var borderTopClass = "";
-        if (o.CustomName != '') {
-            if (!isCustomField) {
-                if (value.substring(0, o.CustomName.length) == o.CustomName) {
-                    borderTopClass = "borderTop1px";
-                    isCustomField = true;
-                }
-            }
-        }
-          ////End Added by Mitesh for creating border between custom fields and other 
         // is this an optgroup?
         if(parent.tagName === 'OPTGROUP') {
           optLabel = parent.getAttribute('label');
@@ -182,8 +177,27 @@
         if(isSelected && !o.multiple) {
           labelClasses.push('ui-state-active');
         }
-
-        html += '<li class="' + liClasses + ' '+borderTopClass+'">';
+          //Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
+                if (!isCampaignCustomField && o.CustomCampaignName != '') {
+                        if (value.substring(0, o.CustomCampaignName.length) == o.CustomCampaignName) {
+                            isCampaignCustomField = true;
+                            html += '<div class="report-seperator"><span>CAMPAIGN CUSTOM FIELDS</span></div>'
+                        }
+                }
+                if (!isProgramCustomField && o.CustomProgramName != '') {
+                    if (value.substring(0, o.CustomProgramName.length) == o.CustomProgramName) {
+                        isProgramCustomField = true;
+                        html += '<div class="report-seperator"><span>PROGRAM CUSTOM FIELDS</span></div>'
+                    }
+                }
+                if (!isTacticCustomField && o.CustomTacticName != '') {
+                    if (value.substring(0, o.CustomTacticName.length) == o.CustomTacticName) {
+                        isTacticCustomField = true;
+                        html += '<div class="report-seperator"><span>TACTIC CUSTOM FIELDS</span></div>'
+                    }
+                }
+          //End: Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
+                html += '<li class="' + liClasses + '">';
 
         // create the label
         html += '<label for="' + inputID + '" title="' + title + '" class="' + labelClasses.join(' ') + '">';
