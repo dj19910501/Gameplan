@@ -98,11 +98,13 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.20710.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -608,13 +610,13 @@
     <Content Include="Scripts\js\ReportRevenue.js" />
     <Content Include="Scripts\js\ReportSummary.js" />
     <Content Include="Scripts\summernote.min.js" />
-    <Content Include="Service References\BDSService\BDSService.disco" />
-    <Content Include="Service References\BDSService\configuration91.svcinfo" />
-    <Content Include="Service References\BDSService\configuration.svcinfo" />
-    <Content Include="Service References\BDSService\Reference.svcmap">
+    <None Include="Service References\BDSService\BDSService.disco" />
+    <None Include="Service References\BDSService\configuration91.svcinfo" />
+    <None Include="Service References\BDSService\configuration.svcinfo" />
+    <None Include="Service References\BDSService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
-    </Content>
+    </None>
     <Content Include="Views\Plan\PlanSelector.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -812,7 +814,7 @@
     <Content Include="Views\Report\Budget.cshtml" />
     <Content Include="Views\Report\_Budget.cshtml" />
     <Content Include="Views\Login\MaintenanceSite.cshtml" />
-    <Content Include="Service References\BDSService\BDSService.wsdl" />
+    <None Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>
     </None>

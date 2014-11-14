@@ -63,6 +63,9 @@ namespace BDSService
         int CreateUser(BDSEntities.User user, Guid applicationId, Guid createdBy);
 
         [OperationContract]
+        int CreateUserWithPermission(BDSEntities.User user, Guid applicationId, Guid createdBy, string VerticalIds, string GeographyIds, string BusinessUnitIds);
+
+        [OperationContract]
         int UpdateUser(BDSEntities.User user, Guid applicationId, Guid modifiedBy);
 
         //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 

@@ -576,6 +576,165 @@ namespace BDSService
 
         #region Add User
 
+        public int CreateUserWithPermission(BDSEntities.User user, Guid applicationId, Guid createdBy, string VerticalIds, string GeographyIds, string BusinessUnitIds)
+        {
+            int retVal = 0;
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                {
+                    var objDuplicateCheck = db.Users.Where(u => u.Email.Trim().ToLower() == user.Email.Trim().ToLower() && u.IsDeleted == false).FirstOrDefault();
+                    if (objDuplicateCheck != null)
+                    {
+                        retVal = -1;
+                    }
+                    else
+                    {
+                        User obj = new User();
+
+                        Guid NewUserId = Guid.NewGuid();
+                        obj.UserId = NewUserId;
+
+                        byte[] saltbytes = Common.GetSaltBytes();
+                        obj.FirstName = user.FirstName;
+                        obj.LastName = user.LastName;
+
+                        // Generate final hash i.e. to be stored in DB
+                        string FinalPwd = Common.ComputeFinalHash(user.Password, saltbytes);
+
+                        obj.Password = FinalPwd;
+                        obj.Email = user.Email;
+                        obj.Phone = user.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        //Start Manoj 08Jul2014 PL # 34 (Measure)
+                        obj.ManagerId = user.ManagerId;
+                        //End Manoj 08Jul2014 PL # 34 (Measure)
+                        obj.JobTitle = user.JobTitle;
+                        obj.ClientId = user.ClientId;
+                        if (user.ProfilePhoto != null)
+                            obj.ProfilePhoto = user.ProfilePhoto;
+                        obj.BusinessUnitId = user.BusinessUnitId;
+                        obj.CreatedDate = DateTime.Now;
+                        obj.IsDeleted = false;
+                        obj.CreatedDate = DateTime.Now;
+                        db.Entry(obj).State = EntityState.Added;
+                        db.Users.Add(obj);
+                        int res = db.SaveChanges();
+
+                        //Insert in User_Application
+                        User_Application objUser_Application = new User_Application();
+                        objUser_Application.UserId = obj.UserId;
+                        objUser_Application.ApplicationId = applicationId;
+                        objUser_Application.RoleId = user.RoleId;
+                        objUser_Application.CreatedDate = DateTime.Now;
+                        objUser_Application.CreatedBy = createdBy;
+                        //objUser_Application.ManagerId = user.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        db.Entry(objUser_Application).State = EntityState.Added;
+                        db.User_Application.Add(objUser_Application);
+                        res = db.SaveChanges();
+
+                        // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        //-- Insert User_Activity_Permission data
+                        if (user.RoleId != null && user.RoleId != Guid.Empty)
+                        {
+                            var lstDefaultRights = db.Role_Activity_Permission.Where(a => a.RoleId == user.RoleId).ToList();
+
+                            if (lstDefaultRights != null)
+                            {
+                                if (lstDefaultRights.Count > 0)
+                                {
+                                    foreach (var item in lstDefaultRights)
+                                    {
+                                        User_Activity_Permission objUser_Activity_Permission = new User_Activity_Permission();
+                                        objUser_Activity_Permission.UserId = obj.UserId;
+                                        objUser_Activity_Permission.ApplicationActivityId = item.ApplicationActivityId;
+                                        objUser_Activity_Permission.CreatedBy = createdBy;
+                                        objUser_Activity_Permission.CreatedDate = DateTime.Now;
+                                        db.Entry(objUser_Activity_Permission).State = EntityState.Added;
+                                        db.User_Activity_Permission.Add(objUser_Activity_Permission);
+                                        db.SaveChanges();
+                                    }
+                                }
+                            }
+                        }
+                        // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+
+                        if (!string.IsNullOrEmpty(VerticalIds))
+                        {
+                            string[] arr = VerticalIds.Split(',');
+                            foreach (string CustomFieldId in arr)
+                            {
+                                if (!string.IsNullOrEmpty(CustomFieldId))
+                                {
+                                    CustomRestriction objCF = new CustomRestriction();
+                                    objCF.UserId = NewUserId;
+                                    objCF.CustomFieldId = CustomFieldId;
+                                    objCF.CustomField = "Verticals";
+                                    objCF.Permission = 2;
+                                    objCF.CreatedDate = System.DateTime.Now;
+                                    objCF.CreatedBy = createdBy;
+                                    objCF.ApplicationId = applicationId;
+                                    db.Entry(objCF).State = EntityState.Added;
+                                    db.CustomRestrictions.Add(objCF);
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(GeographyIds))
+                        {
+                            string[] arr = GeographyIds.Split(',');
+                            foreach (string CustomFieldId in arr)
+                            {
+                                if (!string.IsNullOrEmpty(CustomFieldId))
+                                {
+                                    CustomRestriction objCF = new CustomRestriction();
+                                    objCF.UserId = NewUserId;
+                                    objCF.CustomFieldId = CustomFieldId;
+                                    objCF.CustomField = "Geography";
+                                    objCF.Permission = 2;
+                                    objCF.CreatedDate = System.DateTime.Now;
+                                    objCF.CreatedBy = createdBy;
+                                    objCF.ApplicationId = applicationId;
+                                    db.Entry(objCF).State = EntityState.Added;
+                                    db.CustomRestrictions.Add(objCF);
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(BusinessUnitIds))
+                        {
+                            string[] arr = BusinessUnitIds.Split(',');
+                            foreach (string CustomFieldId in arr)
+                            {
+                                if (!string.IsNullOrEmpty(CustomFieldId))
+                                {
+                                    CustomRestriction objCF = new CustomRestriction();
+                                    objCF.UserId = NewUserId;
+                                    objCF.CustomFieldId = CustomFieldId;
+                                    objCF.CustomField = "BusinessUnit";
+                                    objCF.Permission = 2;
+                                    objCF.CreatedDate = System.DateTime.Now;
+                                    objCF.CreatedBy = createdBy;
+                                    objCF.ApplicationId = applicationId;
+                                    db.Entry(objCF).State = EntityState.Added;
+                                    db.CustomRestrictions.Add(objCF);
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
+
+                        if (res > 0)
+                            retVal = 1;
+                    }
+                    scope.Complete();       // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return retVal;
+        }
+
         /// <summary>
         /// Function to insert new user.
         /// </summary>

@@ -2058,6 +2058,12 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateUser", ReplyAction="http://tempuri.org/IBDSService/CreateUserResponse")]
         System.Threading.Tasks.Task<int> CreateUserAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateUserWithPermission", ReplyAction="http://tempuri.org/IBDSService/CreateUserWithPermissionResponse")]
+        int CreateUserWithPermission(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy, string VerticalIds, string GeographyIds, string BusinessUnitIds);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateUserWithPermission", ReplyAction="http://tempuri.org/IBDSService/CreateUserWithPermissionResponse")]
+        System.Threading.Tasks.Task<int> CreateUserWithPermissionAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy, string VerticalIds, string GeographyIds, string BusinessUnitIds);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/UpdateUser", ReplyAction="http://tempuri.org/IBDSService/UpdateUserResponse")]
         int UpdateUser(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid modifiedBy);
         
@@ -2420,6 +2426,14 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<int> CreateUserAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy) {
             return base.Channel.CreateUserAsync(user, applicationId, createdBy);
+        }
+        
+        public int CreateUserWithPermission(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy, string VerticalIds, string GeographyIds, string BusinessUnitIds) {
+            return base.Channel.CreateUserWithPermission(user, applicationId, createdBy, VerticalIds, GeographyIds, BusinessUnitIds);
+        }
+        
+        public System.Threading.Tasks.Task<int> CreateUserWithPermissionAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy, string VerticalIds, string GeographyIds, string BusinessUnitIds) {
+            return base.Channel.CreateUserWithPermissionAsync(user, applicationId, createdBy, VerticalIds, GeographyIds, BusinessUnitIds);
         }
         
         public int UpdateUser(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid modifiedBy) {

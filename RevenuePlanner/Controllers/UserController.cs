@@ -695,8 +695,19 @@ namespace RevenuePlanner.Controllers
                     }
                     objUser.BusinessUnitId = form.BusinessUnitId;
                     objUser.ManagerId = form.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                    //PL Ticket#892 - Set Custom Restriction Permissions to View/Edit
+                    //int retVal = objBDSServiceClient.CreateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
+                    List<Guid> lstBU = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList();
+                    string strBUIds = string.Join(",", lstBU);
 
-                    int retVal = objBDSServiceClient.CreateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
+                    List<int> lstVertical = db.Verticals.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).Select(b => b.VerticalId).ToList();
+                    string strVerticalIds = string.Join(",", lstVertical);
+
+                    List<Guid> lstGeography = db.Geographies.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).Select(b => b.GeographyId).ToList();
+                    string strGeographyIds = string.Join(",", lstGeography);
+                    int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.UserId,strVerticalIds,strGeographyIds,strBUIds);
+                    //int retVal = objBDSServiceClient.CreateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
+                    //PL Ticket#892 - Set Custom Restriction Permissions to View/Edit
                     if (retVal == 1)
                     {
                         UserCreatedMail(objUser, password);

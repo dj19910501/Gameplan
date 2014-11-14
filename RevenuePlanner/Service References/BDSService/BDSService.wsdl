@@ -98,6 +98,12 @@
   <wsdl:message name="IBDSService_CreateUser_OutputMessage">
     <wsdl:part name="parameters" element="tns:CreateUserResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_CreateUserWithPermission_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateUserWithPermission" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_CreateUserWithPermission_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateUserWithPermissionResponse" />
+  </wsdl:message>
   <wsdl:message name="IBDSService_UpdateUser_InputMessage">
     <wsdl:part name="parameters" element="tns:UpdateUser" />
   </wsdl:message>
@@ -375,6 +381,10 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CreateUser" message="tns:IBDSService_CreateUser_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CreateUserResponse" message="tns:IBDSService_CreateUser_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="CreateUserWithPermission">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CreateUserWithPermission" message="tns:IBDSService_CreateUserWithPermission_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CreateUserWithPermissionResponse" message="tns:IBDSService_CreateUserWithPermission_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="UpdateUser">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/UpdateUser" message="tns:IBDSService_UpdateUser_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/UpdateUserResponse" message="tns:IBDSService_UpdateUser_OutputMessage" />
@@ -650,6 +660,15 @@
     </wsdl:operation>
     <wsdl:operation name="CreateUser">
       <soap:operation soapAction="http://tempuri.org/IBDSService/CreateUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateUserWithPermission">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/CreateUserWithPermission" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
