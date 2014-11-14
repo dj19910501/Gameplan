@@ -487,7 +487,7 @@
 	</Field>
 	<Field>
 		<Name>ValidateEmailAtleastone</Name>
-		<value>Please select atleast one email.</value>
+		<value>Please select at least one email.</value>
 	</Field>
 	<Field>
 		<Name>ValidatePaswordMustSameAsConfirm</Name>
@@ -567,7 +567,7 @@
 	</Field>
 	<Field>
 		<Name>ValidateEmailAtleastone</Name>
-		<value>Please select atleast one email.</value>
+		<value>Please select at least one email.</value>
 	</Field>
 	<Field>
 		<Name>EmailAlreadyExits</Name>
