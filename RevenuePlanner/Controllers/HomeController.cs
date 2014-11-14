@@ -3530,8 +3530,18 @@ namespace RevenuePlanner.Controllers
                         //Add restriction of BU for edit button in inspect popup 
                         BusinessUnitId = objPlan_Campaign_Program_Tactic.BusinessUnitId;
                         IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        //Start - Added by Mitesh Vaishnav for PL ticket 746 - Edit Own and Subordinates Tactics Doesnt work
+                        //Verify that existing user has created tactic or it has subordinate permission and tactic owner is subordinate of existing user
+                        bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                        List<Guid> lstSubordinatesIds = new List<Guid>();
+                        if (IsTacticAllowForSubordinates)
+                        {
+                            lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+                        }
+                        //End - Added by Mitesh Vaishnav for PL ticket 746 - Edit Own and Subordinates Tactics Doesnt work
                         // planId = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(objPlan_Campaign_Program_Tactic.PlanProgramId)).Select(r => r.PlanCampaignId).FirstOrDefault())).Select(r => r.PlanId).FirstOrDefault();
-                        if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        //Modify by Mitesh Vaishnav for PL ticket 746
+                        if ((objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy)) && IsBusinessUnitEditable)
                         {
                             IsPlanEditable = true;
                         }

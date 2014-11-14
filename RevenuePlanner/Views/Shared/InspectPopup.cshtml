@@ -59,23 +59,24 @@
         <span>
          <span id="lblTacticTitle" class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
            
-             @if (tacticMaster.OwnerId == Sessions.User.UserId)
+             @if (IsPlanEditable)
                     {
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteTactic">
                             <button class="delete-btn-gray" id="deleteTactic" type="button">Delete</button>
                         </div>
                     }
-             @if (IsPlanEditable)
-            {
+           
                  <div style="float: right; position: relative;margin-left:10px;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
-                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 35px;" id="popupnewTactic">
+                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupnewTactic">
                                 <ul style="margin: 0;">
                                     <li class="new-prog" id="NewTactic">New Line Item</li>
                                     <li class="copy-camp" id="CloneTactic">Copy Tactic</li>
                                 </ul>
                             </div>
                  </div>
+              @if (IsPlanEditable)
+            {
                 <span class="edit-icon-white btn-blue btn-large" style="display:block;cursor: pointer;" id="EditForm"></span>
             }
          </span>
