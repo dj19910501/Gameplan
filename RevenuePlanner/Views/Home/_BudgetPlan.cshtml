@@ -139,12 +139,12 @@
                             $("#" + r[i].periodTitle).attr('ov', r[i].budgetValue == '' ? '0' : r[i].budgetValue);
                             $("#" + r[i].periodTitle).attr('cmb', r[i].campaignMonthlyBudget);
                             $("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val());
-                            if (parseInt(campaignMonthlyBudget) > budgetValue) {
-                                $(this).addClass('low-budgeted');
+                            if (parseInt(campaignMonthlyBudget) > parseInt(budgetValue)) {
+                                $("#" + r[i].periodTitle).addClass('low-budgeted');
                                 $("#lblAllocatedCampaignsBudget").addClass('error-text');
                             }
                             else {
-                                $(this).removeClass('low-budgeted');
+                                $("#" + r[i].periodTitle).removeClass('low-budgeted');
                                 $("#lblAllocatedCampaignsBudget").removeClass('error-text');
                             }
                         }
