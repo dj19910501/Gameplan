@@ -4591,6 +4591,32 @@ namespace RevenuePlanner.Helpers
 
             return lastModifiedMessage;
         }
+
+        /// <summary>
+        /// Function to generate HTML with Anchor link if text contains url.
+        /// Method used in all inspect popup to generate HTML based Description text.
+        /// Added by Viral Kadiya on 11/15/2014
+        /// </summary>
+        /// <param name="description">Description Text.</param>
+        public static string GenerateHTMLDescription(string description = "")
+        {
+            string result = string.Empty;
+            if (string.IsNullOrEmpty(description))
+                return result;
+            try
+            {
+                result = description;
+                string regex = @"((www\.|(http|https|ftp|news|file)+\:\/\/)[&#95;.a-z0-9-]+\.[a-z0-9\/&#95;:@=.+?,_##%&~-]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])";
+                Regex r = new Regex(regex, RegexOptions.IgnoreCase);
+                result = result.Replace("\n", "<br />");
+                result = r.Replace(result, "<a href=\"$1\" title=\"Click to open in a new window or tab\" target=\"&#95;blank\">$1</a>").Replace("href=\"www", "href=\"http://www");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
     }
 
     /// <summary>

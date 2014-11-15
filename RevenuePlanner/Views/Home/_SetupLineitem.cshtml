@@ -27,7 +27,12 @@
              <p>@Html.Raw("Parent Program")</p>
              @Html.TextBox("txtProgramTitle",programTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtProgramTitle", @readonly = "true" })
             <p>@Html.Raw("Description")</p>
-            @Html.TextAreaFor(model=>model.Description, new { @class = "span12 text-area-size", style = "background:#F2F2F2;height:92px;", @readonly = "true",value= HttpUtility.HtmlDecode(Model.Description) })
+             @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+            <div class="description-content">
+                <div class="description-content-area">
+                        @Html.Raw(HttpUtility.HtmlDecode(Model.Description))
+                </div>
+            </div>
            
             <div style="clear: both; width: 250%;">
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>

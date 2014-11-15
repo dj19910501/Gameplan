@@ -37,6 +37,7 @@
             @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
             @Html.HiddenFor(model => model.ProgramBudget, new { id = "hdnOldProgramBudget" })
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
+            @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })       @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
 
             <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
                 <div class="span6" id="inspect-modal-left-column1">
@@ -44,8 +45,7 @@
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(CampaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = CampaignTitle })
 
             <p>Description</p>
-            @Html.TextAreaFor(model => model.Description, new {@class = "span12 text-area-size", placeholder = "Optional", rows = "3", maxlength = "4000" })
-
+            @Html.TextArea("Description", string.Empty, new {id="Description",@class = "span12 text-area-size", placeholder = "Optional", rows = "3" })  @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
                </div>
                 <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
                     <p>@Html.Raw("Owner")</p>
@@ -162,6 +162,11 @@
 
         $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
         $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+
+        // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
+        var _description = $("#hdnDescription").val();
+        $("#Description").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
+        // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
 
         $("#txtTitle").keypress(function (e) {
             if (e.keyCode == 13) {
@@ -306,7 +311,7 @@
             if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
 
             $("#txtProgramBudget").val(ReplaceCC($("#txtProgramBudget").val()));
-            
+            $("#hdnDescription").val(htmlEncode($('#Description').val()));       // Added by Viral Kadiya on 11/15/2014 to resolve PL ticket #794.
             document.getElementById("Description").value = htmlEncode($('#Description').val());
 
             var _customFieldValues = [];

@@ -16,7 +16,13 @@
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="padding-top:15px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
-            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size", style = "background:#F2F2F2;height:92px;", @readonly = "true" })
+             @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+            <div class="description-content">
+                <div class="description-content-area">
+                        @Html.Raw(HttpUtility.HtmlDecode(Model.Description))
+                </div>
+            </div>
+
             <p style="width: 110%;">@Html.Raw("Deployed to Integration")</p>
             @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
             <div style="clear: both; width: 250%;">

@@ -34,7 +34,7 @@
             <p>Parent Program</p>
             @Html.TextBoxFor(model => model.ProgramTitle, new { @class = "span12 input-small truncate", id = "txtProgram", @readonly = "true", style = "background:#F2F2F2;" })
             <p>Description</p>
-            @Html.TextAreaFor(model => model.Description, new {placeholder = "Optional", @class = "span12 text-area-size", id = "Description", maxlength = "4000" })
+            @Html.TextArea("Description", string.Empty, new {placeholder = "Optional", @class = "span12 text-area-size", id = "Description"})   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         </div>
         <div class="span3" id="inspect-modal-left-column2">
             <p>Tactic Type</p>
@@ -170,6 +170,11 @@
 
           $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
           $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+
+          // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
+          var _description = $("#hdnDescription").val();
+          $("#Description").val(htmlDecode(unescape(_description.replace(/\s*<br\s*\/?>\s*/g, '\n')))); // To decode HTML to text in TextArea.
+          // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
 
           //// Assign default values to controls having classname = .resubmission
           assignDefaultValue(".resubmission");
@@ -411,7 +416,7 @@
           $.ajax({
               type: 'POST',
               url: '@Url.Content("~/Home/SetupSaveTactic")',
-            data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues),
+              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&strDescription=' + txtDescriptionValue.toString(),
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

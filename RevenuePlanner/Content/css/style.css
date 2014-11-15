@@ -11036,3 +11036,29 @@ li.close-list {
     padding-top: 5px ! important;
     padding-left:5px;
 }
+
+/* Start - Added by Viral Kadiya on 11/15/2014 for PL ticket #874*/
+/* change design of description field for Inspect Popup(View Mode only)*/
+.description-content{ position:relative; width:100%; height:100px;}
+.description-content-area {
+        width: 100%;
+        height: 100px;
+        border: 1px solid #ccc;
+        word-wrap:break-word;
+        overflow-y:auto;
+        float: left;
+        padding-top: 5px;
+        background-color: #ffffff;
+        border: 1px solid #cccccc;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+        transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+            border-radius: 4px;
+    color: #555555;
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 10px;
+    padding: 4px 6px;
+    vertical-align: middle;
+    background: none repeat scroll 0 0 #f2f2f2;
+    }
+/*End - Added by Viral Kadiya on 11/15/2014 for PL ticket #874*/

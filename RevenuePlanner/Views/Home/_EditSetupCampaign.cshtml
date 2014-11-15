@@ -32,13 +32,16 @@
     @Html.HiddenFor(model => model.TStartDate, new { id = "hdnTStartDate" })
     @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
     @Html.HiddenFor(model => model.CampaignBudget, new { id = "hdnOldCampaignBudget" })
+    @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })  // Added by Viral Kadiya on 11/15/2014 for PL ticket #794
+                                                                                
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
 
         <div class="span6" id="inspect-modal-left-column1">
             @*<p>@Html.Raw("Parent Plan")</p>
             @Html.TextBox("txtPlan", HttpUtility.HtmlDecode(PlanTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = PlanTitle })*@
             <p>@Html.Raw("Description")</p>
-            @Html.TextAreaFor(model=>model.Description, new {id="txtDescription", @class = "span12 text-area-size", style = "height:92px;" })
+            @Html.TextArea("Description", string.Empty, new {id="txtDescription", @class = "span12 text-area-size", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+
             @if (ExtIntService)
             {
                <p class="clear-section" style="line-height: 11px; padding-bottom: 8px;">@Html.Raw("Deployed to Integration")</p>
@@ -163,6 +166,10 @@
                   $("#hdnIsDeployedToIntegration").val(false);
               }
           }
+          // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
+          var _description = $("#hdnDescription").val();
+          $("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
+          // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
       });
     //<---  End Document.ready Event --->
 
@@ -359,8 +366,7 @@
         document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
         $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
-
-       
+        $("#hdnDescription").val(htmlEncode($('#txtDescription').val()));
 
         var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         var uId = $(window).attr('name');

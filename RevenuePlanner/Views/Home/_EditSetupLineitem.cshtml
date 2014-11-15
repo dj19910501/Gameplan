@@ -26,6 +26,7 @@
     @Html.HiddenFor(model => model.PlanLineItemId, new { id = "PlanLineItemId" })
     @Html.HiddenFor(model => model.PlanTacticId, new { id = "PlanTacticId" })
      @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
+    @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
 
         <div class="span6" id="inspect-modal-left-column1">
@@ -35,7 +36,7 @@
             @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = programTitle })
 
             <p>@Html.Raw("Description")</p>
-            @Html.TextAreaFor(model => model.Description, new { id = "txtDescription", @class = "span12 text-area-size", style = "height:92px;" })
+            @Html.TextArea("Description", string.Empty, new { id = "txtDescription", @class = "span12 text-area-size", style = "height:92px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
             <div style="clear: both; width: 250%;">
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
@@ -75,6 +76,11 @@
         $("#errorMessageEditLineitem").slideUp(50);
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $(".verticalIdSelectBox select").selectbox();
+
+        // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
+        var _description = $("#hdnDescription").val();
+        $("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
+        // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
 
         if ('@isOtherLineitem.ToString().ToLower()' == 'true') {
     //        $('form').find(".sbSelector").each(function () {
@@ -190,8 +196,11 @@
         //for (var i = 0; i < lstActualAllocInputs.length; i++) {
         //    ActualallocationValue.push(ReplaceCC($(lstActualAllocInputs[i]).val()));
         //}
-        document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
+        
+        //document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
         var uId = $(window).attr('name');
+
+        $("#hdnDescription").val(htmlEncode($('#txtDescription').val()));
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/home/SaveLineitem")',
