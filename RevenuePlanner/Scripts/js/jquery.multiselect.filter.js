@@ -23,7 +23,10 @@
 	  label: '',
       width: null, /* override default width set in css file (px). null will inherit */
       placeholder: '',
-      autoReset: false
+      autoReset: false,
+      CustomCampaignName: "",
+      CustomProgramName: "",
+      CustomTacticName: "",
     },
 
     _create: function() {
@@ -105,7 +108,7 @@
 
     // thx for the logic here ben alman
     _handler: function (e) {
-        
+        var opts = this.options;
       var term = $.trim(this.input[0].value.toLowerCase()),
 
       // speed up lookups
@@ -134,44 +137,45 @@
       var isProgramDivSet = false;
       var isCampaignDivSet = false;
       var isTacticDivSet = false;
-      
-      if (typeof rows.eq(0).parent().parent().attr('id') != 'undefined' && rows.eq(0).parent().parent().attr('id') != '') {
-          var programHeaderId = rows.eq(0).parent().parent().attr('id').replace('multipleselect_', '');
-          programHeaderId += "_programCustomHeader";
-          var CampaignHeaderId = rows.eq(0).parent().parent().attr('id').replace('multipleselect_', '');
-          CampaignHeaderId += "_campaignCustomHeader";
-          var tacticHeaderId = rows.eq(0).parent().parent().attr('id').replace('multipleselect_', '');
-          tacticHeaderId += "_tacticCustomHeader";
-      
-          rows.each(function () {
-              //Check for ProgramCustom
-              if ($(this).find('input').val().indexOf("ProgramCustom") > -1 && $(this).css("display") != "none") {
-                  $("#" + programHeaderId).css("display", "block");
-                  isProgramDivSet = true;
-              }
+      if (opts.CustomCampaignName != "" || opts.CustomProgramName != "" || opts.CustomTacticName != "") {
+          if (typeof rows.eq(0).parent().parent().attr('id') != 'undefined' && rows.eq(0).parent().parent().attr('id') != '') {
+              var programHeaderId = rows.eq(0).parent().parent().attr('id').replace('multipleselect_', '');
+              programHeaderId += "_programCustomHeader";
+              var CampaignHeaderId = rows.eq(0).parent().parent().attr('id').replace('multipleselect_', '');
+              CampaignHeaderId += "_campaignCustomHeader";
+              var tacticHeaderId = rows.eq(0).parent().parent().attr('id').replace('multipleselect_', '');
+              tacticHeaderId += "_tacticCustomHeader";
 
-              //Check for CampaignCustom
-              if ($(this).find('input').val().indexOf("CampaignCustom") > -1 && $(this).css("display") != "none") {
-                  $("#" + CampaignHeaderId).css("display", "block");
-                  isCampaignDivSet = true;
-              }
+              rows.each(function () {
+                  //Check for ProgramCustom
+                  if ($(this).find('input').val().indexOf(opts.CustomProgramName) > -1 && $(this).css("display") != "none") {
+                      $("#" + programHeaderId).css("display", "block");
+                      isProgramDivSet = true;
+                  }
 
-              //Check for TacticCustom
-              if ($(this).find('input').val().indexOf("TacticCustom") > -1 && $(this).css("display") != "none") {
-                  $("#" + tacticHeaderId).css("display", "block");
-                  isTacticDivSet = true;
+                  //Check for CampaignCustom
+                  if ($(this).find('input').val().indexOf(opts.CustomCampaignName) > -1 && $(this).css("display") != "none") {
+                      $("#" + CampaignHeaderId).css("display", "block");
+                      isCampaignDivSet = true;
+                  }
+
+                  //Check for TacticCustom
+                  if ($(this).find('input').val().indexOf(opts.CustomTacticName) > -1 && $(this).css("display") != "none") {
+                      $("#" + tacticHeaderId).css("display", "block");
+                      isTacticDivSet = true;
+                  }
+              });
+              if (!isProgramDivSet) {
+                  $("#" + programHeaderId).css("display", "none");
               }
-          });
-          if (!isProgramDivSet) {
-              $("#" + programHeaderId).css("display", "none");
+              if (!isCampaignDivSet) {
+                  $("#" + CampaignHeaderId).css("display", "none");
+              }
+              if (!isTacticDivSet) {
+                  $("#" + tacticHeaderId).css("display", "none");
+              }
+              //End Added by Mitesh Vaishnav for PL ticket #959
           }
-          if (!isCampaignDivSet) {
-              $("#" + CampaignHeaderId).css("display", "none");
-          }
-          if (!isTacticDivSet) {
-              $("#" + tacticHeaderId).css("display", "none");
-          }
-          //End Added by Mitesh Vaishnav for PL ticket #959
       }
       
       // show/hide optgroups
