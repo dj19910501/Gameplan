@@ -1451,7 +1451,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 VerticalId = ta.Key,
                                 Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
-                            });
+                            }).OrderByDescending(ta => ta.Trend).Take(5);
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
                                            .Select(b => new
@@ -1530,7 +1530,7 @@ namespace RevenuePlanner.Controllers
                                                                                           includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
                                                                              .Sum(ta => ta.Actualvalue) :
                                                                              0
-                                                });
+                                                }).OrderByDescending(ta=>ta.Value).Take(5);
 
             var geography = db.Geographies.ToList().Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
@@ -1598,7 +1598,7 @@ namespace RevenuePlanner.Controllers
                                                                                        .Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth)))
                                                                                        .Sum(r => r.Field<double>(ColumnValue)) :
                                                                                        0
-                                                });
+                                                }).OrderByDescending(ta => ta.Value).Take(5);
 
             var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
