@@ -135,7 +135,7 @@
          NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
          var InspectValue = $("#hdnInspectPopup").val();
 
-         if ('@IsOtherLineItem' && (InspectValue == "Budget")) {
+         if (('@IsOtherLineItem'.toLowerCase().toString() == "true") && (InspectValue == "Budget")) {
              InspectValue = "Setup";
          }
          
