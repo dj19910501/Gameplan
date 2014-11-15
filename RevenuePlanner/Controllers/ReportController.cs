@@ -1433,7 +1433,7 @@ namespace RevenuePlanner.Controllers
                                                    {
                                                        BusinessUnitId = ta.Key,
                                                        Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
-                                                   }).OrderByDescending(ta => ta.Trend).Take(5); ;
+                                                   });
 
             var tacticTrendGeography = planTacticActual.Where(ta => months.Contains(ta.Period) &&
                                                      (ta.StageTitle == mql))
@@ -1442,7 +1442,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             GeographyId = ta.Key,
                                             Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
-                                        }).OrderByDescending(ta => ta.Trend).Take(5); ;
+                                        });
 
             var tacticTrendVertical = planTacticActual.Where(ta => months.Contains(ta.Period) &&
                                          (ta.StageTitle == mql))
@@ -1451,7 +1451,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 VerticalId = ta.Key,
                                 Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
-                            }).OrderByDescending(ta => ta.Trend).Take(5);
+                            });
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
                                            .Select(b => new
@@ -1460,14 +1460,14 @@ namespace RevenuePlanner.Controllers
                                                ColorCode = string.Format("#{0}", b.ColorCode),
                                                Value = tacticTrenBusinessUnit.Any(bu => bu.BusinessUnitId.Equals(b.BusinessUnitId)) ? tacticTrenBusinessUnit.Where(bu => bu.BusinessUnitId.Equals(b.BusinessUnitId)).First().Trend : 0
 
-                                           });
+                                           }).OrderByDescending(b=>b.Value).ThenBy(b=>b.Title).Take(5);
             var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
                                                     ColorCode = string.Format("#{0}", v.ColorCode),
                                                     Value = tacticTrendVertical.Any(ve => ve.VerticalId.Equals(v.VerticalId)) ? tacticTrendVertical.Where(ve => ve.VerticalId.Equals(v.VerticalId)).First().Trend : 0
-                                                });
+                                                }).OrderByDescending(v => v.Value).ThenBy(v => v.Title).Take(5);
 
             var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
@@ -1475,7 +1475,7 @@ namespace RevenuePlanner.Controllers
                                                     Title = g.Title,
                                                     ColorCode = "#1627a0",
                                                     Value = tacticTrendGeography.Any(ge => ge.GeographyId.Equals(g.GeographyId)) ? tacticTrendGeography.Where(ge => ge.GeographyId.Equals(g.GeographyId)).First().Trend : 0
-                                                });
+                                                }).OrderByDescending(g => g.Value).ThenBy(g => g.Title).Take(5);
             //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag 
             return Json(new
             {
@@ -1517,7 +1517,7 @@ namespace RevenuePlanner.Controllers
                                                                                           includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
                                                                              .Sum(ta => ta.Actualvalue) :
                                                                              0
-                                                }).OrderByDescending(ta => ta.Value).Take(5); ;
+                                                }).OrderByDescending(ta => ta.Value).ThenBy(b=>b.Title).Take(5); ;
             var vertical = db.Verticals.ToList().Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
@@ -1530,7 +1530,7 @@ namespace RevenuePlanner.Controllers
                                                                                           includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
                                                                              .Sum(ta => ta.Actualvalue) :
                                                                              0
-                                                }).OrderByDescending(ta=>ta.Value).Take(5);
+                                                }).OrderByDescending(ta=>ta.Value).ThenBy(v=>v.Title).Take(5);
 
             var geography = db.Geographies.ToList().Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
@@ -1544,7 +1544,7 @@ namespace RevenuePlanner.Controllers
                                                                                           includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
                                                                              .Sum(ta => ta.Actualvalue) :
                                                                              0
-                                                }).OrderByDescending(ta => ta.Value).Take(5); ;
+                                                }).OrderByDescending(ta => ta.Value).ThenBy(g=>g.Title).Take(5); ;
             //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             return Json(new
             {
@@ -1581,7 +1581,7 @@ namespace RevenuePlanner.Controllers
                                                                                         .Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth)))
                                                                                         .Sum(r => r.Field<double>(ColumnValue)) :
                                                                                         0
-                                                }).OrderByDescending(ta => ta.Value).Take(5); 
+                                                }).OrderByDescending(ta => ta.Value).ThenBy(ta=>ta.Title).Take(5); 
 
 
 
@@ -1598,7 +1598,7 @@ namespace RevenuePlanner.Controllers
                                                                                        .Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth)))
                                                                                        .Sum(r => r.Field<double>(ColumnValue)) :
                                                                                        0
-                                                }).OrderByDescending(ta => ta.Value).Take(5);
+                                                }).OrderByDescending(ta => ta.Value).ThenBy(ta=>ta.Title).Take(5);
 
             var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
@@ -1613,7 +1613,7 @@ namespace RevenuePlanner.Controllers
                                                                                .Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth)))
                                                                                .Sum(r => r.Field<double>(ColumnValue)) :
                                                                                0
-                                                }).OrderByDescending(ta => ta.Value).Take(5);
+                                                }).OrderByDescending(ta => ta.Value).ThenBy(ta=>ta.Title).Take(5);
             //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             return Json(new
             {
@@ -2992,14 +2992,14 @@ namespace RevenuePlanner.Controllers
                                                     Title = b.Title,
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
                                                     Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.BusinessUnitId.Equals(b.BusinessUnitId)).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
-                                                }).OrderByDescending(b=>b.Value).Take(5);
+                                                }).OrderByDescending(b=>b.Value).ThenBy(b=>b.Title).Take(5);
             var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
                                                     ColorCode = string.Format("#{0}", v.ColorCode),
                                                     Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.VerticalId.Equals(v.VerticalId)).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
-                                                }).OrderByDescending(v => v.Value).Take(5);
+                                                }).OrderByDescending(v => v.Value).ThenBy(v=>v.Title).Take(5);
 
             var geography = db.Geographies.Where(g => g.ClientId.Equals(Sessions.User.ClientId) && g.IsDeleted == false).ToList()
                                                 .Select(g => new
@@ -3007,7 +3007,7 @@ namespace RevenuePlanner.Controllers
                                                     Title = g.Title,
                                                     ColorCode = "#1627a0",
                                                     Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.GeographyId.Equals(g.GeographyId)).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
-                                                }).OrderByDescending(g => g.Value).Take(5);
+                                                }).OrderByDescending(g => g.Value).ThenBy(g=>g.Title).Take(5);
             //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             return Json(new
             {

@@ -194,19 +194,22 @@
                 if (!isCampaignCustomField && o.CustomCampaignName != '') {
                         if (value.substring(0, o.CustomCampaignName.length) == o.CustomCampaignName) {
                             isCampaignCustomField = true;
-                            html += '<div class="report-seperator"><span>CAMPAIGN CUSTOM FIELDS</span></div>'
+                            var tempId = $this.parent().attr('id');
+                            html += '<div class="report-seperator" id="' + tempId + '_campaignCustomHeader"><span>CAMPAIGN CUSTOM FIELDS</span></div>'
                         }
                 }
                 if (!isProgramCustomField && o.CustomProgramName != '') {
                     if (value.substring(0, o.CustomProgramName.length) == o.CustomProgramName) {
                         isProgramCustomField = true;
-                        html += '<div class="report-seperator"><span>PROGRAM CUSTOM FIELDS</span></div>'
+                        var tempId = $this.parent().attr('id');
+                        html += '<div class="report-seperator" id="'+tempId+'_programCustomHeader"><span>PROGRAM CUSTOM FIELDS</span></div>'
                     }
                 }
                 if (!isTacticCustomField && o.CustomTacticName != '') {
                     if (value.substring(0, o.CustomTacticName.length) == o.CustomTacticName) {
                         isTacticCustomField = true;
-                        html += '<div class="report-seperator"><span>TACTIC CUSTOM FIELDS</span></div>'
+                        var tempId = $this.parent().attr('id');
+                        html += '<div class="report-seperator" id="' + tempId + '_tacticCustomHeader"><span>TACTIC CUSTOM FIELDS</span></div>'
                     }
                 }
           //End: Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
