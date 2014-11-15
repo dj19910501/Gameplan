@@ -8,7 +8,7 @@
         <h2 class="title-header">Revenue Summary</h2>
     </li>
 </ul>
- <div class="summary-btns">
+    <div id="DivSummaryButtonsRevenueSummary" class="summary-btns">
         <p>View By:</p>
      <span>
              @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text", Common.RevenueGeography.ToString()))
@@ -51,7 +51,8 @@
             <h4 class="title-header">Revenue to Plan</h4>
         </li>
     </ul>
-  <div class="summary-btns" style="margin-right:0px;">  @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934*@
+            <div id="DivSummaryButtonsRevenueToPlan" class="summary-btns" style="margin-right: 0px;">
+                @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934*@
         <p>View By:</p>
             <span>
              @Html.DropDownList("ddlParentRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueToPlan, "Value", "Text", Common.RevenueOrganization.ToString()))
@@ -89,7 +90,7 @@
     <!--  Revenue Realization-->
     <div class="title-header-reports border-btm">
         <h4>Revenue Realization</h4>
-        <div>
+            <div id="DivSummaryButtonsRevenueRealization">
             @*<span class="selectBox" id="ddlBusinessUnitSelectBox">*@
                 @if (RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds != null && RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.Count == 1)
                 {
@@ -163,7 +164,8 @@
             <h4 class="title-header">Revenue Contribution</h4>
         </li>
     </ul>
-    <div class="summary-btns" style="margin-right:0px;"> @* Modified by Sohel Pathan on 12/11/2014 for PL ticket #934 *@
+        <div id="DivSummaryButtonsRevenueContribution" class="summary-btns" style="margin-right: 0px;">
+            @* Modified by Sohel Pathan on 12/11/2014 for PL ticket #934 *@
         <p>View By:</p>
             <span>
              @Html.DropDownList("ddlParentRevenueContribution", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueContribution, "Value", "Text", Common.RevenueAudience.ToString()))
@@ -1765,8 +1767,7 @@
             }
             // }
             var isBusiness = true;
-            if (buid == 0)
-            {
+            if (buid == 0) {
                 isBusiness = false;
             }
             $.ajax({

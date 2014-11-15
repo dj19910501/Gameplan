@@ -8,7 +8,7 @@
         <h2 class="title-header">Conversion Summary</h2>
     </li>
 </ul>
- <div class="summary-btns">
+    <div id="DivSummaryButtonsConversionSummary" class="summary-btns">
         <p>View By:</p>
             <span>
              @Html.DropDownList("ddlParentConversionSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text", Common.RevenueVertical.ToString()))
@@ -47,7 +47,8 @@
         </li>
     </ul>
 
-      <div class="summary-btns" style="margin-right:0px;"> @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934 *@
+            <div id="DivSummaryButtonsConversionPlan" class="summary-btns" style="margin-right: 0px;">
+                @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934 *@
         <p>View By:</p>
            <span>
              @Html.DropDownList("ddlParentConversionPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text", Common.RevenueAudience.ToString()))
@@ -81,7 +82,8 @@
             <h4 class="title-header">@Html.LabelForMQL("MQL") Performance</h4>
         </li>
     </ul>
-     <div class="summary-btns" style="margin-right:0px;"> @* Modified by Sohel Pathan on 12/11/2014 for PL ticket #934 *@
+            <div id="DivSummaryButtonsMQLPerformance" class="summary-btns" style="margin-right: 0px;">
+                @* Modified by Sohel Pathan on 12/11/2014 for PL ticket #934 *@
         <p>View By:</p>
             <span>
              @Html.DropDownList("ddlParentConversionPerformance", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionPerformance, "Value", "Text", Common.Actuals.ToString()))

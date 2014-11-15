@@ -195,8 +195,74 @@
             $html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
+
+            ReplaceMultiselectByLabelConversionSummary($html);
+            ReplaceMultiselectByLableConversionPlan($html);
+            ReplaceMultiselectByLableMQLPerformance($html);
             html = $html.wrap('<p/>').parent().html();
             return escape(html);
+        }
+
+        //// Function replace multiselect by label in conversion summary report section.
+        //// Added By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF
+        function ReplaceMultiselectByLabelConversionSummary($html) {
+            parentValue = $html.find('#btnMultiselect_ddlParentConversionSummery').attr("title");
+           //// parentValue = '0123456789012345678901234567890123456789012345678901234567890123456789';
+            $html.find('#DivSummaryButtonsConversionSummary').css("float","right");
+            $html.find('#DivSummaryButtonsConversionSummary').css("width","70%");
+            
+            $html.find('#DivSummaryButtonsConversionSummary').empty();
+            $html.find('#DivSummaryButtonsConversionSummary').append("<div class='filter-detail'>\
+                                                                    <div>\
+                                                                        <div style='max-width: 80%; float: right;  white-space: normal; overflow: hidden; text-overflow: ellipsis;margin-top:5px;'>"+ parentValue +"</div>\
+                                                                    </div>\
+                                                                    <p style='float: right;'>View By:</p>\
+                                                                    </div>");
+
+            return $html;
+        }
+
+        //// Function replace multiselect by label in conversion plan section.
+        //// Added By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF
+        function ReplaceMultiselectByLableConversionPlan($html) {
+            var parentValue = $html.find('#btnMultiselect_ddlParentConversionPlan').attr("title");
+            var childValue = $html.find('#btnMultiselect_ddlChildConversionPlan').attr("title");
+            ////parentValue = '0123456789012345678901234567890123456789012345678901234567890123456789';
+            ////childValue= '0123456789012345678901234567890123456789012345678901234567890123456789';
+            $html.find('#ParentULMQLConversion').addClass("margin-top10");
+            $html.find('#DivSummaryButtonsConversionPlan').css("float","right");
+            $html.find('#DivSummaryButtonsConversionPlan').css("width","74%");
+            
+            $html.find('#DivSummaryButtonsConversionPlan').empty();
+            $html.find('#DivSummaryButtonsConversionPlan').append("<div class='filter-detail'>\
+                                                                    <div>\
+                                                                        <div style='max-width: 40%; float: right; border-left: 1px solid rgb(128, 128, 128); margin-left: 9px; margin-top:5px; padding-left: 12px; padding-right: 3px; white-space: normal; overflow: hidden; text-overflow: ellipsis;'>" + childValue + "</div>\
+                                                                        <div style='max-width: 40%; float: right; white-space: normal; overflow: hidden; text-overflow: ellipsis;margin-top:5px;'>"+ parentValue +"</div>\
+                                                                    </div>\
+                                                                    <p style='float: right;'>View By:</p>\
+                                                                    </div>");
+
+            return $html;
+        }
+
+        //// Function replace multiselect by label in mql performance section.
+        //// Added By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF
+        function ReplaceMultiselectByLableMQLPerformance($html)
+        {
+            parentValue = $html.find('#btnMultiselect_ddlParentConversionPerformance').attr("title");
+            ////parentValue = '0123456789012345678901234567890123456789012345678901234567890123456789';
+            $html.find('#MQLPerformance').addClass("margin-top10");
+            $html.find('#DivSummaryButtonsMQLPerformance').css("float","right");
+            $html.find('#DivSummaryButtonsMQLPerformance').css("width","70%");
+            $html.find('#DivSummaryButtonsMQLPerformance').empty();
+            $html.find('#DivSummaryButtonsMQLPerformance').append("<div class='filter-detail'>\
+                                                                    <div>\
+                                                                        <div style='max-width: 80%; float: right;  white-space: normal; overflow: hidden; text-overflow: ellipsis;margin-top:5px;'>"+ parentValue +"</div>\
+                                                                    </div>\
+                                                                    <p style='float: right;'>View By:</p>\
+                                                                    </div>");
+
+            return $html;
         }
 
         /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
@@ -231,8 +297,105 @@
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
 
+            ReplaceMultiselectByLableRevenueSummary($html);
+            ReplaceMultiselectByLableRevenueToPlan($html);
+            ReplaceMultiselectByLableRevenueRealization($html);
+            ReplaceMultiselectByLableRevenueContribution($html);
+
             html = $html.wrap('<p/>').parent().html();
             return escape(html);
+        }
+
+        //// Function replace multiselect by label in revenue summary section.
+        //// Added By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF
+        function ReplaceMultiselectByLableRevenueSummary($html) {
+            var parentValue = $html.find('#btnMultiselect_ddlParentRevenueSummery').attr("title");
+            var childValue = $html.find('#btnMultiselect_ddlChildRevenueSummery').attr("title");
+            ////parentValue = '0123456789012345678901234567890123456789012345678901234567890123456789';
+            ////childValue= '0123456789012345678901234567890123456789012345678901234567890123456789';
+            $html.find('#DivSummaryButtonsRevenueSummary').css("float","right");
+            $html.find('#DivSummaryButtonsRevenueSummary').css("width","74%");
+            
+            $html.find('#DivSummaryButtonsRevenueSummary').empty();
+            $html.find('#DivSummaryButtonsRevenueSummary').append("<div class='filter-detail'>\
+                                                                    <div>\
+                                                                        <div style='max-width: 40%; float: right; border-left: 1px solid rgb(128, 128, 128); margin-left: 9px; margin-top:5px; padding-left: 12px; padding-right: 3px; white-space: normal; overflow: hidden; text-overflow: ellipsis;'>" + childValue + "</div>\
+                                                                        <div style='max-width: 40%; float: right; white-space: normal; overflow: hidden; text-overflow: ellipsis;margin-top:5px;'>"+ parentValue +"</div>\
+                                                                    </div>\
+                                                                    <p style='float: right;'>View By:</p>\
+                                                                    </div>");
+
+            return $html;
+        }
+
+        //// Function replace multiselect by label in revenue to plan section.
+        //// Added By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF
+        function ReplaceMultiselectByLableRevenueToPlan($html) {
+            parentValue = $html.find('#btnMultiselect_ddlParentRevenueToPlan').attr("title");
+            childValue = $html.find('#btnMultiselect_ddlChildRevenueToPlan').attr("title");
+            ////parentValue = '0123456789012345678901234567890123456789012345678901234567890123456789';
+            ////childValue= '0123456789012345678901234567890123456789012345678901234567890123456789';
+            $html.find('#ParentULRevenueToPlan').addClass("margin-top10");
+            $html.find('#DivSummaryButtonsRevenueToPlan').css("float","right");
+            $html.find('#DivSummaryButtonsRevenueToPlan').css("width","74%");
+            
+            $html.find('#DivSummaryButtonsRevenueToPlan').empty();
+            $html.find('#DivSummaryButtonsRevenueToPlan').append("<div class='filter-detail'>\
+                                                                    <div>\
+                                                                        <div style='max-width: 40%; float: right; border-left: 1px solid rgb(128, 128, 128); margin-left: 9px; margin-top:5px; padding-left: 12px; padding-right: 3px; white-space: normal; overflow: hidden; text-overflow: ellipsis;'>" + childValue + "</div>\
+                                                                        <div style='max-width: 40%; float: right; white-space: normal; overflow: hidden; text-overflow: ellipsis;margin-top:5px;'>"+ parentValue +"</div>\
+                                                                    </div>\
+                                                                    <p style='float: right;'>View By:</p>\
+                                                                    </div>");
+            return $html;
+        }
+
+        //// Function replace multiselect by label in revenue realization section.
+        //// Added By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF
+        function ReplaceMultiselectByLableRevenueRealization($html) {
+            var businessUnit = $html.find('#btnMultiselect_ddlBusinessUnit').attr("title");
+            var campaign = $html.find('#btnMultiselect_ddlCampaign').attr("title");
+            var program = $html.find('#btnMultiselect_ddlProgram').attr("title");
+            var tactic = $html.find('#btnMultiselect_ddlTactic').attr("title");
+            ////businessUnit= '0123456789012345678901234567890123456789012345678901234567890123456789';
+            ////campaign= '0123456789012345678901234567890123456789012345678901234567890123456789';
+            ////program= '0123456789012345678901234567890123456789012345678901234567890123456789';
+            ////tactic= '0123456789012345678901234567890123456789012345678901234567890123456789';
+
+            $html.find('#DivSummaryButtonsRevenueRealization').css("float","right");
+            $html.find('#DivSummaryButtonsRevenueRealization').css("width","74%");
+            
+            $html.find('#DivSummaryButtonsRevenueRealization').empty();
+            $html.find('#DivSummaryButtonsRevenueRealization').append("<div class='filter-detail'>\
+                                                                    <div>\
+                                                                        <div style='max-width: 20%; float: right; border-left: 1px solid rgb(128, 128, 128); margin-left: 9px; margin-top:5px; padding-left: 12px; padding-right: 3px; white-space: normal; overflow: hidden; text-overflow: ellipsis;'>" + tactic + "</div>\
+                                                                        <div style='max-width: 20%; float: right; border-left: 1px solid rgb(128, 128, 128); margin-left: 9px; margin-top:5px; padding-left: 12px; padding-right: 3px; white-space: normal; overflow: hidden; text-overflow: ellipsis;'>" + program + "</div>\
+                                                                        <div style='max-width: 20%; float: right; border-left: 1px solid rgb(128, 128, 128); margin-left: 9px; margin-top:5px; padding-left: 12px; padding-right: 3px; white-space: normal; overflow: hidden; text-overflow: ellipsis;'>" + campaign + "</div>\
+                                                                        <div style='max-width: 20%; float: right;  white-space: normal; overflow: hidden; text-overflow: ellipsis;margin-top:4px;'>"+ businessUnit +"</div>\
+                                                                    </div>\
+                                                                    </div>");
+
+            return $html;
+        }
+
+        //// Function replace multiselect by label in revenue contribution section.
+        //// Added By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF
+        function ReplaceMultiselectByLableRevenueContribution($html) {
+            parentValue = $html.find('#btnMultiselect_ddlParentRevenueContribution').attr("title");
+            ////parentValue = '0123456789012345678901234567890123456789012345678901234567890123456789';
+            $html.find('#ParentULRevenueContribution').addClass("margin-top10");
+            $html.find('#DivSummaryButtonsRevenueContribution').css("float","right");
+            $html.find('#DivSummaryButtonsRevenueContribution').css("width","74%");
+            
+            $html.find('#DivSummaryButtonsRevenueContribution').empty();
+            $html.find('#DivSummaryButtonsRevenueContribution').append("<div class='filter-detail'>\
+                                                                    <div>\
+                                                                        <div style='max-width: 80%; float: right;  white-space: normal; overflow: hidden; text-overflow: ellipsis;margin-top:5px;'>"+ parentValue +"</div>\
+                                                                    </div>\
+                                                                    <p style='float: right;'>View By:</p>\
+                                                                    </div>");
+
+            return $html;
         }
 
         /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
