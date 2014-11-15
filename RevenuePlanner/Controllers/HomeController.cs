@@ -6724,7 +6724,7 @@ namespace RevenuePlanner.Controllers
             User userName = new User();
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(pcpt.CreatedBy, Sessions.ApplicationId);
+                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
             }
             catch (Exception e)
             {
