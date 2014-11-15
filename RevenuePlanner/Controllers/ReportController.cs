@@ -3527,6 +3527,7 @@ namespace RevenuePlanner.Controllers
                                         obj.Id = l.PlanLineItemId.ToString();
                                         obj.ActivityId = "cptl_" + l.PlanLineItemId.ToString();
                                         obj.ActivityName = l.Title;
+                                        obj.LineItemTypeId = l.LineItemTypeId;
                                         obj.ActivityType = ActivityType.ActivityLineItem;
                                         obj.ParentActivityId = parentTacticId;
                                         obj.TabActivityId = p.PlanId.ToString();
@@ -3691,6 +3692,7 @@ namespace RevenuePlanner.Controllers
                                         obj.Id = l.PlanLineItemId.ToString();
                                         obj.ActivityId = "cptl_" + l.PlanLineItemId.ToString();
                                         obj.ActivityName = l.Title;
+                                        obj.LineItemTypeId = l.LineItemTypeId;
                                         obj.ActivityType = ActivityType.ActivityLineItem;
                                         obj.ParentActivityId = parentTacticId;
                                         obj.TabActivityId = p.Id.ToString();
@@ -4318,7 +4320,7 @@ namespace RevenuePlanner.Controllers
             {
                 BudgetMonth lineDiffPlanned = new BudgetMonth();
                 List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
-                BudgetModelReport otherLine = lines.Where(ol => ol.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault();
+                BudgetModelReport otherLine = lines.Where(ol => ol.ActivityName == Common.DefaultLineItemTitle && ol.LineItemTypeId == null).SingleOrDefault();
                 lines = lines.Where(ol => ol.ActivityName != Common.DefaultLineItemTitle).ToList();
                 if (otherLine != null)
                 {
@@ -4359,9 +4361,9 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().MonthPlanned = l.MonthPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonthPlanned = l.MonthPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Planned = l.Planned < 0 ? 0 : l.Planned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle && line.LineItemTypeId == null).SingleOrDefault().MonthPlanned = l.MonthPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle && line.LineItemTypeId == null).SingleOrDefault().ParentMonthPlanned = l.MonthPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle && line.LineItemTypeId == null).SingleOrDefault().Planned = l.Planned < 0 ? 0 : l.Planned;
                     }
                 }
             }

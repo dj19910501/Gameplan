@@ -1479,11 +1479,13 @@ namespace RevenuePlanner.Helpers
             }
 
             DateTime Current_date = DateTime.Now.Date;
-
+            List<User> userName = new List<User>();
+            string userList = string.Join(",", lst_ChangeLog.Select(cl => cl.UserId.ToString()).ToArray());
+            userName = bdsservice.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
             foreach (var cl in lst_ChangeLog)
             {
                 ChangeLog_ViewModel clvm = new ChangeLog_ViewModel();
-                var user = bdsservice.GetTeamMemberDetails(cl.UserId, Sessions.ApplicationId);
+                User user = userName.Where(u => u.UserId == cl.UserId).Select(u => u).FirstOrDefault(); //bdsservice.GetTeamMemberDetails(cl.UserId, Sessions.ApplicationId);
                 clvm.ComponentTitle = cl.ComponentTitle;
                 clvm.ComponentType = cl.ComponentType;
                 clvm.Action = cl.ActionName;
@@ -3323,72 +3325,8 @@ namespace RevenuePlanner.Helpers
 
         #region "Improvement Customized Stage"
 
-        public static double GetCalculatedValueImproved(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, string stageType, bool isIncludeImprovement = true)
+        public static List<TacticStageValue> GetTacticStageValueListForSuggestedImprovement(List<StageRelation> bestInClassStageRelation, List<StageList> stageListType, List<ModelDateList> modelDateList, int ModelId, List<ModelStageRelationList> modleStageRelationList, List<ImprovementTacticType_Metric> improvementTacticTypeMetric, List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, List<Stage> stageList)
         {
-            List<StageRelation> stagevalueList = CalculateStageValue(planId, improvementActivities, isIncludeImprovement);
-            double returnValue = 0;
-            if (stagevalueList.Count > 0)
-            {
-                returnValue = stagevalueList.Where(s => s.StageType == stageType).Sum(s => s.Value);
-            }
-            return returnValue;
-        }
-
-        /// <summary>
-        /// Function to calculate improved velocity.
-        /// </summary>
-        /// <param name="planId">Current plan id.</param>
-        /// <returns>Returns improved velocity.</returns>
-        public static List<StageRelation> CalculateStageValue(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, bool isIncludeImprovement = true)
-        {
-            MRPEntities db = new MRPEntities();
-
-            List<StageRelation> bestInClassStageRelation = GetBestInClassValue();
-            List<StageList> stageList = GetStageList();
-            //// Getting model based on plan id.
-            int ModelId = db.Plans.Where(p => p.PlanId == planId).Select(p => p.ModelId).SingleOrDefault();
-            if (improvementActivities.Count > 0)
-            {
-                //// Get Model id based on effective date From.
-                ModelId = GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), ModelId);
-            }
-            List<int> modelids = new List<int>();
-            modelids.Add(ModelId);
-            List<ModelStageRelationList> modleStageRelationList = GetModelStageRelation(modelids);
-            List<StageRelation> stageModelRelation = modleStageRelationList.Single(m => m.ModelId == ModelId).StageList;
-            List<StageRelation> finalStageResult = new List<StageRelation>();
-            //// Checking whether improvement activities exist.
-            if (improvementActivities.Count() > 0 && isIncludeImprovement)
-            {
-                var improvementTypeList = improvementActivities.Select(imptactic => imptactic.ImprovementTacticTypeId).ToList();
-                var improvementIdsWeighList = db.ImprovementTacticType_Metric.Where(imptype => improvementTypeList.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
-
-                foreach (StageList stage in stageList)
-                {
-                    StageRelation stageRelationObj = new StageRelation();
-                    var stageimplist = improvementIdsWeighList.Where(impweight => impweight.StageId == stage.StageId && impweight.StageType == stage.StageType && impweight.Weight > 0).ToList();
-                    double impcount = stageimplist.Count();
-                    double impWeight = impcount <= 0 ? 0 : stageimplist.Sum(s => s.Weight);
-                    double improvementValue = GetImprovement(stage.StageType, bestInClassStageRelation.Single(b => b.StageId == stage.StageId && b.StageType == stage.StageType).Value, stageModelRelation.Single(s => s.StageId == stage.StageId && s.StageType == stage.StageType).Value, impcount, impWeight);
-                    stageRelationObj.StageId = stage.StageId;
-                    stageRelationObj.StageType = stage.StageType;
-                    stageRelationObj.Value = improvementValue;
-                    finalStageResult.Add(stageRelationObj);
-                }
-            }
-            else
-            {
-                finalStageResult = stageModelRelation;
-            }
-
-            return finalStageResult;
-        }
-
-        public static List<TacticStageValue> GetTacticStageValueListForImprovement(List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
-        {
-            MRPEntities dbStage = new MRPEntities();
-
-            List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
             List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
             string stageINQ = Enums.Stage.INQ.ToString();
             int levelINQ = stageList.Single(s => s.Code.Equals(stageINQ)).Level.Value;
@@ -3411,7 +3349,7 @@ namespace RevenuePlanner.Helpers
             foreach (Plan_Campaign_Program_Tactic tactic in marketingActivities)
             {
                 List<Plan_Improvement_Campaign_Program_Tactic> improvementList = improvementActivities.Where(it => it.EffectiveDate <= tactic.StartDate).ToList();
-                List<StageRelation> stageRelation = CalculateStageValue(Sessions.PlanId, improvementList, true);
+                List<StageRelation> stageRelation = CalculateStageValueForSuggestedImprovement(bestInClassStageRelation, stageListType, modelDateList, ModelId, modleStageRelationList, improvementList, improvementTacticTypeMetric, true);
                 int projectedStageLevel = stageList.Single(s => s.StageId == tactic.StageId).Level.Value;
                 inqStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelINQ).Select(s => s.StageId).ToList();
                 mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
@@ -3454,6 +3392,87 @@ namespace RevenuePlanner.Helpers
             return tacticStageList;
         }
 
+
+        public static double GetCalculatedValueImprovement(List<StageRelation> bestInClassStageRelation,List<StageList> stageList,List<ModelDateList> modelDateList, int ModelId,List<ModelStageRelationList> modleStageRelationList, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities,List<ImprovementTacticType_Metric> improvementTacticTypeMetric, string stageType, bool isIncludeImprovement = true)
+        {
+            List<StageRelation> stagevalueList = CalculateStageValueForSuggestedImprovement(bestInClassStageRelation, stageList, modelDateList, ModelId, modleStageRelationList, improvementActivities,improvementTacticTypeMetric, isIncludeImprovement);
+            double returnValue = 0;
+            if (stagevalueList.Count > 0)
+            {
+                returnValue = stagevalueList.Where(s => s.StageType == stageType).Sum(s => s.Value);
+            }
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Function to calculate improved velocity.
+        /// </summary>
+        /// <param name="planId">Current plan id.</param>
+        /// <returns>Returns improved velocity.</returns>
+        public static List<StageRelation> CalculateStageValueForSuggestedImprovement(List<StageRelation> bestInClassStageRelation,List<StageList> stageList,List<ModelDateList> modelDateList, int ModelId,List<ModelStageRelationList> modleStageRelationList, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities,List<ImprovementTacticType_Metric> improvementTacticTypeMetric, bool isIncludeImprovement = true)
+        {
+            if (improvementActivities.Count > 0)
+            {
+                //// Get Model id based on effective date From.
+                ModelId = GetModelIdFromList(modelDateList, improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), ModelId);
+            }
+            List<StageRelation> stageModelRelation = modleStageRelationList.Single(m => m.ModelId == ModelId).StageList;
+            List<StageRelation> finalStageResult = new List<StageRelation>();
+            //// Checking whether improvement activities exist.
+            if (improvementActivities.Count() > 0 && isIncludeImprovement)
+            {
+                var improvementTypeList = improvementActivities.Select(imptactic => imptactic.ImprovementTacticTypeId).ToList();
+                var improvementIdsWeighList = improvementTacticTypeMetric.Where(imptype => improvementTypeList.Contains(imptype.ImprovementTacticTypeId)).Select(imptype => imptype).ToList();
+
+                foreach (StageList stage in stageList)
+                {
+                    StageRelation stageRelationObj = new StageRelation();
+                    var stageimplist = improvementIdsWeighList.Where(impweight => impweight.StageId == stage.StageId && impweight.StageType == stage.StageType && impweight.Weight > 0).ToList();
+                    double impcount = stageimplist.Count();
+                    double impWeight = impcount <= 0 ? 0 : stageimplist.Sum(s => s.Weight);
+                    double improvementValue = GetImprovement(stage.StageType, bestInClassStageRelation.Single(b => b.StageId == stage.StageId && b.StageType == stage.StageType).Value, stageModelRelation.Single(s => s.StageId == stage.StageId && s.StageType == stage.StageType).Value, impcount, impWeight);
+                    stageRelationObj.StageId = stage.StageId;
+                    stageRelationObj.StageType = stage.StageType;
+                    stageRelationObj.Value = improvementValue;
+                    finalStageResult.Add(stageRelationObj);
+                }
+            }
+            else
+            {
+                finalStageResult = stageModelRelation;
+            }
+
+            return finalStageResult;
+        }
+
+        public static int GetModelIdFromList(List<ModelDateList> modelDateList, DateTime StartDate, int ModelId)
+        {
+            DateTime? effectiveDate = modelDateList.Where(m => m.ModelId == ModelId).Select(m => m.EffectiveDate).SingleOrDefault();
+            if (effectiveDate != null)
+            {
+                if (StartDate >= effectiveDate)
+                {
+                    return ModelId;
+                }
+                else
+                {
+                    int? ParentModelId = modelDateList.Where(m => m.ModelId == ModelId).Select(m => m.ParentModelId).SingleOrDefault();
+                    if (ParentModelId != null)
+                    {
+                        return GetModelIdFromList(modelDateList, StartDate, (int)ParentModelId);
+                    }
+                    else
+                    {
+                        return ModelId;
+                    }
+                }
+            }
+            else
+            {
+                return ModelId;
+            }
+        }
+     
         #endregion
 
         #region Subordinares and peers

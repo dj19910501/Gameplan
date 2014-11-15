@@ -76,6 +76,8 @@ namespace RevenuePlanner.Models
         public double Actual { get; set; }
         public double Planned { get; set; }
         
+        public int? LineItemTypeId { get; set; }
+        
     }
     public class BudgetedValue
     {

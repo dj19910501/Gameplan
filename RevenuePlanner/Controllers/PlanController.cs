@@ -2052,52 +2052,49 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result.</returns>
         public JsonResult GetCampaign()
         {
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
             List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            List<Plan_Tactic_Values> ListTactic = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId)).Select(pcpt => pcpt).ToList(), true);
-            var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
-            var campaignobj = campaign.Select(p => new
+            List<Plan_Campaign> CampaignList = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
+            List<int> CampaignIds = CampaignList.Select(pc => pc.PlanCampaignId).ToList();
+            List<Plan_Campaign_Program> ProgramList = db.Plan_Campaign_Program.Where(pcp => CampaignIds.Contains(pcp.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList();
+            List<int> ProgramIds = ProgramList.Select(pcp => pcp.PlanProgramId).ToList();
+            List<Plan_Campaign_Program_Tactic> TacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => ProgramIds.Contains(pcpt.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList();
+            List<int> TacticIds = TacticList.Select(pcpt => pcpt.PlanTacticId).ToList();
+            List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => TacticIds.Contains(pcptl.PlanTacticId) && pcptl.IsDeleted.Equals(false)).Select(pcptl => pcptl).ToList();
+            List<int> LineItemIds = LineItemList.Select(pcptl => pcptl.PlanLineItemId).ToList();
+            List<Plan_Tactic_Values> ListTacticMQLValue = Common.GetMQLValueTacticList(TacticList, true);
+
+            var campaignobj = CampaignList.Select(p => new
             {
                 id = p.PlanCampaignId,
                 title = p.Title,
                 description = p.Description,
-                cost = Common.CalculateCampaignCost(p.PlanCampaignId), //cost = p.Cost.HasValue ? p.Cost : 0, // Modified for PL#440 by Dharmraj
+                cost = LineItemList.Where(l => (TacticList.Where(pcpt => (ProgramList.Where(pcp => pcp.PlanCampaignId == p.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(pcpt.PlanProgramId)).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Cost),
                 //inqs = p.INQs.HasValue ? p.INQs : 0,
-                mqls = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == p.PlanCampaignId && t.IsDeleted == false).ToList(), true).Sum(tm => tm.MQL),
-                /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
-        changed by : Nirav Shah on 13 feb 2014*/
+                mqls = ListTacticMQLValue.Where(lt => (TacticList.Where(pcpt => (ProgramList.Where(pcp => pcp.PlanCampaignId == p.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(pcpt.PlanProgramId)).Select(pcpt => pcpt.PlanTacticId)).Contains(lt.PlanTacticId)).Sum(lt => lt.MQL),
                 isOwner = Sessions.User.UserId == p.CreatedBy ? 0 : 1,
-                programs = (db.Plan_Campaign_Program.ToList().Where(pcp => pcp.PlanCampaignId.Equals(p.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pcpj => new
+                programs = (ProgramList.Where(pcp => pcp.PlanCampaignId.Equals(p.PlanCampaignId))).Select(pcpj => new
                 {
                     id = pcpj.PlanProgramId,
                     title = pcpj.Title,
                     description = pcpj.Description,
-                    cost = Common.CalculateProgramCost(pcpj.PlanProgramId), //cost = pcpj.Cost.HasValue ? pcpj.Cost : 0, // Modified for PL#440 by Dharmraj
-                    //inqs = pcpj.INQs.HasValue ? pcpj.INQs : 0,
-                    mqls = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpj.PlanProgramId && t.IsDeleted == false).ToList(), true).Sum(tm => tm.MQL),
+                    cost = LineItemList.Where(l => (TacticList.Where(pcpt => pcpt.PlanProgramId == pcpj.PlanProgramId).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Cost),
+                    mqls = ListTacticMQLValue.Where(lt => (TacticList.Where(pcpt => pcpt.PlanProgramId == pcpj.PlanProgramId).Select(pcpt => pcpt.PlanTacticId)).Contains(lt.PlanTacticId)).Sum(lt => lt.MQL),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
-                    tactics = (db.Plan_Campaign_Program_Tactic.ToList().Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false) && Common.GetRightsForTacticVisibility(lstUserCustomRestriction, pcpt.VerticalId, pcpt.GeographyId)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
+                    tactics = (TacticList.Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && Common.GetRightsForTacticVisibility(lstUserCustomRestriction, pcpt.VerticalId, pcpt.GeographyId)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
                     {
                         id = pcptj.PlanTacticId,
                         title = pcptj.Title,
                         description = pcptj.Description,
-                        cost = db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc => lc.PlanTacticId.Equals(pcptj.PlanTacticId) && lc.IsDeleted.Equals(false)).Select(lc => lc.Cost).Sum() > pcptj.Cost ? db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc => lc.PlanTacticId.Equals(pcptj.PlanTacticId) && lc.IsDeleted.Equals(false)).Select(lc => lc.Cost).Sum() : pcptj.Cost,//Modified by mitesh Vaishnav on 29-07-2014 for PL ticket #619
-                        //inqs = pcptj.INQs,
-                        mqls = ListTactic.Where(lt => lt.PlanTacticId == pcptj.PlanTacticId).Sum(tm => tm.MQL),
-                        /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
-                         changed by : Nirav Shah on 13 feb 2014*/
-                        // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+                        cost = LineItemList.Where(l => l.PlanTacticId == pcptj.PlanTacticId).Sum(l => l.Cost),
+                        mqls = ListTacticMQLValue.Where(lt => lt.PlanTacticId == pcptj.PlanTacticId).Sum(lt => lt.MQL),
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? (Common.GetRightsForTactic(lstUserCustomRestriction, pcptj.VerticalId, pcptj.GeographyId) ? 0 : 1) : 1,
-                        //Added by Mitesh Vaishnav for pl ticket 619
-                        lineitems = (db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(pcptl => pcptl.PlanTacticId.Equals(pcptj.PlanTacticId) && pcptl.IsDeleted.Equals(false))).Select(pcptlj => new
+                        lineitems = (LineItemList.Where(pcptl => pcptl.PlanTacticId.Equals(pcptj.PlanTacticId))).Select(pcptlj => new
                         {
                             id = pcptlj.PlanLineItemId,
                             type = pcptlj.LineItemTypeId,
                             title = pcptlj.Title,
                             cost = pcptlj.Cost
-
                         }).Select(pcptlj => pcptlj).Distinct().OrderByDescending(pcptlj => pcptlj.type)
-                        //End :Added by Mitesh Vaishnav for pl ticket 619
                     }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id)
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
             }).Select(p => p).Distinct().OrderBy(p => p.id);
@@ -2134,9 +2131,8 @@ namespace RevenuePlanner.Controllers
                 programs = c.programs
             });
 
-            //return Json(campaignobj, JsonRequestBehavior.AllowGet);
             return Json(lstCampaign, JsonRequestBehavior.AllowGet);
-            //End : Check isOwner flag for program and campaign based on custom restrictions, Ticket #577, By Dharmraj
+
         }
 
         /// <summary>
@@ -7152,6 +7148,28 @@ namespace RevenuePlanner.Controllers
             List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelation(tacticList, false);
             List<TacticStageValue> TacticDataWithImprovement = Common.GetTacticStageRelation(tacticList, true);
 
+            //Added By Bhavesh For Performance Issue #955
+            List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
+            List<StageList> stageListType = Common.GetStageList();
+            int? ModelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+            List<ModelDateList> modelDateList = new List<ModelDateList>();
+            var ModelList = db.Models.Where(m => m.IsDeleted == false);
+            int MainModelId = (int)ModelId;
+            while (ModelId != null)
+            {
+                var model = ModelList.Where(m => m.ModelId == ModelId).Select(m => m).FirstOrDefault();
+                modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                ModelId = model.ParentModelId;
+            }
+
+            List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(m => m.ModelId).ToList());
+
+            var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).Distinct().ToList();
+            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+            List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            //End #955
+
+
             //// Calculating MQL difference.
             double? improvedMQL = TacticDataWithImprovement.Sum(t => t.MQLValue);
             double planMQL = TacticDataWithoutImprovement.Sum(t => t.MQLValue);
@@ -7163,14 +7181,18 @@ namespace RevenuePlanner.Controllers
             double differenceCW = Convert.ToDouble(improvedCW) - planCW;
 
             string stageTypeSV = Enums.StageType.SV.ToString();
-            double improvedSV = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSV);
-            double sv = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSV, false);
+            //double improvedSV = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSV);
+            double improvedSV = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, stageTypeSV);
+            //double sv = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSV, false);
+            double sv = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, stageTypeSV, false);
             double differenceSV = Convert.ToDouble(improvedSV) - sv;
 
             //// Calcualting Deal size.
             string stageTypeSize = Enums.StageType.Size.ToString();
-            double improvedDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize);
-            double averageDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize, false);
+            //double improvedDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize);
+            double improvedDealSize = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, stageTypeSize);
+            //double averageDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize, false);
+            double averageDealSize = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, stageTypeSize, false);
             double differenceDealSize = improvedDealSize - averageDealSize;
 
             //// Calculation of Revenue
@@ -7206,12 +7228,30 @@ namespace RevenuePlanner.Controllers
             List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelation(marketingActivities, false);
             List<TacticStageValue> TacticDataWithImprovement = Common.GetTacticStageRelation(marketingActivities, true);
 
+            //Added By Bhavesh For Performance Issue #955
+            List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
+            List<StageList> stageListType = Common.GetStageList();
+            int? ModelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+            List<ModelDateList> modelDateList = new List<ModelDateList>();
+            var ModelList = db.Models.Where(m => m.IsDeleted == false);
+            int MainModelId = (int)ModelId;
+            while (ModelId != null)
+            {
+                var model = ModelList.Where(m => m.ModelId == ModelId).Select(m => m).FirstOrDefault();
+                modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                ModelId = model.ParentModelId;
+            }
+
+            List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(m => m.ModelId).ToList());
+
+            var improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
+            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+            List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
             //// Checking whether improvement activities exist.
             if (improvementActivities.Count() > 0)
             {
 
-                double improvedDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize);
-
+                double improvedDealSize = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, stageTypeSize);
                 List<double> revenueList = new List<double>();
                 TacticDataWithImprovement.ForEach(t => revenueList.Add(t.CWValue * improvedDealSize));
                 projectedRevenueWithoutTactic = revenueList.Sum();
@@ -7252,10 +7292,10 @@ namespace RevenuePlanner.Controllers
                         suggestedImprovement.isOwner = true;
                     }
                 }
-                List<TacticStageValue> tacticStageValueInnerList = Common.GetTacticStageValueListForImprovement(marketingActivities, improvementActivitiesWithType);
 
-                double improvedAverageDealSizeForProjectedRevenue = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivitiesWithType, stageTypeSize);
+                List<TacticStageValue> tacticStageValueInnerList = Common.GetTacticStageValueListForSuggestedImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementTacticTypeMetric, marketingActivities, improvementActivitiesWithType, stageList);
 
+               double improvedAverageDealSizeForProjectedRevenue = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivitiesWithType, improvementTacticTypeMetric, stageTypeSize);
                 double improvedValue = 0;
 
                 //// Checking whether marketing and improvement activities exist.
@@ -7381,6 +7421,27 @@ namespace RevenuePlanner.Controllers
             List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelation(marketingActivities, false);
             List<TacticStageValue> TacticDataWithImprovement = Common.GetTacticStageRelation(marketingActivities, true);
 
+            //Added By Bhavesh For Performance Issue #955
+            List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
+            List<StageList> stageListType = Common.GetStageList();
+            int? ModelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+            List<ModelDateList> modelDateList = new List<ModelDateList>();
+            var ModelList = db.Models.Where(m => m.IsDeleted == false);
+            int MainModelId = (int)ModelId;
+            while (ModelId != null)
+            {
+                var model = ModelList.Where(m => m.ModelId == ModelId).Select(m => m).FirstOrDefault();
+                modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                ModelId = model.ParentModelId;
+            }
+
+            List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(m => m.ModelId).ToList());
+
+            var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).Distinct().ToList();
+            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+            List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            //End #955
+
             double improvedValue = 0;
             double adsWithTactic = 0;
             double? dealSize = null;
@@ -7390,7 +7451,7 @@ namespace RevenuePlanner.Controllers
             if (improvementActivitiesWithIncluded.Count() > 0)
             {
                 //// Getting deal size improved based on improvement activities.
-                dealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivitiesWithIncluded, stageTypeSize);
+                dealSize = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivitiesWithIncluded, improvementTacticTypeMetric, stageTypeSize);
             }
             if (dealSize != null)
             {
@@ -7443,11 +7504,11 @@ namespace RevenuePlanner.Controllers
                 if (improvementActivitiesWithType.Count() > 0)
                 {
                     //// Getting deal size improved based on improvement activities.
-                    dealSizeInner = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivitiesWithType, stageTypeSize);
+                    dealSizeInner = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivitiesWithType, improvementTacticTypeMetric, stageTypeSize);
                 }
                 else
                 {
-                    dealSizeInner = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivitiesWithType, stageTypeSize, false);
+                    dealSizeInner = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivitiesWithType, improvementTacticTypeMetric, stageTypeSize, false);
                 }
                 if (dealSizeInner != null)
                 {
@@ -7455,7 +7516,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 double projectedRevenueWithoutTactic = 0;
-                List<TacticStageValue> tacticStageValueInnerList = Common.GetTacticStageValueListForImprovement(marketingActivities, improvementActivitiesWithType);
+                List<TacticStageValue> tacticStageValueInnerList = Common.GetTacticStageValueListForSuggestedImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementTacticTypeMetric, marketingActivities, improvementActivitiesWithType, stageList);
 
                 //// Checking whether marketing and improvement activities exist.
                 if (marketingActivities.Count() > 0)
@@ -7537,7 +7598,28 @@ namespace RevenuePlanner.Controllers
             //// Getting list of improvement activites.
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && !plantacticids.Contains(t.ImprovementPlanTacticId) && t.IsDeleted == false).Select(t => t).ToList();
 
-            List<TacticStageValue> tacticStageValueInnerList = Common.GetTacticStageValueListForImprovement(marketingActivities, improvementActivities);
+            //Added By Bhavesh For Performance Issue #955
+            List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
+            List<StageList> stageListType = Common.GetStageList();
+            int? ModelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+            List<ModelDateList> modelDateList = new List<ModelDateList>();
+            var ModelList = db.Models.Where(m => m.IsDeleted == false);
+            int MainModelId = (int)ModelId;
+            while (ModelId != null)
+            {
+                var model = ModelList.Where(m => m.ModelId == ModelId).Select(m => m).FirstOrDefault();
+                modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                ModelId = model.ParentModelId;
+            }
+
+            List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(m => m.ModelId).ToList());
+
+            var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).Distinct().ToList();
+            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+            List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            //End #955
+
+            List<TacticStageValue> tacticStageValueInnerList = Common.GetTacticStageValueListForSuggestedImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementTacticTypeMetric, marketingActivities, improvementActivities, stageList);
 
             double? improvedCW = null;
 
@@ -7553,13 +7635,12 @@ namespace RevenuePlanner.Controllers
 
             string stageTypeSize = Enums.StageType.Size.ToString();
             //// Calcualting Deal size.
-            double averageDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize, false);
-
+            double averageDealSize = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, stageTypeSize, false);
             double differenceDealSize = 0;
             //// Checking whether improvement activities exist.
             if (improvementActivities.Count() > 0)
             {
-                double improvedDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize, true);
+                double improvedDealSize = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, stageTypeSize, true);
                 differenceDealSize = improvedDealSize - averageDealSize;
             }
 
@@ -7571,8 +7652,8 @@ namespace RevenuePlanner.Controllers
             if (improvementActivities.Count() > 0)
             {
                 //// Getting velocity improved based on improvement activities.
-                improvedSV = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSV, true);
-                double sv = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSV, false);
+                improvedSV = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, stageTypeSV, true);
+                double sv = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, stageTypeSV, false);
                 differenceSV = Convert.ToDouble(improvedSV) - sv;
             }
 
@@ -7659,7 +7740,27 @@ namespace RevenuePlanner.Controllers
                 suggestedImprovementActivitiesConversion.Add(sIconversion);
             }
 
-            List<StageRelation> stageRelationList = Common.CalculateStageValue(Sessions.PlanId, improvementActivitiesWithIncluded, true);
+            //Added By Bhavesh For Performance Issue #955
+            List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
+            List<StageList> stageListType = Common.GetStageList();
+            int? ModelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+            List<ModelDateList> modelDateList = new List<ModelDateList>();
+            var ModelList = db.Models.Where(m => m.IsDeleted == false);
+            int MainModelId = (int)ModelId;
+            while (ModelId != null)
+            {
+                var model = ModelList.Where(m => m.ModelId == ModelId).Select(m => m).FirstOrDefault();
+                modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                ModelId = model.ParentModelId;
+            }
+
+            List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(m => m.ModelId).ToList());
+
+            var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).Distinct().ToList();
+            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+            //End #955
+
+            List<StageRelation> stageRelationList = Common.CalculateStageValueForSuggestedImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivitiesWithIncluded, improvementTacticTypeMetric, true);
             List<int> finalMetricList = stageList.Select(m => m.StageId).ToList();
 
             var datalist = suggestedImprovementActivitiesConversion.Select(si => new

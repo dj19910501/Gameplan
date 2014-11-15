@@ -448,4 +448,11 @@ namespace RevenuePlanner.Models
         public int customFieldOptionId { get; set; }
         public string value { get; set; }
     }
+
+    public class ModelDateList
+    {
+        public int ModelId { get; set; }
+        public int? ParentModelId { get; set; }
+        public DateTime? EffectiveDate { get; set; }
+    }
 }
