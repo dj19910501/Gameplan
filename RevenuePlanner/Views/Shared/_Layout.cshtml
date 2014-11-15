@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     @RenderSection("nlFormContent", false)
-    @if (RevenuePlanner.Helpers.Common.IsDebug) 
+    @if (RevenuePlanner.Helpers.Common.IsDebug)
     {
         <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap.css")" type="text/css" />
         <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
@@ -46,6 +46,11 @@
        <link rel="stylesheet" href="@Url.Content("~/Content/css/summernote.css")" type="text/css" />
        <script type="text/javascript" src="@Url.Content("~/Scripts/summernote.min.js")"></script>
         @* end - Added by :- uday on 27/05/2014 for PL #453 *@
+        
+        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
+        <link href="@Url.Content("~/Content/css/jquery.multiselect.css?n=")@DateTime.Now" rel="stylesheet" type="text/css" />
     }
     else
     {
@@ -83,6 +88,12 @@
         <link href="//oss.maxcdn.com/summernote/0.5.1/summernote.css" rel="stylesheet">
         <script src="//oss.maxcdn.com/summernote/0.5.1/summernote.min.js"></script>
         @* end - Added by :- uday on 27/05/2014 for PL #453 *@
+        
+        
+        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
+        <link href="@Url.Content("~/Content/css/jquery.multiselect.css?n=")@DateTime.Now" rel="stylesheet" type="text/css" />
     }
 </head>
 <body>
