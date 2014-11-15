@@ -8,8 +8,13 @@
     ViewBag.PageTitle = "Assortment";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
 }
 <!--<link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />-->
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
+<link href="@Url.Content("~/Content/css/jquery.multiselect.css?n=")@DateTime.Now" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+
 @section Sidebar
 {
     @Html.Partial("~/Views/Plan/_plan.cshtml")

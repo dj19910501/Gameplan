@@ -6013,6 +6013,7 @@ namespace RevenuePlanner.Controllers
             ippctm.PEndDate = pcpt.Plan_Campaign_Program.EndDate;
             ippctm.CStartDate = pcpt.Plan_Campaign_Program.Plan_Campaign.StartDate;
             ippctm.CEndDate = pcpt.Plan_Campaign_Program.Plan_Campaign.EndDate;
+            ippctm.BusinessUnitId = pcpt.BusinessUnitId;
 
             User userName = new User();
             try
@@ -6140,8 +6141,12 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsTackticAddEdit = true;
             try
             {
+                Dictionary<string, string> lstCustomRestrictionFields = new Dictionary<string, string>();
+                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.BusinessUnit.ToString(), ippctm.BusinessUnitId.ToString());
+                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Geography.ToString(), ippctm.GeographyId.ToString());
+                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Verticals.ToString(), ippctm.VerticalId.ToString());
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                var lstUser = objBDSServiceClient.GetUserListWithCustomRestrictions(Sessions.User.UserId, Sessions.User.ClientId, Sessions.ApplicationId);
+                var lstUser = objBDSServiceClient.GetUserListWithCustomRestrictions(Sessions.User.UserId, Sessions.User.ClientId, Sessions.ApplicationId, lstCustomRestrictionFields);
                 ViewBag.OwnerList = lstUser;
             }
             catch (Exception e)

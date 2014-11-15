@@ -339,10 +339,10 @@ namespace BDSService
             return obj.AssignUser(UserId, RoleId, applicationId, createdBy);
         }
 
-        public List<BDSEntities.User> GetUserListWithCustomRestrictions(Guid userId, Guid clientId, Guid applicationId)
+        public List<BDSEntities.User> GetUserListWithCustomRestrictions(Guid userId, Guid clientId, Guid applicationId, Dictionary<string, string> customRestrictionFieldIds)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.GetUserListWithCustomRestrictions(userId, clientId, applicationId);
+            return obj.GetUserListWithCustomRestrictions(userId, clientId, applicationId, customRestrictionFieldIds);
         }
 
         public List<BDSEntities.User> GetMultipleTeamMemberName(string userIdList)

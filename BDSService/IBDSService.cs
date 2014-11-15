@@ -189,7 +189,7 @@ namespace BDSService
         int AssignUser(Guid UserId, Guid RoleId, Guid applicationId, Guid createdBy);
 
         [OperationContract]
-        List<BDSEntities.User> GetUserListWithCustomRestrictions(Guid userId, Guid clientId, Guid applicationId);
+        List<BDSEntities.User> GetUserListWithCustomRestrictions(Guid userId, Guid clientId, Guid applicationId, Dictionary<string, string> customRestrictionFieldIds);
         
         [OperationContract]
         List<BDSEntities.User> GetMultipleTeamMemberName(string userIdList);

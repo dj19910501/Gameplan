@@ -2574,33 +2574,59 @@ namespace BDSService
         /// <param name="userId">User ID</param>
         /// <param name="clientId">Client ID</param>
         /// <param name="applicationId">Application ID</param>
+        /// <param name="customRestrictionFieldIds">Dictionary of Custom fields with its respective values</param>
         /// <returns>List of user with Firstname and Lastname details.</returns>
-        public List<BDSEntities.User> GetUserListWithCustomRestrictions(Guid userId, Guid clientId, Guid applicationId)
+        public List<BDSEntities.User> GetUserListWithCustomRestrictions(Guid userId, Guid clientId, Guid applicationId, Dictionary<string, string> customRestrictionFieldIds)
         {
             List<BDSEntities.User> teamMemberList = new List<BDSEntities.User>();
             List<User> lstUser = (from u in db.Users
                                   join ua in db.User_Application on u.UserId equals ua.UserId
                                   where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && ua.IsDeleted == false
-                                  select u).OrderBy(q => new { q.FirstName, q.LastName }).Distinct().ToList();
+                                  select u).Distinct().OrderBy(u => new { u.FirstName, u.LastName }).ToList();
 
             if (lstUser.Count > 0)
             {
                 var lstUserIds = lstUser.Select(u => u.UserId).ToList();
 
-                var Verticals = Enums.CustomRestrictionType.Verticals.ToString();
                 var BusinessUnit = Enums.CustomRestrictionType.BusinessUnit.ToString();
                 var Geography = Enums.CustomRestrictionType.Geography.ToString();
+                var Verticals = Enums.CustomRestrictionType.Verticals.ToString();
+
+                string BusinessUnitId = string.Empty, GeographyId = string.Empty, VerticalsId = string.Empty;
+
+                if (customRestrictionFieldIds.ContainsKey(BusinessUnit))
+                {
+                    BusinessUnitId = customRestrictionFieldIds[BusinessUnit].ToString();
+                }
+                if (customRestrictionFieldIds.ContainsKey(Geography))
+                {
+                    GeographyId = customRestrictionFieldIds[Geography].ToString();
+                }
+                if (customRestrictionFieldIds.ContainsKey(Verticals))
+                {
+                    VerticalsId = customRestrictionFieldIds[Verticals].ToString();
+                }
 
                 int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                 int ViewPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
 
-                var usercustomRestrictionList = db.CustomRestrictions
-                                                .Where(crl => lstUserIds.Contains(crl.UserId) && crl.ApplicationId == applicationId &&
-                                                ((crl.CustomField == Verticals || crl.CustomField == BusinessUnit || crl.CustomField == Geography) &&
-                                                crl.Permission == ViewEditPermission || crl.Permission == ViewPermission))
-                                                .Select(crl => crl.UserId).ToList().Distinct();
+                var customRestrictionListForAllUsers = db.CustomRestrictions.Where(crl => lstUserIds.Contains(crl.UserId) && crl.ApplicationId == applicationId).Select(crl => crl).ToList().Distinct();
 
-                teamMemberList = lstUser.Where(u => usercustomRestrictionList.Contains(u.UserId)).ToList().Select(u => new BDSEntities.User()
+                // -- List of userIds who have Viewonly & ViewEdit rights on BusinessUnit
+                var lstBusinessUnitUsers = customRestrictionListForAllUsers.Where(cr => cr.CustomField == BusinessUnit && cr.CustomFieldId == BusinessUnitId && 
+                                            (cr.Permission == ViewEditPermission || cr.Permission == ViewPermission)).Select(cr => cr.UserId).ToList().Distinct();
+                // -- List of userIds who have Viewonly & ViewEdit rights on Geography
+                var lstGeographyUsers = customRestrictionListForAllUsers.Where(cr => cr.CustomField == Geography && cr.CustomFieldId == GeographyId && 
+                                            (cr.Permission == ViewEditPermission || cr.Permission == ViewPermission)).Select(cr => cr.UserId).ToList().Distinct();
+                // -- List of userIds who have Viewonly & ViewEdit rights on Verticals
+                var lstVerticalsUsers = customRestrictionListForAllUsers.Where(cr => cr.CustomField == Verticals && cr.CustomFieldId == VerticalsId && 
+                                            (cr.Permission == ViewEditPermission || cr.Permission == ViewPermission)).Select(cr => cr.UserId).ToList().Distinct();
+
+                var lstUsersWithCustomRestrictions = lstUser.Where(u => lstBusinessUnitUsers.Contains(u.UserId) &&
+                                                                        lstGeographyUsers.Contains(u.UserId) &&
+                                                                        lstVerticalsUsers.Contains(u.UserId)).Select(u => u.UserId).ToList().Distinct();
+                
+                teamMemberList = lstUser.Where(u => lstUsersWithCustomRestrictions.Contains(u.UserId)).ToList().Select(u => new BDSEntities.User()
                 {
                     UserId = u.UserId,
                     DisplayName = u.FirstName + " " + u.LastName

@@ -2281,10 +2281,10 @@ namespace RevenuePlanner.BDSService {
         System.Threading.Tasks.Task<int> AssignUserAsync(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictions", ReplyAction="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictionsResponse")]
-        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictions(System.Guid userId, System.Guid clientId, System.Guid applicationId);
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictions(System.Guid userId, System.Guid clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictions", ReplyAction="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictionsResponse")]
-        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListWithCustomRestrictionsAsync(System.Guid userId, System.Guid clientId, System.Guid applicationId);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListWithCustomRestrictionsAsync(System.Guid userId, System.Guid clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberName", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameResponse")]
         System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberName(string userIdList);
@@ -2736,12 +2736,12 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.AssignUserAsync(UserId, RoleId, applicationId, createdBy);
         }
         
-        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictions(System.Guid userId, System.Guid clientId, System.Guid applicationId) {
-            return base.Channel.GetUserListWithCustomRestrictions(userId, clientId, applicationId);
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictions(System.Guid userId, System.Guid clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds) {
+            return base.Channel.GetUserListWithCustomRestrictions(userId, clientId, applicationId, customRestrictionFieldIds);
         }
         
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListWithCustomRestrictionsAsync(System.Guid userId, System.Guid clientId, System.Guid applicationId) {
-            return base.Channel.GetUserListWithCustomRestrictionsAsync(userId, clientId, applicationId);
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListWithCustomRestrictionsAsync(System.Guid userId, System.Guid clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds) {
+            return base.Channel.GetUserListWithCustomRestrictionsAsync(userId, clientId, applicationId, customRestrictionFieldIds);
         }
         
         public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberName(string userIdList) {
