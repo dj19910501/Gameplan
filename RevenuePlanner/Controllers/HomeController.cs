@@ -9989,7 +9989,7 @@ namespace RevenuePlanner.Controllers
                                     if (IsPlan)
                                     {
                                         TempData["SuccessMessageDeletedPlan"] = strMessage;
-                                        return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }) });
+                                        return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("PlanSelector", "Plan", new { type = CalledFromBudget }) });
                                     }
                                     // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                                     else if (IsCampaign)
