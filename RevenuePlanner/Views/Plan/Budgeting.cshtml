@@ -341,6 +341,9 @@ function LoadPlanBuBusinessUnit(Bid) {
         @*displayconfirm('@Url.Action("Create", "Plan", new { id = CurrentPlanId })');*@
         displayconfirm('@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "");
     });
+    $(document).on("click", "#LeftNavAddActivity", function (e) {
+        displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + CurrentPlanId + "");
+     });
 
 $(document).on("click", "#LeftNavCampaigns", function (e) {
     displayconfirm('@Url.Action("Assortment", "Plan")');

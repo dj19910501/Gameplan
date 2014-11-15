@@ -762,6 +762,16 @@
     $(document).on("click", "#LeftNavCampaigns", function (e) {
         displayconfirm('@Url.Action("Assortment", "Plan")');
     });
+    $(document).on("click", "#LeftNavAddActivity", function (e) {
+        var hdnPlanId = $("#hdnPlanId").val();
+        if (hdnPlanId == 0) {
+            displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan");
+        }
+        else {
+            displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + hdnPlanId + "");
+        }
+        //  
+      });
     $(document).on("click", "#aBudgeting", function (e) {
         displayconfirm('@Url.Action("Budgeting", "Plan")');
     });

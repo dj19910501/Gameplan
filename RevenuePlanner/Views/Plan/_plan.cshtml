@@ -86,7 +86,7 @@
                 </div>
             </div>
             <div id="Addactivityarea" class="span6">
-                <button id="LeftNavAddActivity" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Add Activity</button>
+                <button id="LeftNavAddActivity" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Go to Calendar</button>
             </div>
         }
     </div>
@@ -229,6 +229,7 @@
                     else {
                         //$('#ulplan').removeClass();
                         //$('#ulplan').addClass('nav nav-listc nav-gray-plan');
+                        $('#LeftNavAddActivity').removeAttr("disabled", "disabled");
                         $('#LeftNavCampaigns').attr("id", "LeftNavCampaigns");
                         $('#LeftNavCampaigns').removeAttr('href', '#');
                         $('#aApplyToCalender').attr("id", "aApplyToCalender");

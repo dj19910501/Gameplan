@@ -412,7 +412,8 @@
     });
 
     $(document).on("click", "#LeftNavAddActivity", function (e) {
-        displayconfirm('@Url.Action("Assortment", "Plan")');
+        //displayconfirm('@Url.Action("Assortment", "Plan")');
+        displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + CurrentPlanId + "");
     });
     $(document).on("click", "#aBudgeting", function (e) {
         displayconfirm('@Url.Action("Budgeting", "Plan")');
