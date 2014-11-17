@@ -21,15 +21,15 @@
 <!--success message-->
 <div id="successMessageDuplicatePlan" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
-    <strong>Success. </strong>
-    <span id="cSuccessDuplicatePlan"></span>
+     <strong>Success. </strong>
+   <div id="cSuccessDuplicatePlan" style="display:inline-block;"></div>
 </div>
 <!--success message-->
 <!--error message-->
 <div id="errorMessageDuplicatePlan" class="alert hide alert-error message-position-small">
     <a class="close">×</a>
-     <strong>Error! </strong>
-    <span id="cErrorDuplicatePlan"></span>
+    <strong>Error! </strong>
+     <div id="cErrorDuplicatePlan" style="display:inline-block;"></div>
 </div>
 @Html.Hidden("hdnYear", pm.Year, new { id = "hdnYear" })
 @Html.Hidden("hdnModelId", pm.ModelId, new { id = "hdnModelId" })   @* Added by Sohel Pathan on 15/07/2014 for PL ticket #566*@
@@ -581,7 +581,7 @@
 
         function displayConfirmCommon(functionName) {
             if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $('#cErrorDuplicatePlan').html("You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
                 $("#btnConfirmOK").click(function () {
                     $('#cErrorDuplicatePlan').html("");
@@ -1092,7 +1092,7 @@
         //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign deletion)
         function displayconfirmForDeleteEvent(id, type) {
             if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $('#cErrorDuplicatePlan').html("You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
 
                 $("#btnConfirmOK").click(function () {
@@ -1159,7 +1159,7 @@
         //Dharmraj Start 11July2014 : 547 (Warning of data loss during save and comtinue)
         function displayconfirmForSaveContinueEvent() {
             if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $('#cErrorDuplicatePlan').html("You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
                 $("#btnConfirmOK").click(function () {
                     //alert(id);
@@ -1179,7 +1179,7 @@
             //    return false;
             //}
             if (isApply) {
-                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> @Common.objCached.ValidateAtleastOneCampaign');
+                $('#cErrorDuplicatePlan').html(' @Common.objCached.ValidateAtleastOneCampaign');
                 $("#errorMessageDuplicatePlan").slideDown(3000);
             }
             else {
