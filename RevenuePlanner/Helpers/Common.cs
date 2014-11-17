@@ -4732,6 +4732,30 @@ namespace RevenuePlanner.Helpers
             }
             return result;
         }
+
+         /// <summary>
+        /// Function to return Status message.
+        /// Added by Viral Kadiya on 11/17/2014 for PL ticket #947.
+        /// </summary>
+        /// <param name="status">Status of the Tactic.</param>\
+        public static string GetStatusMessage(string status)
+        {
+            string strMessage = string.Empty;
+            try
+            {
+                if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                    strMessage = Common.objCached.PlanEntityDeclined;
+                else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
+                    strMessage = Common.objCached.PlanEntitySubmittedForApproval;
+                else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                    strMessage = Common.objCached.PlanEntityApproved;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return strMessage;
+        }
     }
 
     /// <summary>

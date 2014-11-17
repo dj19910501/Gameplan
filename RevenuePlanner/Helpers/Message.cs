@@ -2161,6 +2161,70 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _ChangesSaved = value; }
         }
         // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+        // Start - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
+
+        // Start - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
+        private string _PlanEntityCreated;
+        public string PlanEntityCreated
+        {
+            get { return _PlanEntityCreated; }
+            set { _PlanEntityCreated = value; }
+        }
+        private string _PlanEntityUpdated;
+        public string PlanEntityUpdated
+        {
+            get { return _PlanEntityUpdated; }
+            set { _PlanEntityUpdated = value; }
+        }
+        private string _PlanEntityDeclined;
+        public string PlanEntityDeclined
+        {
+            get { return _PlanEntityDeclined; }
+            set { _PlanEntityDeclined = value; }
+        }
+        private string _PlanEntitySubmittedForApproval;
+        public string PlanEntitySubmittedForApproval
+        {
+            get { return _PlanEntitySubmittedForApproval; }
+            set { _PlanEntitySubmittedForApproval = value; }
+        }
+        private string _PlanEntityApproved;
+        public string PlanEntityApproved
+        {
+            get { return _PlanEntityApproved; }
+            set { _PlanEntityApproved = value; }
+        }
+        private string _PlanEntityAllocationUpdated;
+        public string PlanEntityAllocationUpdated
+        {
+            get { return _PlanEntityAllocationUpdated; }
+            set { _PlanEntityAllocationUpdated = value; }
+        }
+        private string _PlanEntityActualsUpdated;
+        public string PlanEntityActualsUpdated
+        {
+            get { return _PlanEntityActualsUpdated; }
+            set { _PlanEntityActualsUpdated = value; }
+        }
+        private string _PlanEntityDeleted;
+        public string PlanEntityDeleted
+        {
+            get { return _PlanEntityDeleted; }
+            set { _PlanEntityDeleted = value; }
+        }
+        private string _EmptyFieldValidation;
+        public string EmptyFieldValidation
+        {
+            get { return _EmptyFieldValidation; }
+            set { _EmptyFieldValidation = value; }
+        }
+        private string _EmptyFieldCommentAdded;
+        public string EmptyFieldCommentAdded
+        {
+            get { return _EmptyFieldCommentAdded; }
+            set { _EmptyFieldCommentAdded = value; }
+        }
+        // End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
         #endregion
 
         #region  Functions
@@ -2821,6 +2885,38 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _ChangesSaved = strMsgValue;
                                             break;
                                         // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933.
+                                        // Start - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
+                                        case "PlanEntityCreated":
+                                            _PlanEntityCreated = strMsgValue;
+                                            break;
+                                        case "PlanEntityUpdated":
+                                            _PlanEntityUpdated = strMsgValue;
+                                            break;
+                                        case "PlanEntityDeclined":
+                                            _PlanEntityDeclined = strMsgValue;
+                                            break;
+                                        case "PlanEntitySubmittedForApproval":
+                                            _PlanEntitySubmittedForApproval = strMsgValue;
+                                            break;
+                                        case "PlanEntityApproved":
+                                            _PlanEntityApproved = strMsgValue;
+                                            break;
+                                        case "PlanEntityAllocationUpdated":
+                                            _PlanEntityAllocationUpdated = strMsgValue;
+                                            break;
+                                        case "PlanEntityActualsUpdated":
+                                            _PlanEntityActualsUpdated = strMsgValue;
+                                            break;
+                                        case "PlanEntityDeleted":
+                                            _PlanEntityDeleted = strMsgValue;
+                                            break;
+                                        case "EmptyFieldValidation":
+                                            _EmptyFieldValidation = strMsgValue;
+                                            break;
+                                        case "EmptyFieldCommentAdded":
+                                            _EmptyFieldCommentAdded = strMsgValue;
+                                            break;
+                                        // End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
                                         
                                     }
                                 }

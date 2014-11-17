@@ -106,7 +106,8 @@
 	</Field>
 	<Field>
 		<Name>ValidateForEmptyField</Name>
-		<value>Make sure all fields are filled and try again.</value>
+		<!--Modiefied by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.-->
+		<value>Please fill all required fields.</value>
 	</Field>
 	<Field>
 		<Name>ValidateForValidField</Name>
@@ -523,7 +524,7 @@
 	</Field>
 	<Field>
 		<Name>ValidateTargetStage</Name>
-    		<value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>
+		<value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>
 	</Field>
 	<Field>
 		<Name>ConfirmationForDeleteTactic</Name>
@@ -778,15 +779,61 @@
 	</Field>
 	<!-- End - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752 -->
 	<!-- Start - Added by Pratik on 24/09/2014 for PL ticket #754 -->
-  <Field>
-    <Name>StagesConfigurationMissMatch</Name>
-    <value>Stages configured for your organization doesn't match with those defined as benchmark stages. Please contact system administrator.</value>
-  </Field>
-  <!-- End - Added by Pratik on 24/09/2014 for PL ticket #754 -->
-  <!-- Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933 -->
-  <Field>
-    <Name>ChangesSaved</Name>
-    <value>Changes Saved.</value>
-  </Field>
-  <!-- End - Added by Sohel on 12/11/2014 for PL ticket #933 -->
+	<Field>
+		<Name>StagesConfigurationMissMatch</Name>
+		<value>Stages configured for your organization doesn't match with those defined as benchmark stages. Please contact system administrator.</value>
+	</Field>
+	<!-- End - Added by Pratik on 24/09/2014 for PL ticket #754 -->
+	<!-- Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933 -->
+	<Field>
+		<Name>ChangesSaved</Name>
+		<value>Changes Saved.</value>
+	</Field>
+	<!-- End - Added by Sohel on 12/11/2014 for PL ticket #933 -->
+	<!-- Start - Added by Viral Kadiya on 17/11/2014 for PL ticket #947 -->
+	<Field>
+		<Name>PlanEntityCreated</Name>
+		<value>{0} created.</value>
+	</Field>
+	<Field>
+		<Name>PlanEntityUpdated</Name>
+		<value>{0} updated.</value>
+	</Field>
+	<Field>
+		<Name>PlanEntityDeclined</Name>
+		<value>{0} declined.</value>
+	</Field>
+	<Field>
+		<Name>PlanEntitySubmittedForApproval</Name>
+		<value>{0} submitted for approval.</value>
+	</Field>
+	<Field>
+		<Name>PlanEntityApproved</Name>
+		<value>{0} approved.</value>
+	</Field>
+	<Field>
+		<Name>PlanEntityAllocationUpdated</Name>
+		<value>{0} allocation updated.</value>
+	</Field>
+	<Field>
+		<Name>PlanEntityActualsUpdated</Name>
+		<value>{0} actuals updated.</value>
+	</Field>
+	<Field>
+		<Name>PlanEntityDeleted</Name>
+		<value>{0} deleted.</value>
+	</Field>
+	<Field>
+		<Name>EmptyFieldValidation</Name>
+		<value>Please fill all required fields.</value>
+	</Field>
+	<Field>
+		<Name>EmptyFieldCommentAdded</Name>
+		<value>Comment added.</value>
+	</Field>
+	<Field>
+		<Name>EmptyFieldDuplicated</Name>
+		<value>{0} duplicated.</value>
+	</Field>
+	<!-- End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947 -->
 </Messages>

@@ -852,6 +852,44 @@ namespace RevenuePlanner.Helpers
             ImprovementTactic
         }
 
+        /// <summary>
+        /// Added By : Viral Kadiya
+        /// Added Date : 17/11/2014
+        /// Description : Enum for Inspect Popup Tabs
+        /// </summary>
+        public enum InspectPopupTabs
+        {
+            Setup,
+            Review,
+            Actuals,
+            Budget
+        }
+
+        /// <summary>
+        /// Added By : Viral Kadiya
+        /// Added Date : 17/11/2014
+        /// Description : Enum for Activity Type
+        /// </summary>
+        public enum PlanEntity
+        {
+            Plan,
+            Campaign,
+            Program,
+            Tactic,
+            LineItem,
+            ImprovementTactic
+        }
+
+        public static Dictionary<string, string> PlanEntityValues = new Dictionary<string, string>()
+        {
+            {PlanEntity.Plan.ToString(), "Plan"},
+            {PlanEntity.Campaign.ToString(), "Campaign"},
+            {PlanEntity.Program.ToString(), "Program"},
+            {PlanEntity.Tactic.ToString(), "Tactic"},
+            {PlanEntity.LineItem.ToString(), "LineItem"},
+            {PlanEntity.ImprovementTactic.ToString(), "Improvement Tactic"}
+        };
+
         #endregion
     }
 

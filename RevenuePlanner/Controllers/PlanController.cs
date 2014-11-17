@@ -2908,12 +2908,12 @@ namespace RevenuePlanner.Controllers
                                 //return Json(new { redirect = Url.Action("Assortment") });
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
-                                    TempData["SuccessMessage"] = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
+                                    TempData["SuccessMessage"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                                     return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
                                 }
                                 else
                                 {
-                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
+                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                                     if (RedirectType)
                                     {
                                         if (closedTask != null)
@@ -3661,12 +3661,12 @@ namespace RevenuePlanner.Controllers
                                 //return Json(new { redirect = Url.Action("Assortment", new { campaignId = pc.PlanCampaignId }) });
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
-                                    TempData["SuccessMessage"] = string.Format(Common.objCached.ProgramDeleteSuccess, Title);
+                                    TempData["SuccessMessage"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                                     return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "campaign" + cid.ToString() }) });
                                 }
                                 else
                                 {
-                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.ProgramDeleteSuccess, Title);
+                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                                     if (RedirectType)
                                     {
                                         if (closedTask != null)
@@ -4738,12 +4738,12 @@ namespace RevenuePlanner.Controllers
 
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
-                                    TempData["SuccessMessage"] = string.Format(Common.objCached.TacticDeleteSuccess, Title);
+                                    TempData["SuccessMessage"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                                     return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "program" + pid.ToString() }) });
                                 }
                                 else
                                 {
-                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.TacticDeleteSuccess, Title);
+                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                                     if (RedirectType)
                                     {
                                         if (closedTask != null)
@@ -6361,7 +6361,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             if (returnValue > 0)
-                return Json(new { successmsg = string.Format(Common.objCached.PlanDeleteSuccessful, PlanName) }, JsonRequestBehavior.AllowGet);
+                return Json(new { successmsg = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]) }, JsonRequestBehavior.AllowGet);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
             else
                 return Json(new { errorMsg = string.Format(Common.objCached.PlanDeleteError, PlanName) }, JsonRequestBehavior.AllowGet);
         }
@@ -9665,7 +9665,10 @@ namespace RevenuePlanner.Controllers
                 int pid = db.Plan_Campaign_Program_Tactic.Where(s => s.PlanTacticId == tid).SingleOrDefault().PlanProgramId;
                 int cid = db.Plan_Campaign_Program.Where(s => s.PlanProgramId == pid).SingleOrDefault().PlanCampaignId;
             if (saveresult > 0)
-                    return Json(new { id = strPlanItemId, TabValue = "Actuals", msg = "Result Updated Successfully.", planCampaignID = cid, planProgramID = pid, planTacticID = tid });
+                {
+                    string strMessage = Common.objCached.PlanEntityActualsUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                    return Json(new { id = strPlanItemId, TabValue = "Actuals", msg = strMessage, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
+                }
             }
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }

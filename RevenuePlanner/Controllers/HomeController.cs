@@ -4077,7 +4077,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult SaveSyncToIntegration(int id, string section, bool IsDeployedToIntegration)
         {
             bool returnValue = false;
-
+            string strPlanEntity = string.Empty;
             try
             {
                 if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
@@ -4087,6 +4087,7 @@ namespace RevenuePlanner.Controllers
                     db.Entry(objTactic).State = EntityState.Modified;
                     db.SaveChanges();
                     returnValue = true;
+                    strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]; // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
                 else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                 {
@@ -4095,6 +4096,7 @@ namespace RevenuePlanner.Controllers
                     db.Entry(objProgram).State = EntityState.Modified;
                     db.SaveChanges();
                     returnValue = true;
+                    strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()];    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
                 else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                 {
@@ -4103,6 +4105,7 @@ namespace RevenuePlanner.Controllers
                     db.Entry(objCampaign).State = EntityState.Modified;
                     db.SaveChanges();
                     returnValue = true;
+                    strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()];   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                 {
@@ -4111,14 +4114,15 @@ namespace RevenuePlanner.Controllers
                     db.Entry(objITactic).State = EntityState.Modified;
                     db.SaveChanges();
                     returnValue = true;
+                    strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()];  // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
             }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
-
-            return Json(new { result = returnValue, msg = section + " updated successfully" }, JsonRequestBehavior.AllowGet);
+            string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", strPlanEntity);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+            return Json(new { result = returnValue, msg = strMessage }, JsonRequestBehavior.AllowGet); // Modified by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
         }
 
         /// <summary>
@@ -4757,7 +4761,8 @@ namespace RevenuePlanner.Controllers
                             int result = db.SaveChanges();
                             result = Common.InsertChangeLog(Sessions.PlanId, null, actualResult.PlanTacticId, objPCPT.Title, Enums.ChangeLog_ComponentType.tacticresults, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                             scope.Complete();
-                            return Json(new { id = actualResult.PlanTacticId, TabValue = "Actuals", msg = "Result Updated Successfully." });
+                            string strMessage = Common.objCached.PlanEntityActualsUpdated.Replace("{0}", Enums.PlanEntity.Tactic.ToString());    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                            return Json(new { id = actualResult.PlanTacticId, TabValue = "Actuals", msg = strMessage });
                         }
                     }
                 }
@@ -4964,8 +4969,7 @@ namespace RevenuePlanner.Controllers
                             Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString(), pc.Title, true, comment, Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
                         }
                     }
-
-                    return Json(new { id = planTacticId, TabValue = "Review", msg = section + " updated successfully." });
+                    return Json(new { id = planTacticId, TabValue = "Review", msg = Common.objCached.EmptyFieldCommentAdded });      // Modified by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
             }
             catch (Exception e)
@@ -5091,6 +5095,15 @@ namespace RevenuePlanner.Controllers
                                     }
                                     strmessage = Common.objCached.TacticStatusSuccessfully.Replace("{0}", status);
 
+                                    // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
+                                    if (!string.IsNullOrEmpty(strStatusMessage))
+                                    {
+                                        strmessage = strStatusMessage;
+                                        strmessage = string.Format(strmessage,Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                                    }
+                                    // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+
                                     //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                     //-- Update Program status according to the tactic status
                                     Common.ChangeProgramStatus(tactic.PlanProgramId);
@@ -5131,6 +5144,14 @@ namespace RevenuePlanner.Controllers
                                         Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
                                     }
                                     strmessage = Common.objCached.ImprovementTacticStatusSuccessfully.Replace("{0}", status);
+                                    // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
+                                    if (!string.IsNullOrEmpty(strStatusMessage))
+                                    {
+                                        strmessage = strStatusMessage;
+                                        strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);
+                                    }
+                                    // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 }
                                 else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                                 {
@@ -5175,6 +5196,14 @@ namespace RevenuePlanner.Controllers
                                         Common.mailSendForTactic(planTacticId, status, program.Title, false, "", Convert.ToString(Enums.Section.Program).ToLower());
                                     }
                                     strmessage = Common.objCached.ProgramStatusSuccessfully.Replace("{0}", status);
+                                    // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
+                                    if (!string.IsNullOrEmpty(strStatusMessage))
+                                    {
+                                        strmessage = strStatusMessage;
+                                        strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);
+                                    }
+                                    // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 }
                                 else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                                 {
@@ -5218,6 +5247,14 @@ namespace RevenuePlanner.Controllers
                                         Common.mailSendForTactic(planTacticId, status, campaign.Title, false, "", Convert.ToString(Enums.Section.Campaign).ToLower());
                                     }
                                     strmessage = Common.objCached.CampaignStatusSuccessfully.Replace("{0}", status);
+                                    // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
+                                    if (!string.IsNullOrEmpty(strStatusMessage))
+                                    {
+                                        strmessage = strStatusMessage;
+                                        strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);
+                                    }
+                                    // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 }
                             }
                             scope.Complete();
@@ -5490,7 +5527,8 @@ namespace RevenuePlanner.Controllers
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                 Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
-                                return Json(new { IsSaved = true, Msg = "Program created successfully.", programID = programid, campaignID = campaignId }, JsonRequestBehavior.AllowGet);
+                                string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                return Json(new { IsSaved = true, Msg = strMessage, programID = programid, campaignID = campaignId }, JsonRequestBehavior.AllowGet);
                             }
                         }
                     }
@@ -5563,7 +5601,8 @@ namespace RevenuePlanner.Controllers
                                 {
                                     Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);
                                     scope.Complete();
-                                    return Json(new { IsSaved = true, Msg = "Changes saved.", campaignID = campaignId }, JsonRequestBehavior.AllowGet);
+                                    string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    return Json(new { IsSaved = true, Msg = strMessage, campaignID = campaignId }, JsonRequestBehavior.AllowGet);
                                 }
                             }
                         }
@@ -6304,8 +6343,8 @@ namespace RevenuePlanner.Controllers
                                     Common.ChangeCampaignStatus(PlanCampaignId);
 
                                     scope.Complete();
-
-                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = "Tactic created.", planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid });
+                                    string strMessag = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid });
                                 }
                             }
                         }
@@ -6628,8 +6667,8 @@ namespace RevenuePlanner.Controllers
                                     //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                                     scope.Complete();
-
-                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = "Tactic updated.", planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid });
+                                    string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid });
                                 }
                             }
                         }
@@ -7107,7 +7146,8 @@ namespace RevenuePlanner.Controllers
                                 if (result >= 1)
                                 {
                                     scope.Complete();
-                                    return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Improvement Tactic created.", id = picpt.ImprovementPlanTacticId });
+                                    string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = strMessage, id = picpt.ImprovementPlanTacticId });
                                 }
                             }
                         }
@@ -7230,7 +7270,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-                                        return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Improvement Tactic updated." });
+                                        string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                        return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = strMessage });
                                     }
                                 }
                             }
@@ -9261,7 +9302,8 @@ namespace RevenuePlanner.Controllers
                             int result = db.SaveChanges();
                             result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                             scope.Complete();
-                            return Json(new { IsSaved = true, msg = "Changes Saved.", JsonRequestBehavior.AllowGet });
+                            string strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                            return Json(new { IsSaved = true, msg = strMessage, JsonRequestBehavior.AllowGet });
                         }
                     }
                 }
@@ -9538,7 +9580,8 @@ namespace RevenuePlanner.Controllers
 
                             db.SaveChanges();
                             scope.Complete();
-                            return Json(new { IsSaved = true, msg = "Changes Saved.", planTacticId = form.PlanTacticId, JsonRequestBehavior.AllowGet });
+                            string strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                            return Json(new { IsSaved = true, msg = strMessage, planTacticId = form.PlanTacticId, JsonRequestBehavior.AllowGet });
                         }
                     }
                 }
@@ -9898,7 +9941,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 var planTitle = db.Plans.Where(p => p.PlanId == id).ToList().Select(p => p.Title).FirstOrDefault();
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, id, planTitle, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                strMessage = string.Format(Common.objCached.PlanDeleteSuccessful, HttpUtility.HtmlDecode(planTitle));
+                                strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                             }
                         }
                         // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
@@ -9910,7 +9953,7 @@ namespace RevenuePlanner.Controllers
                                 Plan_Campaign pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).SingleOrDefault();
                                 Title = pc.Title;
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanCampaignId, pc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                strMessage = string.Format(Common.objCached.CampaignDeleteSuccess, HttpUtility.HtmlDecode(Title));
+                                strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                             }
                         }
                         else if (IsProgram)
@@ -9922,7 +9965,7 @@ namespace RevenuePlanner.Controllers
                                 cid = pc.PlanCampaignId;
                                 Title = pc.Title;
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                strMessage = string.Format(Common.objCached.ProgramDeleteSuccess, HttpUtility.HtmlDecode(Title));
+                                strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                             }
                         }
                         else if (IsTactic)
@@ -9936,7 +9979,7 @@ namespace RevenuePlanner.Controllers
                                  pid = pcpt.PlanProgramId;
                                  Title = pcpt.Title;
                                  returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.PlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                 strMessage = string.Format(Common.objCached.TacticDeleteSuccess, HttpUtility.HtmlDecode(Title));
+                                 strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                              }
                         }
                         else if (IsLineItem)
@@ -9993,7 +10036,7 @@ namespace RevenuePlanner.Controllers
                                 tid = pcptl.PlanTacticId;
                                 Title = pcptl.Title;
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcptl.PlanLineItemId, pcptl.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
-                                strMessage = string.Format("Line Item {0} deleted successfully", HttpUtility.HtmlDecode(Title));
+                                strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                                 tempLocalVariable = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
                             }
                         }
@@ -10291,7 +10334,8 @@ namespace RevenuePlanner.Controllers
 
                                 db.SaveChanges();
                                 scope.Complete();
-                                return Json(new { isSaved = true, msg = "Campaign created successfully.", CampaignID = campaignid });
+                                string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                return Json(new { isSaved = true, msg = strMessage, CampaignID = campaignid });
                             }
                         }
                     }
@@ -10350,7 +10394,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 db.SaveChanges();
                                 scope.Complete();
-                                return Json(new { isSaved = true, msg = "Changes Saved." });
+                                string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                return Json(new { isSaved = true, msg = strMessage });
                             }
 
                         }
@@ -10568,7 +10613,8 @@ namespace RevenuePlanner.Controllers
 
                             db.SaveChanges();
                             scope.Complete();
-                            return Json(new { IsSaved = true, msg = "Changes Saved.", planCampaignId = form.PlanCampaignId, JsonRequestBehavior.AllowGet });
+                            string strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                            return Json(new { IsSaved = true, msg = strMessage, planCampaignId = form.PlanCampaignId, JsonRequestBehavior.AllowGet });
                         }
                     }
                 }
@@ -10883,7 +10929,8 @@ namespace RevenuePlanner.Controllers
 
                             }
                             scope.Complete();
-                            return Json(new { isSaved = true, msg = "Lineitem created.", planLineitemID = lineItemId, planCampaignID = cid, planProgramID = pid, planTacticID=tid });
+                            string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                            return Json(new { isSaved = true, msg = strMessage, planLineitemID = lineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
                         }
                     }
                 }
@@ -10983,7 +11030,8 @@ namespace RevenuePlanner.Controllers
 
 
                                 scope.Complete();
-                                return Json(new { isSaved = true, msg = "Lineitem updated successfully.", planLineitemID = form.PlanLineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
+                                string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                return Json(new { isSaved = true, msg = strMessage, planLineitemID = form.PlanLineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
 
                             }
                         }
@@ -11132,6 +11180,8 @@ namespace RevenuePlanner.Controllers
                 if (ModelState.IsValid)
                 {
                     Plan plan = new Plan();
+                    string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                    
                     if (objPlanModel.PlanId > 0)
                     {
                         //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
@@ -11150,6 +11200,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else   // Budget Tab
                         {
+                            strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                             plan.Budget = Convert.ToDouble(planBudget.ToString().Trim().Replace(",", "").Replace("$", ""));
 
                             #region Update Budget Allocation Value
@@ -11297,7 +11348,8 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (RedirectType.ToLower() == "")
                         {
-                            return Json(new { id = plan.PlanId, succmsg = Common.objCached.ChangesSaved.ToString(), redirect = "" });
+                            
+                            return Json(new { id = plan.PlanId, succmsg = strMessage, redirect = "" });
                         }
                         else
                         {
@@ -11718,6 +11770,7 @@ namespace RevenuePlanner.Controllers
 
                                 db.SaveChanges();
                                 scope.Complete();
+                                string strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 return Json(new
                                 {
                                     IsSaved = true,
@@ -11725,7 +11778,7 @@ namespace RevenuePlanner.Controllers
                                     ProgramId = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId,
                                     TacticId = objLineitem.PlanTacticId,
                                     PlanLineItemId = form.PlanLineItemId,
-                                    msg = "Changes Saved.",
+                                    msg = strMessage,
                                     JsonRequestBehavior.AllowGet
                                 });
                             }
