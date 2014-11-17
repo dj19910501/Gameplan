@@ -295,7 +295,25 @@
                         $('body').removeClass('bodyOverflow');
                     }
                     else {
-                        window.location.href = data.redirect;
+
+                        var lineItemId = data.Id;
+                        var expandplanLineItemId = data.expand;
+                        var planCampaignId = "";
+                        var planProgramId = "";
+                        loadInspectPopup(lineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
+                            $("#hdnBudgetingExpandId").val(expandplanLineItemId);
+                            $("#hdnBudgetingIsSave").val("true");
+                        }
+                        else {
+                            RefreshCurrentTab('@RedirectType', planCampaignId, planProgramId, 0);
+                        }
+
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessage").css("display", "none");
                         return;
                     }
                 }

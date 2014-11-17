@@ -361,14 +361,33 @@
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
-                    if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                        SaveMessageOnParent(data.msg);
-                        $('body').removeClass('bodyOverflow');
+                    
+                        var currentTab = "Setup";
+
+                        if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                            currentTab = "Budget";
+                        }
+
+                        var planProgramId = data.Id;
+                        var expandplanProgramId = data.expand;
+                        var planCampaignId = "";
+
+                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
+                            $("#hdnBudgetingExpandId").val(expandplanProgramId);
+                            $("#hdnBudgetingIsSave").val("true");
                         }
                         else {
-                        window.location.href = data.redirect;
-                            return;
+                            RefreshCurrentTab('@RedirectType', planCampaignId, planProgramId, 0);
                         }
+
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessage").css("display", "none");
+                        ///window.location.href = data.redirect;
+                        return;
                     }
                     else {
                         $("#successMessageViewProgram").slideUp(50);

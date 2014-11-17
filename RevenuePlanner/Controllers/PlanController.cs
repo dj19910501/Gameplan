@@ -9494,22 +9494,23 @@ namespace RevenuePlanner.Controllers
 
                 if (rtResult >= 1)
                 {
+                    string strMessage = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
                     if (!string.IsNullOrEmpty(CalledFromBudget))
                     {
-                        TempData["SuccessMessage"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
+                        TempData["SuccessMessage"] = strMessage;
                         TempData["SuccessMessageDeletedPlan"] = "";
                         //return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
 
                         string expand = CloneType.ToLower().Replace(" ", "");
                         if (expand == "campaign")
-                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }), Id=rtResult, msg = strMessage  });
                         else
-                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + Id.ToString() }) });
+                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + Id.ToString() }), Id = rtResult, msg = strMessage  });
                     }
                     else
                     {
-                        TempData["SuccessMessageDeletedPlan"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
-                        return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId });
+                        TempData["SuccessMessageDeletedPlan"] = strMessage;
+                        return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId, Id = rtResult, msg = strMessage  });
                     }
                 }
                 return Json(new { });

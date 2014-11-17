@@ -9720,6 +9720,19 @@ namespace RevenuePlanner.Controllers
             bool IsProgram = (CloneType == Enums.Section.Program.ToString()) ? true : false; ;
             bool IsTactic = (CloneType == Enums.Section.Tactic.ToString()) ? true : false; ;
 
+            if (IsCampaign)
+            {
+                planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == Id && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).SingleOrDefault();
+            }
+            else if (IsProgram)
+            {
+                planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == (db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == Id && pcp.IsDeleted.Equals(false)).Select(pcp => pcp.PlanCampaignId).FirstOrDefault()) && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).SingleOrDefault();
+            }
+            else if (IsTactic)
+            {
+                planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == (db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == (db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == Id && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt.PlanProgramId).FirstOrDefault()) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp.PlanCampaignId).FirstOrDefault()) && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).SingleOrDefault();
+            }
+
             if (Sessions.User == null)
             {
                 TempData["ErrorMessage"] = Common.objCached.SessionExpired;
@@ -9757,23 +9770,26 @@ namespace RevenuePlanner.Controllers
 
                         string expand = CloneType.ToLower().Replace(" ", "");
                         if (expand == "campaign")
-                            return Json(new { IsSuccess = true, redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }) });
+                            return Json(new { IsSuccess = true, type = CalledFromBudget, Id = rtResult, msg = strMessage });
                         else
-                            return Json(new { IsSuccess = true, redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget, expand = expand + Id.ToString() }) });
+                            return Json(new { IsSuccess = true, type = CalledFromBudget, Id = rtResult, expand = expand + rtResult.ToString(), msg = strMessage });
                     }
                     else
                     {
                         if (!string.IsNullOrEmpty(RequsetedModule) && RequsetedModule == Enums.InspectPopupRequestedModules.Index.ToString())
                         {
-                            return Json(new { IsSuccess = true, redirect = Url.Action("Index"), msg = strMessage, opt = Enums.InspectPopupRequestedModules.Index.ToString() });
+                            return Json(new { IsSuccess = true, redirect = Url.Action("Index"), msg = strMessage, opt = Enums.InspectPopupRequestedModules.Index.ToString(), Id = rtResult });
                         }
                         else if (!string.IsNullOrEmpty(RequsetedModule) && RequsetedModule == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString())
                         {
                             TempData["SuccessMessageDeletedPlan"] = strMessage;
-                            return Json(new { IsSuccess = true, msg = strMessage, redirect = Url.Action("ApplyToCalendar", "Plan") });
+                            return Json(new { IsSuccess = true, msg = strMessage, redirect = Url.Action("ApplyToCalendar", "Plan"), Id = rtResult });
                         }
-                        TempData["SuccessMessageDeletedPlan"] = strMessage;
-                        return Json(new { IsSuccess = true, redirect = Url.Action("Assortment", "Plan"), planId = Sessions.PlanId, opt = Enums.InspectPopupRequestedModules.Assortment.ToString() });
+                        else
+                        {
+                            TempData["SuccessMessageDeletedPlan"] = strMessage;
+                            return Json(new { IsSuccess = true, Id = rtResult, redirect = Url.Action("Assortment", "Plan"), planId = Sessions.PlanId, opt = Enums.InspectPopupRequestedModules.Assortment.ToString(), msg = strMessage });
+                        }
                     }
                 }
                 else

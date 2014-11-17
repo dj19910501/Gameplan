@@ -215,15 +215,40 @@
                     }
                     else {
                         if (data.redirect) {
-                            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html());
+                            @* $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html());
                             if (data.planId) {
                                 CurrentPlanId = data.planId;
                             }
                             var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() 
                             if ($('#ActiveMenu').val() == '@Enums.ActiveMenu.Plan.ToString()') {
                                 url = url + '&currentPlanId=' + data.planId;
+                            }*@
+
+                            var currentTab = "Setup";
+
+                            if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                                 currentTab = "Budget";
                             }
-                            window.location.href = url;
+
+                            var planId = data.Id;
+                            var expandplanProgramId = data.expand;
+                            var planCampaignId = "";
+                            var planProgramId="";
+                            loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
+
+                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
+                                $("#hdnBudgetingExpandId").val(expandplanProgramId);
+                                $("#hdnBudgetingIsSave").val("true");
+                                $("#hdnBudgetingCurrentTab").val("aAllocated")
+                                $("#hdnBudgetingCurrentPlanId").val(planId)
+                            }
+                            else {
+                            RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, 0);
+                        }
+
+                            $("#successMessage").css("display", "block");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
                             return;
                         }
                         if (data.errormsg != '') {
