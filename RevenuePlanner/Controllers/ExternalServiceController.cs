@@ -1342,11 +1342,10 @@ namespace RevenuePlanner.Controllers
                                 if (obj != null)
                                 {
                                     mrp.Entry(obj).State = EntityState.Deleted;
-                                    mrp.SaveChanges();
                                 }
                             }
-
                         }
+                        
                         foreach (GameplanDataTypeModel obj in form)
                         {
                             if (!string.IsNullOrEmpty(obj.TargetDataType))
@@ -1360,9 +1359,9 @@ namespace RevenuePlanner.Controllers
                                 objMapping.CreatedDate = DateTime.Now;
                                 objMapping.CreatedBy = Sessions.User.UserId;
                                 mrp.Entry(objMapping).State = EntityState.Added;
-                                mrp.SaveChanges();
                             }
                         }
+                        mrp.SaveChanges();
                         scope.Complete();
                     }
                 }

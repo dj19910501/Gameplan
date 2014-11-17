@@ -95,47 +95,10 @@
         $('select[sb="' + sbValue + '"]').val(selValue);
     });
 
-    $('#frmClosedDealDataMapping .ddlStyle').change(function (e) {
-        $('#frmClosedDealDataMapping .ddlStyle').each(function () {
-            var isError = false;
-            var currentDdl = this;
-            var currentTargetValue = $(this).val();
-            if (currentTargetValue != null) {
-                if (currentTargetValue.toLowerCase() != 'select' || currentTargetValue.toLowerCase() != '') {
-                    $('#frmClosedDealDataMapping .ddlStyle').each(function () {
-                        var SourceTargetValue = $(this).val();
-
-                        if (currentDdl.id != this.id) {
-                            if (currentTargetValue == SourceTargetValue && SourceTargetValue.toLowerCase() != 'select' && SourceTargetValue != '') {
-
-                                $(currentDdl).next('.sbHolder').addClass("error");
-                                $(this).next('.sbHolder').addClass("error");
-                                isError = true;
-                            }
-                        }
-                        if (!isError) {
-                            $(currentDdl).next('.sbHolder').removeClass("error");
-                        }
-                    });
-                }
-                else {
-                    $(currentDdl).next('.sbHolder').removeClass("error");
-                }
-            }
-            else {
-                $(currentDdl).next('.sbHolder').removeClass("error");
-            }
-        });
-    });
-
     $("#btnSaveCloseDealMappings").click(function (e) {
         var isError = false;
-        $('#frmClosedDealDataMapping').find('.ddlStyle').each(function (e) {    // Modified by Sohel Pathan on 06/11/2014 for PL ticket #863
-            if ($(this).next('.sbHolder').hasClass("error")) {
-                isError = true;
-                return false;
-            }
-        });
+        AssignSelectedValueToSelectBoxOptionClosedDeal();   // Added by Sohel Pathan on 17/11/2014 for PL ticket #949.
+        isError = CheckTargetFieldMappingClosedDeal();  // Added by Sohel Pathan on 17/11/2014 for PL ticket #949.
         if (isError) {
             $('#ClosedDealErrorMessage').find('#spanMessageError').html($('#ClosedDealInvalidMsg').val());
             $("#ClosedDealErrorMessage").slideDown(400);
@@ -190,4 +153,54 @@
         });
     }
     // End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+
+    // Start - Added by Sohel Pathan on 17/11/2014 for PL ticket #949.
+    function CheckTargetFieldMappingClosedDeal() {
+        var isFieldMappingError = false;
+        $('#frmClosedDealDataMapping .ddlStyle').each(function () {
+            var isError = false;
+            var currentDdl = this;
+            var currentTargetValue = $(this).val();
+            if (currentTargetValue != null) {
+                if (currentTargetValue.toLowerCase() != 'select' || currentTargetValue.toLowerCase() != '') {
+                    $('#frmClosedDealDataMapping .ddlStyle').each(function () {
+                        var SourceTargetValue = $(this).val();
+
+                        if (currentDdl.id != this.id) {
+                            if (currentTargetValue == SourceTargetValue && SourceTargetValue.toLowerCase() != 'select' && SourceTargetValue != '') {
+
+                                $(currentDdl).next('.sbHolder').addClass("error");
+                                $(this).next('.sbHolder').addClass("error");
+                                isError = true;
+                                isFieldMappingError = true;
+                            }
+                        }
+                        if (!isError) {
+                            $(currentDdl).next('.sbHolder').removeClass("error");
+                        }
+                    });
+                }
+                else {
+                    $(currentDdl).next('.sbHolder').removeClass("error");
+                }
+            }
+            else {
+                $(currentDdl).next('.sbHolder').removeClass("error");
+            }
+        });
+        return isFieldMappingError;
+    }
+
+    function AssignSelectedValueToSelectBoxOptionClosedDeal() {
+        $("#frmClosedDealDataMapping").find('.ddlStyle').each(function () {
+            var currentSelectedValue = $(this).next().find('.sbSelector').html();
+            var currentSelectedOption = $(this).find('option:selected').html();
+            if (currentSelectedValue != currentSelectedOption) {
+                $(this).find('option:selected').removeAttr("selected");
+                $(this).val(currentSelectedValue);
+                $(this).attr("myValue", currentSelectedValue);
+            }
+        });
+    }
+    // End - Added by Sohel Pathan on 17/11/2014 for PL ticket #949.
 </script>
