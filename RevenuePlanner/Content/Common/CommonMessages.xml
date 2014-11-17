@@ -680,7 +680,7 @@
 	<!--Added By : Kalpesh Sharma Functional Review Point-->
 	<Field>
 		<Name>NoPlanFoundPlanSelector</Name>
-		<value>There is no any active plan.</value>
+		<value>There is no active plan for selected filter.</value>
 	</Field>
 	<!--Start Added By Dharmraj #567 : Budget allocation for campaign-->
 	<Field>

@@ -2072,7 +2072,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
         if (dataid == 1) {
             if (!isMarketingTacticExits) {
                 $("#suggested-tactics").empty();
-                $("#suggested-tactics").html('<h2 class="source-sans-probold">No marketing activities exits.</h2>');
+                $("#suggested-tactics").html('<h2 class="source-sans-probold">No marketing activities exist.</h2>');
             }
             else {
                 LoadRecommendedGrid();
@@ -2081,7 +2081,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
         else if (dataid == 2) {
             if (!isImprovementTacticExits) {
                 $("#ads").empty();
-                $("#ads").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
+                $("#ads").html('<h2 class="source-sans-probold">No improvement tactic(s) exist.</h2>');
             }
             else {
                 isADS = true;
@@ -2091,7 +2091,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
         else if (dataid == 3) {
             if (!isImprovementTacticExits) {
                 $("#conversion").empty();
-                $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
+                $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exist.</h2>');
             }
             else {
                 isConversion = true;
@@ -2101,7 +2101,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
         else if (dataid == 4) {
             if (!isImprovementTacticExits) {
                 $("#conversion").empty();
-                $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
+                $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exist.</h2>');
             }
             else {
                 isConversion = false;

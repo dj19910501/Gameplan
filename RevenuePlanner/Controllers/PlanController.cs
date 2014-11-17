@@ -304,6 +304,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SavePlan(PlanModel objPlanModel, string BudgetInputValues = "", string RedirectType = "", string UserId = "")
         {
+            
+            try
+            {
             // Start - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -314,8 +317,6 @@ namespace RevenuePlanner.Controllers
                 }
             }
             // End - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
-            try
-            {
                 if (ModelState.IsValid)
                 {
                     Plan plan = new Plan();
@@ -947,7 +948,7 @@ namespace RevenuePlanner.Controllers
                     lstPlanModel.Add(objPlanModel);
                 }
             }
-            return lstPlanModel;
+            return lstPlanModel.OrderBy(a=>a.ModelTitle).ToList();
         }
         #endregion
 

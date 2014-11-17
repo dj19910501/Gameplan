@@ -278,7 +278,7 @@
         </div>
 	</div>
 </div>
-<div class="padding-content" style="padding-bottom:150px;">
+<div class="padding-content" style="padding-bottom:155px;padding-top:15px;">
     <input type="button" value="Save &amp; Continue" id="button-saveContinue" style="display:none;" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" />
 </div>
 
@@ -314,6 +314,13 @@
               $("#button-save").show();
           }
           // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+
+          if ($("#GoalType").val().toLowerCase() == "revenue") {
+              $('#revenueSign').show();
+          }
+          else {
+              $('#revenueSign').hide();
+          }
 
           $('#BtnGroup').click(function (e) {
               //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
@@ -532,9 +539,9 @@
                       },
                       error: function () {
                           GoToLogin();
-                          $("#errorMessage").css("display", "block");
-                          $("#spanMessageError").empty();
-                          $("#divErrLessBudget").css("display", "none");
+                          //$("#errorMessage").css("display", "block");
+                          //$("#spanMessageError").empty();
+                          //$("#divErrLessBudget").css("display", "none");
                           return false;
                       }
                   });

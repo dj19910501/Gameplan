@@ -214,7 +214,12 @@
         if (IsSessionExist == 0 && isAlerted == false) {
             isAlerted = true;
             alert("@Common.objCached.SessionExpired");
+            if (readCookie('ReturnURL') != "") {
+                window.location = '@Url.Content("~/login/Index?ReturnUrl=")' + readCookie('ReturnURL');
+            }
+            else {
             window.location = "@Url.Content("~/login/Index")";
+            }
         }
     }
     function readCookie(name) {
