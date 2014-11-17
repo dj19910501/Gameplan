@@ -9494,6 +9494,9 @@ namespace RevenuePlanner.Controllers
 
                 if (rtResult >= 1)
                 {
+                    // Added By : Kalpesh Sharma
+                    // #953 Invalid Characters Tactic, Program, Campaign Names While Duplicating
+                    title = System.Net.WebUtility.HtmlDecode(title);
                     string strMessage = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
                     if (!string.IsNullOrEmpty(CalledFromBudget))
                     {

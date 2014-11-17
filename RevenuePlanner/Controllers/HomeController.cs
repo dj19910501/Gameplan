@@ -2954,10 +2954,12 @@ namespace RevenuePlanner.Controllers
             }
 
             //Get the min start date of Program and Campaign.
+            //Modified By : Kalpesh Sharma
+            //#958 Change of Plan is not working (Some Cases)
             var queryPlanCampaignId = program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.PlanCampaignId).ToList<int>();
-            DateTime minDateProgram = program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.StartDate).Min();
+            DateTime minDateProgram = queryPlanProgramId.Count >0 ? program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.StartDate).Min() : DateTime.MinValue;
 
-            DateTime minDateCampaign = campaign.Where(c => queryPlanCampaignId.Contains(c.PlanCampaignId)).Select(c => c.StartDate).Min();
+            DateTime minDateCampaign = queryPlanCampaignId.Count() > 0 ? campaign.Where(c => queryPlanCampaignId.Contains(c.PlanCampaignId)).Select(c => c.StartDate).Min() : DateTime.MinValue;
 
             return new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
         }
@@ -3146,9 +3148,12 @@ namespace RevenuePlanner.Controllers
             }
 
             var queryPlanCampaignId = program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.PlanCampaignId).ToList<int>();
-            DateTime maxDateProgram = program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.EndDate).Max();
+            // Modified By : Kalpesh Sharma 
+            // #958 : Change of Plan is not working (Some Cases)
 
-            DateTime maxDateCampaign = campaign.Where(c => queryPlanCampaignId.Contains(c.PlanCampaignId)).Select(c => c.EndDate).Max();
+            DateTime maxDateProgram = queryPlanProgramId.Count > 0 ?  program.Where(p => queryPlanProgramId.Contains(p.PlanProgramId)).Select(p => p.EndDate).Max() : DateTime.MaxValue;
+
+            DateTime maxDateCampaign = queryPlanCampaignId.Count > 0 ?  campaign.Where(c => queryPlanCampaignId.Contains(c.PlanCampaignId)).Select(c => c.EndDate).Max() : DateTime.MaxValue;
 
             return new[] { maxDateTactic, maxDateProgram, maxDateCampaign }.Max();
         }

@@ -21,13 +21,15 @@
 <!--success message-->
 <div id="successMessageDuplicatePlan" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
-    <div id="cSuccessDuplicatePlan"></div>
+    <strong>Success. </strong>
+    <span id="cSuccessDuplicatePlan"></span>
 </div>
 <!--success message-->
 <!--error message-->
 <div id="errorMessageDuplicatePlan" class="alert hide alert-error message-position-small">
     <a class="close">×</a>
-    <div id="cErrorDuplicatePlan"></div>
+     <strong>Error! </strong>
+    <span id="cErrorDuplicatePlan"></span>
 </div>
 @Html.Hidden("hdnYear", pm.Year, new { id = "hdnYear" })
 @Html.Hidden("hdnModelId", pm.ModelId, new { id = "hdnModelId" })   @* Added by Sohel Pathan on 15/07/2014 for PL ticket #566*@
@@ -263,13 +265,16 @@
     $(document).ready(function () {
 
         function DuplicateOpt(id, title, duplicateModule) {
+
+            title = htmlEncode(title);
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/Clone")',
                 data: {
                     CloneType: duplicateModule,
                     Id: id,
-                    title: escape(title)
+                    title: title
                 },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -1917,11 +1922,11 @@ function loadscript() {
 function Showmsg() {
     if (ismsg != '') {
         if (hdnisError == 'True') {
-            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + ismsg);
+            $('#cErrorDuplicatePlan').text(ismsg);
             $("#errorMessageDuplicatePlan").slideDown(3000);
         }
         else {
-            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + ismsg);
+            $('#cSuccessDuplicatePlan').text(ismsg);
             $("#successMessageDuplicatePlan").slideDown(3000);
             //$("#successMessageDuplicatePlan").slideUp(1200);
         }
