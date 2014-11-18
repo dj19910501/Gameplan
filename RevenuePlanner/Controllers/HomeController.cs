@@ -9817,7 +9817,7 @@ namespace RevenuePlanner.Controllers
                 if (rtResult >= 1)
                 {
                     title = HttpUtility.HtmlDecode(title);
-                    string strMessage = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
+                    string strMessage = string.Format(Common.objCached.CloneDuplicated, CloneType);     // Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
 
                     if (!string.IsNullOrEmpty(CalledFromBudget))
                     {
@@ -9850,7 +9850,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    string strErrorMessage = string.Format("{0} {1} not successfully Duplicated.", CloneType, title);
+                    string strErrorMessage = string.Format("{0} not duplicated.", CloneType);    // Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
                     return Json(new { IsSuccess = false, msg = strErrorMessage, opt = RequsetedModule });
 
                 }

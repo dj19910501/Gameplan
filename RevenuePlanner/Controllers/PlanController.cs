@@ -9508,7 +9508,8 @@ namespace RevenuePlanner.Controllers
                     // Added By : Kalpesh Sharma
                     // #953 Invalid Characters Tactic, Program, Campaign Names While Duplicating
                     title = System.Net.WebUtility.HtmlDecode(title);
-                    string strMessage = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
+                    string strMessage = string.Format(Common.objCached.CloneDuplicated, CloneType);     // Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+
                     if (!string.IsNullOrEmpty(CalledFromBudget))
                     {
                         TempData["SuccessMessage"] = strMessage;

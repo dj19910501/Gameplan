@@ -2230,6 +2230,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _PlanEntityDuplicated; }
             set { _PlanEntityDuplicated = value; }
         }
+        
         // End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
         #endregion
 
