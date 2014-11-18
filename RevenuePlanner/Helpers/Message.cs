@@ -2224,6 +2224,12 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _EmptyFieldCommentAdded; }
             set { _EmptyFieldCommentAdded = value; }
         }
+        private string _PlanEntityDuplicated;
+        public string PlanEntityDuplicated
+        {
+            get { return _PlanEntityDuplicated; }
+            set { _PlanEntityDuplicated = value; }
+        }
         // End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
         #endregion
 
@@ -2915,6 +2921,9 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             break;
                                         case "EmptyFieldCommentAdded":
                                             _EmptyFieldCommentAdded = strMsgValue;
+                                            break;
+                                        case "PlanEntityDuplicated":
+                                            _PlanEntityDuplicated = strMsgValue;
                                             break;
                                         // End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
                                         

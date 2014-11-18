@@ -2506,7 +2506,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pc != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateCampaignExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -2647,7 +2648,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pc != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateCampaignExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -3190,7 +3192,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateProgramExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -3393,7 +3396,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateProgramExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -4090,7 +4094,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -4282,7 +4287,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -5416,7 +5422,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pcptvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateLineItemExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -5559,7 +5566,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pcptvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateLineItemExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -6657,7 +6665,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -6735,7 +6744,8 @@ namespace RevenuePlanner.Controllers
 
                             if (pcpvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                return Json(new { errormsg = strDuplicateMessage });
                             }
                             else
                             {
@@ -9630,7 +9640,8 @@ namespace RevenuePlanner.Controllers
 
             if (pcptvar != null)
             {
-                return Json(new { IsDuplicate = true, errormsg = Common.objCached.DuplicateLineItemExits });
+                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
             }
             else
             {

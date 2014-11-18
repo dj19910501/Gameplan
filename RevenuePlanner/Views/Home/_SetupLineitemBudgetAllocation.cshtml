@@ -119,6 +119,10 @@
 
     $(document).ready(
     function () {
+        /* Adde by Viral Kadiya on 11/18/2014 for Internal Review Points to slide up error or success message on page load.*/
+        $("#successMessageViewLineItem").slideUp(50);
+        $("#errorMessageEditLineitem").slideUp(50);
+
         var IsEditable = $("#hdnLineitemOpt").val();
         if (IsEditable == 'View') {
             $('form').find(".sbSelector").each(function () {

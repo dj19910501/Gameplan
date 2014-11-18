@@ -133,6 +133,10 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        /* Adde by Viral Kadiya on 11/18/2014 to slide up error or success message on page load.*/
+        $("#successMessageViewLineItem").slideUp(50);
+        $("#errorMessageEditLineitem").slideUp(50);
+        
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
         function ActualTab() {
             html = '<div class="bold padding-top16 font-size18">Tactic should be "Approved" for adding actuals.</div>'

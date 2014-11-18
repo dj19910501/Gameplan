@@ -832,7 +832,7 @@
 		<value>Comment added.</value>
 	</Field>
 	<Field>
-		<Name>EmptyFieldDuplicated</Name>
+		<Name>PlanEntityDuplicated</Name>
 		<value>{0} duplicated.</value>
 	</Field>
 	<!-- End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947 -->

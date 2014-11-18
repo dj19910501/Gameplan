@@ -3300,7 +3300,8 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                        return Json(new { errormsg = strDuplicateMessage });
                     }
                 }
                 else
@@ -3348,7 +3349,8 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                            string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                            return Json(new { errormsg =strDuplicateMessage });
                         }
                     //}
                 }
