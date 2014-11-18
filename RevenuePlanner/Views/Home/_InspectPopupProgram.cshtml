@@ -370,7 +370,7 @@
 
                         var planProgramId = data.Id;
                         var expandplanProgramId = data.expand;
-                        var planCampaignId = "";
+                        var planCampaignId = '@campaignId';
 
                         loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
 
@@ -379,7 +379,7 @@
                             $("#hdnBudgetingIsSave").val("true");
                         }
                         else {
-                            RefreshCurrentTab('@RedirectType', planCampaignId, planProgramId, 0);
+                            RefreshCurrentTab('@RedirectType', planCampaignId, 0, 0);
                         }
 
                         $("#successMessage").css("display", "block");

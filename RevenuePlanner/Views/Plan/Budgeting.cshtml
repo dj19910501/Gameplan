@@ -46,9 +46,9 @@
 
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 
-<div id="successMessage" class="alert alert-success message-position" style="display: none;">
+<div id="listingsuccessMessage" class="alert alert-success message-position" style="display: none;">
     <a class="close">×</a>
-    <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+    <strong>Success.</strong> <span id="listingspanMessageSuccess"></span>
 </div>
 <div id="errorMessageDuplicatePlan" class="alert hide alert-error message-position-small">
     <a class="close">×</a>
@@ -117,23 +117,25 @@
         $('.changes').load(url + '?objectId=' + CurrentPlanId);
     }
     function HideMessages() {
-        $("#successMessage").slideUp(1);
-        $('#spanMessageSuccess').html('');
+        $("#listingsuccessMessage").slideUp(1);
+        $('#listingspanMessageSuccess').html('');
         $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
     }
     var hideAllMessages = false;
     $(document).ready(function () {
         $("#errorMessageDuplicatePlan").slideUp(300);
-        if ('@sucMsg' != '') {
+
+       @* if ('@sucMsg' != '') {
             $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-            $('#spanMessageSuccess').html('@sucMsg')
-            $("#successMessage").slideDown(400);
+            $('#listingspanMessageSuccess').html('@sucMsg')
+            $("#listingsuccessMessage").slideDown(400);
         }
         else {
             $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
-            $("#successMessage").slideUp(1);
-            $('#spanMessageSuccess').html('');
-        }
+            $("#listingsuccessMessage").slideUp(1);
+            $('#listingspanMessageSuccess').html('');
+        }*@
+
         $(".selectBox select").selectbox();
         LoadPlanBuBusinessUnit($('#ddlBusinessUnit').val());
         $("#hdnBudgetingBussinessUnitId").val($('#ddlBusinessUnit').val());
