@@ -6211,7 +6211,15 @@ namespace RevenuePlanner.Controllers
                 lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Verticals.ToString(), ippctm.VerticalId.ToString());
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 var lstUser = objBDSServiceClient.GetUserListWithCustomRestrictions(Sessions.User.UserId, Sessions.User.ClientId, Sessions.ApplicationId, lstCustomRestrictionFields);
-                ViewBag.OwnerList = lstUser;
+                if (lstUser != null)
+                {
+                    var lstPreparedOwners = lstUser.Select(u => new { UserId = u.UserId, DisplayName = u.DisplayName }).ToList();
+                    ViewBag.OwnerList = lstPreparedOwners;
+                }
+                else
+                {
+                    ViewBag.OwnerList = new List<User>();
+                }
             }
             catch (Exception e)
             {
@@ -11941,6 +11949,58 @@ namespace RevenuePlanner.Controllers
             pc.AllocatedBy = objPlan.AllocatedBy;
             return PartialView("_EditSetupLineitem", pc);
         }
+
+        #region fill Owner list
+        /// <summary>
+        /// fill Owner list based on BusinessUnitId, GeographyId and VerticalId of a tactic
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>18/11/2014</CreatedDate>
+        /// <param name="planTacticId"></param>
+        /// <param name="businessUnitId"></param>
+        /// <param name="GeographyId"></param>
+        /// <param name="VerticalId"></param>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        public JsonResult fillOwner(Guid BusinessUnitId, Guid GeographyId, int VerticalId, string UserId = "")
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            try
+            {
+                Dictionary<string, string> lstCustomRestrictionFields = new Dictionary<string, string>();
+                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.BusinessUnit.ToString(), BusinessUnitId.ToString());
+                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Geography.ToString(), GeographyId.ToString());
+                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Verticals.ToString(), VerticalId.ToString());
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                var lstUser = objBDSServiceClient.GetUserListWithCustomRestrictions(Sessions.User.UserId, Sessions.User.ClientId, Sessions.ApplicationId, lstCustomRestrictionFields);
+                if (lstUser != null)
+                {
+                    var lstPreparedOwners = lstUser.Select(u => new { UserId = u.UserId, DisplayName = u.DisplayName }).ToList();
+                    return Json(new { isSuccess = true, lstOwner = lstPreparedOwners }, JsonRequestBehavior.AllowGet);
+                }
+                return Json(new { isSuccess = true, lstOwner = new List<User>()  }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }
 
