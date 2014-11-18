@@ -290,7 +290,15 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
+                if (activeMenu != Enums.ActiveMenu.Plan)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points                    
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = null;
+                }
+                
                 return RedirectToAction("PlanSelector", "Plan");
             }
 
