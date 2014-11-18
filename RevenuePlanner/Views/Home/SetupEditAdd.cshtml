@@ -8,6 +8,10 @@
     {
         color: gray;
     }
+    .stage-title {
+         width: auto;
+         float: left;
+     }
    </style>
 
 @using (Html.BeginForm())
@@ -87,14 +91,14 @@
 
             <div class="cf width100" style="width: 244px;">
                 <div class="margin-right10 pull-left" style="width: 47%">
-                    <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
+                    <label id="lblStageTitle" title="@Model.StageTitle" class="stage-title">@Model.StageTitle &nbsp;</label>
 
                         @if (ViewBag.IsDiffrentStageType == true)
                         {
                             <span>
                                 <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
-                        }</label>
+                        }
                     @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue resubmission", label = @Model.StageTitle, maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
@@ -158,6 +162,7 @@
 
     $(document).ready(
       function () {
+          ImageTipsy('#diffrentStageIcon'); // Added by Vira Kadiya on 11/18/2014 to resolve PL ticket #964.
           $(this).scrollTop(0);
           $(".verticalIdSelectBox select").selectbox();
           $('#txtTacticTitle').css('display', 'block');
