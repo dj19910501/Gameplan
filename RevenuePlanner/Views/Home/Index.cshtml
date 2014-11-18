@@ -21,6 +21,7 @@
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
 @Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
 @Html.Hidden("showBid", showBid)
+@Html.Hidden("hdnSelectedPlanIds", 0, new { id = "hdnSelectedPlanIds" })
 
 <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
 @Html.Hidden("hdnIsImprovement", isImprovement)
@@ -739,6 +740,8 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
              }
 
         SetAttributeData();
+
+        $('#hdnSelectedPlanIds').val(SelectedPlanIds);
 
         $.ajax({
             type: 'POST',
@@ -1556,6 +1559,9 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
             if (filters.OwnerTitles.length <= 0) {
                 $('#ownerdetail').html("None");
             }
+
+            $('#hdnSelectedPlanIds').val(PlanIdsCustom);
+
         });
 
         function SetBusinessUnitSection() {
@@ -3786,5 +3792,15 @@ function ApproveTactic(e, task) {
             Currenttime = $('#ddlUpComingActivites').val();
             isQuater = Currenttime;
         }
-        });
+    });
+
+
+    function RefershPlanHeaderCalc()
+    {
+        var Currenttime = $('#ddlUpComingActivites').val();
+        var SelectedPlanIds = $('#hdnSelectedPlanIds').val();
+        GetHealderData(SelectedPlanIds);
+        GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
+    }
+
 </script>

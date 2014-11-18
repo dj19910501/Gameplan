@@ -527,6 +527,8 @@
             else if (statusValue == "Reject") {
                 stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
             }
+
+            var RedirectType = $("#hdnRequestedModule").val();
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Home/ApprovedTactic/")',
@@ -541,7 +543,12 @@
                             $("#successMessage").css("display", "block");
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
-                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue); //section parameter passed to open tactic popup
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);
+
+                            //Added By : Kalpesh Sharma Internal review points 18/11/2014
+                            if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
+                                RefershPlanHeaderCalc();
+                            }
                         }
                         else {
                             $("#errorMessage").css("display", "block");
