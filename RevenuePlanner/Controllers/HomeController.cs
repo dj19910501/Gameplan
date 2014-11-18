@@ -7668,7 +7668,7 @@ namespace RevenuePlanner.Controllers
                         year = Planyear;
                     }
                 }
-
+                int currentMonth = DateTime.Now.Month;
                 foreach (Plan_Campaign_Program_Tactic a in objPlan_Campaign_Program_Tactic)
                 {
                     var start = Convert.ToDateTime(a.StartDate);
@@ -7792,7 +7792,7 @@ namespace RevenuePlanner.Controllers
                     else if (strparam == Enums.UpcomingActivities.thisquarter.ToString())
                     {
 
-                        if (DateTime.Now.Month == 1 || DateTime.Now.Month == 2 || DateTime.Now.Month == 3)
+                        if (currentMonth == 1 || currentMonth == 2 || currentMonth == 3)
                         {
                             if (start.Month == 1 || start.Month == 2 || start.Month == 3 || end.Month == 1 || end.Month == 2 || end.Month == 3)
                             {
@@ -7800,7 +7800,7 @@ namespace RevenuePlanner.Controllers
                             }
 
                         }
-                        else if (DateTime.Now.Month == 4 || DateTime.Now.Month == 5 || DateTime.Now.Month == 6)
+                        else if (currentMonth == 4 || currentMonth == 5 || currentMonth == 6)
                         {
                             if (start.Month == 4 || start.Month == 5 || start.Month == 6 || end.Month == 4 || end.Month == 5 || end.Month == 6)
                             {
@@ -7808,7 +7808,7 @@ namespace RevenuePlanner.Controllers
                             }
 
                         }
-                        else if (DateTime.Now.Month == 7 || DateTime.Now.Month == 8 || DateTime.Now.Month == 9)
+                        else if (currentMonth == 7 || currentMonth == 8 || currentMonth == 9)
                         {
                             if (start.Month == 7 || start.Month == 8 || start.Month == 9 || end.Month == 7 || end.Month == 8 || end.Month == 9)
                             {
@@ -7816,7 +7816,7 @@ namespace RevenuePlanner.Controllers
                             }
 
                         }
-                        else if (DateTime.Now.Month == 10 || DateTime.Now.Month == 11 || DateTime.Now.Month == 12)
+                        else if (currentMonth == 10 || currentMonth == 11 || currentMonth == 12)
                         {
                             if (start.Month == 10 || start.Month == 11 || start.Month == 12 || end.Month == 10 || end.Month == 11 || end.Month == 12)
                             {
@@ -8875,7 +8875,8 @@ namespace RevenuePlanner.Controllers
                 {
                     strContatedIndividualList += item.ToString() + ',';
                 }
-                var individuals = bdsUserRepository.GetMultipleTeamMemberDetails(strContatedIndividualList.TrimEnd(','), Sessions.ApplicationId);
+                //var individuals = bdsUserRepository.GetMultipleTeamMemberDetails(strContatedIndividualList.TrimEnd(','), Sessions.ApplicationId);
+                var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList.TrimEnd(','));
 
                 return individuals;
             }

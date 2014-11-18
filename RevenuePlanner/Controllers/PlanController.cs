@@ -6181,7 +6181,7 @@ namespace RevenuePlanner.Controllers
                                p.IsDeleted == false && p.Year == str_Year && m.BusinessUnitId.Equals(BUId)
                                select p).OrderByDescending(p => p.ModifiedDate ?? p.CreatedDate).ThenBy(p => p.Title).ToList();
                 }
-
+                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
                 if (objPlan != null && objPlan.Count > 0)
                 {
                     foreach (var item in objPlan)
@@ -6203,7 +6203,7 @@ namespace RevenuePlanner.Controllers
                             string marketing = Enums.Funnel.Marketing.ToString();
                             double ADSValue = db.Model_Funnel.Single(mf => mf.ModelId == item.ModelId && mf.Funnel.Title == marketing).AverageDealSize;
 
-                            objPlanSelector.MQLS = Common.CalculateMQLOnly(item.ModelId, item.GoalType, item.GoalValue.ToString(), ADSValue).ToString("#,##0"); ;
+                            objPlanSelector.MQLS = Common.CalculateMQLOnly(item.ModelId, item.GoalType, item.GoalValue.ToString(), ADSValue, stageList).ToString("#,##0"); ;
                         }
                         // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
                         objPlanSelector.Budget = (item.Budget).ToString("#,##0");

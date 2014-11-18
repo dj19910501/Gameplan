@@ -1481,7 +1481,7 @@ namespace RevenuePlanner.Helpers
             DateTime Current_date = DateTime.Now.Date;
             List<User> userName = new List<User>();
             string userList = string.Join(",", lst_ChangeLog.Select(cl => cl.UserId.ToString()).ToArray());
-            userName = bdsservice.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
+            userName = bdsservice.GetMultipleTeamMemberName(userList);
             foreach (var cl in lst_ChangeLog)
             {
                 ChangeLog_ViewModel clvm = new ChangeLog_ViewModel();
@@ -1538,8 +1538,8 @@ namespace RevenuePlanner.Helpers
                         // Get ADS value
                         string marketing = Enums.Funnel.Marketing.ToString();
                         double ADSValue = db.Model_Funnel.Single(mf => mf.ModelId == plan.ModelId && mf.Funnel.Title == marketing).AverageDealSize;
-
-                        objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(plan.ModelId, plan.GoalType, plan.GoalValue.ToString(), ADSValue);
+                        List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                        objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(plan.ModelId, plan.GoalType, plan.GoalValue.ToString(), ADSValue, stageList);
                     }
                     // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
                     string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
@@ -1627,16 +1627,40 @@ namespace RevenuePlanner.Helpers
             {
                 List<Plan_Campaign_Program_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
                 var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => planIds.Contains(imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && imp.IsDeleted == false).ToList();
-
+                var tacticids = planTacticsList.Select(t => t.PlanTacticId).ToList();
+                List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticids.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
                 Double MQLs = 0;
                 List<Plan_Campaign_Program_Tactic> planTacticIds = new List<Plan_Campaign_Program_Tactic>();
                 string marketing = Enums.Funnel.Marketing.ToString();
+                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+
+                //Added By Bhavesh For Performance Issue #Home
+                List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
+                List<StageList> stageListType = Common.GetStageList();
+                List<Model> ModelList = db.Models.Where(m => m.IsDeleted == false).ToList();
+
+                var improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
+                List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+
                 foreach (var plan in planList)
                 {
                     //HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
 
                     planTacticIds = planTacticsList.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == plan.PlanId).ToList();
 
+                    int? ModelId = plan.ModelId;
+                    List<ModelDateList> modelDateList = new List<ModelDateList>();
+                    
+                    int MainModelId = (int)ModelId;
+                    while (ModelId != null)
+                    {
+                        var model = ModelList.Where(m => m.ModelId == ModelId).Select(m => m).FirstOrDefault();
+                        modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                        ModelId = model.ParentModelId;
+                    }
+
+                    List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(m => m.ModelId).ToList());
+                    List<Plan_Improvement_Campaign_Program_Tactic> impList = improvementTacticList.Where(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == plan.PlanId).ToList();
                     if (plan.Status == Enums.PlanStatusValues[Enums.PlanStatus.Draft.ToString()].ToString())
                     {
                         if (plan.GoalType.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
@@ -1647,7 +1671,7 @@ namespace RevenuePlanner.Helpers
                         {
                             // Get ADS value
                             double ADSValue = db.Model_Funnel.Single(mf => mf.ModelId == plan.ModelId && mf.Funnel.Title == marketing).AverageDealSize;
-                            MQLs = Common.CalculateMQLOnly(plan.ModelId, plan.GoalType, plan.GoalValue.ToString(), ADSValue);
+                            MQLs = Common.CalculateMQLOnly(plan.ModelId, plan.GoalType, plan.GoalValue.ToString(), ADSValue, stageList);
                         }
 
                         //string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
@@ -1664,7 +1688,8 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
-                        MQLs = GetTacticStageRelation(planTacticIds, false).Sum(t => t.MQLValue);
+                        MQLs = Common.GetTacticStageRelationForSinglePlan(planTacticIds, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, impList, modelDateList, MainModelId, stageList, false).Sum(t => t.MQLValue);
+                        //MQLs = GetTacticStageRelation(planTacticIds, false).Sum(t => t.MQLValue);
                         //string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
                         //if (string.IsNullOrEmpty(MQLStageLabel))
                         //{
@@ -1677,16 +1702,17 @@ namespace RevenuePlanner.Helpers
                         if (planTacticIds.Count() > 0)
                         {
                             var tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
-                            TotalBudget += db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticIds.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+                            TotalBudget += LineItemList.Where(l => tacticIds.Contains(l.PlanTacticId)).Sum(l => l.Cost);
                         }
                         //newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
                     }
 
-                    var impList = improvementTacticList.Where(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == plan.PlanId).ToList();
+                    
                     if (impList.Count > 0)
                     {
                         //// Getting improved MQL.
-                        double? improvedMQL = GetTacticStageRelation(planTacticIds, true).Sum(t => t.MQLValue);
+                        //double? improvedMQL = GetTacticStageRelation(planTacticIds, true).Sum(t => t.MQLValue);
+                        double? improvedMQL = Common.GetTacticStageRelationForSinglePlan(planTacticIds, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, impList, modelDateList, MainModelId, stageList, true).Sum(t => t.MQLValue);
 
                         //// Calculating percentage increase.
                         if (improvedMQL.HasValue && MQLs != 0)
@@ -4089,12 +4115,12 @@ namespace RevenuePlanner.Helpers
         /// <param name="goalValue"></param>
         /// <param name="averageDealSize"></param>
         /// <returns></returns>
-        public static double CalculateMQLOnly(int modelId, string goalType, string goalValue, double averageDealSize)
+        public static double CalculateMQLOnly(int modelId, string goalType, string goalValue, double averageDealSize,List<Stage> stageList)
         {
             try
             {
                 MRPEntities dbStage = new MRPEntities();
-                List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                
                 string stageINQ = Enums.Stage.INQ.ToString();
                 int levelINQ = stageList.Single(s => s.Code.Equals(stageINQ)).Level.Value;
                 string stageMQL = Enums.Stage.MQL.ToString();
