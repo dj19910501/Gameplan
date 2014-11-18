@@ -3550,6 +3550,9 @@ namespace RevenuePlanner.Controllers
                         {
                             IsPlanEditable = true;
                         }
+
+                        ViewBag.CampaignId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
+                        ViewBag.PlanProgrameId = objPlan_Campaign_Program_Tactic.PlanProgramId;
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
@@ -3564,6 +3567,8 @@ namespace RevenuePlanner.Controllers
                         {
                             IsPlanEditable = true;
                         }
+
+                        ViewBag.CampaignId = objPlan_Campaign_Program.PlanCampaignId;
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
@@ -3601,6 +3606,8 @@ namespace RevenuePlanner.Controllers
                         ViewBag.PlanId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                         BusinessUnitId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
                         IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        ViewBag.tacticId = objPlan_Campaign_Program_Tactic_LineItem.PlanTacticId;
+
                         if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
                         {
                             IsPlanEditable = true;
@@ -3615,6 +3622,8 @@ namespace RevenuePlanner.Controllers
                             ViewBag.IsOtherLineItem = false;
                          }
 
+                        ViewBag.CampaignId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
+                        ViewBag.PlanProgrameId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.PlanProgramId;
                     }
                     // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
                     else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
@@ -4400,7 +4409,7 @@ namespace RevenuePlanner.Controllers
                     imodel.BusinessUnitId = objPlan.Model.BusinessUnitId;
                     imodel.Title = objPlan.Title;
                     imodel.ModelId = objPlan.ModelId;
-                    imodel.ModelTitle = objPlan.Model.Title;
+                    imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Version;
                     imodel.GoalType = objPlan.GoalType;
                     imodel.GoalValue = objPlan.GoalValue.ToString();
                     imodel.Budget = objPlan.Budget;
@@ -9315,7 +9324,7 @@ namespace RevenuePlanner.Controllers
                             result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                             scope.Complete();
                             string strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                            return Json(new { IsSaved = true, msg = strMessage, JsonRequestBehavior.AllowGet });
+							return Json(new { IsSaved = true, msg = strMessage, JsonRequestBehavior.AllowGet, PlanProgramId = form.PlanProgramId, PlanCampaignId = form.PlanCampaignId });
                         }
                     }
                 }

@@ -12,6 +12,9 @@
     var planLineItemId = 0;
     string colorCode = "C6EBF3";
     string tacticId = Convert.ToString(ViewBag.tacticId);
+    var campaignId = Convert.ToString(ViewBag.CampaignId);
+    var planProgrameId = Convert.ToString(ViewBag.PlanProgrameId);
+     
     string lineitemTitle = "";
     bool IsPlanEditable = false;
     bool IsOtherLineItem = false;
@@ -73,7 +76,7 @@
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                             <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupLineitem">
                                 <ul style="margin: 0;">
-
+                                    <li class="new-prog" id="NewLineItem">New Line Item</li>
                                     <li class="copy-camp" id="CloneLineItem">Copy Line Item</li>
                                 </ul>
                             </div>
@@ -172,6 +175,10 @@
 
     //<--- End Document.ready event --->
   
+    $("#NewLineItem").on("click", function () {
+        loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@tacticId', '@RedirectType');
+    });
+
     $("#btnEditlineItem").on("click", function () {
         $("#errorMessage").css("display", "none");
         $("#successMessage").css("display", "none");
@@ -296,18 +303,25 @@
                     }
                     else {
 
+                        var currentTab = "Setup";
+
+                        if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                             currentTab = "Budget";
+                         }
+
                         var lineItemId = data.Id;
                         var expandplanLineItemId = data.expand;
-                        var planCampaignId = "";
-                        var planProgramId = "";
-                        loadInspectPopup(lineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+                        var planCampaignId = '@campaignId';
+                        var planProgramId = '@planProgrameId';
+                        var planTacticId = '@tacticId';
+                        loadInspectPopup(lineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
 
                         if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
                             $("#hdnBudgetingExpandId").val(expandplanLineItemId);
                             $("#hdnBudgetingIsSave").val("true");
                         }
                         else {
-                            RefreshCurrentTab('@RedirectType', planCampaignId, planProgramId, 0);
+                            RefreshCurrentTab('@RedirectType', planCampaignId, planProgramId, planTacticId);
                         }
 
                         $("#successMessage").css("display", "block");
