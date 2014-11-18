@@ -11026,10 +11026,11 @@ li.close-list {
     border-bottom: 1px solid #dfdfdf;
     border-top: 1px solid #dfdfdf;
     font-family: "source_sans_prosemibold",Arial,'sans-serif';
-    font-size: 14px;
-    height: 25px;
+    font-size: 10px;
+    height: auto;
     /*padding: 0 0 0 15px;*/
     width: 100%;
+    margin-top:14px;
 }
 .report-seperator span{
     vertical-align: middle; 
