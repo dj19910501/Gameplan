@@ -1,4 +1,4 @@
----Execute this script on Gameplan database.
+ ---Execute this script on Gameplan database.
 -----01_PL_925_BDS_QA_Incorrect_email_for_a_campaign.sql
 BEGIN
 	IF Exists(Select 1 from [Notification] Where NotificationInternalUseOnly='CampaignCommentAdded')

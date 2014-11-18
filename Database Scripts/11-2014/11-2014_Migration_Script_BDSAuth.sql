@@ -1,4 +1,4 @@
----Execute this script on BDSAuth database.
+ ---Execute this script on BDSAuth database.
 ----Updated Release month.
 BEGIN
 	IF EXISTS(Select 1 from [dbo].[Application] Where [Code] = 'MRP')
