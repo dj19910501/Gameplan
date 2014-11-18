@@ -10121,7 +10121,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (IsIndex)
                                 {
-                                    TempData["SuccessMessageDeletedPlan"] = strMessage;
+                                    //Modified by Mitesh Vaishnav for PL ticket 966
+                                    TempData["SuccessMessageDeletedPlan"] = "";
                                     return Json(new { IsSuccess = true, redirect = Url.Action("Index"), msg = strMessage, opt = Enums.InspectPopupRequestedModules.Index.ToString() });
                                 }
                                 else 
