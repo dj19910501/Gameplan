@@ -33,34 +33,55 @@ namespace RevenuePlanner
                         "~/Content/css/NaturalLanguageForm/default.css",
                         "~/Content/css/NaturalLanguageForm/component.css"));
 
-            //bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
-            //            "~/Scripts/jquery-ui-{version}.js"));
+            bundles.Add(new StyleBundle("~/Content/css/GetCSS").Include(
+                 "~/Content/css/font-awesome.css",
+                "~/Content/css/bootstrap.css",
+                //  "~/Content/css/style.css",
+                     "~/Content/css/datepicker.css",
+                //  "~/Content/css/style_extended.css",
+                     "~/Content/css/tipsy.css",
+                     "~/Content/css/dhtmlxgantt.css",
+                     "~/Content/css/summernote.css",
+                     "~/Content/css/jquery.multiselect.css"
+                    ));
 
-            //bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-            //            "~/Scripts/jquery.unobtrusive*",
-            //            "~/Scripts/jquery.validate*"));
+            bundles.Add(new StyleBundle("~/Content/css/GetCSSForLogin").Include(
+               "~/Content/css/font-awesome.css",
+              "~/Content/css/bootstrap.css",
+                   "~/Content/css/summernote.css"
+                  ));
 
-            //// Use the development version of Modernizr to develop with and learn from. Then, when you're
-            //// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
-            //bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
-            //            "~/Scripts/modernizr-*"));
+            bundles.Add(new ScriptBundle("~/bundles/GetJSForLogin").Include(
+                        "~/Scripts/js/jquery.js",
+                        "~/Scripts/js/bootstrap.js",
+                        "~/Scripts/js/jquery.slimscroll_min.js",
+                        "~/Scripts/js/jquery.slidepanel_min.js",
+                        //"~/Scripts/js/scripts.js",
+                        "~/Scripts/summernote_min.js"
+                        ));
 
-            //bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
+            bundles.Add(new ScriptBundle("~/bundles/GetJS").Include(
+                        "~/Scripts/js/DHTMLX/dhtmlxgantt.js",
+                        "~/Scripts/js/jquery.js",
+                        "~/Scripts/js/jquery-migrate-1.2.1.js",
+                        "~/Scripts/js/jquery.slimscroll_min.js",
+                        "~/Scripts/js/jquery.slidepanel_min.js",
+                        "~/Scripts/js/bootstrap.js",
+                       // "~/Scripts/js/scripts.js",
+                      //  "~/Scripts/js/scripts_extended.js",
+                        "~/Scripts/jquery.form.js",
+                         "~/Scripts/js/bootstrap-datepicker.js",
+                        "~/Scripts/js/jquery.price_format.1.8.js",
+                        "~/Scripts/js/slimScrollHorizontal.js",
+                         "~/Scripts/js/jquery.tipsy.js",
+                        "~/Scripts/jquery.selectbox-0.2.js",
+                         "~/Scripts/summernote_min.js",
+                        "~/Scripts/js/jquery-ui.js",
+                        "~/Scripts/js/jquery.multiselect.js",
+                        "~/Scripts/js/jquery.multiselect.filter.js"
+                        ));
 
-            //bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
-            //            "~/Content/themes/base/jquery.ui.core.css",
-            //            "~/Content/themes/base/jquery.ui.resizable.css",
-            //            "~/Content/themes/base/jquery.ui.selectable.css",
-            //            "~/Content/themes/base/jquery.ui.accordion.css",
-            //            "~/Content/themes/base/jquery.ui.autocomplete.css",
-            //            "~/Content/themes/base/jquery.ui.button.css",
-            //            "~/Content/themes/base/jquery.ui.dialog.css",
-            //            "~/Content/themes/base/jquery.ui.slider.css",
-            //            "~/Content/themes/base/jquery.ui.tabs.css",
-            //            "~/Content/themes/base/jquery.ui.datepicker.css",
-            //            "~/Content/themes/base/jquery.ui.progressbar.css",
-            //            "~/Content/themes/base/jquery.ui.theme.css"));
-
+            BundleTable.EnableOptimizations = true;
             
         }
     }

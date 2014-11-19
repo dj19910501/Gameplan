@@ -41,7 +41,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-<AutoParameterizationWebConfigConnectionStrings>false</AutoParameterizationWebConfigConnectionStrings>
+    <AutoParameterizationWebConfigConnectionStrings>false</AutoParameterizationWebConfigConnectionStrings>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Elmah">
@@ -266,6 +266,7 @@
     <Content Include="Content\css\DHTMLX\dhtmlxchart.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxchart_debug.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgantt.css" />
+    <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
     <Content Include="Content\css\jquery.mCustomScrollbar.css" />
@@ -595,21 +596,28 @@
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.ttf" />
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.woff" />
     <Content Include="Scripts\jquery.cookie.js" />
+    <Content Include="Scripts\jquery.form.js" />
     <Content Include="Scripts\jquery.selectbox-0.2.js" />
     <Content Include="Scripts\jquery.treeview.js" />
+    <Content Include="Scripts\js\bootstrap.js" />
     <Content Include="Scripts\js\check.js" />
+    <Content Include="Scripts\js\jquery-migrate-1.2.1.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.min.js" />
     <Content Include="Content\fonts\fontawesome-webfont.eot" />
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="Scripts\js\jquery-ui.js" />
     <Content Include="Scripts\js\jquery.actual.js" />
+    <Content Include="Scripts\js\jquery.js" />
     <Content Include="Scripts\js\jquery.mCustomScrollbar.concat.min.js" />
     <Content Include="Scripts\js\jquery.multiselect.filter.js" />
     <Content Include="Scripts\js\jquery.multiselect.js" />
+    <Content Include="Scripts\js\jquery.slidepanel_min.js" />
+    <Content Include="Scripts\js\jquery.slimscroll_min.js" />
     <Content Include="Scripts\js\ReportConversion.js" />
     <Content Include="Scripts\js\ReportRevenue.js" />
     <Content Include="Scripts\js\ReportSummary.js" />
+    <Content Include="Scripts\summernote_min.js" />
     <Content Include="Scripts\summernote.min.js" />
     <Content Include="RevenuePlanner.wpp.targets" />
     <None Include="Service References\BDSService\BDSService.disco" />

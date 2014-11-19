@@ -8,84 +8,16 @@
     <link rel="shortcut icon" href="@Url.Content("~/Content/images/favicon.png")">
     <meta name="viewport" content="width=device-width" />
     <meta name="robots" content="noindex">
-    @if (RevenuePlanner.Helpers.Common.IsDebug)
-    {
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap.min.css")" type="text/css" />
+
+     @Styles.Render("~/Content/css/GetCSSForLogin")
         <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.min.css")" type="text/css" />
         <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css?n=")@DateTime.Now" type="text/css" />
         <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css?n=")@DateTime.Now" type="text/css" />
-        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-    <script src=""@Url.Content("~/Scripts/js/html5shiv.js")"></script>
-    <![endif]-->
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.min.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap.min.js")"></script>
-        @* Start - Added by :- uday on 27/05/2014 for PL #453*@ 
-            <link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css">
-        @* Start -Commneted by Manoj to resolve the RFT issue :- *@
-            @*<script type="text/javascript" src="@Url.Content("~/Scripts/modernizr-2.5.3.js")"></script>*@
-            <!-- include summernote css/js-->
-        
-        /*Added By : Kalpesh Sharma PL #453 Contact Us Support Editor Dropdown issue*/
-            <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slimscroll.js")"></script>
-            <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slidepanel.js")"></script>
-            <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
-        /*End : Kalpesh Sharma PL #453 Contact Us Support Editor Dropdown issue*/
-        
-            <link rel="stylesheet" href="@Url.Content("~/Content/css/summernote.css")" type="text/css" />
-            <script type="text/javascript" src="@Url.Content("~/Scripts/summernote.min.js")"></script>
-        @* end - Added by :- uday on 27/05/2014 for PL #453 *@
-    }
-    else
-    {
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap.min.css")" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.min.css")" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css?n=")@DateTime.Now" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css?n=")@DateTime.Now" type="text/css" />
-        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-		<script src="//cdn.jsdelivr.net/html5shiv/3.6.2/html5shiv.js"></script>
-		<![endif]-->   
-        
-        <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.0.min.js"></script>
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-        //// CDN Fallback - Jquery #942 	Exception handeling in Gameplan
-        <script type="text/javascript">
-            window.jQuery || document.write('<script src=' + "@Url.Content("~/Scripts/js/jquery.min.js")" + '>\x3C/script>')
-        </script>
-        
-        <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/2.3.1/js/bootstrap.min.js"></script>
-         @* Start - Added by :- uday on 27/05/2014 for PL #453*@ 
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" type="text/css">
 
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-        //// CDN Fallback - Bootstrap & font-awesome                        
-        <script type="text/javascript">
-            window.jQuery.fn.modal || document.write('<script src=' + "@Url.Content("~/Scripts/js/bootstrap.min.js")" + '>\x3C/script>')
-            window.jQuery.fn.modal || document.write('<link rel="stylesheet" href=' + "@Url.Content("~/Content/css/font-awesome.min.css")" + ' type="text/css">')
-        </script>
-        
 
-        @* Start -Commneted by Manoj to resolve the RFT issue :- *@
-        @*<script type="text/javascript" src="http://cdn.jsdelivr.net/modernizr/2.8.2/modernizr.min.js"></script>*@
-        <!-- include summernote css/js-->
-        
-        /*Added By : Kalpesh Sharma PL #453 Contact Us Support Editor Dropdown issue*/
-            <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slimscroll.js")"></script>
-            <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slidepanel.js")"></script>
+    @Scripts.Render("~/bundles/GetJSForLogin")
             <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
-        /*End : Kalpesh Sharma PL #453 Contact Us Support Editor Dropdown issue*/
-        
-        <link href="//oss.maxcdn.com/summernote/0.5.1/summernote.css" rel="stylesheet">
-        <script src="//oss.maxcdn.com/summernote/0.5.1/summernote.min.js"></script>
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-        //// CDN Fallback - Summernote
-        <script type="text/javascript">
-            window.jQuery.summernote || document.write('<script src=' + "@Url.Content("~/Scripts/summernote.min.js")" + '>\x3C/script>')
-            window.jQuery.summernote || document.write('<link href=' + "@Url.Content("~/Content/css/summernote.css")" + ' rel="stylesheet">')
-        </script>
-        @* end - Added by :- uday on 27/05/2014 for PL #453 *@
-    }
+
 
 </head>
 <body class="gradient">

@@ -9,135 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     @RenderSection("nlFormContent", false)
-    @if (RevenuePlanner.Helpers.Common.IsDebug)
-    {
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap.css")" type="text/css" />
+
+    @Styles.Render("~/Content/css/GetCSS")
         <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
         <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css?n=")@DateTime.Now" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/datepicker.css")" type="text/css" />
         <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css?n=")@DateTime.Now" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/tipsy.css")" type="text/css" />
-        <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgantt.css")" rel="stylesheet">
-        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-		<script src=""@Url.Content("~/Scripts/js/html5shiv.js")"></script>
-		<![endif]-->    
-        <script src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgantt.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.min.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-migrate-1.2.1.min.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap.min.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slimscroll.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slidepanel.js")"></script>
+
+    @Scripts.Render("~/bundles/GetJS")
         <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
         <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts_extended.js?n=")@DateTime.Now"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.form.min.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap-datepicker.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.price_format.1.8.js?n=")@DateTime.Now"></script>
-        @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.price_format.1.8.min.js?n=")@DateTime.Now"></script>*@
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/slimScrollHorizontal.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.tipsy.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.selectbox-0.2.js")"></script>
-        
-        @* Start - Added by :- uday on 27/05/2014 for PL #453*@
-       <link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css">
-         @* Start -Commneted by Manoj to resolve the RFT issue :- *@
-       @*<script type="text/javascript" src="@Url.Content("~/Scripts/modernizr-2.5.3.js")"></script>*@
-       <!-- include summernote css/js-->
-       <link rel="stylesheet" href="@Url.Content("~/Content/css/summernote.css")" type="text/css" />
-       <script type="text/javascript" src="@Url.Content("~/Scripts/summernote.min.js")"></script>
-        @* end - Added by :- uday on 27/05/2014 for PL #453 *@
-        
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
-        <link href="@Url.Content("~/Content/css/jquery.multiselect.css?n=")@DateTime.Now" rel="stylesheet" type="text/css" />
-    }
-    else
-    {
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap.min.css")" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css?n=")@DateTime.Now" type="text/css" />
-        <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.datepicker/0.1/css/datepicker.css" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css?n=")@DateTime.Now" type="text/css" />
-        <link rel="stylesheet" href="//cdn.jsdelivr.net/tipsy/1.0/stylesheets/tipsy.css" type="text/css" />
-        <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgantt.css")" rel="stylesheet">
-        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-		<script src="//cdn.jsdelivr.net/html5shiv/3.6.2/html5shiv.js"></script>
-		<![endif]-->    
-        <script src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgantt.js")"></script>
-        <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.0.min.js"></script>
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-        //// CDN Fallback - Jquery
-        <script type="text/javascript">
-            window.jQuery || document.write('<script src=' + "@Url.Content("~/Scripts/js/jquery.min.js")" + '>\x3C/script>')
-        </script>
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-        //// CDN Fallback - Jquery migrate-1.2.1       
-        <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.migrate/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript">
-            jQuery.migrateWarnings || document.write('<script src=' + "@Url.Content("~/Scripts/js/jquery-migrate-1.2.1.min.js")" + '>\x3C/script>') // or typeof jQuery.fn.live == 'undefined'
-        </script>
-        
-        <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/2.3.1/js/bootstrap.min.js"></script>
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-         //// CDN Fallback - Bootstrap                       
-        <script type="text/javascript">
-            window.jQuery.fn.modal || document.write('<script src=' + "@Url.Content("~/Scripts/js/bootstrap.min.js")" + '>\x3C/script>')
-        </script>
-        
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slimscroll.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slidepanel.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts_extended.js?n=")@DateTime.Now"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.form.min.js")"></script>
-        <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.datepicker/0.1/js/bootstrap-datepicker.js"></script>
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-         //// CDN Fallback - datepicker
-        <script type="text/javascript">
-            window.jQuery.fn.datepicker || document.write('<script src=' + "@Url.Content("~/Scripts/js/bootstrap-datepicker.js")" + '>\x3C/script>')
-            window.jQuery.fn.datepicker || document.write('<link rel="stylesheet" href=' + "@Url.Content("~/Content/css/datepicker.css")" + ' type="text/css">')
-        </script>
-        
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.price_format.1.8.min.js?n=")@DateTime.Now"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/slimScrollHorizontal.js?n=")@DateTime.Now"></script>
-        <script type="text/javascript" src="//cdn.jsdelivr.net/tipsy/1.0/javascripts/jquery.tipsy.js"></script>
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-        //// CDN Fallback - tipsy
-        <script type="text/javascript">
-            window.jQuery.fn.tipsy || document.write('<script src=' + "@Url.Content("~/Scripts/js/jquery.tipsy.js")" + '>\x3C/script>')
-            window.jQuery.fn.tipsy || document.write('<link rel="stylesheet" href=' + "@Url.Content("~/Content/css/tipsy.css")" + ' type="text/css">')
-        </script>
-        
-        <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.selectbox-0.2.js")"></script>
-        
-       @* Start - Added by :- uday on 27/05/2014 for PL #453*@ 
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" type="text/css">
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-         //// CDN Fallback - font-awesome                        
-        <script type="text/javascript">
-            window.jQuery.fn.modal || document.write('<link rel="stylesheet" href=' + "@Url.Content("~/Content/css/font-awesome.min.css")" + ' type="text/css">')
-        </script>
-                
-        @* Start -Commneted by Manoj to resolve the RFT issue :- *@
-        @*<script type="text/javascript" src="http://cdn.jsdelivr.net/modernizr/2.8.2/modernizr.min.js"></script>*@
-        <!-- include summernote css/js-->
-        <link href="//oss.maxcdn.com/summernote/0.5.1/summernote.css" rel="stylesheet">
-        <script src="//oss.maxcdn.com/summernote/0.5.1/summernote.min.js"></script>
-        ////Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan
-        //// CDN Fallback - Summernote
-        <script type="text/javascript">
-            window.jQuery.summernote || document.write('<script src=' + "@Url.Content("~/Scripts/summernote.min.js")" + '>\x3C/script>')
-            window.jQuery.summernote || document.write('<link href=' + "@Url.Content("~/Content/css/summernote.css")" + ' rel="stylesheet">')
-        </script>
-        @* end - Added by :- uday on 27/05/2014 for PL #453 *@
-        
-        
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
-        <link href="@Url.Content("~/Content/css/jquery.multiselect.css?n=")@DateTime.Now" rel="stylesheet" type="text/css" />
-    }
+    
 </head>
 <body>
     <div class="container-fluid all-height">
