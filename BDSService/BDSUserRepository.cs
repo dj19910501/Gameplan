@@ -2596,35 +2596,34 @@ namespace BDSService
 
                 if (customRestrictionFieldIds.ContainsKey(BusinessUnit))
                 {
-                    BusinessUnitId = customRestrictionFieldIds[BusinessUnit].ToString();
+                    BusinessUnitId = customRestrictionFieldIds[BusinessUnit].ToString().ToLower();
                 }
                 if (customRestrictionFieldIds.ContainsKey(Geography))
                 {
-                    GeographyId = customRestrictionFieldIds[Geography].ToString();
+                    GeographyId = customRestrictionFieldIds[Geography].ToString().ToLower();
                 }
                 if (customRestrictionFieldIds.ContainsKey(Verticals))
                 {
                     VerticalsId = customRestrictionFieldIds[Verticals].ToString();
                 }
 
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                int ViewPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+                int NonePermission = (int)Enums.CustomRestrictionPermission.None;
 
-                var customRestrictionListForAllUsers = db.CustomRestrictions.Where(crl => lstUserIds.Contains(crl.UserId) && crl.ApplicationId == applicationId).Select(crl => crl).ToList().Distinct();
+                var customRestrictionListForAllUsers = db.CustomRestrictions.Where(crl => lstUserIds.Contains(crl.UserId) && crl.ApplicationId == applicationId).Select(crl => crl).ToList().Distinct().ToList();
+                customRestrictionListForAllUsers.ForEach(c => c.CustomFieldId = c.CustomFieldId.ToLower());
 
                 // -- List of userIds who have Viewonly & ViewEdit rights on BusinessUnit
-                var lstBusinessUnitUsers = customRestrictionListForAllUsers.Where(cr => cr.CustomField == BusinessUnit && cr.CustomFieldId == BusinessUnitId && 
-                                            (cr.Permission == ViewEditPermission || cr.Permission == ViewPermission)).Select(cr => cr.UserId).ToList().Distinct();
+                var lstBusinessUnitUsers = customRestrictionListForAllUsers.Where(cr => cr.CustomField == BusinessUnit && cr.CustomFieldId == BusinessUnitId &&
+                                            (cr.Permission != NonePermission)).Select(cr => cr.UserId).ToList().Distinct();
                 // -- List of userIds who have Viewonly & ViewEdit rights on Geography
-                var lstGeographyUsers = customRestrictionListForAllUsers.Where(cr => cr.CustomField == Geography && cr.CustomFieldId == GeographyId && 
-                                            (cr.Permission == ViewEditPermission || cr.Permission == ViewPermission)).Select(cr => cr.UserId).ToList().Distinct();
+                var lstGeographyUsers = customRestrictionListForAllUsers.Where(cr => cr.CustomField == Geography && cr.CustomFieldId == GeographyId &&
+                                            (cr.Permission != NonePermission)).Select(cr => cr.UserId).ToList().Distinct();
                 // -- List of userIds who have Viewonly & ViewEdit rights on Verticals
-                var lstVerticalsUsers = customRestrictionListForAllUsers.Where(cr => cr.CustomField == Verticals && cr.CustomFieldId == VerticalsId && 
-                                            (cr.Permission == ViewEditPermission || cr.Permission == ViewPermission)).Select(cr => cr.UserId).ToList().Distinct();
+                var lstVerticalsUsers = customRestrictionListForAllUsers.Where(cr => cr.CustomField == Verticals && cr.CustomFieldId == VerticalsId &&
+                                            (cr.Permission != NonePermission)).Select(cr => cr.UserId).ToList().Distinct();
 
-                var lstUsersWithCustomRestrictions = lstUser.Where(u => lstBusinessUnitUsers.Contains(u.UserId) &&
-                                                                        lstGeographyUsers.Contains(u.UserId) &&
-                                                                        lstVerticalsUsers.Contains(u.UserId)).Select(u => u.UserId).ToList().Distinct();
+                var lstMergedUserList = lstBusinessUnitUsers.Intersect(lstGeographyUsers).Intersect(lstVerticalsUsers);
+                var lstUsersWithCustomRestrictions = lstUser.Where(u => lstMergedUserList.Contains(u.UserId)).Select(u => u.UserId).ToList().Distinct();
                 
                 teamMemberList = lstUser.Where(u => lstUsersWithCustomRestrictions.Contains(u.UserId)).ToList().Select(u => new BDSEntities.User()
                 {

@@ -290,7 +290,15 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
+                if (activeMenu != Enums.ActiveMenu.Plan)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points                    
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = null;
+                }
+                
                 return RedirectToAction("PlanSelector", "Plan");
             }
 
@@ -3550,6 +3558,9 @@ namespace RevenuePlanner.Controllers
                         {
                             IsPlanEditable = true;
                         }
+
+                        ViewBag.CampaignId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
+                        ViewBag.PlanProgrameId = objPlan_Campaign_Program_Tactic.PlanProgramId;
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
@@ -3564,6 +3575,8 @@ namespace RevenuePlanner.Controllers
                         {
                             IsPlanEditable = true;
                         }
+
+                        ViewBag.CampaignId = objPlan_Campaign_Program.PlanCampaignId;
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
@@ -3601,6 +3614,8 @@ namespace RevenuePlanner.Controllers
                         ViewBag.PlanId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                         BusinessUnitId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
                         IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        ViewBag.tacticId = objPlan_Campaign_Program_Tactic_LineItem.PlanTacticId;
+
                         if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
                         {
                             IsPlanEditable = true;
@@ -3615,6 +3630,8 @@ namespace RevenuePlanner.Controllers
                             ViewBag.IsOtherLineItem = false;
                          }
 
+                        ViewBag.CampaignId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
+                        ViewBag.PlanProgrameId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.PlanProgramId;
                     }
                     // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
                     else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
@@ -4400,7 +4417,7 @@ namespace RevenuePlanner.Controllers
                     imodel.BusinessUnitId = objPlan.Model.BusinessUnitId;
                     imodel.Title = objPlan.Title;
                     imodel.ModelId = objPlan.ModelId;
-                    imodel.ModelTitle = objPlan.Model.Title;
+                    imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Version;
                     imodel.GoalType = objPlan.GoalType;
                     imodel.GoalValue = objPlan.GoalValue.ToString();
                     imodel.Budget = objPlan.Budget;
@@ -6194,7 +6211,15 @@ namespace RevenuePlanner.Controllers
                 lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Verticals.ToString(), ippctm.VerticalId.ToString());
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 var lstUser = objBDSServiceClient.GetUserListWithCustomRestrictions(Sessions.User.UserId, Sessions.User.ClientId, Sessions.ApplicationId, lstCustomRestrictionFields);
-                ViewBag.OwnerList = lstUser;
+                if (lstUser != null)
+                {
+                    var lstPreparedOwners = lstUser.Select(u => new { UserId = u.UserId, DisplayName = u.DisplayName }).ToList();
+                    ViewBag.OwnerList = lstPreparedOwners;
+                }
+                else
+                {
+                    ViewBag.OwnerList = new List<User>();
+                }
             }
             catch (Exception e)
             {
@@ -9315,7 +9340,7 @@ namespace RevenuePlanner.Controllers
                             result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                             scope.Complete();
                             string strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                            return Json(new { IsSaved = true, msg = strMessage, JsonRequestBehavior.AllowGet });
+							return Json(new { IsSaved = true, msg = strMessage, JsonRequestBehavior.AllowGet, PlanProgramId = form.PlanProgramId, PlanCampaignId = form.PlanCampaignId });
                         }
                     }
                 }
@@ -10112,7 +10137,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (IsIndex)
                                 {
-                                    TempData["SuccessMessageDeletedPlan"] = strMessage;
+                                    //Modified by Mitesh Vaishnav for PL ticket 966
+                                    TempData["SuccessMessageDeletedPlan"] = "";
                                     return Json(new { IsSuccess = true, redirect = Url.Action("Index"), msg = strMessage, opt = Enums.InspectPopupRequestedModules.Index.ToString() });
                                 }
                                 else 
@@ -11923,6 +11949,58 @@ namespace RevenuePlanner.Controllers
             pc.AllocatedBy = objPlan.AllocatedBy;
             return PartialView("_EditSetupLineitem", pc);
         }
+
+        #region fill Owner list
+        /// <summary>
+        /// fill Owner list based on BusinessUnitId, GeographyId and VerticalId of a tactic
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>18/11/2014</CreatedDate>
+        /// <param name="planTacticId"></param>
+        /// <param name="businessUnitId"></param>
+        /// <param name="GeographyId"></param>
+        /// <param name="VerticalId"></param>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        public JsonResult fillOwner(Guid BusinessUnitId, Guid GeographyId, int VerticalId, string UserId = "")
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            try
+            {
+                Dictionary<string, string> lstCustomRestrictionFields = new Dictionary<string, string>();
+                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.BusinessUnit.ToString(), BusinessUnitId.ToString());
+                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Geography.ToString(), GeographyId.ToString());
+                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Verticals.ToString(), VerticalId.ToString());
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                var lstUser = objBDSServiceClient.GetUserListWithCustomRestrictions(Sessions.User.UserId, Sessions.User.ClientId, Sessions.ApplicationId, lstCustomRestrictionFields);
+                if (lstUser != null)
+                {
+                    var lstPreparedOwners = lstUser.Select(u => new { UserId = u.UserId, DisplayName = u.DisplayName }).ToList();
+                    return Json(new { isSuccess = true, lstOwner = lstPreparedOwners }, JsonRequestBehavior.AllowGet);
+                }
+                return Json(new { isSuccess = true, lstOwner = new List<User>()  }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }
 

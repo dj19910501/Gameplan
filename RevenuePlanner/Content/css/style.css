@@ -11063,3 +11063,10 @@ li.close-list {
     background: none repeat scroll 0 0 #f2f2f2;
     }
 /*End - Added by Viral Kadiya on 11/15/2014 for PL ticket #874*/
+
+/* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
+.ui-state-hover {
+    background-color: #0081c2 !important;
+    color: #fff !important;
+}
+/* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */

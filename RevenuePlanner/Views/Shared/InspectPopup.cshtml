@@ -15,8 +15,9 @@
     var PlanTacticId = 0;
     var IsResubmitableStatus = false;
     bool IsPlanEditable = false;
+    var campaignId = Convert.ToString(ViewBag.CampaignId);
     var tacticMaster = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
-    var PlanProgramId = 0;
+    var PlanProgramId = ViewBag.PlanProgrameId;
     var colorCode = "";
     string RequestedModule = (ViewBag.RedirectType != "") ? ViewBag.RedirectType : "";
     
@@ -57,7 +58,7 @@
         @if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
         {            
         <span>
-         <span id="lblTacticTitle" class="tipsyclassTitle" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
+         <span id="lblTacticTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
            
              @if (IsPlanEditable)
                     {
@@ -403,8 +404,8 @@
 
                         var planTacticId = data.Id;
                         var expandPlanTacticId = data.expand;
-                        var planCampaignId = "";
-                        var planProgramId = "";
+                        var planCampaignId = '@campaignId';
+                        var planProgramId = '@PlanProgramId';
 
                         loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
 
@@ -413,7 +414,7 @@
                             $("#hdnBudgetingIsSave").val("true");
                         }
                         else {
-                            RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, 0); 
+                            RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, planTacticId); 
                         }
 
                     $("#successMessage").css("display", "block");

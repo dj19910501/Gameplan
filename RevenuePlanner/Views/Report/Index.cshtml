@@ -405,7 +405,7 @@
             var url = '@Url.Content("~/Report/GetBudget/")';
             $('#divMainReportPart').load(url, function () {
                 isAllowClick = true;
-                myApp.hidePleaseWait();
+                //myApp.hidePleaseWait();
             });
         }
         
@@ -451,7 +451,11 @@
         }
         function LoadBudgetData() {
             if (isByAllocated) {
-                $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?GeographyIds=' + GeographyIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + OptionMain + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId);
+                myApp.showPleaseWait();
+                $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?GeographyIds=' + GeographyIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + OptionMain + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId, function () {
+                     myApp.hidePleaseWait();
+                });
+                
         }
     }
 

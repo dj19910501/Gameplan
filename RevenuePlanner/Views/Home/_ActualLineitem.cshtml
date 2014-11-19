@@ -317,8 +317,9 @@
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
                             var requestedModule = $("#hdnRedirectType").val();
-                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", data.TabValue);
-
+                            var activeTab = $("#InspectTab li.active a").text();
+                            var planLineItemId = data.id;   
+                            loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                 $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
                                 $("#hdnBudgetingIsSave").val("true");

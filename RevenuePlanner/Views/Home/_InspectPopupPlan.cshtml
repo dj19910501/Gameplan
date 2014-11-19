@@ -195,7 +195,7 @@
 
     $('#NewCampaign').click(function () {
         var planId = $("#hdnPlanId").val();
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", planId);
+        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", planId, '@RequestedModule');
     });
 
     $('#ClonePlan').click(function () {

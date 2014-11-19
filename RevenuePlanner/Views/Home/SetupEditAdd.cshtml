@@ -8,6 +8,10 @@
     {
         color: gray;
     }
+    .stage-title {
+         width: auto;
+         float: left;
+     }
    </style>
 
 @using (Html.BeginForm())
@@ -87,14 +91,14 @@
 
             <div class="cf width100" style="width: 244px;">
                 <div class="margin-right10 pull-left" style="width: 47%">
-                    <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
+                    <label id="lblStageTitle" title="@Model.StageTitle" class="stage-title">@Model.StageTitle &nbsp;</label>
 
                         @if (ViewBag.IsDiffrentStageType == true)
                         {
                             <span>
                                 <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
-                        }</label>
+                        }
                     @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue resubmission", label = @Model.StageTitle, maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
@@ -158,6 +162,7 @@
 
     $(document).ready(
       function () {
+          ImageTipsy('#diffrentStageIcon'); // Added by Vira Kadiya on 11/18/2014 to resolve PL ticket #964.
           $(this).scrollTop(0);
           $(".verticalIdSelectBox select").selectbox();
           $('#txtTacticTitle').css('display', 'block');
@@ -332,6 +337,18 @@
               }
           });
 
+          /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
+          //// RequireField validation for Owner Dropdown
+          if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+              var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
+              if (OwnerValue == "Please Select") {
+                  $('#btnMultiselect_ddlOwner').addClass("error");
+              }
+              else {
+                  $('#btnMultiselect_ddlOwner').removeClass("error");
+              }
+          }
+          /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
           if (iserror) {
               ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
               return false;
@@ -641,4 +658,59 @@
             }
         }
 
+    /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
+    $('#VerticalId').change(function () {
+        fillOwnerList();
+    });
+        
+    $('#GeographyId').change(function () {
+        fillOwnerList();
+    });
+
+    function fillOwnerList()
+    {
+        var uId = $(window).attr('name');
+        var businessUnitId = $('#hdnBusinessUnitId').val();
+        var geographyId = $('#GeographyId').val();
+        var verticalId = $('#VerticalId').val();
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '@Url.Content("~/Home/fillOwner/")',
+            data: { BusinessUnitId: businessUnitId, GeographyId: geographyId, VerticalId: verticalId, UserId: uId },
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data != null) {
+                        if(data.isSuccess)
+                        {
+                            var preservedOwner = $("#ddlOwner").val();
+                            $("#ddlOwner").empty();
+                            $("#ddlOwner").append("<option value='0'>Please Select</option>");
+                            $.each(data.lstOwner, function (index, optionData) {
+                                $("#ddlOwner").append("<option value='" + optionData.UserId + "'>" + optionData.DisplayName + "</option>");
+                            });
+                            $('#ddlOwner').val(preservedOwner);
+                            $('#ddlOwner').multiselect("refresh");
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    $('#btnMultiselect_ddlOwner').click(function () {
+        var span1 = $('#multipleselect_ddlOwner');
+        $(this).after(span1);
+        $('#ddlOwner').parent().css('position', 'relative');
+        $('#multipleselect_ddlOwner').css('left', '0px');
+        $('#multipleselect_ddlOwner').css('top', '20px');
+    });
+
+    $('.sbHolder').click(function () {
+        $('#multipleselect_ddlOwner').css('display', 'none');
+    });
+    /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
 </script>
