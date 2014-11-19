@@ -11097,3 +11097,10 @@ li.close-list {
      font-weight:300;
 }
 /*End - Added by Viral Kadiya on 11/19/2014 for PL ticket #947*/
+/*Start - Added by Viral Kadiya on 11/19/2014 to implement Internal Review Points.*/
+.btn-save {
+    font-size:14px;
+    border-radius:6px;
+    padding:0px 19px;
+}
+/*End - Added by Viral Kadiya on 11/19/2014 to implement Internal Review Points.*/
