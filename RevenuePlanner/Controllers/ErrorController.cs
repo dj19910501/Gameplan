@@ -18,5 +18,15 @@ namespace RevenuePlanner.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Added by: Maninder Singh Wadhva on 11/18/2014 to address ticket #942 Exception handeling in Gameplan.
+        /// Action for Page not found
+        /// </summary>
+        /// <returns>Returns page not found view.</returns>
+        public ActionResult PageNotFound()
+        {
+            return View("PageNotFound");
+        }
+
     }
 }
