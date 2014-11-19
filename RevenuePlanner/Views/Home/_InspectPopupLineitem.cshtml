@@ -70,9 +70,11 @@
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
                             <button class="delete-btn-gray" id="deleteLineItem" type="button">Delete</button>
                         </div>
+                        }
+                    }
                     
-                   
-                        <div style="float: right; position: relative;">
+                    @if(!IsOtherLineItem){
+                         <div style="float: right; position: relative;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                             <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupLineitem">
                                 <ul style="margin: 0;">
@@ -81,7 +83,10 @@
                                 </ul>
                             </div>
                         </div>
-                        }
+                    }
+
+                    @if (IsPlanEditable)
+                    {
                         <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;"></a>
                     }
                 </span> 

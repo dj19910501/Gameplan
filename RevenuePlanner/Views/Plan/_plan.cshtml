@@ -23,7 +23,7 @@
     var BudgetingBussinessUnitId = 0;
     var BudgetingCurrentTab = "aAllocated";
     var BudgetingCurrentPlanId = 0;
-    var RequsedtedModule="";
+    var RequestedModule="";
     var BudgetingExpandId = 0;
     bool BudgetingIsSave = false;
 }
@@ -31,7 +31,7 @@
 @Html.Hidden("hdnBudgetingBussinessUnitId", BudgetingBussinessUnitId)
 @Html.Hidden("hdnBudgetingCurrentTab", BudgetingCurrentTab)
 @Html.Hidden("hdnBudgetingCurrentPlanId", BudgetingCurrentPlanId)
-@Html.Hidden("hdnRequsedtedModule", RequsedtedModule)
+@Html.Hidden("hdnRequestedModule", RequestedModule)
 @Html.Hidden("hdnBudgetingExpandId", BudgetingExpandId)
 @Html.Hidden("hdnBudgetingIsSave", BudgetingIsSave)
 
@@ -301,7 +301,7 @@
 //}
 
 
-function ShowModel(mode, section, id, ParentId, RequsedtedModule) {
+function ShowModel(mode, section, id, ParentId, RequestedModule) {
     modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
     $('.modal-backdrop').addClass('modalFull-backdrop');
@@ -311,79 +311,79 @@ function ShowModel(mode, section, id, ParentId, RequsedtedModule) {
     $("#successMessageDuplicatePlan").css("display", "none");
     $("#modal-container-186470").modal('show');
     ParentId = typeof ParentId != 'undefined' ? ParentId : '0';
-    RequsedtedModule = typeof RequsedtedModule != 'undefined' ? RequsedtedModule : '';
+    RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
 
-    $("#hdnRequsedtedModule").val(RequsedtedModule);
+    $("#hdnRequestedModule").val(RequestedModule);
     var currentTab = "Setup";
-    if ((RequsedtedModule == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") && (mode == "@Enums.InspectPopupMode.ReadOnly.ToString()")) {
+    if ((RequestedModule == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") && (mode == "@Enums.InspectPopupMode.ReadOnly.ToString()")) {
         currentTab = "Budget";
     }
 
     if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", '@Planid', RequsedtedModule);
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", '@Planid', RequestedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, RequsedtedModule);
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, RequestedModule);
         }
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, RequsedtedModule);
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, RequestedModule);
         }
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequsedtedModule);
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
         }
     }
     else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
+            loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequsedtedModule);
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
         }
     } 
  else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
+            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
         }
         else {
-            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequsedtedModule);
+            loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
         }
  }
  else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()") {
      if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-         loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequsedtedModule);
+         loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
         }
         else {
-         loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequsedtedModule);
+         loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
         }
  }
 
     modalBackdropDisplayNone();
 };
 
-function loadInspectPopup(id, section, tabValue, mode, parentId, RequsedtedModule) {
+function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule) {
     parentId = typeof parentId != 'undefined' ? parentId : '0';
-    RequsedtedModule = typeof RequsedtedModule != 'undefined' ? RequsedtedModule : '';
+    RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
     var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
-        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + RequsedtedModule);
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + RequestedModule);
     }
 
     function CloseIconClick() {
         $('.close-x-big-icon').click(function () {
             $('body').removeClass('bodyOverflow');
             
-            if ((($("#hdnBudgetingIsSave").val().toLowerCase().toString()) == "true") && ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == $("#hdnRequsedtedModule").val())) {
+            if ((($("#hdnBudgetingIsSave").val().toLowerCase().toString()) == "true") && ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == $("#hdnRequestedModule").val())) {
                 $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + $("#hdnBudgetingBussinessUnitId").val(), function () { TabLoad($("#hdnBudgetingCurrentTab").val()); ShowChangeLog($("#hdnBudgetingCurrentPlanId").val()); hideAllMessages = true; });
                 $("#hdnBudgetingIsSave").val("false");
             }

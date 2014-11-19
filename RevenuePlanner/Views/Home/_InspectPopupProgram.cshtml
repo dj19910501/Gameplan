@@ -67,10 +67,8 @@
                             <button class="delete-btn-gray" id="deleteProgram" type="button">Delete</button>
                         </div>
                     }
-                @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
-                {
-                    <div style="float: right;position:relative;">
-                    @*<span class="delete-icon-white delete-btn-gray delete-btn-tab" style="display: block; cursor: pointer;" id="DeleteForm"></span>*@
+
+                <div style="float: right;position:relative;">
                     <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer;margin-right:10px;" id="AddForm"></span>
                     <div class="btn-dropdwn" style="display:none;position:absolute;top:40px;" id="popupnewprogram">
                                 <ul style="margin:0;">
@@ -79,6 +77,10 @@
                                 </ul>
                             </div>
                         </div>
+
+                @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
+                {
+                    
                     @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
                 }
             </span>

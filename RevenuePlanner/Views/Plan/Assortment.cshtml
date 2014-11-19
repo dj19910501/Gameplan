@@ -1977,12 +1977,12 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
     });
 }
 
-    function RefreshCurrentTab(RequsedtedModule, planCampaignId, planProgramId, planTacticId) {
+    function RefreshCurrentTab(RequestedModule, planCampaignId, planProgramId, planTacticId) {
     var planCampaignId = typeof planCampaignId != 'undefined' ? planCampaignId : '0';
     var planProgramId = typeof planProgramId != 'undefined' ? planProgramId : '0';
     var planTacticId = typeof planTacticId != 'undefined' ? planTacticId : '0';
 
-    if ('@Enums.InspectPopupRequestedModules.Assortment.ToString()' == RequsedtedModule) {
+    if ('@Enums.InspectPopupRequestedModules.Assortment.ToString()' == RequestedModule) {
         getCampaign(planCampaignId, planProgramId, planTacticId);
         }
     }

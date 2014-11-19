@@ -75,35 +75,22 @@
                             <button class="delete-btn-gray" id="deleteCampaign" type="button">Delete</button>
                         </div>
                     }
-                    @if (IsPlanEditable)
-                    {
-                        <div style="float: right; position: relative;">
+
+                    <div style="float: right; position: relative;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                             <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupnewprogram">
                                 <ul style="margin: 0;">
                                     <li class="new-prog" id="NewProgram">New Program</li>
                                     <li class="copy-camp" id="CloneCampaign">Copy Campaign</li>
                                 </ul>
-                            </div>
-                            @* <div class="btn-group">
-                                <button id="BtnGroup1" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px popup-button">
-                                    Add
-                                </button>
-                                <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu source-sans-prolight">
-                                    <li>
-                                        <a href="#">New Program</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Copy Campaign</a>
-                                    </li>
-                                </ul>
-                            </div>*@
+                            </div>                            
                         </div>
-                        <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;"></a>
-@*@Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0, tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large" })*@
+
+                    @if (IsPlanEditable)
+                    {
+                        
+                    <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;"></a>
+                    @*@Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0, tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large" })*@
                     }
                 </span> 
             }
