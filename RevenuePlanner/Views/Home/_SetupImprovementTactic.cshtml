@@ -16,6 +16,25 @@
 }
 @using RevenuePlanner.Helpers
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
+<style type="text/css">
+    #divPartial .verticalIdSelectBox .sbHolder {
+            background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
+            box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
+            margin-bottom: 0;
+            z-index: auto;
+    }
+    #divPartial .ui-multiselect {
+         background: none repeat scroll 0 0 #dff0f8 !important;
+     }
+    #divPartial .sbToggle {
+        border-top: 4px solid #6d6d6d !important;
+    }
+    #divPartial .sbHolder {
+        background-color: #dff0f8 !important;
+        background-image:none;
+    }
+
+</style>
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.ImprovementPlanTacticId)
@@ -32,7 +51,7 @@
             <p>Description</p>
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
             {
-                @Html.TextArea("Description", string.Empty, new { id = "txtDescription", @class = "span12 text-area-size", style = "height:93px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+                @Html.TextArea("Description", string.Empty, new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:93px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
                 if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
                 {
                     <div style="clear: both; width: 100%;">
@@ -57,10 +76,10 @@
             {
                 <span class="Inspect-Popup-ImprovementTactic verticalIdSelectBox">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })</span>
                 <p style="margin-top:11px;">Cost</p>    
-                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate resubmission", style = "", id = "txtCost", label = "Cost" })
+                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate resubmission input-setup", style = "", id = "txtCost", label = "Cost" })
                 <p>Effective Date</p>
                 <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker" style="padding:0 0 4px;">
-                    @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate resubmission", id = "txtDate", label = "Effective_Date" })
+                    @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate resubmission input-setup", id = "txtDate", label = "Effective_Date" })
                     <span class="add-on">
                         <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png"></span>
                 </div>
@@ -182,6 +201,16 @@
           }
 
           $('.Inspect-Popup-ImprovementTactic .sbSelector').attr('title', $('.Inspect-Popup-ImprovementTactic .sbSelector').html());
+          //Start - Added by Viral Kadiya on 19/11/2014 to resolve PL ticket #947.
+          if ('@InspectMode' == '@Enums.InspectPopupMode.Edit.ToString()' || '@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()') {                                 // check current page mode is editable or not.
+              $('.input-setup').addClass('light-blue-background');
+              $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
+          }
+          else {
+              $('.input-setup').removeClass('light-blue-background');
+              $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').removeClass('light-blue-background');
+          }
+          //End - Added by Viral Kadiya on 19/11/2014 to resolve PL ticket #947.
       });
 
       $('.dp').datepicker({

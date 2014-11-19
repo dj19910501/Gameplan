@@ -50,7 +50,7 @@
     <div class="modal-popup-title">
         <span class="icon-flag bg-purple flagcolor" style="background-color:#@ColorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight">
-            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(TacticTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate font20", style = "width: 95%; height: 28px;", title = HttpUtility.HtmlDecode(TacticTitle) })
+            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(TacticTitle), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small truncate font20 light-blue-background", style = "width: 95%; height: 28px;", title = HttpUtility.HtmlDecode(TacticTitle) })
             @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle1" })
             <span class="tipsyclassTitle" id="spnImprovementTacticTitle" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
             @if (IsPlanEditable && !(InspectMode == Enums.InspectPopupMode.Edit.ToString()) && !(InspectMode == Enums.InspectPopupMode.Add.ToString()))

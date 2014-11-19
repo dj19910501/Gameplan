@@ -97,7 +97,7 @@
     <div class="padding-top10">
 
         @*<img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "User", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />*@
-        @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment" })
+        @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-blue-background" })
         @if (IsProgramEditable && (bool)ViewBag.IsBusinessUnitEditable)
         {
         <img id="btnComment" src="~/Content/images/chat-button.png" alt="" style="float:right" />

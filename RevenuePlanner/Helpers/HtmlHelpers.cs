@@ -3759,7 +3759,7 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                            sb.Append("<input type=\"text\" maxlength =\"255\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");    
+                            sb.Append("<input type=\"text\" maxlength =\"255\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small input-setup\"");    
                         }
 
                         //If custom field is required than add attribute require

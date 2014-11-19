@@ -8,9 +8,21 @@
     {
         color: gray;
     }
-    .stage-title {
-         width: auto;
-         float: left;
+    #divTab .verticalIdSelectBox .sbHolder {
+            background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
+            box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
+            margin-bottom: 0;
+            z-index: auto;
+    }
+    #divTab .ui-multiselect {
+         background: none repeat scroll 0 0 #dff0f8 !important;
+     }
+    #divTab .sbToggle {
+        border-top: 4px solid #6d6d6d !important;
+    }
+    #divTab .sbHolder {
+        background-color: #dff0f8 !important;
+        background-image:none;
      }
    </style>
 
@@ -38,18 +50,18 @@
             <p>Parent Program</p>
             @Html.TextBoxFor(model => model.ProgramTitle, new { @class = "span12 input-small truncate", id = "txtProgram", @readonly = "true", style = "background:#F2F2F2;" })
             <p>Description</p>
-            @Html.TextArea("Description", string.Empty, new {placeholder = "Optional", @class = "span12 text-area-size", id = "Description"})   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+            @Html.TextArea("Description", string.Empty, new { placeholder = "Optional", @class = "span12 text-area-size input-setup", id = "Description" })   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         </div>
         <div class="span3" id="inspect-modal-left-column2">
             <p>Tactic Type</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
+                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
             <p style="margin-top: 10px;">Tactic Planned Cost</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+            @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Start Date</p>
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small resubmission", id = "t_startdate", label = "Start_Date" })
+                @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small resubmission input-setup", id = "t_startdate", label = "Start_Date" })
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
@@ -57,7 +69,7 @@
             <br />
             <p>End Date</p>
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small resubmission", id = "t_enddate", label = "End_Date" })
+                @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small resubmission input-setup", id = "t_enddate", label = "End_Date" })
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
@@ -67,7 +79,7 @@
             @if (IsTackticAddEdit)
             {
                 <span style="min-width:100%;">
-                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlOwner", label = "Owner" }) 
+                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
             else
@@ -99,7 +111,7 @@
                                 <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
                         }
-                    @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue resubmission", label = @Model.StageTitle, maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                    @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue resubmission input-setup", label = @Model.StageTitle, maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
                 <div class="pull-left" style="width: 47%">
@@ -125,7 +137,7 @@
         <div class="span3 margin-top10" style="clear: both;">
             <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", label = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience), require = "true" })
+                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", label = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience), require = "true" })
             </span>
         </div>
         <div class="span3 margin-top10 paddingleft25px">
@@ -135,13 +147,13 @@
         <div class="span3 margin-top10 paddingleft25px">
             <p>Vertical</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Vertical" })
+                @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", label = "Vertical" })
             </span>
         </div>
         <div class="span3 margin-top10 paddingleft25px">
             <p>Geography</p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Geography" })
+                @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", label = "Geography" })
             </span>
         </div>
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 4, "addEdit")
@@ -202,6 +214,10 @@
               $(this).datepicker('hide');
           });;
 
+          //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
+           $('.input-setup').addClass('light-blue-background');
+           $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
+          //End - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
           /*hide the other datepicker in input onclick*/
 
           $("#t_integration_status").click(function () {

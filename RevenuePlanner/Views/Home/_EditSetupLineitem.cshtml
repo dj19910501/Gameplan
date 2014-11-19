@@ -19,6 +19,22 @@
         color: gray;
         margin-top: 6px;
     }
+    #divPartial .verticalIdSelectBox .sbHolder {
+            background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
+            box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
+            margin-bottom: 0;
+            z-index: auto;
+    }
+    #divPartial .ui-multiselect {
+         background: none repeat scroll 0 0 #dff0f8 !important;
+     }
+    #divPartial .sbToggle {
+        border-top: 4px solid #6d6d6d !important;
+    }
+    #divPartial .sbHolder {
+        background-color: #dff0f8 !important;
+        background-image:none;
+    }
 </style>
 @using (Html.BeginForm())
 {
@@ -36,7 +52,7 @@
             @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = programTitle })
 
             <p>@Html.Raw("Description")</p>
-            @Html.TextArea("Description", string.Empty, new { id = "txtDescription", @class = "span12 text-area-size", style = "height:92px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+            @Html.TextArea("Description", string.Empty, new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
             <div style="clear: both; width: 250%;">
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
@@ -55,7 +71,7 @@
             <p>@Html.Raw("Owner")</p>
             @Html.TextBox("txtOwner", owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
             <p>@Html.Raw("Line Item Cost")</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate", id = "txtLineItemCost" })
+            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate input-setup", id = "txtLineItemCost" })
 
         </div>
     </div>
@@ -96,6 +112,10 @@
             $("#lblLineitemTitle").css('display', 'block');
             $("#txtTitle").css('display', 'none');
         }
+        //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
+        $('.input-setup').addClass('light-blue-background');
+        $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
+        //End - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
 
     });
 

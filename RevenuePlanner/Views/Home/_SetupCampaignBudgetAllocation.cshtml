@@ -39,7 +39,7 @@
    
     <div style="width: 30%; float: left;">
         <label class="padding-left4" title="Campaign Budget">Campaign Budget</label>
-        @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtCampaignBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+        @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar margin-top3px input-budget", placeholder = "Required", require = "true", id = "txtCampaignBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
         <div>
             <label title="Remaining Campaign Budget">Remaining Budget</label>
             @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
@@ -139,10 +139,13 @@
             });
 
             $("#SaveCampaignBudgetSection").css("display", "none");
+            
+            $(".input-budget").removeClass('light-blue-background');
         }
         else {
             $("#SaveCampaignBudgetSection").css("display", "block");
             $("#txtTitle").prop('readonly', false);
+            $(".input-budget").addClass('light-blue-background');
         }
 
         $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));

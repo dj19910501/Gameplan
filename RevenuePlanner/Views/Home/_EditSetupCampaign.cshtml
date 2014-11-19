@@ -21,6 +21,23 @@
     margin-top: 6px;
 }
 
+    #divPartial .verticalIdSelectBox .sbHolder {
+            background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
+            box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
+            margin-bottom: 0;
+            z-index: auto;
+    }
+    #divPartial .ui-multiselect {
+         background: none repeat scroll 0 0 #dff0f8 !important;
+     }
+    #divPartial .sbToggle {
+        border-top: 4px solid #6d6d6d !important;
+    }
+    #divPartial .sbHolder {
+        background-color: #dff0f8 !important;
+        background-image:none;
+    }
+
 </style>
 @using (Html.BeginForm())
 {
@@ -40,7 +57,7 @@
             @*<p>@Html.Raw("Parent Plan")</p>
             @Html.TextBox("txtPlan", HttpUtility.HtmlDecode(PlanTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = PlanTitle })*@
             <p>@Html.Raw("Description")</p>
-            @Html.TextArea("Description", string.Empty, new {id="txtDescription", @class = "span12 text-area-size", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+            @Html.TextArea("Description", string.Empty, new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
 
             @if (ExtIntService)
             {
@@ -63,13 +80,13 @@
                     @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true"})
             <p>Start Date</p>
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_startdate" })
+                @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate input-setup", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_startdate" })
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
             <p class="clear-section" style="margin-top:2px;">End Date</p>
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_enddate" })
+                @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate input-setup", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_enddate" })
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
@@ -77,7 +94,7 @@
         </div>
         <div class="span3" id="inspect-modal-left-column3">
              <p>@Html.Raw("Campaign Budget")</p>
-            @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate", id = "txtCampaignBudget", placeholder = "Required", require = "true" , maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar})
+            @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate input-setup", id = "txtCampaignBudget", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Remaining Campaign Budget</p>
                 @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
              <div class="content dark inline-ellipsis">
@@ -166,6 +183,19 @@
                   $("#hdnIsDeployedToIntegration").val(false);
               }
           }
+
+          //Start - Added by Viral Kadiya on 18/11/2014 to resolve PL ticket #947.
+          var IsEditable = $("#hdnCampaignOpt").val();
+          if (IsEditable == 'View') {                                 // check current page mode is editable or not.
+              $('.input-setup').removeClass('light-blue-background');
+              $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').removeClass('light-blue-background');
+          }
+          else {
+              $('.input-setup').addClass('light-blue-background');
+              $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
+          }
+          //End - Added by Viral Kadiya on 18/11/2014 to resolve PL ticket #947.
+
           // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
           var _description = $("#hdnDescription").val();
           $("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
