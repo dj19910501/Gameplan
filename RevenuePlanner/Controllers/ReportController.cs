@@ -3294,7 +3294,6 @@ namespace RevenuePlanner.Controllers
             var lstCustomFieldsCampaign = Common.GetCustomFields(campaignlist, Enums.Section.Campaign.ToString());
             var lstCustomFieldsProgram = Common.GetCustomFields(programlist, Enums.Section.Program.ToString());
 
-            var lstCustomFields = Common.GetTacticsCustomFields(TacticId);
             lstViewByTab = lstViewByTab.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
            // lstCustomFields = lstCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             lstViewByTab = lstViewByTab.Concat(lstCustomFieldsCampaign).Concat(lstCustomFieldsProgram).Concat(lstCustomFieldsTactics).ToList();
