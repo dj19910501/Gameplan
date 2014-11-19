@@ -6440,6 +6440,14 @@ namespace RevenuePlanner.Controllers
                                     pcpobj.GeographyId = form.GeographyId;
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
+                                // Start - Added by Sohel Pathan on 19/11/2014 for PL ticket #708
+                                Guid oldOwnerId = pcpobj.CreatedBy;
+                                if (pcpobj.CreatedBy != form.OwnerId)
+                                {
+                                    pcpobj.CreatedBy = form.OwnerId;
+                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                }
+                                // End - Added by Sohel Pathan on 19/11/2014 for PL ticket #708
                                 //if (RedirectType) // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 //{
 
@@ -6555,13 +6563,7 @@ namespace RevenuePlanner.Controllers
                                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic
                                 var PrevAllocationList = db.Plan_Campaign_Program_Tactic_Cost.Where(c => c.PlanTacticId == form.PlanTacticId).Select(c => c).ToList();  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
                                 //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                // Start - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
-                                Guid oldOwnerId = pcpobj.CreatedBy;
-                                if (form.OwnerId != null && form.OwnerId != Guid.Empty)
-                                {
-                                    pcpobj.CreatedBy = form.OwnerId;
-                                }
-                                // End - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
+                                
                                 db.Entry(pcpobj).State = EntityState.Modified;
                                 int result;
                                 if (Common.CheckAfterApprovedStatus(pcpobj.Status))
