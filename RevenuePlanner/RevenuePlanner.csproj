@@ -41,6 +41,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+<AutoParameterizationWebConfigConnectionStrings>false</AutoParameterizationWebConfigConnectionStrings>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Elmah">
@@ -610,6 +611,7 @@
     <Content Include="Scripts\js\ReportRevenue.js" />
     <Content Include="Scripts\js\ReportSummary.js" />
     <Content Include="Scripts\summernote.min.js" />
+    <Content Include="RevenuePlanner.wpp.targets" />
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />
