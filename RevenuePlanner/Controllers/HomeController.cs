@@ -4417,7 +4417,7 @@ namespace RevenuePlanner.Controllers
                     imodel.BusinessUnitId = objPlan.Model.BusinessUnitId;
                     imodel.Title = objPlan.Title;
                     imodel.ModelId = objPlan.ModelId;
-                    imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Version;
+                    imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Model.Version;
                     imodel.GoalType = objPlan.GoalType;
                     imodel.GoalValue = objPlan.GoalValue.ToString();
                     imodel.Budget = objPlan.Budget;

@@ -162,6 +162,8 @@
         var tabtext = ($("#li" + InspectValue).children('a').text());
         $('#div' + tabtext).css({ display: "block" });
 
+        $("#inq-value").text(number_format($("#inq-value").text().toString(), 0, 0, ','));
+
         if (!('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()')) {
             calculateBudget('@modelId', '@goalType', '@goalValue');
         }

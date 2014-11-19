@@ -1090,7 +1090,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
             type: 'POST',
             url: '@Url.Content("~/Home/GetPlansByBusinessId/")',
             dataType: "json",
-            async: true,
+            async: false,
             data: {
                 businessIds: filters.BUId.toString(),
                 requstedModule: ActiveMenu
