@@ -82,7 +82,7 @@
             <p>Owner</p>
             @if (IsTackticAddEdit)
             {
-                <span style="min-width:100%;">
+                <span style="min-width:100%; position:relative;">
                     @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
@@ -318,6 +318,19 @@
 
           $('#ddlOwner').next().css('width', '95%');
           $('#ddlOwner').next().css('min-height', '30px');
+
+          var spanOwner = $('#multipleselect_ddlOwner');
+          //$('#modal-container-186470').find('div:first').after(spanOwner);
+          $('#btnMultiselect_ddlOwner').after(spanOwner);
+          //$('#ddlOwner').parent().css('position', 'relative');
+          //$('#multipleselect_ddlOwner').css('left', '0px');
+          //$('#multipleselect_ddlOwner').css('top', '0px');
+
+          $('#btnMultiselect_ddlOwner').find('span:first').click(function () {
+              $('#multipleselect_ddlOwner').css('left', '0px');
+              $('#multipleselect_ddlOwner').css('top', '20px');
+      });
+          
       });
 
       $("#btnUploadResult").on("click", function (e) {          
@@ -722,9 +735,9 @@
     }
 
     $('#btnMultiselect_ddlOwner').click(function () {
-        var span1 = $('#multipleselect_ddlOwner');
-        $(this).after(span1);
-        $('#ddlOwner').parent().css('position', 'relative');
+        //var spanOwner = $('#multipleselect_ddlOwner');
+        //$(this).after(spanOwner);
+        //$('#ddlOwner').parent().css('position', 'relative');
         $('#multipleselect_ddlOwner').css('left', '0px');
         $('#multipleselect_ddlOwner').css('top', '20px');
     });
