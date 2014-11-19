@@ -3286,10 +3286,19 @@ namespace RevenuePlanner.Controllers
             lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = ReportTabType.Audience.ToString() });
 
+           ////Start - Modified by Mitesh Vaishnav for PL ticket #831
+            var campaignProgramList= db.Plan_Campaign_Program_Tactic.Where(t => TacticId.Contains(t.PlanTacticId)).ToList();
+            List<int> campaignlist = campaignProgramList.Select(a => a.Plan_Campaign_Program.PlanCampaignId).ToList();
+            List<int> programlist = campaignProgramList.Select(t=>t.PlanProgramId).ToList();
+            var lstCustomFieldsTactics = Common.GetCustomFields(TacticId, Enums.Section.Tactic.ToString());
+            var lstCustomFieldsCampaign = Common.GetCustomFields(campaignlist, Enums.Section.Campaign.ToString());
+            var lstCustomFieldsProgram = Common.GetCustomFields(programlist, Enums.Section.Program.ToString());
+
             var lstCustomFields = Common.GetTacticsCustomFields(TacticId);
             lstViewByTab = lstViewByTab.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
-            lstCustomFields = lstCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
-            lstViewByTab = lstViewByTab.Concat(lstCustomFields).ToList();
+           // lstCustomFields = lstCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            lstViewByTab = lstViewByTab.Concat(lstCustomFieldsCampaign).Concat(lstCustomFieldsProgram).Concat(lstCustomFieldsTactics).ToList();
+            ////End - Modified by Mitesh Vaishnav for PL ticket #831
             ViewBag.ViewByTab = lstViewByTab;
 
             List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
@@ -3565,9 +3574,9 @@ namespace RevenuePlanner.Controllers
                 {
                     planobj = db.Verticals.Where(a => VerticalIdsInner.Contains(a.VerticalId)).ToList().Select(a => new BudgetReportTab { Id = a.VerticalId.ToString(), Title = a.Title }).ToList();
                 }
-                else if (Tab.Contains(Common.CustomTitle))
+                else if (Tab.Contains(Common.TacticCustomTitle))
                 {
-                    customfieldId = Convert.ToInt32(Tab.Replace(Common.CustomTitle, ""));
+                    customfieldId = Convert.ToInt32(Tab.Replace(Common.TacticCustomTitle, ""));
                     string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
 
                     if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
@@ -3591,7 +3600,58 @@ namespace RevenuePlanner.Controllers
                     }
 
                 }
+                ////Start - Added by Mitesh Vaishnav for PL ticket #831
+                else if (Tab.Contains(Common.ProgramCustomTitle))
+                {
+                    customfieldId = Convert.ToInt32(Tab.Replace(Common.ProgramCustomTitle, ""));
+                    string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
 
+                    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                    {
+                        var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
+                        planobj = optionlist.Select(p => new BudgetReportTab
+                        {
+                            Id = p.CustomFieldOptionId.ToString(),
+                            Title = p.Value
+                        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
+                    }
+                    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                    {
+                        List<int> entityids = tacticList.Select(t => t.PlanProgramId).ToList();
+                        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                        planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
+                        {
+                            Id = p.Key,
+                            Title = p.Key
+                        }).Select(b => b).OrderBy(b => b.Title).ToList();
+                    }
+                }
+                else if (Tab.Contains(Common.CampaignCustomTitle))
+                {
+                    customfieldId = Convert.ToInt32(Tab.Replace(Common.CampaignCustomTitle, ""));
+                    string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+
+                    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                    {
+                        var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
+                        planobj = optionlist.Select(p => new BudgetReportTab
+                        {
+                            Id = p.CustomFieldOptionId.ToString(),
+                            Title = p.Value
+                        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
+                    }
+                    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                    {
+                        List<int> entityids = tacticList.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
+                        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                        planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
+                        {
+                            Id = p.Key,
+                            Title = p.Key
+                        }).Select(b => b).OrderBy(b => b.Title).ToList();
+                    }
+                }
+                ////End - Added by Mitesh Vaishnav for PL ticket #831
 
                 if (planobj != null)
                 {
@@ -3615,14 +3675,29 @@ namespace RevenuePlanner.Controllers
                         {
                             TacticListInner = tacticList.Where(tactic => tactic.VerticalId.ToString() == p.Id).ToList();
                         }
-                        else if (Tab.Contains(Common.CustomTitle))
+                        else if (Tab.Contains(Common.TacticCustomTitle))
                         {
                             var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == p.Id).ToList();
                             List<int> entityids = cusomfieldEntity.Select(e => e.EntityId).ToList();
                             TacticListInner = tacticList.Where(tactic => entityids.Contains(tactic.PlanTacticId)).ToList();
                             p.Id = p.Id.Replace(' ', '_').Replace('#','_').Replace('-','_');
                         }
-
+                        ////Start - Added by Mitesh Vaishnav for PL ticket #831
+                        else if (Tab.Contains(Common.ProgramCustomTitle))
+                        {
+                            var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == p.Id).ToList();
+                            List<int> entityids = cusomfieldEntity.Select(e => e.EntityId).ToList();
+                            TacticListInner = tacticList.Where(tactic => entityids.Contains(tactic.PlanProgramId)).ToList();
+                            p.Id = p.Id.Replace(' ', '_').Replace('#', '_').Replace('-', '_');
+                        }
+                        else if (Tab.Contains(Common.CampaignCustomTitle))
+                        {
+                            var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == p.Id).ToList();
+                            List<int> entityids = cusomfieldEntity.Select(e => e.EntityId).ToList();
+                            TacticListInner = tacticList.Where(tactic => entityids.Contains(tactic.Plan_Campaign_Program.PlanCampaignId)).ToList();
+                            p.Id = p.Id.Replace(' ', '_').Replace('#', '_').Replace('-', '_');
+                        }
+                        ////End - Added by Mitesh Vaishnav for PL ticket #831
                         obj = new BudgetModelReport();
                         obj.Id = p.Id.ToString();
                         obj.ActivityId = "plan_" + p.Id.ToString();
