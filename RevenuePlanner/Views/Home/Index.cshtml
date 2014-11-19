@@ -170,6 +170,9 @@
             filters.OwnerTitles = [];
             filters.OwnerIds = [];
             $.ajax({
+                beforeSend: function (x) {
+                    myApp.hidePleaseWait();
+                },
                 type: "GET",
                 async:false,
                 cache: false,
@@ -858,6 +861,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         }
     }
 
+
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function toggleBusinessUnit(obj) {
         var id = $(obj).attr('id');
@@ -880,7 +884,7 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
             $("#PlanAllModule").css("display", "none");
             $("#NoPlanFound").show();
         }
-
+      
         BindPlanBySelectedBusniessUnit();
     }
 
@@ -1080,10 +1084,13 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         ResetFilterBeforePlan();
         var ActiveMenu = $('#ActiveMenu').val().toLowerCase();
         $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
             type: 'POST',
             url: '@Url.Content("~/Home/GetPlansByBusinessId/")',
             dataType: "json",
-            async: false,
+            async: true,
             data: {
                 businessIds: filters.BUId.toString(),
                 requstedModule: ActiveMenu
@@ -3778,6 +3785,7 @@ function ApproveTactic(e, task) {
 
 <script>
     $(document).ready(function () {
+
         $("#content_wraper").css("margin-bottom", "0");
        function toggleChevron(e) {
             $(e.target)
@@ -3803,4 +3811,5 @@ function ApproveTactic(e, task) {
         GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
     }
 
+   
 </script>
