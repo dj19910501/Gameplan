@@ -23,12 +23,12 @@ namespace RevenuePlanner.Helpers
         /// <param name="CopyClone"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public  int ToClone(string Suffix = "", string CopyClone = "", int ID = 0 ,int PlanId = 0)
+        public int ToClone(string Suffix = "", string CopyClone = "", int ID = 0, int PlanId = 0)
         {
             Guid UserId = Sessions.User.UserId;
             if (PlanId == 0)
             {
-                PlanId = Sessions.PlanId;                
+                PlanId = Sessions.PlanId;
             }
             Suffix = !string.IsNullOrEmpty(Suffix) ? Suffix : Common.copySuffix + Common.GetTimeStamp();
             string PlanStatus = Enums.PlanStatus.Draft.ToString();
@@ -63,7 +63,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="PlanStatus"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public  int PlanClone(int PlanId, string Suffix, Guid UserId, string PlanStatus, string TacticStatus)
+        public int PlanClone(int PlanId, string Suffix, Guid UserId, string PlanStatus, string TacticStatus)
         {
             int returnFlag = 0;
             if (PlanId == 0)
@@ -81,7 +81,7 @@ namespace RevenuePlanner.Helpers
                     proj.Status = PlanStatus;
                     proj.Model = null;
                     proj.Plan_Improvement_Campaign = null;
-                    proj.Plan_Budget = proj.Plan_Budget.ToList(); 
+                    proj.Plan_Budget = proj.Plan_Budget.ToList();
                     proj.Plan_Team = null;
                     proj.Plan_Campaign.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
@@ -101,6 +101,7 @@ namespace RevenuePlanner.Helpers
                                 pcp.Audience = null;
                                 pcp.Geography = null;
                                 pcp.Vertical = null;
+                                pcp.Status = TacticStatus;
                                 pcp.Plan_Campaign_Program_Budget = pcp.Plan_Campaign_Program_Budget.ToList();
                                 pcp.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
                                 {
@@ -119,9 +120,9 @@ namespace RevenuePlanner.Helpers
                                     pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
-                                        {
-                                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
-                                        });
+                                    {
+                                        pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
+                                    });
                                 });
                             });
                         });
@@ -141,17 +142,17 @@ namespace RevenuePlanner.Helpers
                     campaignList = db.Plan_Campaign.Where(a => a.PlanId == PlanId && a.IsDeleted == false).ToList();
                     foreach (var campaign in campaignList)
                     {
-                       var campaignCustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == campaign.PlanCampaignId && a.CustomField.EntityType == entityTypeCampaign).ToList();
+                        var campaignCustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == campaign.PlanCampaignId && a.CustomField.EntityType == entityTypeCampaign).ToList();
                         var clonedCampaign = proj.Plan_Campaign.Where(a => a.Title == campaign.Title && a.IsDeleted == false).FirstOrDefault();
                         campaignCustomFieldsList.ForEach(a => { a.EntityId = clonedCampaign.PlanCampaignId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
-                        var programList=campaign.Plan_Campaign_Program.Where(a=>a.IsDeleted==false).ToList();
+                        var programList = campaign.Plan_Campaign_Program.Where(a => a.IsDeleted == false).ToList();
 
                         foreach (var program in programList)
                         {
                             var programCustomField = db.CustomField_Entity.Where(a => a.EntityId == program.PlanProgramId && a.CustomField.EntityType == entityTypeProgram).ToList();
                             var clonedProgram = clonedCampaign.Plan_Campaign_Program.Where(a => a.Title == program.Title).ToList().FirstOrDefault();
                             programCustomField.ForEach(a => { a.EntityId = clonedProgram.PlanProgramId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
-                            var tacticList=program.Plan_Campaign_Program_Tactic.Where(a=>a.IsDeleted==false).ToList();
+                            var tacticList = program.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted == false).ToList();
 
                             foreach (var tactic in tacticList)
                             {
@@ -166,7 +167,7 @@ namespace RevenuePlanner.Helpers
                     db.SaveChanges();
                     ////End Added by Mitesh Vaishnav for PL ticket #718
 
-                    Sessions.PlanId = proj.PlanId; 
+                    Sessions.PlanId = proj.PlanId;
                     Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, proj.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                     returnFlag = planId;
                     return returnFlag;
@@ -190,7 +191,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public  int CampaignClone(int PlanId, string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int CampaignClone(int PlanId, string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
             string title = string.Empty;
@@ -202,53 +203,54 @@ namespace RevenuePlanner.Helpers
             try
             {
                 Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().First(p => p.PlanId == PlanId && p.PlanCampaignId == ID && p.IsDeleted == false);
-                if (objPlanCampaign != null )
+                if (objPlanCampaign != null)
                 {
-                        objPlanCampaign.Tactic_Share = null;
-                        objPlanCampaign.CreatedBy = UserId;
-                        objPlanCampaign.CreatedDate = DateTime.Now;
-                        objPlanCampaign.Title = (objPlanCampaign.Title + Suffix);
-                        objPlanCampaign.Plan_Campaign_Program_Tactic_Comment = null;
-                        objPlanCampaign.Plan = null;
-                        objPlanCampaign.Audience = null;
-                        objPlanCampaign.Geography = null;
-                        objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
-                        objPlanCampaign.Vertical = null;
-                        objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
-                            t =>
+                    objPlanCampaign.Tactic_Share = null;
+                    objPlanCampaign.CreatedBy = UserId;
+                    objPlanCampaign.CreatedDate = DateTime.Now;
+                    objPlanCampaign.Title = (objPlanCampaign.Title + Suffix);
+                    objPlanCampaign.Plan_Campaign_Program_Tactic_Comment = null;
+                    objPlanCampaign.Plan = null;
+                    objPlanCampaign.Audience = null;
+                    objPlanCampaign.Geography = null;
+                    objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
+                    objPlanCampaign.Vertical = null;
+                    objPlanCampaign.Status = TacticStatus;
+                    objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
+                        t =>
+                        {
+                            t.Tactic_Share = null;
+                            t.Plan_Campaign_Program_Tactic_Comment = null;
+                            t.CreatedDate = DateTime.Now;
+                            t.Status = TacticStatus;
+                            t.Vertical = null;
+                            t.Audience = null;
+                            t.Geography = null;
+                            t.Plan_Campaign_Program_Budget = t.Plan_Campaign_Program_Budget;
+                            t.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
                             {
-                                t.Tactic_Share = null;
-                                t.Plan_Campaign_Program_Tactic_Comment = null;
-                                t.CreatedDate = DateTime.Now;
-                                t.Status = TacticStatus;
-                                t.Vertical = null;
-                                t.Audience = null;
-                                t.Geography = null;
-                                t.Plan_Campaign_Program_Budget = t.Plan_Campaign_Program_Budget;
-                                t.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
+                                pcpt.Plan_Campaign_Program_Tactic_Actual = null;
+                                pcpt.Plan_Campaign_Program_Tactic_Comment = null;
+                                pcpt.Tactic_Share = null;
+                                pcpt.Vertical = null;
+                                pcpt.Audience = null;
+                                pcpt.BusinessUnit = null;
+                                pcpt.Geography = null;
+                                pcpt.Plan_Campaign_Program_Tactic1 = null;
+                                pcpt.Plan_Campaign_Program_Tactic2 = null;
+                                pcpt.Stage = null;
+                                pcpt.TacticType = null;
+                                pcpt.Status = TacticStatus;
+                                pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
+                                pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
+                                pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                                 {
-                                    pcpt.Plan_Campaign_Program_Tactic_Actual = null;
-                                    pcpt.Plan_Campaign_Program_Tactic_Comment = null;
-                                    pcpt.Tactic_Share = null;
-                                    pcpt.Vertical = null;
-                                    pcpt.Audience = null;
-                                    pcpt.BusinessUnit = null;
-                                    pcpt.Geography = null;
-                                    pcpt.Plan_Campaign_Program_Tactic1 = null;
-                                    pcpt.Plan_Campaign_Program_Tactic2 = null;
-                                    pcpt.Stage = null;
-                                    pcpt.TacticType = null;
-                                    pcpt.Status = TacticStatus;
-                                    pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
-                                    pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
-                                    pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
-                                    {
-                                        pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
-                                    });
+                                    pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                                 });
-                                t.Plan_Campaign_Program_Tactic = t.Plan_Campaign_Program_Tactic.ToList();
                             });
-                
+                            t.Plan_Campaign_Program_Tactic = t.Plan_Campaign_Program_Tactic.ToList();
+                        });
+
                     objPlanCampaign.Plan_Campaign_Program = objPlanCampaign.Plan_Campaign_Program.ToList();
                     db.Plan_Campaign.Add(objPlanCampaign);
                     db.SaveChanges();
@@ -267,7 +269,7 @@ namespace RevenuePlanner.Helpers
                         var programCustomField = db.CustomField_Entity.Where(a => a.EntityId == program.PlanProgramId && a.CustomField.EntityType == entityTypeProgram).ToList();
                         var clonedProgram = objPlanCampaign.Plan_Campaign_Program.Where(a => a.Title == program.Title).ToList().FirstOrDefault();
                         programCustomField.ForEach(a => { a.EntityId = clonedProgram.PlanProgramId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
-                        var tacticList=program.Plan_Campaign_Program_Tactic.Where(a=>a.IsDeleted==false).ToList();
+                        var tacticList = program.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted == false).ToList();
 
                         if (clonedProgram != null && clonedProgram.Plan_Campaign_Program_Tactic.Count > 0)
                         {
@@ -276,7 +278,7 @@ namespace RevenuePlanner.Helpers
                                 var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
                                 int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
                                 tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
-                            }    
+                            }
                         }
                     }
 
@@ -304,7 +306,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="UserId"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public  int ProgramClone(string Suffix, Guid UserId, int ID , string TacticStatus)
+        public int ProgramClone(string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
             int planId = Sessions.PlanId;
@@ -319,43 +321,44 @@ namespace RevenuePlanner.Helpers
 
                 if (objPlanCampaignPrograms != null)
                 {
-                            planId = objPlanCampaignPrograms.Plan_Campaign.PlanId;
-                            objPlanCampaignPrograms.CreatedBy = UserId;
-                            objPlanCampaignPrograms.CreatedDate = DateTime.Now;
-                            objPlanCampaignPrograms.Title = (objPlanCampaignPrograms.Title + Suffix);
-                            objPlanCampaignPrograms.Plan_Campaign_Program_Tactic_Comment = null;
-                            objPlanCampaignPrograms.Plan_Campaign = null;
-                            objPlanCampaignPrograms.Audience = null;
-                            objPlanCampaignPrograms.Geography = null;
-                            objPlanCampaignPrograms.Tactic_Share = null;
-                            objPlanCampaignPrograms.Vertical = null;
-                            objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
-                            objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
-                                t =>
-                                {
-                                    t.CreatedDate = DateTime.Now;
-                                    t.Plan_Campaign_Program_Tactic_Comment = null;
-                                    t.Plan_Campaign_Program_Tactic_Actual = null;
-                                    t.Audience = null;
-                                    t.BusinessUnit = null;
-                                    t.Geography = null;
-                                    t.Plan_Campaign_Program_Tactic1 = null;
-                                    t.Plan_Campaign_Program_Tactic2 = null;
-                                    t.Stage = null;
-                                    t.Tactic_Share = null;
-                                    t.TacticType = null;
-                                    t.Vertical= null;
-                                    t.Status = TacticStatus;
-                                    t.Plan_Campaign_Program_Tactic_Cost = t.Plan_Campaign_Program_Tactic_Cost.ToList();
-                                    t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.ToList();
-                                    t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
-                                    {
-                                        pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
-                                    });
-                                });
-                            objPlanCampaignPrograms.Plan_Campaign_Program_Tactic = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.ToList();
-                            db.Plan_Campaign_Program.Add(objPlanCampaignPrograms);
-                            db.SaveChanges();
+                    planId = objPlanCampaignPrograms.Plan_Campaign.PlanId;
+                    objPlanCampaignPrograms.CreatedBy = UserId;
+                    objPlanCampaignPrograms.CreatedDate = DateTime.Now;
+                    objPlanCampaignPrograms.Title = (objPlanCampaignPrograms.Title + Suffix);
+                    objPlanCampaignPrograms.Plan_Campaign_Program_Tactic_Comment = null;
+                    objPlanCampaignPrograms.Plan_Campaign = null;
+                    objPlanCampaignPrograms.Audience = null;
+                    objPlanCampaignPrograms.Geography = null;
+                    objPlanCampaignPrograms.Tactic_Share = null;
+                    objPlanCampaignPrograms.Vertical = null;
+                    objPlanCampaignPrograms.Status = TacticStatus;
+                    objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
+                    objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
+                        t =>
+                        {
+                            t.CreatedDate = DateTime.Now;
+                            t.Plan_Campaign_Program_Tactic_Comment = null;
+                            t.Plan_Campaign_Program_Tactic_Actual = null;
+                            t.Audience = null;
+                            t.BusinessUnit = null;
+                            t.Geography = null;
+                            t.Plan_Campaign_Program_Tactic1 = null;
+                            t.Plan_Campaign_Program_Tactic2 = null;
+                            t.Stage = null;
+                            t.Tactic_Share = null;
+                            t.TacticType = null;
+                            t.Vertical = null;
+                            t.Status = TacticStatus;
+                            t.Plan_Campaign_Program_Tactic_Cost = t.Plan_Campaign_Program_Tactic_Cost.ToList();
+                            t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.ToList();
+                            t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
+                            {
+                                pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
+                            });
+                        });
+                    objPlanCampaignPrograms.Plan_Campaign_Program_Tactic = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.ToList();
+                    db.Plan_Campaign_Program.Add(objPlanCampaignPrograms);
+                    db.SaveChanges();
 
                     int PlanProgramId = objPlanCampaignPrograms.PlanProgramId;
 
@@ -366,17 +369,17 @@ namespace RevenuePlanner.Helpers
                     var CustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == ID && a.CustomField.EntityType == entityTypeProgram).ToList();
                     CustomFieldsList.ForEach(a => { a.EntityId = objPlanCampaignPrograms.PlanProgramId; db.Entry(a).State = EntityState.Added; });
 
-                            tacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.PlanProgramId == ID && a.IsDeleted == false).ToList();
+                    tacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.PlanProgramId == ID && a.IsDeleted == false).ToList();
 
-                            foreach (var tactic in tacticList)
-                            {
-                                var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
-                                int clonedTacticId = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
-                                tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
-                            }
+                    foreach (var tactic in tacticList)
+                    {
+                        var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
+                        int clonedTacticId = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
+                        tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                    }
 
-                            db.SaveChanges();
-                            ////End Added by Mitesh Vaishnav for PL ticket #719
+                    db.SaveChanges();
+                    ////End Added by Mitesh Vaishnav for PL ticket #719
 
                     Common.InsertChangeLog(planId, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                     returnFlag = PlanProgramId;
@@ -401,7 +404,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public  int TacticClone(string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int TacticClone(string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
             int planid = Sessions.PlanId;
@@ -472,7 +475,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public  int LineItemClone(string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int LineItemClone(string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
             int planid = Sessions.PlanId;
@@ -511,7 +514,7 @@ namespace RevenuePlanner.Helpers
         /// Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
         /// </summary>
         /// <param name="TacticId"></param>
-        public  void CostCalculacation(int TacticId)
+        public void CostCalculacation(int TacticId)
         {
             Plan_Campaign_Program_Tactic ObjTactic = db.Plan_Campaign_Program_Tactic.SingleOrDefault(t => t.PlanTacticId == TacticId);
             var objtacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == TacticId && s.IsDeleted == false && s.LineItemTypeId != null).ToList();
