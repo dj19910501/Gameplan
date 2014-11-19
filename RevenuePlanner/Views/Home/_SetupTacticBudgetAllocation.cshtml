@@ -40,10 +40,10 @@
    @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
    
     <div style="width: 30%; float: left;">
-        <label class="padding-left4" title="Tactic Planned Cost">Tactic Planned Cost</label>
+        <label class="padding-left4 inspect-bolder-label" title="Tactic Planned Cost">Tactic Planned Cost</label>
         @Html.TextBoxFor(model => model.TacticCost, new { @class = "currency_dollar margin-top3px input-budget", placeholder = "Required", require = "true", id = "txtTacticBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
         <div>
-            <label title="Remaining Campaign Budget">Remaining Program Budget</label>
+            <label title="Remaining Campaign Budget" class="inspect-bolder-label">Remaining Program Budget</label>
             @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
         </div>
     </div>
@@ -51,7 +51,7 @@
         @if (@Model.AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
         {
             <div class="budget-section">
-                <div class="budget-head clearfix">
+                <div class="budget-head clearfix inspect-bolder-label">
                     <p>Planned Cost Allocation</p>
                 </div>
                 <div class="budget-collapse">

@@ -18,7 +18,7 @@
     @Html.Hidden("hdnIsBudgetAllocated",IsBudgetAllocated)
     
         <div style="width: 30%; float: left;">
-            <label class="padding-left4">Plan Budget</label>
+            <label class="padding-left4 inspect-bolder-label">Plan Budget</label>
             @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
             {
                 @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id="txtPlanBudget", @class = "margin-top3px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })
@@ -33,7 +33,7 @@
             {
 	            <div class="budget-section">
                     <div class="budget-head clearfix">
-                        <p>Budget Allocation</p>
+                        <p class="inspect-bolder-label">Budget Allocation</p>
                     </div>
                     <div class="budget-collapse">
                         <div class="white-bg-InspectPopup-Budget">
@@ -46,10 +46,7 @@
                             <div class="budget-result source-sans-prolight">
                                 <p class="font-size16">
                                     Allocated Campaign Budget (this @(AllocatedBy.Equals(Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString(), StringComparison.OrdinalIgnoreCase) ? "Month" : "Quarter")): 
-                                    @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
-                                    {
                                                 <span id="lblAllocatedCampaignsBudget" class="source-sans-proregular"></span>
-                                    }
                                 </p>
                                 <p class="font-size16">
                                     Total Allocated:
@@ -110,7 +107,7 @@
                 $(this).parent().removeClass('light-blue-background');
                 $(this).parent().addClass('unallocated-span');
                 $(this).addClass('unallocated-text-BudgetPopUp');
-                $(this).prop('disabled', 'disabled');
+                //$(this).prop('disabled', 'disabled');
             });
         }
 

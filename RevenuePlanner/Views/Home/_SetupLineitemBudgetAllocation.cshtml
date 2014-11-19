@@ -55,10 +55,10 @@
     @Html.HiddenFor(model => model.Cost, new { id = "hdnOldLineitemCost" })
    
     <div style="width: 30%; float: left;">
-        <label class="padding-left4" title="Tactic Planned Cost">Line Item Cost</label>
+        <label class="padding-left4 inspect-bolder-label" title="Tactic Planned Cost">Line Item Cost</label>
         @Html.TextBoxFor(model => model.Cost, new { @class = "currency_dollar margin-top3px input-budget", placeholder = "Required", require = "true", id = "txtLineItemCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
         <div>
-            <label title="Remaining Campaign Budget">Other Line Item Cost</label>
+            <label title="Remaining Campaign Budget" class="inspect-bolder-label">Other Line Item Cost</label>
             @Html.TextBox("txtOtherLineItemCost", otherLineItemCost, new { @class = "margin-top3px", id = "txtOtherLineItemCost", @readonly = "true" })
         </div>
     </div>
@@ -68,7 +68,7 @@
        {
             <div class="budget-section">
                 <div class="budget-head clearfix">
-                    <p>Planned Cost Allocation</p>
+                    <p class="inspect-bolder-label">Planned Cost Allocation</p>
                 </div>
                 <div class="budget-collapse">
                     <div class="white-bg-edirProgram">

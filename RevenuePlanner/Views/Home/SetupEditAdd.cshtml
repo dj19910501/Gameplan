@@ -107,7 +107,7 @@
 
             <div class="cf width100" style="width: 244px;">
                 <div class="margin-right10 pull-left" style="width: 47%">
-                    <label id="lblStageTitle" title="@Model.StageTitle" class="stage-title">@Model.StageTitle &nbsp;</label>
+                    <label id="lblStageTitle" title="@Model.StageTitle" class="stage-title inspect-bolder-label">@Model.StageTitle &nbsp;</label>
 
                         @if (ViewBag.IsDiffrentStageType == true)
                         {
@@ -119,12 +119,12 @@
                 </div>
 
                 <div class="pull-left" style="width: 47%">
-                    <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
+                    <label title="@Html.LabelForMQL("MQL")" class="inspect-bolder-label">@Html.LabelForMQL("MQL")</label>
                     <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
                 </div>
 
                 <div class="pull-left" style="width: 47%">
-                    <label title="Revenue">Revenue</label>
+                    <label title="Revenue" class="inspect-bolder-label">Revenue</label>
                     @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>
             </div>

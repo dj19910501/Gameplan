@@ -42,7 +42,7 @@
             @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
             <div class="cf width100" style="width:244px;">
              <div class="margin-right10 pull-left" style="width: 47%">
-                 <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
+                 <label id="lblStageTitle" title="@Model.StageTitle" class="inspect-bolder-label">@Model.StageTitle &nbsp;
                           @if (ViewBag.IsDiffrentStageType == true)
                           {
                               <span>
@@ -53,12 +53,12 @@
              </div>
 
              <div class="pull-left" style="width: 47%">
-                 <label title="@Html.LabelForMQL("MQLs")">@Html.LabelForMQL("MQLs")</label>
+                 <label title="@Html.LabelForMQL("MQLs")" class="inspect-bolder-label">@Html.LabelForMQL("MQLs")</label>
                  <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
              </div>
 
              <div class="pull-left" style="width: 47%">
-                 <label title="Revenue">Revenue</label>
+                 <label title="Revenue" class="inspect-bolder-label">Revenue</label>
                  @Html.TextBoxFor(model => model.Revenues, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
              </div>
          </div>

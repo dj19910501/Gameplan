@@ -10280,13 +10280,14 @@ li.close-list {
         background-position: 0 3px;
         background-repeat: no-repeat;
         content: "Edit";
-        font-size: 15px;
+        font-size: 14px;        /* Old Value: 15px, Modified by Viral Kadiya to resolve Pl ticket #947. */
         height: 14px;
         line-height: 34px;
         margin-left: 10px;
         margin-top: 12px;
         padding-left: 24px;
         vertical-align: top;
+        font-weight: lighter;   /* Added by Viral Kadiya to resolve Pl ticket #947. */
     }
 /* */
 
@@ -10848,6 +10849,8 @@ li.close-list {
     width: 70px;
     margin-top: -5px;
     outline: none;
+    font-family: 'source_sans_prolight';	/* Added by Viral Kadiya to resolve Pl ticket #947. */
+    font-weight: lighter !important;		/* Added by Viral Kadiya to resolve Pl ticket #947. */
 }
 
 .Tactic-Budget-Allocation {
@@ -10865,13 +10868,14 @@ li.close-list {
         background-position: 0 3px;
         background-repeat: no-repeat;
         content: "Add";
-        font-size: 15px;
+        font-size: 14px;	/* Old Value: 15px, Modified by Viral Kadiya to resolve Pl ticket #947. */
         height: 14px;
         line-height: 34px;
         margin-left: 10px;
         margin-top: 12px;
         padding-left: 24px;
         vertical-align: top;
+        font-weight: lighter;	/* Added by Viral Kadiya to resolve Pl ticket #947. */
     }
 
 .delete-icon-white {
