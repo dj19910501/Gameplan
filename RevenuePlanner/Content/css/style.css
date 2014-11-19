@@ -7895,6 +7895,7 @@ input.icon-check-gray {
     background-image: url("../images/circle-check-icon-gray.png");
     background-repeat: no-repeat;
     background-position: right;
+    background-color: #dcedf7; /*Added by Viral kadiya on 19/11/2014 for PL ticket #947.*/
 }
 
 input.icon-check-blue {
