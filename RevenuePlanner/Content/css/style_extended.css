@@ -742,10 +742,15 @@ span.setbackground {
 .nav-gray-planc li a.audience span {
     background-position: -136px 0 !important;
 }
-
+/*Modified by Mitesh Vaishnav for internal issues (in new Model mode icon display wrong)*/ 
 .nav-gray-planc li a.tactics span {
-    background-position: -170px 0 !important;
+    background-position: -70px 0 !important;
 }
+/*Added by Mitesh Vaishnav for internal issue  (in new Model mode icon display wrong)*/
+.nav-gray-planc li a.integrations span {
+    background-position: -235px 0 !important;
+}/*End modified by Mitesh Vaishnav for internal issue*/
+
 /*Added by mitesh vaishnav on 18/07/2014*/
 .nav-gray-planc li#liCalender span {
     background-position: -170px 0 !important;
