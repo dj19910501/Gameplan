@@ -618,9 +618,27 @@ namespace RevenuePlanner.Controllers
         {
             string sourceViewBy = viewBy;
             int CustomTypeId = 0;
-            if (viewBy.Contains(Common.CustomTitle))
+            bool IsCampaign = viewBy.Contains(Common.CampaignCustomTitle) ? true : false;
+            bool IsProgram = viewBy.Contains(Common.ProgramCustomTitle) ? true : false;
+            bool IsTactic = viewBy.Contains(Common.TacticCustomTitle) ? true : false;
+            string entityType = Enums.EntityType.Tactic.ToString();
+            if (IsTactic)
             {
-                CustomTypeId = Convert.ToInt32(viewBy.Replace(Common.CustomTitle, ""));
+                CustomTypeId = Convert.ToInt32(viewBy.Replace(Common.TacticCustomTitle, ""));
+            }
+            else if (IsCampaign)
+            {
+                CustomTypeId = Convert.ToInt32(viewBy.Replace(Common.CampaignCustomTitle, ""));
+                entityType = Enums.EntityType.Campaign.ToString();
+            }
+            else if (IsProgram)
+            {
+                CustomTypeId = Convert.ToInt32(viewBy.Replace(Common.ProgramCustomTitle, ""));
+                entityType = Enums.EntityType.Program.ToString();
+            }
+
+            if (IsTactic || IsCampaign || IsProgram)
+            {
                 viewBy = PlanGanttTypes.Custom.ToString();
             }
 
@@ -882,11 +900,12 @@ namespace RevenuePlanner.Controllers
                 var tempTactic = (from cf in db.CustomFields
                                   join cft in db.CustomFieldTypes on cf.CustomFieldTypeId equals cft.CustomFieldTypeId
                                   join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                  join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
+                                  join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals 
+                                  (IsCampaign ?  t.Plan_Campaign_Program.PlanCampaignId : ( IsProgram ?  t.PlanProgramId : t.PlanTacticId) )
                                   join cfoLeft in db.CustomFieldOptions on new { Key1 = cf.CustomFieldId, Key2 = cfe.Value.Trim() } equals
                                      new { Key1 = cfoLeft.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)cfoLeft.CustomFieldOptionId).Trim() } into cAll
                                   from cfo in cAll.DefaultIfEmpty()
-                                  where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.CustomFieldId == CustomTypeId &&
+                                  where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == entityType && cf.CustomFieldId == CustomTypeId &&
                                   cf.ClientId == Sessions.User.ClientId && tacticIdList.Contains(t.PlanTacticId)
                                   select new
                                   {
@@ -1283,7 +1302,7 @@ namespace RevenuePlanner.Controllers
             List<ViewByModel> lstViewById = new List<ViewByModel>();
             if (getViewByList)
             {
-                lstViewById = Common.GetDefaultGanttTypes(tacticForAllTabs.ToList().Select(t => t.PlanTacticId).ToList());
+                lstViewById = Common.GetDefaultGanttTypes(tacticForAllTabs.ToList());
                 //lstViewById = lstViewById.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             }
             return lstViewById;

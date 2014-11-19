@@ -4531,7 +4531,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="planTacticIds">List of PlanTactic Id's</param>
         /// <param name="planIds">list of planids with comma Sepreated</param>
         /// <returns>List of ViewByModel</returns>
-        public static List<ViewByModel> GetDefaultGanttTypes(List<int> planTacticIds)
+        public static List<ViewByModel> GetDefaultGanttTypes(List<Plan_Campaign_Program_Tactic> objTactic = null)
         {
             //Initialize the default Plan Gantt Types
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
@@ -4544,20 +4544,86 @@ namespace RevenuePlanner.Helpers
             lstViewByTab = lstViewByTab.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             //Check that if PlanTactic is not null then we are going to fetch the Custom Fields
-            if (planTacticIds != null)
+            if (objTactic != null)
             {
-                if (planTacticIds.Count > 0)
+                if (objTactic.Count > 0)
                 {
-                    var lstCustomFields = GetTacticsCustomFields(planTacticIds);
+                    var lstCampaignCustomFields = GetAllCustomFields(objTactic.Select(s => s.Plan_Campaign_Program.PlanCampaignId).ToList(), Enums.EntityType.Campaign.ToString());
+                    var lstProgramCustomFields = GetAllCustomFields(objTactic.Select(s => s.PlanProgramId).ToList(), Enums.EntityType.Program.ToString());
+                    var lstCustomFields = GetAllCustomFields(objTactic.Select(s => s.PlanTacticId).ToList(), Enums.EntityType.Tactic.ToString());
+
+                    lstCampaignCustomFields = lstCampaignCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+                    lstProgramCustomFields = lstProgramCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
                     lstCustomFields = lstCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
                     //Concat the Default list with newly fetched custom fields. 
-                    lstViewByTab = lstViewByTab.Concat(lstCustomFields).ToList();
+                    lstViewByTab = lstViewByTab.Concat(lstCampaignCustomFields).Concat(lstProgramCustomFields).Concat(lstCustomFields).ToList();
                 }
             }
 
             return lstViewByTab;
         }
+
+        /// <summary>
+        /// Fetch the Custom fields based upon it's PlanTactic id
+        /// </summary>
+        /// <param name="planTacticIds">List of Plan Tactic id</param>
+        /// <returns>List of ViewbyModel</returns>
+        public static List<ViewByModel> GetAllCustomFields(List<int> Ids,string Section)
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
+            bool isCampaign = (Section == Enums.EntityType.Campaign.ToString() ? true : false);
+            bool isProgram = (Section == Enums.EntityType.Program.ToString() ? true : false);
+            bool isTactic = (Section == Enums.EntityType.Tactic.ToString() ? true : false);
+            string customTitles = Common.TacticCustomTitle;
+            var CustomFields = (dynamic)null;
+
+            if (Ids == null)
+            {
+                Ids = new List<int>();
+            }
+
+            if (isCampaign)
+            {
+                customTitles = Common.CampaignCustomTitle;
+                CustomFields = (from cf in db.CustomFields
+                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
+                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.Plan_Campaign_Program.PlanCampaignId
+                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == Section && cf.ClientId == Sessions.User.ClientId &&
+                                Ids.Contains(t.Plan_Campaign_Program.PlanCampaignId)
+                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+            }
+            else if (isProgram)
+            {
+                customTitles = Common.ProgramCustomTitle;
+                CustomFields = (from cf in db.CustomFields
+                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
+                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanProgramId
+                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == Section && cf.ClientId == Sessions.User.ClientId &&
+                                Ids.Contains(t.PlanProgramId)
+                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+            }
+            else
+            {
+                CustomFields = (from cf in db.CustomFields
+                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
+                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
+                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == Section && cf.ClientId == Sessions.User.ClientId &&
+                                Ids.Contains(t.PlanTacticId)
+                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+            }
+
+            //Process and fetch the Custom Fields with EntityType is Tactic and PlanTactic id.
+            
+            //ittrate the custom fields and insert into the temp list
+            foreach (var item in CustomFields)
+            {
+                lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", customTitles, item.CustomFieldId.ToString()) });
+            }
+            return lstCustomFieldsViewByTab;
+        }
+
 
         /// <summary>
         /// Fetch the Custom fields based upon it's PlanTactic id
