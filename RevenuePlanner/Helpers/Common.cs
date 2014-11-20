@@ -4835,7 +4835,7 @@ namespace RevenuePlanner.Helpers
             try
             {
                 result = description;
-                string regex = @"((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+# ]*[\w\-\@?^=%&amp;/~\+#])?)";
+                string regex = @"((www\.|(http|https|ftp|news|file)+\:\/\/)[&#95;.a-z0-9-]+\.[a-z0-9\/&#95;:@=.+?,_##%&~ -]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])";
                 Regex r = new Regex(regex, RegexOptions.IgnoreCase);
                 result = result.Replace("\n", "<br />");
                 result = r.Replace(result, "<a href=\"$1\" title=\"Click to open in a new window or tab\" target=\"&#95;blank\">$1</a>").Replace("href=\"www", "href=\"http://www");
