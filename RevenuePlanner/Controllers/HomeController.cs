@@ -11707,11 +11707,6 @@ namespace RevenuePlanner.Controllers
                                 var PrevAllocationList = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(c => c.PlanLineItemId == form.PlanLineItemId).Select(c => c).ToList();
                                 //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by :- Sohel Pathan on 05/09/2014 for PL ticket #759
 
-                                // Added By : Kalpesh Sharma #697 08/26/2014
-                                // Fetch the Actual Allocation values by it's LineItem Id and delete all the record.
-                                var PrevActualAllocationList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => c.PlanLineItemId == form.PlanLineItemId).Select(c => c).ToList();
-                                PrevActualAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
                                 if (arrCostInputValues.Length == 12)
                                 {
                                     for (int i = 0; i < arrCostInputValues.Length; i++)
