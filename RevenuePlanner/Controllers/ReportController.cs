@@ -65,10 +65,10 @@ namespace RevenuePlanner.Controllers
 
             ////Start Added by Mitesh Vaishnav for PL ticket #846
             Guid reportBusinessUnitId = Guid.Empty;
+            Sessions.ReportPlanIds = new List<int>();
+            Sessions.ReportBusinessUnitIds = new List<Guid>();
             if (Sessions.PlanId > 0)
             {
-                Sessions.ReportPlanIds = new List<int>();
-                Sessions.ReportBusinessUnitIds = new List<Guid>();
                 Sessions.ReportPlanIds.Add(Sessions.PlanId);
                 reportBusinessUnitId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.Model.BusinessUnitId).SingleOrDefault();
                 Sessions.ReportBusinessUnitIds.Add(reportBusinessUnitId);
@@ -108,6 +108,11 @@ namespace RevenuePlanner.Controllers
             string published = Enums.PlanStatus.Published.ToString();
             List<SelectListItem> lstYear = new List<SelectListItem>();
             var lstPlan = db.Plans.Where(p => p.IsDeleted == false && p.Status == published && p.Model.BusinessUnit.ClientId == Sessions.User.ClientId && p.Model.IsDeleted==false).ToList();
+            if (lstPlan.Count == 0)
+            {
+                TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
+                return RedirectToAction("PlanSelector", "Plan");
+            }
             var yearlist = lstPlan.OrderBy(p => p.Year).Select(p => p.Year).Distinct().ToList();
             yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year, Selected = year == DateTime.Now.Year.ToString() ? true : false }));
             SelectListItem thisQuarter = new SelectListItem { Text = "this quarter", Value = "thisquarter" };

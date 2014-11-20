@@ -1655,6 +1655,18 @@ namespace RevenuePlanner.Helpers
                 _NoPublishPlanAvailable = value;
             }
         }
+        private string _NoPublishPlanAvailableOnReport;
+        public string NoPublishPlanAvailableOnReport
+        {
+            get
+            {
+                return _NoPublishPlanAvailableOnReport;
+            }
+            set
+            {
+                _NoPublishPlanAvailableOnReport = value;
+            }
+        }
         private string _ConfirmationForDeleteProgram;
         public string ConfirmationForDeleteProgram
         {
@@ -2927,7 +2939,9 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _PlanEntityDuplicated = strMsgValue;
                                             break;
                                         // End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
-                                        
+                                        case "NoPublishPlanAvailableOnReport":
+                                            _NoPublishPlanAvailableOnReport = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;

@@ -7,6 +7,7 @@
     //string isViewOnly = ViewBag.IsViewOnly;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string strConfirmationmessage = Common.objCached.PlanDeleteConfirmMessage;
+    string errorMsg=(string)TempData["ErrorMessage"];
     //bool IsPlanEditAllAuthorized = (bool)ViewBag.IsPlanEditAllAuthorized;
     //bool IsPlanEditOwnAndSubordinatesAuthorized = (bool)ViewBag.IsPlanEditOwnAndSubordinatesAuthorized;
      
@@ -58,7 +59,7 @@
 <!--success/error message-->
 <div id="Div_NoModelArea"></div>
 <ul class="nav nav-tabs" id="YearTabs">
-    <li class="title-header source-sans-proregular">
+    <li class="title-header source-sans-proregular" style="padding-top:8px;padding-bottom:8px;">
         <h2>Plan Selector</h2>
     </li>
 </ul>
@@ -232,10 +233,12 @@
             }
             else {
                 //$("#YearTabs").append('No Records found for This Selection.');
+                if ('@errorMsg' == '') {
                 $('#errorMessage').css("display", "block");
                 $('#cError').html('<strong>Error!</strong> @Common.objCached.NoPublishPlanAvailable');  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
                 $("#errorMessage").slideDown(1200); // Show the Alert
                 $('#successMessage').css("display", "none");
+                }
             }
         }
     }
