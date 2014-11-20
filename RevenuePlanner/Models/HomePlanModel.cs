@@ -247,5 +247,6 @@ namespace RevenuePlanner.Models
         public double PlanProgrss { get; set; } 
         public double CampaignProgress { get; set; }
         public double ProgramProgress { get; set; }
+        public List<int> lstCustomEntityId { get; set; }
     }
 }

@@ -4611,9 +4611,9 @@ namespace RevenuePlanner.Helpers
                 customTitles = Common.CampaignCustomTitle;
                 CustomFields = (from cf in db.CustomFields
                                 join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.Plan_Campaign_Program.PlanCampaignId
+                                join t in db.Plan_Campaign on cfe.EntityId equals t.PlanCampaignId
                                 where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == Section && cf.ClientId == Sessions.User.ClientId &&
-                                Ids.Contains(t.Plan_Campaign_Program.PlanCampaignId)
+                                Ids.Contains(t.PlanCampaignId)
                                 select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
             }
             else if (isProgram)
@@ -4621,7 +4621,7 @@ namespace RevenuePlanner.Helpers
                 customTitles = Common.ProgramCustomTitle;
                 CustomFields = (from cf in db.CustomFields
                                 join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanProgramId
+                                join t in db.Plan_Campaign_Program on cfe.EntityId equals t.PlanProgramId
                                 where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == Section && cf.ClientId == Sessions.User.ClientId &&
                                 Ids.Contains(t.PlanProgramId)
                                 select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();

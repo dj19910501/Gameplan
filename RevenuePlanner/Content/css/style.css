@@ -11103,4 +11103,9 @@ li.close-list {
     border-radius:6px;
     padding:0px 19px;
 }
-/*End - Added by Viral Kadiya on 11/19/2014 to implement Internal Review Points.*/
+/*End - Added by Viral Kadiya on 11/19/2014 to implement Internal Review Points.*/	  
+
+#divPlanBudgetAllocation .budget-quarters span
+{
+      margin-right: 10px;
+}
