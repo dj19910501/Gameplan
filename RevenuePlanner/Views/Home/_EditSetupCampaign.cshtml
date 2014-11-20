@@ -37,7 +37,17 @@
         background-color: #dff0f8 !important;
         background-image:none;
     }
-
+    .inspect-column-parent input, .inspect-column-parent textarea {
+    min-height: 22px !important;
+    width: calc(100% - 12px) !important;
+}
+    .calendar-width {
+    width: calc(100% - 30px) !important;
+}
+    .datepicker {
+        padding:0px !important;
+        margin-bottom:10px !important;
+    }
 </style>
 @using (Html.BeginForm())
 {
@@ -61,7 +71,7 @@
 
             @if (ExtIntService)
             {
-               <p class="clear-section" style="line-height: 11px; padding-bottom: 8px;">@Html.Raw("Deployed to Integration")</p>
+               <p class="clear-section" style="line-height: 11px; padding-bottom: 5px;">@Html.Raw("Deployed to Integration")</p>
                 if (Model.IsDeployedToIntegration)
                 {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
@@ -95,23 +105,24 @@
         <div class="span3" id="inspect-modal-left-column3">
              <p>@Html.Raw("Campaign Budget")</p>
             @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate input-setup", id = "txtCampaignBudget", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-            <p>Remaining Campaign Budget</p>
-                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+            <p>Remaining Plan Budget</p>
+                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { id = "txtRemainingBudget", @readonly = "true" })
              <div class="content dark inline-ellipsis">
                         @if (!(bool)ViewBag.IsCreated)
                         {
                             <div class="cf width100">
-                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                <div class="width65px margin-right20 pull-left" style="width:45%;">
             <p>@Html.LabelForMQL("MQL")</p>
             @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
                    </div>
 
-                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                <div class="width65px pull-left" style="width:45%;">
             <p>Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
             </div>
-
-                                <div class="width65px pull-left" style="width:40%;">
+            </div>
+                            <div class="cf width100">
+                                <div class="width65px pull-left" style="width:45%;">
                                     <p>Revenue</p>
             @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
                                      </div>

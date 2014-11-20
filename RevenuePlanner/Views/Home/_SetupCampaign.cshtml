@@ -9,7 +9,15 @@
     string MQLs = Convert.ToString(ViewBag.MQLs);
     string revenue = Convert.ToString(ViewBag.Revenue);
 }
-
+<style type="text/css">
+    .inspect-column-parent input, .inspect-column-parent textarea {
+    min-height: 22px !important;
+    width: calc(100% - 12px) !important;
+}
+    .calendar-width {
+    width: calc(100% - 30px) !important;
+}
+</style>
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanCampaignId)
@@ -43,17 +51,18 @@
                <div class="content dark inline-ellipsis">
                        
                             <div class="cf width100">
-                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                <div class="width65px margin-right20 pull-left" style="width:45%;">
             <p>@Html.LabelForMQL("MQL")</p>
             @Html.TextBox("txtmql",MQLs, new { @class = "span12 input-small priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
                    </div>
 
-                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                <div class="width65px pull-left" style="width:45%;">
             <p>Cost</p>
             @Html.TextBox("txtcost",cost, new { @class = "span12 input-small currency_dollar",  @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
             </div>
-
-                                <div class="width65px pull-left" style="width:40%;">
+                                </div>
+                                <div class="cf width100">
+                                <div class="width65px pull-left" style="width:45%;">
                                     <p>Revenue</p>
             @Html.TextBox("txtRevenue",revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
                                      </div>
