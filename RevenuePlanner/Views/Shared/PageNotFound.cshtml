@@ -1,10 +1,19 @@
 ﻿@model System.Web.Mvc.HandleErrorInfo
 
 @{
+    if (RevenuePlanner.Helpers.Sessions.User != null)
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    } 
+    else
+    {
+        Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    }
+    
     ViewBag.Title = "Page not found";
 }
 
-<hgroup class="title" style="margin: 20px;">
+<hgroup class="title" style="margin: 20px;text-align:left;">
     <h3 class="error">Page not found</h3>
         <h4 class="error">Make sure that the web site address displayed in address bar of your browser is spelled and formatted correctly.</h4>
 </hgroup>

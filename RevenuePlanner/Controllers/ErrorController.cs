@@ -25,6 +25,8 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns page not found view.</returns>
         public ActionResult PageNotFound()
         {
+            string applicationReleaseVersion = RevenuePlanner.Helpers.Common.GetCurrentApplicationReleaseVersion();
+            ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
             return View("PageNotFound");
         }
 
