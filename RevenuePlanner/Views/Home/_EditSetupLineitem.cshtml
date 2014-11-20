@@ -158,6 +158,12 @@
         $("#spanMessageEditLineitem").empty();
         $("#spanMessageEditLineitem").html(value);
     }
+    $("#txtLineItemCost").keyup(function () {
+        var LineItemBudgetValue = ReplaceCC($("#txtLineItemCost").val());
+        if (LineItemBudgetValue == '' || typeof LineItemBudgetValue == 'undefined') {
+            $("#txtLineItemCost").val('$0')
+        }
+    });
     $("#save_LineItem").click(function () {
         var iserror = false;
         var lineItemTitle = htmlEncode($('#txtTitle').val());

@@ -233,6 +233,10 @@
 
     $("#txtProgramBudget").keyup(function () {
         var ProgramBudgetValue = ReplaceCC($("#txtProgramBudget").val());
+        if (ProgramBudgetValue == '' || typeof ProgramBudgetValue == 'undefined') {
+            ProgramBudgetValue = '0';
+            $("#txtProgramBudget").val('$0')
+        }
         var OldProgramBudgetValue = ReplaceCC($("#hdnOldProgramBudget").val());
         var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
         var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;

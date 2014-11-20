@@ -282,6 +282,10 @@
     $("#txtLineItemCost").keyup(function () {
         $("#txtLineItemCost").attr('title', $("#txtLineItemCost").val());
         var LineitemCostValue = ReplaceCC($("#txtLineItemCost").val());
+        if (LineitemCostValue == '' || typeof LineitemCostValue == 'undefined') {
+            LineitemCostValue = '0';
+            $("#txtLineItemCost").val('$0')
+        }
         var OldLineitemCostValue = $("#hdnOldLineitemCost").val();
         var totalLineItemCost = $("#hdnTotalLineItemCost").val();
         var differenceVal = parseInt(totalLineItemCost) - parseInt(OldLineitemCostValue);

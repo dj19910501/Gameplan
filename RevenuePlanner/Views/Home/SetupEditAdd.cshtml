@@ -552,7 +552,12 @@
             });
         }
     }
-
+    $("#TacticCost").keyup(function () {
+        var tacticBudgetValue = ReplaceCC($("#TacticCost").val());
+        if (tacticBudgetValue == '' || typeof tacticBudgetValue == 'undefined') {
+            $("#TacticCost").val('$0')
+        }
+    });
     $('#ddlTacticType').change(function () {
         var tacticTypeId = $(this).val();
         var pmql = 0;
