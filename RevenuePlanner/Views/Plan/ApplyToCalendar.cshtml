@@ -33,8 +33,10 @@
 </style>
 
 @section nlFormContent{
-      @Styles.Render("~/Content/nFormCss")
-     @Scripts.Render("~/bundles/nFormjs")
+       <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+<link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+}
 }
 @Html.HiddenFor(m => m.PlanId)
 <input type="hidden" id="hdnRefresh" value="ApplyToCalendar" />     @*Added by Viral Kadiya on 11/10/2014 for PL #941 to check flag in _plan.cshtml page to refresh gantt.*@
