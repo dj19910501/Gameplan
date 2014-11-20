@@ -338,7 +338,7 @@
         
         document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());
         document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
-        $("#hdnDescription").val(htmlEncode($('#txtDescription').val()));    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+        $("#hdnDescription").val(($('#txtDescription').val()));    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
 
         $('#Title').val($('#txtTitle').val());
         
