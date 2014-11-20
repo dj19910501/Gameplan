@@ -1364,12 +1364,12 @@ else
                             }
                             else {
                                 if (data.errorMessage != undefined || data.errorMessage != '') {
-                                    $("#errorMessage").html('<a class="close">×</a><strong>Error. </strong> ' + data.errorMessage);
+                                    $("#errorMessage").html('<a class="close">×</a><strong>Error! </strong> ' + data.errorMessage);
                                     $("#errorMessage").slideDown(400);
                                     $("html, body").animate({ scrollTop: 0 }, 1000);
                                 }
                                 else if ($('#Msgcannotpublish').val() != null || $('#Msgcannotpublish').val() != '') {
-                                    $("#errorMessage").html('<a class="close">×</a><strong>Error. </strong> ' + $('#Msgcannotpublish').val());
+                                    $("#errorMessage").html('<a class="close">×</a><strong>Error! </strong> ' + $('#Msgcannotpublish').val());
                                     $("#errorMessage").slideDown(400);
                                     $("html, body").animate({ scrollTop: 0 }, 1000);
                                 }

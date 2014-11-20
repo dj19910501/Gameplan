@@ -33,7 +33,10 @@
         background-color: #dff0f8 !important;
         background-image:none;
     }
-
+    #btnEditCancel
+    {
+        color: gray;
+    }
 </style>
 @using (Html.BeginForm())
 {
@@ -44,7 +47,7 @@
     @Html.HiddenFor(model => model.Title)
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })  // Added by Viral Kadiya on 11/15/2014 for PL ticket #794
 
-    <div class="inspect-column-parent source-sans-proregular">
+    <div class="inspect-column-parent source-sans-proregular" style="margin-bottom:0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>Parent Campaign</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
@@ -125,12 +128,12 @@
     </div>  
     if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
     {
-        <div class="wraper-btns cf" style="width: 100%; clear: both">
-            <div class="span2 btn-save">
-                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular" style="min-width:115px;"  type="button">Save</button>
+        <div style="width: 100%; clear: both" class="wraper-btns cf ">
+            <div class="span2 btn-save" style="width:80px;">
+                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save</button>
             </div>
             <div class="span2">
-                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" type="button" style="float: left; margin-left: 20px; margin-top: 5px">Cancel</button>
+                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
             </div>
         </div>
     }                        

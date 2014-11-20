@@ -123,7 +123,7 @@ else
         }
         @* added by Nirav Shah  on 14 feb 2014 *@
         if ($('#cError').html() != '') {
-            $('#cError').html('<strong>Error.</strong> ' + $('#cError').html())
+            $('#cError').html('<strong>Error!</strong> ' + $('#cError').html())
             $("#errorMessage").slideDown(1200); // Show the Alert
         }
 
@@ -159,7 +159,7 @@ else
                         else {
                             if (data.errorMsg != undefined) {
                                 $('#errorMessage').css("display", "block");
-                                $('#cError').html('<strong>Error.</strong> ' + data.errorMsg)
+                                $('#cError').html('<strong>Error!</strong> ' + data.errorMsg)
                                 $("#errorMessage").slideDown(1200); // Show the Alert
                                 $('#successMessage').css("display", "none");
                             }

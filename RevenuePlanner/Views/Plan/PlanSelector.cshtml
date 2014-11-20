@@ -107,7 +107,7 @@
            // $("#successMessage").slideUp(3000);
         }
         if ($('#cError').html() != '') {
-            $('#cError').html('<strong>Error.</strong> ' + $('#cError').html())
+            $('#cError').html('<strong>Error!</strong> ' + $('#cError').html())
             $("#errorMessage").slideDown(1200); // Show the Alert
         }
 
@@ -167,7 +167,7 @@
                         success: function (data) {
                             if (data.errorMsg != undefined) {
                                 $('#errorMessage').css("display", "block");
-                                $('#cError').html('<strong>Error.</strong> ' + data.errorMsg)
+                                $('#cError').html('<strong>Error!</strong> ' + data.errorMsg)
                                 $("#errorMessage").slideDown(1200); // Show the Alert
                                 $('#successMessage').css("display", "none");
                             }
@@ -233,7 +233,7 @@
             else {
                 //$("#YearTabs").append('No Records found for This Selection.');
                 $('#errorMessage').css("display", "block");
-                $('#cError').html('<strong>Error.</strong> @Common.objCached.NoPublishPlanAvailable');  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
+                $('#cError').html('<strong>Error!</strong> @Common.objCached.NoPublishPlanAvailable');  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
                 $("#errorMessage").slideDown(1200); // Show the Alert
                 $('#successMessage').css("display", "none");
             }
