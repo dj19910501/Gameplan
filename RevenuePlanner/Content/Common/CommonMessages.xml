@@ -524,7 +524,8 @@
 	</Field>
 	<Field>
 		<Name>ValidateTargetStage</Name>
-		<value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>
+		<!--<value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>-->
+    <value>At least one stage under Conversion Rates section needs to be set to target stage, please contact system administrator.</value>
 	</Field>
 	<Field>
 		<Name>ConfirmationForDeleteTactic</Name>
