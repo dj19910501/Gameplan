@@ -462,7 +462,7 @@
           $.ajax({
               type: 'POST',
               url: '@Url.Content("~/Home/SetupSaveTactic")',
-              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&strDescription=' + txtDescriptionValue.toString(),
+              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&strDescription=' + escape(txtDescriptionValue.toString()),
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
