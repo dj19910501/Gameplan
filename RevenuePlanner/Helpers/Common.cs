@@ -4008,8 +4008,30 @@ namespace RevenuePlanner.Helpers
             objStage.Code = Enums.PlanGoalTypeList[Enums.PlanGoalType.Revenue.ToString()].ToString().ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
             return new SelectList(lstGoalTypeListFromDB, "Code", "Title");
-
         }
+
+        /// <summary>
+        /// Get Goal Type from Goal code
+        /// </summary>
+        /// <CreatedBy>Pratik Chauhan</CreatedBy>
+        /// <CreatedDate>20/11/2014</CreatedDate>
+        /// <param name="clientId">User Id.</param>
+        /// <param name="code">Goal Type code.</param>
+        /// <returns></returns>
+        public static string GetGoalTypeFromGoalCode(Guid clientId, string code)
+        {
+            MRPEntities db = new MRPEntities();
+            var lstGoalTypes = Enum.GetValues(typeof(Enums.PlanGoalType)).Cast<Enums.PlanGoalType>().Select(a => a.ToString()).ToList();
+            var lstGoalTypeListFromDB = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == clientId && lstGoalTypes.Contains(a.Code)).Select(a => a).ToList();
+            lstGoalTypeListFromDB.ForEach(a => a.Title = a.Title.ToLower());
+            Stage objStage = new Stage();
+            objStage.Title = Enums.PlanGoalTypeList[Enums.PlanGoalType.Revenue.ToString()].ToString().ToLower();
+            objStage.Code = Enums.PlanGoalTypeList[Enums.PlanGoalType.Revenue.ToString()].ToString().ToUpper();
+            lstGoalTypeListFromDB.Add(objStage);
+            var goalType =(from l in lstGoalTypeListFromDB where l.Code==code select l.Title).SingleOrDefault();
+            return goalType;
+        }
+
         #endregion
 
         #region Calculated Budget parameters

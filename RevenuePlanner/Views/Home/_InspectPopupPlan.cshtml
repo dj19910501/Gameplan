@@ -105,7 +105,7 @@
             goal of 
         <span id="revenueSign" class="source-sans-prosemibold color5693B3">$ </span>
             <span id="inq-value" class="source-sans-prosemibold color5693B3">@planDetails.GoalValue</span>
-            which will required 
+            which will require 
         @*<span id="inquiries" class="source-sans-prosemibold color5693B3">@planDetails.MQLs</span> 
         and 
         <span id="revenue" class="source-sans-prosemibold color5693B3">@planDetails.Revenues</span>*@
@@ -152,10 +152,14 @@
 
         if ($("#hdnGoalType").val().toLowerCase() == "revenue") {
             $('#revenueSign').show();
+            $('#conjuntionWord').html('and ');
         }
         else {
             $('#revenueSign').hide();
+            $('#conjuntionWord').html('to deliver ');
         }
+
+        $("#inq-label").text('@Common.GetGoalTypeFromGoalCode(Sessions.User.ClientId,goalType)');
 
         $("#li" + InspectValue).removeClass("pull-left");
         $("#li" + InspectValue).addClass("active pull-left");
