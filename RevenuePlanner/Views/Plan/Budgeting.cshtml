@@ -219,7 +219,13 @@
                             }
                     }
                     else if (strExpandType == 'program') {
-                            var currObj = $('#' + strExpandId).parent();
+                        // Added By : Kalpesh Sharma #907
+                        // When a user makes any change to the inspection window then the tree collapses on its own. The system should maintain the context. 
+                        var ProgramExpand = "#" + strExpandId;
+                        if (currentTab == 'aPlanned') {
+                            ProgramExpand = "#cp_" + strExpandId;
+                         }
+                        var currObj = $(ProgramExpand).parent();
                             var campaignDP = $(currObj).parent().attr('data-parent'); //campaign
 
                         $('#' + campaignDP).css('display', 'block');
