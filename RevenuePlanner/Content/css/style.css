@@ -1964,6 +1964,9 @@ input.error {
         margin-top: 22px !important;
         text-shadow: 0 1px 1px #235D86 !important;
     }
+        .form-signin #ForgotPassword:hover {
+        text-decoration:underline !important;
+        }
 
 .support-icon {
     width: 34px;
@@ -11028,7 +11031,7 @@ li.close-list {
 }
 
 #divTab {
-    margin-top: 30px;
+    margin-top: 15px;
 }
 
 .report-seperator {

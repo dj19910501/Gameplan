@@ -45,11 +45,11 @@
             @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString() || InspectMode == Enums.InspectPopupMode.Edit.ToString())
             {
                 <div style="width:50%; float:left;">
-                    <label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>
+                    <p title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</p>
                     @Html.TextBox("txtINQ", "", new { placeholder = "$0", id = "txtINQ", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })    
                 </div>
                 <div style="width:50%; float:left;">
-                    <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
+                    <p title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</p>
                     @Html.TextBox("txtMQL", "", new { placeholder = "$0", id = "txtMQL", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })    
                 </div>
                 <div style="width:50%; float:left;">
