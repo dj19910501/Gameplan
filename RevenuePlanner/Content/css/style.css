@@ -11105,7 +11105,7 @@ li.close-list {
 }
 /*End - Added by Viral Kadiya on 11/19/2014 to implement Internal Review Points.*/	  
 
-#divPlanBudgetAllocation .budget-quarters span
+#divPlanBudgetAllocation #divQuarterlyBudget .budget-quarters
 {
-      margin-right: 10px;
+      width: 0 !important;
 }
