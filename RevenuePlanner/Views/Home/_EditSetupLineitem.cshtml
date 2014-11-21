@@ -52,7 +52,7 @@
             @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = programTitle })
 
             <p>@Html.Raw("Description")</p>
-            @Html.TextArea("Description", string.Empty, new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+            @Html.TextArea("Description", Model.Description, new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
             <div style="clear: both; width: 250%;">
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
@@ -94,8 +94,8 @@
         $(".verticalIdSelectBox select").selectbox();
 
         // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-        var _description = $("#hdnDescription").val();
-        $("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
+        //var _description = $("#hdnDescription").val();
+        //$("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
         // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
 
         if ('@isOtherLineitem.ToString().ToLower()' == 'true') {

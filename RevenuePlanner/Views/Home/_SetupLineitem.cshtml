@@ -11,6 +11,7 @@
     string programTitle = Convert.ToString(ViewBag.ProgramTitle);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
     string owner = Convert.ToString(ViewBag.Owner);
+    var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
     
 }
 
@@ -30,7 +31,7 @@
              @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
             <div class="description-content">
                 <div class="description-content-area">
-                        @Html.Raw(HttpUtility.HtmlDecode(Model.Description))
+                        @Html.Raw(HttpUtility.HtmlDecode(_editdescription))
                 </div>
             </div>
            

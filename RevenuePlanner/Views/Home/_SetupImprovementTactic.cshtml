@@ -13,6 +13,7 @@
     string hdnYear = ViewBag.Year != null ? (string)ViewBag.Year : string.Empty;
     bool ExtIntService = ViewBag.ExtIntService != null ? (bool)ViewBag.ExtIntService : false;
     bool isOwner = ViewBag.IsOwner != null ? (bool)ViewBag.IsOwner : false;
+    var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
 }
 @using RevenuePlanner.Helpers
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
@@ -54,7 +55,7 @@
             <p>Description</p>
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
             {
-                @Html.TextArea("Description", string.Empty, new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:93px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+                @Html.TextArea("Description", Model.Description, new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:93px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
                 if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
                 {
                     <div style="clear: both; width: 100%;">
@@ -68,7 +69,7 @@
                  @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
                 <div class="description-content">
                 <div class="description-content-area">
-                        @Html.Raw(HttpUtility.HtmlDecode(Model.Description))
+                        @Html.Raw(HttpUtility.HtmlDecode(_editdescription))
                 </div>
             </div>
             }
@@ -157,8 +158,8 @@
           }
           
           // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-          var _description = $("#hdnDescription").val();
-          $("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
+          //var _description = $("#hdnDescription").val();
+          //$("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
           // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
 
           $('#txtDate').val($('#txtDate').val().split(" ")[0].toString());
@@ -336,9 +337,10 @@
         if (!CheckDateYear(sdate, @hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
         $("#txtCost").val(ReplaceCC($("#txtCost").val()));
         
+        $("#hdnDescription").val(($('#txtDescription').val()));    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());
         document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
-        $("#hdnDescription").val(($('#txtDescription').val()));    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+        
 
         $('#Title').val($('#txtTitle').val());
         

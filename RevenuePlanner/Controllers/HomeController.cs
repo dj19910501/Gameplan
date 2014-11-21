@@ -5571,8 +5571,8 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
 
                                 Plan_Campaign_Program pcpobj = new Plan_Campaign_Program();
                                 pcpobj.PlanCampaignId = form.PlanCampaignId;
@@ -5648,8 +5648,8 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
 
                                 Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).SingleOrDefault();
                                 pcpobj.Title = title;
@@ -6355,8 +6355,8 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
 
                                 Plan_Campaign_Program_Tactic pcpobj = new Plan_Campaign_Program_Tactic();
                                 pcpobj.PlanProgramId = form.PlanProgramId;
@@ -6482,8 +6482,8 @@ namespace RevenuePlanner.Controllers
                                 string status = string.Empty;
 
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
 
                                 Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).SingleOrDefault();
                                 if (pcpobj.CreatedBy == Sessions.User.UserId) isOwner = true;
@@ -7196,8 +7196,8 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
 
                                 Plan_Improvement_Campaign_Program_Tactic picpt = new Plan_Improvement_Campaign_Program_Tactic();
                                 picpt.ImprovementPlanProgramId = form.ImprovementPlanProgramId;
@@ -7288,8 +7288,8 @@ namespace RevenuePlanner.Controllers
                                 //    isDirectorLevelUser = true;
                                 //}
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
                                 Plan_Improvement_Campaign_Program_Tactic pcpobj = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.ImprovementPlanTacticId.Equals(form.ImprovementPlanTacticId)).SingleOrDefault();
 
                                 //If improvement tacitc modified by immediate manager then no resubmission will take place, By dharmraj, Ticket #537
@@ -10410,8 +10410,8 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
 
                                 Plan_Campaign pcobj = new Plan_Campaign();
 
@@ -10471,8 +10471,8 @@ namespace RevenuePlanner.Controllers
                             {
 
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
 
                                 Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(form.PlanCampaignId) && pcobjw.IsDeleted.Equals(false)).SingleOrDefault();
 
@@ -10979,8 +10979,8 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
 
                                 Plan_Campaign_Program_Tactic_LineItem objLineitem = new Plan_Campaign_Program_Tactic_LineItem();
                                 objLineitem.PlanTacticId = tacticId;
@@ -11072,8 +11072,8 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                                if (!string.IsNullOrEmpty(form.Description))
-                                    form.Description = Common.GenerateHTMLDescription(form.Description);
+                                //if (!string.IsNullOrEmpty(form.Description))
+                                //    form.Description = Common.GenerateHTMLDescription(form.Description);
 
                                 Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(form.PlanLineItemId));
 
@@ -11302,8 +11302,8 @@ namespace RevenuePlanner.Controllers
                     if (objPlanModel.PlanId > 0)
                     {
                         //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
-                        if (!string.IsNullOrEmpty(objPlanModel.Description))
-                            objPlanModel.Description = Common.GenerateHTMLDescription(objPlanModel.Description);
+                        //if (!string.IsNullOrEmpty(objPlanModel.Description))
+                        //    objPlanModel.Description = Common.GenerateHTMLDescription(objPlanModel.Description);
 
                         plan = db.Plans.Where(m => m.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
 

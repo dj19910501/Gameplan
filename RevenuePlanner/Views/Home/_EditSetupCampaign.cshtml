@@ -67,7 +67,7 @@
             @*<p>@Html.Raw("Parent Plan")</p>
             @Html.TextBox("txtPlan", HttpUtility.HtmlDecode(PlanTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = PlanTitle })*@
             <p>@Html.Raw("Description")</p>
-            @Html.TextArea("Description", string.Empty, new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+            @Html.TextArea("Description", Model.Description, new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
 
             @if (ExtIntService)
             {
@@ -208,8 +208,8 @@
           //End - Added by Viral Kadiya on 18/11/2014 to resolve PL ticket #947.
 
           // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-          var _description = $("#hdnDescription").val();
-          $("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
+          //var _description = $("#hdnDescription").val();
+          //$("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
           // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
       });
     //<---  End Document.ready Event --->
@@ -407,11 +407,10 @@
             }
         });
         _customFieldValues = JSON.stringify(_customFieldValues);
-        
+        $("#hdnDescription").val($('#txtDescription').val());
         document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
         $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
-        $("#hdnDescription").val(htmlEncode($('#txtDescription').val()));
 
         var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         var uId = $(window).attr('name');
