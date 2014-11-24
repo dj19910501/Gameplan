@@ -24,7 +24,7 @@
                         <ul>
                             @foreach (var item in ViewBag.resubmissionValues)
                             { 
-                                <li>@item</li>
+                               <li class="tipsyclassTitle resubmission_textwrapping">@item</li>
                             }
                         </ul>
                     </div>
@@ -39,6 +39,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
         //// Hide parent div container when popup is closed.
         $("#divResubmissionPopup").on("hide", function (e) { $("#divResubmission").hide(); });
         $('#divResubmissionPopup').on("show", function (e) { $("#divResubmission").show(); });

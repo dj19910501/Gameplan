@@ -11121,3 +11121,12 @@ li.close-list {
 {
       width: 0 !important;
 }
+
+/* Start - Added by Pratik on 24/11/2014 for PL ticket #985 */
+.resubmission_textwrapping {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 60%;
+}
+/* End - Added by Pratik on 24/11/2014 for PL ticket #985 */
