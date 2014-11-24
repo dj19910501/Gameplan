@@ -11127,3 +11127,19 @@ li.close-list {
     width: 60%;
 }
 /* End - Added by Pratik on 24/11/2014 for PL ticket #985 */
+
+/* Start - Added by Viral Kadiya on 11/24/2014 for PL ticket #988 */
+@media screen and (-webkit-min-device-pixel-ratio:0), (-ms-high-contrast: active), (-ms-high-contrast: none)    /*if browser is chrome or IE then increase height of div*/
+{  
+    .chrome-ie-height-720px
+    {
+        min-height: 720px !important;
+    }
+}
+.last-ddl .sbOptions {
+    max-height:100px !important;
+}
+.secondlast-ddl .sbOptions {
+    max-height:150px !important;
+}
+/* End - Added by Viral Kadiya on 11/24/2014 for PL ticket #988 */

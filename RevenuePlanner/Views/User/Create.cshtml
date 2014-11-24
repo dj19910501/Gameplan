@@ -46,7 +46,7 @@
 <a class="link-gray" href="@Url.Action("Index", "User")">« BACK TO LIST</a>
 
 <div class="padding-content cf source-sans-proregular" id="content">
-    <div class="row">
+    <div class="row chrome-ie-height-720px">
         <div class="span2 content-colum-left content-img-user">
         </div>
         <div class="span10 content-colum-info-user">
@@ -161,7 +161,7 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.RoleId)
                     @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
-                    <div class="selectBox UserProfile" id="ddlRoleIdSelectBox">
+                    <div class="selectBox UserProfile secondlast-ddl" id="ddlRoleIdSelectBox">
                         @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
                     </div>
                     @Html.ValidationMessageFor(model => model.RoleId)
@@ -173,7 +173,7 @@
                 //{
                     <div class="cf inputs-aligned-horizontal" id="divManager">
                         @Html.Label("Manager")
-                        <div class="selectBox UserProfile" id="ddlManagerIdSelectBox">
+                        <div class="selectBox UserProfile last-ddl" id="ddlManagerIdSelectBox">
                             @if (ViewData["ManagerList"] != null)
                             {
                                 @Html.DropDownListFor(c => c.ManagerId, new SelectList((System.Collections.IEnumerable)ViewData["ManagerList"], "ManagerId", "ManagerName"), "Please Select")
