@@ -21,6 +21,7 @@
     programStatus = programMaster.Status;
     colorCode = programMaster.ColorCode;
     programTitle = programMaster.ProgramTitle;
+    TempData["ProgramModel"] = programMaster;
     }
     bool IsPlanEditable = false;
     if (ViewBag.IsPlanEditable!=null){

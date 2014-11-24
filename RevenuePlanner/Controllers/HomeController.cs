@@ -3021,19 +3021,24 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadSetup(int id, string Mode = "View")
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);     //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-            List<Guid> userListId = new List<Guid>();
-            userListId.Add(im.OwnerId);
-            User userName = new User();
+            InspectModel im;
+
+            if (TempData["TacticModel"] != null)
+            {
+                im = (InspectModel)TempData["TacticModel"];
+            }
+            else
+            {
+                im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
+            }
+
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+                im.Owner = Common.GetUserName(im.OwnerId.ToString());
             }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
                     TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
@@ -3041,9 +3046,8 @@ namespace RevenuePlanner.Controllers
                 }
 
             }
-            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+            
             ViewBag.TacticDetail = im;
-
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
             ViewBag.IsTackticAddEdit = false;
@@ -3067,7 +3071,17 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadReview(int id)
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);     //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+            InspectModel im;
+
+            if (TempData["TacticModel"] != null)
+            {
+                im = (InspectModel)TempData["TacticModel"];
+            }
+            else
+            {
+                im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
+            }
+
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
                                  where tc.PlanTacticId == id
                                  select tc).ToArray();
@@ -4455,13 +4469,20 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadSetupProgram(int id)
         {
-            InspectModel im = GetInspectModel(id, "program", false);        //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-            List<Guid> userListId = new List<Guid>();
-            userListId.Add(im.OwnerId);
-            User userName = new User();
+            InspectModel im; 
+
+            if (TempData["ProgramModel"] != null)
+            {
+                im = (InspectModel)TempData["ProgramModel"];
+            }
+            else
+            {
+                im = GetInspectModel(id, "program", false);
+            }
+
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+                im.Owner = Common.GetUserName(im.OwnerId.ToString());
             }
             catch (Exception e)
             {
@@ -4474,7 +4495,7 @@ namespace RevenuePlanner.Controllers
                     return RedirectToAction("Index", "Login");
                 }
             }
-            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+            
             ViewBag.ProgramDetail = im;
             ViewBag.OwnerName = im.Owner;
             if (im.LastSyncDate != null)
@@ -4487,7 +4508,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.LastSync = string.Empty;
             }
-            var objPlan = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == id).FirstOrDefault();
+            double? objPlanProgramBudget = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == id).FirstOrDefault().ProgramBudget;
 
             ViewBag.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == id && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
             ViewBag.Cost = Common.CalculateProgramCost(id); //pcp.Cost; modified for PL #440 by dharmraj 
@@ -4497,7 +4518,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
 
 
-            ViewBag.ProgramBudget = objPlan != null ? objPlan.ProgramBudget : 0;
+            ViewBag.ProgramBudget = objPlanProgramBudget != null ? objPlanProgramBudget : 0;
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
 
@@ -4528,11 +4549,7 @@ namespace RevenuePlanner.Controllers
             if (tsd.Count() > 0)
             {
                 pcpm.TStartDate = (from otsd in tsd select otsd.StartDate).Min();
-            }
-            var ted = (from t in db.Plan_Campaign_Program_Tactic where t.PlanProgramId == id select t);
-            if (ted.Count() > 0)
-            {
-                pcpm.TEndDate = (from oted in ted select oted.EndDate).Max();
+                pcpm.TEndDate = (from otsd in tsd select otsd.EndDate).Max();
             }
 
             pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
@@ -4545,7 +4562,7 @@ namespace RevenuePlanner.Controllers
             pcpm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
 
             pcpm.ProgramBudget = pcp.ProgramBudget;
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == pcp.Plan_Campaign.PlanId);
             pcpm.AllocatedBy = objPlan.AllocatedBy;
 
             pcpm.IsDeployedToIntegration = pcp.IsDeployedToIntegration;
@@ -4588,18 +4605,16 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsProgramDeleteble = false;
             }
             ViewBag.Campaign = HttpUtility.HtmlDecode(pcp.Plan_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            ViewBag.Year = objPlan.Year;
 
             var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
-            var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList();
-            double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
-            ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
+            double lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList().Sum(c=>c.ProgramBudget);
+            ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - lstSelectedProgram);
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == pcp.Plan_Campaign.Plan.Model.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();
 
-            User userName = new User();
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(pcp.CreatedBy, Sessions.ApplicationId);
+                ViewBag.OwnerName = Common.GetUserName(pcp.CreatedBy.ToString());
             }
             catch (Exception e)
             {
@@ -4612,8 +4627,7 @@ namespace RevenuePlanner.Controllers
                     RedirectToAction("Index", "Login");
                 }
             }
-            ViewBag.OwnerName = userName.FirstName + " " + userName.LastName;
-
+            
             return PartialView("_EditSetupProgram", pcpm);
         }
 
@@ -4804,7 +4818,17 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadReviewProgram(int id)
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Program).ToLower(), false);    //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+            InspectModel im;
+
+            if (TempData["ProgramModel"] != null)
+            {
+                im = (InspectModel)TempData["ProgramModel"];
+            }
+            else
+            {
+                im = GetInspectModel(id, Convert.ToString(Enums.Section.Program).ToLower(), false);
+            }
+
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
                                  where tc.PlanProgramId == id && tc.PlanProgramId.HasValue
                                  select tc).ToArray();
@@ -4989,7 +5013,17 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadReviewCampaign(int id)
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Campaign).ToLower(), false);       //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+            InspectModel im  ;
+
+            if (TempData["CampaignModel"] != null)
+            {
+                im = (InspectModel)TempData["CampaignModel"];
+            }
+            else
+            {
+                im = GetInspectModel(id, Convert.ToString(Enums.Section.Campaign).ToLower(), false);
+            }
+
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
                                  where tc.PlanCampaignId == id && tc.PlanCampaignId.HasValue
                                  select tc).ToArray();
@@ -5235,10 +5269,10 @@ namespace RevenuePlanner.Controllers
             ippctm.CEndDate = pcpt.Plan_Campaign_Program.Plan_Campaign.EndDate;
             ippctm.BusinessUnitId = pcpt.BusinessUnitId;
 
-            User userName = new User();
+            //User userName = new User();
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(pcpt.CreatedBy, Sessions.ApplicationId);
+                ippctm.Owner = Common.GetUserName(pcpt.CreatedBy.ToString());
             }
             catch (Exception e)
             {
@@ -5251,8 +5285,6 @@ namespace RevenuePlanner.Controllers
                     return null;//// RedirectToAction("Index", "Login");
                 }
             }
-
-            ippctm.Owner = (userName.FirstName + " " + userName.LastName).ToString();
 
             List<Plan_Campaign_Program_Tactic> lstTmpTac = new List<Plan_Campaign_Program_Tactic>();
             lstTmpTac.Add(pcpt);

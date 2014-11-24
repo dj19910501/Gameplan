@@ -20,27 +20,32 @@
     var PlanProgramId = ViewBag.PlanProgrameId;
     var colorCode = "";
     string RequestedModule = (ViewBag.RedirectType != "") ? ViewBag.RedirectType : "";
+
+    if (tacticMaster != null)
+    {
+        TempData["TacticModel"] = tacticMaster;
+    }
     
     if (ViewBag.TacticDetail != null)
-    {        
-        IsPlanEditable = (bool)ViewBag.IsPlanEditable;
-        IsResubmitableStatus = (bool)Common.CheckAfterApprovedStatus(tacticMaster.Status);
-        TacticTitle = tacticMaster.TacticTitle;
-        PlanTacticId = tacticMaster.PlanTacticId;
-        Status = tacticMaster.Status;
-        colorCode = tacticMaster.ColorCode;
-    }
-    else
-    {
-        if (ViewBag.PlanProgrameId != null)
         {
-            PlanProgramId = ViewBag.PlanProgrameId;
+            IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+            IsResubmitableStatus = (bool)Common.CheckAfterApprovedStatus(tacticMaster.Status);
+            TacticTitle = tacticMaster.TacticTitle;
+            PlanTacticId = tacticMaster.PlanTacticId;
+            Status = tacticMaster.Status;
+            colorCode = tacticMaster.ColorCode;
         }
-    }
+        else
+        {
+            if (ViewBag.PlanProgrameId != null)
+            {
+                PlanProgramId = ViewBag.PlanProgrameId;
+            }
+        }
 
-    bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
-    string InspectMode = ViewBag.InspectMode;
-        
+        bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
+        string InspectMode = ViewBag.InspectMode;
+
     }
 
 
@@ -61,11 +66,11 @@
          <span id="lblTacticTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
            
              @if (IsPlanEditable)
-                    {
+             {
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteTactic">
                             <button class="delete-btn-gray" id="deleteTactic" type="button">Delete</button>
                         </div>
-                    }
+             }
            
                  <div style="float: right; position: relative;margin-left:10px;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
@@ -77,9 +82,9 @@
                             </div>
                  </div>
               @if (IsPlanEditable)
-            {
+              {
                 <span class="edit-icon-white btn-blue btn-large" style="display:block;cursor: pointer;" id="EditForm"></span>
-            }
+              }
          </span>
         }
 
