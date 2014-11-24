@@ -570,42 +570,6 @@
     }
 }
 
-@*Start - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899
-@if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
-{
-    <div class="HomeSearchFilter-area clearfix">
-        <div class="HomeSearchFilter-area-left">
-            <div class="filter-detail">
-                <div class="filter-details">
-                    <label>Business Unit:</label>
-                    <div id="businessunitdetail" class="details"></div>
-                </div>
-                <div class="filter-details">
-                    <label>Plan:</label>
-                    <div id="plandetail" class="details"></div>
-                </div>
-                <div class="filter-details">
-                    <label>Geography:</label>
-                    <div id="geographydetail" class="details">All</div>
-                </div>
-                <div class="filter-details">
-                    <label>Vertical:</label>
-                    <div id="verticaldetail" class="details">All</div>
-                </div>
-                <div class="filter-details">
-                    <label>@Html.CustomLabelFor(Enums.CustomLabelCode.Audience):</label>
-                    <div id="audiencedetail" class="details">All</div>
-                </div>
-                <div class="filter-details last">
-                    <label>Owner:</label>
-                    <div id="ownerdetail" class="details">All</div>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
-
 <script>
     var pid = $('#PlanId').val();
     var CurrentPlanId = pid;
@@ -869,13 +833,11 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#li" + id).addClass("close-list");
-            //$("#" + id).html('');
             filters.BUId.push(id);
             filters.BuTitles.push($("#" + id).attr("BuTitile"));
         }
         else {
             $("#li" + id).removeClass("close-list");
-            //$("#" + id).html('Select');
             removeByValue(filters.BUId, id);
             removeByValue(filters.BuTitles, ($("#" + id).attr("BuTitile")));
         }
@@ -914,9 +876,6 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
             CurrentPlanId = id;
             $("#CurrentPlanId").val(id);
         }
-
-        //   BindOtherAttributes();
-
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
@@ -924,13 +883,11 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#liGeography" + id).addClass("close-list");
-            // $("#" + event).html('');
             filters.geographyIds.push(id);
             filters.geographyTitle.push($("#" + id).attr("geotitle"));
         }
         else {
             $("#liGeography" + id).removeClass("close-list");
-            //$("#" + id).html('Select');
             removeByValue(filters.geographyIds, id);
             removeByValue(filters.geographyTitle, ($("#" + id).attr("geotitle")));
         }
@@ -941,13 +898,11 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#liVertical" + id).addClass("close-list");
-            //$("#" + id).html('');
             filters.VerticalId.push(id);
             filters.VerticalTitle.push(($("#" + id).attr("verticaltitle")));
         }
         else {
             $("#liVertical" + id).removeClass("close-list");
-            //$("#" + id).html('Select');
             removeByValue(filters.VerticalId, id);
             removeByValue(filters.VerticalTitle, ($("#" + id).attr("verticaltitle")));
         }
@@ -958,13 +913,11 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#liAudience" + id).addClass("close-list");
-            //$("#" + id).html('');
             filters.AudienceIds.push(id);
             filters.AudienceTitle.push(($("#" + id).attr("AudienceTitle")));
         }
         else {
             $("#liAudience" + id).removeClass("close-list");
-            //$("#" + id).html('Select');
             removeByValue(filters.AudienceIds, id);
             removeByValue(filters.AudienceTitle, ($("#" + id).attr("AudienceTitle")));
         }
@@ -975,13 +928,11 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#liOwner" + id).addClass("close-list");
-            //$("#" + id).html('');
             filters.OwnerIds.push(id);
             filters.OwnerTitles.push(($("#" + id).attr("OwnerTitle")));
         }
         else {
             $("#liOwner" + id).removeClass("close-list");
-            //$("#" + id).html('Select');
             removeByValue(filters.OwnerIds, id);
             removeByValue(filters.OwnerTitles, ($("#" + id).attr("OwnerTitle")));
         }
@@ -1310,7 +1261,6 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         if (selection) {
             $("#ulSelectedPlans li").each(function (i) {
                 $(this).addClass("close-list");
-               //$(this).find("a").html('');
                var chkid = $(this).find("input[type=checkbox]").attr("id");
                $("#" + chkid).attr("checked", "checked");
                filters.SelectedPlans.push(chkid);
@@ -1320,7 +1270,6 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
         else {
             $("#ulSelectedPlans li").each(function (i) {
                 $(this).removeClass("close-list");
-               //$(this).find("a").html('Select');
                var chkid = $(this).find("input[type=checkbox]").attr("id");
                $("#" + chkid).removeAttr("checked");
             });
@@ -1330,7 +1279,6 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
             isFirstCall = false;
         }
         GetOwnerListForFilter(filters.SelectedPlans);
-        //  BindOtherAttributes();
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
@@ -1343,7 +1291,6 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
                 $(this).addClass("close-list");
                var chkid = $(this).find("input[type=checkbox]").attr("id");
                $("#" + chkid).attr("checked", "checked");
-               //$(this).find("a").html('');
                filters.geographyIds.push(chkid);
                filters.geographyTitle.push($(this).find("input[type=checkbox]").attr("geoTitle"));
             });
@@ -1783,20 +1730,6 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
             isRender = false;
         }
 
-        ////// Modified By Maninder Singh Wadhva PL Ticket#47
-        ////// Function to create audience view control.
-        //function AddAccordionToggleAndInnerAudience(data) {
-        //    var accordionDiv = $('#DivAccordionMarketingActivities');
-        //    accordionDiv.empty();
-        //    $.each(data.audience, function (index1, objAudience) {
-        //        var colorCode = objAudience.ColorCode;
-        //        var audienceId = objAudience.AudienceId;
-
-        //        var filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
-        //        AddMarketingActivities(colorCode, objAudience.Title, audienceId, filteredAudience);
-        //    })
-        //}
-
         //// Modified By Maninder Singh Wadhva PL Ticket#47
         //// Function to create vertical view control.
         function AddAccordionToggleAndInnerCustomFields(data) {
@@ -1913,25 +1846,29 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
                   //// Modified By Maninder Singh Wadhva PL Ticket#47
                   //// filtering non improvement task data.
                   var filteredNonImprovementData = $.grep(data.taskData, function (value) { return (typeof value.isImprovement == 'undefined') });
-                  if (filteredNonImprovementData.length > 0) {
+                  if (filteredNonImprovementData.length > 0 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                       isDataExistForTacticTable = true;
                       $('#marketing-activities').show();
-
+                      var IsCampaign = type.indexOf('@Common.CampaignCustomTitle') > 0 ? '@Common.CampaignCustomTitle' : type.toString();
+                      var IsProgram = type.indexOf('@Common.ProgramCustomTitle') > 0 ? '@Common.ProgramCustomTitle' : type.toString();
+                      var IsTactic = type.indexOf('@Common.TacticCustomTitle') > 0 ? '@Common.TacticCustomTitle' : type.toString();
                       switch (type) {
                           case '@PlanGanttTypes.Tactic.ToString()':
                               AddAccordionToggleAndInnerTactic(data);
+                              break;
+                          case '@PlanGanttTypes.Request.ToString()':
+                              AddAccordionToggleAndInnerRequest(data);
                               break;
                           case '@PlanGanttTypes.Vertical.ToString()':
                           case '@PlanGanttTypes.Stage.ToString()':
                           case '@PlanGanttTypes.Audience.ToString()':
                           case '@PlanGanttTypes.BusinessUnit.ToString()':
+                          case IsCampaign:
+                          case IsProgram:
+                          case IsTactic:
                               AddAccordionToggleAndInnerCustomFields(data);
                               break;
-                          case '@PlanGanttTypes.Request.ToString()':
-                              AddAccordionToggleAndInnerRequest(data);
-                              break;
                           default:
-                              //alert('No match');
                               $('#marketing-activities').hide();
                               break;
                       }
@@ -1950,52 +1887,11 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
                       $(".shadow-scroll-gantt").show();
                       $("#table_activities").show();
                       FillTacticTableForRequest(data);
-
-                      //if ($('.gantt_ver_scroll').is(":visible")) {
-                      //    //$(".shadow-scroll-gantt").removeClass("full-width");
-                      //    if (w1 - w3 == 0) {
-                      //        if ($('.gantt_task').length > 0) {
-                      //            var widthMain = $('.gantt_task').css('width');
-                      //            widthMain = widthMain.replace('px', '');
-                      //            widthMain = (parseInt(widthMain) - 17);
-                      //            if (!isNaN(widthMain)) {
-                      //                if ($('.gantt_task_scale').length > 0)
-                      //                    $('.gantt_task_scale').css('width', widthMain + 'px');
-                      //                if ($('.gantt_data_area').length > 0)
-                      //                    $('.gantt_data_area').css('width', widthMain + 'px');
-                      //            }
-                      //        }
-                      //    }
-                      //}
-                      //else {
-                      //    //$(".shadow-scroll-gantt").addClass("full-width");
-                      //    var ganntWidth = $(".gantt-padding").width();
-                      //    $(".shadow-scroll-gantt").width(ganntWidth);
-                      //}
-
                   } else {
                       $("#table_activities").hide();
                       $(".shadow-scroll-gantt").hide();
                   }
                   gantt.refreshData();
-                  //// Start - Added by Sohel Pathan on 21-10-2014 for PL ticket #830
-                  //$('.gantt_container .gantt_grid .gantt_grid_data .gantt_row').each(function () {
-                  //    var task_id = $(this).attr('task_id');
-                  //    if(task_id != '') {
-                  //        if ((task_id.substring(0, 1) == "L" && (task_id.indexOf("_M") > 0 || task_id.indexOf("_T") > 0)
-                  //            && (task_id.indexOf("_I") == -1))
-                  //            || (task_id.substring(0, 1) == "L" && task_id.indexOf("_M") == -1 && task_id.indexOf("_C") == -1 && task_id.indexOf("_P") == -1)) {
-                  //            $(this).css('font-weight', 'bold');
-                  //        }
-                  //        else if (task_id.substring(0, 1) == "Z" && (task_id.indexOf("_M") > 0 || task_id.indexOf("_T") > 0)
-                  //            && (task_id.indexOf("_I") == -1)
-                  //            || (task_id.substring(0, 1) == "Z" && task_id.indexOf("_M") == -1 && task_id.indexOf("_C") == -1 && task_id.indexOf("_P") == -1 && task_id.indexOf("_L") > 0)
-                  //            || (task_id.substring(0, 1) == "Z" && task_id.indexOf("_M") == -1 && task_id.indexOf("_C") == -1 && task_id.indexOf("_P") == -1 && task_id.indexOf("_L") == -1)) {
-                  //            $(this).css('font-weight', 'bold');
-                  //        }
-                  //    }
-                  //});
-                  //// End - Added by Sohel Pathan on 21-10-2014 for PL ticket #830
 
                   //gantt.render();     ////Added by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
               }
@@ -2004,7 +1900,6 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
  else {
                 $('#DivloadPlan').hide();
                 $('.tab-content').hide();
-                //$('#ptacticcount').hide();
                 $('#chart2').hide();
                 $('#pbudget').attr("original-title","$0");
                 $('.changes').hide();
@@ -2211,14 +2106,6 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
 
                   var json_length = filteredTasks.data.length;
                   var gantt_div = document.getElementById("gantt_here");
-                  ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-                  //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-                  //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-                  //}
-                  //else {
-                  //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-                  //}
-                  ////
 
                   // Added by KAPIL - #454 - to resolve extra space
                   CalGanntHeight();
@@ -2759,19 +2646,6 @@ End - Commented by : Sohel Pathan on 29/10/2014 for PL ticket #899*@
             }
         });
     }
-    @*$("#modal-container-186470").on("hide", function (e) {
-        
-        //var DatePickerContainer = $('.dp datepicker');
-        //var AddOnContainer = $('.add-on');
-        //if (!DatePickerContainer.is(e.target) && DatePickerContainer.has(e.target).length === 0 && !AddOnContainer.is(e.target) && AddOnContainer.has(e.target).length === 0) {
-        //    debugger;
-            //$("#modalMainContainer").hide();
-            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                $("#divCollaborator").unbind('click');
-            }
-            $('body').removeClass('bodyOverflow');
-        //}
-    });*@
 
 //Scrip Addded By Bhavesh for Inspect Popup
 

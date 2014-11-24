@@ -3912,9 +3912,17 @@ namespace RevenuePlanner.Helpers
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>30/06/2014</CreatedDate>
         /// <returns>List of Business units</returns>
-        public static List<string> GetViewEditBusinessUnitList()
+        public static List<string> GetViewEditBusinessUnitList(List<UserCustomRestrictionModel> lstUserCustomRestrictionParam = null)
         {
-            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
+            if (lstUserCustomRestrictionParam == null)
+            {
+                lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            }
+            else 
+            {
+                lstUserCustomRestriction = lstUserCustomRestrictionParam;
+            }
             int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             return lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
