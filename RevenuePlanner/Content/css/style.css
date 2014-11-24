@@ -10784,6 +10784,7 @@ li.close-list {
     Font-size: 13px !important;
     padding-bottom: 5px;
     list-style-position: inside;
+    padding-left:35%;
 }
 
 /*End: Ticket #895*/
