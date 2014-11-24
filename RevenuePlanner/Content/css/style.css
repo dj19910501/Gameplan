@@ -9286,7 +9286,7 @@ footer {
     bottom: 0;
     width: 100%;
     /*width: 83%;*/
-    z-index: 1999;
+    z-index: 9999; /*Old Value: 1999; Modified by Viral Kadiya on 11/24/2014 for PL ticket #988*/
     /*margin-left: 280px;*/
     /*End #832*/
 }
