@@ -9286,7 +9286,7 @@ footer {
     bottom: 0;
     width: 100%;
     /*width: 83%;*/
-    z-index: 9999; /*Old Value: 1999; Modified by Viral Kadiya on 11/24/2014 for PL ticket #988*/
+    z-index: 2499; /*Old Value: 1999; Modified by Viral Kadiya on 11/24/2014 for PL ticket #988*/ /*Inspect Popup z-index value is 2500;*/
     /*margin-left: 280px;*/
     /*End #832*/
 }
@@ -11142,4 +11142,13 @@ li.close-list {
 .secondlast-ddl .sbOptions {
     max-height:150px !important;
 }
+/*Set in Add NewUser/Edit page to hide dropdownlist from footer*/
+.z-index-2498 .inputs-aligned-horizontal .selectBox .sbHolder.sbToggleOpen {
+    z-index:2498 !important;    /*Footer z-index value is 2499;*/
+}
+
+.z-index-2498 .sbOptions {
+    z-index:2498 !important;    /*Footer z-index value is 2499;*/
+}
+
 /* End - Added by Viral Kadiya on 11/24/2014 for PL ticket #988 */

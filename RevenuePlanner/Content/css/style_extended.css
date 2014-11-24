@@ -680,7 +680,7 @@ textarea[readonly] {
     text-align: center;
     top: 13%;/*changed 4m 20 to 13 by uday 7-7-14 #453s*/
     width: 354px;
-    z-index: 2002;
+    z-index: 2501;
 }
 
 .button-contact-support {
