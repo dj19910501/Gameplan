@@ -6352,23 +6352,28 @@ namespace RevenuePlanner.Controllers
                     tacticList.ForEach(pcpt => pcpt.IsDeleted = true);
                     var tacticIds = tacticList.Select(a => a.PlanTacticId).ToList();
                     db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic).ToList().ForEach(a => customFieldList.Add(a));
-                    customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                    customFieldList = new List<CustomField_Entity>();
-
+                   
                     var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
                     programList.ForEach(pcp => pcp.IsDeleted = true);
                     var programIds = programList.Select(a => a.PlanProgramId).ToList();
                     db.CustomField_Entity.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram).ToList().ForEach(a => customFieldList.Add(a));
-                    customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                    customFieldList = new List<CustomField_Entity>();
-
+                    
                     var campaignList= db.Plan_Campaign.Where(pc => pc.PlanId == PlanId && pc.IsDeleted == false).ToList();
                     campaignList.ForEach(pc => pc.IsDeleted = true);
                     var campaignIds = campaignList.Select(a => a.PlanCampaignId).ToList();
                     db.CustomField_Entity.Where(a => campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(a => customFieldList.Add(a));
                     db.Plans.Where(p => p.PlanId == PlanId && p.IsDeleted == false).ToList().ForEach(p => p.IsDeleted = true);
 
-                    customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                    try
+                    {
+                        //// To increase performance we added this code. By Pratik Chauhan
+                        db.Configuration.AutoDetectChangesEnabled = false;
+                        customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                    }
+                    finally
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = true;
+                    }
 
                     returnValue = db.SaveChanges();
                     scope.Complete();

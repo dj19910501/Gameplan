@@ -72,6 +72,8 @@ namespace RevenuePlanner.Helpers
             List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
             try
             {
+                db.Configuration.AutoDetectChangesEnabled = false;
+
                 Plan proj = db.Plans.AsNoTracking().First(p => p.PlanId == PlanId && p.IsDeleted == false);
                 if (proj != null)
                 {
@@ -178,7 +180,10 @@ namespace RevenuePlanner.Helpers
             {
                 return returnFlag;
             }
-
+            finally
+            {
+                db.Configuration.AutoDetectChangesEnabled = true;
+            }
         }
 
         /// <summary>
@@ -202,6 +207,8 @@ namespace RevenuePlanner.Helpers
             List<Plan_Campaign_Program> programList = new List<Plan_Campaign_Program>();
             try
             {
+                db.Configuration.AutoDetectChangesEnabled = false;
+
                 Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().First(p => p.PlanId == PlanId && p.PlanCampaignId == ID && p.IsDeleted == false);
                 if (objPlanCampaign != null)
                 {
@@ -295,6 +302,10 @@ namespace RevenuePlanner.Helpers
             {
                 return returnFlag;
             }
+            finally
+            {
+                db.Configuration.AutoDetectChangesEnabled = true;
+            }
         }
 
         /// <summary>
@@ -317,6 +328,8 @@ namespace RevenuePlanner.Helpers
             List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
             try
             {
+                db.Configuration.AutoDetectChangesEnabled = false;
+
                 Plan_Campaign_Program objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().First(p => p.PlanProgramId == ID && p.IsDeleted == false);
 
                 if (objPlanCampaignPrograms != null)
@@ -391,7 +404,10 @@ namespace RevenuePlanner.Helpers
             {
                 return returnFlag;
             }
-
+            finally
+            {
+                db.Configuration.AutoDetectChangesEnabled = true;
+            }
         }
 
         /// <summary>
@@ -412,6 +428,8 @@ namespace RevenuePlanner.Helpers
                 return returnFlag;
             try
             {
+                db.Configuration.AutoDetectChangesEnabled = false;
+
                 Plan_Campaign_Program_Tactic objPlanCampaignProgramTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().First(p => p.PlanTacticId == ID && p.IsDeleted == false);
 
                 if (objPlanCampaignProgramTactic != null)
@@ -463,7 +481,10 @@ namespace RevenuePlanner.Helpers
             {
                 return returnFlag;
             }
-
+            finally
+            {
+                db.Configuration.AutoDetectChangesEnabled = true;
+            }
         }
 
         /// <summary>
@@ -484,6 +505,8 @@ namespace RevenuePlanner.Helpers
                 return returnFlag;
             try
             {
+                db.Configuration.AutoDetectChangesEnabled = false;
+
                 Plan_Campaign_Program_Tactic_LineItem objPlanCampaignProgramTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.AsNoTracking().First(p => p.PlanLineItemId == ID && p.IsDeleted == false);
                 if (objPlanCampaignProgramTacticLineItem != null)
                 {
@@ -506,6 +529,10 @@ namespace RevenuePlanner.Helpers
             catch (AmbiguousMatchException)
             {
                 return returnFlag;
+            }
+            finally
+            {
+                db.Configuration.AutoDetectChangesEnabled = true;
             }
         }
 
