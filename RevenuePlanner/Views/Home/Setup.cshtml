@@ -6,6 +6,15 @@
     deployStatus = tactic.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus;////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
 }
+<style type="text/css">
+    .inspect-column-parent input, .inspect-column-parent textarea {
+    min-height: 22px !important;
+    width: calc(100% - 12px) !important;
+}
+    .calendar-width {
+    width: calc(100% - 30px) !important;
+}
+</style>
 
 @using (Html.BeginForm())
 {
@@ -41,7 +50,7 @@
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
             <p style="width: 110%;">Deployed to Integration</p>
             @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
-            <div class="cf width100" style="width:244px;">
+            <div class="cf width100">
              <div class="margin-right10 pull-left" style="width: 47%">
                  <label id="lblStageTitle" title="@Model.StageTitle" class="inspect-bolder-label">@Model.StageTitle &nbsp;
                           @if (ViewBag.IsDiffrentStageType == true)

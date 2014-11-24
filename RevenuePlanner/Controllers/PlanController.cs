@@ -6203,6 +6203,7 @@ namespace RevenuePlanner.Controllers
                         // Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
                         if (item.GoalType.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
                         {
+                            item.GoalValue = item.GoalValue.Equals(double.NaN) ? 0 : item.GoalValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
                             objPlanSelector.MQLS = item.GoalValue.ToString("#,##0");
                         }
                         else

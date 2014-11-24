@@ -41,7 +41,7 @@
         <label class="padding-left4 inspect-bolder-label" title="Campaign Budget">Campaign Budget</label>
         @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar margin-top3px input-budget", placeholder = "Required", require = "true", id = "txtCampaignBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
         <div>
-            <label title="Remaining Campaign Budget" class="inspect-bolder-label">Remaining Budget</label>
+            <label title="Remaining Plan Budget" class="inspect-bolder-label">Remaining Plan Budget</label>
             @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
         </div>
     </div>

@@ -10,7 +10,15 @@
     string revenue = Convert.ToString(ViewBag.Revenue);
     var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
 }
-
+<style type="text/css">
+    .inspect-column-parent input, .inspect-column-parent textarea {
+    min-height: 22px !important;
+    width: calc(100% - 12px) !important;
+}
+    .calendar-width {
+    width: calc(100% - 30px) !important;
+}
+</style>
 
 @using (Html.BeginForm())
 {
@@ -48,17 +56,18 @@
              <div class="content dark inline-ellipsis">
                        
                             <div class="cf width100">
-                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                <div class="width65px margin-right20 pull-left" style="width:45%;">
                                     <p title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</p>
                                     @Html.TextBox("txtMQLs",MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                                 </div>
 
-                                <div class="width65px margin-right20 pull-left" style="width:40%;">
+                                <div class="width65px pull-left" style="width:45%;">
                                     <p title="Cost">Cost</p>
                                     @Html.TextBox("txtCost",cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                 </div>
-
-                                <div class="width65px pull-left" style="width:40%;">
+                                </div>
+                 <div class="cf width100">
+                                <div class="width65px pull-left" style="width:45%;">
                                     <p title="Revenue">Revenue</p>
                                     @Html.TextBox("txtRevenue",revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                 </div>

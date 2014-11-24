@@ -11058,7 +11058,7 @@ li.close-list {
 
 /* Start - Added by Viral Kadiya on 11/15/2014 for PL ticket #874*/
 /* change design of description field for Inspect Popup(View Mode only)*/
-.description-content{ position:relative; width:100%; height:100px;}
+.description-content{ position:relative; width:97.5%; height:100px;}    /*Old-Value:width:100%;, Modified by Viral Kadiya on 11/24/2014 for PL ticket #980.*/
 .description-content-area {
         width: 100%;
         height: 92px;

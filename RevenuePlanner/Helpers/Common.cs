@@ -4165,6 +4165,7 @@ namespace RevenuePlanner.Helpers
                         mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
                         var modelFunnelStageListMQL = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
                         double MQLValue = (inputValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
+                        MQLValue = MQLValue.Equals(double.NaN) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
                         return MQLValue;
                     }
                     else if (goalType == Enums.PlanGoalType.Revenue.ToString().ToUpper())
@@ -4179,6 +4180,7 @@ namespace RevenuePlanner.Helpers
                         // Calculate MQL
                         var modelFunnelStageListMQL = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
                         double MQLValue = (INQValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
+                        MQLValue = MQLValue.Equals(double.NaN) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
                         return MQLValue;
                     }
                 }
