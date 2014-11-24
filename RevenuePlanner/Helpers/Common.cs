@@ -4404,124 +4404,134 @@ namespace RevenuePlanner.Helpers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        // Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
-                        if (section == Enums.Section.Plan.ToString() && id != 0)
+                        try
                         {
-                            var PlanId = id;
-                            string entityTypeCampaign = Enums.EntityType.Campaign.ToString();
-                            string entityTypeProgram = Enums.EntityType.Program.ToString();
-                            string entityTypeTactic = Enums.EntityType.Tactic.ToString();
-                            List<CustomField_Entity> customFieldList = new List<CustomField_Entity>();
-                            var tacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId && pcpt.IsDeleted == false).ToList();
-                            tacticList.ForEach(pcpt => pcpt.IsDeleted = true);
-                            var tacticIds = tacticList.Select(a => a.PlanTacticId).ToList();
-                            db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic).ToList().ForEach(a => customFieldList.Add(a));
+                            //// To increase performance we added this code. By Pratik Chauhan
+                            db.Configuration.AutoDetectChangesEnabled = false;
+                            // Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+                            if (section == Enums.Section.Plan.ToString() && id != 0)
+                            {
+                                var PlanId = id;
+                                string entityTypeCampaign = Enums.EntityType.Campaign.ToString();
+                                string entityTypeProgram = Enums.EntityType.Program.ToString();
+                                string entityTypeTactic = Enums.EntityType.Tactic.ToString();
+                                List<CustomField_Entity> customFieldList = new List<CustomField_Entity>();
+                                var tacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId && pcpt.IsDeleted == false).ToList();
+                                tacticList.ForEach(pcpt => pcpt.IsDeleted = true);
+                                var tacticIds = tacticList.Select(a => a.PlanTacticId).ToList();
+                                db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic).ToList().ForEach(a => customFieldList.Add(a));
 
-                            var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
-                            programList.ForEach(pcp => pcp.IsDeleted = true);
-                            var programIds = programList.Select(a => a.PlanProgramId).ToList();
-                            db.CustomField_Entity.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram).ToList().ForEach(a => customFieldList.Add(a));
+                                var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
+                                programList.ForEach(pcp => pcp.IsDeleted = true);
+                                var programIds = programList.Select(a => a.PlanProgramId).ToList();
+                                db.CustomField_Entity.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram).ToList().ForEach(a => customFieldList.Add(a));
 
-                            var campaignList = db.Plan_Campaign.Where(pc => pc.PlanId == PlanId && pc.IsDeleted == false).ToList();
-                            campaignList.ForEach(pc => pc.IsDeleted = true);
-                            var campaignIds = campaignList.Select(a => a.PlanCampaignId).ToList();
-                            db.CustomField_Entity.Where(a => campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(a => customFieldList.Add(a));
-                            db.Plans.Where(p => p.PlanId == PlanId && p.IsDeleted == false).ToList().ForEach(p => p.IsDeleted = true);
+                                var campaignList = db.Plan_Campaign.Where(pc => pc.PlanId == PlanId && pc.IsDeleted == false).ToList();
+                                campaignList.ForEach(pc => pc.IsDeleted = true);
+                                var campaignIds = campaignList.Select(a => a.PlanCampaignId).ToList();
+                                db.CustomField_Entity.Where(a => campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(a => customFieldList.Add(a));
+                                db.Plans.Where(p => p.PlanId == PlanId && p.IsDeleted == false).ToList().ForEach(p => p.IsDeleted = true);
 
-                            customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                            }
+                            // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+                            else if (section == Enums.Section.Campaign.ToString() && id != 0)
+                            {
+                                var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == id).ToList();
+                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == id).ToList();
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.PlanCampaignId == id).ToList();
+                                Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.PlanCampaignId == id).ToList();
+                                Plan_CampaignList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
+                                var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
+                                var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
+                                plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
+                                //// when campaign deleted then custom field's value for this campaign and custom field's value of appropriate program and tactic will be deleted
+                                var campaign_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
+                                campaign_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                var programIds = Plan_Campaign_ProgramList.Select(a => a.PlanProgramId).ToList();
+                                string sectionProgram = Enums.EntityType.Program.ToString();
+                                var program_customFieldList = db.CustomField_Entity.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionProgram).ToList();
+                                program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
+                                string sectionTactic = Enums.EntityType.Tactic.ToString();
+                                var tactic_customFieldList = db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
+                                tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
+
+                            }
+                            else if (section == Enums.Section.Program.ToString() && id != 0)
+                            {
+                                var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId == id).ToList();
+                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program.PlanProgramId == id).ToList();
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == id).ToList();
+                                Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
+                                var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
+                                var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
+                                plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
+                                //// when program deleted then custom field's value for this program and custom field's value of appropriate tactic will be deleted
+                                var program_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
+                                program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
+                                string sectionTactic = Enums.EntityType.Tactic.ToString();
+                                var tactic_customFieldList = db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
+                                tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
+                            }
+                            else if (section == Enums.Section.Tactic.ToString() && id != 0)
+                            {
+                                var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
+                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
+                                var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
+                                var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
+                                plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactics
+                                //// when tactic deleted then custom field's value for this tactic will be deleted 
+                                var tactic_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
+                                tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactic
+                            }
+                            else if (section == Enums.Section.LineItem.ToString() && id != 0)
+                            {
+                                var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanLineItemId == id).ToList();
+                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
+                                var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => a.PlanLineItemId == id).ToList();
+                                plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                            }
                         }
-                        // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
-                        else if (section == Enums.Section.Campaign.ToString() && id != 0)
+                        finally
                         {
-                            var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == id).ToList();
-                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                            var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == id).ToList();
-                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                            var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.PlanCampaignId == id).ToList();
-                            Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                            var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.PlanCampaignId == id).ToList();
-                            Plan_CampaignList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                            ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
-                            var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
-                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
-                            plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                            ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
-                            //// when campaign deleted then custom field's value for this campaign and custom field's value of appropriate program and tactic will be deleted
-                            var campaign_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
-                            campaign_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                            var programIds = Plan_Campaign_ProgramList.Select(a => a.PlanProgramId).ToList();
-                            string sectionProgram = Enums.EntityType.Program.ToString();
-                            var program_customFieldList = db.CustomField_Entity.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionProgram).ToList();
-                            program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                            var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
-                            string sectionTactic = Enums.EntityType.Tactic.ToString();
-                            var tactic_customFieldList = db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
-                            tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                            ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
-
+                            db.Configuration.AutoDetectChangesEnabled = true;
                         }
-                        else if (section == Enums.Section.Program.ToString() && id != 0)
-                        {
-                            var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId == id).ToList();
-                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
-                            var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program.PlanProgramId == id).ToList();
-                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                            var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == id).ToList();
-                            Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                            ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
-                            var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
-                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
-                            plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                            ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
-                            //// when program deleted then custom field's value for this program and custom field's value of appropriate tactic will be deleted
-                            var program_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
-                            program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                            var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
-                            string sectionTactic = Enums.EntityType.Tactic.ToString();
-                            var tactic_customFieldList = db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
-                            tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                            ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
-                        }
-                        else if (section == Enums.Section.Tactic.ToString() && id != 0)
-                        {
-                            var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
-                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                            var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
-                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                            ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
-                            var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
-                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
-                            plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                            ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactics
-                            //// when tactic deleted then custom field's value for this tactic will be deleted 
-                            var tactic_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
-                            tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                            ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactic
-                        }
-                        else if (section == Enums.Section.LineItem.ToString() && id != 0)
-                        {
-                            var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanLineItemId == id).ToList();
-                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                            ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
-                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => a.PlanLineItemId == id).ToList();
-                            plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                        }
                         returnValue = db.SaveChanges();
                         scope.Complete();
                     }
