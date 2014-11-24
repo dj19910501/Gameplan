@@ -28,6 +28,7 @@
     }
     if (campaignMaster != null)
     {
+        TempData["CampaignModel"] = campaignMaster;
         planCampaignId = campaignMaster.PlanCampaignId;
         campaignStatus = campaignMaster.Status;
         colorCode = campaignMaster.ColorCode;

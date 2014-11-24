@@ -4870,6 +4870,20 @@ namespace RevenuePlanner.Helpers
             }
             return strMessage;
         }
+
+
+        public static string GetUserName(string UserGuid)
+        {
+            BDSServiceClient bdsservice = new BDSServiceClient();
+            List<User> userName = new List<User>();
+            userName = bdsservice.GetMultipleTeamMemberName(UserGuid);
+            if (userName.Count > 0)
+	        {
+                return string.Concat(userName.FirstOrDefault().FirstName," ",userName.FirstOrDefault().LastName);
+	        }
+            return "";
+        }
+
     }
 
     /// <summary>

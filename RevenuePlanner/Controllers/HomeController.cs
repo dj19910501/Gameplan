@@ -5850,28 +5850,31 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadSetupCampaign(int id)
         {
-
-            InspectModel im = GetInspectModel(id, "campaign", false);       //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-            List<Guid> userListId = new List<Guid>();
-            userListId.Add(im.OwnerId);
-            User userName = new User();
+            InspectModel im;
+            if (TempData["CampaignModel"] != null)
+            {
+                im = (InspectModel)TempData["CampaignModel"];
+            }
+            else
+            {
+               im = GetInspectModel(id, "campaign", false);
+            }
+            
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+                 im.Owner = Common.GetUserName(im.OwnerId.ToString());
             }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
 
-                //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
                     TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
                     return RedirectToAction("Index", "Login");
                 }
             }
-            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
-
+            
             if (im.LastSyncDate != null)
             {
                 TimeZone localZone = TimeZone.CurrentTimeZone;
@@ -5888,11 +5891,10 @@ namespace RevenuePlanner.Controllers
             ViewBag.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); //  Update by Bhavesh to Display Revenue
 
             ViewBag.CampaignDetail = im;
-            var objCampaign = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == id).FirstOrDefault();
-            ViewBag.CampaignBudget = objCampaign != null ? objCampaign.CampaignBudget : 0;
+            double? objCampaign = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == id).FirstOrDefault().CampaignBudget;
+            ViewBag.CampaignBudget = objCampaign != null ? objCampaign : 0;
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
-
             return PartialView("_SetupCampaign", im);
         }
 
@@ -10262,10 +10264,10 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
-            User userName = new User();
+           
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(pc.CreatedBy, Sessions.ApplicationId);
+                ViewBag.OwnerName = Common.GetUserName(pc.CreatedBy.ToString());
             }
             catch (Exception e)
             {
@@ -10278,7 +10280,7 @@ namespace RevenuePlanner.Controllers
                     return RedirectToAction("Index", "Login");
                 }
             }
-            ViewBag.OwnerName = userName.FirstName + " " + userName.LastName;
+            
             ViewBag.Year = pc.Plan.Year;
             ViewBag.PlanTitle = pc.Plan.Title;
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pc.Plan.Model);
@@ -10291,37 +10293,32 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsDeployedToIntegration = pcm.IsDeployedToIntegration;
             pcm.StartDate = pc.StartDate;
             pcm.EndDate = pc.EndDate;
-            var psd = (from p in db.Plan_Campaign_Program where p.PlanCampaignId == id && p.IsDeleted.Equals(false) select p);
+
+            var programs = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == id && p.IsDeleted.Equals(false)).ToList();
+            var tactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false)).ToList();
+
+            var psd = (from p in programs select p);
             if (psd.Count() > 0)
             {
                 pcm.PStartDate = (from opsd in psd select opsd.StartDate).Min();
+                pcm.PEndDate = (from opsd in psd select opsd.EndDate).Max();
             }
 
-            var ped = (from p in db.Plan_Campaign_Program where p.PlanCampaignId == id && p.IsDeleted.Equals(false) select p);
-            if (ped.Count() > 0)
-            {
-                pcm.PEndDate = (from oped in ped select oped.EndDate).Max();
-            }
-            var tsd = (from t in db.Plan_Campaign_Program_Tactic where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false) select t);
+            var tsd = (from t in tactic select t);
             if (tsd.Count() > 0)
             {
                 pcm.TStartDate = (from otsd in tsd select otsd.StartDate).Min();
+                pcm.TEndDate = (from otsd in tsd select otsd.EndDate).Max();
             }
-            var ted = (from t in db.Plan_Campaign_Program_Tactic where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false) select t);
-            if (ted.Count() > 0)
-            {
-                pcm.TEndDate = (from oted in ted select oted.EndDate).Max();
-            }
-            //}
-            //pcm.INQs = pc.INQs;
-            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList());
+
+            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(tactic);
             pcm.MQLs = PlanTacticValuesList.Sum(tm => tm.MQL);
             pcm.Cost = Common.CalculateCampaignCost(pc.PlanCampaignId); //pc.Cost; // Modified for PL#440 by Dharmraj
             // Start Added By Dharmraj #567 : Budget allocation for campaign
             pcm.CampaignBudget = pc.CampaignBudget;
             pcm.AllocatedBy = pc.Plan.AllocatedBy;
 
-            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
+            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == pc.PlanId && c.IsDeleted == false).ToList();
             double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
             double planBudget = pc.Plan.Budget;
             double planRemainingBudget = planBudget - allCampaignBudget;
@@ -10336,7 +10333,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsOwner = true;
 
                 // Added by Dharmraj Mangukiya to hide/show delete program as per custom restrictions PL ticket #577
-                var AllTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList();
+                var AllTactic = tactic;
                 bool IsCampaignDeleteble = true;
                 if (AllTactic.Count > 0)
                 {
@@ -10366,8 +10363,9 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsOwner = false;
                 ViewBag.IsCampaignDeleteble = false;
             }
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-
+            /*Modified By : Kalpesh Sharma :: Optimize the code and performance of application*/
+            //ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            ViewBag.Year = pc.Plan.Year;
             return PartialView("_EditSetupCampaign", pcm);
         }
 
