@@ -2171,27 +2171,6 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Function for calculate MQL based on tactic stage level
-        /// added by dharmraj for ticket #440
-        /// </summary>
-        /// <param name="objTactic"></param>
-        /// <returns></returns>
-        public string GetTacticMQL(Plan_Campaign_Program_Tactic objTactic)
-        {
-            string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
-            int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(s => s.ClientId == Sessions.User.ClientId && s.Code == TitleMQL).Level);
-            if (objTactic.Stage.Level > MQLStageLevel)
-            {
-                return "N/A";
-            }
-            else
-            {
-                // Added by Bhavesh Dobariya #183
-                return Convert.ToString(Common.CalculateMQLTactic(Convert.ToDouble(objTactic.ProjectedStageValue), objTactic.StartDate, objTactic.PlanTacticId, objTactic.StageId, objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId));
-            }
-        }
-
-        /// <summary>
         /// Added By: Bhavesh Dobariya.
         /// Action to Create Campaign.
         /// </summary>
@@ -3888,9 +3867,7 @@ namespace RevenuePlanner.Controllers
             //pcptm.INQs = pcpt.INQs;
             /// Added by Dharmraj on 4-Sep-2014
             /// #760 Advanced budgeting – show correct revenue in Tactic fly out
-            List<Plan_Campaign_Program_Tactic> lstTmpTac = new List<Plan_Campaign_Program_Tactic>();
-            lstTmpTac.Add(pcpt);
-            List<TacticStageValue> varTacticStageValue = Common.GetTacticStageRelation(lstTmpTac, false);
+            TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(pcpt, false);
             // Set MQL
             string stageMQL = Enums.Stage.MQL.ToString();
             int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
@@ -3898,14 +3875,7 @@ namespace RevenuePlanner.Controllers
             if (tacticStageLevel < levelMQL)
             {
                 //pcptm.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(pcpt.ProjectedStageValue), pcpt.StartDate, pcpt.PlanTacticId, pcpt.StageId, pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
-                if (varTacticStageValue.Count > 0)
-                {
-                    pcptm.MQLs = varTacticStageValue[0].MQLValue;
-                }
-                else
-                {
-                    pcptm.MQLs = 0;
-                }
+                pcptm.MQLs = varTacticStageValue.MQLValue;
             }
             else if (tacticStageLevel == levelMQL)
             {
@@ -3918,14 +3888,7 @@ namespace RevenuePlanner.Controllers
             }
 
             // Set Revenue
-            if (varTacticStageValue.Count > 0)
-            {
-                pcptm.Revenue = Math.Round(varTacticStageValue[0].RevenueValue, 2); // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
-            }
-            else
-            {
-                pcptm.Revenue = 0;
-            }
+            pcptm.Revenue = Math.Round(varTacticStageValue.RevenueValue, 2); // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
 
             pcptm.Cost = pcpt.Cost;
 
@@ -4891,7 +4854,6 @@ namespace RevenuePlanner.Controllers
                 int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
                 /// Added by Dharmraj on 4-Sep-2014
                 /// #760 Advanced budgeting – show correct revenue in Tactic fly out
-                List<Plan_Campaign_Program_Tactic> lstTactic = new List<Plan_Campaign_Program_Tactic>();
                 Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                 objTactic.StartDate = StartDate;
                 objTactic.EndDate = form.EndDate;
@@ -4899,20 +4861,12 @@ namespace RevenuePlanner.Controllers
                 objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
                 objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
                 objTactic.ProjectedStageValue = projectedStageValue;
-                lstTactic.Add(objTactic);
-                var lstTacticStageRelation = Common.GetTacticStageRelation(lstTactic, false);
+                var lstTacticStageRelation = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
                 double calculatedMQL = 0;
                 double CalculatedRevenue = 0;
-                if (lstTacticStageRelation.Count > 0)
-                {
-                    calculatedMQL = lstTacticStageRelation[0].MQLValue;
-                    CalculatedRevenue = lstTacticStageRelation[0].RevenueValue;
+                calculatedMQL = lstTacticStageRelation.MQLValue;
+                CalculatedRevenue = lstTacticStageRelation.RevenueValue;
                     CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
-                }
-                else
-                {
-                    calculatedMQL = CalculatedRevenue = 0;
-                }
                 calculatedMQL = Math.Round(calculatedMQL, 0, MidpointRounding.AwayFromZero);
                 if (tacticStageLevel < levelMQL)
                 {
@@ -4958,7 +4912,6 @@ namespace RevenuePlanner.Controllers
                 /// Added by Dharmraj on 4-Sep-2014
                 /// #760 Advanced budgeting – show correct revenue in Tactic fly out
                 int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                List<Plan_Campaign_Program_Tactic> lstTactic = new List<Plan_Campaign_Program_Tactic>();
                 Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                 if (tacticStageLevel < levelMQL)
                 {
@@ -4973,20 +4926,12 @@ namespace RevenuePlanner.Controllers
                 objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
                 objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
                 objTactic.ProjectedStageValue = projectedStageValue;
-                lstTactic.Add(objTactic);
-                var lstTacticStageRelation = Common.GetTacticStageRelation(lstTactic, false);
+                var lstTacticStageRelation = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
                 double calculatedMQL = 0;
                 double CalculatedRevenue = 0;
-                if (lstTacticStageRelation.Count > 0)
-                {
-                    calculatedMQL = lstTacticStageRelation[0].MQLValue;
-                    CalculatedRevenue = lstTacticStageRelation[0].RevenueValue;
+                calculatedMQL = lstTacticStageRelation.MQLValue;
+                CalculatedRevenue = lstTacticStageRelation.RevenueValue;
                     CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
-                }
-                else
-                {
-                    calculatedMQL = CalculatedRevenue = 0;
-                }
 
                 if (tacticStageLevel < levelMQL)
                 {
@@ -7281,8 +7226,6 @@ namespace RevenuePlanner.Controllers
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
             double projectedRevenueWithoutTactic = 0;
             string stageTypeSize = Enums.StageType.Size.ToString();
-           // List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelation(marketingActivities, false);
-           // List<TacticStageValue> TacticDataWithImprovement = Common.GetTacticStageRelation(marketingActivities, true);
 
             //Added By Bhavesh For Performance Issue #955
             List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
@@ -7478,8 +7421,6 @@ namespace RevenuePlanner.Controllers
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesWithIncluded = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false && !plantacticids.Contains(t.ImprovementPlanTacticId)).OrderBy(t => t.ImprovementPlanTacticId).Select(t => t).ToList();
 
             string stageTypeSize = Enums.StageType.Size.ToString();
-           // List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelation(marketingActivities, false);
-           // List<TacticStageValue> TacticDataWithImprovement = Common.GetTacticStageRelation(marketingActivities, true);
 
             //Added By Bhavesh For Performance Issue #955
             List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();

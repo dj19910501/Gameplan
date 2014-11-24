@@ -3382,24 +3382,15 @@ namespace RevenuePlanner.Controllers
 
                               }).SingleOrDefault();
 
-                    Plan_Campaign_Program_Tactic pcpt1 = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).SingleOrDefault();
-                    List<Plan_Campaign_Program_Tactic> lstTmpTac = new List<Plan_Campaign_Program_Tactic>();
-                    lstTmpTac.Add(pcpt1);
-                    List<TacticStageValue> varTacticStageValue = Common.GetTacticStageRelation(lstTmpTac, false);
+                    Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).SingleOrDefault();
+                    TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
                     // Set MQL
                     string stageMQL = Enums.Stage.MQL.ToString();
                     int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
-                    int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == id).Stage.Level);
+                    int tacticStageLevel = Convert.ToInt32(objTactic.Stage.Level);
                     if (tacticStageLevel < levelMQL)
                     {
-                        if (varTacticStageValue.Count > 0)
-                        {
-                            imodel.MQLs = varTacticStageValue[0].MQLValue;
-                        }
-                        else
-                        {
-                            imodel.MQLs = 0;
-                        }
+                        imodel.MQLs = varTacticStageValue.MQLValue;
                     }
                     else if (tacticStageLevel == levelMQL)
                     {
@@ -3412,14 +3403,7 @@ namespace RevenuePlanner.Controllers
                     }
                     imodel.MQLs = Math.Round((double)imodel.MQLs, 0, MidpointRounding.AwayFromZero);
                     // Set Revenue
-                    if (varTacticStageValue.Count > 0)
-                    {
-                        imodel.Revenues = Math.Round(varTacticStageValue[0].RevenueValue, 2);
-                    }
-                    else
-                    {
-                        imodel.Revenues = 0;
-                    }
+                    imodel.Revenues = Math.Round(varTacticStageValue.RevenueValue, 2);
 
                     imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(db.Plan_Campaign_Program_Tactic.SingleOrDefault(varT => varT.PlanTacticId == id).TacticType.Model);
                 }
@@ -5286,23 +5270,15 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            List<Plan_Campaign_Program_Tactic> lstTmpTac = new List<Plan_Campaign_Program_Tactic>();
-            lstTmpTac.Add(pcpt);
-            List<TacticStageValue> varTacticStageValue = Common.GetTacticStageRelation(lstTmpTac, false);
-            // Set MQL
+            //Updated By Bhavesh Dobariya Performance Issue
+            TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(pcpt, false);
+           // Set MQL
             string stageMQL = Enums.Stage.MQL.ToString();
             int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
-            int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == pcpt.PlanTacticId).Stage.Level);
+            int tacticStageLevel = Convert.ToInt32(pcpt.Stage.Level);
             if (tacticStageLevel < levelMQL)
             {
-                if (varTacticStageValue.Count > 0)
-                {
-                    ippctm.MQLs = varTacticStageValue[0].MQLValue;
-                }
-                else
-                {
-                    ippctm.MQLs = 0;
-                }
+               ippctm.MQLs = varTacticStageValue.MQLValue;
             }
             else if (tacticStageLevel == levelMQL)
             {
@@ -5315,14 +5291,7 @@ namespace RevenuePlanner.Controllers
             }
             ippctm.MQLs = Math.Round((double)ippctm.MQLs, 0, MidpointRounding.AwayFromZero);
             // Set Revenue
-            if (varTacticStageValue.Count > 0)
-            {
-                ippctm.Revenue = Math.Round(varTacticStageValue[0].RevenueValue, 2); // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
-            }
-            else
-            {
-                ippctm.Revenue = 0;
-            }
+            ippctm.Revenue = Math.Round(varTacticStageValue.RevenueValue, 2);
 
             string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
@@ -6118,7 +6087,6 @@ namespace RevenuePlanner.Controllers
                 int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
                 /// Added by Dharmraj on 4-Sep-2014
                 /// #760 Advanced budgeting – show correct revenue in Tactic fly out
-                List<Plan_Campaign_Program_Tactic> lstTactic = new List<Plan_Campaign_Program_Tactic>();
                 Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                 objTactic.StartDate = StartDate;
                 objTactic.EndDate = form.EndDate;
@@ -6126,20 +6094,12 @@ namespace RevenuePlanner.Controllers
                 objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
                 objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
                 objTactic.ProjectedStageValue = projectedStageValue;
-                lstTactic.Add(objTactic);
-                var lstTacticStageRelation = Common.GetTacticStageRelation(lstTactic, false);
+                var lstTacticStageRelation = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
                 double calculatedMQL = 0;
                 double CalculatedRevenue = 0;
-                if (lstTacticStageRelation.Count > 0)
-                {
-                    calculatedMQL = lstTacticStageRelation[0].MQLValue;
-                    CalculatedRevenue = lstTacticStageRelation[0].RevenueValue;
+                calculatedMQL = lstTacticStageRelation.MQLValue;
+                CalculatedRevenue = lstTacticStageRelation.RevenueValue;
                     CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
-                }
-                else
-                {
-                    calculatedMQL = CalculatedRevenue = 0;
-                }
                 calculatedMQL = Math.Round(calculatedMQL, 0, MidpointRounding.AwayFromZero);
                 if (tacticStageLevel < levelMQL)
                 {
@@ -6174,7 +6134,6 @@ namespace RevenuePlanner.Controllers
                 /// Added by Dharmraj on 4-Sep-2014
                 /// #760 Advanced budgeting – show correct revenue in Tactic fly out
                 int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                List<Plan_Campaign_Program_Tactic> lstTactic = new List<Plan_Campaign_Program_Tactic>();
                 Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                 if (tacticStageLevel < levelMQL)
                 {
@@ -6189,20 +6148,12 @@ namespace RevenuePlanner.Controllers
                 objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
                 objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
                 objTactic.ProjectedStageValue = projectedStageValue;
-                lstTactic.Add(objTactic);
-                var lstTacticStageRelation = Common.GetTacticStageRelation(lstTactic, false);
+                var lstTacticStageRelation = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
                 double calculatedMQL = 0;
                 double CalculatedRevenue = 0;
-                if (lstTacticStageRelation.Count > 0)
-                {
-                    calculatedMQL = lstTacticStageRelation[0].MQLValue;
-                    CalculatedRevenue = lstTacticStageRelation[0].RevenueValue;
+                calculatedMQL = lstTacticStageRelation.MQLValue;
+                CalculatedRevenue = lstTacticStageRelation.RevenueValue;
                     CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
-                }
-                else
-                {
-                    calculatedMQL = CalculatedRevenue = 0;
-                }
 
                 if (tacticStageLevel < levelMQL)
                 {
