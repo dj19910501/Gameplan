@@ -71,19 +71,15 @@ body {
     height: 78px;
     position: relative;
     z-index: 1500;
-    /*min-width: 1200px;*/
+    min-width: 1280px !important;
     border-bottom: 1px solid #144d6b;
 }
 
 /* added by kapil - #139 - to resolve popup issue */
-.row-fluid.calc-height {  min-width: 1280px !important; }   /* Modified by Sohel Pathan on 24/11/2014 for PL ticket #973 */ 
-/* */
-
-/* Start - Added by Sohel Pathan on 24/11/2014 for PL ticket #973 */
-.row-fluid {
-    min-width: 1280px !important;
+.row-fluid.calc-height {
+    min-width: 1280px;
 }
-/* End- Added by Sohel Pathan on 24/11/2014 for PL ticket #973 */
+/* */
 
 #sidebar {
     /*height: auto !important;
@@ -106,7 +102,7 @@ body {
     min-width: 1000px !important;
     /*position: absolute;*/ /* removed by kapil - #139 - to resolve popup issue */
     float: left; /* added by kapil - #139 - to resolve popup issue */
-    margin: 0px; /* Modified by Sohel Pathan on 24/11/2014 for PL ticket #973 */
+    margin: 0px !important; /* Modified by Sohel Pathan on 24/11/2014 for PL ticket #973 */
 }
 /* changed by Nirav shah  on 10 feb 2014 for  Inspect screen : css changes as per new HTML*/
 /*#content_wraper
@@ -1755,7 +1751,7 @@ span.requests-logo-icon {
     }
 
         .wraper-btns .span6:first-child {
-            margin-right: 10%;
+            margin-right: 7%;
         }
 
         .wraper-btns .span6 button {
