@@ -223,10 +223,9 @@
         //    ActualallocationValue.push(ReplaceCC($(lstActualAllocInputs[i]).val()));
         //}
         
-        //document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
+        document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
         var uId = $(window).attr('name');
-
-        $("#hdnDescription").val(htmlEncode($('#txtDescription').val()));
+        document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/home/SaveLineitem")',
