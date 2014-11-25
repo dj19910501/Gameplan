@@ -2642,7 +2642,7 @@ namespace RevenuePlanner.Helpers
             string SV = Enums.StageType.SV.ToString();
             string Size = Enums.StageType.Size.ToString();
             List<Plan_Campaign_Program_Tactic_Actual> actualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-            if (isSinglePlan)
+            if (!isSinglePlan)
             {
                 List<int> TacticIds = tlist.Select(t => t.PlanTacticId).ToList();
                 actualTacticList = dbStage.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
@@ -2669,7 +2669,7 @@ namespace RevenuePlanner.Helpers
                 tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.ADSValue = stageRelation.Where(sr => sr.StageType == Size).Sum(sr => sr.Value);
                 tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
-                if (isSinglePlan)
+                if (!isSinglePlan)
                 {
                     tacticStageValueObj.ActualTacticList = actualTacticList.Where(a => a.PlanTacticId == tactic.PlanTacticId).ToList();
                 }
