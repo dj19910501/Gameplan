@@ -24,6 +24,14 @@
 @section Sidebar {
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
+<style type="text/css">
+    .inputs-aligned-horizontal .selectBox .sbHolder.sbToggleOpen {
+    z-index:inherit;
+    }
+    .sbHolder{
+    z-index:inherit;
+    }
+</style>
 
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
@@ -46,7 +54,7 @@
 <a class="link-gray" href="@Url.Action("Index", "User")">« BACK TO LIST</a>
 
 <div class="padding-content cf source-sans-proregular" id="content">
-    <div class="row chrome-ie-height-720px z-index-2498">
+    <div class="row chrome-ie-height-720px">
         <div class="span2 content-colum-left content-img-user">
         </div>
         <div class="span10 content-colum-info-user">
