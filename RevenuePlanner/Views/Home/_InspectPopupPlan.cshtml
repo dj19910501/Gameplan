@@ -12,6 +12,14 @@
     var goalType = planDetails.GoalType;
     var modelId = planDetails.ModelId;
     var goalValue = planDetails.GoalValue;
+
+
+    if (planDetails != null)
+    {
+        TempData["PlanModel"] = planDetails;
+
+    }
+    
 }
 
 @Html.Hidden("hdnGoalType", goalType, new { id = "hdnGoalType" })

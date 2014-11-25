@@ -3517,7 +3517,17 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Actuals Tab.</returns>
         public ActionResult LoadActuals(int id)
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);     //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+            InspectModel im;
+
+            if (TempData["TacticModel"] != null)
+            {
+                im = (InspectModel)TempData["TacticModel"];
+            }
+            else
+            {
+                im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
+            }
+
             ViewBag.TacticStageId = im.StageId;
             ViewBag.TacticStageTitle = im.StageTitle;
 
@@ -5044,7 +5054,11 @@ namespace RevenuePlanner.Controllers
         public ActionResult EditTactic(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
             ViewBag.CalledFromBudget = CalledFromBudget;
-            int planId = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == id).FirstOrDefault().Plan_Campaign_Program.Plan_Campaign.PlanId;
+            
+            Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).SingleOrDefault();
+            
+            int planId = pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId;
+
             var tList = from t in db.TacticTypes
                         join p in db.Plans on t.ModelId equals p.ModelId
                         where p.PlanId == planId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true
@@ -5061,9 +5075,6 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.RedirectType = true;
             }
-
-
-            Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).SingleOrDefault();
 
             if (pcpt == null)
             {
@@ -5250,17 +5261,18 @@ namespace RevenuePlanner.Controllers
             // ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == ippctm.AudienceId).Select(a => a.Title).SingleOrDefault();
             //ViewBag.Program = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Title);
             //ViewBag.Campaign = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Plan_Campaign.Title);
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+
+            ViewBag.Year = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == pcpt.BusinessUnitId && b.IsDeleted == false).Select(b => b.Title).SingleOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ippctm.TacticCost = pcpt.Cost;
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            ippctm.AllocatedBy = objPlan.AllocatedBy;
+            ippctm.AllocatedBy = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
 
             ippctm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Tactic.ToString());//Added by Mitesh Vaishnav for PL ticket #720
 
             var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpt.PlanProgramId).ToList().Sum(c => c.Cost);
-            var objPlanCampaignProgram = db.Plan_Campaign_Program.SingleOrDefault(p => p.PlanProgramId == pcpt.PlanProgramId);
-            ViewBag.planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
+            double? objPlanCampaignProgram = db.Plan_Campaign_Program.SingleOrDefault(p => p.PlanProgramId == pcpt.PlanProgramId).ProgramBudget;
+            objPlanCampaignProgram = objPlanCampaignProgram != null ? objPlanCampaignProgram : 0;
+            ViewBag.planRemainingBudget = (objPlanCampaignProgram - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
 
             // Start - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
             ViewBag.IsTackticAddEdit = true;
@@ -8427,8 +8439,7 @@ namespace RevenuePlanner.Controllers
                 (budgetAllocation > 0 ? budgetAllocation : (pcp.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcp.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
                 : pcp.Cost;
 
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == pcp.Plan_Campaign_Program.Plan_Campaign.PlanId);
-            pcpm.AllocatedBy = objPlan.AllocatedBy;
+            pcpm.AllocatedBy = pcp.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
 
             //Added By : Kalpesh Sharma Functioan and code review #693
             var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpm.PlanProgramId).ToList().Sum(c => c.Cost);
@@ -8950,12 +8961,12 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCreated = true;
             ViewBag.RedirectType = false;
             ViewBag.IsOwner = true;
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(planId)).Year;
+            ViewBag.Year = objPlan.Year;
             ViewBag.PlanTitle = objPlan.Title;
-            User userName = new User();
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
+                //userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
+                ViewBag.OwnerName = Common.GetUserName(Sessions.User.UserId.ToString());
             }
             catch (Exception e)
             {
@@ -8968,7 +8979,6 @@ namespace RevenuePlanner.Controllers
                     RedirectToAction("Index", "Login");
                 }
             }
-            ViewBag.OwnerName = userName.FirstName + " " + userName.LastName;
 
             Plan_CampaignModel pc = new Plan_CampaignModel();
             pc.PlanId = planId;
@@ -10142,26 +10152,31 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadPlanSetup(int id, string InspectPopupMode = "")
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Plan).ToLower());
-            List<Guid> userListId = new List<Guid>();
-            userListId.Add(im.OwnerId);
-            User userName = new User();
+            InspectModel im;
+
+            if (TempData["PlanModel"] != null)
+            {
+                im = (InspectModel)TempData["PlanModel"];
+            }
+            else
+            {
+                im = GetInspectModel(id, Convert.ToString(Enums.Section.Plan).ToLower());
+            }
+
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+                im.Owner = Common.GetUserName(im.OwnerId.ToString());
             }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
                     TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
                     return RedirectToAction("Index", "Login");
                 }
             }
-            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+            
             ViewBag.PlanDetails = im;
 
             if (InspectPopupMode == Enums.InspectPopupMode.ReadOnly.ToString())
@@ -10191,13 +10206,20 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Budget Tab.</returns>
         public ActionResult LoadPlanBudget(int id, string InspectPopupMode = "")
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Plan).ToLower());
-            List<Guid> userListId = new List<Guid>();
-            userListId.Add(im.OwnerId);
-            User userName = new User();
+            InspectModel im;
+
+            if (TempData["PlanModel"] != null)
+            {
+                im = (InspectModel)TempData["PlanModel"];
+            }
+            else
+            {
+                im = GetInspectModel(id, Convert.ToString(Enums.Section.Plan).ToLower());
+            }
+
             try
             {
-                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+                im.Owner = Common.GetUserName(im.OwnerId.ToString());
             }
             catch (Exception e)
             {
@@ -10210,7 +10232,7 @@ namespace RevenuePlanner.Controllers
                     return RedirectToAction("Index", "Login");
                 }
             }
-            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+            
             ViewBag.PlanDetails = im;
 
             if (InspectPopupMode == Enums.InspectPopupMode.ReadOnly.ToString())
