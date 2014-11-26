@@ -113,11 +113,11 @@
                 <p style="width: 110%;">Deployed to Integration</p>
                 if (Model.IsDeployedToIntegration)
                 {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to Integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Synced to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
                 }
                 else
                 {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Sync to Integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not synced to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
                 }
             }
 
@@ -242,13 +242,13 @@
 
           $("#t_integration_status").click(function () {
               if ($(this).hasClass("icon-check-blue")) {
-                  $(this).val("Not Sync to integration");
+                  $(this).val("Not synced to integration");
                   $(this).addClass("icon-check-gray");
                   $(this).removeClass("icon-check-blue");
                   $("#hdnIsDeployedToIntegration").val(false);
               }
               else {
-                  $(this).val("Sync to integration");
+                  $(this).val("Synced to integration");
                   $(this).addClass("icon-check-blue");
                   $(this).removeClass("icon-check-gray");
                   $("#hdnIsDeployedToIntegration").val(true);
@@ -602,13 +602,13 @@
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
                         if (data.IsDeployedToIntegration) {
-                            $("#t_integration_status").val("Sync to integration");
+                            $("#t_integration_status").val("Synced to integration");
                             $("#t_integration_status").addClass("icon-check-blue");
                             $("#t_integration_status").removeClass("icon-check-gray");
                             $("#hdnIsDeployedToIntegration").val(true);
                         }
                         else {
-                            $("#t_integration_status").val("Not Sync to integration");
+                            $("#t_integration_status").val("Not synced to integration");
                             $("#t_integration_status").addClass("icon-check-gray");
                             $("#t_integration_status").removeClass("icon-check-blue");
                             $("#hdnIsDeployedToIntegration").val(false);
