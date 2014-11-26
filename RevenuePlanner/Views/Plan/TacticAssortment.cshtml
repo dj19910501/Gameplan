@@ -128,12 +128,12 @@
                 if (Model.IsDeployedToIntegration)
                 {
                 <label style="margin-top: 6px;">Status</label>
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" value="Sync to integration" maxlength="18" readonly />   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Synced to integration" value="Synced to integration" maxlength="18" readonly />   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
                 }
                 else
                 {
                 <label style="margin-top: 6px;">Status</label>
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" value="Not Sync to integration" maxlength="18" readonly />   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not synced to integration" value="Not synced to integration" maxlength="18" readonly />   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
                 }
             }
 
@@ -531,13 +531,13 @@
 
         $("#t_integration_status").click(function () {
             if ($(this).hasClass("icon-check-blue")) {
-                $(this).val("Not Sync to integration");
+                $(this).val("Not synced to integration");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
                 $("#hdnIsDeployedToIntegration").val(false);
             }
             else {
-                $(this).val("Sync to integration");
+                $(this).val("Synced to integration");
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
                 $("#hdnIsDeployedToIntegration").val(true);
@@ -876,13 +876,13 @@
                             $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
 
                             if (data.IsDeployedToIntegration) {
-                                $("#t_integration_status").val("Sync to integration");
+                                $("#t_integration_status").val("Synced to integration");
                                 $("#t_integration_status").addClass("icon-check-blue");
                                 $("#t_integration_status").removeClass("icon-check-gray");
                                 $("#hdnIsDeployedToIntegration").val(true);
                             }
                             else {
-                                $("#t_integration_status").val("Not Sync to integration");
+                                $("#t_integration_status").val("Not synced to integration");
                                 $("#t_integration_status").addClass("icon-check-gray");
                                 $("#t_integration_status").removeClass("icon-check-blue");
                                 $("#hdnIsDeployedToIntegration").val(false);
