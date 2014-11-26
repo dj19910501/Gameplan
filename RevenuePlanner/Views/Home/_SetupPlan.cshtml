@@ -160,6 +160,15 @@
             //}
         }
 
+        var regex = /(>|<)/m;
+
+        var descriptionvalue = $("#txtDescription").val();
+        if (descriptionvalue.search(regex) >= 0) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
+            $("#txtDescription").addClass("error");
+            iserror = true;
+        }
+
         if (!iserror) {
             if ($("#hdnIsBudgetAllocated").val() == "True") {
                 var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
@@ -256,7 +265,7 @@
     function ShowError(value) {
         $("#errorMessagePlan").slideDown(400);
         $("#spanErrMessagePlan").empty();
-        $("#spanErrMessagePlan").text(value);
+        $("#spanErrMessagePlan").html(value);
     }
 
     function returnToReadOnlyMode(id) {

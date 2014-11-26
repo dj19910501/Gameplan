@@ -329,6 +329,16 @@
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
             return false;
         }
+
+        var regex = /(>|<)/m;
+
+        var descriptionvalue = $("#txtDescription").val();
+        if (descriptionvalue.search(regex) >= 0) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
+            $("#txtDescription").addClass("error");
+            return false;
+        }
+
         var sdate = $('#txtDate').val();
         if (!isDate(sdate)) {
             alert('@Common.objCached.ValidateEffectiveDate');
@@ -383,7 +393,7 @@
 function ShowError(value) {
     $("#errorMessageImprovementTactic").slideDown(400);
     $("#spanErrMessageImprovementTactic").empty();
-    $("#spanErrMessageImprovementTactic").text(value);
+    $("#spanErrMessageImprovementTactic").html(value);
 }
 
 function ShowMessage(InspectSuccMsg) {

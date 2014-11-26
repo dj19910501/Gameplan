@@ -2251,6 +2251,15 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _DataInconsistency; }
             set { _DataInconsistency = value; }
         }
+			  //// Start - Ticket #994, by Pratik chauhan
+        private string _InvalidCharacterofDescription;
+        public string InvalidCharacterofDescription
+        {
+            get { return _InvalidCharacterofDescription; }
+            set { _InvalidCharacterofDescription = value; }
+        }
+
+        //// End - Ticket #994, by Pratik chauhan
 
         #endregion
 
@@ -2952,6 +2961,9 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             break;
                                         case "NoPublishPlanAvailableOnReport":
                                             _NoPublishPlanAvailableOnReport = strMsgValue;
+											 break;
+                                        case "InvalidCharacterofDescription":
+                                            _InvalidCharacterofDescription = strMsgValue;
                                             break;
                                     }
                                 }

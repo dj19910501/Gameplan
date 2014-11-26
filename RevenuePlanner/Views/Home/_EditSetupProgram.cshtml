@@ -325,6 +325,15 @@
                 return false;
             }
 
+            var regex = /(>|<)/m;
+
+            var descriptionvalue = $("#Description").val();
+            if (descriptionvalue.search(regex) >= 0) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
+                $("#Description").addClass("error");
+            return false;
+        }
+
             sdate = $('#t_startdate').val();
             edate = $('#t_enddate').val();
             var tsdate = $('#hdnTStartDate').val();

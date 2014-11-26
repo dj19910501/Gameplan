@@ -849,4 +849,10 @@
 		<Name>DataInconsistency</Name>
 		<value>The system as detected a data inconsistency between Tactics and Waterfall Stages. Please contact your system administrator for assistance.</value>
 	</Field>
+	<!--Start Added by Pratik -->
+	<Field>
+		<Name>InvalidCharacterofDescription</Name>
+		<value>Character &#60; , &#62; are not allowed in description field.</value>
+	</Field>
+	<!--End Added by Pratik -->
 </Messages>

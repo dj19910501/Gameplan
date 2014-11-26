@@ -393,6 +393,16 @@
               return false;
           }
 
+          var regex = /(>|<)/m;
+
+          var descriptionvalue = $("#Description").val();
+          if (descriptionvalue.search(regex) >= 0) {
+              var test = "@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription";
+              ShowError(test);
+              $("#Description").addClass("error");
+            return false;
+        }
+
           var sdate = $('#t_startdate').val();
           var edate = $('#t_enddate').val();
           if (!isDate(sdate)) {
@@ -525,7 +535,7 @@
         $("#errorMessage").css("display", "block");
         $("#errorMessage").slideDown(400);
         $("#spanMessageError").empty();
-        $("#spanMessageError").text(value);
+        $("#spanMessageError").html(value);
     }
 
     function assignDefaultValue(classname) {

@@ -204,6 +204,15 @@
             return false;
         }
 
+        var regex = /(>|<)/m;
+
+        var descriptionvalue = $("#txtDescription").val();
+        if (descriptionvalue.search(regex) >= 0) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
+            $("#txtDescription").addClass("error");
+            return false;
+        }
+
         $("#txtLineItemCost").val(ReplaceCC($("#txtLineItemCost").val()));
         //var arrClosedTaskString = null;
         //if (typeof arrClosedTask != 'undefined') {
