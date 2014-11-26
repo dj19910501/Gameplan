@@ -5333,7 +5333,7 @@ namespace RevenuePlanner.Controllers
             {
                 int cid = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == form.PlanProgramId).Select(p => p.PlanCampaignId).FirstOrDefault();
                 int pid = form.PlanProgramId;
-                form.Description = strDescription;  //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
+                //form.Description = strDescription;  //Added by Viral Kadiya on 11/15/2014 for PL ticket #794 to save Description in html format.
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
 
                 if (form.PlanTacticId == 0)

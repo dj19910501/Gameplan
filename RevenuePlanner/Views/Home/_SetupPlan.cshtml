@@ -28,7 +28,7 @@
             }
             else if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
             {
-                @Html.TextArea("Description", Model.Description, new { id = "txtDescription", @class = "span12 text-area-size light-blue-background", style = "height:93px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+                @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size light-blue-background", style = "height:93px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@ 
             }
         </div>
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
@@ -197,9 +197,10 @@
                 }
 
                 var allocationValue = [];
-            $("#hdnDescription").val($('#txtDescription').val());
                 $("#txtTitle").value = htmlEncode($('#txtTitle').val());
                 $("#Description").value = htmlEncode($('#Description').val());
+                document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584 
+                document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
                 $('#Title').val($('#txtTitle').val());
                 var formData = $("form").serialize();
                 var RedirectType = "";

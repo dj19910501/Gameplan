@@ -461,18 +461,18 @@
          var txtCampaignValue = $("#txtCampaign").val();
          var  txtProgramValue = $("#txtProgram").val();
           var txtTacticValue = $("#txtTacticTitle").val();
-          var txtDescriptionValue = $("#Description").val();
+          var txtDescriptionValue = htmlEncode($("#Description").val());
           document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
           document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
           document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
           document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
-
+          document.getElementById("Description").value = htmlEncode($('#Description').val());
           var uId = $(window).attr('name');
 
           $.ajax({
               type: 'POST',
               url: '@Url.Content("~/Home/SetupSaveTactic")',
-              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&strDescription=' + encodeURIComponent(txtDescriptionValue.toString()),
+              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) ,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
