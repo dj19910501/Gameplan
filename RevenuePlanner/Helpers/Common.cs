@@ -808,16 +808,19 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="cookieName"></param>
         /// <param name="cookieValue"></param>
-        public static void SetCookie(string cookieName, string cookieValue)
+        public static void SetCookie(string cookieName, string cookieValue, bool isForDataInconsistency = false)
         {
             HttpCookie objCookie = null;
             objCookie = HttpContext.Current.Request.Cookies[cookieName];
             if (objCookie != null)
             {
+                if (!isForDataInconsistency)
+                {
                 objCookie.Value = cookieValue;
                 objCookie.Expires = System.Convert.ToDateTime(System.DateTime.Now.Date).AddMonths(6);
                 objCookie.Path = "/";
                 HttpContext.Current.Response.Cookies.Add(objCookie);
+                }
             }
             else
             {
@@ -4813,6 +4816,13 @@ namespace RevenuePlanner.Helpers
 	        }
             return "";
         }
+
+        public static bool SetSessionVariable()
+        {
+            Sessions.IsDisplayDataInconsistencyMsg = false;
+            return true;
+        }
+
 		    #endregion
     }
 

@@ -524,8 +524,10 @@
 	</Field>
 	<Field>
 		<Name>ValidateTargetStage</Name>
-		<!--<value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>-->
-    <value>At least one stage under Conversion Rates section needs to be set to target stage, please contact system administrator.</value>
+		<!--
+<value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>
+		-->
+		<value>At least one stage under Conversion Rates section needs to be set to target stage, please contact system administrator.</value>
 	</Field>
 	<Field>
 		<Name>ConfirmationForDeleteTactic</Name>
@@ -837,10 +839,14 @@
 		<value>{0} with same title exist.</value>
 	</Field>
 	<!-- End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947 -->
- <!--Start Added by Mitesh Vaishnav for internal issue on 20-11-2014-->
-  <Field>
-    <Name>NoPublishPlanAvailableOnReport</Name>
-    <value>No published plan available to shown on report, please publish a plan.</value>
-  </Field>
-  <!--End Added by Mitesh Vaishnav for internal issue on 20-11-2014-->
+	<!--Start Added by Mitesh Vaishnav for internal issue on 20-11-2014-->
+	<Field>
+		<Name>NoPublishPlanAvailableOnReport</Name>
+		<value>No published plan available to shown on report, please publish a plan.</value>
+	</Field>
+	<!--End Added by Mitesh Vaishnav for internal issue on 20-11-2014-->
+	<Field>
+		<Name>DataInconsistency</Name>
+		<value>The system as detected a data inconsistency between Tactics and Waterfall Stages. Please contact your system administrator for assistance.</value>
+	</Field>
 </Messages>

@@ -79,7 +79,7 @@
             var url = '@Url.Content("~/Common/LoadSupportPartial/")';   //// Modified by Sohel Pathan on 23/05/2014 for internal review points.
             $("#div_contactSupport").load(url);
         });
-
+        CheckDataInconsistency();
         switch ($('#ActiveMenu').val().toString().toLowerCase()) {
             case 'home':
                 $('.home').addClass('active');
@@ -106,6 +106,18 @@
 
 
     });
+
+    function CheckDataInconsistency() {
+        if ('@Sessions.IsDisplayDataInconsistencyMsg' == 'True') {
+            var IsSessionClient = readCookie('DataClientId' + '@Sessions.User.ClientId.ToString().ToLower()');
+            if (IsSessionClient != null) {
+                alert('@Common.objCached.DataInconsistency');
+             var retvalue = '@RevenuePlanner.Helpers.Common.SetSessionVariable()';
+            }
+        }
+    }
+   
+
     $(".alert").find(".close").on("click", function (e) {
         e.stopPropagation();
         e.preventDefault();

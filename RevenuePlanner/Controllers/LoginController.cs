@@ -183,6 +183,28 @@ namespace RevenuePlanner.Controllers
                         }
                         // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
 
+                        // Added by bhavesh Dobariya @Date: 26/11/2014
+                        Sessions.IsDisplayDataInconsistencyMsg = false;
+                        Guid ClientId = obj.ClientId;
+                        List<int> deletedStageId = db.Stages.Where(s => s.ClientId == ClientId && s.IsDeleted == true).Select(s => s.StageId).ToList();
+                        if (deletedStageId.Count > 0)
+                        {
+                            var tacticlist = db.Plan_Campaign_Program_Tactic.Where(t => deletedStageId.Contains(t.StageId) && t.BusinessUnit.ClientId == ClientId && t.IsDeleted == false).ToList();
+                            if (tacticlist.Count > 0)
+                            {
+                                Common.SetCookie("DataClientId" + ClientId.ToString().ToLower(), ClientId.ToString().ToLower(), true);
+                                Sessions.IsDisplayDataInconsistencyMsg = true;
+                            }
+                            else
+                            {
+                                Common.RemoveCookie("DataClientId" + ClientId.ToString().ToLower());
+                            }
+                        }
+
+
+                        //End Bhavesh
+
+
                         //Redirect users logging in for the first time to the change password module
                         if (obj.LastLoginDate == null)
                         {

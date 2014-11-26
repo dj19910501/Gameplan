@@ -2244,6 +2244,14 @@ private string _CannotAllocateMorethanRemainingBudgeted;
         }
         
         // End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
+
+        private string _DataInconsistency;
+        public string DataInconsistency
+        {
+            get { return _DataInconsistency; }
+            set { _DataInconsistency = value; }
+        }
+
         #endregion
 
         #region  Functions
@@ -2939,6 +2947,9 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _PlanEntityDuplicated = strMsgValue;
                                             break;
                                         // End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
+                                        case "DataInconsistency":
+                                            _DataInconsistency = strMsgValue;
+                                            break;
                                         case "NoPublishPlanAvailableOnReport":
                                             _NoPublishPlanAvailableOnReport = strMsgValue;
                                             break;

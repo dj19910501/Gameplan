@@ -386,5 +386,18 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        public static bool IsDisplayDataInconsistencyMsg
+        {
+            get
+            {
+                return Convert.ToBoolean(HttpContext.Current.Session["DisplayDataInconsistencyMsg"]);
+            }
+            set
+            {
+                HttpContext.Current.Session["DisplayDataInconsistencyMsg"] = value;
+            }
+        }
+
+      
     }
 }
