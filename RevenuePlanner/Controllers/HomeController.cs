@@ -7106,7 +7106,21 @@ namespace RevenuePlanner.Controllers
                 //added by uday for internal point on 15-7-2014
                 string type = PlanGanttTypes.Tactic.ToString(); // this is inititalized as 0 bcoz to get the status for tactics.
                 var individuals = GetIndividualsByPlanId(Sessions.PlanId.ToString(), type, Enums.ActiveMenu.Home.ToString());
-                planmodel.objIndividuals = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
+                ////Start - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
+                ////Fetch individual's records distinct
+                planmodel.objIndividuals = individuals.Select(a => new
+                {
+                    UserId = a.UserId,
+                    FirstName = a.FirstName,
+                    LastName = a.LastName
+                }).ToList().Distinct().Select(a => new User()
+                {
+                    UserId = a.UserId,
+                    FirstName = a.FirstName,
+                    LastName = a.LastName
+                }).ToList().OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
+                ////End - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
+                
                 //end by uday
 
                 List<TacticType> objTacticType = new List<TacticType>();

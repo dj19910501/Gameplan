@@ -5,6 +5,12 @@
 }
 @section Sidebar
 {
+    <style type="text/css">
+        .chkbxfilter {
+            float: right;
+            margin: 7px -3px 0 0 !important;
+        }
+    </style>
     <div class="padding-content padding-bottom0" id="DivButtonsHome">
         <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
         <div class="wraper-btns cf">
@@ -31,86 +37,131 @@
 
     <div class="shadow-scroll"></div>*@
     
-    <div class="padding-content padding-top0">
-        <a class="link-alone" id="AShowOnlyMyTactic" href="#">
-            <label>Show only My Tactics</label></a>
-    
-        <h4 class="text-shadow-black source-sans-prolight">Filters</h4>
+    <div id="sidebar" class="span2 sidebar">
 
-        <!--Second Accordion-->
-        <div class="accordion simple" id="accordion-Filter">
-            <div class="accordion-group">
-                @if (((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList).Count > 0)
-                {
+        <div class="sidebar-section scroll-section">
+            <div style="width: 100%;">
+                <div class="width50 float-left ">
+                    <span class="filter-header">Filters</span>
+                    </div>
+                <div class="width50 float-left">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="btnUpdateResultFilters" onclick="UpdateResult()">
+                        Update Results
+                    </button>
+                    </div>
+            </div>
+            <div style="clear: both;"></div>
+            <div id="accordion-1" class="dropdown-section accordion">
+                <div class="accordion-group">
                     <div class="accordion-heading">
-                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterTacticType">Tactic Type</a>
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-1" href="#accordion-element-TacticType">Tactic Type<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
-                    <div id="accordion-filterTacticType" class="accordion-body collapse">
-                        @foreach (var item in ((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList))
-                        {
-                            <a href="#" class="accordion-inner" tacticId="@item.TacticTypeId">@item.Title<span class="pull-right"></span></a>                        
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="accordion-heading">
-                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Tactic Type</a>
-                    </div>
+                    <div id="accordion-element-TacticType" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulTacticType">
+                            @if (((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList).Count > 0)
+                            {
+                                foreach (var item in ((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList))
+                                {
+                                    string id = "li" + item.TacticTypeId;
+                                <li class="accordion-inner" id="@id" title="@item.Title"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@item.TacticTypeId" onchange="toggleTacticType(this)"/></li>
+                                    
+                                }
+                            }
+                        </ul>
+                        <div class="list-tab">
+                             @if (((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList).Count > 0)
+                            {
+                            <ul id="TacticTypeAllModule">
+                                <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkTTOperation(false)">deselect all</a></li>
+                            </ul>
+                             }
+                            else{
+                            <div id="NoTTFound" class="NoDataFoundFilter">No TacticType Found</div>
                 }
             </div>
-            <div class="accordion-group">
-                @if (Model.objGeography.Count > 0)
-                {
+                    </div>
+                    </div>
+            </div>
+
+            <div id="accordion-3" class="dropdown-section accordion">
+                <div class="accordion-group">
                     <div class="accordion-heading">
-                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterGeography">Geography</a>
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-3" href="#accordion-element-Geography">Geography<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
-                    <div id="accordion-filterGeography" class="accordion-body collapse">
-                        @foreach (var geography in Model.objGeography)
-                        {
-                            <a href="#" class="accordion-inner" filterId="@geography.GeographyId">@geography.Title<span class="pull-right"></span></a>                        
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="accordion-heading">
-                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Geography</a>
-                    </div>
+                    <div id="accordion-element-Geography" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulSelectedGeography">
+                            @if (Model.objGeography.Count > 0)
+                            {
+                                foreach (var item in Model.objGeography)
+                                {
+                                    string id = "liGeography" + item.GeographyId;
+                                <li class="accordion-inner" id="@id" title="@item.Title"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@item.GeographyId" onchange="toggleGeography(this)"/></li>
+                                }
+                            }
+                        </ul>
+                        <div class="list-tab">
+                             @if (Model.objGeography.Count > 0)
+                            {
+                            <ul id="GeographyAllModule">
+                                <li><a onclick="BulkGeoOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkGeoOperation(false)">deselect all</a></li>
+                            </ul>
+                             }
+                            else{
+                            <div id="NoGeographyFound" class="NoDataFoundFilter">No Geography Found</div>
                 }
             </div>
-            <div class="accordion-group">
-                @if (Model.objIndividuals.Count > 0)
-                {
-                    //here individuals heading is replaced with authors as per ticket PL #445 by uday 5-6-2014
-                    <div class="accordion-heading">
-                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterIndividuals">Authors</a>
                     </div>
-                    <div id="accordion-filterIndividuals" class="accordion-body collapse">
-                        @foreach (var individual in Model.objIndividuals)
-                        {
-                            //here lastname and firstname are interchanged as per ticket PL #505 by uday 4-6-2014 i.e last name is displayed first and first name at last //change on 15-7-2014
-                            var name = individual.LastName + ", " + individual.FirstName;
-                            <a href="#" class="accordion-inner" filterId="@individual.UserId">@string.Format("{0}", name)<span class="pull-right"></span></a>                        
+                </div>
+            </div>
+
+            <div id="accordion-6" class="dropdown-section accordion">
+            <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-6" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                    </div>
+                    <div id="accordion-element-Owner" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulSelectedOwner">
+                            @if (Model.objIndividuals.Count > 0)
+                            {
+                                foreach (var item in Model.objIndividuals)
+                                {
+                                    string id = "liOwner" + item.UserId;
+                                    string name = item.LastName + ", " + item.FirstName;
+                                <li class="accordion-inner" id="@id" title="@name"><span class="sidebarliwidth">@name</span><input type="checkbox" class="chkbxfilter" id="@item.UserId" onchange="toggleOwner(this)"/></li>
+                                }
+                            }
+                        </ul>
+                        <div class="list-tab">
+                             @if (Model.objIndividuals.Count > 0)
+                            {
+                            <ul id="ulOwnerAllModule">
+                                <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
+                            </ul>
+                             }
+                            else{
+                            <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
                         }
                     </div>
-                }
-                else
-                {
-                    //here individuals heading is replaced with authors as per ticket PL #445 by uday 5-6-2014
-                    <div class="accordion-heading"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Authors</a></div>
-                }
-
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <!--End Second Accordion-->
-    <ul class="nav nav-list nav-gray-plan">
+    <div style="clear:both;">
+    @*<ul class="nav nav-list nav-gray-plan">
         <li id="change-log" class="nav-header">
             <span>Change Log</span>
             <div class="changes"></div>
         </li>
-    </ul>
+    </ul>*@
+        </div>
                 }
 <!--Error message-->
 <div id="errorMessage" class="alert alert-error hide message-position-small">
@@ -158,6 +209,7 @@
     var geoArr = [];
     var indArr = [];
     var tacArr = [];
+    var Status = 0;
     $(document).ready(function () {
 
         //Added By : Kalpesh Sharma Functional Review Point #76
@@ -171,13 +223,15 @@
         $(document).on("click", "#calendar-link-home-actuals", function (e) {
             displayconfirm('@Url.Action("Index", "Home", new { currentPlanId = @RevenuePlanner.Helpers.Sessions.PlanId })');
         });
+        BulkGeoOperation(true);
+        BulkOwnerOperation(true);
+        BulkTTOperation(true);
 
-
-        $('.changes').html('');
+       @* $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog")';
-        $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");
+        $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");*@
 
-        var Status = 0;
+
         CallAjax();
         $("#liOpen a").click(function () {
             //Status = 0;
@@ -223,22 +277,7 @@
             CallAjax();
         }
 
-        function CallAjax() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Home/GetActualTactic/")',
-                data: {
-                    status: Status
-                },
-                success: function (r) {
-                    actuals = r;
-                    $('.accordion-actuals').empty();
 
-                    LoadPage();
-                    AssignDefaultValue(); // added by dharmraj, #547
-                }
-            });
-        }
 
         var IsShowOnlyMyTactic = false
         $("#AShowOnlyMyTactic").click(function () {
@@ -318,27 +357,97 @@
             }
         }
 
-        function animateMask(mask, value) {
-            $(mask).animate({
-                height: value
-            }, 300, function () {
-                // Animation complete
+
+
+
+
+
+
+        //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
+        $("#header a").not("#ContactSupport").click(function () {
+            //alert($(this).attr('href'));
+            if (isDataChanged()) {
+                displayconfirm($(this).attr('href'));
+                return false;
+            }
+            else {
+                return true;
+            }
             });
-        };
-        function maskWidht() {
-            var widthHeader = $("#accordion2").width(),
-                //widthRigth = widthHeader - 652;
+        $(document).on("click", "#confirmClose, .confirmClose", function (e) {
+            $("#errorMessage").slideUp(400);
+            //$('#spanMessageError').html("");
+        });
+        $(document).on("click", "#btnNPlan", function (e) {
+            displayconfirm('@Url.Action("Create", "Plan")');
+        });
+        $(document).on("click", "#btnAddActivity", function (e) {
+            displayconfirm('@Url.Action("Assortment", "Plan")');
+        });
 
-                //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
-                widthRigth = widthHeader - 662;
+        //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
-            $(".header-toogle-actual-right").width(widthRigth);
-            $(".table-actual-mask").width(widthRigth);
-            $('.table-actual-mask').scrollLeft(0);
-            $(".accordion-actuals .accordion-heading").find('.table-actual-mask').next().css({ "margin-left": widthRigth });
-            return this;
-        };
+        //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
+        function displayconfirm(strURL) {
+            if (isDataChanged()) {
+                $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $("#errorMessage").slideDown(400);
+            }
+            else {
+                window.location.href = strURL;
+            }
+        }
 
+        function displayConfirmCommon(functionName) {
+            if (isDataChanged()) {
+                $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $("#errorMessage").slideDown(400);
+                $("#btnConfirmOK").click(function () {
+                    //alert(id);
+                    $('#spanMessageError').html("");
+                    $("#errorMessage").hide();
+                    eval(functionName);
+                });
+            }
+            else {
+                eval(functionName);
+            }
+        }
+
+
+
+        //function to check myValue attribute values and input values that any changes made?
+        function isDataChanged() {
+            var changed = false;
+            $('.accordion-actuals').find("input,input[type=text],textarea,select").each(function () {
+                var iv = $(this).attr("myValue");
+                if ($(this).val().toString().trim() != iv.toString().trim()) {      // Modified by Sohel Pathan on 02/09/2014 for PL ticket #742
+                    changed = true;
+                    return false; // Added by Sohel Pathan on 02/09/2014 for PL ticket #742
+                }
+            });
+            return changed;
+        }
+        //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
+
+    });//document ready
+
+        function CallAjax() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/GetActualTactic/")',
+                data: {
+                    status: Status
+                },
+                success: function (r) {
+                    actuals = r;
+                    $('.accordion-actuals').empty();
+
+                    LoadPage();
+                    AssignDefaultValue(); // added by dharmraj, #547
+                }
+            });
+        }
         function LoadPage() {
             fillActualsTable();
             NumberFormatterTipsyTitle(".tipsyclassTitle", 24);
@@ -600,8 +709,7 @@
                                 }
 
                                 //If Tactic has not any line item at that time application will update the Actual cost and Projected Cost.
-                                else if (arr[1] == 'Cost')
-                                {
+                            else if (arr[1] == 'Cost') {
                                     costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
                                     var updateActalCost = "ActuallblCCost" + costlbl;
                                     document.getElementById(updateActalCost).innerHTML = totalvalue;
@@ -814,7 +922,12 @@
 
             });
         }
-
+        function AssignDefaultValue() {
+            $('.accordion-actuals').find("input,input[type=text],textarea,select").each(function () {
+                $(this).attr("myValue", $(this).val());
+                $(this).attr("title", $(this).val());//uday 2-7-2014
+            });
+        }
         function fillActualsTable() {
             if (typeof actuals != 'undefined') {
                 $('.accordion-actuals').empty();
@@ -886,7 +999,6 @@
                 // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
             }
         }
-
         //add row in actuals table
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
         function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData) {
@@ -976,7 +1088,8 @@
                 else {
                     $html += '<div id="' + divId + '" class="table-info-actual-left addFormatterActualCurrency" style="float: right;">' + _costActualData[newCounterTactic].Cost + '</div>';
                 }
-                $html += '</td>'; }
+                $html += '</td>';
+            }
                 $html += '</tr>';
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
@@ -1137,79 +1250,148 @@
             $tableActuals.append($html);
 
         }//addRowActual
+        function maskWidht() {
+            var widthHeader = $("#accordion2").width(),
+                //widthRigth = widthHeader - 652;
 
-        //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
-        $("#header a").not("#ContactSupport").click(function () {
-            //alert($(this).attr('href'));
-            if (isDataChanged()) {
-                displayconfirm($(this).attr('href'));
-                return false;
+                //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
+                widthRigth = widthHeader - 662;
+
+            $(".header-toogle-actual-right").width(widthRigth);
+            $(".table-actual-mask").width(widthRigth);
+            $('.table-actual-mask').scrollLeft(0);
+            $(".accordion-actuals .accordion-heading").find('.table-actual-mask').next().css({ "margin-left": widthRigth });
+            return this;
+        };
+        function animateMask(mask, value) {
+            $(mask).animate({
+                height: value
+            }, 300, function () {
+                // Animation complete
+        });
+        };
+        //Added by Mitesh Vaishnav for PL ticket #972 - Add Actuals - Filter section formatting
+        function toggleTacticType(obj) {
+            var id = $(obj).attr('id');
+            if ($(obj).is(':checked')) {
+                $("#li" + id).addClass("close-list");
+                tacArr.push(id);
             }
             else {
-                return true;
+                $("#li" + id).removeClass("close-list");
+                removeByValue(tacArr, id);
             }
-        });
-        $(document).on("click", "#confirmClose, .confirmClose", function (e) {
-            $("#errorMessage").slideUp(400);
-            //$('#spanMessageError').html("");
-        });
-        $(document).on("click", "#btnNPlan", function (e) {
-            displayconfirm('@Url.Action("Create", "Plan")');
-        });
-        $(document).on("click", "#btnAddActivity", function (e) {
-            displayconfirm('@Url.Action("Assortment", "Plan")');
-        });
-        
-        //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
-
-        //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
-        function displayconfirm(strURL) {
-            if (isDataChanged()) {
-                $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessage").slideDown(400);
-            }
-            else {
-                window.location.href = strURL;
+            //if (tacArr.length == 0) {
+            //    $("#TacticTypeAllModule").css("display", "none");
+            //    $("#NoTTFound").show();
+            //}
+            //else {
+            //    $("#TacticTypeAllModule").css("display", "block");
+            //    $("#NoTTFound").hide();
+            //}
+        }
+        function removeByValue(arr, val) {
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] == val) {
+                    arr.splice(i, 1);
+                    break;
+                }
             }
         }
-
-        function displayConfirmCommon(functionName) {
-            if (isDataChanged()) {
-                $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessage").slideDown(400);
-                $("#btnConfirmOK").click(function () {
-                    //alert(id);
-                    $('#spanMessageError').html("");
-                    $("#errorMessage").hide();
-                    eval(functionName);
+        function UpdateResult() {
+            CallAjax();
+        }
+        function toggleGeography(obj) {
+            var id = $(obj).attr('id');
+            if ($(obj).is(':checked')) {
+                $("#liGeography" + id).addClass("close-list");
+                geoArr.push(id);
+            }
+            else {
+                $("#liGeography" + id).removeClass("close-list");
+                removeByValue(geoArr, id);
+            }
+            //if (geoArr.length == 0) {
+            //    $("#GeographyAllModule").css("display", "none");
+            //    $("#NoGeographyFound").show();
+            //}
+            //else {
+            //    $("#GeographyAllModule").css("display", "block");
+            //    $("#NoGeographyFound").hide();
+            //}
+        }
+        function toggleOwner(obj) {
+            debugger;
+            var id = $(obj).attr('id');
+            if ($(obj).is(':checked')) {
+                $("#liOwner" + id).addClass("close-list");
+                indArr.push(id);
+            }
+            else {
+                $("#liOwner" + id).removeClass("close-list");
+                removeByValue(indArr, id);
+            }
+            //if (indArr.length == 0) {
+            //    $("#ulOwnerAllModule").css("display", "none");
+            //    $("#NoOwnerFound").show();
+            //}
+            //else {
+            //    $("#ulOwnerAllModule").css("display", "block");
+            //    $("#NoOwnerFound").hide();
+            //}
+        }
+        function BulkOwnerOperation(selection) {
+            indArr = [];
+            if (selection) {
+                $("#ulSelectedOwner li").each(function (i) {
+                    $(this).addClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).attr("checked", "checked");
+                    indArr.push(chkid);
+            });
+        }
+            else {
+                $("#ulSelectedOwner li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+            });
+            }
+        }
+        function BulkGeoOperation(selection) {
+            geoArr = [];
+            if (selection) {
+                $("#ulSelectedGeography li").each(function (i) {
+                    $(this).addClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).attr("checked", "checked");
+                    geoArr.push(chkid);
                 });
             }
             else {
-                eval(functionName);
+                $("#ulSelectedGeography li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+                });
             }
         }
-
-        function AssignDefaultValue() {
-            $('.accordion-actuals').find("input,input[type=text],textarea,select").each(function () {
-                $(this).attr("myValue", $(this).val());
-                $(this).attr("title", $(this).val());//uday 2-7-2014
-            });
+        function BulkTTOperation(selection) {
+            tacArr = [];
+            if (selection) {
+                $("#ulTacticType li").each(function (i) {
+                    $(this).addClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).attr("checked", "checked");
+                    tacArr.push(chkid);
+                });
+            }
+            else {
+                $("#ulTacticType li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+                });
+            }
         }
-
-        //function to check myValue attribute values and input values that any changes made?
-        function isDataChanged() {
-            var changed = false;
-            $('.accordion-actuals').find("input,input[type=text],textarea,select").each(function () {
-                var iv = $(this).attr("myValue");
-                if ($(this).val().toString().trim() != iv.toString().trim()) {      // Modified by Sohel Pathan on 02/09/2014 for PL ticket #742
-                    changed = true;
-                    return false; // Added by Sohel Pathan on 02/09/2014 for PL ticket #742
-                }
-            });
-            return changed;
-        }
-        //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
-
-    });//document ready
-
 </script>
