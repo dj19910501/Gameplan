@@ -476,7 +476,7 @@
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();*@
              e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
-             if ($(this).text() == "Campaign Title") {
+             if ($(this).text() == "Add Campaign") {
                  ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0","0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
              }
              else {
@@ -624,7 +624,7 @@
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();
              e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue*@
-            if ($(this).text() == "Add Programs") {
+            if ($(this).text() == "Add Program") {
                 var idCampaign = $(this).parent().parent().attr('data-id-campaing');
                 ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaign, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
             }
@@ -1366,7 +1366,7 @@
 
                 $html += '<div class="accordion-header campaign-default">' +
                         '<a id="0" class="accordion-toggle chevron-right" data-toggle="collapse">' +
-                            '<span id="0" class="pull-left width55"><span class="pull-left font-black">1.</span><span class="blue-bg-text campaign-name campaign-name-span">Campaign Title</span></span>' +
+                            '<span id="0" class="pull-left width55"><span class="pull-left font-black">1.</span><span class="blue-bg-text campaign-name campaign-name-span">Add Campaign</span></span>' +
                             '<span class="pull-right width50px"><div class="add-icon campaign"></div></span>' +
                             '<span class="pull-right width100px text-right font-black">' + 0 + '</span>' +
                             '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
@@ -1588,7 +1588,7 @@
 
                     $html += '<div class="accordion-header">' +
                                 '<a id="0" class="accordion-toggle" data-id-campaing="' + _id + '" font-black" data-toggle="collapse">' +
-                                    '<span class="pull-left width40"><span class="gray-bg-text campaign-name underline">Add Programs</span></span>' +
+                                    '<span class="pull-left width40"><span class="gray-bg-text campaign-name underline">Add Program</span></span>' +
                                     '<span class="pull-right width100px"><div class="add-icon program" ></div></span>' +
                                 '</a>' +
                             '</div>';
