@@ -7129,7 +7129,7 @@ namespace RevenuePlanner.Controllers
                 objTacticType = (from t in db.Plan_Campaign_Program_Tactic
                                  where t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId
                                  && tacticStatus.Contains(t.Status) && t.IsDeleted == false
-                                 select t.TacticType).Distinct().ToList();
+                                 select t.TacticType).Distinct().OrderBy(t=>t.Title).ToList();
 
                 ViewBag.TacticTypeList = objTacticType;
 

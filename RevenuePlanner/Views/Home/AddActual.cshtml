@@ -130,7 +130,7 @@
                                 foreach (var item in Model.objIndividuals)
                                 {
                                     string id = "liOwner" + item.UserId;
-                                    string name = item.LastName + ", " + item.FirstName;
+                                    string name = item.FirstName + " " + item.LastName;
                                 <li class="accordion-inner" id="@id" title="@name"><span class="sidebarliwidth">@name</span><input type="checkbox" class="chkbxfilter" id="@item.UserId" onchange="toggleOwner(this)"/></li>
                                 }
                             }
