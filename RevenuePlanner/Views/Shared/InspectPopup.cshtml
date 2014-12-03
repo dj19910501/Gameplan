@@ -292,11 +292,25 @@
             }
             else if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
                 url = '@Url.Content("~/Home/EditTactic/")';
-                $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""');
+                $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""', function (response, status, xhr) {
+                    if (response.indexOf('serviceUnavailable') != -1) {
+                        //// Call function to redirect on service unavailibility.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                });
             }
             else {
                 url = '@Url.Content("~/Home/LoadSetup/")';
-                $("#divTab").load(url + '?id=' + id + '&Mode=' + ProgramOpt);
+                $("#divTab").load(url + '?id=' + id + '&Mode=' + ProgramOpt, function (response, status, xhr) {
+                    if (response.indexOf('serviceUnavailable') != -1) {
+                        //// Call function to redirect on service unavailibility.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                });
             }
         }
 
@@ -306,7 +320,14 @@
             $("#lblTacticTitle").removeAttr("style");
                
             url = '@Url.Content("~/Home/LoadReview/")';
-            $("#divTab").load(url + '?id=' + id );
+        $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
+            if (response.indexOf('serviceUnavailable') != -1) {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+        });
         }
         if (tabValue == TabActual) {
 

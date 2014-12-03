@@ -157,6 +157,7 @@ namespace RevenuePlanner.Helpers
         //Added By Sohel Pathan
         public static string ColorCodeForCustomField = "";
 
+        public static string RedirectOnServiceUnavailibilityPage = "~/Login/ServiceUnavailable";
         #endregion
 
         #region Functions for File and IO Handling

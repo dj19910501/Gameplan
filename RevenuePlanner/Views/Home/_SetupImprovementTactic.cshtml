@@ -399,6 +399,10 @@
             url: '@Url.Content("~/Home/SaveImprovementTactic")',
                 data: $("form").serialize() + '&RedirectType=' + isAssortment,
                 success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else{
                     if (data.isSaved) {
                         $("#successMessage").css("display", "block");
                         $("#spanMessageSuccess").empty();
@@ -415,6 +419,7 @@
                             return;
                         }
                     }
+                }
                 }
      });
     }

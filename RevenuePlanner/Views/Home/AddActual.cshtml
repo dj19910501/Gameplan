@@ -440,11 +440,17 @@
                     status: Status
                 },
                 success: function (r) {
-                    actuals = r;
-                    $('.accordion-actuals').empty();
-
-                    LoadPage();
-                    AssignDefaultValue(); // added by dharmraj, #547
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    if (r.returnURL != 'undefined' && r.returnURL == '#') {
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
+                        actuals = r;
+                        $('.accordion-actuals').empty();
+                        LoadPage();
+                        AssignDefaultValue(); // added by dharmraj, #547
+                    }
                 }
             });
         }

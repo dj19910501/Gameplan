@@ -29,6 +29,17 @@ namespace RevenuePlanner.Controllers
 
         #region Login
 
+        public ActionResult ServiceUnavailable()
+        {
+            //// Flag to indicate unavailability of web service.
+            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+            //// Ticket: 942 Exception handeling in Gameplan.
+            Sessions.Clear();
+            System.Web.Security.FormsAuthentication.SignOut();
+            TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+            return RedirectToAction("Index");
+        }
+
         /// <summary>
         /// Login view
         /// </summary>

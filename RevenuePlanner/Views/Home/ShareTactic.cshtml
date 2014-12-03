@@ -13,6 +13,11 @@
     @Html.Hidden("hdnSection", Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower());
                                               }
     
+                                              //// Flag to indicate unavailability of web service.
+                                              //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                              //// Ticket: 942 Exception handeling in Gameplan.
+    bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
+    
 }
 
 
@@ -64,8 +69,22 @@
     </div>
 </div>
 <script type="text/javascript">
+    //// Function to redirect to login page on unavailability of web service.
+    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+    //// Ticket: 942 Exception handeling in Gameplan.
+    function redirectOnServiceUnavailibility() {
+        if ('@Html.Raw(Json.Encode(isServiceUnavailable))' == 'true') {
+            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+        }
+    }
+
     var select2EmailData = [];
     $(document).ready(function () {
+        //// Call function to redirect on service unavailibility.
+        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //// Ticket: 942 Exception handeling in Gameplan.
+        redirectOnServiceUnavailibility();
+
         var emails = @Html.Raw(Json.Encode(@ViewBag.EmailIds));
         if (emails != null) {
             $.each(emails, function (index, email) {

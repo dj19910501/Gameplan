@@ -2,6 +2,10 @@
 @using RevenuePlanner.Helpers;
 @{
     var IsTackticAddEdit = ViewBag.IsTackticAddEdit != null ? (bool)ViewBag.IsTackticAddEdit : false;
+    //// Flag to indicate unavailability of web service.
+    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+    //// Ticket: 942 Exception handeling in Gameplan.
+    bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
 }
  <style type="text/css">
      @@media screen and (-webkit-min-device-pixel-ratio:0) {
@@ -205,9 +209,22 @@
 
 <script type="text/javascript">
     var hdnYear;
+    //// Function to redirect to login page on unavailability of web service.
+    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+    //// Ticket: 942 Exception handeling in Gameplan.
+    function redirectOnServiceUnavailibility() {
+        if ('@Html.Raw(Json.Encode(isServiceUnavailable))' == 'true') {
+            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+        }
+    }
 
     $(document).ready(
-      function () {
+      function () {	 
+          //// Call function to redirect on service unavailibility.
+          //// Added By: Maninder Singh Wadhva on 11/24/2014.
+          //// Ticket: 942 Exception handeling in Gameplan.
+          redirectOnServiceUnavailibility();
+
           $(".datepicker.dropdown-menu").each(function () {
               $(this).remove();
           });
@@ -540,7 +557,7 @@
               data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) ,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                    window.location = '@Url.Content("~/Login/Index")';
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
                     if (!data.IsDuplicate) {
@@ -789,7 +806,7 @@
             data: { BusinessUnitId: businessUnitId, GeographyId: geographyId, VerticalId: verticalId, UserId: uId },
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                    window.location = '@Url.Content("~/Login/Index")';
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
                     if (data != null) {

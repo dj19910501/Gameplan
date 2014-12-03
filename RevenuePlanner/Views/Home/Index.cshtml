@@ -186,6 +186,10 @@
                 },
                 dataType: "json",
                 success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                   }
+                    else {
                     if (data.isSuccess == true) {
                         if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
                             OwnerCount = data.AllowedOwner.length;
@@ -208,6 +212,8 @@
                             $("#NoOwnerFound").show();
                         }
                     }
+                }
+
                 }
             });
         }

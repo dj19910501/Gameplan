@@ -8,6 +8,10 @@
     string CampaignTitle = ViewBag.CampaignTitle;
     string OwnerName = ViewBag.OwnerName;
     
+    //// Flag to indicate unavailability of web service.
+    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+    //// Ticket: 942 Exception handeling in Gameplan.
+    bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
 }
 
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
@@ -187,7 +191,21 @@
         }
     }
 
-    $(document).ready(function () {
+    //// Function to redirect to login page on unavailability of web service.
+    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+    //// Ticket: 942 Exception handeling in Gameplan.
+    function redirectOnServiceUnavailibility() {
+        if ('@Html.Raw(Json.Encode(isServiceUnavailable))' == 'true') {
+            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+        }
+    }
+
+    $(document).ready(function () {	
+        //// Call function to redirect on service unavailibility.
+        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //// Ticket: 942 Exception handeling in Gameplan.
+        redirectOnServiceUnavailibility();
+
         $(".datepicker.dropdown-menu").each(function () {
             $(this).remove();
         });
