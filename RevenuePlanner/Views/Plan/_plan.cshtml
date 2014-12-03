@@ -394,6 +394,9 @@ function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule
             if (hdnRefresh != null && gantt != null) {
                 gantt.refreshData();
             }
+            $(".datepicker.dropdown-menu").each(function () {
+                $(this).remove();
+            });
         });
     }
     function modalBackdropDisplayNone() {

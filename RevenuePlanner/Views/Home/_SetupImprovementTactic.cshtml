@@ -18,6 +18,12 @@
 @using RevenuePlanner.Helpers
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
 <style type="text/css">
+    @@media screen and (-webkit-min-device-pixel-ratio:0) {
+    #dp_start .datepicker{
+        top: 32px !important;
+        left:auto !important;
+    }
+   }
     #divPartial .verticalIdSelectBox .sbHolder {
             background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
             box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
@@ -82,11 +88,13 @@
                 <p style="margin-top:11px;">Cost</p>    
                 @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate resubmission input-setup", style = "", id = "txtCost", label = "Cost" })
                 <p>Effective Date</p>
+                <span style="position:relative;">
                 <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker" style="padding:0 0 4px;">
                     @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate resubmission input-setup", id = "txtDate", label = "Effective_Date" })
                     <span class="add-on">
                         <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png"></span>
                 </div>
+                    </span>
             }
             else
             {
@@ -230,6 +238,21 @@
     $('#dp_start .add-on').click(function () {
         $('#dp_start').datepicker('show');
         $(".dropdown-menu").css("z-index", "25001");
+        setTimeout(function () {
+            if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                $("#txtDate").after($(".datepicker.dropdown-menu").eq(0));
+                $("#txtDate").parent().find(".datepicker.dropdown-menu").css({
+                    top: '652px',
+                    display: 'block'
+                });
+            }
+            else {
+                $('#dp_start').find('.datepicker.dropdown-menu').css({
+                    top: '652px',
+                    display: 'block'
+                });
+            }
+        }, 1);
     })
 
     $('#btnEditCancel').click(function () {

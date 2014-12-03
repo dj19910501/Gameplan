@@ -15,7 +15,16 @@
     #dp_start,#dp_end    {
         padding-left:0px;
     }
-
+    @@media screen and (-webkit-min-device-pixel-ratio:0) {
+    #dp_start .datepicker{
+        top: 32px !important;
+        left:auto !important;
+    }
+    #dp_end .datepicker{
+        top: 32px !important;
+        left:auto !important;
+    }
+   }
     #divPartial .verticalIdSelectBox .sbHolder {
             background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
             box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
@@ -80,18 +89,21 @@
                     <p>@Html.Raw("Owner")</p>
                     @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true"})
                     <p>Start Date</p>
+                     <span style="position:relative;">
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                             @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small input-setup", id = "t_startdate" })
                             <span class="add-on">
                                 <img src="~/Content/images/gray-calendar-icon.png"></span>
                     </div>
-
+                         </span>
                         <p class="clear-section">End Date</p>
+                     <span style="position:relative;">
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                             @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small input-setup", id = "t_enddate" })
                             <span class="add-on">
                                 <img src="~/Content/images/gray-calendar-icon.png"></span>
                         </div>
+                         </span>
                      @if (ExtIntService)
                       {
                          <p class="clear-section">Deployed to Integration</p>
@@ -485,14 +497,43 @@
             $('#dp_start').datepicker('show');
             $('#dp_end').datepicker('hide');
             $(".dropdown-menu").css("z-index", "25001");
-            
+            setTimeout(function () {
+                if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                    $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
+                    $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
+                        top: '547px',
+                        display: 'block'
+                    });
+                }
+                else {
+                    $('#dp_start').find('.datepicker.dropdown-menu').css({
+                        top: '547px',
+                        display: 'block'
+                    });
+                }
+            }, 1);
+           
         })
 
         $('#dp_end .add-on').click(function () {
             $('#dp_start').datepicker('hide');
             $('#dp_end').datepicker('show');
             $(".dropdown-menu").css("z-index", "25001");
-            
+            setTimeout(function () {
+                if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                    $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
+                    $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
+                        top: '614px',
+                        display: 'block'
+                    });
+                }
+                else {
+                    $('#dp_end').find('.datepicker.dropdown-menu').css({
+                        top: '614px',
+                        display: 'block'
+                    });
+                }
+            }, 1);
         })
 
         $('#t_startdate').click(function () {

@@ -7,15 +7,28 @@
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     //deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     string OwnerName = ViewBag.OwnerName;
-    //string PlanTitle = ViewBag.PlanTitle;
+                //string PlanTitle = ViewBag.PlanTitle;
 }
 
-<script src="~/Scripts/js/bootstrap-datepicker.js"></script>   
+<script src="~/Scripts/js/bootstrap-datepicker.js"></script>
 <style type="text/css">
     #dp_start,#dp_end    {
         padding-left:0px;
     }
-    
+    @*start Added by Mitesh Vaishnav for PL ticket #972
+    Set design of calender popup in google chrome*@
+    @@media screen and (-webkit-min-device-pixel-ratio:0) {
+    #dp_start .datepicker{
+        top: 32px !important;
+        left:auto !important;
+    }
+    #dp_end .datepicker{
+        top: 32px !important;
+        left:auto !important;
+    }
+   }
+   @*End Added by Mitesh Vaishnav for PL ticket #972
+    Set design of calender popup in google chrome*@
     #btnCancel {
     color: gray;
     margin-top: 6px;
@@ -71,7 +84,7 @@
 
             @if (ExtIntService)
             {
-               <p class="clear-section" style="line-height: 11px; padding-bottom: 5px;">@Html.Raw("Deployed to Integration")</p>
+                <p class="clear-section" style="line-height: 11px; padding-bottom: 5px;">@Html.Raw("Deployed to Integration")</p>
                 if (Model.IsDeployedToIntegration)
                 {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Synced to integration" maxlength="18" readonly />
@@ -86,49 +99,52 @@
             </div>
         </div>
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
-           <p>@Html.Raw("Owner")</p>
-                    @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true"})
+            <p>@Html.Raw("Owner")</p>
+            @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
             <p>Start Date</p>
-            <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate input-setup", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_startdate" })
-                <span class="add-on">
-                    <img src="~/Content/images/gray-calendar-icon.png"></span>
-            </div>
-            <p class="clear-section" style="margin-top:2px;">End Date</p>
-            <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate input-setup", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_enddate" })
-                <span class="add-on">
-                    <img src="~/Content/images/gray-calendar-icon.png"></span>
-            </div>
-            
+            <span style="position: relative;">
+                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                    @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate input-setup", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_startdate" })
+                    <span id="startAddOn" class="add-on">
+                        <img src="~/Content/images/gray-calendar-icon.png"></span>
+                </div>
+            </span>
+            <p class="clear-section" style="margin-top: 2px;">End Date</p>
+            <span style="position: relative;">
+                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                    @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate input-setup", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_enddate" })
+                    <span class="add-on">
+                        <img src="~/Content/images/gray-calendar-icon.png"></span>
+                </div>
+            </span>
         </div>
         <div class="span3" id="inspect-modal-left-column3">
-             <p>@Html.Raw("Campaign Budget")</p>
+            <p>@Html.Raw("Campaign Budget")</p>
             @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate input-setup", id = "txtCampaignBudget", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Remaining Plan Budget</p>
-                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { id = "txtRemainingBudget", @readonly = "true" })
-             <div class="content dark inline-ellipsis">
-                        @if (!(bool)ViewBag.IsCreated)
-                        {
-                            <div class="cf width100">
-                                <div class="width65px margin-right20 pull-left" style="width:45%;">
-            <p>@Html.LabelForMQL("MQL")</p>
-            @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
-                   </div>
+            @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { id = "txtRemainingBudget", @readonly = "true" })
+            <div class="content dark inline-ellipsis">
+                @if (!(bool)ViewBag.IsCreated)
+                {
+                    <div class="cf width100">
+                        <div class="width65px margin-right20 pull-left" style="width: 45%;">
+                            <p>@Html.LabelForMQL("MQL")</p>
+                            @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
+                        </div>
 
-                                <div class="width65px pull-left" style="width:45%;">
-            <p>Cost</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
-            </div>
-            </div>
-                            <div class="cf width100">
-                                <div class="width65px pull-left" style="width:45%;">
-                                    <p>Revenue</p>
-            @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
-                                     </div>
-                            </div>
-                        }
+                        <div class="width65px pull-left" style="width: 45%;">
+                            <p>Cost</p>
+                            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+                        </div>
                     </div>
+                    <div class="cf width100">
+                        <div class="width65px pull-left" style="width: 45%;">
+                            <p>Revenue</p>
+                            @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
     <ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div" id="InspectTab">
@@ -148,8 +164,8 @@
                 if ((bool)ViewBag.IsOwner)
                 {           
     <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
-        <div class="span2 btn-save" style="width:80px;">
-            <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button" > Save </button>
+        <div class="span2 btn-save" style="width: 80px;">
+            <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save </button>
         </div>
         <div class="span2">
             <button id="btnCancel" class="close-form btn-link source-sans-proregular" style="float: left; margin-left: 20px; margin-top: 30px !important" type="button">Cancel</button>
@@ -205,21 +221,27 @@
               $('.input-setup').addClass('light-blue-background');
               $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
           }
+
           //End - Added by Viral Kadiya on 18/11/2014 to resolve PL ticket #947.
 
           // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
           //var _description = $("#hdnDescription").val();
           //$("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
           // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
+          //var spanStartDate = $(".datepicker-days").eq(1).parent().html();
+          //spanStartDate.attr("id", "dp_Start_menu1");
+
+
+
       });
     //<---  End Document.ready Event --->
 
     $("#btnCancel").click(function () {
         if ($('#PlanCampaignId').val() != '0') {
-        CancelEvent();
-        $("#successMessageViewCampaign").slideUp(50);
-        $("#errorMessageEditCampaign").slideUp(50);
-        $('#txtTitle').val($('#lblCampaignTitle').text());
+            CancelEvent();
+            $("#successMessageViewCampaign").slideUp(50);
+            $("#errorMessageEditCampaign").slideUp(50);
+            $('#txtTitle').val($('#lblCampaignTitle').text());
         }
         else {
             $('.close-x-big-icon').trigger('click');
@@ -246,16 +268,48 @@
         $('#dp_start').datepicker('hide');
     });
 
-    $('#dp_start .add-on').click(function () {
+    $('#dp_start .add-on').click(function (e) {
         $('#dp_start').datepicker('show');
         $('#dp_end').datepicker('hide');
         $(".dropdown-menu").css("z-index", "25001");
+        setTimeout(function () {
+            if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
+                $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
+                    top: '547px',
+                    display: 'block'
+                });
+            }
+            else {
+                $('#dp_start').find('.datepicker.dropdown-menu').css({
+                    top: '547px',
+                    display: 'block'
+                });
+            }
+        }, 1);
     })
 
     $('#dp_end .add-on').click(function () {
         $('#dp_start').datepicker('hide');
         $('#dp_end').datepicker('show');
         $(".dropdown-menu").css("z-index", "25001");
+        setTimeout(function () {
+            if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
+                $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
+                    top: '614px',
+                    display: 'block'
+
+                });
+            }
+            else {
+                $('#dp_end').find('.datepicker.dropdown-menu').css({
+                    top: '614px',
+                    display: 'block'
+
+                });
+            }
+        }, 1);
     })
 
 
@@ -267,64 +321,64 @@
         $(this).datepicker('hide');
     });
 
-    $(".alert").find(".close").on("click", function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
-    });
+        $(".alert").find(".close").on("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
+        });
 
-    $("#t_integration_status").click(function () {
+        $("#t_integration_status").click(function () {
 
-        if ($(this).hasClass("icon-check-blue")) {
-            $(this).val("Not synced to integration");
-            $(this).addClass("icon-check-gray");
-            $(this).removeClass("icon-check-blue");
-            $("#hdnIsDeployedToIntegration").val(false);
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Not synced to integration");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+                $("#hdnIsDeployedToIntegration").val(false);
+            }
+            else {
+                $(this).val("Synced to integration");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+                $("#hdnIsDeployedToIntegration").val(true);
+            }
+
+        });
+        function ShowError(value) {
+            $("#modal-container-186470").scrollTop(0);
+            $("#successMessageViewCamapaign").slideUp(400);
+            $("#spanSuccessMessageViewCamapaign").empty();
+            $("#errorMessageEditCampaign").slideDown(400);
+            $("#spanMessageEditCampaign").empty();
+            $("#spanMessageEditCampaign").html(value);
         }
-        else {
-            $(this).val("Synced to integration");
-            $(this).addClass("icon-check-blue");
-            $(this).removeClass("icon-check-gray");
-            $("#hdnIsDeployedToIntegration").val(true);
-        }
-
-    });
-    function ShowError(value) {
-        $("#modal-container-186470").scrollTop(0);
-        $("#successMessageViewCamapaign").slideUp(400);
-        $("#spanSuccessMessageViewCamapaign").empty();
-        $("#errorMessageEditCampaign").slideDown(400);
-        $("#spanMessageEditCampaign").empty();
-        $("#spanMessageEditCampaign").html(value);
-    }
 
 
-    $("#txtCampaignBudget").keyup(function () {
-        var ProgramBudgetValue = ReplaceCC($("#txtCampaignBudget").val());
-        if (ProgramBudgetValue == '' || typeof ProgramBudgetValue == 'undefined') {
-            ProgramBudgetValue = '0';
-            $("#txtCampaignBudget").val('$0')
-        }
-        var OldProgramBudgetValue = ReplaceCC($("#hdnOldCampaignBudget").val());
-        var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
-        var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
+        $("#txtCampaignBudget").keyup(function () {
+            var ProgramBudgetValue = ReplaceCC($("#txtCampaignBudget").val());
+            if (ProgramBudgetValue == '' || typeof ProgramBudgetValue == 'undefined') {
+                ProgramBudgetValue = '0';
+                $("#txtCampaignBudget").val('$0')
+            }
+            var OldProgramBudgetValue = ReplaceCC($("#hdnOldCampaignBudget").val());
+            var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
+            var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
 
-        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
-        $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+            $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+            $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
 
-        $("#hdnOldCampaignBudget").val(ProgramBudgetValue);
-        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
-            $("#txtRemainingBudget").addClass('error-text');
-        }
-        else {
-            $("#txtRemainingBudget").removeClass('error-text');
-        }
-    });
+            $("#hdnOldCampaignBudget").val(ProgramBudgetValue);
+            if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+                $("#txtRemainingBudget").addClass('error-text');
+            }
+            else {
+                $("#txtRemainingBudget").removeClass('error-text');
+            }
+        });
 
-    $("#save_campaign").click(function () {
-        var iserror = false;
-        var campaignTitle = htmlEncode($('#txtTitle').val());
-        var hdnYear = @ViewBag.Year
+        $("#save_campaign").click(function () {
+            var iserror = false;
+            var campaignTitle = htmlEncode($('#txtTitle').val());
+            var hdnYear = @ViewBag.Year
 
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
@@ -360,8 +414,8 @@
 
         if ($("#txtRemainingBudget").hasClass('error-text')) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
-               return false;
-           }
+            return false;
+        }
 
         var regex = /(>|<)/m;
 
@@ -426,7 +480,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/home/SaveCampaign")',
-            data: formData + '&UserId=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues)+ '&planId=@Model.PlanId',
+            data: formData + '&UserId=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues) + '&planId=@Model.PlanId',
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

@@ -4,6 +4,16 @@
     var IsTackticAddEdit = ViewBag.IsTackticAddEdit != null ? (bool)ViewBag.IsTackticAddEdit : false;
 }
  <style type="text/css">
+     @@media screen and (-webkit-min-device-pixel-ratio:0) {
+    #dp_start .datepicker{
+        top: 32px !important;
+        left:auto !important;
+    }
+    #dp_end .datepicker{
+        top: 32px !important;
+        left:auto !important;
+    }
+   }
     #btnCancel
     {
         color: gray;
@@ -82,17 +92,21 @@
             <p style="margin-top: 10px;">Tactic Planned Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Start Date</p>
+             <span style="position:relative;">
             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                 @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small resubmission input-setup", id = "t_startdate", label = "Start_Date" })
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
+                 </span>
             <p class="clear-section" style="margin-top:2px;">End Date</p>
-            <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+            <span style="position:relative;">
+             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                 @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small resubmission input-setup", id = "t_enddate", label = "End_Date" })
                 <span class="add-on">
                     <img src="~/Content/images/gray-calendar-icon.png"></span>
             </div>
+                </span>
         </div>
         <div class="span3" id="inspect-modal-left-column3">
             <p>Owner</p>
@@ -280,12 +294,42 @@
               $('#dp_start').datepicker('show');
               $('#dp_end').datepicker('hide');
               $(".dropdown-menu").css("z-index", "25001");
+              setTimeout(function () {
+                  if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                      $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
+                      $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
+                          top: '605px',
+                          display: 'block'
+                      });
+                  }
+                  else {
+                      $('#dp_start').find('.datepicker.dropdown-menu').css({
+                          top: '605px',
+                          display: 'block'
+                      });
+                  }
+              }, 1);
           })
 
           $('#dp_end .add-on').click(function () {
               $('#dp_start').datepicker('hide');
               $('#dp_end').datepicker('show');
               $(".dropdown-menu").css("z-index", "25001");
+              setTimeout(function () {
+                  if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                      $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
+                      $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
+                          top: '672px',
+                          display: 'block'
+                      });
+                  }
+                  else {
+                      $('#dp_end').find('.datepicker.dropdown-menu').css({
+                          top: '672px',
+                          display: 'block'
+                      });
+                  }
+              }, 1);
           })
 
           var arLineitem = [];
