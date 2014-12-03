@@ -7971,13 +7971,8 @@ namespace RevenuePlanner.Controllers
                 //// Custom Restrictions applied
                 TacticUserList = TacticUserList.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower())).ToList();
 
-                string strContatedIndividualList = string.Empty;
-                foreach (var item in TacticUserList.Select(a => a.CreatedBy).ToList())
-                {
-                    strContatedIndividualList += item.ToString() + ',';
-                }
-                //var individuals = bdsUserRepository.GetMultipleTeamMemberDetails(strContatedIndividualList.TrimEnd(','), Sessions.ApplicationId);
-                var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList.TrimEnd(','));
+                string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
+                var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
 
                 return individuals;
             }
@@ -7990,12 +7985,8 @@ namespace RevenuePlanner.Controllers
                 //// Custom Restrictions applied
                 TacticUserList = TacticUserList.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower())).ToList();
 
-                string strContatedIndividualList = string.Empty;
-                foreach (var item in TacticUserList.Select(a => a.CreatedBy).ToList())
-                {
-                    strContatedIndividualList += item.ToString() + ',';
-                }
-                var individuals = bdsUserRepository.GetMultipleTeamMemberDetails(strContatedIndividualList.TrimEnd(','), Sessions.ApplicationId);
+                string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
+                var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
 
                 return individuals;
             }

@@ -46,7 +46,6 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> ModifiedBy { get; set; }
     
         public virtual ICollection<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
-        public virtual IntegrationType IntegrationType { get; set; }
         public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public virtual ICollection<IntegrationInstanceDataTypeMappingPull> IntegrationInstanceDataTypeMappingPulls { get; set; }
         public virtual ICollection<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
@@ -58,5 +57,6 @@ namespace RevenuePlanner.Models
         public virtual ICollection<Model> Models2 { get; set; }
         public virtual ICollection<Model> Models3 { get; set; }
         public virtual SyncFrequency SyncFrequency { get; set; }
+        public virtual IntegrationType IntegrationType { get; set; }
     }
 }

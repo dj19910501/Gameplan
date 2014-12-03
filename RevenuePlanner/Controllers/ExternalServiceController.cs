@@ -132,9 +132,9 @@ namespace RevenuePlanner.Controllers
                 .ToList();
 
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-
-            objIntegrationTypeModel.Title = db.IntegrationTypes.Where(a => a.IsDeleted.Equals(false) && a.IntegrationTypeId == integrationTypeId).Select(a => a.Title).FirstOrDefault();
-
+            var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == integrationTypeId);
+            objIntegrationTypeModel.Title = integrationTypeObj.Select(integrationtype => integrationtype.Title).FirstOrDefault();
+            objIntegrationTypeModel.Code = integrationTypeObj.Select(integrationtype => integrationtype.Code).FirstOrDefault();
             objModelToView.IntegrationType = objIntegrationTypeModel;
             objModelToView.IntegrationTypeId = integrationTypeId;
 
@@ -429,7 +429,9 @@ namespace RevenuePlanner.Controllers
                         .ToList();
 
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            objIntegrationTypeModel.Title = db.IntegrationTypes.Where(a => a.IsDeleted.Equals(false) && a.IntegrationTypeId == form.IntegrationTypeId).Select(a => a.Title).FirstOrDefault();
+            var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == form.IntegrationTypeId);
+            objIntegrationTypeModel.Title = integrationTypeObj.Select(integrationtype => integrationtype.Title).FirstOrDefault();
+            objIntegrationTypeModel.Code = integrationTypeObj.Select(integrationtype => integrationtype.Code).FirstOrDefault();
             form.IntegrationType = objIntegrationTypeModel;
 
             populateSyncFreqData();
@@ -529,7 +531,9 @@ namespace RevenuePlanner.Controllers
             }
 
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            objIntegrationTypeModel.Title = db.IntegrationTypes.Where(a => a.IsDeleted.Equals(false) && a.IntegrationTypeId == IntegrationTypeId).Select(a => a.Title).FirstOrDefault();
+            var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == IntegrationTypeId);
+            objIntegrationTypeModel.Title = integrationTypeObj.Select(integrationtype => integrationtype.Title).FirstOrDefault();
+            objIntegrationTypeModel.Code = integrationTypeObj.Select(integrationtype => integrationtype.Code).FirstOrDefault();
             objView.IntegrationType = objIntegrationTypeModel;
 
             objView.IntegrationTypeId = IntegrationTypeId;
@@ -836,20 +840,19 @@ namespace RevenuePlanner.Controllers
 
             if (form.Instance != "" && form.Username != "" && form.Password != "")
             {
-                if (form.IntegrationType.Title.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
+                if (form.IntegrationType.Code.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
                 {
-                    string eloqua = Integration.Helper.Enums.IntegrationType.Eloqua.ToString();
                     IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient();
                     integrationEloquaClient._instance = form.Instance;// "TechnologyPartnerBulldog";
                     integrationEloquaClient._username = form.Username;// "Brij.Bhavsar";
                     integrationEloquaClient._password = form.Password;//"Brij1234";
-                    RevenuePlanner.Models.IntegrationType integrationType = db.IntegrationTypes.Single(intgtype => intgtype.Title.Equals(eloqua));
+                    RevenuePlanner.Models.IntegrationType integrationType = db.IntegrationTypes.Single(intgtype => intgtype.IntegrationTypeId.Equals(form.IntegrationTypeId));
                     integrationEloquaClient._apiURL = integrationType.APIURL;
                     integrationEloquaClient._apiVersion = integrationType.APIVersion;
                     integrationEloquaClient.Authenticate();
                     isAuthenticated = integrationEloquaClient.IsAuthenticated;
                 }
-                else if (form.IntegrationType.Title.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()) && form.IntegrationTypeAttributes != null)
+                else if (form.IntegrationType.Code.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()) && form.IntegrationTypeAttributes != null)
                 {
                     if (form.IntegrationTypeAttributes.Count > 0)
                     {
@@ -877,14 +880,13 @@ namespace RevenuePlanner.Controllers
 
                         if (!string.IsNullOrWhiteSpace(consumerKey) && !string.IsNullOrWhiteSpace(consumerSecret) && !string.IsNullOrWhiteSpace(securityToken))
                         {
-                            string salesforce = Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                             IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient();
                             integrationSalesforceClient._username = form.Username;
                             integrationSalesforceClient._password = form.Password;
                             integrationSalesforceClient._consumerKey = consumerKey;
                             integrationSalesforceClient._consumerSecret = consumerSecret;
                             integrationSalesforceClient._securityToken = securityToken;
-                            integrationSalesforceClient._apiURL = db.IntegrationTypes.Single(intgtype => intgtype.Title.Equals(salesforce)).APIURL;
+                            integrationSalesforceClient._apiURL = db.IntegrationTypes.Single(intgtype => intgtype.IntegrationTypeId.Equals(form.IntegrationTypeId)).APIURL;
                             integrationSalesforceClient.Authenticate();
                             isAuthenticated = integrationSalesforceClient.IsAuthenticated;
                         }
@@ -1172,10 +1174,12 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.IntegrationInstanceId = id;
-                string integrationTypeName = (from i in db.IntegrationInstances
-                                              join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
-                                              where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
-                                              select t.Title).SingleOrDefault();
+                var integrationTypeObj = (from integrationInstance in db.IntegrationInstances
+                                          join integartionType in db.IntegrationTypes on integrationInstance.IntegrationTypeId equals integartionType.IntegrationTypeId
+                                          where integrationInstance.IsDeleted == false && integartionType.IsDeleted == false && integrationInstance.IntegrationInstanceId == id
+                                          select integartionType);
+                string integrationTypeName = integrationTypeObj.Select(integartionType => integartionType.Title).FirstOrDefault();
+                string integrationTypeCode = integrationTypeObj.Select(integartionType => integartionType.Code).FirstOrDefault();
                 if (string.IsNullOrEmpty(integrationTypeName))
                 {
                     ViewBag.IntegrationTypeName = "";
@@ -1198,7 +1202,7 @@ namespace RevenuePlanner.Controllers
                                                  join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
                                                  from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
                                                  where i.IntegrationInstanceId == id && d.IsDeleted == false &&
-                                                 (integrationTypeName == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic) : 1 == 1)
+                                                 (integrationTypeCode == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic) : 1 == 1)
                                                  select new GameplanDataTypeModel
                                                  {
                                                      GameplanDataTypeId = d.GameplanDataTypeId,
@@ -1247,10 +1251,13 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IntegrationInstanceId = id;
                 // Get Integration instance Title
-                string integrationTypeName = (from i in db.IntegrationInstances
-                                              join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
-                                              where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
-                                              select t.Title).SingleOrDefault();
+                var integrationTypeObj = (from integrationInstance in db.IntegrationInstances
+                                          join integartionType in db.IntegrationTypes on integrationInstance.IntegrationTypeId equals integartionType.IntegrationTypeId
+                                          where integrationInstance.IsDeleted == false && integartionType.IsDeleted == false && integrationInstance.IntegrationInstanceId == id
+                                          select integartionType);
+                string integrationTypeName = integrationTypeObj.Select(integartionType => integartionType.Title).FirstOrDefault();
+                string integrationTypeCode = integrationTypeObj.Select(integartionType => integartionType.Code).FirstOrDefault();
+
                 if (string.IsNullOrEmpty(integrationTypeName))
                 {
                     ViewBag.IntegrationTypeName = "";
@@ -1263,7 +1270,7 @@ namespace RevenuePlanner.Controllers
                 TempData["ClosedDealInvalidMsg"] = Common.objCached.CloseDealTargetFieldInvalidMsg;
                 List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
                 //Get list of GameplanDatatypePull objects when integration instance type is Salesforce
-                if (integrationTypeName == Enums.IntegrationType.Salesforce.ToString())
+                if (integrationTypeCode == Enums.IntegrationType.Salesforce.ToString())
                 {
                     // Get list of All GameplanDataTypePullModel from DB by IntegrationInstance ID
                     string strGameplanDatatypePullType = gameplanDatatypePullType.ToString();

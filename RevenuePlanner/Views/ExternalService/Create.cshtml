@@ -51,6 +51,7 @@
         {
             @Html.ValidationSummary(true)
             @Html.HiddenFor(model => model.IntegrationTypeId);
+            @Html.HiddenFor(model => model.IntegrationType.Code);
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.IntegrationType.Title)
 

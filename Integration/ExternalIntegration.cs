@@ -120,7 +120,7 @@ namespace Integration
             _integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.Single(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
                 IdentifyIntegration();
             }
         }
@@ -131,7 +131,7 @@ namespace Integration
             _integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
                 IdentifyIntegration();
             }
         }
@@ -142,7 +142,7 @@ namespace Integration
             _integrationInstanceId = db.Plan_Campaign_Program.Single(p => p.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
                 IdentifyIntegration();
             }
         }
@@ -153,7 +153,7 @@ namespace Integration
             _integrationInstanceId = db.Plan_Campaign.Single(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
                 IdentifyIntegration();
             }
         }
@@ -163,7 +163,7 @@ namespace Integration
             _integrationInstanceId = _id;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
                 IdentifyIntegration();
             }
         }
@@ -245,7 +245,7 @@ namespace Integration
             _integrationInstanceId = _id;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
             }
 
             if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
@@ -277,7 +277,7 @@ namespace Integration
             _integrationInstanceId = _id;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
             }
 
             if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
@@ -301,7 +301,7 @@ namespace Integration
             _integrationInstanceId = _id;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
             }
 
             if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))

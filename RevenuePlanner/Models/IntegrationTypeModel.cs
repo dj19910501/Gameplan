@@ -33,6 +33,11 @@ namespace RevenuePlanner.Models
         [Required]
         public bool IsDeleted { get; set; }
 
+        [Display(Name = "Integration Type Code")]
+        [Required]
+        [MaxLength(250, ErrorMessage = "Code cannot be more than 250 characters.")]
+        public string Code { get; set; }
+
         public List<SelectListItem> plans { get; set; }
     }
 }

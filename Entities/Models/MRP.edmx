@@ -772,6 +772,7 @@
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="APIVersion" Type="nvarchar" MaxLength="25" />
           <Property Name="APIURL" Type="nvarchar" MaxLength="1000" />
+          <Property Name="Code" Type="varchar" Nullable="false" MaxLength="255" />
         </EntityType>
         <EntityType Name="IntegrationTypeAttribute">
           <Key>
@@ -987,6 +988,7 @@
           <Property Name="GoalType" Type="varchar" Nullable="false" MaxLength="50" />
           <Property Name="GoalValue" Type="float" Nullable="false" />
           <Property Name="AllocatedBy" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="EloquaFolderPath" Type="nvarchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="Plan_Budget">
           <Key>
@@ -2402,7 +2404,6 @@
           <EntitySet Name="IntegrationInstanceLogs" EntityType="MRPModel.IntegrationInstanceLog" />
           <EntitySet Name="IntegrationInstancePlanEntityLogs" EntityType="MRPModel.IntegrationInstancePlanEntityLog" />
           <EntitySet Name="IntegrationInstanceSections" EntityType="MRPModel.IntegrationInstanceSection" />
-          <EntitySet Name="IntegrationTypes" EntityType="MRPModel.IntegrationType" />
           <EntitySet Name="IntegrationTypeAttributes" EntityType="MRPModel.IntegrationTypeAttribute" />
           <EntitySet Name="LineItemTypes" EntityType="MRPModel.LineItemType" />
           <EntitySet Name="MasterTacticTypes" EntityType="MRPModel.MasterTacticType" />
@@ -2484,17 +2485,9 @@
             <End Role="Funnel_Field" EntitySet="Funnel_Field" />
             <End Role="ModelReview" EntitySet="ModelReviews" />
           </AssociationSet>
-          <AssociationSet Name="FK_GameplanDataType_IntegrationType" Association="MRPModel.FK_GameplanDataType_IntegrationType">
-            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
-            <End Role="GameplanDataType" EntitySet="GameplanDataTypes" />
-          </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstanceDataTypeMapping_GameplanDataType" Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType">
             <End Role="GameplanDataType" EntitySet="GameplanDataTypes" />
             <End Role="IntegrationInstanceDataTypeMapping" EntitySet="IntegrationInstanceDataTypeMappings" />
-          </AssociationSet>
-          <AssociationSet Name="FK_GameplanDataTypePull_IntegrationType" Association="MRPModel.FK_GameplanDataTypePull_IntegrationType">
-            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
-            <End Role="GameplanDataTypePull" EntitySet="GameplanDataTypePulls" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstanceDataTypeMappingPull_GameplanDataTypePull" Association="MRPModel.FK_IntegrationInstanceDataTypeMappingPull_GameplanDataTypePull">
             <End Role="GameplanDataTypePull" EntitySet="GameplanDataTypePulls" />
@@ -2527,10 +2520,6 @@
           <AssociationSet Name="FK_IntegrationInstance_Attribute_IntegrationInstance" Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="IntegrationInstance_Attribute" EntitySet="IntegrationInstance_Attribute" />
-          </AssociationSet>
-          <AssociationSet Name="FK_IntegrationInstance_IntegrationType" Association="MRPModel.FK_IntegrationInstance_IntegrationType">
-            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
@@ -2587,10 +2576,6 @@
           <AssociationSet Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection" Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection">
             <End Role="IntegrationInstanceSection" EntitySet="IntegrationInstanceSections" />
             <End Role="IntegrationInstancePlanEntityLog" EntitySet="IntegrationInstancePlanEntityLogs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_IntegrationTypeAttribute_IntegrationType" Association="MRPModel.FK_IntegrationTypeAttribute_IntegrationType">
-            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
-            <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttributes" />
           </AssociationSet>
           <AssociationSet Name="FK_LineItemType_Model" Association="MRPModel.FK_LineItemType_Model">
             <End Role="Model" EntitySet="Models" />
@@ -2782,6 +2767,23 @@
             <End Role="CustomField" EntitySet="CustomFields" />
             <End Role="CustomFieldOption" EntitySet="CustomFieldOptions" />
           </AssociationSet>
+          <EntitySet Name="IntegrationTypes" EntityType="MRPModel.IntegrationType" />
+          <AssociationSet Name="FK_GameplanDataType_IntegrationType" Association="MRPModel.FK_GameplanDataType_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
+            <End Role="GameplanDataType" EntitySet="GameplanDataTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GameplanDataTypePull_IntegrationType" Association="MRPModel.FK_GameplanDataTypePull_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
+            <End Role="GameplanDataTypePull" EntitySet="GameplanDataTypePulls" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstance_IntegrationType" Association="MRPModel.FK_IntegrationInstance_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationTypeAttribute_IntegrationType" Association="MRPModel.FK_IntegrationTypeAttribute_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
+            <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttributes" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -2921,8 +2923,8 @@
           <Property Type="String" Name="DisplayFieldName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="Boolean" Name="IsGet" Nullable="false" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
-          <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_GameplanDataType_IntegrationType" FromRole="GameplanDataType" ToRole="IntegrationType" />
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType" FromRole="GameplanDataType" ToRole="IntegrationInstanceDataTypeMapping" />
+          <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_GameplanDataType_IntegrationType" FromRole="GameplanDataType" ToRole="IntegrationType" />
         </EntityType>
         <EntityType Name="GameplanDataTypePull">
           <Key>
@@ -2934,8 +2936,8 @@
           <Property Type="String" Name="DisplayFieldName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Type" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
-          <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_GameplanDataTypePull_IntegrationType" FromRole="GameplanDataTypePull" ToRole="IntegrationType" />
           <NavigationProperty Name="IntegrationInstanceDataTypeMappingPulls" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMappingPull_GameplanDataTypePull" FromRole="GameplanDataTypePull" ToRole="IntegrationInstanceDataTypeMappingPull" />
+          <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_GameplanDataTypePull_IntegrationType" FromRole="GameplanDataTypePull" ToRole="IntegrationType" />
         </EntityType>
         <EntityType Name="Geography">
           <Key>
@@ -3008,7 +3010,6 @@
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
           <NavigationProperty Name="IntegrationInstance_Attribute" Relationship="MRPModel.FK_IntegrationInstance_Attribute_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstance_Attribute" />
-          <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationInstance" ToRole="IntegrationType" />
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceDataTypeMapping" />
           <NavigationProperty Name="IntegrationInstanceDataTypeMappingPulls" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMappingPull_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceDataTypeMappingPull" />
           <NavigationProperty Name="IntegrationInstanceExternalServers" Relationship="MRPModel.FK_IntegrationInstanceExternalServer_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceExternalServer" />
@@ -3020,6 +3021,7 @@
           <NavigationProperty Name="Models2" Relationship="MRPModel.FK_Model_IntegrationInstanceINQ" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="Models3" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
+          <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationInstance" ToRole="IntegrationType" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -3128,21 +3130,6 @@
           <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstanceSection_IntegrationInstance" FromRole="IntegrationInstanceSection" ToRole="IntegrationInstance" />
           <NavigationProperty Name="IntegrationInstanceLog" Relationship="MRPModel.FK_IntegrationInstanceSection_IntegrationInstanceLog" FromRole="IntegrationInstanceSection" ToRole="IntegrationInstanceLog" />
           <NavigationProperty Name="IntegrationInstancePlanEntityLogs" Relationship="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection" FromRole="IntegrationInstanceSection" ToRole="IntegrationInstancePlanEntityLog" />
-        </EntityType>
-        <EntityType Name="IntegrationType">
-          <Key>
-            <PropertyRef Name="IntegrationTypeId" />
-          </Key>
-          <Property Type="Int32" Name="IntegrationTypeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
-          <Property Type="String" Name="APIVersion" MaxLength="25" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="APIURL" MaxLength="1000" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="GameplanDataTypes" Relationship="MRPModel.FK_GameplanDataType_IntegrationType" FromRole="IntegrationType" ToRole="GameplanDataType" />
-          <NavigationProperty Name="GameplanDataTypePulls" Relationship="MRPModel.FK_GameplanDataTypePull_IntegrationType" FromRole="IntegrationType" ToRole="GameplanDataTypePull" />
-          <NavigationProperty Name="IntegrationInstances" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationType" ToRole="IntegrationInstance" />
-          <NavigationProperty Name="IntegrationTypeAttributes" Relationship="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" FromRole="IntegrationType" ToRole="IntegrationTypeAttribute" />
         </EntityType>
         <EntityType Name="IntegrationTypeAttribute">
           <Key>
@@ -3393,6 +3380,7 @@
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Team" Relationship="MRPModel.FK_Plan_Collaborator_Plan" FromRole="Plan" ToRole="Plan_Team" />
           <NavigationProperty Name="Plan_Improvement_Campaign" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Plan" FromRole="Plan" ToRole="Plan_Improvement_Campaign" />
+          <Property Type="String" Name="EloquaFolderPath" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Plan_Budget">
           <Key>
@@ -3966,18 +3954,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_GameplanDataType_IntegrationType">
-          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
-          <End Type="MRPModel.GameplanDataType" Role="GameplanDataType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationType">
-              <PropertyRef Name="IntegrationTypeId" />
-            </Principal>
-            <Dependent Role="GameplanDataType">
-              <PropertyRef Name="IntegrationTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_IntegrationInstanceDataTypeMapping_GameplanDataType">
           <End Type="MRPModel.GameplanDataType" Role="GameplanDataType" Multiplicity="1" />
           <End Type="MRPModel.IntegrationInstanceDataTypeMapping" Role="IntegrationInstanceDataTypeMapping" Multiplicity="*" />
@@ -3987,18 +3963,6 @@
             </Principal>
             <Dependent Role="IntegrationInstanceDataTypeMapping">
               <PropertyRef Name="GameplanDataTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_GameplanDataTypePull_IntegrationType">
-          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
-          <End Type="MRPModel.GameplanDataTypePull" Role="GameplanDataTypePull" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationType">
-              <PropertyRef Name="IntegrationTypeId" />
-            </Principal>
-            <Dependent Role="GameplanDataTypePull">
-              <PropertyRef Name="IntegrationTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4095,18 +4059,6 @@
             </Principal>
             <Dependent Role="IntegrationInstance_Attribute">
               <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_IntegrationInstance_IntegrationType">
-          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
-          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationType">
-              <PropertyRef Name="IntegrationTypeId" />
-            </Principal>
-            <Dependent Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4275,18 +4227,6 @@
             </Principal>
             <Dependent Role="IntegrationInstancePlanEntityLog">
               <PropertyRef Name="IntegrationInstanceSectionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_IntegrationTypeAttribute_IntegrationType">
-          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
-          <End Type="MRPModel.IntegrationTypeAttribute" Role="IntegrationTypeAttribute" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationType">
-              <PropertyRef Name="IntegrationTypeId" />
-            </Principal>
-            <Dependent Role="IntegrationTypeAttribute">
-              <PropertyRef Name="IntegrationTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4919,6 +4859,70 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="IntegrationType">
+          <Key>
+            <PropertyRef Name="IntegrationTypeId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationTypeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="String" Name="APIVersion" MaxLength="25" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="APIURL" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Code" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="GameplanDataTypes" Relationship="MRPModel.FK_GameplanDataType_IntegrationType" FromRole="IntegrationType" ToRole="GameplanDataType" />
+          <NavigationProperty Name="GameplanDataTypePulls" Relationship="MRPModel.FK_GameplanDataTypePull_IntegrationType" FromRole="IntegrationType" ToRole="GameplanDataTypePull" />
+          <NavigationProperty Name="IntegrationInstances" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationType" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="IntegrationTypeAttributes" Relationship="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" FromRole="IntegrationType" ToRole="IntegrationTypeAttribute" />
+        </EntityType>
+        <Association Name="FK_GameplanDataType_IntegrationType">
+          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
+          <End Type="MRPModel.GameplanDataType" Role="GameplanDataType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="GameplanDataType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GameplanDataTypePull_IntegrationType">
+          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
+          <End Type="MRPModel.GameplanDataTypePull" Role="GameplanDataTypePull" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="GameplanDataTypePull">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationInstance_IntegrationType">
+          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationTypeAttribute_IntegrationType">
+          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationTypeAttribute" Role="IntegrationTypeAttribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="IntegrationTypeAttribute">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5238,18 +5242,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="IntegrationTypes">
-            <EntityTypeMapping TypeName="MRPModel.IntegrationType">
-              <MappingFragment StoreEntitySet="IntegrationType">
-                <ScalarProperty Name="APIURL" ColumnName="APIURL" />
-                <ScalarProperty Name="APIVersion" ColumnName="APIVersion" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="IntegrationTypeId" ColumnName="IntegrationTypeId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="IntegrationTypeAttributes">
             <EntityTypeMapping TypeName="MRPModel.IntegrationTypeAttribute">
               <MappingFragment StoreEntitySet="IntegrationTypeAttribute">
@@ -5457,6 +5449,7 @@
           <EntitySetMapping Name="Plans">
             <EntityTypeMapping TypeName="MRPModel.Plan">
               <MappingFragment StoreEntitySet="Plan">
+                <ScalarProperty Name="EloquaFolderPath" ColumnName="EloquaFolderPath" />
                 <ScalarProperty Name="AllocatedBy" ColumnName="AllocatedBy" />
                 <ScalarProperty Name="GoalValue" ColumnName="GoalValue" />
                 <ScalarProperty Name="GoalType" ColumnName="GoalType" />
@@ -5939,6 +5932,19 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="CustomFieldTypeId" ColumnName="CustomFieldTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationTypes">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationType">
+              <MappingFragment StoreEntitySet="IntegrationType">
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="APIURL" ColumnName="APIURL" />
+                <ScalarProperty Name="APIVersion" ColumnName="APIVersion" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="IntegrationTypeId" ColumnName="IntegrationTypeId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

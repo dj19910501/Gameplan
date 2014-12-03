@@ -28,6 +28,7 @@ namespace RevenuePlanner.Models
         public bool IsDeleted { get; set; }
         public string APIVersion { get; set; }
         public string APIURL { get; set; }
+        public string Code { get; set; }
     
         public virtual ICollection<GameplanDataType> GameplanDataTypes { get; set; }
         public virtual ICollection<GameplanDataTypePull> GameplanDataTypePulls { get; set; }

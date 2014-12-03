@@ -46,7 +46,6 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
         public DbSet<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public DbSet<IntegrationInstanceSection> IntegrationInstanceSections { get; set; }
-        public DbSet<IntegrationType> IntegrationTypes { get; set; }
         public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
         public DbSet<LineItemType> LineItemTypes { get; set; }
         public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
@@ -90,5 +89,6 @@ namespace RevenuePlanner.Models
         public DbSet<CustomField_Entity> CustomField_Entity { get; set; }
         public DbSet<CustomFieldOption> CustomFieldOptions { get; set; }
         public DbSet<CustomFieldType> CustomFieldTypes { get; set; }
+        public DbSet<IntegrationType> IntegrationTypes { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace RevenuePlanner.Models
         public bool IsGet { get; set; }
         public bool IsDeleted { get; set; }
     
-        public virtual IntegrationType IntegrationType { get; set; }
         public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
+        public virtual IntegrationType IntegrationType { get; set; }
     }
 }

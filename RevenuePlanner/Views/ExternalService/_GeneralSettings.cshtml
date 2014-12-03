@@ -9,6 +9,7 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "integrationForm", style = "margin-bottom:5px !important;" }))
         {
             @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => Model.IntegrationType.Code);
             @Html.HiddenFor(model => Model.IntegrationTypeId);
             @Html.HiddenFor(model => Model.IntegrationInstanceId);
             @Html.HiddenFor(model => Model.IsActiveStatuChanged);
