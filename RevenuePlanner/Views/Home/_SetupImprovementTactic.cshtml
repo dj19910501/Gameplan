@@ -155,7 +155,9 @@
 
     $(document).ready(
       function () {
-          
+          $(".datepicker.dropdown-menu").each(function () {
+              $(this).remove();
+          });
           if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()')
           {
               $("#liSetup,#liReview,#liImpact").unbind("click");
@@ -238,17 +240,21 @@
     $('#dp_start .add-on').click(function () {
         $('#dp_start').datepicker('show');
         $(".dropdown-menu").css("z-index", "25001");
+        var pos = $("#t_startdate").position();
+        var height = $("#t_startdate").height();
+        var scrollTop = $("#modal-container-186470").scrollTop();
+        var pos_top = pos.top + height + scrollTop + 10;
         setTimeout(function () {
             if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
                 $("#txtDate").after($(".datepicker.dropdown-menu").eq(0));
                 $("#txtDate").parent().find(".datepicker.dropdown-menu").css({
-                    top: '652px',
+                    top: pos_top.toString() + 'px',
                     display: 'block'
                 });
             }
             else {
                 $('#dp_start').find('.datepicker.dropdown-menu').css({
-                    top: '652px',
+                    top: pos_top.toString() + 'px',
                     display: 'block'
                 });
             }
