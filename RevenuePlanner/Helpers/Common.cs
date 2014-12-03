@@ -60,8 +60,12 @@ namespace RevenuePlanner.Helpers
 
 
         public static Message objCached = new Message();
-        public static string xmlMsgFilePath = HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLCommonMsgFilePath"));
-        public static string xmlBenchmarkFilePath = HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLBenchmarkFilePath"));
+        //public static string xmlMsgFilePath = HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLCommonMsgFilePath"));
+        //public static string xmlBenchmarkFilePath = HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLBenchmarkFilePath"));
+
+        public static string xmlMsgFilePath = HttpContext.Current.Request.ApplicationPath == null ? string.Empty : HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLCommonMsgFilePath"));
+        public static string xmlBenchmarkFilePath = HttpContext.Current.Request.ApplicationPath == null ? string.Empty : HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLBenchmarkFilePath"));
+     
 
         public static readonly int imgWidth = 50;
         public static readonly int imgHeight = 50;
@@ -567,7 +571,7 @@ namespace RevenuePlanner.Helpers
                 emailBody = emailBody.Replace("[programname]", ProgramName);
                 emailBody = emailBody.Replace("[campaignname]", CampaignName);
                 emailBody = emailBody.Replace("[planname]", PlanName);
-                
+
                 string email = EmailIds.ElementAt(i);
                 ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
                 Thread thread = new Thread(threadStart);
@@ -816,10 +820,10 @@ namespace RevenuePlanner.Helpers
             {
                 if (!isForDataInconsistency)
                 {
-                objCookie.Value = cookieValue;
-                objCookie.Expires = System.Convert.ToDateTime(System.DateTime.Now.Date).AddMonths(6);
-                objCookie.Path = "/";
-                HttpContext.Current.Response.Cookies.Add(objCookie);
+                    objCookie.Value = cookieValue;
+                    objCookie.Expires = System.Convert.ToDateTime(System.DateTime.Now.Date).AddMonths(6);
+                    objCookie.Path = "/";
+                    HttpContext.Current.Response.Cookies.Add(objCookie);
                 }
             }
             else
@@ -1125,7 +1129,7 @@ namespace RevenuePlanner.Helpers
         {
             int year;
             bool isNumeric = int.TryParse(currentView, out year);
-            
+
             if (currentView == Enums.UpcomingActivities.thisyear.ToString())
             {
                 //// Plan
@@ -1642,7 +1646,7 @@ namespace RevenuePlanner.Helpers
 
                     int? ModelId = plan.ModelId;
                     List<ModelDateList> modelDateList = new List<ModelDateList>();
-                    
+
                     int MainModelId = (int)ModelId;
                     while (ModelId != null)
                     {
@@ -1654,15 +1658,15 @@ namespace RevenuePlanner.Helpers
                     List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(m => m.ModelId).ToList());
                     List<Plan_Improvement_Campaign_Program_Tactic> impList = improvementTacticList.Where(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == plan.PlanId).ToList();
 
-                        MQLs = Common.GetTacticStageRelationForSinglePlan(planTacticIds, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, impList, modelDateList, MainModelId, stageList, false).Sum(t => t.MQLValue);
-                   
-                        if (planTacticIds.Count() > 0)
-                        {
-                            var tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
-                            TotalBudget += LineItemList.Where(l => tacticIds.Contains(l.PlanTacticId)).Sum(l => l.Cost);
-                        }
+                    MQLs = Common.GetTacticStageRelationForSinglePlan(planTacticIds, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, impList, modelDateList, MainModelId, stageList, false).Sum(t => t.MQLValue);
 
-                    
+                    if (planTacticIds.Count() > 0)
+                    {
+                        var tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
+                        TotalBudget += LineItemList.Where(l => tacticIds.Contains(l.PlanTacticId)).Sum(l => l.Cost);
+                    }
+
+
                     if (impList.Count > 0)
                     {
                         //// Getting improved MQL.
@@ -1682,7 +1686,7 @@ namespace RevenuePlanner.Helpers
                     }
 
                     TotalMQLs += MQLs;
-                  
+
                     MQLs = 0;
                 }
             }
@@ -2613,13 +2617,13 @@ namespace RevenuePlanner.Helpers
         /// <param name="tlist">List collection of tactics</param>
         /// <param name="isIncludeImprovement">boolean flag that indicate tactic included imporvement sections</param>
         /// <returns></returns>
-        public static List<TacticStageValue> GetTacticStageRelationForSinglePlan(List<Plan_Campaign_Program_Tactic> tlist,List<StageRelation> bestInClassStageRelation,List<StageList> stageListType,List<ModelStageRelationList> modleStageRelationList,List<ImprovementTacticType_Metric> improvementTacticTypeMetric,List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities,List<ModelDateList> modelDateList,int ModelId,List<Stage> stageList, bool isIncludeImprovement = true)
+        public static List<TacticStageValue> GetTacticStageRelationForSinglePlan(List<Plan_Campaign_Program_Tactic> tlist, List<StageRelation> bestInClassStageRelation, List<StageList> stageListType, List<ModelStageRelationList> modleStageRelationList, List<ImprovementTacticType_Metric> improvementTacticTypeMetric, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, List<ModelDateList> modelDateList, int ModelId, List<Stage> stageList, bool isIncludeImprovement = true)
         {
             //Compute the tactic relation list
             List<TacticStageValueRelation> tacticValueRelationList = GetCalculationForSinglePlan(tlist, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, ModelId, isIncludeImprovement);
             //fetch the tactic stages and it's value
             //Return finalized TacticStageValue list to the Parent method 
-            return GetTacticStageValueList(tlist,tacticValueRelationList,stageList,true);
+            return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, true);
         }
 
         public static List<TacticStageValue> GetTacticStageValueList(List<Plan_Campaign_Program_Tactic> tlist, List<TacticStageValueRelation> tacticValueRelationList, List<Stage> stageList, bool isSinglePlan = false)
@@ -2697,7 +2701,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ModelId"></param>
         /// <param name="isIncludeImprovement"></param>
         /// <returns></returns>
-        public static List<TacticStageValueRelation> GetCalculationForSinglePlan(List<Plan_Campaign_Program_Tactic> tlist,List<StageRelation> bestInClassStageRelation,List<StageList> stageList,List<ModelStageRelationList> modleStageRelationList,List<ImprovementTacticType_Metric> improvementTacticTypeMetric,List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities,List<ModelDateList> modelDateList,int ModelId, bool isIncludeImprovement = true)
+        public static List<TacticStageValueRelation> GetCalculationForSinglePlan(List<Plan_Campaign_Program_Tactic> tlist, List<StageRelation> bestInClassStageRelation, List<StageList> stageList, List<ModelStageRelationList> modleStageRelationList, List<ImprovementTacticType_Metric> improvementTacticTypeMetric, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, List<ModelDateList> modelDateList, int ModelId, bool isIncludeImprovement = true)
         {
             List<TacticStageValueRelation> TacticSatgeValueList = new List<TacticStageValueRelation>();
             string Size = Enums.StageType.Size.ToString();
@@ -3189,7 +3193,7 @@ namespace RevenuePlanner.Helpers
             List<ModelStageRelationList> modleStageRelationList = GetModelStageRelation(modelDateList.Select(m => m.ModelId).ToList());
 
             //// Getting list of improvement activites.
-            List < Plan_Improvement_Campaign_Program_Tactic > improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
 
             var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).Distinct().ToList();
             List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
@@ -3302,7 +3306,7 @@ namespace RevenuePlanner.Helpers
 
             return tacticModellist;
         }
-      
+
         #endregion
 
         #region "Improvement Customized Stage"
@@ -3402,9 +3406,9 @@ namespace RevenuePlanner.Helpers
         /// <param name="stageType"></param>
         /// <param name="isIncludeImprovement"></param>
         /// <returns></returns>
-        public static double GetCalculatedValueImprovement(List<StageRelation> bestInClassStageRelation,List<StageList> stageList,List<ModelDateList> modelDateList, int ModelId,List<ModelStageRelationList> modleStageRelationList, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities,List<ImprovementTacticType_Metric> improvementTacticTypeMetric, string stageType, bool isIncludeImprovement = true)
+        public static double GetCalculatedValueImprovement(List<StageRelation> bestInClassStageRelation, List<StageList> stageList, List<ModelDateList> modelDateList, int ModelId, List<ModelStageRelationList> modleStageRelationList, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, List<ImprovementTacticType_Metric> improvementTacticTypeMetric, string stageType, bool isIncludeImprovement = true)
         {
-            List<StageRelation> stagevalueList = CalculateStageValueForSuggestedImprovement(bestInClassStageRelation, stageList, modelDateList, ModelId, modleStageRelationList, improvementActivities,improvementTacticTypeMetric, isIncludeImprovement);
+            List<StageRelation> stagevalueList = CalculateStageValueForSuggestedImprovement(bestInClassStageRelation, stageList, modelDateList, ModelId, modleStageRelationList, improvementActivities, improvementTacticTypeMetric, isIncludeImprovement);
             double returnValue = 0;
             if (stagevalueList.Count > 0)
             {
@@ -3418,7 +3422,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planId">Current plan id.</param>
         /// <returns>Returns improved velocity.</returns>
-        public static List<StageRelation> CalculateStageValueForSuggestedImprovement(List<StageRelation> bestInClassStageRelation,List<StageList> stageList,List<ModelDateList> modelDateList, int ModelId,List<ModelStageRelationList> modleStageRelationList, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities,List<ImprovementTacticType_Metric> improvementTacticTypeMetric, bool isIncludeImprovement = true)
+        public static List<StageRelation> CalculateStageValueForSuggestedImprovement(List<StageRelation> bestInClassStageRelation, List<StageList> stageList, List<ModelDateList> modelDateList, int ModelId, List<ModelStageRelationList> modleStageRelationList, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, List<ImprovementTacticType_Metric> improvementTacticTypeMetric, bool isIncludeImprovement = true)
         {
             if (improvementActivities.Count > 0)
             {
@@ -3489,7 +3493,7 @@ namespace RevenuePlanner.Helpers
                 return ModelId;
             }
         }
-     
+
         #endregion
 
         #region Subordinares and peers
@@ -3795,7 +3799,7 @@ namespace RevenuePlanner.Helpers
             {
                 lstUserCustomRestriction = Common.GetUserCustomRestriction();
             }
-            else 
+            else
             {
                 lstUserCustomRestriction = lstUserCustomRestrictionParam;
             }
@@ -3892,7 +3896,7 @@ namespace RevenuePlanner.Helpers
             objStage.Title = Enums.PlanGoalTypeList[Enums.PlanGoalType.Revenue.ToString()].ToString().ToLower();
             objStage.Code = Enums.PlanGoalTypeList[Enums.PlanGoalType.Revenue.ToString()].ToString().ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
-            var goalType =(from l in lstGoalTypeListFromDB where l.Code==code select l.Title).SingleOrDefault();
+            var goalType = (from l in lstGoalTypeListFromDB where l.Code == code select l.Title).SingleOrDefault();
             return goalType;
         }
 
@@ -4001,12 +4005,12 @@ namespace RevenuePlanner.Helpers
         /// <param name="goalValue"></param>
         /// <param name="averageDealSize"></param>
         /// <returns></returns>
-        public static double CalculateMQLOnly(int modelId, string goalType, string goalValue, double averageDealSize,List<Stage> stageList)
+        public static double CalculateMQLOnly(int modelId, string goalType, string goalValue, double averageDealSize, List<Stage> stageList)
         {
             try
             {
                 MRPEntities dbStage = new MRPEntities();
-                
+
                 string stageINQ = Enums.Stage.INQ.ToString();
                 int levelINQ = stageList.Single(s => s.Code.Equals(stageINQ)).Level.Value;
                 string stageMQL = Enums.Stage.MQL.ToString();
@@ -4780,7 +4784,7 @@ namespace RevenuePlanner.Helpers
             return result;
         }
 
-         /// <summary>
+        /// <summary>
         /// Function to return Status message.
         /// Added by Viral Kadiya on 11/17/2014 for PL ticket #947.
         /// </summary>
@@ -4811,9 +4815,9 @@ namespace RevenuePlanner.Helpers
             List<User> userName = new List<User>();
             userName = bdsservice.GetMultipleTeamMemberName(UserGuid);
             if (userName.Count > 0)
-	        {
-                return string.Concat(userName.FirstOrDefault().FirstName," ",userName.FirstOrDefault().LastName);
-	        }
+            {
+                return string.Concat(userName.FirstOrDefault().FirstName, " ", userName.FirstOrDefault().LastName);
+            }
             return "";
         }
 
@@ -4823,7 +4827,7 @@ namespace RevenuePlanner.Helpers
             return true;
         }
 
-		    #endregion
+        #endregion
     }
 
     /// <summary>
