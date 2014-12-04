@@ -92,4 +92,14 @@ namespace RevenuePlanner.Models
         public string LastSync { get; set; }
     }
 //End : Added by Mitesh Vaishnav for PL ticket #659
+
+//Start :Added by Pratik for PL ticket #998
+    public class IntegrationPlanList
+    {     
+        public string Year { get; set; }
+        public int PlanId { get; set; }
+        public string PlanTitle { get; set; }
+        public string FolderPath { get; set; }
+    }
+//End :Added by Pratik for PL ticket #998
 }

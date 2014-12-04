@@ -2,67 +2,102 @@
 
 <!DOCTYPE html>
 
-     <div class="span2 myaccount-colum">
-            <div class="width216">
-                <ul class="nav nav-pills nav-stacked width216">
-                    <li id="Icredential" class="active">
-                        @if (ViewBag.PageTitle == "MapDataType")
-                        {
-                            /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
-                            @*<a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Credentials</a>*@
-                            <a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Settings</a>
-                        }
-                        else
-                        {
-                            /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
-                        @*<a href="#">Integration Credentials</a>*@
-                            <a href="#">Integration Settings</a>
-                        }
-                    </li>
-                    <li id="MdataType" style="display:none;">
-                        @if (ViewBag.PageTitle == "Edit")
-                        {
-                        <a href="@Url.Content("~/ExternalService/MapDataTypes/")@Model.IntegrationInstanceId.ToString()">Map Data Types</a>
-                        }
-                        else
-                        {
-                            <a href="#">Map Data Types</a>
-                        }
-                    </li>
-                </ul>
-            </div>
-        </div>
-    <script>
-        $(document).ready(
-            function () {
+<div class="span2 myaccount-colum">
+    <div class="width216">
+        <ul class="nav nav-pills nav-stacked width216">
+            <li id="Icredential" class="active">
+                @if (ViewBag.PageTitle == "MapDataType")
+                {
+                    /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
 
-                if ('@ViewBag.PageTitle' == 'Create') {
+                    <a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Settings</a>
+                }
+                else
+                {
+                    /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
 
-                    if (!$('#Icredential').hasClass('active')) {
-
-                        $('#Icredential').addClass('active');
+                    <a href="@Url.Content("~/ExternalService/Edit?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Settings</a>
+                        
+                }
+            </li>
+            <li id="IntegrationFolder">
+                @if ((ViewBag.PageTitle == "EloquaFolder"))
+                {
+                    if (ViewBag.IntegrationTypeCode == Enums.IntegrationType.Eloqua.ToString())
+                    {
+                    <a href="@Url.Content("~/ExternalService/IntegrationFolder?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Folders(Eloqua only)</a>
                     }
-                    if (!$('#MdataType').hasClass('disabled')) {
-                        $('#MdataType').removeClass();
-                        $('#MdataType').addClass('disabled');
+                    else
+                    {
+                        Response.Redirect(Url.Action("Index", "ExternalService"));
                     }
                 }
-                else if ('@ViewBag.PageTitle' == 'Edit') {
-                    if (!$('#Icredential').hasClass('active')) {
-
-                        $('#Icredential').addClass('active');
-                    }
-                    if (!$('#MdataType').hasClass('disabled')) {
-                        $('#MdataType').removeClass();
-                    }
+                else
+                {
+                 if (ViewBag.IntegrationTypeCode == Enums.IntegrationType.Eloqua.ToString())
+                    {
+                    <a href="@Url.Content("~/ExternalService/IntegrationFolder?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Folders(Eloqua only)</a>
+                    }   
                 }
-                else if ('@ViewBag.PageTitle' == 'MapDataType') {
-                    if (!$('#MdataType').hasClass('active')) {
-                        $('#MdataType').removeClass();
-                        $('#Icredential').removeClass();
-                        $('#MdataType').addClass('active');
-                    }
+            </li>
+            <li id="MdataType" style="display: none;">
+                @if (ViewBag.PageTitle == "Edit")
+                {
+
+                    <a href="@Url.Content("~/ExternalService/MapDataTypes/")@ViewBag.IntegrationInstanceId.ToString()">Map Data Types</a>
+                }
+                else
+                {
+
+                    <a href="#">Map Data Types</a>
+                }
+            </li>
+        </ul>
+    </div>
+</div>
+<script>
+    $(document).ready(
+        function () {
+
+            if ('@ViewBag.PageTitle' == 'Create') {
+
+                if (!$('#Icredential').hasClass('active')) {
+
+                    $('#Icredential').addClass('active');
+                }
+                if (!$('#MdataType').hasClass('disabled')) {
+                    $('#MdataType').removeClass();
+                    $('#MdataType').addClass('disabled');
                 }
             }
+            else if ('@ViewBag.PageTitle' == 'Edit') {
+                if (!$('#Icredential').hasClass('active')) {
+
+                    $('#Icredential').addClass('active');
+                }
+                if (!$('#MdataType').hasClass('disabled')) {
+                    $('#MdataType').removeClass();
+                }
+            }
+            else if ('@ViewBag.PageTitle' == 'MapDataType') {
+                if (!$('#MdataType').hasClass('active')) {
+                    $('#MdataType').removeClass();
+                    $('#Icredential').removeClass();
+                    $('#MdataType').addClass('active');
+                }
+            }
+
+            $("#IntegrationFolder").on("click", function () {
+                $('#IntegrationFolder').addClass('active');
+                $('#Icredential').removeClass('active');
+
+            });
+
+            $("#Icredential").on("click", function () {
+                $('#IntegrationFolder').removeClass('active');
+                $('#Icredential').addClass('active');
+            });
+
+        }
             );
     </script>

@@ -888,6 +888,8 @@
     <Content Include="Views\Home\_ActualLineitem.cshtml" />
     <Content Include="Views\Home\_EditSetupLineitem.cshtml" />
     <Content Include="Views\Shared\PageNotFound.cshtml" />
+    <Content Include="Views\ExternalService\_IntegrationFolderPlanList.cshtml" />
+    <Content Include="Views\ExternalService\IntegrationFolder.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
@@ -938,7 +940,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>58479</DevelopmentServerPort>
+          <DevelopmentServerPort>52622</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

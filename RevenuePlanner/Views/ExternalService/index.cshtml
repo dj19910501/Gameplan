@@ -255,7 +255,7 @@
         var $html = "";
         $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + htmlEncode(_instance) + '</span><span class="search-icon"></span></td>' +
             '<td>' + _provider + '</td>'
-        console.log(_lastSyncStatus.toString().toLowerCase());
+        
         if (_lastSyncStatus.toString().toLowerCase() == "error")
         {
             $html += '<td id="lastSyncStatus' + _integrationInstanceId + '"><span style="color:red;">' + _lastSyncStatus + '</span></td>'

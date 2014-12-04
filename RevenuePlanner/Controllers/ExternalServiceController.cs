@@ -103,6 +103,112 @@ namespace RevenuePlanner.Controllers
             return Json(IntegrationList, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// This will return view for Integration folder.
+        /// </summary>
+        /// <param name="id">Integration id.</param>
+        /// <param name="TypeId">Integration type id.</param>
+        /// <param name="year">Year for plan selection.</param>
+        /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]
+        public ActionResult IntegrationFolder(int id = 0, int TypeId = 0, string year = "")
+        {
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
+            ViewBag.IntegrationInstanceId = id;
+            ViewBag.IntegrationTypeId = TypeId;
+
+            var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == TypeId).FirstOrDefault();
+            ViewBag.IntegrationTypeCode = integrationTypeObj.Code;
+
+            string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
+
+            Guid clientId = Sessions.User.ClientId;
+            
+            ////Get published plan list year for logged in client.
+            var objPlan = (from p in db.Plans
+                           join m in db.Models on p.ModelId equals m.ModelId
+                           join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
+                           where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false && p.IsDeleted == false && p.Status == status
+                           select p).OrderBy(q => q.Year).ToList().Select(p => p.Year).Distinct().ToList();
+
+            ViewBag.Year = objPlan;
+           
+            return View();
+        }
+
+        /// <summary>
+        /// This method will return the partial view for Integration Folder published Plan listing for selected year
+        /// </summary>
+        /// <param name="Year">Year.</param>
+        /// <returns>Return partial view.</returns>
+        public PartialViewResult GetPlanSelectorData(string Year)
+        {
+            List<IntegrationPlanList> objIntegrationPlanList = new List<IntegrationPlanList>();
+
+            Guid clientId = Sessions.User.ClientId;
+            string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
+
+            int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
+
+            // Get the list of plan, filtered by Business Unit , Year selected and published plan for logged in client.
+            if (Int_Year > 0)
+            {
+                objIntegrationPlanList = (from p in db.Plans
+                                          join m in db.Models on p.ModelId equals m.ModelId
+                                          join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
+                                          where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false &&
+                                          p.IsDeleted == false && p.Year == Year && p.Status == status
+                                          select p).OrderByDescending(p => p.ModifiedDate ?? p.CreatedDate).ThenBy(p => p.Title).ToList().Select(p => new IntegrationPlanList { PlanId = p.PlanId, PlanTitle = p.Title, FolderPath = p.EloquaFolderPath }).ToList();
+            }
+
+            return PartialView("_IntegrationFolderPlanList", objIntegrationPlanList);
+        }
+
+        /// <summary>
+        /// This will save plan list for eloqua folder path.
+        /// </summary>
+        /// <param name="IntegrationPlanList">IntegrationPlanList Model list.</param>
+        /// <returns>Return json value.</returns>
+        [HttpPost]
+        public JsonResult SaveIntegrationFoderPlanList(List<IntegrationPlanList> IntegrationPlanList)
+        {
+            string Year = DateTime.Now.Year.ToString();
+
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        if (IntegrationPlanList.Count > 0)
+                        {
+                            Year = IntegrationPlanList[0].Year;
+
+                            //// Iterate Integration model list and save it to database.
+                            foreach (var item in IntegrationPlanList)
+                            {
+                                Plan objPlan = db.Plans.Where(p => p.PlanId == item.PlanId).FirstOrDefault();
+                                objPlan.EloquaFolderPath = item.FolderPath;
+                                db.Entry(objPlan).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                        }
+
+                        scope.Complete();
+                        string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);
+                        return Json(new { IsSaved = true, Message = strMessag });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { IsSaved = false, Message = Common.objCached.ErrorOccured });
+        }
+
         #endregion
 
         #region Add Integration

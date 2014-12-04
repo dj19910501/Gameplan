@@ -15,6 +15,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.PageTitle = "Edit";
     ViewBag.ModuleTitle = "Integration";
+    ViewBag.IntegrationInstanceId = Model.IntegrationInstanceId;
+    ViewBag.IntegrationTypeId = Model.IntegrationTypeId;
+    ViewBag.IntegrationTypeCode = Model.IntegrationType.Code.ToString();
 }
 
 @section Sidebar {

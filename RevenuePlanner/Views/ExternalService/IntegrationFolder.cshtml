@@ -1,0 +1,96 @@
+﻿@using RevenuePlanner.Models
+@model List<IntegrationPlanList>
+@using RevenuePlanner.Helpers
+
+<script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+@Html.Hidden("ErrMsg", TempData["ErrorMessage"])
+@Html.Hidden("DeleteConfirmationMsg", TempData["DeleteConfirmationMsg"])
+@Html.Hidden("InActiveConfirmationMsg", TempData["InActiveConfirmationMsg"])
+
+@{
+    ViewBag.Title = "Edit External Service Integrations";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.PageTitle = "EloquaFolder";
+    ViewBag.ModuleTitle = "Integration";
+    var IntegrationInstanceId = ViewBag.IntegrationInstanceId;
+    var IntegrationTypeId = ViewBag.IntegrationTypeId;
+}
+
+@section Sidebar {
+    @Html.Partial("~/Views/shared/_preferences.cshtml")
+}
+
+@using (Html.BeginForm())
+{
+    <!--success message-->
+    <div id="successMessage" class="alert hide alert-success message-position">
+        <a class="close">×</a>
+        <div><strong>Success.</strong><span id="cSuccess"></span></div>
+    </div>
+    <div id="errorMessage" class="alert alert-error hide message-position">
+        <a class="close">×</a>
+        <div><strong>Error!</strong><span id="cError"></span></div>
+    </div>
+    <!--success message-->
+    <ul class="nav nav-tabs margin-bottom0">
+        <li class="source-sans-proregular">
+            <h2 class="title-header">@( IntegrationInstanceId == 0 ? "Create" : "Edit") External Service Integrations</h2>
+        </li>
+    </ul>
+
+    <a class="link-gray" href="@Url.Action("Index", "ExternalService")">« BACK TO LIST</a>
+
+    <div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom: 0px !important">
+        <div class="row z-index-2498">
+            @Html.Partial("~/Views/ExternalService/_integration.cshtml")
+
+            <div class="integrationAccordion span10" style="border: none !important; width: 76%">
+                <div style="margin-bottom: 10px;">
+                    @Html.Label("Fiscal Year:", new { id = "lblUpcoming_Activies",style="font-size:14px;" })
+                    <span class="selectBox" id="ddlUpComingActivitesSelectBox" style="width: 70px;font-size:14px;">
+                        @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.Year, DateTime.Now.Year.ToString()))
+                    </span>
+                </div>
+                <div id="IntegrationFolderPlanList">
+                </div>                
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#IntegrationFolder').addClass('active');
+        $('#Icredential').removeClass('active');
+        $(".selectBox select").selectbox();
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        LoadPlanData($('#ddlYear').val());
+        $('.sbSelector').css({'padding-left': '5px','font-size' : '14px'});
+    });
+
+    function LoadPlanData(SelectedYear) {
+        var url = '@Url.Content("~/ExternalService/GetPlanSelectorData/")';
+        $("#IntegrationFolderPlanList").empty();
+        $("#IntegrationFolderPlanList").load(url + '?Year=' + SelectedYear);
+    }
+
+    $('#ddlYear').change(function () {
+        clearMessages();
+        var year = $('.sbSelector').html();
+        LoadPlanData(year);
+    });
+  
+    function clearMessages() {
+        $("#successMessage").slideDown(400);
+        $("#errorMessage").slideDown(400);
+        $("#errorMessage").css("display", "none");
+        $("#successMessage").css("display", "none");
+        $("#cSuccess").empty();
+        $("#cError").empty();
+    }
+
+</script>
