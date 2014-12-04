@@ -30,11 +30,8 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-        #region List
-
-        #endregion
-
         #region Create
+
         /// <summary>
         /// Function to create Plan
         /// </summary>
@@ -111,7 +108,6 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
-                //objPlanModel.IsDirector = Sessions.IsDirector;
                 Sessions.PlanId = id;/*added by Nirav for plan consistency on 14 apr 2014*/
 
                 var List = GetModelName();
@@ -147,7 +143,6 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.ModelId = objplan.ModelId;
                     objPlanModel.Title = objplan.Title;
                     objPlanModel.Year = objplan.Year;
-                    //objPlanModel.MQls = Convert.ToString(objplan.MQLs);
                     objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Value).FirstOrDefault();
                     objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
                     objPlanModel.AllocatedBy = objplan.AllocatedBy;
@@ -199,6 +194,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #region NoModel
+
         /// <summary>
         /// Call NoModel when no baseline model exist for current client.
         /// </summary>
@@ -207,91 +203,8 @@ namespace RevenuePlanner.Controllers
         {
             return View();
         }
-        #endregion
 
-        //Commented Code - 14Apr2014
-        ///// <summary>
-        ///// POST: Save Plan
-        ///// </summary>
-        ///// <param name="form"></param>
-        ///// <returns></returns>
-        //[HttpPost]
-        //public JsonResult SavePlan(PlanModel objPlanModel)
-        //{
-
-        //    try
-        //    {
-        //        if (ModelState.IsValid)
-        //        {
-        //            Plan plan = new Plan();
-
-        //            if (objPlanModel.PlanId != 0)
-        //            {
-        //                plan = db.Plans.Where(m => m.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
-        //            }
-        //            else
-        //            {
-        //                string planDraftStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value;
-        //                plan.Status = planDraftStatus;
-        //                plan.CreatedDate = System.DateTime.Now;
-        //                plan.CreatedBy = Sessions.User.UserId;
-        //                plan.IsActive = true;
-        //                plan.IsDeleted = false;
-        //                double version = 0;
-        //                var plantable = db.Plans.Where(m => m.ModelId == objPlanModel.ModelId && m.IsActive == true && m.IsDeleted == false).FirstOrDefault();
-        //                if (plantable != null)
-        //                {
-        //                    version = Convert.ToDouble(plantable.Version) + 0.1;
-        //                }
-        //                else
-        //                {
-        //                    version = 1;
-        //                }
-        //                plan.Version = version.ToString();
-        //            }
-
-        //            plan.Title = objPlanModel.Title.Trim();
-        //            plan.MQLs = Convert.ToInt64(objPlanModel.MQls.Trim().Replace(",", "").Replace("$", ""));
-        //            plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
-        //            plan.ModelId = objPlanModel.ModelId;
-        //            plan.Year = objPlanModel.Year;
-        //            if (objPlanModel.PlanId == 0)
-        //            {
-        //                db.Plans.Add(plan);
-        //            }
-        //            else
-        //            {
-        //                plan.ModifiedBy = Sessions.User.UserId;
-        //                plan.ModifiedDate = System.DateTime.Now;
-        //                db.Entry(plan).State = EntityState.Modified;
-        //            }
-
-        //            int result = db.SaveChanges();
-        //            if (objPlanModel.PlanId == 0)
-        //            {
-        //                Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-        //            }
-        //            else
-        //            {
-        //                Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-        //            }
-        //            if (result > 0)
-        //            {
-        //                Sessions.PlanId = plan.PlanId;
-
-        //                //Create default Plan Improvement Campaign, Program
-        //                int returnValue = CreatePlanImprovementCampaignAndProgram();
-        //            }
-
-        //            return Json(new { id = Sessions.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-        //    }
-        //    return Json(new { id = 0 });
-        //}
+        #endregion  NoModel
 
         /// <summary>
         /// POST: Save Plan
@@ -304,19 +217,19 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SavePlan(PlanModel objPlanModel, string BudgetInputValues = "", string RedirectType = "", string UserId = "")
         {
-            
+
             try
             {
-            // Start - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
-            if (!string.IsNullOrEmpty(UserId))
-            {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                // Start - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
+                if (!string.IsNullOrEmpty(UserId))
                 {
-                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                    if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                        return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                    }
                 }
-            }
-            // End - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
+                // End - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
                 if (ModelState.IsValid)
                 {
                     Plan plan = new Plan();
@@ -372,6 +285,7 @@ namespace RevenuePlanner.Controllers
                                 UpdateTacticType(objPlanModel.PlanId, objPlanModel.ModelId);
                             }
                         }
+
                         plan.Title = objPlanModel.Title.Trim();
                         plan.GoalType = objPlanModel.GoalType;
                         plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
@@ -391,7 +305,6 @@ namespace RevenuePlanner.Controllers
                             string[] arrBudgetInputValues = BudgetInputValues.Split(',');
 
                             var PrevPlanBudgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == objPlanModel.PlanId).Select(pb => pb).ToList();
-                            //PrevPlanBudgetAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
                             if (arrBudgetInputValues.Length == 12)
                             {
@@ -616,130 +529,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region Plan Details in Slide Panel
-        /// <summary>
-        /// Action to return view of Plan Details to show in Slide Panel
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="RedirectType"></param>
-        /// <returns></returns>
-        public PartialViewResult PlanDetails(int id = 0, string RedirectType = "", string CalledFromBudget = "")
-        {
-            ViewBag.CalledFromBudget = CalledFromBudget;
-            if (id > 0)
-            {
-                TempData["selectList"] = GetModelName();
-
-                var objplan = db.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
-                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                //Get all subordinates of current user upto n level
-                var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                bool IsPlanEditable = false;
-                if (objplan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
-                {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditAllAuthorized)
-                {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditSubordinatesAuthorized)
-                {
-                    if (lstSubOrdinates.Contains(objplan.CreatedBy))
-                    {
-                        IsPlanEditable = true;
-                    }
-                }
-
-                if (!IsPlanEditable)
-                {
-                    return null;
-                }
-            }
-
-            ViewBag.IsCreated = false;
-            if (RedirectType == "Assortment")
-            {
-                ViewBag.RedirectType = false;
-            }
-            else
-            {
-                ViewBag.RedirectType = true;
-            }
-
-            var objPlanData = db.Plans.Where(m => m.PlanId == id && m.IsDeleted == false).FirstOrDefault();
-
-            if (objPlanData == null)
-            {
-                return null;
-            }
-
-            PlanModel objPlanModel = new PlanModel();
-            objPlanModel.PlanId = objPlanData.PlanId;
-            objPlanModel.ModelId = objPlanData.ModelId;
-            objPlanModel.Title = objPlanData.Title;
-            objPlanModel.Year = objPlanData.Year;
-            objPlanModel.GoalType = objPlanData.GoalType;
-            objPlanModel.GoalValue = Convert.ToString(objPlanData.GoalValue);
-            objPlanModel.AllocatedBy = objPlanData.AllocatedBy;
-            objPlanModel.Budget = objPlanData.Budget;
-            objPlanModel.Description = objPlanData.Description;    /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
-            double TotalAllocatedCampaignBudget = 0;
-            var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == objPlanData.PlanId && pcb.Plan_Campaign.IsDeleted == false).Select(a => a.Value).ToList();
-            if (PlanCampaignBudgetList.Count > 0)
-            {
-                TotalAllocatedCampaignBudget = PlanCampaignBudgetList.Sum();
-            }
-            objPlanModel.TotalAllocatedCampaignBudget = TotalAllocatedCampaignBudget;
-            ViewBag.IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Models.Where(b => b.ModelId == objPlanData.ModelId).Select(b => b.BusinessUnitId).FirstOrDefault());  // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-
-            double planBudget = objPlanData.Budget;
-            double planRemainingBudget = planBudget - TotalAllocatedCampaignBudget;
-            ViewBag.planRemainingBudget = planRemainingBudget;
-
-            if (Sessions.User.UserId == objPlanData.CreatedBy)
-            {
-                ViewBag.IsOwner = true;
-
-                // Added by Dharmraj Mangukiya to hide/show delete program as per custom restrictions PL ticket #577
-                //var AllTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList();
-                //bool IsCampaignDeleteble = true;
-                //if (AllTactic.Count > 0)
-                //{
-                //    var OthersTactic = AllTactic.Where(t => t.CreatedBy != Sessions.User.UserId).ToList();
-                //    if (OthersTactic.Count > 0)
-                //    {
-                //        IsCampaignDeleteble = false;
-                //    }
-                //    else
-                //    {
-                //        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                //        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                //        var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-                //        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
-                //        var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
-                //        var a = AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString()) || !lstAllowedVertical.Contains(t.VerticalId.ToString()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString()))).ToList();
-                //        if (AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString()) || !lstAllowedVertical.Contains(t.VerticalId.ToString()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString()))).ToList().Count > 0)
-                //        {
-                //            IsCampaignDeleteble = false;
-                //        }
-                //    }
-                //}
-
-                //ViewBag.IsCampaignDeleteble = IsCampaignDeleteble;
-            }
-            else
-            {
-                ViewBag.IsOwner = false;
-                ViewBag.IsCampaignDeleteble = false;
-            }
-
-            return PartialView("PlanAssortment", objPlanModel);
-        }
-        #endregion
-
-        #endregion
+        #endregion Create
 
         #region Switch Model for Plan
 
@@ -868,6 +658,7 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
         }
+
         /// <summary>
         /// Function to get model list
         /// </summary>
@@ -948,11 +739,12 @@ namespace RevenuePlanner.Controllers
                     lstPlanModel.Add(objPlanModel);
                 }
             }
-            return lstPlanModel.OrderBy(a=>a.ModelTitle).ToList();
+            return lstPlanModel.OrderBy(a => a.ModelTitle).ToList();
         }
         #endregion
 
         #region PlanZero
+
         /// <summary>
         /// Called when no plan exist.
         /// </summary>
@@ -964,9 +756,11 @@ namespace RevenuePlanner.Controllers
             ViewBag.ActiveMenu = activeMenu;
             return View();
         }
+
         #endregion
 
         #region GetPlanByPlanID
+
         /// <summary>
         /// Get plan by plan id
         /// </summary>
@@ -987,9 +781,11 @@ namespace RevenuePlanner.Controllers
             return Json(new { }, JsonRequestBehavior.AllowGet);
 
         }
+
         #endregion
 
         #region Get Multiple plans data
+
         /// <summary>
         /// Added By : Sohel Pathan
         /// Added Date : 22/09/2014
@@ -1015,6 +811,7 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
+
         #endregion
 
         #region "Apply To Calendar"
@@ -1101,8 +898,7 @@ namespace RevenuePlanner.Controllers
             planModel.PlanId = plan.PlanId;
             planModel.PlanTitle = plan.Title;
 
-            //// Modified By Maninder Singh Wadhva to Address PL#203
-            //planModel.CollaboratorId = GetCollaborator(plan);
+            //// Modified By Maninder Singh Wadhva to Address PL#203           
             planModel.LastUpdatedDate = GetLastUpdatedDate(plan);
 
             //List<SelectListItem> planList = Common.GetPlan().Select(p => new SelectListItem() { Text = p.Title, Value = p.PlanId.ToString() }).OrderBy(p => p.Text).ToList();
@@ -1271,51 +1067,7 @@ namespace RevenuePlanner.Controllers
 
             return PartialView("_ApplytoCalendarPlanList", objHomePlan);
         }
-
-        ///// <summary>
-        ///// Getting list of collaborator for current plan.
-        ///// </summary>
-        ///// <param name="plan">Plan</param>
-        ///// <param name="currentPlanId">PlanId</param>
-        ///// <returns>Returns list of collaborators for current plan.</returns>
-        //public List<string> GetCollaborator(Plan plan)
-        //{
-        //    List<string> collaboratorId = new List<string>();
-        //    if (plan.ModifiedBy != null)
-        //    {
-        //        collaboratorId.Add(plan.ModifiedBy.ToString());
-        //    }
-
-        //    if (plan.CreatedBy != null)
-        //    {
-        //        collaboratorId.Add(plan.CreatedBy.ToString());
-        //    }
-
-        //    var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId)).Select(t => t);
-
-        //    var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-        //    var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
-
-        //    var planProgramModifiedBy = planTactic.ToList().Where(t => t.Plan_Campaign_Program.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.ModifiedBy.ToString()).ToList();
-        //    var planProgramCreatedBy = planTactic.ToList().Select(t => t.Plan_Campaign_Program.CreatedBy.ToString()).ToList();
-
-        //    var planCampaignModifiedBy = planTactic.ToList().Where(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy.ToString()).ToList();
-        //    var planCampaignCreatedBy = planTactic.ToList().Select(t => t.Plan_Campaign_Program.Plan_Campaign.CreatedBy.ToString()).ToList();
-
-        //    var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId))
-        //                                                                   .Select(pc => pc);
-        //    var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
-
-        //    collaboratorId.AddRange(planTacticCreatedBy);
-        //    collaboratorId.AddRange(planTacticModifiedBy);
-        //    collaboratorId.AddRange(planProgramCreatedBy);
-        //    collaboratorId.AddRange(planProgramModifiedBy);
-        //    collaboratorId.AddRange(planCampaignCreatedBy);
-        //    collaboratorId.AddRange(planCampaignModifiedBy);
-        //    collaboratorId.AddRange(planTacticCommentCreatedBy);
-        //    return collaboratorId.Distinct().ToList<string>();
-        //}
-
+               
         #region Get Collaborator Details
 
         /// <summary>
@@ -1936,10 +1688,10 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                Sessions.PlanId = db.Plan_Campaign.Where(c => c.PlanCampaignId == campaignId).Select(c => c.PlanId).FirstOrDefault();
+                    Sessions.PlanId = db.Plan_Campaign.Where(c => c.PlanCampaignId == campaignId).Select(c => c.PlanId).FirstOrDefault();
                 }
             }
-            
+
             // Added by dharmraj to check user activity permission
             bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
@@ -1948,16 +1700,16 @@ namespace RevenuePlanner.Controllers
             if (plan != null)
             {
 
-            // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 IsBusinessUnitEditable = Common.IsBusinessUnitEditable(plan.Model.BusinessUnitId);
-            if (!IsBusinessUnitEditable)
-                return AuthorizeUserAttribute.RedirectToNoAccess();
-            // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                if (!IsBusinessUnitEditable)
+                    return AuthorizeUserAttribute.RedirectToNoAccess();
+                // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
                 // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                
+
                 bool IsPlanEditable = false;
                 if (plan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
@@ -2064,7 +1816,7 @@ namespace RevenuePlanner.Controllers
             List<int> TacticIds = TacticList.Select(pcpt => pcpt.PlanTacticId).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => TacticIds.Contains(pcptl.PlanTacticId) && pcptl.IsDeleted.Equals(false)).Select(pcptl => pcptl).ToList();
             List<int> LineItemIds = LineItemList.Select(pcptl => pcptl.PlanLineItemId).ToList();
-           // List<Plan_Tactic_Values> ListTacticMQLValue = Common.GetMQLValueTacticList(TacticList, true);
+            // List<Plan_Tactic_Values> ListTacticMQLValue = Common.GetMQLValueTacticList(TacticList, true);
 
 
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
@@ -2091,12 +1843,12 @@ namespace RevenuePlanner.Controllers
             List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelationForSinglePlan(TacticList, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, MainModelId, stageList, false);
 
             List<Plan_Tactic_Values> ListTacticMQLValue = (from tactic in TacticDataWithoutImprovement
-                                                      select new Plan_Tactic_Values
-                                                      {
-                                                          PlanTacticId = tactic.TacticObj.PlanTacticId,
-                                                          MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
-                                                          Revenue = tactic.RevenueValue
-                                                      }).ToList();
+                                                           select new Plan_Tactic_Values
+                                                           {
+                                                               PlanTacticId = tactic.TacticObj.PlanTacticId,
+                                                               MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
+                                                               Revenue = tactic.RevenueValue
+                                                           }).ToList();
 
             var campaignobj = CampaignList.Select(p => new
             {
@@ -2169,183 +1921,7 @@ namespace RevenuePlanner.Controllers
             return Json(lstCampaign, JsonRequestBehavior.AllowGet);
 
         }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Create Campaign.
-        /// </summary>
-        /// <returns>Returns Partial View Of Campaign.</returns>
-        public PartialViewResult CreateCampaign()
-        {
-            // Dropdown for Verticals
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            /* changed by Nirav on 11 APR for PL 322*/
-            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
-
-            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
-            ViewBag.IsDeployedToIntegration = false;
-
-
-            ViewBag.IsCreated = true;
-            ViewBag.RedirectType = false;
-            ViewBag.IsOwner = true;
-            // Start - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            Plan_CampaignModel pc = new Plan_CampaignModel();
-            pc.StartDate = GetCurrentDateBasedOnPlan();
-            pc.EndDate = GetCurrentDateBasedOnPlan(true);
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-            pc.CampaignBudget = 0; // Added By Dharmraj #567 : Budget allocation for campaign
-            pc.AllocatedBy = objPlan.AllocatedBy;
-
-            pc.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Campaign.ToString());//Added by Mitesh Vaishnav for PL ticket #718
-
-            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
-            double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
-            double planBudget = objPlan.Budget;
-            double planRemainingBudget = planBudget - allCampaignBudget;
-            ViewBag.planRemainingBudget = planRemainingBudget;
-
-            // End - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            return PartialView("CampaignAssortment", pc);   // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Create Campaign.
-        /// </summary>
-        /// <param name="id">Campaign Id.</param>
-        /// <param name="RedirectType">Redirect Type</param>
-        /// <returns>Returns Partial View Of Campaign.</returns>
-        public PartialViewResult EditCampaign(int id = 0, string RedirectType = "", string CalledFromBudget = "")
-        {
-            ViewBag.CalledFromBudget = CalledFromBudget;
-            // Dropdown for Verticals
-            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
-            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
-
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            /* changed by Nirav on 11 APR for PL 322*/
-            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
-            ViewBag.IsCreated = false;
-            if (RedirectType == "Assortment")
-            {
-                ViewBag.RedirectType = false;
-            }
-            else
-            {
-                ViewBag.RedirectType = true;
-            }
-            Plan_Campaign pc = db.Plan_Campaign.Where(pcobj => pcobj.PlanCampaignId.Equals(id) && pcobj.IsDeleted.Equals(false)).SingleOrDefault();
-            if (pc == null)
-            {
-                return null;
-            }
-
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pc.Plan.Model);
-            Plan_CampaignModel pcm = new Plan_CampaignModel();
-            pcm.PlanCampaignId = pc.PlanCampaignId;
-            pcm.Title = HttpUtility.HtmlDecode(pc.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            pcm.Description = HttpUtility.HtmlDecode(pc.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            pcm.IsDeployedToIntegration = pc.IsDeployedToIntegration;
-            ViewBag.IsDeployedToIntegration = pcm.IsDeployedToIntegration;
-            /* changed by Nirav on 11 APR for PL 322*/
-            //pcm.VerticalId = pc.VerticalId;
-            //pcm.AudienceId = pc.AudienceId;
-            //pcm.GeographyId = pc.GeographyId;
-            pcm.StartDate = pc.StartDate;
-            pcm.EndDate = pc.EndDate;
-            //if (RedirectType != "Assortment") // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            //{
-            var psd = (from p in db.Plan_Campaign_Program where p.PlanCampaignId == id && p.IsDeleted.Equals(false) select p);
-            if (psd.Count() > 0)
-            {
-                pcm.PStartDate = (from opsd in psd select opsd.StartDate).Min();
-            }
-
-            var ped = (from p in db.Plan_Campaign_Program where p.PlanCampaignId == id && p.IsDeleted.Equals(false) select p);
-            if (ped.Count() > 0)
-            {
-                pcm.PEndDate = (from oped in ped select oped.EndDate).Max();
-            }
-            var tsd = (from t in db.Plan_Campaign_Program_Tactic where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false) select t);
-            if (tsd.Count() > 0)
-            {
-                pcm.TStartDate = (from otsd in tsd select otsd.StartDate).Min();
-            }
-            var ted = (from t in db.Plan_Campaign_Program_Tactic where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false) select t);
-            if (ted.Count() > 0)
-            {
-                pcm.TEndDate = (from oted in ted select oted.EndDate).Max();
-            }
-            //}
-            //pcm.INQs = pc.INQs;
-            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList());
-            pcm.MQLs = PlanTacticValuesList.Sum(tm => tm.MQL);
-            pcm.Cost = Common.CalculateCampaignCost(pc.PlanCampaignId); //pc.Cost; // Modified for PL#440 by Dharmraj
-            // Start Added By Dharmraj #567 : Budget allocation for campaign
-            pcm.CampaignBudget = pc.CampaignBudget;
-            pcm.AllocatedBy = pc.Plan.AllocatedBy;
-
-            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
-            double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
-            double planBudget = pc.Plan.Budget;
-            double planRemainingBudget = planBudget - allCampaignBudget;
-            ViewBag.planRemainingBudget = planRemainingBudget;
-
-            pcm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); //  Update by Bhavesh to Display Revenue
-            // End Added By Dharmraj #567 : Budget allocation for campaign
-
-            pcm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Campaign.ToString());//Added by Mitesh Vaishnav for PL ticket #718
-            if (Sessions.User.UserId == pc.CreatedBy)
-            {
-                ViewBag.IsOwner = true;
-
-                // Added by Dharmraj Mangukiya to hide/show delete program as per custom restrictions PL ticket #577
-                var AllTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList();
-                bool IsCampaignDeleteble = true;
-                if (AllTactic.Count > 0)
-                {
-                    var OthersTactic = AllTactic.Where(t => t.CreatedBy != Sessions.User.UserId).ToList();
-                    if (OthersTactic.Count > 0)
-                    {
-                        IsCampaignDeleteble = false;
-                    }
-                    else
-                    {
-                        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                        var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
-                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
-                        var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
-                        if (AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower()) || !lstAllowedVertical.Contains(t.VerticalId.ToString().ToLower()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString().ToLower()))).ToList().Count > 0)
-                        {
-                            IsCampaignDeleteble = false;
-                        }
-                    }
-                }
-
-                ViewBag.IsCampaignDeleteble = IsCampaignDeleteble;
-            }
-            else
-            {
-                ViewBag.IsOwner = false;
-                ViewBag.IsCampaignDeleteble = false;
-            }
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-
-            //Clonehelper.PlanClone(Sessions.PlanId);
-
-            return PartialView("CampaignAssortment", pcm);
-        }
-
+             
         /// <summary>
         /// Added By: Dharmraj Mangukiya.
         /// Action to Get month/Quarter wise budget Value Of campaign.
@@ -2437,411 +2013,6 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Added By: Bhavesh Dobariya.
-        /// Action to Get TacticType.
-        /// </summary>
-        /// <returns>Returns JSon Result Of TacticType.</returns>
-        public JsonResult GetTacticType()
-        {
-            var tacticType = from t in db.TacticTypes
-                             join p in db.Plans on t.ModelId equals p.ModelId
-                             where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true
-                             orderby t.Title
-                             select new { t.Title, t.TacticTypeId };
-            return Json(tacticType, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Save Campaign.
-        /// </summary>
-        /// <param name="form">Form object of Plan_CampaignModel.</param>
-        /// <param name="programs">Program list string array.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
-        /// <returns>Returns Action Result.</returns>
-        [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask, string BudgetInputValues,string customFieldInputs, string UserId = "", string CalledFromBudget = "")
-        {
-            if (!string.IsNullOrEmpty(UserId))
-            {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
-                {
-                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            try
-            {
-                //Deserialize customFieldInputs json string to  KeyValuePair List
-                var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string,string>>>(customFieldInputs);
-                string[] arrBudgetInputValues = BudgetInputValues.Split(',');
-
-                if (form.PlanCampaignId == 0)
-                {
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(Sessions.PlanId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()))).FirstOrDefault();
-
-                            if (pc != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                Plan_Campaign pcobj = new Plan_Campaign();
-                                //Change Plan Id
-                                pcobj.PlanId = Sessions.PlanId;
-                                pcobj.Title = form.Title;
-                                pcobj.Description = form.Description;
-                                pcobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                /* changed by Nirav on 11 APR for PL 322*/
-                                //pcobj.VerticalId = form.VerticalId;
-                                //pcobj.AudienceId = form.AudienceId;
-                                //pcobj.GeographyId = form.GeographyId;
-                                //pcobj.INQs = 0;
-                                //pcobj.Cost = 0;
-                                pcobj.StartDate = form.StartDate;   // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                pcobj.EndDate = form.EndDate;   // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                pcobj.CreatedBy = Sessions.User.UserId;
-                                pcobj.CreatedDate = DateTime.Now;
-                                pcobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign table 
-                                pcobj.CampaignBudget = form.CampaignBudget;
-                                db.Entry(pcobj).State = EntityState.Added;
-                                int result = db.SaveChanges();
-                                int campaignid = pcobj.PlanCampaignId;
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, campaignid, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                if (result >= 1)
-                                {
-
-                                    if (programs != string.Empty)
-                                    {
-                                        string[] program = programs.Split(',');
-
-                                        foreach (string prg in program)
-                                        {
-                                            Plan_Campaign_Program pcpobj = new Plan_Campaign_Program();
-                                            //Change Plan Id
-                                            pcpobj.PlanCampaignId = campaignid;
-                                            pcpobj.Title = prg;
-                                            /* changed by Nirav on 11 APR for PL 322*/
-                                            //pcpobj.VerticalId = form.VerticalId;
-                                            //pcpobj.AudienceId = form.AudienceId;
-                                            //pcpobj.GeographyId = form.GeographyId;
-                                            //pcpobj.INQs = 0;
-                                            //pcpobj.Cost = 0;
-                                            pcpobj.StartDate = form.StartDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                            pcpobj.EndDate = form.EndDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                            pcpobj.CreatedBy = Sessions.User.UserId;
-                                            pcpobj.CreatedDate = DateTime.Now;
-                                            pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign_Program table 
-                                            pcpobj.ProgramBudget = 0;
-                                            db.Entry(pcpobj).State = EntityState.Added;
-                                            result = db.SaveChanges();
-                                            int programId = pcpobj.PlanProgramId;
-                                            result = Common.InsertChangeLog(Sessions.PlanId, null, programId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                        }
-                                    }
-
-                                    // Start Added By Dharmraj #567 : Budget allocation for campaign
-                                    var PrevAllocationList = db.Plan_Campaign_Budget.Where(c => c.PlanCampaignId == campaignid).Select(c => c).ToList();
-                                    PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                                    if (arrBudgetInputValues.Length == 12)
-                                    {
-                                        for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                        {
-                                            if (arrBudgetInputValues[i] != "")
-                                            {
-                                                Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
-                                                objPlanCampaignBudget.PlanCampaignId = campaignid;
-                                                objPlanCampaignBudget.Period = "Y" + (i + 1);
-                                                objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
-                                                objPlanCampaignBudget.CreatedDate = DateTime.Now;
-                                                db.Entry(objPlanCampaignBudget).State = EntityState.Added;
-                                            }
-                                        }
-                                    }
-                                    else if (arrBudgetInputValues.Length == 4)
-                                    {
-                                        int QuarterCnt = 1;
-                                        for (int i = 0; i < 4; i++)
-                                        {
-                                            if (arrBudgetInputValues[i] != "")
-                                            {
-                                                Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
-                                                objPlanCampaignBudget.PlanCampaignId = campaignid;
-                                                objPlanCampaignBudget.Period = "Y" + QuarterCnt;
-                                                objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
-                                                objPlanCampaignBudget.CreatedDate = DateTime.Now;
-                                                db.Entry(objPlanCampaignBudget).State = EntityState.Added;
-                                            }
-                                            QuarterCnt = QuarterCnt + 3;
-                                        }
-                                    }
-                                    // End Added By Dharmraj #567 : Budget allocation for campaign
-                                    ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
-                                    ////save custom fields value for particular campaign
-                                    if (customFields.Count != 0)
-                                    {
-                                        foreach (var item in customFields)
-                                        {
-                                            CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
-                                            objcustomFieldEntity.EntityId = campaignid;
-                                            objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                            objcustomFieldEntity.Value = item.Value.Trim().ToString();
-                                            objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                            objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                            db.Entry(objcustomFieldEntity).State = EntityState.Added;
-
-                                        }
-                                    }
-                                    ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
-                                    db.SaveChanges();
-
-                                }
-                                scope.Complete();
-                                if (!string.IsNullOrEmpty(CalledFromBudget))
-                                {
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
-                                }
-                                else
-                                {
-                                    return Json(new { redirect = Url.Action("Assortment") });
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(Sessions.PlanId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(form.PlanCampaignId))).FirstOrDefault();
-
-                            if (pc != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(form.PlanCampaignId) && pcobjw.IsDeleted.Equals(false)).SingleOrDefault();
-                                //Change Plan Id
-                                pcobj.Title = form.Title;
-                                pcobj.Description = form.Description;
-                                pcobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                /* changed by Nirav on 11 APR for PL 322*/
-                                //pcobj.VerticalId = form.VerticalId;
-                                //pcobj.AudienceId = form.AudienceId;
-                                //pcobj.GeographyId = form.GeographyId;
-                                //if (RedirectType) // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                //{
-                                pcobj.StartDate = form.StartDate;
-                                pcobj.EndDate = form.EndDate;
-                                //}
-                                //pcobj.INQs = (form.INQs == null ? 0 : form.INQs);
-                                //pcobj.Cost = (form.Cost == null ? 0 : form.Cost);
-                                pcobj.ModifiedBy = Sessions.User.UserId;
-                                pcobj.ModifiedDate = DateTime.Now;
-                                pcobj.CampaignBudget = form.CampaignBudget;
-                                db.Entry(pcobj).State = EntityState.Modified;
-
-                                Common.InsertChangeLog(Sessions.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-
-                                if (arrBudgetInputValues.Length > 0)    // Added by Sohel Pathan on 27/08/2014 for PL ticket #758
-                                {
-                                    // Start Added By Dharmraj #567 : Budget allocation for campaign
-                                    var PrevAllocationList = db.Plan_Campaign_Budget.Where(c => c.PlanCampaignId == form.PlanCampaignId).Select(c => c).ToList();
-                                    //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by Sohel Pathan on 27/08/2014 for PL ticket #758
-
-                                    if (arrBudgetInputValues.Length == 12)
-                                    {
-                                        for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                        {
-                                            // Start - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
-                                            bool isExists = false;
-                                            if (PrevAllocationList != null)
-                                            {
-                                                if (PrevAllocationList.Count > 0)
-                                                {
-                                                    var updatePlanCampaignBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
-                                                    if (updatePlanCampaignBudget != null)
-                                                    {
-                                                        if (arrBudgetInputValues[i] != "")
-                                                        {
-                                                            var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                            if (updatePlanCampaignBudget.Value != newValue)
-                                                            {
-                                                                updatePlanCampaignBudget.Value = newValue;
-                                                                db.Entry(updatePlanCampaignBudget).State = EntityState.Modified;
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            db.Entry(updatePlanCampaignBudget).State = EntityState.Deleted; //// Added by Sohel Pathan on 01/09/2014 for PL ticket #758
-                                                        }
-                                                        isExists = true;
-                                                    }
-                                                }
-                                            }
-                                            if (!isExists && arrBudgetInputValues[i] != "")
-                                            {
-                                                // End - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
-                                                Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
-                                                objPlanCampaignBudget.PlanCampaignId = form.PlanCampaignId;
-                                                objPlanCampaignBudget.Period = "Y" + (i + 1);
-                                                objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
-                                                objPlanCampaignBudget.CreatedDate = DateTime.Now;
-                                                db.Entry(objPlanCampaignBudget).State = EntityState.Added;
-                                            }
-                                        }
-                                    }
-                                    else if (arrBudgetInputValues.Length == 4)
-                                    {
-                                        int QuarterCnt = 1;
-                                        for (int i = 0; i < 4; i++)
-                                        {
-                                            // Start - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
-                                            bool isExists = false;
-                                            if (PrevAllocationList != null)
-                                            {
-                                                if (PrevAllocationList.Count > 0)
-                                                {
-                                                    var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt)) || pb.Period == ("Y" + (QuarterCnt + 1)) || pb.Period == ("Y" + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
-                                                    var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
-
-                                                    if (thisQuarterFirstMonthBudget != null)
-                                                    {
-                                                        if (arrBudgetInputValues[i] != "")
-                                                        {
-                                                            var thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
-                                                            var thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
-                                                            var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-
-                                                            if (thisQuarterTotalBudget != newValue)
-                                                            {
-                                                                var BudgetDiff = newValue - thisQuarterTotalBudget;
-                                                                if (BudgetDiff > 0)
-                                                                {
-                                                                    thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-                                                                    db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                }
-                                                                else
-                                                                {
-                                                                    int j = 1;
-                                                                    while (BudgetDiff < 0)
-                                                                    {
-                                                                        if (thisQuarterFirstMonthBudget != null)
-                                                                        {
-                                                                            BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-
-                                                                            if (BudgetDiff <= 0)
-                                                                                thisQuarterFirstMonthBudget.Value = 0;
-                                                                            else
-                                                                                thisQuarterFirstMonthBudget.Value = BudgetDiff;
-
-                                                                            db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                        }
-                                                                        if ((QuarterCnt + j) <= (QuarterCnt + 2))
-                                                                        {
-                                                                            thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt + j))).FirstOrDefault();
-                                                                        }
-
-                                                                        j = j + 1;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                                        }
-                                                        isExists = true;
-                                                    }
-                                                }
-                                            }
-                                            if (!isExists && arrBudgetInputValues[i] != "")
-                                            {
-                                                // End - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
-                                                Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
-                                                objPlanCampaignBudget.PlanCampaignId = form.PlanCampaignId;
-                                                objPlanCampaignBudget.Period = "Y" + QuarterCnt;
-                                                objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
-                                                objPlanCampaignBudget.CreatedDate = DateTime.Now;
-                                                db.Entry(objPlanCampaignBudget).State = EntityState.Added;
-                                            }
-                                            QuarterCnt = QuarterCnt + 3;
-                                        }
-                                    }
-                                }
-                                // End Added By Dharmraj #567 : Budget allocation for campaign
-                                ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
-                                //// delete previous custom field values and save modified custom fields value for particular campaign
-                                string entityTypeCampaign=Enums.EntityType.Campaign.ToString();
-                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == pcobj.PlanCampaignId && c.CustomField.EntityType == entityTypeCampaign).ToList();
-                                prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
-
-                                if (customFields.Count != 0)
-                                {
-                                    foreach (var item in customFields)
-                                    {
-                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
-                                        objcustomFieldEntity.EntityId = pcobj.PlanCampaignId;
-                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
-
-                                    }
-                                }
-                                ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
-                                db.SaveChanges();
-
-
-                                scope.Complete();
-                                if (!string.IsNullOrEmpty(CalledFromBudget))
-                                {
-                                    TempData["SuccessMessage"] = "Campaign Saved Successfully";
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
-                                }
-                                else
-                                {
-                                    if (RedirectType)
-                                    {
-                                        TempData["ClosedTask"] = closedTask;
-                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                    }
-                                    else
-                                    {
-                                        return Json(new { redirect = Url.Action("Assortment") });
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
-
-            return Json(new { });
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
         /// Action to Delete Campaign.
         /// </summary>
         /// <param name="id">Campaign Id.</param>
@@ -2924,682 +2095,6 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Added By: Bhavesh Dobariya.
-        /// Action to Create Program.
-        /// </summary>
-        /// <returns>Returns Partial View Of Program.</returns>
-        public PartialViewResult CreateProgram(int id = 0)
-        {
-            // Dropdown for Verticals
-            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
-            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            /* changed by Nirav on 11 APR for PL 322*/
-            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
-            ViewBag.IsCreated = true;
-
-
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
-
-            Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
-            if (pcp == null)
-            {
-                return null;
-            }//uday PL Ticket #550 3-7-2014
-
-            ViewBag.Campaign = pcp.Title;//uday PL Ticket #550 3-7-2014
-
-            Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
-            pcpm.PlanCampaignId = id;
-            pcpm.IsDeployedToIntegration = false;
-            //Plan_Campaign pc = db.Plan_Campaign.Where(pco => pco.PlanCampaignId == id).SingleOrDefault();
-            /* changed by Nirav on 11 APR for PL 322*/
-            //pcpm.GeographyId = pc.GeographyId;
-            //pcpm.VerticalId = pc.VerticalId;
-            //pcpm.AudienceId = pc.AudienceId;
-            ViewBag.IsOwner = true;      /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-            ViewBag.RedirectType = false;
-            // Start - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            pcpm.StartDate = GetCurrentDateBasedOnPlan();
-            pcpm.EndDate = GetCurrentDateBasedOnPlan(true);
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-            pcpm.CStartDate = pcp.StartDate;
-            pcpm.CEndDate = pcp.EndDate;
-            // End - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-
-            // Start - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-            bool canCreateTactic = false;
-            var IsAudienceExists = db.Audiences.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).Any();
-            if (IsAudienceExists)
-            {
-                var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId);
-                var isGeographyAllowed = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()
-                    && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
-                if (isGeographyAllowed)
-                {
-                    var isVerticalAllowed = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()
-                                            && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
-
-                    if (isVerticalAllowed)
-                        canCreateTactic = true;
-                }
-            }
-
-            if (canCreateTactic == false)
-            {
-                // Modified by Dharmraj,27-8-2014,#738, To set custom Audience label in message
-                ViewBag.CannotCreateQuickTacticMessage = string.Format(Common.objCached.CannotCreateQuickTacticMessage, Common.CustomLabelFor(Enums.CustomLabelCode.Audience));
-            }
-
-            ViewBag.CanCreateTactic = canCreateTactic;
-            // End - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-
-            pcpm.ProgramBudget = 0; // Added By Kalpesh #604 : Budget allocation for campaign
-            pcpm.AllocatedBy = objPlan.AllocatedBy;
-
-            pcpm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Program.ToString());//Added by Mitesh Vaishnav for PL ticket #719
-
-            return PartialView("ProgramAssortment", pcpm);
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Edit Program.
-        /// </summary>
-        /// <param name="id">Program Id.</param>
-        /// <param name="RedirectType">Redirect Type</param>
-        /// <returns>Returns Partial View Of Program.</returns>
-        public PartialViewResult EditProgram(int id = 0, string RedirectType = "", string CalledFromBudget = "")
-        {
-            ViewBag.CalledFromBudget = CalledFromBudget;
-            // Dropdown for Verticals
-            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
-            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            /* changed by Nirav on 11 APR for PL 322*/
-            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
-            ViewBag.IsCreated = false;
-            if (RedirectType == "Assortment")
-            {
-                ViewBag.RedirectType = false;
-            }
-            else
-            {
-                ViewBag.RedirectType = true;
-            }
-            Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
-            if (pcp == null)
-            {
-                return null;
-            }
-
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pcp.Plan_Campaign.Plan.Model);
-            Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
-            pcpm.PlanProgramId = pcp.PlanProgramId;
-            pcpm.PlanCampaignId = pcp.PlanCampaignId;
-            pcpm.Title = HttpUtility.HtmlDecode(pcp.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            pcpm.Description = HttpUtility.HtmlDecode(pcp.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            /* changed by Nirav on 11 APR for PL 322*/
-            //pcpm.VerticalId = pcp.VerticalId;
-            //pcpm.AudienceId = pcp.AudienceId;
-            //pcpm.GeographyId = pcp.GeographyId;
-            pcpm.StartDate = pcp.StartDate;
-            pcpm.EndDate = pcp.EndDate;
-            //if (RedirectType != "Assortment") // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            //{
-            pcpm.CStartDate = pcp.Plan_Campaign.StartDate;
-            pcpm.CEndDate = pcp.Plan_Campaign.EndDate;
-            var tsd = (from t in db.Plan_Campaign_Program_Tactic where t.PlanProgramId == id select t);
-            if (tsd.Count() > 0)
-            {
-                pcpm.TStartDate = (from otsd in tsd select otsd.StartDate).Min();
-            }
-            var ted = (from t in db.Plan_Campaign_Program_Tactic where t.PlanProgramId == id select t);
-            if (ted.Count() > 0)
-            {
-                pcpm.TEndDate = (from oted in ted select oted.EndDate).Max();
-            }
-            //}
-            //pcpm.INQs = pcp.INQs;
-            pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
-            pcpm.Cost = Common.CalculateProgramCost(pcp.PlanProgramId); //pcp.Cost; modified for PL #440 by dharmraj 
-
-            //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
-            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pcp.PlanCampaignId &&
-                t.Plan_Campaign_Program.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList());
-            pcpm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
-
-            /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-
-            //Start added by Kalpesh  #608: Budget allocation for Program
-            pcpm.ProgramBudget = pcp.ProgramBudget;
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            pcpm.AllocatedBy = objPlan.AllocatedBy;
-
-            pcpm.IsDeployedToIntegration = pcp.IsDeployedToIntegration;
-
-            pcpm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Program.ToString());//Added by Mitesh Vaishnav for PL ticket #719
-
-            if (Sessions.User.UserId == pcp.CreatedBy)
-            {
-                ViewBag.IsOwner = true;
-
-                // Added by Dharmraj Mangukiya to hide/show delete program as per custom restrictions PL ticket #577
-                var AllTactic = pcp.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted.Equals(false)).ToList();
-                bool IsProgramDeleteble = true;
-                if (AllTactic.Count > 0)
-                {
-                    var OthersTactic = AllTactic.Where(t => t.CreatedBy != Sessions.User.UserId).ToList();
-                    if (OthersTactic.Count > 0)
-                    {
-                        IsProgramDeleteble = false;
-                    }
-                    else
-                    {
-                        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                        var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
-                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
-                        var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
-                        if (AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower()) || !lstAllowedVertical.Contains(t.VerticalId.ToString().ToLower()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString().ToLower()))).ToList().Count > 0)
-                        {
-                            IsProgramDeleteble = false;
-                        }
-                    }
-                }
-
-                ViewBag.IsProgramDeleteble = IsProgramDeleteble;
-            }
-            else
-            {
-                ViewBag.IsOwner = false;
-                ViewBag.IsProgramDeleteble = false;
-            }
-            ViewBag.Campaign = HttpUtility.HtmlDecode(pcp.Plan_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-
-            var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
-            var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList();
-            double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
-            ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
-
-            return PartialView("ProgramAssortment", pcpm);
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Save Program.
-        /// </summary>
-        /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
-        /// <param name="programs">Program list string array.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
-        /// <returns>Returns Action Result.</returns>
-        [HttpPost]
-        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask, string BudgetInputValues, string customFieldInputs, string UserId = "", string CalledFromBudget = "")
-        {
-            if (!string.IsNullOrEmpty(UserId))
-            {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
-                {
-                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            try
-            {
-                //Deserialize customFieldInputs json string to  KeyValuePair List
-                var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
-                string[] arrBudgetInputValues = BudgetInputValues.Split(',');
-
-                if (form.PlanProgramId == 0)
-                {
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            var pcpvar = (from pcp in db.Plan_Campaign_Program
-                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcp.IsDeleted.Equals(false)
-                                          && pc.PlanCampaignId == form.PlanCampaignId       //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
-                                          select pcp).FirstOrDefault();
-
-                            if (pcpvar != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                Plan_Campaign_Program pcpobj = new Plan_Campaign_Program();
-                                pcpobj.PlanCampaignId = form.PlanCampaignId;
-                                pcpobj.Title = form.Title;
-                                pcpobj.Description = form.Description;
-                                /* changed by Nirav on 11 APR for PL 322*/
-                                //pcpobj.VerticalId = form.VerticalId;
-                                //pcpobj.AudienceId = form.AudienceId;
-                                //pcpobj.GeographyId = form.GeographyId;
-                                pcpobj.StartDate = form.StartDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                pcpobj.EndDate = form.EndDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                pcpobj.CreatedBy = Sessions.User.UserId;
-                                pcpobj.CreatedDate = DateTime.Now;
-                                pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); //status field added for Plan_Campaign_Program table
-                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-
-                                //Added By : Kalpesh Sharma : PL #604 : 07/29/2014
-                                pcpobj.ProgramBudget = form.ProgramBudget;
-
-                                db.Entry(pcpobj).State = EntityState.Added;
-
-                                // Start - Added by Sohel Pathan on 04/09/2014 for PL ticket #758
-                                var PrevAllocationList = db.Plan_Campaign_Program_Budget.Where(c => c.PlanProgramId == form.PlanProgramId).Select(c => c).ToList();
-                                PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #758
-
-                                //Start added by Kalpesh  #608: Budget allocation for Program
-                                if (arrBudgetInputValues.Length == 12)
-                                {
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                    {
-                                        if (arrBudgetInputValues[i] != "")
-                                        {
-                                            Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
-                                            objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
-                                            objPlanCampaignProgramBudget.Period = "Y" + (i + 1);
-                                            objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
-                                            objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
-                                            db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
-                                        }
-                                    }
-                                }
-                                else if (arrBudgetInputValues.Length == 4)
-                                {
-                                    int BudgetInputValuesCounter = 1;
-
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                    {
-                                        if (arrBudgetInputValues[i] != "")
-                                        {
-                                            Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
-                                            objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
-                                            objPlanCampaignProgramBudget.Period = "Y" + BudgetInputValuesCounter;
-                                            objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
-                                            objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
-                                            db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
-                                        }
-
-                                        BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
-                                    }
-                                }
-
-                                int result = db.SaveChanges();
-                                int programid = pcpobj.PlanProgramId;
-
-                                ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
-                                ////save custom fields value for particular Program
-                                if (customFields.Count != 0)
-                                {
-                                    foreach (var item in customFields)
-                                    {
-                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
-                                        objcustomFieldEntity.EntityId = programid;
-                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
-
-                                    }
-                                }
-                                ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
-
-                                // Start - Added by Sohel Pathan on 09/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                Plan_Campaign pcp = db.Plan_Campaign.Where(pcobj => pcobj.PlanCampaignId.Equals(pcpobj.PlanCampaignId) && pcobj.IsDeleted.Equals(false)).SingleOrDefault();
-                                if (pcp != null)
-                                {
-                                    if (pcp.StartDate > form.StartDate)
-                                    {
-                                        pcp.StartDate = form.StartDate;
-                                    }
-
-                                    if (form.EndDate > pcp.EndDate)
-                                    {
-                                        pcp.EndDate = form.EndDate;
-                                    }
-                                    db.Entry(pcp).State = EntityState.Modified;
-                                    result = db.SaveChanges();
-                                }
-                                // End - Added by Sohel Pathan on 09/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                if (tactics != string.Empty)
-                                {
-                                    string[] tactic = tactics.Split(',');
-                                    var TacticType = db.TacticTypes;
-                                    foreach (string tac in tactic)
-                                    {
-                                        Plan_Campaign_Program_Tactic pcptobj = new Plan_Campaign_Program_Tactic();
-                                        pcptobj.PlanProgramId = programid;
-                                        int tacid = Convert.ToInt32(tac);
-                                        pcptobj.TacticTypeId = tacid;
-                                        TacticType mt = db.TacticTypes.Where(m => m.TacticTypeId == tacid).FirstOrDefault();
-
-                                        pcptobj.IsDeployedToIntegration = mt.IsDeployedToIntegration;//mt.Model.IntegrationInstanceId == null ? false : true;
-                                        pcptobj.Title = mt.Title;
-                                        /* changed by Nirav on 11 APR for PL 322*/
-
-                                        // Start - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-                                        var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId);
-                                        List<int> lstVerticalRestricted = new List<int>();
-                                        List<Guid> lstGeographyRestricted = new List<Guid>();
-                                        if (userCustomRestrictionList != null)
-                                        {
-                                            lstVerticalRestricted = userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()
-                                                                    && (ucr.Permission == (int)Enums.CustomRestrictionPermission.None)).Select(a => Convert.ToInt32(a.CustomFieldId)).ToList();
-                                            lstGeographyRestricted = userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()
-                                                                    && (ucr.Permission == (int)Enums.CustomRestrictionPermission.None)).Select(a => Guid.Parse(a.CustomFieldId)).ToList();
-                                        }
-                                        // End - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-
-                                        // Start - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-                                        pcptobj.VerticalId = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId && !lstVerticalRestricted.Contains(vertical.VerticalId)).Select(s => s.VerticalId).FirstOrDefault();
-                                        pcptobj.AudienceId = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId).Select(s => s.AudienceId).FirstOrDefault();
-                                        pcptobj.GeographyId = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId && !lstGeographyRestricted.Contains(geography.GeographyId)).Select(s => s.GeographyId).FirstOrDefault();
-                                        // End - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-
-                                        //pcptobj.VerticalId = form.VerticalId;
-                                        //pcptobj.AudienceId = form.AudienceId;
-                                        //pcptobj.GeographyId = form.GeographyId;
-                                        //pcptobj.INQs = mt.ProjectedInquiries == null ? 0 : Convert.ToInt32(mt.ProjectedInquiries);
-                                        pcptobj.Cost = mt.ProjectedRevenue == null ? 0 : Convert.ToDouble(mt.ProjectedRevenue);
-                                        pcptobj.StartDate = form.StartDate; // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                        pcptobj.EndDate = form.EndDate; // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                        pcptobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
-                                        pcptobj.BusinessUnitId = (from m in db.Models
-                                                                  join p in db.Plans on m.ModelId equals p.ModelId
-                                                                  where p.PlanId == Sessions.PlanId
-                                                                  select m.BusinessUnitId).FirstOrDefault();
-
-                                        pcptobj.StageId = Convert.ToInt32(mt.StageId);
-                                        pcptobj.ProjectedStageValue = mt.ProjectedStageValue;
-
-                                        pcptobj.CreatedBy = Sessions.User.UserId;
-                                        pcptobj.CreatedDate = DateTime.Now;
-                                        db.Entry(pcptobj).State = EntityState.Added;
-                                        result = db.SaveChanges();
-                                        int tid = pcptobj.PlanTacticId;
-
-                                        //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
-                                        if (mt.ProjectedRevenue > 0)
-                                        {
-                                            Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                            objNewLineitem.PlanTacticId = tid;
-                                            objNewLineitem.Title = Common.DefaultLineItemTitle;
-                                            objNewLineitem.Cost = Convert.ToDouble(mt.ProjectedRevenue);
-                                            objNewLineitem.Description = string.Empty;
-                                            objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                            objNewLineitem.CreatedDate = DateTime.Now;
-                                            db.Entry(objNewLineitem).State = EntityState.Added;
-                                            db.SaveChanges();
-                                        }
-
-                                        result = Common.InsertChangeLog(Sessions.PlanId, null, tid, pcptobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                    }
-                                }
-                                //result = TacticValueCalculate(pcpobj.PlanProgramId); // Modified by dharmraj for PL #440
-                                Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                scope.Complete();
-                                return Json(new { redirect = Url.Action("Assortment", new { campaignId = form.PlanCampaignId }) });
-                            }
-                        }
-                    }
-                }
-                else
-                {
-
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            var pcpvar = (from pcp in db.Plan_Campaign_Program
-                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcp.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcp.PlanProgramId.Equals(form.PlanProgramId) && pcp.IsDeleted.Equals(false)
-                                          && pc.PlanCampaignId == form.PlanCampaignId   //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
-                                          select pcp).FirstOrDefault();
-
-                            if (pcpvar != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).SingleOrDefault();
-                                //Change Plan Id
-                                pcpobj.Title = form.Title;
-                                pcpobj.Description = form.Description;
-                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                /* changed by Nirav on 11 APR for PL 322*/
-                                //pcpobj.VerticalId = form.VerticalId;
-                                //pcpobj.AudienceId = form.AudienceId;
-                                //pcpobj.GeographyId = form.GeographyId;
-                                //if (RedirectType) // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                //{
-                                pcpobj.StartDate = form.StartDate;
-                                pcpobj.EndDate = form.EndDate;
-                                if (form.CStartDate > form.StartDate)
-                                {
-                                    pcpobj.Plan_Campaign.StartDate = form.StartDate;
-                                }
-
-                                if (form.EndDate > form.CEndDate)
-                                {
-                                    pcpobj.Plan_Campaign.EndDate = form.EndDate;
-                                }
-                                //}
-                                //pcpobj.INQs = (form.INQs == null ? 0 : form.INQs);
-                                //pcpobj.MQLs = (form.MQLs == null ? 0 : form.MQLs);
-                                //pcpobj.Cost = (form.Cost == null ? 0 : form.Cost);
-                                pcpobj.ModifiedBy = Sessions.User.UserId;
-                                pcpobj.ModifiedDate = DateTime.Now;
-
-                                //Added By : Kalpesh Sharma : PL #604 : 07/29/2014
-                                pcpobj.ProgramBudget = form.ProgramBudget;
-
-                                //Start added by Kalpesh  #608: Budget allocation for Program
-                                var PrevAllocationList = db.Plan_Campaign_Program_Budget.Where(c => c.PlanProgramId == form.PlanProgramId).Select(c => c).ToList();    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
-                                //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by Sohel Pathan on 03/09/2014 for PL ticket #758
-
-                                if (arrBudgetInputValues.Length == 12)
-                                {
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                    {
-                                        // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                        bool isExists = false;
-                                        if (PrevAllocationList != null)
-                                        {
-                                            if (PrevAllocationList.Count > 0)
-                                            {
-                                                var updatePlanProgramBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
-                                                if (updatePlanProgramBudget != null)
-                                                {
-                                                    if (arrBudgetInputValues[i] != "")
-                                                    {
-                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                        if (updatePlanProgramBudget.Value != newValue)
-                                                        {
-                                                            updatePlanProgramBudget.Value = newValue;
-                                                            db.Entry(updatePlanProgramBudget).State = EntityState.Modified;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        db.Entry(updatePlanProgramBudget).State = EntityState.Deleted;
-                                                    }
-                                                    isExists = true;
-                                                }
-                                            }
-                                        }
-                                        if (!isExists && arrBudgetInputValues[i] != "")
-                                        {
-                                            // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                            Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
-                                            objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
-                                            objPlanCampaignProgramBudget.Period = "Y" + (i + 1);
-                                            objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
-                                            objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
-                                            db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
-                                        }
-                                    }
-                                }
-                                else if (arrBudgetInputValues.Length == 4)
-                                {
-                                    int BudgetInputValuesCounter = 1;
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                    {
-                                        // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                        bool isExists = false;
-                                        if (PrevAllocationList != null)
-                                        {
-                                            if (PrevAllocationList.Count > 0)
-                                            {
-                                                var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 1)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
-                                                var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
-
-                                                if (thisQuarterFirstMonthBudget != null)
-                                                {
-                                                    if (arrBudgetInputValues[i] != "")
-                                                    {
-                                                        var thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
-                                                        var thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
-                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-
-                                                        if (thisQuarterTotalBudget != newValue)
-                                                        {
-                                                            var BudgetDiff = newValue - thisQuarterTotalBudget;
-                                                            if (BudgetDiff > 0)
-                                                            {
-                                                                thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-                                                                db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                            }
-                                                            else
-                                                            {
-                                                                int j = 1;
-                                                                while (BudgetDiff < 0)
-                                                                {
-                                                                    if (thisQuarterFirstMonthBudget != null)
-                                                                    {
-                                                                        BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-
-                                                                        if (BudgetDiff <= 0)
-                                                                            thisQuarterFirstMonthBudget.Value = 0;
-                                                                        else
-                                                                            thisQuarterFirstMonthBudget.Value = BudgetDiff;
-
-                                                                        db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                    }
-                                                                    if ((BudgetInputValuesCounter + j) <= (BudgetInputValuesCounter + 2))
-                                                                    {
-                                                                        thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter + j))).FirstOrDefault();
-                                                                    }
-
-                                                                    j = j + 1;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                                    }
-                                                    isExists = true;
-                                                }
-                                            }
-                                        }
-                                        if (!isExists && arrBudgetInputValues[i] != "")
-                                        {
-                                            // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                            Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
-                                            objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
-                                            objPlanCampaignProgramBudget.Period = "Y" + BudgetInputValuesCounter;
-                                            objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
-                                            objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
-                                            db.Entry(objPlanCampaignProgramBudget).State = EntityState.Added;
-                                        }
-                                        BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
-                                    }
-                                }
-
-                                db.Entry(pcpobj).State = EntityState.Modified;
-
-                                ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
-                                //// delete previous custom field values and save modified custom fields value for particular Program
-                                string entityTypeProgram = Enums.EntityType.Program.ToString();
-                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == form.PlanProgramId && c.CustomField.EntityType == entityTypeProgram).ToList();
-                                prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
-
-                                if (customFields.Count != 0)
-                                {
-                                    foreach (var item in customFields)
-                                    {
-                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
-                                        objcustomFieldEntity.EntityId = form.PlanProgramId;
-                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
-                                    }
-                                }
-                                ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
-
-                                int result = db.SaveChanges();
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                                if (result >= 1)
-                                {
-                                    Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                    scope.Complete();
-                                    if (!string.IsNullOrEmpty(CalledFromBudget))
-                                    {
-                                        TempData["SuccessMessage"] = "Program saved successfully";
-                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "program" + form.PlanProgramId.ToString() }) });
-                                    }
-                                    else
-                                    {
-                                        if (RedirectType)
-                                        {
-                                            TempData["ClosedTask"] = closedTask;
-                                            return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                        }
-                                        else
-                                        {
-                                            return Json(new { redirect = Url.Action("Assortment", new { campaignId = form.PlanCampaignId }) });
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
-
-            return Json(new { });
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
         /// Action to Delete Program.
         /// </summary>
         /// <param name="id">Program Id.</param>
@@ -3636,13 +2131,10 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
                             if (returnValue >= 1)
                             {
-                                //TacticValueCalculate(pc.PlanCampaignId, false); modofied for PL #440 by dharmraj
                                 Common.ChangeCampaignStatus(pc.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
 
-
-                                //return Json(new { redirect = Url.Action("Assortment", new { campaignId = pc.PlanCampaignId }) });
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
@@ -3662,988 +2154,6 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
-
-            return Json(new { });
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Create Tactic.
-        /// </summary>
-        /// <returns>Returns Partial View Of Tactic.</returns>
-        public PartialViewResult CreateTactic(int id = 0)
-        {
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
-
-            // Dropdown for Verticals
-            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
-            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
-            ViewBag.Verticals = (from v in db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).ToList()
-                                 join lu in lstUserCustomRestriction on v.VerticalId.ToString() equals lu.CustomFieldId
-                                 where lu.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
-                                 select v).ToList();
-            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction // Modified by dharmraj for Geography dropdown issue
-            ViewBag.Geography = (from g in db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).ToList()
-                                 join lu in lstUserCustomRestriction on g.GeographyId.ToString().ToLower() equals lu.CustomFieldId.ToLower()
-                                 where lu.CustomField == Enums.CustomRestrictionType.Geography.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
-                                 select g).ToList();
-            ////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            var tactics = from t in db.TacticTypes
-                          join p in db.Plans on t.ModelId equals p.ModelId
-                          where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true //// Modified by Sohel Pathan on 17/07/2014 for PL ticket #594
-                          orderby t.Title
-                          select t;
-            foreach (var item in tactics)
-            {
-                item.Title = HttpUtility.HtmlDecode(item.Title);
-            }
-            ViewBag.Tactics = tactics;
-            ////End :Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            ViewBag.IsCreated = true;
-
-
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
-            Plan_Campaign_Program pcpt = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id)).SingleOrDefault();
-            if (pcpt == null)
-            {
-                return null;
-            }//uday PL Ticket #550 3-7-2014
-
-            Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
-            pcptm.PlanProgramId = id;
-            pcptm.IsDeployedToIntegration = false;
-            pcptm.StageId = 0;
-            pcptm.StageTitle = "Stage";
-            //Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(pcpo => pcpo.PlanProgramId == id).SingleOrDefault();
-            //pcptm.GeographyId = pcp.GeographyId;
-            //pcptm.VerticalId = pcp.VerticalId;
-            //pcptm.AudienceId = pcp.AudienceId;
-            ViewBag.IsOwner = true;/*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
-            ViewBag.IsAllowCustomRestriction = true;
-            ViewBag.Program = HttpUtility.HtmlDecode(pcpt.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            ViewBag.Campaign = HttpUtility.HtmlDecode(pcpt.Plan_Campaign.Title); ////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            ViewBag.RedirectType = false;
-            // Start - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            pcptm.StartDate = GetCurrentDateBasedOnPlan();
-            pcptm.EndDate = GetCurrentDateBasedOnPlan(true);
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-            // End - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-
-            //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-            pcptm.TacticCost = 0;
-            pcptm.AllocatedBy = objPlan.AllocatedBy;
-
-            pcptm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Tactic.ToString());//Added by Mitesh Vaishnav for PL ticket #720
-
-            return PartialView("TacticAssortment", pcptm);
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Create Tactic.
-        /// </summary>
-        /// <param name="id">Tactic Id.</param>
-        /// <param name="RedirectType">Redirect Type</param>
-        /// <returns>Returns Partial View Of Tactic.</returns>
-        public PartialViewResult EditTactic(int id = 0, string RedirectType = "", string CalledFromBudget = "")
-        {
-            ViewBag.CalledFromBudget = CalledFromBudget;
-            var tList = from t in db.TacticTypes
-                        join p in db.Plans on t.ModelId equals p.ModelId
-                        where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true //// Modified by Sohel Pathan on 17/07/2014 for PL ticket #594
-                        orderby t.Title
-                        select t;
-
-            ViewBag.IsCreated = false;
-            if (RedirectType == "Assortment")
-            {
-                ViewBag.RedirectType = false;
-            }
-            else
-            {
-                ViewBag.RedirectType = true;
-
-            }
-            Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id)).SingleOrDefault();
-            if (pcpt == null)
-            {
-                return null;
-            }
-
-            ViewBag.IsTacticAfterApproved =Common.CheckAfterApprovedStatus(pcpt.Status);////Added by Mitesh Vaishnav for PL ticket #571 for checking tactic has after approved status
-            // Start - Added by Sohel Pathan on 17/07/2014 for PL ticket #594 
-            if (!tList.Any(t => t.TacticTypeId == pcpt.TacticTypeId))
-            {
-                var tacticTypeSpecial = from t in db.TacticTypes
-                                        join p in db.Plans on t.ModelId equals p.ModelId
-                                        where p.PlanId == Sessions.PlanId && t.TacticTypeId == pcpt.TacticTypeId
-                                        orderby t.Title
-                                        select t;
-                tList = tList.Concat<TacticType>(tacticTypeSpecial);
-                tList = tList.OrderBy(a => a.Title);
-            }
-            // End - Added by Sohel Pathan on 17/07/2014 for PL ticket #594 
-
-            /*Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
-            foreach (var item in tList)
-            {
-                item.Title = HttpUtility.HtmlDecode(item.Title);
-            }
-            /*End :Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
-
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            bool isallowrestriction = Common.GetRightsForTactic(lstUserCustomRestriction, pcpt.VerticalId, pcpt.GeographyId);
-            ViewBag.IsAllowCustomRestriction = isallowrestriction;
-            // Dropdown for Verticals
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
-            if (isallowrestriction)
-            {
-                ViewBag.Verticals = (from v in db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).ToList()
-                                     join lu in lstUserCustomRestriction on v.VerticalId.ToString() equals lu.CustomFieldId
-                                     where lu.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
-                                     select v).ToList();
-            }
-            else
-            {
-                ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            }
-            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
-            if (isallowrestriction)
-            {
-                ViewBag.Geography = (from g in db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).ToList()
-                                     join lu in lstUserCustomRestriction on g.GeographyId.ToString().ToLower() equals lu.CustomFieldId.ToLower()////Modified by Mitesh Vaishnav For functional review point 89
-                                     where lu.CustomField == Enums.CustomRestrictionType.Geography.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
-                                     select g).ToList();
-            }
-            else
-            {
-                ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
-            }
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pcpt.TacticType.Model);
-
-            Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
-            pcptm.PlanProgramId = pcpt.PlanProgramId;
-            pcptm.PlanTacticId = pcpt.PlanTacticId;
-            pcptm.TacticTypeId = pcpt.TacticTypeId;
-            pcptm.Title = HttpUtility.HtmlDecode(pcpt.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            pcptm.Description = HttpUtility.HtmlDecode(pcpt.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            pcptm.VerticalId = pcpt.VerticalId;
-            pcptm.AudienceId = pcpt.AudienceId;
-            pcptm.GeographyId = pcpt.GeographyId;
-            pcptm.StartDate = pcpt.StartDate;
-            pcptm.EndDate = pcpt.EndDate;
-            //if (RedirectType != "Assortment") // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            //{
-            pcptm.PStartDate = pcpt.Plan_Campaign_Program.StartDate;
-            pcptm.PEndDate = pcpt.Plan_Campaign_Program.EndDate;
-            pcptm.CStartDate = pcpt.Plan_Campaign_Program.Plan_Campaign.StartDate;
-            pcptm.CEndDate = pcpt.Plan_Campaign_Program.Plan_Campaign.EndDate;
-            //}
-
-            //pcptm.INQs = pcpt.INQs;
-            /// Added by Dharmraj on 4-Sep-2014
-            /// #760 Advanced budgeting – show correct revenue in Tactic fly out
-            TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(pcpt, false);
-            // Set MQL
-            string stageMQL = Enums.Stage.MQL.ToString();
-            int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
-            int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == pcpt.PlanTacticId).Stage.Level);
-            if (tacticStageLevel < levelMQL)
-            {
-                //pcptm.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(pcpt.ProjectedStageValue), pcpt.StartDate, pcpt.PlanTacticId, pcpt.StageId, pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
-                pcptm.MQLs = varTacticStageValue.MQLValue;
-            }
-            else if (tacticStageLevel == levelMQL)
-            {
-                pcptm.MQLs = Convert.ToDouble(pcpt.ProjectedStageValue);
-            }
-            else if (tacticStageLevel > levelMQL)
-            {
-                pcptm.MQLs = 0;
-                TempData["TacticMQL"] = "N/A";
-            }
-
-            // Set Revenue
-            pcptm.Revenue = Math.Round(varTacticStageValue.RevenueValue, 2); // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
-
-            pcptm.Cost = pcpt.Cost;
-
-            pcptm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
-
-            pcptm.StageId = Convert.ToInt32(pcpt.StageId);
-            pcptm.StageTitle = db.Stages.FirstOrDefault(varS => varS.StageId == pcpt.StageId).Title;
-            pcptm.ProjectedStageValue = Convert.ToDouble(pcpt.ProjectedStageValue);
-            /*Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model*/
-            var modelTacticStageType = tList.Where(tt => tt.TacticTypeId == pcpt.TacticTypeId).FirstOrDefault().StageId;
-            var plantacticStageType = pcpt.StageId;
-            if (modelTacticStageType == plantacticStageType)
-            {
-                ViewBag.IsDiffrentStageType = false;
-            }
-            else
-            {
-                ViewBag.IsDiffrentStageType = true;
-            }
-            /*End Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model */
-
-            /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-            if (Sessions.User.UserId == pcpt.CreatedBy)
-            {
-                ViewBag.IsOwner = true;
-            }
-            else
-            {
-                ViewBag.IsOwner = false;
-            }
-            List<TacticType> tnewList = tList.ToList();
-            TacticType tobj = db.TacticTypes.Where(t => t.TacticTypeId == pcptm.TacticTypeId && t.IsDeleted == true).SingleOrDefault();
-            if (tobj != null)
-            {
-                TacticType tSameExist = tnewList.Where(t => t.Title.Equals(tobj.Title)).SingleOrDefault();
-                if (tSameExist != null)
-                {
-                    tnewList.Remove(tSameExist);
-                }
-                tnewList.Add(tobj);
-
-            }
-            ViewBag.Tactics = tnewList.OrderBy(t => t.Title);
-            ViewBag.Program = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            ViewBag.Campaign = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Plan_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-
-            //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-            pcptm.TacticCost = pcpt.Cost;
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            pcptm.AllocatedBy = objPlan.AllocatedBy;
-
-            pcptm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Tactic.ToString());//Added by Mitesh Vaishnav for PL ticket #720
-
-            //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
-            //List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpt.PlanProgramId &&
-            //    t.PlanTacticId == pcpt.PlanTacticId && t.IsDeleted == false).ToList());
-            //pcptm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
-
-            //Added By : Kalpesh Sharma Functioan and code review #693
-            var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpt.PlanProgramId).ToList().Sum(c => c.Cost);
-            var objPlanCampaignProgram = db.Plan_Campaign_Program.SingleOrDefault(p => p.PlanProgramId == pcpt.PlanProgramId);
-            ViewBag.planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
-
-            return PartialView("TacticAssortment", pcptm);
-        }
-
-        /// <summary>
-        /// Added By : Kalpesh Sharma : Functional Review Points #697
-        /// This method is responsible to add the Line items in Tactic.
-        /// </summary>
-        /// <param name="form">Pass the Tactic form model for fetching Start date and end date values</param>
-        /// <param name="lineitems">pass the lineitems</param>
-        /// <param name="tacticId">Tactic Id that used to insert into Lineitem table </param>
-        public int SaveLineItems(Plan_Campaign_Program_TacticModel form, string lineitems, int tacticId)
-        {
-            int Result = 0;
-
-            // Added by Dharmraj for PL #644
-
-            //Fetch the lineitems and store into array of string
-            string[] lineitem = lineitems.Split(',');
-
-            // Modified By : Kalpesh Sharma 
-            // Functional and Code Review Point #697
-            // Fetch the current plan object and based on it's ModelID we have fetch the lineitems.
-            Plan objPlan = db.Plans.Where(p => p.PlanId == Sessions.PlanId).SingleOrDefault();
-            var lineItemType = db.LineItemTypes.Where(l => l.ModelId == objPlan.ModelId).ToList();
-            // End Modified By : Kalpesh Sharma 
-
-            //Iterating the collection of lineitems that we hasd perviously fetch.
-            foreach (string li in lineitem)
-            {
-                //insert new lineItem into the LineItem Table. 
-                Plan_Campaign_Program_Tactic_LineItem pcptlobj = new Plan_Campaign_Program_Tactic_LineItem();
-                pcptlobj.PlanTacticId = tacticId;
-                int lineItemTypeid = Convert.ToInt32(li);
-                pcptlobj.LineItemTypeId = lineItemTypeid;
-
-                //Fetch the LineItemType by it's ID
-                LineItemType lit = lineItemType.Where(m => m.LineItemTypeId == lineItemTypeid).FirstOrDefault();
-
-                // Added By : Kalpesh Sharma 
-                // Functional and Code Review Point #697
-                pcptlobj.Title = (lit.Title == Enums.LineItemTypes.None.ToString()) ? DefaultLineItemTitle : lit.Title;
-                pcptlobj.Cost = 0;
-                pcptlobj.StartDate = form.StartDate;
-                pcptlobj.EndDate = form.EndDate;
-                pcptlobj.CreatedBy = Sessions.User.UserId;
-                pcptlobj.CreatedDate = DateTime.Now;
-                db.Entry(pcptlobj).State = EntityState.Added;
-
-                //Save the database changes and get new inserted PlanLineItemId   
-                Result = db.SaveChanges();
-                int liid = pcptlobj.PlanLineItemId;
-
-                //insert chnage log into the database 
-                Result = Common.InsertChangeLog(Sessions.PlanId, null, liid, pcptlobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-            }
-
-            //retturn the reuslt status
-            return Result;
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Save Tactic.
-        /// </summary>
-        /// <param name="form">Form object of Plan_Campaign_Program_TacticModel.</param>
-        /// <param name="programs">Program list string array.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
-        /// <returns>Returns Action Result.</returns>
-        [HttpPost]
-        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, string lineitems, bool RedirectType, string closedTask, string BudgetInputValues, string actualInputValues, string customFieldInputs, string UserId = "", string CalledFromBudget = "")
-        {
-            if (!string.IsNullOrEmpty(UserId))
-            {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
-                {
-                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            try
-            {
-                int cid = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == form.PlanProgramId).Select(p => p.PlanCampaignId).FirstOrDefault();
-                int pid = form.PlanProgramId;
-
-                string[] arrBudgetInputValues = BudgetInputValues.Split(',');
-                string[] arrActualCostInputValues = actualInputValues.Split(',');
-                //Deserialize customFieldInputs json string to  KeyValuePair List
-                var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
-
-                if (form.PlanTacticId == 0)
-                {
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
-                                          join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcpt.IsDeleted.Equals(false)
-                                          && pcp.PlanProgramId == form.PlanProgramId    //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
-                                          select pcp).FirstOrDefault();
-
-                            if (pcpvar != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                Plan_Campaign_Program_Tactic pcpobj = new Plan_Campaign_Program_Tactic();
-                                pcpobj.PlanProgramId = form.PlanProgramId;
-                                pcpobj.Title = form.Title;
-                                pcpobj.TacticTypeId = form.TacticTypeId;
-                                pcpobj.Description = form.Description;
-                                pcpobj.VerticalId = form.VerticalId;
-                                pcpobj.AudienceId = form.AudienceId;
-                                pcpobj.GeographyId = form.GeographyId;
-                                //pcpobj.INQs = form.INQs;
-                                //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
-                                pcpobj.Cost = UpdateBugdetAllocationCost(arrBudgetInputValues, form.TacticCost);
-                                pcpobj.StartDate = form.StartDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                pcpobj.EndDate = form.EndDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
-                                pcpobj.BusinessUnitId = (from m in db.Models
-                                                         join p in db.Plans on m.ModelId equals p.ModelId
-                                                         where p.PlanId == Sessions.PlanId
-                                                         select m.BusinessUnitId).FirstOrDefault();
-                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                pcpobj.StageId = form.StageId;
-                                pcpobj.ProjectedStageValue = form.ProjectedStageValue;
-                                pcpobj.CreatedBy = Sessions.User.UserId;
-                                pcpobj.CreatedDate = DateTime.Now;
-                                db.Entry(pcpobj).State = EntityState.Added;
-                                int result = db.SaveChanges();
-                                int tacticId = pcpobj.PlanTacticId;
-
-                                // Start Added by dharmraj for ticket #644
-                                if (pcpobj.Cost > 0)
-                                {
-                                    Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                    objNewLineitem.PlanTacticId = tacticId;
-                                    objNewLineitem.Title = Common.DefaultLineItemTitle;
-                                    objNewLineitem.Cost = pcpobj.Cost;
-                                    objNewLineitem.Description = string.Empty;
-                                    objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                    objNewLineitem.CreatedDate = DateTime.Now;
-                                    db.Entry(objNewLineitem).State = EntityState.Added;
-                                    db.SaveChanges();
-                                }
-                                // End Added by dharmraj for ticket #644
-
-                                ////Start - Added by : Mitesh Vaishnav on 25-06-2014    for PL ticket 554 Home & Plan Pages: Program and Campaign Blocks are not covering newly added Tactic.
-                                var planCampaignProgramDetails = (from pcp in db.Plan_Campaign_Program
-                                                                  join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                                                  where pcp.PlanProgramId == pcpobj.PlanProgramId
-                                                                  select pcp).FirstOrDefault();
-                                if (planCampaignProgramDetails.StartDate > pcpobj.StartDate)
-                                {
-                                    planCampaignProgramDetails.StartDate = pcpobj.StartDate;
-                                }
-                                if (planCampaignProgramDetails.Plan_Campaign.StartDate > pcpobj.StartDate)
-                                {
-                                    planCampaignProgramDetails.Plan_Campaign.StartDate = pcpobj.StartDate;
-                                }
-                                if (pcpobj.EndDate > planCampaignProgramDetails.EndDate)
-                                {
-                                    planCampaignProgramDetails.EndDate = pcpobj.EndDate;
-                                }
-                                if (pcpobj.EndDate > planCampaignProgramDetails.Plan_Campaign.EndDate)
-                                {
-                                    planCampaignProgramDetails.Plan_Campaign.EndDate = pcpobj.EndDate;
-                                }
-                                db.Entry(planCampaignProgramDetails).State = EntityState.Modified;
-
-                                ////start Added by Mitesh Vaishnav for PL ticket #571
-                                //Insert actual cost of tactic
-                                for (int i = 0; i < arrActualCostInputValues.Length; i++)
-                                {
-                                    if (arrActualCostInputValues[i] != "")
-                                    {
-                                        Plan_Campaign_Program_Tactic_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                        obPlanCampaignProgramTacticActual.PlanTacticId = tacticId;
-                                        obPlanCampaignProgramTacticActual.StageTitle = Enums.InspectStage.Cost.ToString();
-                                        obPlanCampaignProgramTacticActual.Period = "Y" + (i + 1);
-                                        obPlanCampaignProgramTacticActual.Actualvalue = Convert.ToDouble(arrActualCostInputValues[i]);
-                                        obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
-                                        obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
-                                        db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;
-                                    }
-                                }
-                                ////End Added by Mitesh Vaishnav for PL ticket #571
-
-                                // Start - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                var PrevAllocationList = db.Plan_Campaign_Program_Tactic_Cost.Where(c => c.PlanTacticId == form.PlanTacticId).Select(c => c).ToList();
-                                PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-
-                                //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-                                if (arrBudgetInputValues.Length == 12)
-                                {
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                    {
-                                        if (arrBudgetInputValues[i] != "")
-                                        {
-                                            Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                            obPlanCampaignProgramTacticCost.PlanTacticId = tacticId;
-                                            obPlanCampaignProgramTacticCost.Period = "Y" + (i + 1);
-                                            obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
-                                            obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
-                                            db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
-                                        }
-                                    }
-                                }
-                                else if (arrBudgetInputValues.Length == 4)
-                                {
-                                    int BudgetInputValuesCounter = 1;
-
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                    {
-                                        if (arrBudgetInputValues[i] != "")
-                                        {
-                                            Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                            obPlanCampaignProgramTacticCost.PlanTacticId = tacticId;
-                                            obPlanCampaignProgramTacticCost.Period = "Y" + BudgetInputValuesCounter;
-                                            obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
-                                            obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
-                                            db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
-                                        }
-
-                                        BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
-                                    }
-                                }
-
-                                ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
-                                ////save custom fields value for particular Tactic
-                                if (customFields.Count != 0)
-                                {
-                                    foreach (var item in customFields)
-                                    {
-                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
-                                        objcustomFieldEntity.EntityId = tacticId;
-                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
-
-                                    }
-                                }
-                                ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
-
-                                db.SaveChanges();
-
-                                //result = TacticValueCalculate(pcpobj.PlanProgramId); // Commented by Dharmraj for PL #440
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-
-                                // Added By : Kalpesh Sharma : Functional Review Points #697
-                                // Check whether the lineitmes is empty or not . if lineitems have any instance at that time call the SaveLineItems function and insert the data into the lineItems table. 
-                                if (lineitems != string.Empty)
-                                {
-                                    result = SaveLineItems(form, lineitems, tacticId);
-                                }
-
-                                if (result >= 1)
-                                {
-                                    //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId);
-                                    var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpobj.PlanProgramId).Select(a => a.PlanCampaignId).Single();
-                                    Common.ChangeCampaignStatus(PlanCampaignId);
-                                    //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-
-                                    scope.Complete();
-
-                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
-                                          join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                          join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                          where pc.PlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(form.PlanTacticId) && pcpt.IsDeleted.Equals(false)
-                                          && pcp.PlanProgramId == form.PlanProgramId    //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
-                                          select pcp).FirstOrDefault();
-
-                            if (pcpvar != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                bool isReSubmission = false;
-                                bool isDirectorLevelUser = false;
-                                bool isOwner = false;
-                                string status = string.Empty;
-
-                                Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).SingleOrDefault();
-                                if (pcpobj.CreatedBy == Sessions.User.UserId) isOwner = true;
-                                //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-                                //{
-                                //    if (!isOwner) isDirectorLevelUser = true;
-                                //}
-                                // Added by dharmraj for Ticket #537
-                                var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-                                var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList().Select(u => u.UserId).ToList();
-                                if (lstSubordinates.Count > 0)
-                                {
-                                    if (lstSubordinates.Contains(pcpobj.CreatedBy))
-                                    {
-                                        if (!isOwner) isDirectorLevelUser = true;
-                                    }
-                                }
-
-
-                                pcpobj.Title = form.Title;
-                                status = pcpobj.Status;
-                                if (pcpobj.TacticTypeId != form.TacticTypeId)
-                                {
-                                    pcpobj.TacticTypeId = form.TacticTypeId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                pcpobj.Description = form.Description;
-                                if (pcpobj.VerticalId != form.VerticalId)
-                                {
-                                    pcpobj.VerticalId = form.VerticalId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                if (pcpobj.AudienceId != form.AudienceId)
-                                {
-                                    pcpobj.AudienceId = form.AudienceId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                if (pcpobj.GeographyId != form.GeographyId)
-                                {
-                                    pcpobj.GeographyId = form.GeographyId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                //if (RedirectType) // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                                //{
-
-                                DateTime todaydate = DateTime.Now;
-
-                                /// Modified by:   Dharmraj
-                                /// Modified date: 2-Sep-2014
-                                /// Purpose:       #625 Changing the dates on an approved tactic needs to go through the approval process
-                                // To check whether status is Approved or not
-                                if (Common.CheckAfterApprovedStatus(pcpobj.Status))
-                                {
-                                    // If any changes in start/end dates then tactic will go through the approval process
-                                    if (pcpobj.EndDate != form.EndDate || pcpobj.StartDate != form.StartDate)
-                                    {
-                                        if (!isDirectorLevelUser) isReSubmission = true;
-                                        //Comment because it already called beloe in isresubmission.PL Ticket 359.
-                                        // pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                        // Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
-                                    }
-                                    else
-                                    {
-                                        if (todaydate > form.StartDate && todaydate < form.EndDate)
-                                        {
-                                            pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
-                                        }
-                                        else if (todaydate > form.EndDate)
-                                        {
-                                            pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
-                                        }
-                                    }
-                                }
-
-                                pcpobj.StartDate = form.StartDate;
-                                pcpobj.EndDate = form.EndDate;
-
-                                if (form.PStartDate > form.StartDate)
-                                {
-                                    pcpobj.Plan_Campaign_Program.StartDate = form.StartDate;
-                                }
-
-                                if (form.EndDate > form.PEndDate)
-                                {
-                                    pcpobj.Plan_Campaign_Program.EndDate = form.EndDate;
-                                }
-
-                                if (form.CStartDate > form.StartDate)
-                                {
-                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate = form.StartDate;
-                                }
-
-                                if (form.EndDate > form.CEndDate)
-                                {
-                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = form.EndDate;
-                                }
-
-                                //}
-                                if (pcpobj.ProjectedStageValue != form.ProjectedStageValue)
-                                {
-                                    pcpobj.ProjectedStageValue = form.ProjectedStageValue;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                /* TFS Bug 207 : Cant override the Cost from the defaults coming out of the model
-                                 * changed by Nirav shah on 10 feb 2014  
-                                 */
-                                //if (pcpobj.Cost != form.TacticCost)
-                                //{
-                                //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
-                                pcpobj.Cost = UpdateBugdetAllocationCost(arrBudgetInputValues, form.TacticCost);
-                                //    if (!isDirectorLevelUser) isReSubmission = true;
-                                //}
-                                /* TFS Bug 207 : end changes */
-                                // pcpobj.Cost = form.Cost; 
-
-                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                pcpobj.StageId = form.StageId;
-                                pcpobj.ProjectedStageValue = form.ProjectedStageValue;
-
-                                pcpobj.ModifiedBy = Sessions.User.UserId;
-                                pcpobj.ModifiedDate = DateTime.Now;
-
-                                ////start Added by Mitesh Vaishnav for PL ticket #571
-                                ////For edit mode, remove all actual cost for tactic if tactic has no line item
-                                var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.IsDeleted == false).Select(l => l.PlanLineItemId).ToList();
-                                if (tacticLineItemList.Count == 0)
-                                {
-                                    var PrevActualAllocationListTactics = db.Plan_Campaign_Program_Tactic_Actual.Where(c => c.PlanTacticId == form.PlanTacticId).Select(c => c).ToList();
-                                    PrevActualAllocationListTactics.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                                    //Insert actual cost of tactic
-                                    for (int i = 0; i < arrActualCostInputValues.Length; i++)
-                                    {
-                                        if (arrActualCostInputValues[i] != "")
-                                        {
-                                            Plan_Campaign_Program_Tactic_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                            obPlanCampaignProgramTacticActual.PlanTacticId = form.PlanTacticId;
-                                            obPlanCampaignProgramTacticActual.StageTitle = Enums.InspectStage.Cost.ToString();
-                                            obPlanCampaignProgramTacticActual.Period = "Y" + (i + 1);
-                                            obPlanCampaignProgramTacticActual.Actualvalue = Convert.ToDouble(arrActualCostInputValues[i]);
-                                            obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
-                                            obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
-                                            db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;
-                                        }
-                                    }
-                                }
-                                ////End Added by Mitesh Vaishnav for PL ticket #571
-
-                                //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-                                var PrevAllocationList = db.Plan_Campaign_Program_Tactic_Cost.Where(c => c.PlanTacticId == form.PlanTacticId).Select(c => c).ToList();  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by Sohel Pathan on 04/09/2014 for PL ticket #759
-
-                                if (arrBudgetInputValues.Length == 12)
-                                {
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                    {
-                                        // Start - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                        bool isExists = false;
-                                        if (PrevAllocationList != null)
-                                        {
-                                            if (PrevAllocationList.Count > 0)
-                                            {
-                                                var updatePlanTacticBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
-                                                if (updatePlanTacticBudget != null)
-                                                {
-                                                    if (arrBudgetInputValues[i] != "")
-                                                    {
-                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                        if (updatePlanTacticBudget.Value != newValue)
-                                                        {
-                                                            updatePlanTacticBudget.Value = newValue;
-                                                            db.Entry(updatePlanTacticBudget).State = EntityState.Modified;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        db.Entry(updatePlanTacticBudget).State = EntityState.Deleted;
-                                                    }
-                                                    isExists = true;
-                                                }
-                                            }
-                                        }
-                                        if (!isExists && arrBudgetInputValues[i] != "")
-                                        {
-                                            // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                            Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                            obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
-                                            obPlanCampaignProgramTacticCost.Period = "Y" + (i + 1);
-                                            obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
-                                            obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
-                                            db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
-                                        }
-                                    }
-                                }
-                                else if (arrBudgetInputValues.Length == 4)
-                                {
-                                    int BudgetInputValuesCounter = 1;
-
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                    {
-                                        // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                        bool isExists = false;
-                                        if (PrevAllocationList != null)
-                                        {
-                                            if (PrevAllocationList.Count > 0)
-                                            {
-                                                //var thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + BudgetInputValuesCounter)).FirstOrDefault();
-                                                var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 1)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
-                                                var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
-
-                                                if (thisQuarterFirstMonthBudget != null)
-                                                {
-                                                    if (arrBudgetInputValues[i] != "")
-                                                    {
-                                                        var thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
-                                                        var thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
-                                                        var newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-
-                                                        if (thisQuarterTotalBudget != newValue)
-                                                        {
-                                                            var BudgetDiff = newValue - thisQuarterTotalBudget;
-                                                            if (BudgetDiff > 0)
-                                                            {
-                                                                thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-                                                                db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                            }
-                                                            else
-                                                            {
-                                                                int j = 1;
-                                                                while (BudgetDiff < 0)
-                                                                {
-                                                                    if (thisQuarterFirstMonthBudget != null)
-                                                                    {
-                                                                        BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-
-                                                                        if (BudgetDiff <= 0)
-                                                                            thisQuarterFirstMonthBudget.Value = 0;
-                                                                        else
-                                                                            thisQuarterFirstMonthBudget.Value = BudgetDiff;
-
-                                                                        db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                    }
-                                                                    if ((BudgetInputValuesCounter + j) <= (BudgetInputValuesCounter + 2))
-                                                                    {
-                                                                        thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter + j))).FirstOrDefault();
-                                                                    }
-
-                                                                    j = j + 1;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                                    }
-                                                    isExists = true;
-                                                }
-                                            }
-                                        }
-                                        if (!isExists && arrBudgetInputValues[i] != "")
-                                        {
-                                            // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                            Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                            obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
-                                            obPlanCampaignProgramTacticCost.Period = "Y" + BudgetInputValuesCounter;
-                                            obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
-                                            obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
-                                            db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
-                                        }
-                                        BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
-                                    }
-                                }
-
-                                db.Entry(pcpobj).State = EntityState.Modified;
-                                int result;
-                                if (Common.CheckAfterApprovedStatus(pcpobj.Status))
-                                {
-                                    result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                                }
-                                if (isReSubmission && Common.CheckAfterApprovedStatus(status) && isOwner)
-                                {
-                                    pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                    Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
-                                }
-                                result = db.SaveChanges();
-
-                                // Start Added by dharmraj for ticket #644
-                                var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == pcpobj.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
-                                var objtotalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcpobj.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false);
-                                double totalLoneitemCost = 0;
-                                if (objtotalLoneitemCost != null && objtotalLoneitemCost.Count() > 0)
-                                {
-                                    totalLoneitemCost = objtotalLoneitemCost.Sum(l => l.Cost);
-                                }
-
-                                if (pcpobj.Cost > totalLoneitemCost)
-                                {
-                                    double diffCost = pcpobj.Cost - totalLoneitemCost;
-                                    if (objOtherLineItem == null)
-                                    {
-                                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                        objNewLineitem.PlanTacticId = pcpobj.PlanTacticId;
-                                        objNewLineitem.Title = Common.DefaultLineItemTitle;
-                                        objNewLineitem.Cost = diffCost;
-                                        objNewLineitem.Description = string.Empty;
-                                        objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                        objNewLineitem.CreatedDate = DateTime.Now;
-                                        db.Entry(objNewLineitem).State = EntityState.Added;
-                                    }
-                                    else
-                                    {
-                                        objOtherLineItem.IsDeleted = false;
-                                        objOtherLineItem.Cost = diffCost;
-                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
-                                    }
-                                }
-                                else
-                                {
-                                    if (objOtherLineItem != null)
-                                    {
-                                        objOtherLineItem.IsDeleted = true;
-
-                                        objOtherLineItem.Cost = 0;
-                                        objOtherLineItem.Description = string.Empty;
-                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
-                                        List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
-                                        objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
-                                        objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
-                                    }
-                                }
-                                // End Added by dharmraj for ticket #644
-
-                                ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
-                                //// delete previous custom field values and save modified custom fields value for particular Tactic
-                                string entityTypeTactic = Enums.EntityType.Tactic.ToString();
-                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == pcpobj.PlanTacticId && c.CustomField.EntityType == entityTypeTactic).ToList();
-                                prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
-
-                                if (customFields.Count != 0)
-                                {
-                                    foreach (var item in customFields)
-                                    {
-                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
-                                        objcustomFieldEntity.EntityId = pcpobj.PlanTacticId;
-                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
-
-                                    }
-                                }
-                                ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
-
-                                db.SaveChanges();
-
-                                //result = TacticValueCalculate(pcpobj.PlanProgramId); // Modified by Dharmraj for PL #440
-                                if (result >= 1)
-                                {
-                                    //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId);
-                                    var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpobj.PlanProgramId).Select(a => a.PlanCampaignId).Single();
-                                    Common.ChangeCampaignStatus(PlanCampaignId);
-                                    //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-
-                                    scope.Complete();
-                                    if (!string.IsNullOrEmpty(CalledFromBudget))
-                                    {
-                                        TempData["SuccessMessage"] = "Tactic saved successfully";
-                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "tactic" + form.PlanTacticId.ToString() }) });
-                                    }
-                                    else
-                                    {
-                                        if (RedirectType)
-                                        {
-                                            TempData["ClosedTask"] = closedTask;
-                                            return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                        }
-                                        else
-                                        {
-                                            return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
-                                        }
                                     }
                                 }
                             }
@@ -4695,8 +2205,6 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.PlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
                             if (returnValue >= 1)
                             {
-                                //TacticValueCalculate(pcpt.PlanProgramId); // Modified by Dharmraj for PL #440
-
                                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 Common.ChangeProgramStatus(pcpt.PlanProgramId);
                                 var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpt.PlanProgramId).Select(a => a.PlanCampaignId).Single();
@@ -4739,48 +2247,7 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { });
         }
-
-        /// <summary>
-        /// Total Stage Value Calculated & Update.
-        /// Modified for PL #440 by dharmraj
-        /// </summary>
-        /// <param name="id">id.</param>
-        /// <returns>return int.</returns>
-        //public int TacticValueCalculate(int id, bool isProgram = true)
-        //{
-        //    try
-        //    {
-        //        if (isProgram)
-        //        {
-        //            Plan_Campaign_Program pcp = new Plan_Campaign_Program();
-        //            pcp = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == id).SingleOrDefault();
-        //            var totalProgram = (from t in db.Plan_Campaign_Program_Tactic
-        //                                where t.PlanProgramId == id && t.IsDeleted.Equals(false)
-        //                                select new { t.INQs, t.Cost }).ToList();
-        //            pcp.INQs = totalProgram.Sum(tp => tp.INQs);
-        //            pcp.Cost = totalProgram.Sum(tp => tp.Cost);
-        //            db.Entry(pcp).State = EntityState.Modified;
-        //            id = pcp.PlanCampaignId;
-        //        }
-
-        //        Plan_Campaign pc = new Plan_Campaign();
-        //        pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).SingleOrDefault();
-        //        var totalCampaign = (from t in db.Plan_Campaign_Program_Tactic
-        //                             where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false)
-        //                             select new { t.INQs, t.Cost }).ToList();
-        //        pc.INQs = totalCampaign.Sum(tp => tp.INQs);
-        //        pc.Cost = totalCampaign.Sum(tp => tp.Cost);
-
-        //        db.Entry(pc).State = EntityState.Modified;
-        //        return db.SaveChanges();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-        //    }
-        //    return 0;
-        //}
-
+        
         /// <summary>
         /// Added By: Bhavesh Dobariya.
         /// Action to Get Tactic Type INQ,MQL,Cost,Stage Value.
@@ -4799,321 +2266,6 @@ namespace RevenuePlanner.Controllers
                 stageTitle = tt.Stage.Title,
                 projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue
             }, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Calculate MQL Conerstion Rate based on Session Plan Id.
-        /// Added by Bhavesh Dobariya.
-        /// Modified By: Maninder Singh Wadhva to address TFS Bug#280 :Error Message Showing when editing a tactic - Preventing MQLs from updating
-        /// Modified By: Maninder Singh Wadhva 1-March-2014 to address TFS Bug#322 : Changes made to INQ, MQL and Projected Revenue Calculation.
-        /// </summary>
-        /// <returns>JsonResult MQl Rate.</returns>
-        public JsonResult CalculateMQL(Plan_Campaign_Program_TacticModel form, double projectedStageValue, bool RedirectType, bool isTacticTypeChange)
-        {
-            DateTime StartDate = new DateTime();
-            string stageMQL = Enums.Stage.MQL.ToString();
-            int tacticStageLevel = 0;
-            int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
-            if (form.PlanTacticId != 0)
-            {
-                if (isTacticTypeChange)
-                {
-                    //if (form.TacticTypeId != 0)
-                    //{
-                    tacticStageLevel = Convert.ToInt32(db.TacticTypes.FirstOrDefault(t => t.TacticTypeId == form.TacticTypeId).Stage.Level);
-                    //}
-                    //else
-                    //{
-                    //    if (RedirectType)
-                    //    {
-                    //        StartDate = form.StartDate;
-                    //    }
-                    //    else
-                    //    {
-                    //        StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
-                    //    }
-
-                    //    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    //    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
-                    //}
-                }
-                else
-                {
-                    tacticStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(t => t.StageId == form.StageId).Level);
-                }
-
-                if (RedirectType)
-                {
-                    StartDate = form.StartDate;
-                }
-                else
-                {
-                    StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
-                }
-
-                int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                /// Added by Dharmraj on 4-Sep-2014
-                /// #760 Advanced budgeting – show correct revenue in Tactic fly out
-                Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
-                objTactic.StartDate = StartDate;
-                objTactic.EndDate = form.EndDate;
-                objTactic.StageId = form.StageId;
-                objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
-                objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
-                objTactic.ProjectedStageValue = projectedStageValue;
-                var lstTacticStageRelation = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
-                double calculatedMQL = 0;
-                double CalculatedRevenue = 0;
-                calculatedMQL = lstTacticStageRelation.MQLValue;
-                CalculatedRevenue = lstTacticStageRelation.RevenueValue;
-                    CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
-                calculatedMQL = Math.Round(calculatedMQL, 0, MidpointRounding.AwayFromZero);
-                if (tacticStageLevel < levelMQL)
-                {
-                    //if (RedirectType)
-                    //{
-                    //    StartDate = form.StartDate;
-                    //}
-                    //else
-                    //{
-                    //    StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
-                    //}
-
-                    //return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
-
-                    return Json(new { mql = calculatedMQL, revenue = CalculatedRevenue });
-                }
-                else if (tacticStageLevel == levelMQL)
-                {
-                    return Json(new { mql = projectedStageValue, revenue = CalculatedRevenue });
-                }
-                else if (tacticStageLevel > levelMQL)
-                {
-                    return Json(new { mql = "N/A", revenue = CalculatedRevenue });
-                }
-                else
-                {
-                    return Json(new { mql = 0, revenue = CalculatedRevenue });
-                }
-            }
-            else
-            {
-                //if (form.TacticTypeId != 0)
-                //{
-                tacticStageLevel = Convert.ToInt32(db.TacticTypes.FirstOrDefault(t => t.TacticTypeId == form.TacticTypeId).Stage.Level);
-                //}
-                //else
-                //{
-                //    StartDate = DateTime.Now;
-                //    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                //    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
-                //}
-
-                /// Added by Dharmraj on 4-Sep-2014
-                /// #760 Advanced budgeting – show correct revenue in Tactic fly out
-                int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
-                if (tacticStageLevel < levelMQL)
-                {
-                    objTactic.StartDate = DateTime.Now;
-                }
-                else
-                {
-                    objTactic.StartDate = StartDate;
-                }
-                objTactic.EndDate = form.EndDate;
-                objTactic.StageId = form.StageId;
-                objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
-                objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
-                objTactic.ProjectedStageValue = projectedStageValue;
-                var lstTacticStageRelation = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
-                double calculatedMQL = 0;
-                double CalculatedRevenue = 0;
-                calculatedMQL = lstTacticStageRelation.MQLValue;
-                CalculatedRevenue = lstTacticStageRelation.RevenueValue;
-                    CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
-
-                if (tacticStageLevel < levelMQL)
-                {
-                    //StartDate = DateTime.Now;
-                    //return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
-                    return Json(new { mql = calculatedMQL, revenue = CalculatedRevenue });
-                }
-                else if (tacticStageLevel == levelMQL)
-                {
-                    return Json(new { mql = projectedStageValue, revenue = CalculatedRevenue });
-                }
-                else if (tacticStageLevel > levelMQL)
-                {
-                    return Json(new { mql = "N/A", revenue = CalculatedRevenue });
-                }
-                else
-                {
-                    return Json(new { mql = 0, revenue = CalculatedRevenue });
-                }
-            }
-        }
-
-        //Added by Mitesh Vaishnav for PL ticket 619
-        /// <summary>
-        /// Added By Dharmraj, ticket #574
-        /// Action to create line item
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public PartialViewResult createLine(int id = 0)
-        {
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            //User Custom Restriction
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            // Line item Type
-            var lineItemTypes = from lit in db.LineItemTypes
-                                where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
-                                orderby lit.Title
-                                select lit;
-            foreach (var item in lineItemTypes)
-            {
-                item.Title = HttpUtility.HtmlDecode(item.Title);
-            }
-            ViewBag.lineItemTypes = lineItemTypes;
-            ViewBag.IsCreated = true;
-
-            Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.FirstOrDefault(pcpobj => pcpobj.PlanTacticId.Equals(id));
-            if (pcpt == null)
-            {
-                return null;
-            }
-            ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcpt.Status);////Added by Mitesh Vaishnav for PL ticket #571 for checking tactic has after approved status
-            double totalLineItemCost = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-            double TacticCost = pcpt.Cost;
-            double diffCost = TacticCost - totalLineItemCost;
-            double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
-
-            ViewBag.tacticCost = TacticCost;
-            ViewBag.totalLineItemCost = totalLineItemCost;
-            ViewBag.otherLineItemCost = otherLineItemCost;
-
-
-            Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
-            pcptlm.PlanTacticId = id;
-            ViewBag.IsOwner = true;
-            // Custom Restriction
-            ViewBag.IsAllowCustomRestriction = true;
-            ViewBag.Tactic = HttpUtility.HtmlDecode(pcpt.Title);
-            ViewBag.Program = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Title);
-            ViewBag.Campaign = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Plan_Campaign.Title);
-            ViewBag.RedirectType = false;
-            // To add Start and End date field in Campaign. Program and Tactic screen
-            pcptlm.StartDate = GetCurrentDateBasedOnPlan();
-            pcptlm.EndDate = GetCurrentDateBasedOnPlan(true);
-            pcptlm.Cost = 0;
-            pcptlm.AllocatedBy = objPlan.AllocatedBy;
-            pcptlm.IsOtherLineItem = false;
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-
-            return PartialView("LineItemAssortment", pcptlm);
-        }
-
-        /// <summary>
-        /// Added By Dharmraj, ticket #574
-        /// Action to edit line item
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public PartialViewResult EditLineItem(int id = 0, string RedirectType = "", string CalledFromBudget = "")
-        {
-            ViewBag.CalledFromBudget = CalledFromBudget;
-            ViewBag.IsCreated = false;
-            if (RedirectType == "Assortment")
-            {
-                ViewBag.RedirectType = false;
-            }
-            else
-            {
-                ViewBag.RedirectType = true;
-            }
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            //User Custom Restriction
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            // Line item Type
-            var lineItemTypes = from lit in db.LineItemTypes
-                                where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
-                                orderby lit.Title
-                                select lit;
-            foreach (var item in lineItemTypes)
-            {
-                item.Title = HttpUtility.HtmlDecode(item.Title);
-            }
-            ViewBag.lineItemTypes = lineItemTypes;
-
-            Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobj => pcpobj.PlanLineItemId.Equals(id));
-            if (pcptl == null)
-            {
-                return null;
-            }
-
-            Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
-            if (Sessions.User.UserId == pcptl.CreatedBy)
-            {
-                ViewBag.IsOwner = true;
-            }
-            else
-            {
-                ViewBag.IsOwner = false;
-            }
-
-            //Added By : Kalpesh Sharma #697 08/26/2014
-            bool isallowrestriction = Common.GetRightsForTactic(lstUserCustomRestriction, pcptl.Plan_Campaign_Program_Tactic.VerticalId, pcptl.Plan_Campaign_Program_Tactic.GeographyId);
-            ViewBag.IsAllowCustomRestriction = isallowrestriction;
-
-            if (pcptl.LineItemTypeId == null)
-            {
-                pcptlm.IsOtherLineItem = true;
-            }
-            else
-            {
-                pcptlm.IsOtherLineItem = false;
-            }
-
-            pcptlm.PlanTacticId = id;
-
-            //Added By : Kalpesh Sharma #697 08/26/2014
-            //ViewBag.IsOwner = true;
-            // Custom Restriction
-            //ViewBag.IsAllowCustomRestriction = true;
-            ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcptl.Plan_Campaign_Program_Tactic.Status);////Added by Mitesh Vaishnav for PL ticket #571 for checking tactic has after approved status
-            ViewBag.Tactic = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Title);
-            ViewBag.Program = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title);
-            ViewBag.Campaign = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);
-            ViewBag.RedirectType = false;
-
-            double totalLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-            double TacticCost = pcptl.Plan_Campaign_Program_Tactic.Cost;
-            double diffCost = TacticCost - totalLineItemCost;
-            double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
-
-            ViewBag.tacticCost = TacticCost;
-            ViewBag.totalLineItemCost = totalLineItemCost;
-            ViewBag.otherLineItemCost = otherLineItemCost;
-
-            pcptlm.PlanLineItemId = pcptl.PlanLineItemId;
-            pcptlm.PlanTacticId = pcptl.PlanTacticId;
-            pcptlm.LineItemTypeId = pcptl.LineItemTypeId == null ? 0 : Convert.ToInt32(pcptl.LineItemTypeId);
-            pcptlm.Title = HttpUtility.HtmlDecode(pcptl.Title);
-            pcptlm.Description = HttpUtility.HtmlDecode(pcptl.Description);
-            pcptlm.StartDate = Convert.ToDateTime(pcptl.StartDate);
-            pcptlm.EndDate = Convert.ToDateTime(pcptl.EndDate);
-            pcptlm.Cost = pcptl.Cost;
-            pcptlm.AllocatedBy = objPlan.AllocatedBy;
-            pcptlm.TStartDate = pcptl.Plan_Campaign_Program_Tactic.StartDate;
-            pcptlm.TEndDate = pcptl.Plan_Campaign_Program_Tactic.EndDate;
-            pcptlm.PStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.StartDate;
-            pcptlm.PEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.EndDate;
-            pcptlm.CStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.StartDate;
-            pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-
-            return PartialView("LineItemAssortment", pcptlm);
         }
 
         /// <summary>
@@ -5216,556 +2368,6 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Added By: Dharmraj
-        /// Action to Save Line item.
-        /// </summary>
-        /// <param name="form">Form object of Plan_Campaign_Program_Tactic_LineItemModel.</param>
-        /// <param name="programs">Program list string array.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
-        /// <returns>Returns Action Result.</returns>
-        [HttpPost]
-        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, bool RedirectType, string closedTask, string CostInputValues, string ActualInputValues, string UserId = "", string CalledFromBudget = "")
-        {
-            if (!string.IsNullOrEmpty(UserId))
-            {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
-                {
-                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            try
-            {
-
-                //Added By : Kalpesh Sharma #697 08/26/2014
-                //Spilt the Actuals allocation values into the array (Comma Seprated)
-                string[] arrCostInputValues = CostInputValues.Split(',');
-                string[] arrActualInputValues = ActualInputValues.Split(',');
-
-                ////Start Added by Mitesh Vaishnav for PL ticket #752 - Update line item cost with the total cost from the monthly/quarterly allocation
-                //// Check when monthly planned cost of tactic is lower than total monthly planned cost of line items than update monthly planned cost of tactic
-                var lineItemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.PlanTacticId == form.PlanTacticId && a.IsDeleted == false && a.PlanLineItemId != form.PlanLineItemId).Select(a => a.PlanLineItemId).ToList();
-                ////list of Total monthly planned cost
-                var lstMonthlyLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost
-                    .Where(a => lineItemIds.Contains(a.PlanLineItemId))
-                    .GroupBy(a => a.Period)
-                    .Select(a => new
-                    {
-                        Period = a.Key,
-                        Cost = a.Sum(b => b.Value)
-                    }).ToList();
-                ////List of monthly plaaned cost of tactic
-                var lstMonthlyTacticCost = db.Plan_Campaign_Program_Tactic_Cost.Where(a => a.PlanTacticId == form.PlanTacticId).ToList();
-                bool isBudgetLower = true;
-                double TotalNewPlannedCost = 0;
-                foreach (string s in arrCostInputValues)
-                {
-                    if (s != null && s != "")
-                    {
-                        TotalNewPlannedCost += Convert.ToDouble(s);
-                    }
-                }
-                TotalNewPlannedCost += lstMonthlyLineItemCost.Sum(a => a.Cost);
-                double TotalTacticCost = lstMonthlyTacticCost.Sum(a => a.Value);
-                if (TotalNewPlannedCost>=TotalTacticCost)
-                {
-                    isBudgetLower = false;
-                }
-
-                ////check budget allocation type e.g. month,Quarter etc
-                if (arrCostInputValues.Length == 12)
-                {
-                    for (int i = 0; i < 12; i++)
-                    {
-                        if (arrCostInputValues[i] != "")
-                        {
-                            string period = "Y" + (i + 1).ToString();
-                            double monthlyTotalLineItemCost = lstMonthlyLineItemCost.Where(a => a.Period == period).FirstOrDefault() == null ? 0 : lstMonthlyLineItemCost.Where(a => a.Period == period).FirstOrDefault().Cost;
-                            monthlyTotalLineItemCost = monthlyTotalLineItemCost + Convert.ToDouble(arrCostInputValues[i]);
-                            double monthlyTotalTacticCost = lstMonthlyTacticCost.Where(a => a.Period == period).FirstOrDefault() == null ? 0 : lstMonthlyTacticCost.Where(a => a.Period == period).FirstOrDefault().Value;
-                            if (monthlyTotalLineItemCost > monthlyTotalTacticCost || !isBudgetLower)
-                            {
-                                lstMonthlyTacticCost.Where(a => a.Period == period).ToList().ForEach(a => { a.Value = monthlyTotalLineItemCost; db.Entry(a).State = EntityState.Modified; });
-
-                            }
-                        }
-                    }
-                }
-                else if (arrCostInputValues.Length == 4)
-                {
-                    int QuarterCnt = 1;
-                    for (int i = 0; i < 4; i++)
-                    {
-                        if (arrCostInputValues[i] != "")
-                        {
-                            ////QurterList which contains list of month as per quarter. e.g. for Q1, list is Y1,Y2 and Y3
-                            List<string> QuarterList = new List<string>();
-                            for (int J = 0; J < 3; J++)
-                            {
-                                QuarterList.Add("Y" + (QuarterCnt + J).ToString());
-                            }
-                            //string period = "Y" + QuarterCnt.ToString();
-                            double monthlyTotalLineItemCost = lstMonthlyLineItemCost.Where(a => QuarterList.Contains(a.Period)).ToList().Sum(a=>a.Cost);
-                            monthlyTotalLineItemCost = monthlyTotalLineItemCost + Convert.ToDouble(arrCostInputValues[i]);
-                            double monthlyTotalTacticCost = lstMonthlyTacticCost.Where(a => QuarterList.Contains(a.Period)).ToList().Sum(a => a.Value);
-                            if (monthlyTotalLineItemCost > monthlyTotalTacticCost || !isBudgetLower)
-                            {
-                                string period = QuarterList[0].ToString();
-                                double diffCost = monthlyTotalLineItemCost - monthlyTotalTacticCost;
-                                if (diffCost >= 0)
-                                {
-                                    lstMonthlyTacticCost.Where(a => a.Period == period).ToList().ForEach(a => { a.Value = a.Value + diffCost; db.Entry(a).State = EntityState.Modified; });
-                                }
-                                int periodCount = 0;
-                                ////If cost diffrence is lower than 0 than reduce it from quarter in series of 1st month of quarter,2nd month of quarter...
-                                while (diffCost < 0)
-                                {
-                                    period = QuarterList[periodCount].ToString();
-                                    double tacticCost = lstMonthlyTacticCost.Where(a => a.Period == period).ToList().Sum(a => a.Value);
-                                    if ((diffCost + tacticCost) >= 0)
-                                    {
-                                        lstMonthlyTacticCost.Where(a => a.Period == period).ToList().ForEach(a => { a.Value = a.Value + diffCost; db.Entry(a).State = EntityState.Modified; });
-                                    }
-                                    else
-                                    {
-                                        lstMonthlyTacticCost.Where(a => a.Period == period).ToList().ForEach(a => { a.Value = 0; db.Entry(a).State = EntityState.Modified; });
-                                    }
-                                    diffCost = diffCost + tacticCost;
-                                    periodCount = periodCount + 1;
-                                }
-
-                            }
-                        }
-                        QuarterCnt = QuarterCnt + 3;
-                    }
-                }
-
-
-                var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == form.PlanTacticId);
-                ////update tactic cost as per its monthly total planned cost
-                objTactic.Cost = lstMonthlyTacticCost.Sum(a => a.Value);
-                db.SaveChanges();
-
-                ////End Added by Mitesh Vaishnav for PL ticket #752 - Update line item cost with the total cost from the monthly/quarterly allocation
-                int cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
-                int pid = objTactic.PlanProgramId;
-                int tid = form.PlanTacticId;
-
-                if (form.PlanLineItemId == 0)
-                {
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
-                                           join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
-                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                           where pc.PlanId == Sessions.PlanId && pcptl.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcptl.IsDeleted.Equals(false)
-                                           && pcpt.PlanTacticId == form.PlanTacticId
-                                           select pcpt).FirstOrDefault();
-
-                            if (pcptvar != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                Plan_Campaign_Program_Tactic_LineItem objLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                objLineitem.PlanTacticId = form.PlanTacticId;
-                                objLineitem.Title = form.Title;
-                                objLineitem.LineItemTypeId = form.LineItemTypeId;
-                                objLineitem.Description = form.Description;
-                                //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
-                                objLineitem.Cost = UpdateBugdetAllocationCost(arrCostInputValues, form.Cost);
-                                //Added By :Kalpesh Sharma #890 Line Item Dates need to go away
-                                objLineitem.StartDate = null;
-                                objLineitem.EndDate = null;
-                                objLineitem.CreatedBy = Sessions.User.UserId;
-                                objLineitem.CreatedDate = DateTime.Now;
-                                db.Entry(objLineitem).State = EntityState.Added;
-                                int result = db.SaveChanges();
-                                
-                                int lineitemId = objLineitem.PlanLineItemId;
-
-                                var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == form.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
-                                double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-                                if (objTactic.Cost > totalLoneitemCost)
-                                {
-                                    double diffCost = objTactic.Cost - totalLoneitemCost;
-                                    if (objOtherLineItem == null)
-                                    {
-                                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                        objNewLineitem.PlanTacticId = form.PlanTacticId;
-                                        objNewLineitem.Title = Common.DefaultLineItemTitle;
-                                        objNewLineitem.Cost = diffCost;
-                                        objNewLineitem.Description = string.Empty;
-                                        objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                        objNewLineitem.CreatedDate = DateTime.Now;
-                                        db.Entry(objNewLineitem).State = EntityState.Added;
-                                        db.SaveChanges();
-                                    }
-                                    else
-                                    {
-                                        objOtherLineItem.IsDeleted = false;
-                                        objOtherLineItem.Cost = diffCost;
-                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
-                                        db.SaveChanges();
-                                    }
-                                }
-                                else
-                                {
-                                    if (objOtherLineItem != null)
-                                    {
-                                        objOtherLineItem.IsDeleted = true;
-                                        objOtherLineItem.Cost = 0;
-                                        objOtherLineItem.Description = string.Empty;
-                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
-                                        List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
-                                        objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
-                                        objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
-                                        db.SaveChanges();
-                                    }
-                                }
-
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                if (result >= 1)
-                                {
-                                    var PrevAllocationList = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(c => c.PlanLineItemId == lineitemId).Select(c => c).ToList();
-                                    PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                                    if (arrCostInputValues.Length == 12)
-                                    {
-                                        for (int i = 0; i < arrCostInputValues.Length; i++)
-                                        {
-                                            if (arrCostInputValues[i] != "")
-                                            {
-                                                Plan_Campaign_Program_Tactic_LineItem_Cost objlineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
-                                                objlineItemCost.PlanLineItemId = lineitemId;
-                                                objlineItemCost.Period = "Y" + (i + 1);
-                                                objlineItemCost.Value = Convert.ToDouble(arrCostInputValues[i]);
-                                                objlineItemCost.CreatedBy = Sessions.User.UserId;
-                                                objlineItemCost.CreatedDate = DateTime.Now;
-                                                db.Entry(objlineItemCost).State = EntityState.Added;
-                                            }
-                                        }
-                                    }
-                                    else if (arrCostInputValues.Length == 4)
-                                    {
-                                        int QuarterCnt = 1;
-                                        for (int i = 0; i < 4; i++)
-                                        {
-                                            if (arrCostInputValues[i] != "")
-                                            {
-                                                Plan_Campaign_Program_Tactic_LineItem_Cost objlineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
-                                                objlineItemCost.PlanLineItemId = lineitemId;
-                                                objlineItemCost.Period = "Y" + QuarterCnt;
-                                                objlineItemCost.Value = Convert.ToDouble(arrCostInputValues[i]);
-                                                objlineItemCost.CreatedBy = Sessions.User.UserId;
-                                                objlineItemCost.CreatedDate = DateTime.Now;
-                                                db.Entry(objlineItemCost).State = EntityState.Added;
-                                            }
-                                            QuarterCnt = QuarterCnt + 3;
-                                        }
-                                    }
-
-                                    //Added By : Kalpesh Sharma #697 08/26/2014
-                                    //Save the Actual allocation value into the Tactic_LineItem_Actual Table  
-                                    for (int i = 0; i < arrActualInputValues.Length; i++)
-                                    {
-                                        if (arrActualInputValues[i] != "")
-                                        {
-                                            Plan_Campaign_Program_Tactic_LineItem_Actual objlineItemActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
-                                            objlineItemActual.PlanLineItemId = lineitemId;
-                                            objlineItemActual.Period = "Y" + (i + 1);
-                                            objlineItemActual.Value = Convert.ToDouble(arrActualInputValues[i]);
-                                            objlineItemActual.CreatedBy = Sessions.User.UserId;
-                                            objlineItemActual.CreatedDate = DateTime.Now;
-                                            db.Entry(objlineItemActual).State = EntityState.Added;
-                                        }
-                                    }
-
-                                    db.SaveChanges();
-
-                                }
-                                scope.Complete();
-                                return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
-                                           join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
-                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                           where pc.PlanId == Sessions.PlanId && pcptl.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(form.PlanLineItemId) && pcptl.IsDeleted.Equals(false)
-                                           && pcpt.PlanTacticId == form.PlanTacticId
-                                           select pcpt).FirstOrDefault();
-
-                            if (pcptvar != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(form.PlanLineItemId));
-
-                                objLineitem.Description = form.Description;
-                                if (!form.IsOtherLineItem)
-                                {
-                                    objLineitem.Title = form.Title;
-                                    objLineitem.LineItemTypeId = form.LineItemTypeId;
-                                    //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
-                                    objLineitem.Cost = UpdateBugdetAllocationCost(arrCostInputValues, form.Cost);
-                                    //objLineitem.StartDate = null;
-                                    //objLineitem.EndDate = null;
-                                }
-
-                                objLineitem.ModifiedBy = Sessions.User.UserId;
-                                objLineitem.ModifiedDate = DateTime.Now;
-                                db.Entry(objLineitem).State = EntityState.Modified;
-                                int result;
-
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                                result = db.SaveChanges();
-
-                                if (!form.IsOtherLineItem)
-                                {
-                                    var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == form.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
-                                    double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-                                    if (objTactic.Cost > totalLoneitemCost)
-                                    {
-                                        double diffCost = objTactic.Cost - totalLoneitemCost;
-                                        if (objOtherLineItem == null)
-                                        {
-                                            Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                            objNewLineitem.PlanTacticId = form.PlanTacticId;
-                                            objNewLineitem.Title = Common.DefaultLineItemTitle;
-                                            objNewLineitem.Cost = diffCost;
-                                            objNewLineitem.Description = string.Empty;
-                                            objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                            objNewLineitem.CreatedDate = DateTime.Now;
-                                            db.Entry(objNewLineitem).State = EntityState.Added;
-                                            db.SaveChanges();
-                                        }
-                                        else
-                                        {
-                                            if (diffCost != objOtherLineItem.Cost)
-                                            {
-                                                objOtherLineItem.IsDeleted = false;
-                                                objOtherLineItem.Cost = diffCost;
-                                                db.Entry(objOtherLineItem).State = EntityState.Modified;
-                                                db.SaveChanges();
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (objOtherLineItem != null)
-                                        {
-                                            objOtherLineItem.IsDeleted = true;
-                                            objOtherLineItem.Cost = 0;
-                                            objOtherLineItem.Description = string.Empty;
-                                            db.Entry(objOtherLineItem).State = EntityState.Modified;
-                                            List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
-                                            objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
-                                            objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
-                                            db.SaveChanges();
-                                        }
-                                    }
-                                }
-
-                                if (result >= 1)
-                                {
-                                    var PrevAllocationList = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(c => c.PlanLineItemId == form.PlanLineItemId).Select(c => c).ToList();
-                                    //PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted); // Commented by :- Sohel Pathan on 05/09/2014 for PL ticket #759
-
-                                    // Added By : Kalpesh Sharma #697 08/26/2014
-                                    // Fetch the Actual Allocation values by it's LineItem Id and delete all the record.
-                                    var PrevActualAllocationList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => c.PlanLineItemId == form.PlanLineItemId).Select(c => c).ToList();
-                                    PrevActualAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
-                                    if (arrCostInputValues.Length == 12)
-                                    {
-                                        for (int i = 0; i < arrCostInputValues.Length; i++)
-                                        {
-                                            // Start - Added by Sohel Pathan on 05/09/2014 for PL ticket #759
-                                            bool isExists = false;
-                                            if (PrevAllocationList != null)
-                                            {
-                                                if (PrevAllocationList.Count > 0)
-                                                {
-                                                    var updatePlanTacticBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
-                                                    if (updatePlanTacticBudget != null)
-                                                    {
-                                                        if (arrCostInputValues[i] != "")
-                                                        {
-                                                            var newValue = Convert.ToDouble(arrCostInputValues[i]);
-                                                            if (updatePlanTacticBudget.Value != newValue)
-                                                            {
-                                                                updatePlanTacticBudget.Value = newValue;
-                                                                db.Entry(updatePlanTacticBudget).State = EntityState.Modified;
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            db.Entry(updatePlanTacticBudget).State = EntityState.Deleted;
-                                                        }
-                                                        isExists = true;
-                                                    }
-                                                }
-                                            }
-                                            if (!isExists && arrCostInputValues[i] != "")
-                                            {
-                                                // End - Added by Sohel Pathan on 05/09/2014 for PL ticket #759
-                                                Plan_Campaign_Program_Tactic_LineItem_Cost objlineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
-                                                objlineItemCost.PlanLineItemId = form.PlanLineItemId;
-                                                objlineItemCost.Period = "Y" + (i + 1);
-                                                objlineItemCost.Value = Convert.ToDouble(arrCostInputValues[i]);
-                                                objlineItemCost.CreatedBy = Sessions.User.UserId;
-                                                objlineItemCost.CreatedDate = DateTime.Now;
-                                                db.Entry(objlineItemCost).State = EntityState.Added;
-                                            }
-                                        }
-                                    }
-                                    else if (arrCostInputValues.Length == 4)
-                                    {
-                                        int QuarterCnt = 1;
-                                        for (int i = 0; i < 4; i++)
-                                        {
-                                            // Start - Added by Sohel Pathan on 05/09/2014 for PL ticket #759
-                                            bool isExists = false;
-                                            if (PrevAllocationList != null)
-                                            {
-                                                if (PrevAllocationList.Count > 0)
-                                                {
-                                                    var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt)) || pb.Period == ("Y" + (QuarterCnt + 1)) || pb.Period == ("Y" + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
-                                                    var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
-
-                                                    if (thisQuarterFirstMonthBudget != null)
-                                                    {
-                                                        if (arrCostInputValues[i] != "")
-                                                        {
-                                                            var thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
-                                                            var thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
-                                                            var newValue = Convert.ToDouble(arrCostInputValues[i]);
-
-                                                            if (thisQuarterTotalBudget != newValue)
-                                                            {
-                                                                var BudgetDiff = newValue - thisQuarterTotalBudget;
-                                                                if (BudgetDiff > 0)
-                                                                {
-                                                                    thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-                                                                    db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                }
-                                                                else
-                                                                {
-                                                                    int j = 1;
-                                                                    while (BudgetDiff < 0)
-                                                                    {
-                                                                        if (thisQuarterFirstMonthBudget != null)
-                                                                        {
-                                                                            BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-
-                                                                            if (BudgetDiff <= 0)
-                                                                                thisQuarterFirstMonthBudget.Value = 0;
-                                                                            else
-                                                                                thisQuarterFirstMonthBudget.Value = BudgetDiff;
-
-                                                                            db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                        }
-                                                                        if ((QuarterCnt + j) <= (QuarterCnt + 2))
-                                                                        {
-                                                                            thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt + j))).FirstOrDefault();
-                                                                        }
-
-                                                                        j = j + 1;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                                        }
-                                                        isExists = true;
-                                                    }
-                                                }
-                                            }
-                                            if (!isExists && arrCostInputValues[i] != "")
-                                            {
-                                                // End - Added by Sohel Pathan on 05/09/2014 for PL ticket #759
-                                                Plan_Campaign_Program_Tactic_LineItem_Cost objlineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
-                                                objlineItemCost.PlanLineItemId = form.PlanLineItemId;
-                                                objlineItemCost.Period = "Y" + QuarterCnt;
-                                                objlineItemCost.Value = Convert.ToDouble(arrCostInputValues[i]);
-                                                objlineItemCost.CreatedBy = Sessions.User.UserId;
-                                                objlineItemCost.CreatedDate = DateTime.Now;
-                                                db.Entry(objlineItemCost).State = EntityState.Added;
-                                            }
-                                            QuarterCnt = QuarterCnt + 3;
-                                        }
-                                    }
-
-                                    //Added By : Kalpesh Sharma #697 08/26/2014
-                                    //Save the Actual allocation value into the Tactic_LineItem_Actual Table  
-                                    for (int i = 0; i < arrActualInputValues.Length; i++)
-                                    {
-                                        if (arrActualInputValues[i] != "")
-                                        {
-                                            Plan_Campaign_Program_Tactic_LineItem_Actual objlineItemActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
-                                            objlineItemActual.PlanLineItemId = form.PlanLineItemId;
-                                            objlineItemActual.Period = "Y" + (i + 1);
-                                            objlineItemActual.Value = Convert.ToDouble(arrActualInputValues[i]);
-                                            objlineItemActual.CreatedBy = Sessions.User.UserId;
-                                            objlineItemActual.CreatedDate = DateTime.Now;
-                                            db.Entry(objlineItemActual).State = EntityState.Added;
-                                        }
-                                    }
-
-                                    db.SaveChanges();
-
-                                    scope.Complete();
-                                    if (!string.IsNullOrEmpty(CalledFromBudget))
-                                    {
-                                        TempData["SuccessMessage"] = "Line item saved successfully";
-                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "lineitem" + form.PlanLineItemId.ToString() }) });
-                                    }
-                                    else
-                                    {
-                                        if (RedirectType)
-                                        {
-                                            TempData["ClosedTask"] = closedTask;
-                                            return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                        }
-                                        else
-                                        {
-                                            return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
-
-            return Json(new { });
-        }
-
-        /// <summary>
         /// Added By Mitesh
         /// Action to delete line item
         /// </summary>
@@ -5857,8 +2459,6 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcptl.PlanLineItemId, pcptl.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
                             if (returnValue >= 1)
                             {
-                                //TacticValueCalculate(pcpt.PlanProgramId); // Modified by Dharmraj for PL #440
-
                                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 var planProgramId = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
                                 Common.ChangeProgramStatus(planProgramId);
@@ -5904,24 +2504,6 @@ namespace RevenuePlanner.Controllers
         }
         //End :Added by Mitesh Vaishnav for PL ticket 619
 
-        /// <summary>
-        /// Added By: Dharmraj Mangukiya.
-        /// Action to Get Line Item Type.
-        /// </summary>
-        /// <returns>Returns JSon Result Of Line Item Type.</returns>
-        public JsonResult GetLineItemType()
-        {
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-
-            // Line item Type
-            var lineItemTypes = from lit in db.LineItemTypes
-                                where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
-                                orderby lit.Title
-                                select new { lit.Title, lit.LineItemTypeId };
-
-            return Json(lineItemTypes, JsonRequestBehavior.AllowGet);
-        }
-
         #endregion
 
         #region "Duplicate"
@@ -5955,86 +2537,6 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Function to duplicate current Campaign,Program,Tactic.
-        /// Added By: Bhavesh B Dobariya.
-        /// Date: 09/01/2014
-        /// </summary>
-        /// <param name="Id">Id to be duplicated.</param>
-        /// <param name="RedirectType">Redirect type.</param>
-        /// <param name="CopyClone">copy of .</param>
-        /// <returns>Returns action result.</returns>
-        [HttpPost]
-        public ActionResult DuplicateCopyClone(int id, bool RedirectType, string CopyClone, string closedTask, string CalledFromBudget = "")
-        {
-            try
-            {
-                using (MRPEntities mrp = new MRPEntities())
-                {
-                    using (var scope = new TransactionScope())
-                    {
-                        int cid = 0;
-                        int pid = 0;
-                        int returnValue = DuplicateClone(id, CopyClone);
-                        if (returnValue != 0)
-                        {
-                            if (CopyClone == "Tactic")
-                            {
-                                Plan_Campaign_Program_Tactic opcpt = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(returnValue)).SingleOrDefault();
-                                cid = opcpt.Plan_Campaign_Program.PlanCampaignId;
-                                pid = opcpt.PlanProgramId;
-                                //TacticValueCalculate(opcpt.PlanProgramId); /*Added by Nirav Shah on 17 feb 2013  for Duplicate Tactic */ // Modified by Dharmraj for PL #440
-                                returnValue = Common.InsertChangeLog(Sessions.PlanId, null, opcpt.PlanProgramId, opcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                            }
-                            else if (CopyClone == "Program")
-                            {
-                                Plan_Campaign_Program opcp = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(returnValue)).SingleOrDefault();
-                                cid = opcp.PlanCampaignId;
-                                //TacticValueCalculate(opcp.PlanCampaignId, false); /*Added by Nirav Shah on 17 feb 2013  for Duplicate Program */ // Modified by Dharmraj for PL #440
-                                returnValue = Common.InsertChangeLog(Sessions.PlanId, null, opcp.PlanProgramId, opcp.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                            }
-                            else if (CopyClone == "Campaign")
-                            {
-                                Plan_Campaign opc = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(returnValue)).SingleOrDefault();
-                                returnValue = Common.InsertChangeLog(Sessions.PlanId, null, opc.PlanCampaignId, opc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                            }
-
-                        }
-                        if (returnValue >= 1)
-                        {
-                            scope.Complete();
-                            if (!string.IsNullOrEmpty(CalledFromBudget))
-                            {
-                                string expand = CopyClone.ToLower();
-                                if (expand == "campaign")
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
-                                else
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + id.ToString() }) });
-                            }
-                            else
-                            {
-                                if (RedirectType)
-                                {
-                                    TempData["ClosedTask"] = closedTask;
-                                    return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                }
-                                else
-                                {
-                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
-
-            return Json(new { });
-        }
-
-        /// <summary>
         /// Function to duplicate clone.
         /// Added By: Bhavesh B Dobariya.
         /// Date: 09/01/2014
@@ -6046,6 +2548,80 @@ namespace RevenuePlanner.Controllers
         {
             int returnValue = 0;
             return returnValue;
+        }
+
+        /// <summary>
+        /// Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
+        /// </summary>
+        /// <param name="CloneType"></param>
+        /// <param name="Id"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public ActionResult Clone(string CloneType, int Id, string title, string CalledFromBudget = "")
+        {
+            int rtResult = 0;
+
+            if (Sessions.User == null)
+            {
+                TempData["ErrorMessage"] = Common.objCached.SessionExpired;
+                return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                if (!string.IsNullOrEmpty(CloneType) && Id > 0)
+                {
+                    Clonehelper objClonehelper = new Clonehelper();
+                    if (CloneType == Enums.DuplicationModule.Plan.ToString())
+                    {
+                        rtResult = objClonehelper.ToClone("", CloneType, Id, Id);
+                        Plan objPlan = db.Plans.Where(p => p.PlanId == Id).FirstOrDefault();
+                        title = objPlan != null ? objPlan.Title : string.Empty;
+                    }
+                    else
+                    {
+                        rtResult = objClonehelper.ToClone("", CloneType, Id);
+                    }
+                    if (CloneType == Enums.DuplicationModule.LineItem.ToString())
+                    {
+                        CloneType = "Line Item";
+                    }
+
+                }
+
+                if (rtResult >= 1)
+                {
+                    // Added By : Kalpesh Sharma
+                    // #953 Invalid Characters Tactic, Program, Campaign Names While Duplicating
+                    title = System.Net.WebUtility.HtmlDecode(title);
+                    string strMessage = string.Format(Common.objCached.CloneDuplicated, CloneType);     // Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+
+                    if (!string.IsNullOrEmpty(CalledFromBudget))
+                    {
+                        TempData["SuccessMessage"] = strMessage;
+                        TempData["SuccessMessageDeletedPlan"] = "";
+                        //return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+
+                        string expand = CloneType.ToLower().Replace(" ", "");
+                        if (expand == "campaign")
+                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }), Id = rtResult, msg = strMessage });
+                        else
+                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + Id.ToString() }), Id = rtResult, msg = strMessage });
+                    }
+                    else
+                    {
+                        TempData["SuccessMessageDeletedPlan"] = strMessage;
+                        return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId, Id = rtResult, msg = strMessage });
+                    }
+                }
+                return Json(new { });
+
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                return Json(new { returnValue = rtResult });
+            }
         }
 
         #endregion
@@ -6297,13 +2873,13 @@ namespace RevenuePlanner.Controllers
                     tacticList.ForEach(pcpt => pcpt.IsDeleted = true);
                     var tacticIds = tacticList.Select(a => a.PlanTacticId).ToList();
                     db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic).ToList().ForEach(a => customFieldList.Add(a));
-                   
+
                     var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
                     programList.ForEach(pcp => pcp.IsDeleted = true);
                     var programIds = programList.Select(a => a.PlanProgramId).ToList();
                     db.CustomField_Entity.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram).ToList().ForEach(a => customFieldList.Add(a));
-                    
-                    var campaignList= db.Plan_Campaign.Where(pc => pc.PlanId == PlanId && pc.IsDeleted == false).ToList();
+
+                    var campaignList = db.Plan_Campaign.Where(pc => pc.PlanId == PlanId && pc.IsDeleted == false).ToList();
                     campaignList.ForEach(pc => pc.IsDeleted = true);
                     var campaignIds = campaignList.Select(a => a.PlanCampaignId).ToList();
                     db.CustomField_Entity.Where(a => campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(a => customFieldList.Add(a));
@@ -6328,35 +2904,6 @@ namespace RevenuePlanner.Controllers
                 return Json(new { successmsg = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]) }, JsonRequestBehavior.AllowGet);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
             else
                 return Json(new { errorMsg = string.Format(Common.objCached.PlanDeleteError, PlanName) }, JsonRequestBehavior.AllowGet);
-        }
-
-        #endregion
-
-        #region Plan General Function
-
-        /// <summary>
-        /// Get Current Date Based on Plan Year.
-        /// </summary>
-        /// <param name="isEndDate"></param>
-        /// <returns></returns>
-        private DateTime GetCurrentDateBasedOnPlan(bool isEndDate = false)
-        {
-            string Year = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.Year).SingleOrDefault();
-            DateTime CurrentDate = DateTime.Now;
-            int CurrentYear = CurrentDate.Year;
-            int diffYear = Convert.ToInt32(Year) - CurrentYear;
-            DateTime returnDate = DateTime.Now;
-            if (isEndDate)
-            {
-                DateTime lastEndDate = new DateTime(CurrentDate.AddYears(diffYear).Year, 12, 31);
-                DateTime endDate = CurrentDate.AddYears(diffYear).AddMonths(1);
-                returnDate = endDate > lastEndDate ? lastEndDate : endDate;
-            }
-            else
-            {
-                returnDate = DateTime.Now.AddYears(diffYear);
-            }
-            return returnDate;
         }
 
         #endregion
@@ -6486,336 +3033,6 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Create Improvement Tactic.
-        /// </summary>
-        /// <returns>Returns Partial View Of Tactic.</returns>
-        public PartialViewResult CreateImprovementTactic(int id = 0)
-        {
-            List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false).Select(it => it.ImprovementTacticTypeId).ToList();
-            ViewBag.Tactics = from t in db.ImprovementTacticTypes
-                              where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
-                              && t.IsDeleted == false       //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
-                              orderby t.Title
-                              select t;
-            ViewBag.IsCreated = true;
-
-
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
-            PlanImprovementTactic pitm = new PlanImprovementTactic();
-            pitm.ImprovementPlanProgramId = id;
-            // Set today date as default for effective date.
-            pitm.EffectiveDate = DateTime.Now;
-            pitm.IsDeployedToIntegration = false;
-
-            ViewBag.IsOwner = true;
-            ViewBag.RedirectType = false;
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-            return PartialView("ImprovementTactic", pitm);
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Edit Improvement Tactic.
-        /// </summary>
-        /// <param name="id">Tactic Id.</param>
-        /// <param name="RedirectType">Redirect Type</param>
-        /// <returns>Returns Partial View Of Tactic.</returns>
-        public PartialViewResult EditImprovementTactic(int id = 0, string RedirectType = "")
-        {
-            List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false && it.ImprovementPlanTacticId != id).Select(it => it.ImprovementTacticTypeId).ToList();
-            /*Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584  */
-            var tactics = from t in db.ImprovementTacticTypes
-                          where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
-                          && t.IsDeleted == false       //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
-                          select t;
-            
-            /*End: Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584  */
-            ViewBag.IsCreated = false;
-            if (RedirectType == "Assortment")
-            {
-                ViewBag.RedirectType = false;
-            }
-            else
-            {
-                ViewBag.RedirectType = true;
-
-            }
-
-
-            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
-            Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcptobj => pcptobj.ImprovementPlanTacticId.Equals(id)).SingleOrDefault();
-            if (pcpt == null)
-            {
-                return null;
-            }
-
-            foreach (var item in tactics)
-            {
-                item.Title = HttpUtility.HtmlDecode(item.Title);
-            }
-            ////Added by Mitesh Vaishnav for internal review point 84
-            if (!tactics.Any(a => a.ImprovementTacticTypeId == pcpt.ImprovementTacticTypeId))
-            {
-               var tacticTypeSpecial= from t in db.ImprovementTacticTypes
-                          where t.ClientId == Sessions.User.ClientId && t.ImprovementTacticTypeId==pcpt.ImprovementTacticTypeId     
-                          orderby t.Title
-                          select t;
-               tactics = tactics.Concat<ImprovementTacticType>(tacticTypeSpecial);
-               tactics.OrderBy(a => a.Title);
-                
-            }
-            ViewBag.Tactics = tactics;
-
-            PlanImprovementTactic pcptm = new PlanImprovementTactic();
-            pcptm.ImprovementPlanProgramId = pcpt.ImprovementPlanProgramId;
-            pcptm.ImprovementPlanTacticId = pcpt.ImprovementPlanTacticId;
-            pcptm.ImprovementTacticTypeId = pcpt.ImprovementTacticTypeId;
-            pcptm.Title = HttpUtility.HtmlDecode(pcpt.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            pcptm.Description = HttpUtility.HtmlDecode(pcpt.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            pcptm.EffectiveDate = pcpt.EffectiveDate;
-            pcptm.Cost = pcpt.Cost;
-            pcptm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
-
-            if (Sessions.User.UserId == pcpt.CreatedBy)
-            {
-                ViewBag.IsOwner = true;
-            }
-            else
-            {
-                ViewBag.IsOwner = false;
-            }
-            ViewBag.Program = HttpUtility.HtmlDecode(pcpt.Plan_Improvement_Campaign_Program.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            ViewBag.Campaign = HttpUtility.HtmlDecode(pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-            return PartialView("ImprovementTactic", pcptm);
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Save Improvement Tactic.
-        /// </summary>
-        /// <param name="form">Form object of PlanImprovementTactic.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
-        /// <returns>Returns Action Result.</returns>
-        [HttpPost]
-        public ActionResult SaveImprovementTactic(PlanImprovementTactic form, bool RedirectType)
-        {
-            try
-            {
-                if (form.ImprovementPlanTacticId == 0)
-                {
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            //// Check for duplicate exits or not.
-                            var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
-                                          where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcpt.IsDeleted.Equals(false)
-                                          select pcpt).FirstOrDefault();
-
-                            if (pcpvar != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                Plan_Improvement_Campaign_Program_Tactic picpt = new Plan_Improvement_Campaign_Program_Tactic();
-                                picpt.ImprovementPlanProgramId = form.ImprovementPlanProgramId;
-                                picpt.Title = form.Title;
-                                picpt.ImprovementTacticTypeId = form.ImprovementTacticTypeId;
-                                picpt.Description = form.Description;
-                                picpt.Cost = form.Cost;
-                                picpt.EffectiveDate = form.EffectiveDate;
-                                picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
-                                //// Get Businessunit id from model.
-                                picpt.BusinessUnitId = (from m in db.Models
-                                                        join p in db.Plans on m.ModelId equals p.ModelId
-                                                        where p.PlanId == Sessions.PlanId
-                                                        select m.BusinessUnitId).FirstOrDefault();
-                                picpt.CreatedBy = Sessions.User.UserId;
-                                picpt.CreatedDate = DateTime.Now;
-                                picpt.IsDeployedToIntegration = form.IsDeployedToIntegration;
-
-                                db.Entry(picpt).State = EntityState.Added;
-                                int result = db.SaveChanges();
-
-                                // Set isDeployedToIntegration in improvement program and improvement campaign
-                                var objIProgram = db.Plan_Improvement_Campaign_Program.SingleOrDefault(varP => varP.ImprovementPlanProgramId == picpt.ImprovementPlanProgramId);
-                                var objICampaign = db.Plan_Improvement_Campaign.SingleOrDefault(varC => varC.ImprovementPlanCampaignId == objIProgram.ImprovementPlanCampaignId);
-                                if (form.IsDeployedToIntegration)
-                                {
-                                    objIProgram.IsDeployedToIntegration = true;
-                                    db.Entry(objIProgram).State = EntityState.Modified;
-                                    db.SaveChanges();
-
-                                    objICampaign.IsDeployedToIntegration = true;
-                                    db.Entry(objICampaign).State = EntityState.Modified;
-                                    db.SaveChanges();
-                                }
-                                else
-                                {
-                                    bool flag = false;
-                                    flag = objIProgram.Plan_Improvement_Campaign_Program_Tactic.Any(varT => varT.IsDeployedToIntegration == true && varT.IsDeleted == false);
-                                    if (!flag)
-                                    {
-                                        objIProgram.IsDeployedToIntegration = false;
-                                        db.Entry(objIProgram).State = EntityState.Modified;
-                                        db.SaveChanges();
-
-                                        objICampaign.IsDeployedToIntegration = false;
-                                        db.Entry(objICampaign).State = EntityState.Modified;
-                                        db.SaveChanges();
-                                    }
-                                }
-
-                                //// Insert change log entry.
-                                result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                if (result >= 1)
-                                {
-                                    scope.Complete();
-                                    return Json(new { redirect = Url.Action("Assortment") });
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-
-                    using (MRPEntities mrp = new MRPEntities())
-                    {
-                        using (var scope = new TransactionScope())
-                        {
-                            //// Check for Duplicate or not.
-                            var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
-                                          where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.ImprovementPlanTacticId.Equals(form.ImprovementPlanTacticId) && pcpt.IsDeleted.Equals(false)
-                                          select pcpt).FirstOrDefault();
-
-                            if (pcpvar != null)
-                            {
-                                string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { errormsg = strDuplicateMessage });
-                            }
-                            else
-                            {
-                                bool isReSubmission = false;
-                                //bool isDirectorLevelUser = false;
-                                bool isManagerLevelUser = false;
-                                string status = string.Empty;
-                                //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-                                //{
-                                //    isDirectorLevelUser = true;
-                                //}
-                                Plan_Improvement_Campaign_Program_Tactic pcpobj = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.ImprovementPlanTacticId.Equals(form.ImprovementPlanTacticId)).SingleOrDefault();
-
-                                //If improvement tacitc modified by immediate manager then no resubmission will take place, By dharmraj, Ticket #537
-                                var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-                                var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).Select(u => u.UserId).ToList();
-                                if (lstSubordinates.Contains(pcpobj.CreatedBy))
-                                {
-                                    isManagerLevelUser = true;
-                                }
-
-                                pcpobj.Title = form.Title;
-                                status = pcpobj.Status;
-
-                                if (pcpobj.ImprovementTacticTypeId != form.ImprovementTacticTypeId)
-                                {
-                                    pcpobj.ImprovementTacticTypeId = form.ImprovementTacticTypeId;
-                                    if (!isManagerLevelUser) isReSubmission = true;
-                                }
-                                pcpobj.Description = form.Description;
-
-                                if (pcpobj.EffectiveDate != form.EffectiveDate)
-                                {
-                                    pcpobj.EffectiveDate = form.EffectiveDate;
-                                    if (!isManagerLevelUser) isReSubmission = true;
-                                }
-
-                                if (pcpobj.Cost != form.Cost)
-                                {
-                                    pcpobj.Cost = form.Cost;
-                                    if (!isManagerLevelUser) isReSubmission = true;
-                                }
-
-                                pcpobj.ModifiedBy = Sessions.User.UserId;
-                                pcpobj.ModifiedDate = DateTime.Now;
-                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                db.Entry(pcpobj).State = EntityState.Modified;
-                                int result;
-                                if (Common.CheckAfterApprovedStatus(pcpobj.Status))
-                                {
-                                    result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.ImprovementPlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                                }
-                                if (isReSubmission && Common.CheckAfterApprovedStatus(status))
-                                {
-                                    pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                    Common.mailSendForTactic(pcpobj.ImprovementPlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
-                                }
-                                result = db.SaveChanges();
-
-
-                                // Set isDeployedToIntegration in improvement program and improvement campaign
-                                var objIProgram = db.Plan_Improvement_Campaign_Program.SingleOrDefault(varP => varP.ImprovementPlanProgramId == pcpobj.ImprovementPlanProgramId);
-                                var objICampaign = db.Plan_Improvement_Campaign.SingleOrDefault(varC => varC.ImprovementPlanCampaignId == objIProgram.ImprovementPlanCampaignId);
-                                if (form.IsDeployedToIntegration)
-                                {
-                                    objIProgram.IsDeployedToIntegration = true;
-                                    db.Entry(objIProgram).State = EntityState.Modified;
-                                    db.SaveChanges();
-
-                                    objICampaign.IsDeployedToIntegration = true;
-                                    db.Entry(objICampaign).State = EntityState.Modified;
-                                    db.SaveChanges();
-                                }
-                                else
-                                {
-                                    bool flag = false;
-                                    flag = objIProgram.Plan_Improvement_Campaign_Program_Tactic.Any(varT => varT.IsDeployedToIntegration == true && varT.IsDeleted == false);
-                                    if (!flag)
-                                    {
-                                        objIProgram.IsDeployedToIntegration = false;
-                                        db.Entry(objIProgram).State = EntityState.Modified;
-                                        db.SaveChanges();
-
-                                        objICampaign.IsDeployedToIntegration = false;
-                                        db.Entry(objICampaign).State = EntityState.Modified;
-                                        db.SaveChanges();
-                                    }
-                                }
-
-                                if (result >= 1)
-                                {
-                                    scope.Complete();
-                                    if (RedirectType)
-                                    {
-                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                    }
-                                    else
-                                    {
-                                        return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = "Changes saved." });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
-
-            return Json(new { });
-        }
-
-        /// <summary>
         /// Delete improvement tactic.
         /// </summary>
         /// <param name="id">Id</param>
@@ -6860,41 +3077,6 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
             return Json(new { });
-        }
-
-        /// <summary>
-        /// Loag Improvement Stages for Tactic.
-        /// Added by Bhavesh Dobariya.
-        /// </summary>
-        /// <returns>JsonResult.</returns>
-        public JsonResult LoadImprovementStages(PlanImprovementTactic form)
-        {
-            int ImprovementPlanTacticId = form.ImprovementPlanTacticId;
-            int ImprovementTacticTypeId = form.ImprovementTacticTypeId;
-            DateTime EffectiveDate = form.EffectiveDate;
-
-            var objImprovementTacticType = db.ImprovementTacticTypes.Where(itt => itt.ImprovementTacticTypeId == ImprovementTacticTypeId && itt.IsDeleted.Equals(false)).SingleOrDefault(); //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
-            double Cost = objImprovementTacticType == null ? 0 : objImprovementTacticType.Cost;
-            bool isDeployedToIntegration = objImprovementTacticType == null ? false : objImprovementTacticType.IsDeployedToIntegration;
-
-            // Call function for calculate improvement for each Stage.
-            List<ImprovementStage> ImprovementMetric = GetImprovementStages(ImprovementPlanTacticId, ImprovementTacticTypeId, EffectiveDate);
-            string CR = Enums.StageType.CR.ToString();
-            string SV = Enums.StageType.SV.ToString();
-            string Size = Enums.StageType.Size.ToString();
-            var tacticobj = ImprovementMetric.Select(p => new
-            {
-                MetricId = p.StageId,
-                MetricCode = p.StageCode,
-                MetricName = p.StageName,
-                MetricType = p.StageType,
-                BaseLineRate = p.BaseLineRate,
-                PlanWithoutTactic = p.PlanWithoutTactic,
-                PlanWithTactic = p.PlanWithTactic,
-                Rank = p.StageType == CR ? 1 : (p.StageType == SV ? 2 : 3),
-            }).Select(p => p).Distinct().OrderBy(p => p.Rank).ToList();
-
-            return Json(new { data = tacticobj, cost = Cost, isDeployedToIntegration = isDeployedToIntegration }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -7145,7 +3327,7 @@ namespace RevenuePlanner.Controllers
             //// Getting list of improvement activites.
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
 
-            
+
 
             //Added By Bhavesh For Performance Issue #955
             List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
@@ -7168,7 +3350,7 @@ namespace RevenuePlanner.Controllers
             List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
             //End #955
 
-            List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelationForSinglePlan(tacticList, bestInClassStageRelation, stageListType, modleStageRelationList,improvementTacticTypeMetric, improvementActivities, modelDateList,MainModelId, stageList, false);
+            List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelationForSinglePlan(tacticList, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, MainModelId, stageList, false);
             List<TacticStageValue> TacticDataWithImprovement = Common.GetTacticStageRelationForSinglePlan(tacticList, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, MainModelId, stageList, true);
 
             //// Calculating MQL difference.
@@ -7298,7 +3480,7 @@ namespace RevenuePlanner.Controllers
 
                 List<TacticStageValue> tacticStageValueInnerList = Common.GetTacticStageValueListForSuggestedImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementTacticTypeMetric, marketingActivities, improvementActivitiesWithType, stageList);
 
-               double improvedAverageDealSizeForProjectedRevenue = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivitiesWithType, improvementTacticTypeMetric, stageTypeSize);
+                double improvedAverageDealSizeForProjectedRevenue = Common.GetCalculatedValueImprovement(bestInClassStageRelation, stageListType, modelDateList, MainModelId, modleStageRelationList, improvementActivitiesWithType, improvementTacticTypeMetric, stageTypeSize);
                 double improvedValue = 0;
 
                 //// Checking whether marketing and improvement activities exist.
@@ -7855,6 +4037,7 @@ namespace RevenuePlanner.Controllers
         #region Budget Allocation
 
         #region Save Budget Allocation
+
         /// <summary>
         /// Save budget allocation data for plan
         /// </summary>
@@ -8027,9 +4210,11 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { id = retVal, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) }, JsonRequestBehavior.AllowGet);
         }
+       
         #endregion
 
         #region Get Plan Budget Allocation
+      
         /// <summary>
         /// Get plan bedget allocation by planId
         /// </summary>
@@ -8097,9 +4282,11 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { status = 0 }, JsonRequestBehavior.AllowGet);
         }
+        
         #endregion
 
         #region Get Budget Allocation Data For Plan For Slide Panel
+       
         /// <summary>
         /// Action to Get monthly or quarterly budget value of Plan.
         /// </summary>
@@ -8182,238 +4369,15 @@ namespace RevenuePlanner.Controllers
 
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
+       
         #endregion
 
         #endregion
-
-        public JsonResult GetBudgetAllocationProgrmaData(int CampaignId, int PlanProgramId)
-        {
-            try
-            {
-                List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
-                var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == CampaignId && c.IsDeleted == false);    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
-
-                var objPlan = db.Plans.SingleOrDefault(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
-
-                var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == CampaignId && p.IsDeleted == false).ToList();
-
-                var planProgramIds = lstSelectedProgram.Select(c => c.PlanProgramId);
-
-                var lstCampaignBudget = db.Plan_Campaign_Budget.Where(c => c.PlanCampaignId == CampaignId).ToList()
-                                                               .Select(c => new
-                                                               {
-                                                                   c.PlanCampaignBudgetId,
-                                                                   c.PlanCampaignId,
-                                                                   c.Period,
-                                                                   c.Value
-                                                               }).ToList();
-
-                var lstProgramBudget = db.Plan_Campaign_Program_Budget.Where(c => planProgramIds.Contains(c.PlanProgramId)).ToList()
-                                                               .Select(c => new
-                                                               {
-                                                                   c.PlanProgramBudgetId,
-                                                                   c.PlanProgramId,
-                                                                   c.Period,
-                                                                   c.Value
-                                                               }).ToList();
-
-                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId && c.IsDeleted == false).Select(c => c.PlanTacticId).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
-
-                var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(c => lstPlanProgramTactics.Contains(c.PlanTacticId)).ToList()
-                                                               .Select(c => new
-                                                               {
-                                                                   c.PlanTacticBudgetId,
-                                                                   c.PlanTacticId,
-                                                                   c.Period,
-                                                                   c.Value
-                                                               }).ToList();
-
-                double allCampaignBudget = lstCampaignBudget.Sum(c => c.Value);
-                double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
-                double planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
-
-                if (objPlan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())
-                {
-                    List<PlanBudgetAllocationValue> lstPlanBudgetAllocationValue = new List<PlanBudgetAllocationValue>();
-                    var quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
-                    for (int i = 0; i < 12; i++)
-                    {
-                        if ((i + 1) % 3 == 0)
-                        {
-                            PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
-                            objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
-                            objPlanBudgetAllocationValue.budgetValue = lstProgramBudget.Where(c => quarterPeriods.Contains(c.Period) && c.PlanProgramId == PlanProgramId).FirstOrDefault() == null ? "" : lstProgramBudget.Where(c => quarterPeriods.Contains(c.Period) && c.PlanProgramId == PlanProgramId).Select(a => a.Value).Sum().ToString();
-                            objPlanBudgetAllocationValue.remainingMonthlyBudget = lstCampaignBudget.Where(p => quarterPeriods.Contains(p.Period)).FirstOrDefault() == null ? 0 : lstCampaignBudget.Where(p => quarterPeriods.Contains(p.Period)).Sum(a => a.Value) - (lstProgramBudget.Where(c => quarterPeriods.Contains(c.Period)).Sum(c => c.Value));
-                            objPlanBudgetAllocationValue.programMonthlyBudget = lstTacticsBudget.Where(c => quarterPeriods.Contains(c.Period)).Sum(c => c.Value);
-
-                            /// Add into return list
-                            lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
-
-                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
-                        }
-                    }
-
-                    var objBudgetAllocationData = new { budgetData = lstPlanBudgetAllocationValue, planRemainingBudget = planRemainingBudget };
-                    return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    var budgetData = lstMonthly.Select(m => new
-                    {
-                        periodTitle = m,
-                        budgetValue = lstProgramBudget.SingleOrDefault(c => c.Period == m && c.PlanProgramId == PlanProgramId) == null ? "" : lstProgramBudget.SingleOrDefault(c => c.Period == m && c.PlanProgramId == PlanProgramId).Value.ToString(),
-                        remainingMonthlyBudget = (lstCampaignBudget.SingleOrDefault(p => p.Period == m) == null ? 0 : lstCampaignBudget.SingleOrDefault(p => p.Period == m).Value) - (lstProgramBudget.Where(c => c.Period == m).Sum(c => c.Value)),
-                        programMonthlyBudget = lstTacticsBudget.Where(c => c.Period == m).Sum(c => c.Value)
-                    });
-
-                    var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget };
-                    return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex);
-            }
-
-            return Json(new { }, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Added  By : Kalpesh Sharma PL #605
-        /// </summary>
-        /// <param name="PlanProgramId"></param>
-        /// <param name="PlanTacticId"></param>
-        /// <returns></returns>
-        public JsonResult GetBudgetAllocationTactics(int PlanProgramId, int PlanTacticId)
-        {
-            try
-            {
-                List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
-
-                ////// start-Added by Mitesh Vaishnav for PL ticket #571
-                //// Actual cost portion added exact under "lstMonthly" array because Actual cost portion is independent from the monthly/quarterly selection made by the user at the plan level.
-                var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == PlanTacticId && l.IsDeleted == false).Select(l => l.PlanLineItemId).ToList();
-                bool isLineItemForTactic = false;////flag for line items count of tactic.If tactic has any line item than flag set to true else false
-                List<Plan_Campaign_Program_Tactic_LineItem_Actual> actualCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
-                if (tacticLineItemList.Count == 0)
-                {
-                    ////object for filling input of Actual Cost Allocation
-                    string costTitle=Enums.InspectStage.Cost.ToString();
-                    actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == PlanTacticId && ta.StageTitle==costTitle).ToList().Select(ta => new Plan_Campaign_Program_Tactic_LineItem_Actual
-                      {
-                          PlanLineItemId = 0,
-                          Period = ta.Period,
-                          Value = ta.Actualvalue
-                      }).ToList();
-                }
-                else
-                {
-                    var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => tacticLineItemList.Contains(al.PlanLineItemId)).ToList();
-                    ////object for filling input of Actual Cost Allocation
-                    actualCostAllocationData = lstMonthly.Select(m => new Plan_Campaign_Program_Tactic_LineItem_Actual
-                        {
-                            PlanLineItemId = 0,
-                            Period = m,
-                            Value = actualLineItem.Where(al => al.Period == m).Sum(al => al.Value)
-                        }).ToList();
-                    isLineItemForTactic = true;
-                }
-                //// End-Added by Mitesh Vaishnav for PL ticket #571
-
-                var objPlan = db.Plans.SingleOrDefault(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
-
-                var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == PlanProgramId && p.IsDeleted == false).ToList();
-
-                var planProgramIds = lstSelectedProgram.Select(c => c.PlanProgramId);
-
-                var lstProgramBudget = db.Plan_Campaign_Program_Budget.Where(c => planProgramIds.Contains(c.PlanProgramId)).ToList()
-                                                               .Select(c => new
-                                                               {
-                                                                   c.PlanProgramBudgetId,
-                                                                   c.PlanProgramId,
-                                                                   c.Period,
-                                                                   c.Value
-                                                               }).ToList();
-
-                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId && c.IsDeleted == false).Select(c => c.PlanTacticId).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
-
-                var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId && c.IsDeleted == false).ToList().Sum(c => c.Cost); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
-
-                var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(c => lstPlanProgramTactics.Contains(c.PlanTacticId)).ToList()
-                                                               .Select(c => new
-                                                               {
-                                                                   c.PlanTacticBudgetId,
-                                                                   c.PlanTacticId,
-                                                                   c.Period,
-                                                                   c.Value
-                                                               }).ToList();
-
-                var lstPlanProgramTacticsLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(c => c.PlanTacticId == PlanTacticId && c.IsDeleted == false).Select(c => c.PlanLineItemId).ToList(); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
-                var lstTacticsLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(c => lstPlanProgramTacticsLineItem.Contains(c.PlanLineItemId)).ToList()
-                                                               .Select(c => new
-                                                               {
-                                                                   c.PlanLineItemBudgetId,
-                                                                   c.PlanLineItemId,
-                                                                   c.Period,
-                                                                   c.Value
-                                                               }).ToList();
-
-                var objPlanCampaignProgram = db.Plan_Campaign_Program.SingleOrDefault(p => p.PlanProgramId == PlanProgramId && p.IsDeleted == false);   // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
-                double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
-                double planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
-
-                // Start - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                if (objPlan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())
-                {
-                    List<PlanBudgetAllocationValue> lstPlanBudgetAllocationValue = new List<PlanBudgetAllocationValue>();
-                    var quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
-                    for (int i = 0; i < 12; i++)
-                    {
-                        if ((i + 1) % 3 == 0)
-                        {
-                            PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
-                            objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
-                            objPlanBudgetAllocationValue.budgetValue = lstTacticsBudget.Where(a => quarterPeriods.Contains(a.Period) && a.PlanTacticId == PlanTacticId).FirstOrDefault() == null ? "" : lstTacticsBudget.Where(a => quarterPeriods.Contains(a.Period) && a.PlanTacticId == PlanTacticId).Select(a => a.Value).Sum().ToString();
-                            objPlanBudgetAllocationValue.remainingMonthlyBudget = (lstProgramBudget.Where(a => quarterPeriods.Contains(a.Period)).FirstOrDefault() == null ? 0 : lstProgramBudget.Where(a => quarterPeriods.Contains(a.Period)).Select(a => a.Value).Sum()) - (lstTacticsBudget.Where(a => quarterPeriods.Contains(a.Period)).Sum(c => c.Value));
-                            objPlanBudgetAllocationValue.programMonthlyBudget = lstTacticsLineItemCost.Where(a => quarterPeriods.Contains(a.Period)).Select(a => a.Value).Sum();
-
-                            /// Add into return list
-                            lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
-
-                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
-                        }
-                    }
-
-                    var objBudgetAllocationData = new { budgetData = lstPlanBudgetAllocationValue, planRemainingBudget = planRemainingBudget, actualCostData = actualCostAllocationData, IsLineItemForTactic = isLineItemForTactic };
-                    return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                    var budgetData = lstMonthly.Select(m => new
-                    {
-                        periodTitle = m,
-                        budgetValue = lstTacticsBudget.SingleOrDefault(c => c.Period == m && c.PlanTacticId == PlanTacticId) == null ? "" : lstTacticsBudget.SingleOrDefault(c => c.Period == m && c.PlanTacticId == PlanTacticId).Value.ToString(),
-                        remainingMonthlyBudget = (lstProgramBudget.SingleOrDefault(p => p.Period == m) == null ? 0 : lstProgramBudget.SingleOrDefault(p => p.Period == m).Value) - (lstTacticsBudget.Where(c => c.Period == m).Sum(c => c.Value)),
-                        programMonthlyBudget = lstTacticsLineItemCost.Where(c => c.Period == m).Sum(c => c.Value)
-
-                    });
-
-                    var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget, actualCostData = actualCostAllocationData, IsLineItemForTactic = isLineItemForTactic };
-                    return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex);
-            }
-
-            return Json(new { }, JsonRequestBehavior.AllowGet);
-        }
 
         #region Budget Review Section
 
         #region Constant variable declaration those needs to move to common
+        
         public const string Jan = "Y1";
         public const string Feb = "Y2";
         public const string Mar = "Y3";
@@ -8440,6 +4404,7 @@ namespace RevenuePlanner.Controllers
             Geography = 2,
             Vertical = 3
         }
+
         #endregion
 
         /// <summary>
@@ -9413,118 +5378,235 @@ namespace RevenuePlanner.Controllers
             return model;
         }
 
-        #endregion
-
-        /// <summary>
-        /// Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
-        /// </summary>
-        /// <param name="CloneType"></param>
-        /// <param name="Id"></param>
-        /// <param name="title"></param>
-        /// <returns></returns>
-        public ActionResult Clone(string CloneType, int Id, string title, string CalledFromBudget = "")
+        public JsonResult GetBudgetAllocationProgrmaData(int CampaignId, int PlanProgramId)
         {
-            int rtResult = 0;
-
-            if (Sessions.User == null)
-            {
-                TempData["ErrorMessage"] = Common.objCached.SessionExpired;
-                return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-            }
-
             try
             {
-                if (!string.IsNullOrEmpty(CloneType) && Id > 0)
+                List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
+                var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == CampaignId && c.IsDeleted == false);    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
+
+                var objPlan = db.Plans.SingleOrDefault(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
+
+                var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == CampaignId && p.IsDeleted == false).ToList();
+
+                var planProgramIds = lstSelectedProgram.Select(c => c.PlanProgramId);
+
+                var lstCampaignBudget = db.Plan_Campaign_Budget.Where(c => c.PlanCampaignId == CampaignId).ToList()
+                                                               .Select(c => new
+                                                               {
+                                                                   c.PlanCampaignBudgetId,
+                                                                   c.PlanCampaignId,
+                                                                   c.Period,
+                                                                   c.Value
+                                                               }).ToList();
+
+                var lstProgramBudget = db.Plan_Campaign_Program_Budget.Where(c => planProgramIds.Contains(c.PlanProgramId)).ToList()
+                                                               .Select(c => new
+                                                               {
+                                                                   c.PlanProgramBudgetId,
+                                                                   c.PlanProgramId,
+                                                                   c.Period,
+                                                                   c.Value
+                                                               }).ToList();
+
+                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId && c.IsDeleted == false).Select(c => c.PlanTacticId).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
+
+                var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(c => lstPlanProgramTactics.Contains(c.PlanTacticId)).ToList()
+                                                               .Select(c => new
+                                                               {
+                                                                   c.PlanTacticBudgetId,
+                                                                   c.PlanTacticId,
+                                                                   c.Period,
+                                                                   c.Value
+                                                               }).ToList();
+
+                double allCampaignBudget = lstCampaignBudget.Sum(c => c.Value);
+                double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
+                double planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
+
+                if (objPlan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())
                 {
-                    Clonehelper objClonehelper = new Clonehelper();
-                    if (CloneType == Enums.DuplicationModule.Plan.ToString())
+                    List<PlanBudgetAllocationValue> lstPlanBudgetAllocationValue = new List<PlanBudgetAllocationValue>();
+                    var quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
+                    for (int i = 0; i < 12; i++)
                     {
-                        rtResult = objClonehelper.ToClone("", CloneType, Id, Id);
-                        Plan objPlan = db.Plans.Where(p => p.PlanId == Id).FirstOrDefault();
-                        title = objPlan != null ? objPlan.Title : string.Empty;
-                    }
-                    else
-                    {
-                        rtResult = objClonehelper.ToClone("", CloneType, Id);
-                    }
-                    if (CloneType == Enums.DuplicationModule.LineItem.ToString())
-                    {
-                        CloneType = "Line Item";
+                        if ((i + 1) % 3 == 0)
+                        {
+                            PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
+                            objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
+                            objPlanBudgetAllocationValue.budgetValue = lstProgramBudget.Where(c => quarterPeriods.Contains(c.Period) && c.PlanProgramId == PlanProgramId).FirstOrDefault() == null ? "" : lstProgramBudget.Where(c => quarterPeriods.Contains(c.Period) && c.PlanProgramId == PlanProgramId).Select(a => a.Value).Sum().ToString();
+                            objPlanBudgetAllocationValue.remainingMonthlyBudget = lstCampaignBudget.Where(p => quarterPeriods.Contains(p.Period)).FirstOrDefault() == null ? 0 : lstCampaignBudget.Where(p => quarterPeriods.Contains(p.Period)).Sum(a => a.Value) - (lstProgramBudget.Where(c => quarterPeriods.Contains(c.Period)).Sum(c => c.Value));
+                            objPlanBudgetAllocationValue.programMonthlyBudget = lstTacticsBudget.Where(c => quarterPeriods.Contains(c.Period)).Sum(c => c.Value);
+
+                            /// Add into return list
+                            lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
+
+                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
+                        }
                     }
 
+                    var objBudgetAllocationData = new { budgetData = lstPlanBudgetAllocationValue, planRemainingBudget = planRemainingBudget };
+                    return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
                 }
-
-                if (rtResult >= 1)
+                else
                 {
-                    // Added By : Kalpesh Sharma
-                    // #953 Invalid Characters Tactic, Program, Campaign Names While Duplicating
-                    title = System.Net.WebUtility.HtmlDecode(title);
-                    string strMessage = string.Format(Common.objCached.CloneDuplicated, CloneType);     // Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-
-                    if (!string.IsNullOrEmpty(CalledFromBudget))
+                    var budgetData = lstMonthly.Select(m => new
                     {
-                        TempData["SuccessMessage"] = strMessage;
-                        TempData["SuccessMessageDeletedPlan"] = "";
-                        //return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                        periodTitle = m,
+                        budgetValue = lstProgramBudget.SingleOrDefault(c => c.Period == m && c.PlanProgramId == PlanProgramId) == null ? "" : lstProgramBudget.SingleOrDefault(c => c.Period == m && c.PlanProgramId == PlanProgramId).Value.ToString(),
+                        remainingMonthlyBudget = (lstCampaignBudget.SingleOrDefault(p => p.Period == m) == null ? 0 : lstCampaignBudget.SingleOrDefault(p => p.Period == m).Value) - (lstProgramBudget.Where(c => c.Period == m).Sum(c => c.Value)),
+                        programMonthlyBudget = lstTacticsBudget.Where(c => c.Period == m).Sum(c => c.Value)
+                    });
 
-                        string expand = CloneType.ToLower().Replace(" ", "");
-                        if (expand == "campaign")
-                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }), Id=rtResult, msg = strMessage  });
-                        else
-                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + Id.ToString() }), Id = rtResult, msg = strMessage  });
-                    }
-                    else
-                    {
-                        TempData["SuccessMessageDeletedPlan"] = strMessage;
-                        return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId, Id = rtResult, msg = strMessage  });
-                    }
+                    var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget };
+                    return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
                 }
-                return Json(new { });
-
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                ErrorSignal.FromCurrentContext().Raise(e);
-                return Json(new { returnValue = rtResult });
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
+
+            return Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
-        /// Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
+        /// Added  By : Kalpesh Sharma PL #605
         /// </summary>
-        /// <param name="arrBudgetInputValues">budget allocation value</param>
-        /// <param name="EnteredCost">entered budget cost</param>
-        /// <returns>Return the Sum of Budget Allocation </returns>
-        public double UpdateBugdetAllocationCost(string[] arrBudgetInputValues, double enteredCost)
+        /// <param name="PlanProgramId"></param>
+        /// <param name="PlanTacticId"></param>
+        /// <returns></returns>
+        public JsonResult GetBudgetAllocationTactics(int PlanProgramId, int PlanTacticId)
         {
-            //Check the budget allocation value is greater then 0
-            if (arrBudgetInputValues.Length > 0)
+            try
             {
-                List<double> BudgetValues = new List<double>();
-                bool IsExplcitValue = false;
-                //Iterate all the values of  budget allocation.
-                foreach (string item in arrBudgetInputValues)
+                List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
+
+                ////// start-Added by Mitesh Vaishnav for PL ticket #571
+                //// Actual cost portion added exact under "lstMonthly" array because Actual cost portion is independent from the monthly/quarterly selection made by the user at the plan level.
+                var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == PlanTacticId && l.IsDeleted == false).Select(l => l.PlanLineItemId).ToList();
+                bool isLineItemForTactic = false;////flag for line items count of tactic.If tactic has any line item than flag set to true else false
+                List<Plan_Campaign_Program_Tactic_LineItem_Actual> actualCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                if (tacticLineItemList.Count == 0)
                 {
-                    //If  budget allocation value is "" then Skip those value 
-                    if (item != "")
+                    ////object for filling input of Actual Cost Allocation
+                    string costTitle = Enums.InspectStage.Cost.ToString();
+                    actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == PlanTacticId && ta.StageTitle == costTitle).ToList().Select(ta => new Plan_Campaign_Program_Tactic_LineItem_Actual
                     {
-                        BudgetValues.Add(Convert.ToDouble(item));
-                        IsExplcitValue = true;
-                    }
+                        PlanLineItemId = 0,
+                        Period = ta.Period,
+                        Value = ta.Actualvalue
+                    }).ToList();
                 }
-                //Get the sum of budget allocation value
-                double BugdetAllocationSum = BudgetValues.Sum();
-                if (BugdetAllocationSum == 0 && !IsExplcitValue)
+                else
                 {
-                    // Return the entered budget cost
-                    return enteredCost;
+                    var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => tacticLineItemList.Contains(al.PlanLineItemId)).ToList();
+                    ////object for filling input of Actual Cost Allocation
+                    actualCostAllocationData = lstMonthly.Select(m => new Plan_Campaign_Program_Tactic_LineItem_Actual
+                    {
+                        PlanLineItemId = 0,
+                        Period = m,
+                        Value = actualLineItem.Where(al => al.Period == m).Sum(al => al.Value)
+                    }).ToList();
+                    isLineItemForTactic = true;
                 }
-                return BugdetAllocationSum;
+                //// End-Added by Mitesh Vaishnav for PL ticket #571
+
+                var objPlan = db.Plans.SingleOrDefault(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
+
+                var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == PlanProgramId && p.IsDeleted == false).ToList();
+
+                var planProgramIds = lstSelectedProgram.Select(c => c.PlanProgramId);
+
+                var lstProgramBudget = db.Plan_Campaign_Program_Budget.Where(c => planProgramIds.Contains(c.PlanProgramId)).ToList()
+                                                               .Select(c => new
+                                                               {
+                                                                   c.PlanProgramBudgetId,
+                                                                   c.PlanProgramId,
+                                                                   c.Period,
+                                                                   c.Value
+                                                               }).ToList();
+
+                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId && c.IsDeleted == false).Select(c => c.PlanTacticId).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
+
+                var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId && c.IsDeleted == false).ToList().Sum(c => c.Cost); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
+
+                var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(c => lstPlanProgramTactics.Contains(c.PlanTacticId)).ToList()
+                                                               .Select(c => new
+                                                               {
+                                                                   c.PlanTacticBudgetId,
+                                                                   c.PlanTacticId,
+                                                                   c.Period,
+                                                                   c.Value
+                                                               }).ToList();
+
+                var lstPlanProgramTacticsLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(c => c.PlanTacticId == PlanTacticId && c.IsDeleted == false).Select(c => c.PlanLineItemId).ToList(); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
+                var lstTacticsLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(c => lstPlanProgramTacticsLineItem.Contains(c.PlanLineItemId)).ToList()
+                                                               .Select(c => new
+                                                               {
+                                                                   c.PlanLineItemBudgetId,
+                                                                   c.PlanLineItemId,
+                                                                   c.Period,
+                                                                   c.Value
+                                                               }).ToList();
+
+                var objPlanCampaignProgram = db.Plan_Campaign_Program.SingleOrDefault(p => p.PlanProgramId == PlanProgramId && p.IsDeleted == false);   // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
+                double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
+                double planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
+
+                // Start - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
+                if (objPlan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())
+                {
+                    List<PlanBudgetAllocationValue> lstPlanBudgetAllocationValue = new List<PlanBudgetAllocationValue>();
+                    var quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
+                    for (int i = 0; i < 12; i++)
+                    {
+                        if ((i + 1) % 3 == 0)
+                        {
+                            PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
+                            objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
+                            objPlanBudgetAllocationValue.budgetValue = lstTacticsBudget.Where(a => quarterPeriods.Contains(a.Period) && a.PlanTacticId == PlanTacticId).FirstOrDefault() == null ? "" : lstTacticsBudget.Where(a => quarterPeriods.Contains(a.Period) && a.PlanTacticId == PlanTacticId).Select(a => a.Value).Sum().ToString();
+                            objPlanBudgetAllocationValue.remainingMonthlyBudget = (lstProgramBudget.Where(a => quarterPeriods.Contains(a.Period)).FirstOrDefault() == null ? 0 : lstProgramBudget.Where(a => quarterPeriods.Contains(a.Period)).Select(a => a.Value).Sum()) - (lstTacticsBudget.Where(a => quarterPeriods.Contains(a.Period)).Sum(c => c.Value));
+                            objPlanBudgetAllocationValue.programMonthlyBudget = lstTacticsLineItemCost.Where(a => quarterPeriods.Contains(a.Period)).Select(a => a.Value).Sum();
+
+                            /// Add into return list
+                            lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
+
+                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
+                        }
+                    }
+
+                    var objBudgetAllocationData = new { budgetData = lstPlanBudgetAllocationValue, planRemainingBudget = planRemainingBudget, actualCostData = actualCostAllocationData, IsLineItemForTactic = isLineItemForTactic };
+                    return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
+                    var budgetData = lstMonthly.Select(m => new
+                    {
+                        periodTitle = m,
+                        budgetValue = lstTacticsBudget.SingleOrDefault(c => c.Period == m && c.PlanTacticId == PlanTacticId) == null ? "" : lstTacticsBudget.SingleOrDefault(c => c.Period == m && c.PlanTacticId == PlanTacticId).Value.ToString(),
+                        remainingMonthlyBudget = (lstProgramBudget.SingleOrDefault(p => p.Period == m) == null ? 0 : lstProgramBudget.SingleOrDefault(p => p.Period == m).Value) - (lstTacticsBudget.Where(c => c.Period == m).Sum(c => c.Value)),
+                        programMonthlyBudget = lstTacticsLineItemCost.Where(c => c.Period == m).Sum(c => c.Value)
+
+                    });
+
+                    var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget, actualCostData = actualCostAllocationData, IsLineItemForTactic = isLineItemForTactic };
+                    return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
+                }
             }
-            return enteredCost;
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
+        #endregion
+
         #region "Actuals Tab of LineItem related functions"
+
         /// <summary>
         /// Added By: Viral Kadiya.
         /// Action to Get Actuals cost Value Of line item.
@@ -9583,12 +5665,12 @@ namespace RevenuePlanner.Controllers
             int PlanLineItemId = int.Parse(strPlanItemId);
             int tid = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanLineItemId == PlanLineItemId).SingleOrDefault().PlanTacticId;
             var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
-                                           join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
-                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                           join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
                            where pcptl.Title.Trim().ToLower().Equals(LineItemTitle.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(PlanLineItemId) && pcptl.IsDeleted.Equals(false)
                                            && pcpt.PlanTacticId == tid
-                                           select pcpt).FirstOrDefault();
+                           select pcpt).FirstOrDefault();
 
             if (pcptvar != null)
             {
@@ -9597,41 +5679,41 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-            Plan_Campaign_Program_Tactic_LineItem objPCPTL = db.Plan_Campaign_Program_Tactic_LineItem.Where(c => c.PlanLineItemId == PlanLineItemId).SingleOrDefault();
-            if (objPCPTL != null && !string.IsNullOrEmpty(LineItemTitle))
-            {
-                objPCPTL.Title = LineItemTitle;
-                objPCPTL.ModifiedBy = Sessions.User.UserId;
-                objPCPTL.ModifiedDate = DateTime.Now;
-                db.Entry(objPCPTL).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-            var PrevActualAllocationListTactics = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => c.PlanLineItemId == PlanLineItemId).Select(c => c).ToList();
-            if (PrevActualAllocationListTactics != null && PrevActualAllocationListTactics.Count > 0)
-            {
-                PrevActualAllocationListTactics.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                int result = db.SaveChanges();
-            }
-            //Insert actual cost of tactic
-            int saveresult = 0;
-            for (int i = 0; i < arrActualCostInputValues.Length; i++)
-            {
-                if (arrActualCostInputValues[i] != "")
+                Plan_Campaign_Program_Tactic_LineItem objPCPTL = db.Plan_Campaign_Program_Tactic_LineItem.Where(c => c.PlanLineItemId == PlanLineItemId).SingleOrDefault();
+                if (objPCPTL != null && !string.IsNullOrEmpty(LineItemTitle))
                 {
-                    Plan_Campaign_Program_Tactic_LineItem_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
-                    obPlanCampaignProgramTacticActual.PlanLineItemId = PlanLineItemId;
-                    obPlanCampaignProgramTacticActual.Period = "Y" + (i + 1);
-                    obPlanCampaignProgramTacticActual.Value = Convert.ToDouble(arrActualCostInputValues[i]);
-                    obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
-                    obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
-                    db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;
+                    objPCPTL.Title = LineItemTitle;
+                    objPCPTL.ModifiedBy = Sessions.User.UserId;
+                    objPCPTL.ModifiedDate = DateTime.Now;
+                    db.Entry(objPCPTL).State = EntityState.Modified;
+                    db.SaveChanges();
                 }
-            }
-            saveresult = db.SaveChanges();
-                
+                var PrevActualAllocationListTactics = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => c.PlanLineItemId == PlanLineItemId).Select(c => c).ToList();
+                if (PrevActualAllocationListTactics != null && PrevActualAllocationListTactics.Count > 0)
+                {
+                    PrevActualAllocationListTactics.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                    int result = db.SaveChanges();
+                }
+                //Insert actual cost of tactic
+                int saveresult = 0;
+                for (int i = 0; i < arrActualCostInputValues.Length; i++)
+                {
+                    if (arrActualCostInputValues[i] != "")
+                    {
+                        Plan_Campaign_Program_Tactic_LineItem_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
+                        obPlanCampaignProgramTacticActual.PlanLineItemId = PlanLineItemId;
+                        obPlanCampaignProgramTacticActual.Period = "Y" + (i + 1);
+                        obPlanCampaignProgramTacticActual.Value = Convert.ToDouble(arrActualCostInputValues[i]);
+                        obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
+                        obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
+                        db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;
+                    }
+                }
+                saveresult = db.SaveChanges();
+
                 int pid = db.Plan_Campaign_Program_Tactic.Where(s => s.PlanTacticId == tid).SingleOrDefault().PlanProgramId;
                 int cid = db.Plan_Campaign_Program.Where(s => s.PlanProgramId == pid).SingleOrDefault().PlanCampaignId;
-            if (saveresult > 0)
+                if (saveresult > 0)
                 {
                     string strMessage = Common.objCached.PlanEntityActualsUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                     return Json(new { id = strPlanItemId, TabValue = "Actuals", msg = strMessage, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
@@ -9639,7 +5721,7 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
+        
         #endregion
-
     }
 }
