@@ -325,8 +325,9 @@ namespace RevenuePlanner.Controllers
                     Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationChangePassword));
                     if (notification != null)
                     {
+                        string strURL = Url.Action("Index", "Login", new { }, Request.Url.Scheme);
                         string replyToEmail = System.Configuration.ConfigurationManager.AppSettings.Get("ReplyToMail");
-                        string emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", Sessions.User.FirstName);
+                        string emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", Sessions.User.FirstName).Replace("[URL]", strURL);
                         Common.sendMail(Sessions.User.Email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High), string.Empty, replyToEmail);
                     }
                 }

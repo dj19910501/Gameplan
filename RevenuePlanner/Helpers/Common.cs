@@ -526,15 +526,18 @@ namespace RevenuePlanner.Helpers
                 else if (Section == Convert.ToString(Enums.Section.Program).ToLower())
                 {
                     emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[ProgramNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
+                    emailBody = emailBody.Replace("[URL]", URL);
                 }
                 else if (Section == Convert.ToString(Enums.Section.Campaign).ToLower())
                 {
                     emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[CampaignNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
+                    emailBody = emailBody.Replace("[URL]", URL);
                 }
                 else if (Section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                 {
                     ////Modified By Maninder Singh Wadhva PL Ticket#47
                     emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[ImprovementTacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
+                    emailBody = emailBody.Replace("[URL]", URL);
                 }
                 string email = EmailIds.ElementAt(i);
                 string Username = CollaboratorUserName.ElementAt(i);
@@ -557,7 +560,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ProgramName">Program name of tactic for which owner has been changed</param>
         /// <param name="CampaignName">Campaign name of tactic for which owner has been changed</param>
         /// <param name="PlanName">Plan name of tactic for which owner has been changed</param>
-        public static void SendNotificationMailForTacticOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName)
+        public static void SendNotificationMailForTacticOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName, string URL="")
         {
             for (int i = 0; i <= EmailIds.Count - 1; i++)
             {
@@ -572,6 +575,7 @@ namespace RevenuePlanner.Helpers
                 emailBody = emailBody.Replace("[programname]", ProgramName);
                 emailBody = emailBody.Replace("[campaignname]", CampaignName);
                 emailBody = emailBody.Replace("[planname]", PlanName);
+                emailBody = emailBody.Replace("[URL]", URL);
 
                 string email = EmailIds.ElementAt(i);
                 ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
@@ -701,19 +705,19 @@ namespace RevenuePlanner.Helpers
                 {
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticApproved.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticApproved.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId,URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramApproved.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramApproved.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignApproved.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignApproved.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticApproved.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticApproved.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
                 else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
@@ -721,19 +725,19 @@ namespace RevenuePlanner.Helpers
 
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticDeclined.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticDeclined.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramDeclined.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramDeclined.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignDeclined.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignDeclined.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticDeclined.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticDeclined.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
                 else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
@@ -758,19 +762,19 @@ namespace RevenuePlanner.Helpers
 
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramSubmitted.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramSubmitted.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignSubmitted.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignSubmitted.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
                 else if (status.Equals(Enums.Custom_Notification.TacticCommentAdded.ToString()) && iscomment)
@@ -784,21 +788,21 @@ namespace RevenuePlanner.Helpers
                 {
                     if (section == Convert.ToString(Enums.Section.Program).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Program).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId,URL);
                     }
                 }
                 else if (status.Equals(Enums.Custom_Notification.CampaignCommentAdded.ToString()) && iscomment)
                 {
                     if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Campaign).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
                 else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString()) && iscomment)
                 {
                     if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
             }

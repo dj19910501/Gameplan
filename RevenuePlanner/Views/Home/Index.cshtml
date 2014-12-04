@@ -2561,9 +2561,9 @@
                   planProgramId = $("#hdnshowInspectForPlanProgramId").val();
                   isImprovement = $('#hdnIsImprovement').val().toLowerCase();
               }
-
+              isImprovement = isImprovement.toString();
               //// Checking whether current task is improvement tactic or not.
-              if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == true) {
+              if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == 'true') {
 
                 //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
                 modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design

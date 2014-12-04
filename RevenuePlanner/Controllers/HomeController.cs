@@ -195,7 +195,7 @@ namespace RevenuePlanner.Controllers
                     if (currentPlanId != 0)
                     {
                         currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).FirstOrDefault();
-                        if (planmodel.BusinessUnitIds.Count > 0)
+                        if (planmodel.BusinessUnitIds.Count > 0 && currentPlan != null) // Modified by Viral Kadiya on 12/2/2014 to resolve PL ticket #978.
                         {
                             ViewBag.BusinessUnitTitle = planmodel.BusinessUnitIds.Where(b => b.Value.ToLower() == currentPlan.Model.BusinessUnitId.ToString().ToLower()).Select(b => b.Text).FirstOrDefault();
                         }
@@ -2413,7 +2413,8 @@ namespace RevenuePlanner.Controllers
                                     {
                                         result = Common.InsertChangeLog(improvementPlanTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, 0, planTacticId, improvementPlanTactic.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
                                     }
-                                    Common.mailSendForTactic(planTacticId, status, improvementPlanTactic.Title, section: Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                                    string strUrl = GetNotificationURLbyStatus(improvementPlanTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, planTacticId, Convert.ToString(Enums.Section.ImprovementTactic).ToLower()); // Added by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                    Common.mailSendForTactic(planTacticId, status, improvementPlanTactic.Title, section: Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), URL: strUrl); // Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                     if (result >= 1)
                                     {
                                         scope.Complete();
@@ -2474,7 +2475,8 @@ namespace RevenuePlanner.Controllers
                                     {
                                         result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
                                     }
-                                    Common.mailSendForTactic(planTacticId, status, tactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
+                                    string strUrl = GetNotificationURLbyStatus(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, planTacticId, Convert.ToString(Enums.Section.Tactic).ToLower());
+                                    Common.mailSendForTactic(planTacticId, status, tactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower(), URL: strUrl); // Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
 
                                     ////Start Added by Mitesh Vaishnav for PL ticket #766 Different Behavior for Approve Tactics via Request tab
                                     ////Update Program status according to the tactic status
@@ -4044,22 +4046,27 @@ namespace RevenuePlanner.Controllers
                         {
                             int PlanId = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId).Select(p => p.Plan_Campaign_Program.Plan_Campaign.PlanId).FirstOrDefault();
                             Plan_Campaign_Program_Tactic pct = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == planTacticId).SingleOrDefault();
-                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.TacticCommentAdded.ToString(), pct.Title, true, comment, Convert.ToString(Enums.Section.Tactic).ToLower(), Url.Action("Index", "Home", new { currentPlanId = PlanId, planTacticId = planTacticId }, Request.Url.Scheme));
+                            string strUrl = GetNotificationURLbyStatus(PlanId, planTacticId, section);
+                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.TacticCommentAdded.ToString(), pct.Title, true, comment, Convert.ToString(Enums.Section.Tactic).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                         }
                         else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                         {
                             Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(t => t.PlanProgramId == planTacticId).SingleOrDefault();
-                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.ProgramCommentAdded.ToString(), pcp.Title, true, comment, Convert.ToString(Enums.Section.Program).ToLower());
+                            int PlanId = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanProgramId == planTacticId).Select(p => p.Plan_Campaign.PlanId).FirstOrDefault();
+                            string strUrl = GetNotificationURLbyStatus(PlanId, planTacticId, section);
+                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.ProgramCommentAdded.ToString(), pcp.Title, true, comment, Convert.ToString(Enums.Section.Program).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                         }
                         else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                         {
                             Plan_Campaign pc = db.Plan_Campaign.Where(t => t.PlanCampaignId == planTacticId).SingleOrDefault();
-                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.CampaignCommentAdded.ToString(), pc.Title, true, comment, Convert.ToString(Enums.Section.Campaign).ToLower());
+                            string strUrl = GetNotificationURLbyStatus(pc.PlanId, planTacticId, section);
+                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.CampaignCommentAdded.ToString(), pc.Title, true, comment, Convert.ToString(Enums.Section.Campaign).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                         }
                         else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                         {
                             Plan_Improvement_Campaign_Program_Tactic pc = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId == planTacticId).SingleOrDefault();
-                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString(), pc.Title, true, comment, Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                            string strUrl = GetNotificationURLbyStatus(pc.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, planTacticId, section);
+                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString(), pc.Title, true, comment, Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                         }
                     }
                     return Json(new { id = planTacticId, TabValue = "Review", msg = Common.objCached.EmptyFieldCommentAdded });      // Modified by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
@@ -4184,7 +4191,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                     if (result >= 1)
                                     {
-                                        Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.Tactic).ToLower());
+                                        string strURL = GetNotificationURLbyStatus(Sessions.PlanId, planTacticId, section);//Url.Action("Index", "Home", new { currentPlanId = Sessions.PlanId, planTacticId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                                        Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.Tactic).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                     }
                                     strmessage = Common.objCached.TacticStatusSuccessfully.Replace("{0}", status);
 
@@ -4234,7 +4242,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                     if (result >= 1)
                                     {
-                                        Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                                        string strURL = GetNotificationURLbyStatus(Sessions.PlanId, planTacticId, section);
+                                        Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                     }
                                     strmessage = Common.objCached.ImprovementTacticStatusSuccessfully.Replace("{0}", status);
                                     // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
@@ -4286,7 +4295,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                     if (result >= 1)
                                     {
-                                        Common.mailSendForTactic(planTacticId, status, program.Title, false, "", Convert.ToString(Enums.Section.Program).ToLower());
+                                        string strURL = GetNotificationURLbyStatus(Sessions.PlanId, planTacticId, section);
+                                        Common.mailSendForTactic(planTacticId, status, program.Title, false, "", Convert.ToString(Enums.Section.Program).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                     }
                                     strmessage = Common.objCached.ProgramStatusSuccessfully.Replace("{0}", status);
                                     // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
@@ -4337,7 +4347,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                     if (result >= 1)
                                     {
-                                        Common.mailSendForTactic(planTacticId, status, campaign.Title, false, "", Convert.ToString(Enums.Section.Campaign).ToLower());
+                                        string strURL = GetNotificationURLbyStatus(Sessions.PlanId, planTacticId, section);
+                                        Common.mailSendForTactic(planTacticId, status, campaign.Title, false, "", Convert.ToString(Enums.Section.Campaign).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                     }
                                     strmessage = Common.objCached.CampaignStatusSuccessfully.Replace("{0}", status);
                                     // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
@@ -5665,7 +5676,8 @@ namespace RevenuePlanner.Controllers
                                 if (isReSubmission && Common.CheckAfterApprovedStatus(status) && isOwner)
                                 {
                                     pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                    Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
+                                    string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
+                                    Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower(), URL: strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                 }
                                 result = db.SaveChanges();
                                 // Start - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
@@ -5711,7 +5723,8 @@ namespace RevenuePlanner.Controllers
                                             string ProgramTitle = pcpobj.Plan_Campaign_Program.Title.ToString();
                                             if (lstRecepientEmail.Count > 0)
                                             {
-                                                Common.SendNotificationMailForTacticOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle);
+                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
+                                                Common.SendNotificationMailForTacticOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                             }
                                         }
                                     }
@@ -7441,14 +7454,15 @@ namespace RevenuePlanner.Controllers
                             //// Added by Sohel on 2nd April for PL#398 to decode the optionalMessage text
                             optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
                             ////
-
+                            string strURL = string.Empty;
                             Plan plan = new Plan();
                             if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                             {
                                 plan = db.Plan_Campaign_Program_Tactic.Single(pt => pt.PlanTacticId.Equals(planTacticId)).Plan_Campaign_Program.Plan_Campaign.Plan;
                                 notificationShare = Enums.Custom_Notification.ShareTactic.ToString();
                                 notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
-                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", Url.Action("Index", "Home", new { currentPlanId = plan.PlanId, planTacticId = planTacticId }, Request.Url.Scheme));
+                                strURL = GetNotificationURLbyStatus(plan.PlanId, planTacticId, section);
+                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
 
                             }
                             else if (section == Convert.ToString(Enums.Section.Program).ToLower())
@@ -7456,21 +7470,24 @@ namespace RevenuePlanner.Controllers
                                 plan = db.Plan_Campaign_Program.Single(pt => pt.PlanProgramId.Equals(planTacticId)).Plan_Campaign.Plan;
                                 notificationShare = Enums.Custom_Notification.ShareProgram.ToString();
                                 notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
-                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", Url.Action("Index", "Home", new { currentPlanId = plan.PlanId, planProgramId = planTacticId }, Request.Url.Scheme));
+                                strURL = GetNotificationURLbyStatus(plan.PlanId, planTacticId, section);
+                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                             }
                             else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                             {
                                 plan = db.Plan_Campaign.Single(pt => pt.PlanCampaignId.Equals(planTacticId)).Plan;
                                 notificationShare = Enums.Custom_Notification.ShareCampaign.ToString();
                                 notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
-                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", Url.Action("Index", "Home", new { currentPlanId = plan.PlanId, planCampaignId = planTacticId }, Request.Url.Scheme));
+                                strURL = GetNotificationURLbyStatus(plan.PlanId, planTacticId, section);
+                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                             }
                             else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                             {
                                 plan = db.Plan_Improvement_Campaign_Program_Tactic.Single(pt => pt.ImprovementPlanTacticId.Equals(planTacticId)).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan;
                                 notificationShare = Enums.Custom_Notification.ShareImprovementTactic.ToString();
                                 notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
-                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", Url.Action("Index", "Home", new { currentPlanId = plan.PlanId, planTacticId = planTacticId, isImprovement = true }, Request.Url.Scheme));
+                                strURL = GetNotificationURLbyStatus(plan.PlanId, planTacticId, section);
+                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                             }
 
                             foreach (string toEmail in toEmailIds.Split(','))
@@ -11204,5 +11221,35 @@ namespace RevenuePlanner.Controllers
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
         #endregion
+
+        /// <summary>
+        /// Function to get Notification URL.
+        /// Added By: Viral Kadiya on 12/4/2014.
+        /// </summary>
+        /// <param name="planId">Plan Id.</param>
+        /// <param name="planTacticId">Plan Tactic Id.</param>
+        /// <param name="section">Section.</param>
+        /// <returns>Return NotificationURL.</returns>
+        public string GetNotificationURLbyStatus(int planId = 0, int planTacticId = 0, string section = "")
+        {
+            string strURL = string.Empty;
+            try
+            {
+                if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planTacticId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                else if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planProgramId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planCampaignId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planTacticId = planTacticId, isImprovement = true, activeMenu = "Plan" }, Request.Url.Scheme);
+                
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return strURL;
+        }
     }
 }
