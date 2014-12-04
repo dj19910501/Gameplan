@@ -324,10 +324,7 @@
 
           $('#BtnGroup').click(function (e) {
               //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
-              @*var url = '@Url.Content("~/Plan/Create/0")';
-              window.location.href = url;*@
-              @*displayconfirm('@Url.Content("~/Plan/Create/0")');*@
-
+             
               //#599 Added By Kalpesh Sharma : Plan: Unable to Duplicate Plan 
               if ($(this).html().toLowerCase() == "duplicate") {
                   CheckUserSession("#BtnGroup", true);
@@ -538,10 +535,7 @@
                         } 
                       },
                       error: function () {
-                          GoToLogin();
-                          //$("#errorMessage").css("display", "block");
-                          //$("#spanMessageError").empty();
-                          //$("#divErrLessBudget").css("display", "none");
+                          GoToLogin(); 
                           return false;
                       }
                   });
@@ -813,7 +807,7 @@
 
     //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
     $("#header a").not("#ContactSupport").click(function () {
-        //alert($(this).attr('href'));
+       
         if (isDataChanged()) {
             displayconfirm($(this).attr('href'));
             return false;
@@ -977,19 +971,7 @@
             var AllocatedBy = $('#AllocatedBy').val().toLowerCase();
             if (AllocatedBy == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()')
             {
-                if (isErrorShown) {
-                    @*$('.budget-month .priceValue').each(function () {
-                        if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError') && this.id.toString() != 'unallocatedBudget') {
-                            $('#divErrCampaignBudgetAllocation').show();
-                            var errorMsg = '@RevenuePlanner.Helpers.Common.objCached.ErrMsgLessCampaignBudget ';
-                            errorMsg += $(this).prev().html() + ' month';
-                            errorMsg += '. <br />If you want to continue, hit Save & Continue below.';
-                            $('#divErrCampaignBudgetAllocation').find('.source-sans-probold').html(errorMsg);
-                            isError = true;
-                            isErrorShown = false;
-                            return false;
-                        }
-                    });*@
+                if (isErrorShown) {                   
 
                     var lstAllocInputs = $(".budget-month .priceValue.campaignBudgetError").not('#unallocatedBudget');
                     if (lstAllocInputs.length > 0) {
@@ -1031,19 +1013,7 @@
             else if (AllocatedBy == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()')
             {
                 if (isErrorShown) {
-                    @*$('.budget-quarters .priceValue').each(function () {
-                        if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError') && this.id.toString() != 'unallocatedBudget') {
-                            $('#divErrCampaignBudgetAllocation').show();
-                            var errorMsg = '@RevenuePlanner.Helpers.Common.objCached.ErrMsgLessCampaignBudget ';
-                            errorMsg += $(this).prev().html() + ' quarter';
-                            errorMsg += '. <br />If you want to continue, hit Save & Continue below.';
-                            $('#divErrCampaignBudgetAllocation').find('.source-sans-probold').html(errorMsg);
-                            isError = true;
-                            isErrorShown = false;
-                            return false;
-                        }
-                    });*@
-
+                   
                     var lstAllocInputs = $(".budget-quarters .priceValue.campaignBudgetError").not('#unallocatedBudget');
                     if (lstAllocInputs.length > 0) {
                         var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.ErrMsgLessCampaignBudget ";
@@ -1095,20 +1065,6 @@
         if (inputsType != '') {
             $(inputsType).each(function () {
                 if (this.id.toString() != 'unallocatedBudget') {
-                    // Modified by Dharmraj to handle case were user update empty or zero allocation value.
-                    //if ($(this).val().trim() != '') {
-                    //    var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
-                    //    if (currentValue.match('^(0|[1-9][0-9]*)$')) {
-                    //        _inputs.push(parseInt(currentValue));
-                    //    }
-                    //    else {
-                    //        _inputs.push(0);
-                    //    }
-                    //}
-                    //else {
-                    //    _inputs.push("");
-                    //}
-
                     _inputs.push(ReplaceCC($(this).val()));
                 }
             });

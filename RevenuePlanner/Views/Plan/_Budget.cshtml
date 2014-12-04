@@ -431,22 +431,7 @@ else {
 
     }
     var Assortment = 'Budgeting';
-    $('#aPlanDetails').click(function (e) {
-        @*e.stopPropagation();
-        $.ajaxSetup({ cache: false });
-        $("#slidepanel").css("display", "block");
-        var url = '@Url.Content("~/Plan/PlanDetails")';
-
-        //var id = @Sessions.PlanId
-        var id = CurrentPlanId;
-        if (currentTab == 'aActuals')
-            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
-        else
-        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
-        $("#slidepanel").css("right", "0px");
-        $("#slidepanel").addClass('sidebar-wide');
-        myApp.hidePleaseWait();
-        e.preventDefault();*@
+    $('#aPlanDetails').click(function (e) {       
         var id = CurrentPlanId;
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
@@ -457,65 +442,23 @@ else {
     }
     $("[linktype=campaign]").click(function (e) {
         var id = $(this).attr('id');
-         id = id.replace('c_', '');
-        @*var url = '@Url.Content("~/Plan/EditCampaign")';
-        $("#slidepanel").css("display", "block");
-        if (currentTab == 'aActuals')
-            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
-        else
-        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
-        $("#slidepanel").css("right", "0px");
-        $("#slidepanel").addClass('sidebar-wide');
-        myApp.hidePleaseWait();
-        e.preventDefault();*@
+         id = id.replace('c_', '');       
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 
     $("[linktype=program]").click(function (e) {
         var id = $(this).attr('id');
         id = id.replace('cp_', '');
-        @*var url = '@Url.Content("~/Plan/EditProgram")';
-        $("#slidepanel").css("display", "block");
-        if (currentTab == 'aActuals')
-            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
-        else
-        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
-        $("#slidepanel").css("right", "0px");
-        $("#slidepanel").addClass('sidebar-wide');
-        myApp.hidePleaseWait();
-        e.preventDefault();*@
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
     $("[linktype=tactic]").click(function (e) {
         var id = $(this).attr('id');
-        id = id.replace('cpt_', '');
-        @*var url = '@Url.Content("~/Plan/EditTactic")';
-        $("#slidepanel").css("display", "block");
-        if (currentTab == 'aActuals')
-            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
-        else
-        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
-
-        $("#slidepanel").css("right", "0px");
-        $("#slidepanel").addClass('sidebar-wide');
-        myApp.hidePleaseWait();
-        e.preventDefault();*@
+        id = id.replace('cpt_', '');       
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
      });
     $("[linktype=lineitem]").click(function (e) {
         var id = $(this).attr('id');
-        id = id.replace('cptl_', '');
-        @*var url = '@Url.Content("~/Plan/EditLineItem")';
-        $("#slidepanel").css("display", "block");
-        if (currentTab == 'aActuals')
-            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
-        else
-        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
-        $("#slidepanel").css("right", "0px");
-        $("#slidepanel").addClass('sidebar-wide');
-        myApp.hidePleaseWait();
-        e.preventDefault();*@
-
+        id = id.replace('cptl_', '');       
         ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 </script>

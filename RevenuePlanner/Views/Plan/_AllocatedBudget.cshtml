@@ -95,7 +95,7 @@
         else {
             intWidth = $(this).width();
         }
-        //$(this).attr('title', intWidth);
+       
         return $(this).width();
     }).get();
    
@@ -105,12 +105,7 @@
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
-        //var test = $('.column1').hasScrollBar();
-
-        //if (test == true) {
-        //    $('.column1 tr').addClass('displayRow');
-        //}
-
+       
         // Budget Table
         var mainTableWidth = $('.budget-table').width();
         var columnWidth1 = $('.column1').width();
@@ -128,20 +123,12 @@
 
             //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
             var data = $(".column1").get(0);
-            //var trCounter = 0;
-            //var OpenPanelCounter = 0;
+         
             $(".budget-table .column1 > tr").each(function () {
                 $(this).width(data.scrollWidth);
-                //trCounter = trCounter + 1;
+                
         });
-
-            //OpenPanelCounter = $('.budget-table .column1 > tr .firstLevel.open').length;
-            //if (OpenPanelCounter == (trCounter - 2)) {
-            //    $('.budget-table .column1').css('overflow-x', 'hidden');
-            //}
-            //else {
-            //    $('.budget-table .column1').css('overflow-x', 'auto');
-            //}
+           
         });
 
         //in case of chrome browser it is creating design issue
@@ -168,7 +155,6 @@
         }
     });
     function AddTipsy() {
-        //alert($("div[allocated]").length);
         $("div[allocated]").each(function () {
             var num = $(this).attr('allocated');
             if (parseInt(num) < 0) {
@@ -216,12 +202,7 @@
             $('#monthCompareTitle').html('Monthly Budget Allocation');
             $('.progressPlanned').show();
         }
-        //else {
-        //    $('#planCostTitle').html('');
-        //    $('#planCostValue').html('');
-        //    $('#monthCompareTitle').html('');
-        //    $('.progressPlanned').hide();
-        //}
+       
         if ('@AllocatedBy' == '@strQuarters') {
             $('#monthCompareTitle').html('Quarterly Budget Allocation');
         }
@@ -430,47 +411,23 @@ else {
 
     var Assortment = 'Budgeting';
     $('#aPlanDetails').click(function (e) {
-   @*     e.stopPropagation();
-        $.ajaxSetup({ cache: false });
-        $("#slidepanel").css("display", "block");
-        var url = '@Url.Content("~/Plan/PlanDetails")';
-
-        var id = CurrentPlanId;
-        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=allocated', AssignDefaultValue);
-        $("#slidepanel").css("right", "0px");
-        $("#slidepanel").addClass('sidebar-wide');
-        myApp.hidePleaseWait();
-        e.preventDefault();*@
-
-        var id = CurrentPlanId;
+         var id = CurrentPlanId;
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
+
     function AssignDefaultValue() {
         $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
             $(this).attr("myValue", $(this).val());
         });
     }
+
     $("[linktype=campaign]").click(function (e) {
-         var id = $(this).attr('id');
-      @*  var url = '@Url.Content("~/Plan/EditCampaign")';
-        $("#slidepanel").css("display", "block");
-        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=allocated', AssignDefaultValue);
-        $("#slidepanel").css("right", "0px");
-        $("#slidepanel").addClass('sidebar-wide');
-        myApp.hidePleaseWait();
-        e.preventDefault();*@
+         var id = $(this).attr('id');     
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 
     $("[linktype=program]").click(function (e) {
-        var id = $(this).attr('id');
-        @*var url = '@Url.Content("~/Plan/EditProgram")';
-        $("#slidepanel").css("display", "block");
-        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=allocated', AssignDefaultValue);
-        $("#slidepanel").css("right", "0px");
-        $("#slidepanel").addClass('sidebar-wide');
-        myApp.hidePleaseWait();
-        e.preventDefault();*@
+        var id = $(this).attr('id');       
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 </script>

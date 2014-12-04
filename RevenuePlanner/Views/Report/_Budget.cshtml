@@ -208,23 +208,7 @@
         
     });
 
-   // $('.column1 tr:nth-child(2) div').css('padding-top', '1px');
-
-    //$('.column1 .tacticLevel').css('min-height', '25px');
-
-   // $('.column2 tr:second td div').css('padding-bottom', '0');
-   // $('.column2 tr:second td div').css('padding - top', '0');
-    //:nth-child(2)
-
-   // $('.column2 div').css('min-width', '75px');
-  //  $('.column3 div').css('min-width', '75px');
-    //  $('.column2 tr:first td div').css('min-width', '227px');
-
-  //$(".budget-table .column1").css('width', '8%');
- // $(".budget-table .column2").css('width', '22%');
- // $(".budget-table .column3").css('width', '10%');
-                        
-                        
+   
     @if(Model.Where(p => p.ActivityType == ActivityType.ActivityTactic).Count() == 0)
     {
         isData = false;
@@ -234,7 +218,6 @@
         $('.budget-table').html('<div class="NoDataFound">No data found for selected active filters.</div>');
     }
     function AddTipsy() {
-        //alert($("div[allocated]").length);
         $("div[Allocated]").each(function () {
             $(this).prop('title', 'Allocated' + ' : $' + $(this).attr('Allocated'));
             $(this).addClass('north');
@@ -269,9 +252,7 @@
 
             $('#SpanCurrentQuarter').html('@CurrentQuarter');
             $('#SpanTodayDate').html('@TodayDate');
-          //  SpanTotalSpend
-          //  SpanTotalBudgeted
-
+         
             sumMonth = FormatNumber('@MainTotalActual', false);
             allocated = FormatNumber('@MainTotalAllocated', false);
             $('#SpanTotalSpend').html(sumMonth);

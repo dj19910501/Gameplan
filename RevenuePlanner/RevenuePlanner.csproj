@@ -655,7 +655,6 @@
     <Content Include="Views\Report\Revenue.cshtml" />
     <Content Include="Views\Report\ShareReport.cshtml" />
     <Content Include="Views\Report\_Summary.cshtml" />
-    <Content Include="Views\Plan\ImprovementTactic.cshtml" />
     <Content Include="Views\Home\_ImpactImprovementTactic.cshtml" />
     <Content Include="Views\Home\_InspectPopupImprovementTactic.cshtml" />
     <Content Include="Views\Home\_ReviewImprovementTactic.cshtml" />
@@ -754,12 +753,9 @@
     <Content Include="Views\Model\ModelZero.cshtml" />
     <Content Include="Views\Plan\ApplyToCalendar.cshtml" />
     <Content Include="Views\Plan\Assortment.cshtml" />
-    <Content Include="Views\Plan\CampaignAssortment.cshtml" />
     <Content Include="Views\Plan\Create.cshtml" />
     <Content Include="Views\Plan\NoModel.cshtml" />
     <Content Include="Views\Plan\PlanZero.cshtml" />
-    <Content Include="Views\Plan\ProgramAssortment.cshtml" />
-    <Content Include="Views\Plan\TacticAssortment.cshtml" />
     <Content Include="Views\Home\Actual.cshtml" />
     <Content Include="Views\Home\Homezero.cshtml" />
     <Content Include="Views\Home\Review.cshtml" />
@@ -807,12 +803,10 @@
     <Content Include="Views\Shared\_preferences.cshtml" />
     <Content Include="Views\Model\_DuplicateModel.cshtml" />
     <Content Include="Views\Plan\_NoModel.cshtml" />
-    <Content Include="Views\Plan\LineItemAssortment.cshtml" />
     <Content Include="Views\Plan\Budgeting.cshtml" />
     <Content Include="Views\Plan\_AllocatedBudget.cshtml" />
     <Content Include="Views\Plan\_Budget.cshtml" />
     <Content Include="Views\Plan\_BudgetingPlanList.cshtml" />
-    <Content Include="Views\Plan\PlanAssortment.cshtml" />
     <Content Include="Views\ExternalService\_GeneralSettings.cshtml" />
     <Content Include="Views\ExternalService\_ExternalServer.cshtml" />
     <Content Include="Views\ExternalService\_DataMapping.cshtml" />

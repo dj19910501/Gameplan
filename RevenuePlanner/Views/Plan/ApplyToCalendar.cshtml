@@ -1034,66 +1034,24 @@
        }
    }
 
-    //scroll right sidebar form
-    // commented by kapil to remove extra space from bottom
-   /*$(function () {
-       $('.scrolled_div_form').slimScroll({
-           height: 'auto',
-           alwaysVisible: true,
-           distance: '-10px',
-           wheelStep: 3,
-           allowPageScroll: false,
-           disableFadeOut: false
-       });
-   });*/
-
    function ShowCampaign(id) {
-       @*$("#slidepanel").css("display", "block");
-       //  $("#slidepanel-container").css("display", "block");
-       var url = '@Url.Content("~/Plan/EditCampaign")';
-       //$('#slidepanel-container').load(url + '?id=' + id);
-       $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
-       $("#slidepanel").css("right", "0px");
-       $("#slidepanel").addClass('sidebar-wide');
-       myApp.hidePleaseWait();*@
        var mode = "Edit";
        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id,"0",'@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    function ShowProgram(id) {
-       @*$("#slidepanel").css("display", "block");
-       // $("#slidepanel-container").css("display", "block");
-       var url = '@Url.Content("~/Plan/EditProgram")';
-       //$('#slidepanel-container').load(url + '?id=' + id);
-       $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
-       $("#slidepanel").css("right", "0px");
-       $("#slidepanel").addClass('sidebar-wide');
-       myApp.hidePleaseWait();*@
+     
        var mode = "Edit";
        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    function ShowTactic(id) {
-       @*$("#slidepanel").css("display", "block");
-       //         $("#slidepanel-container").css("display", "block");
-       var url = '@Url.Content("~/Plan/EditTactic")';
-       //$('#slidepanel-container').load(url + '?id=' + id);
-       $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
-       $("#slidepanel").css("right", "0px");
-       $("#slidepanel").addClass('sidebar-wide');
-       myApp.hidePleaseWait();*@
+     
        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    //// Modified By Maninder Singh Wadhva PL Ticket#47
    function ShowImprovementTactic(id) {
-       @*$("#slidepanel").css("display", "block");
-       //         $("#slidepanel-container").css("display", "block");
-       var url = '@Url.Content("~/Plan/EditImprovementTactic")';
-        //$('#slidepanel-container').load(url + '?id=' + id);
-        $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
-        $("#slidepanel").css("right", "0px");
-        myApp.hidePleaseWait();*@
         ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
     }
 
