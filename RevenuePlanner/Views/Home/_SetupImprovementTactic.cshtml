@@ -81,7 +81,7 @@
             }
         </div>
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
-            <p>Improvement Tactic Type</p>
+            <p>Improvement Tactic Type <span class="required-asterisk">*</span></p>
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
             {
                 <span class="Inspect-Popup-ImprovementTactic verticalIdSelectBox">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })</span>

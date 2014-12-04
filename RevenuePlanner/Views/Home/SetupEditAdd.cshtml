@@ -89,7 +89,7 @@
             @Html.TextArea("Description", Model.Description, new { placeholder = "Optional", @class = "span12 text-area-size input-setup", id = "Description" })   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         </div>
         <div class="span3" id="inspect-modal-left-column2">
-            <p>Tactic Type</p>
+            <p>Tactic Type <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
@@ -173,7 +173,7 @@
 
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
         <div class="span3 margin-top10" style="clear: both;">
-            <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
+            <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience) <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
                 @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", label = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience), require = "true" })
             </span>
@@ -183,13 +183,13 @@
             @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
         </div>
         <div class="span3 margin-top10 paddingleft25px">
-            <p>Vertical</p>
+            <p>Vertical <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
                 @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", label = "Vertical" })
             </span>
         </div>
         <div class="span3 margin-top10 paddingleft25px">
-            <p>Geography</p>
+            <p>Geography <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
                 @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", label = "Geography" })
             </span>

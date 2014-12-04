@@ -42,7 +42,7 @@
         <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
              <p>@Html.Raw("Parent Tactic")</p>
              @Html.TextBox("txtTacticTitle",tacticTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTitle", @readonly = "true" })
-            <p id="lblType">Type</p>
+            <p id="lblType">Type <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;" id="ddlTypeArea">
                 @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Type" })
             </span>

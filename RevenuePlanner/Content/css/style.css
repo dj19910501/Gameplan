@@ -11138,3 +11138,14 @@ li.close-list {
 }
 
 /* End - Added by Viral Kadiya on 11/24/2014 for PL ticket #988 */
+
+/* Start - Added by Viral Kadiya on 12/4/2014 for PL ticket #1017 */
+.required-asterisk{
+    color:#ff2c34;
+    font-weight:bold;
+}
+
+.left {
+float:left;
+}
+/* End - Added by Viral Kadiya on 12/4/2014 for PL ticket #1017 */
