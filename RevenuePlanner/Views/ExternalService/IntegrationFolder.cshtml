@@ -73,7 +73,7 @@
     });
 
     function LoadPlanData(SelectedYear) {
-        var url = '@Url.Content("~/ExternalService/GetPlanSelectorData/")';
+        var url = '@Url.Content("~/ExternalService/GetIntegrationFolderPlanList/")';
         $("#IntegrationFolderPlanList").empty();
         $("#IntegrationFolderPlanList").load(url + '?Year=' + SelectedYear);
     }

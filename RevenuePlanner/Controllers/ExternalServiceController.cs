@@ -111,7 +111,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="year">Year for plan selection.</param>
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]
-        public ActionResult IntegrationFolder(int id = 0, int TypeId = 0, string year = "")
+        public ActionResult GetIntegrationFolder(int id = 0, int TypeId = 0)
         {
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
@@ -142,7 +142,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="Year">Year.</param>
         /// <returns>Return partial view.</returns>
-        public PartialViewResult GetPlanSelectorData(string Year)
+        public PartialViewResult GetIntegrationFolderPlanList(string Year)
         {
             List<IntegrationPlanList> objIntegrationPlanList = new List<IntegrationPlanList>();
 
@@ -171,7 +171,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="IntegrationPlanList">IntegrationPlanList Model list.</param>
         /// <returns>Return json value.</returns>
         [HttpPost]
-        public JsonResult SaveIntegrationFoderPlanList(List<IntegrationPlanList> IntegrationPlanList)
+        public JsonResult SaveIntegrationFolderPlanList(List<IntegrationPlanList> IntegrationPlanList)
         {
             string Year = DateTime.Now.Year.ToString();
 

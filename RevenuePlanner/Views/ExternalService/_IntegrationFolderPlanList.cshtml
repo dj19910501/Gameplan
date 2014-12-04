@@ -93,7 +93,7 @@ else
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            url: '@Url.Content("~/ExternalService/SaveIntegrationFoderPlanList/")',
+            url: '@Url.Content("~/ExternalService/SaveIntegrationFolderPlanList/")',
             data: JSON.stringify({ IntegrationPlanList: _tactic }),
             success: function (data) {
                 if (data.IsSaved) {
