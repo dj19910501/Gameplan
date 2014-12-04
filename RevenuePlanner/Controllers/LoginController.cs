@@ -157,7 +157,7 @@ namespace RevenuePlanner.Controllers
                         {
                             Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
                         }
-                        
+
                         if (Sessions.RolePermission == null)
                         {
                             Sessions.RolePermission = objBDSServiceClient.GetPermission(Sessions.ApplicationId, Sessions.User.RoleId);
@@ -266,7 +266,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    if (form.Password != null && form.Password.Length <8)
+                    if (form.Password != null && form.Password.Length < 8)
                     {
                         ModelState.AddModelError("", Common.objCached.InvalidPassword);
                     }
@@ -285,7 +285,10 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
 
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
@@ -309,24 +312,12 @@ namespace RevenuePlanner.Controllers
         {
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
-            try
+            // Get user application activity permission using BDSService
+            var lstUserActivityPermissions = objBDSServiceClient.GetUserActivityPermission(Sessions.User.UserId, Sessions.ApplicationId);
+            Sessions.UserActivityPermission = new Enums.ApplicationActivity();
+            foreach (string permission in lstUserActivityPermissions)
             {
-                // Get user application activity permission using BDSService
-                var lstUserActivityPermissions = objBDSServiceClient.GetUserActivityPermission(Sessions.User.UserId, Sessions.ApplicationId);
-                Sessions.UserActivityPermission = new Enums.ApplicationActivity();
-                foreach (string permission in lstUserActivityPermissions)
-                {
-                    Sessions.UserActivityPermission |= Common.GetKey<Enums.ApplicationActivity>(permission);
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
-                }
+                Sessions.UserActivityPermission |= Common.GetKey<Enums.ApplicationActivity>(permission);
             }
         }
 
@@ -366,7 +357,10 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
 
@@ -391,7 +385,7 @@ namespace RevenuePlanner.Controllers
                     }
                 case Enums.ActiveMenu.Organization:
                     //// For actions with organization controller 06/30/2014 Added By Maninder Singh Wadhva to handle return URL view.
-                    return RedirectToAction("ViewEditPermission", currentMenuOfUrl.ControllerName, new { id= Sessions.User.UserId, Mode="MyPermission" });
+                    return RedirectToAction("ViewEditPermission", currentMenuOfUrl.ControllerName, new { id = Sessions.User.UserId, Mode = "MyPermission" });
                 default:
                     return RedirectToAction(currentMenuOfUrl.ActionName, currentMenuOfUrl.ControllerName);
             }
@@ -433,7 +427,7 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
 
-                
+
                 objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
             }
             catch (Exception e)
@@ -443,8 +437,10 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
 
@@ -487,7 +483,10 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (ex is System.ServiceModel.EndpointNotFoundException)
                 {
-                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
 
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
@@ -718,7 +717,10 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (ex is System.ServiceModel.EndpointNotFoundException)
                 {
-                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
 
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
@@ -786,7 +788,10 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (ex is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
 
                 return RedirectToAction("Index", "Login", new { returnUrl = "" });
@@ -850,7 +855,10 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (ex is System.ServiceModel.EndpointNotFoundException)
                 {
-                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
 
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
@@ -896,6 +904,9 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (ex is System.ServiceModel.EndpointNotFoundException)
                 {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
                     TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
                 }
 
@@ -950,7 +961,10 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (ex is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
 
                 return RedirectToAction("Index", "Login", new { returnUrl = "" });
@@ -979,11 +993,12 @@ namespace RevenuePlanner.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
 
-                //To handle unavailability of BDSService
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
                 }
             }
             if (isValid)
@@ -1016,6 +1031,6 @@ namespace RevenuePlanner.Controllers
             }
         }
 
-        #endregion  
+        #endregion
     }
 }
