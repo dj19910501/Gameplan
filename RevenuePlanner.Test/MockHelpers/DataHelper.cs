@@ -77,7 +77,7 @@ namespace RevenuePlanner.Test.MockHelpers
 
         public static int GetModelId()
         {
-           MRPEntities db = new MRPEntities();
+            MRPEntities db = new MRPEntities();
             string published = Convert.ToString(Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower();
             return db.Models.Where(m => m.IsDeleted == false && m.Status.ToLower() == published).Select(m => m.ModelId).FirstOrDefault();
         }

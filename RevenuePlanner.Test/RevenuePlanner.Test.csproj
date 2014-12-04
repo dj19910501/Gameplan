@@ -39,6 +39,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data.Entity" />
@@ -65,6 +68,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Controllers\ExternalServiceControllerTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controllers\PlanControllerTest.cs" />
     <Compile Include="MockHelpers\DataHelper.cs" />
     <Compile Include="MockHelpers\MockHelpers.cs" />
