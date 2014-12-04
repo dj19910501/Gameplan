@@ -38,7 +38,7 @@
     <div class="shadow-scroll"></div>*@
     
     <div id="sidebar" class="span2 sidebar">
-
+        <div class="WelcomeMessageBorder"></div>
         <div class="sidebar-section scroll-section">
             <div style="width: 100%;">
                 <div class="width50 float-left ">
@@ -231,7 +231,14 @@
         var url = '@Url.Content("~/Home/LoadChangeLog")';
         $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");*@
 
-
+        function toggleChevron(e) {
+            $(e.target)
+				.prev('.accordion-heading')
+				.find("i.indicator")
+				.toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+        }
+        $('.accordion').on('hidden.bs.collapse', toggleChevron);
+        $('.accordion').on('shown.bs.collapse', toggleChevron);
         CallAjax();
         $("#liOpen a").click(function () {
             //Status = 0;
