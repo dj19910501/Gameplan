@@ -316,14 +316,8 @@ namespace RevenuePlanner.Helpers
                 {
                     return Convert.ToString(HttpContext.Current.Session["ApplicationName"]);
                 }
-                else
-                {
-                    Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
-                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                    string applicationName = objBDSServiceClient.GetApplicationName(applicationId);
-                    HttpContext.Current.Session["ApplicationName"] = applicationName;
-                    return Convert.ToString(HttpContext.Current.Session["ApplicationName"]);
-                }
+
+                return string.Empty;
             }
         }
 
@@ -398,6 +392,6 @@ namespace RevenuePlanner.Helpers
             }
         }
 
-      
+
     }
 }

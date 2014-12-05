@@ -78,10 +78,30 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.ReturnUrl = returnUrl;
 
-            //// Start - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
-            string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
-            ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
-            //// End - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+            try
+            {
+                Common.SetSessionVariableApplicationName();
+
+                //// Start - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+                string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
+                ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
+                //// End - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    Sessions.Clear();
+                    System.Web.Security.FormsAuthentication.SignOut();
+                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                }
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+            }
 
             //// Start - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page
             if (Common.IsOffline)
@@ -294,10 +314,29 @@ namespace RevenuePlanner.Controllers
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
             }
 
-            //// Start - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
-            string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
-            ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
-            //// End - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+            try
+            {
+                //// Start - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+                string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
+                ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
+                //// End - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
+                }
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+            }
 
             ViewBag.ReturnUrl = returnUrl;
             return View(form);

@@ -65,7 +65,7 @@ namespace RevenuePlanner.Helpers
 
         public static string xmlMsgFilePath = HttpContext.Current.Request.ApplicationPath == null ? string.Empty : HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLCommonMsgFilePath"));
         public static string xmlBenchmarkFilePath = HttpContext.Current.Request.ApplicationPath == null ? string.Empty : HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLBenchmarkFilePath"));
-     
+
 
         public static readonly int imgWidth = 50;
         public static readonly int imgHeight = 50;
@@ -560,7 +560,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ProgramName">Program name of tactic for which owner has been changed</param>
         /// <param name="CampaignName">Campaign name of tactic for which owner has been changed</param>
         /// <param name="PlanName">Plan name of tactic for which owner has been changed</param>
-        public static void SendNotificationMailForTacticOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName, string URL="")
+        public static void SendNotificationMailForTacticOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName, string URL = "")
         {
             for (int i = 0; i <= EmailIds.Count - 1; i++)
             {
@@ -705,7 +705,7 @@ namespace RevenuePlanner.Helpers
                 {
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticApproved.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId,URL);
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticApproved.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                     {
@@ -788,7 +788,7 @@ namespace RevenuePlanner.Helpers
                 {
                     if (section == Convert.ToString(Enums.Section.Program).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId,URL);
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
                 else if (status.Equals(Enums.Custom_Notification.CampaignCommentAdded.ToString()) && iscomment)
@@ -2245,17 +2245,9 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public static string GetCurrentApplicationReleaseVersion()
         {
-            try
-            {
-                Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
-                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                return objBDSServiceClient.GetApplicationReleaseVersion(applicationId);
-            }
-            catch (Exception ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex);
-                return string.Empty;
-            }
+            Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            return objBDSServiceClient.GetApplicationReleaseVersion(applicationId);
         }
         #endregion
 
@@ -4833,6 +4825,22 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+
+        /// <summary>
+        /// Function to set session variable application name.
+        /// Added By: Maninder 12/04/2014
+        /// Ticket: 942 Exception handeling in Gameplan.
+        /// </summary>
+        internal static void SetSessionVariableApplicationName()
+        {
+            if (HttpContext.Current.Session["ApplicationName"] == null)
+            {
+                Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                string applicationName = objBDSServiceClient.GetApplicationName(applicationId);
+                HttpContext.Current.Session["ApplicationName"] = applicationName;
+            }
+        }
     }
 
     /// <summary>
