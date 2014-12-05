@@ -19,6 +19,7 @@ namespace RevenuePlanner.Models
         public string Value { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
+        public string Abbreviation { get; set; }
     
         public virtual CustomField CustomField { get; set; }
     }

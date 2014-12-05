@@ -26,8 +26,9 @@ namespace RevenuePlanner.Models
         public string DisplayFieldName { get; set; }
         public bool IsGet { get; set; }
         public bool IsDeleted { get; set; }
+        public bool IsImprovement { get; set; }
     
-        public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public virtual IntegrationType IntegrationType { get; set; }
+        public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
     }
 }

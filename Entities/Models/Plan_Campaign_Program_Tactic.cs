@@ -47,6 +47,7 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> LastSyncDate { get; set; }
         public Nullable<double> ProjectedStageValue { get; set; }
         public int StageId { get; set; }
+        public string TacticCustomName { get; set; }
     
         public virtual Audience Audience { get; set; }
         public virtual BusinessUnit BusinessUnit { get; set; }

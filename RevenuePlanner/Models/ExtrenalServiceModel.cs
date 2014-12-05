@@ -19,6 +19,7 @@ namespace RevenuePlanner.Models
         public int? IntegrationInstanceDataTypeMappingId { get; set; }
         public int? IntegrationInstanceId { get; set; }
         public string TargetDataType { get; set; }
+        public bool IsCustomField { get; set; }
     }
     //Manoj Start PL#579 Server Configuration
     public class IntegrationInstanceExternalServerModel

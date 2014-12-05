@@ -41,6 +41,7 @@ namespace RevenuePlanner.Models
         public string IntegrationInstanceProgramId { get; set; }
         public Nullable<System.DateTime> LastSyncDate { get; set; }
         public double ProgramBudget { get; set; }
+        public string Abbreviation { get; set; }
     
         public virtual Audience Audience { get; set; }
         public virtual Geography Geography { get; set; }

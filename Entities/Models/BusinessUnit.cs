@@ -31,6 +31,7 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public string Abbreviation { get; set; }
     
         public virtual ICollection<Model> Models { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }

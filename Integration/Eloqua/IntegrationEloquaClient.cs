@@ -42,7 +42,7 @@ namespace Integration.Eloqua
         private Dictionary<Guid, string> _mappingGeography { get; set; }
         private Dictionary<Guid, string> _mappingBusinessunit { get; set; }
         private Dictionary<Guid, string> _mappingUser { get; set; }
-
+        private Dictionary<string, string> _mappingCustomFields { get; set; }  // Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
         private List<string> IntegrationInstanceTacticIds { get; set; }
         private List<string> campaignMetadata { get; set; }
         private Dictionary<string, string> customFields { get; set; }
@@ -201,6 +201,10 @@ namespace Integration.Eloqua
             if (EntityType.Tactic.Equals(_entityType))
             {
                 Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).SingleOrDefault();
+                // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
+                CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
                 planTactic = SyncTacticData(planTactic);
                 db.SaveChanges();
             }
@@ -429,16 +433,33 @@ namespace Integration.Eloqua
         /// </summary>
         private void SetMappingDetails()
         {
-            List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
-            _mappingTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
-                                                                   !gameplandata.GameplanDataType.IsGet)
-                                            .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
-                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+            // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+            string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
+            string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
+            string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
+            string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
+            // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
 
-            _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign_Program_Tactic" &&
+            // Start - Modified by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+            List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
+            _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
+                                                || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
+                                                (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
+                                            .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+            // End - Modified by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+
+            // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+            dataTypeMapping = dataTypeMapping.Where(gp => gp.GameplanDataType != null).Select(gp => gp).ToList();
+            // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+
+            // Start - Modified by Sohel Pathan on 05/12/2014 for PL ticket #995, 996, & 997
+            _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign_Program_Tactic
+                                                                || (gameplandata.GameplanDataType.TableName == Global && gameplandata.GameplanDataType.IsImprovement == true)) &&
                                                                    !gameplandata.GameplanDataType.IsGet)
                                             .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                             .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+            // End - Modified by Sohel Pathan on 05/12/2014 for PL ticket #995, 996, & 997
 
             Guid clientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
             _mappingVertical = db.Verticals.Where(v => v.ClientId == clientId).Select(v => new { v.VerticalId, v.Title })
@@ -469,6 +490,10 @@ namespace Integration.Eloqua
                 using (var scope = new TransactionScope())
                 {
                     List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
+                    // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
+                    CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                    // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
                     for (int index = 0; index < tacticList.Count; index++)
                     {
                         tacticList[index] = SyncTacticData(tacticList[index]);
@@ -1074,6 +1099,16 @@ namespace Integration.Eloqua
                         }
                     }
                 }
+                // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                else
+                {
+                    var mappedData = MapCustomField<T>(obj, sourceProps, mapping);
+                    if (mappedData != null)
+                    {
+                        fieldValues.Add(mappedData);
+                    }
+                }
+                // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
             }
 
             if (fieldValues.Count > 0)
@@ -1082,6 +1117,51 @@ namespace Integration.Eloqua
             }
 
             return keyvaluepair;
+        }
+
+        /// <summary>
+        /// Added By: Sohel Pathan
+        /// Added Date: 04/12/2014
+        /// Description: Map Custom Field Data for Integration
+        /// </summary>
+        /// <typeparam name="T">Plan or improvement tactic type.</typeparam>
+        /// <param name="obj">Plan or improvement tactic.</param>
+        /// <param name="sourceProps">Array of properties for given obj.</param>
+        /// <param name="mapping">Mapping field item</param>
+        /// <returns>Mapped object of Custom Field</returns>
+        private FieldValue MapCustomField<T>(object obj, PropertyInfo[] sourceProps, KeyValuePair<string, string> mapping)
+        {
+            if (_mappingCustomFields != null)
+            {
+                if (_mappingCustomFields.Count > 0)
+                {
+                    string mappingKey = string.Empty;
+                    string EntityType = ((T)obj).GetType().BaseType.Name;
+                    string EntityTypeId = string.Empty;
+                    PropertyInfo propInfoCustom = null;
+
+                    if (EntityType == Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString())
+                    {
+                        propInfoCustom = sourceProps.FirstOrDefault(property => property.Name.Equals("PlanTacticId", StringComparison.OrdinalIgnoreCase));
+                    }
+                    
+                    if (propInfoCustom != null)
+                    {
+                        EntityTypeId = Convert.ToString(propInfoCustom.GetValue(((T)obj), null));
+                    }
+                    mappingKey = mapping.Key + "-" + EntityTypeId;
+
+                    if (_mappingCustomFields.ContainsKey(mappingKey))
+                    {
+                        var customFieldId = customFields.Where(customField => customField.Value.Equals(mapping.Value)).Select(customField => customField).FirstOrDefault();
+                        if (customFieldId.Key != null && customFieldId.Value != null)
+                        {
+                            return new FieldValue { id = customFieldId.Key, type = "FieldValue", value = _mappingCustomFields[mappingKey] };
+                        }
+                    }
+                }
+            }
+            return null; 
         }
 
         //// Modified By: Maninder Singh Wadhva
@@ -1174,6 +1254,36 @@ namespace Integration.Eloqua
             else
             {
                 return e.Message;
+            }
+        }
+
+        /// <summary>
+        /// Added by : Sohel Pathan
+        /// Added Date : 04/12/2014
+        /// Description : Prepare a dictionary for Custom Fields with CustomFieldId and its value.
+        /// </summary>
+        /// <param name="EntityIdList">List of Entity Ids with which Custom Fields are associated like PlanCampaignIds for Campaign Entity Type</param>
+        /// <param name="EntityType">Type of Entity with which Custom Fields are associated like Campaign, Program or Tactic</param>
+        private void CreateMappingCustomFieldDictionary(List<int> EntityIdList, string EntityType)
+        {
+            var CustomFieldList = db.CustomField_Entity.Where(ce => EntityIdList.Contains(ce.EntityId) && ce.CustomField.EntityType == EntityType)
+                                                        .Select(ce => new { ce.CustomField, ce.CustomFieldEntityId, ce.CustomFieldId, ce.EntityId, ce.Value }).ToList();
+            List<int> CustomFieldIdList = CustomFieldList.Select(cf => cf.CustomFieldId).Distinct().ToList();
+            var CustomFieldOptionList = db.CustomFieldOptions.Where(cfo => CustomFieldIdList.Contains(cfo.CustomFieldId)).Select(cfo => new { cfo.CustomFieldOptionId, cfo.Value });
+
+            _mappingCustomFields = new Dictionary<string, string>();
+            
+            foreach (var item in CustomFieldList)
+            {
+                if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
+                {
+                    _mappingCustomFields.Add(item.CustomFieldId + "-" + item.EntityId, item.Value);
+                }
+                else if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.DropDownList.ToString())
+                {
+                    int CustomFieldOptionId = Convert.ToInt32(item.Value);
+                    _mappingCustomFields.Add(item.CustomFieldId + "-" + item.EntityId, CustomFieldOptionList.Where(cfo => cfo.CustomFieldOptionId == CustomFieldOptionId).Select(cfo => cfo.Value).FirstOrDefault());
+                }
             }
         }
     }

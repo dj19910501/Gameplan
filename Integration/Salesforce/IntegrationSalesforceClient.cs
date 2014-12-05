@@ -51,6 +51,7 @@ namespace Integration.Salesforce
         private Dictionary<Guid, string> _mappingGeography { get; set; }
         private Dictionary<Guid, string> _mappingBusinessunit { get; set; }
         private Dictionary<Guid, string> _mappingUser { get; set; }
+        private Dictionary<string, string> _mappingCustomFields { get; set; }      // Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
         private int _integrationInstanceId { get; set; }
         private int _id { get; set; }
         private Guid _userId { get; set; }
@@ -155,18 +156,30 @@ namespace Integration.Salesforce
             if (EntityType.Tactic.Equals(_entityType))
             {
                 Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).SingleOrDefault();
+                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
+                CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 planTactic = SyncTacticData(planTactic);
                 db.SaveChanges();
             }
             else if (EntityType.Program.Equals(_entityType))
             {
                 Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id).SingleOrDefault();
+                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
+                CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 planProgram = SyncProgramData(planProgram);
                 db.SaveChanges();
             }
             else if (EntityType.Campaign.Equals(_entityType))
             {
                 Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id).SingleOrDefault();
+                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                List<int> campaignIdList = new List<int>(){ planCampaign.PlanCampaignId };
+                CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 planCampaign = SyncCampaingData(planCampaign);
                 db.SaveChanges();
             }
@@ -738,36 +751,63 @@ namespace Integration.Salesforce
 
         private void SetMappingDetails()
         {
+            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+            string Campaign_EntityType = Enums.EntityType.Campaign.ToString();
+            string Program_EntityType = Enums.EntityType.Program.ToString();
+            string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
+            string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
+            string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
+            string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
+            string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
+            string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
+            string Plan_Improvement_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program.ToString();
+            string Plan_Improvement_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign.ToString();
+            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+
+            // Start - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
             List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
-            _mappingTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
-                                                                   !gameplandata.GameplanDataType.IsGet)
+            _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
+                                                    || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
+                                                    (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
+                                                .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                                .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+
+            _mappingProgram = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program 
+                                                    || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Program_EntityType) &&
+                                                    (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
+                                                .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                                .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+
+            _mappingCampaign = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign 
+                                                    || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Campaign_EntityType) &&
+                                                    (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
+                                                .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                                .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+            // End - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+
+            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+            dataTypeMapping = dataTypeMapping.Where(gp => gp.GameplanDataType != null).Select(gp => gp).ToList();
+            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+
+            // Start - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+            _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign_Program_Tactic 
+                                                            || (gameplandata.GameplanDataType.TableName == Global && gameplandata.GameplanDataType.IsImprovement == true)) &&
+                                                                !gameplandata.GameplanDataType.IsGet)
                                             .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                             .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
-
-            _mappingProgram = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign_Program" &&
-                                                       !gameplandata.GameplanDataType.IsGet)
-                                .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
-                                .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
-
-            _mappingCampaign = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign" &&
-                                           !gameplandata.GameplanDataType.IsGet)
-                    .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
-                    .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
-
-            _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign_Program_Tactic" &&
-                                                                   !gameplandata.GameplanDataType.IsGet)
-                                            .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
-                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
-
-            _mappingImprovementProgram = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign_Program" &&
-                                                                  !gameplandata.GameplanDataType.IsGet)
+                        
+            _mappingImprovementProgram = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign_Program
+                                                            || (gameplandata.GameplanDataType.TableName == Global && gameplandata.GameplanDataType.IsImprovement == true)) &&
+                                                                !gameplandata.GameplanDataType.IsGet)
                                            .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
-            _mappingImprovementCampaign = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign" &&
-                                                                  !gameplandata.GameplanDataType.IsGet)
+            _mappingImprovementCampaign = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign
+                                                            || (gameplandata.GameplanDataType.TableName == Global && gameplandata.GameplanDataType.IsImprovement == true)) &&
+                                                                !gameplandata.GameplanDataType.IsGet)
                                            .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+            // End - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
 
             Guid clientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
             _mappingVertical = db.Verticals.Where(v => v.ClientId == clientId).Select(v => new { v.VerticalId, v.Title })
@@ -778,7 +818,7 @@ namespace Integration.Salesforce
                                 .ToDictionary(b => b.BusinessUnitId, b => b.Title);
             _mappingGeography = db.Geographies.Where(g => g.ClientId == clientId).Select(g => new { g.GeographyId, g.Title })
                                 .ToDictionary(g => g.GeographyId, g => g.Title);
-
+            
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             _mappingUser = objBDSservice.GetUserListByClientId(clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
 
@@ -1745,6 +1785,10 @@ namespace Integration.Salesforce
                 using (var scope = new TransactionScope())
                 {
                     List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId)).ToList();
+                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
+                    CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     for (int index = 0; index < campaignList.Count; index++)
                     {
                         campaignList[index] = SyncCampaingData(campaignList[index]);
@@ -1756,6 +1800,10 @@ namespace Integration.Salesforce
                 using (var scope = new TransactionScope())
                 {
                     List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => planIds.Contains(program.Plan_Campaign.PlanId)).ToList();
+                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
+                    CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     for (int index = 0; index < programList.Count; index++)
                     {
                         programList[index] = SyncProgramData(programList[index]);
@@ -1767,6 +1815,10 @@ namespace Integration.Salesforce
                 using (var scope = new TransactionScope())
                 {
                     List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
+                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
+                    CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     for (int index = 0; index < tacticList.Count; index++)
                     {
                         tacticList[index] = SyncTacticData(tacticList[index]);
@@ -1999,9 +2051,71 @@ namespace Integration.Salesforce
 
                     keyvaluepair.Add(mapping.Value, value);
                 }
+                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                else
+                {
+                    var mappedData = MapCustomField<T>(obj, sourceProps, mapping);
+                    if (mappedData != null)
+                    {
+                        if (mappedData.Length > 0)
+                        {
+                            keyvaluepair.Add(mappedData[0].ToString(), mappedData[1].ToString());
+                        }
+                    }
+                }
+                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
             }
 
             return keyvaluepair;
+        }
+
+        /// <summary>
+        /// Added By: Sohel Pathan
+        /// Added Date: 03/12/2014
+        /// Description: Map Custom Field Data for Integration
+        /// </summary>
+        /// <typeparam name="T">Plan or improvement tactic type.</typeparam>
+        /// <param name="obj">Plan or improvement tactic.</param>
+        /// <param name="sourceProps">Array of properties for given obj.</param>
+        /// <param name="mapping">Mapping field item</param>
+        /// <returns>Mapped object of Custom Field</returns>
+        private string[] MapCustomField<T>(object obj, PropertyInfo[] sourceProps, KeyValuePair<string, string> mapping)
+        {
+            if (_mappingCustomFields != null)
+            {
+                if (_mappingCustomFields.Count > 0)
+                {
+                    string mappingKey = string.Empty;
+                    string EntityType = ((T)obj).GetType().BaseType.Name;
+                    string EntityTypeId = string.Empty;
+                    PropertyInfo propInfoCustom = null;
+
+                    if (EntityType == Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString())
+                    {
+                        propInfoCustom = sourceProps.FirstOrDefault(property => property.Name.Equals("PlanTacticId", StringComparison.OrdinalIgnoreCase));
+                    }
+                    else if (EntityType == Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString())
+                    {
+                        propInfoCustom = sourceProps.FirstOrDefault(property => property.Name.Equals("PlanProgramId", StringComparison.OrdinalIgnoreCase));
+                    }
+                    else if (EntityType == Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString())
+                    {
+                        propInfoCustom = sourceProps.FirstOrDefault(property => property.Name.Equals("PlanCampaignId", StringComparison.OrdinalIgnoreCase));
+                    }
+
+                    if (propInfoCustom != null)
+                    {
+                        EntityTypeId = Convert.ToString(propInfoCustom.GetValue(((T)obj), null));
+                    }
+                    mappingKey = mapping.Key + "-" + EntityTypeId;
+
+                    if (_mappingCustomFields.ContainsKey(mappingKey))
+                    {
+                        return new string[] { mapping.Value, _mappingCustomFields[mappingKey] };
+                    }
+                }
+            }
+            return null;
         }
 
         private string GetSalesForceStatus(string status)
@@ -2030,5 +2144,35 @@ namespace Integration.Salesforce
         }
 
         #endregion
+
+        /// <summary>
+        /// Added by : Sohel Pathan
+        /// Added Date : 03/12/2014
+        /// Description : Prepare a dictionary for Custom Fields with CustomFieldId and its value.
+        /// </summary>
+        /// <param name="EntityIdList">List of Entity Ids with which Custom Fields are associated like PlanCampaignIds for Campaign Entity Type</param>
+        /// <param name="EntityType">Type of Entity with which Custom Fields are associated like Campaign, Program or Tactic</param>
+        private void CreateMappingCustomFieldDictionary(List<int> EntityIdList, string EntityType)
+        {
+            var CustomFieldList = db.CustomField_Entity.Where(ce => EntityIdList.Contains(ce.EntityId) && ce.CustomField.EntityType == EntityType)
+                                                        .Select(ce => new { ce.CustomField, ce.CustomFieldEntityId, ce.CustomFieldId, ce.EntityId, ce.Value }).ToList();
+            List<int> CustomFieldIdList = CustomFieldList.Select(cf => cf.CustomFieldId).Distinct().ToList();
+            var CustomFieldOptionList = db.CustomFieldOptions.Where(cfo => CustomFieldIdList.Contains(cfo.CustomFieldId)).Select(cfo => new { cfo.CustomFieldOptionId, cfo.Value });
+
+            _mappingCustomFields = new Dictionary<string, string>();
+
+            foreach (var item in CustomFieldList)
+            {
+                if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
+                {
+                    _mappingCustomFields.Add(item.CustomFieldId + "-" + item.EntityId, item.Value);
+                }
+                else if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.DropDownList.ToString())
+                {
+                    int CustomFieldOptionId = Convert.ToInt32(item.Value);
+                    _mappingCustomFields.Add(item.CustomFieldId + "-" + item.EntityId, CustomFieldOptionList.Where(cfo => cfo.CustomFieldOptionId == CustomFieldOptionId).Select(cfo => cfo.Value).FirstOrDefault());
+                }
+            }
+        }
     }
 }

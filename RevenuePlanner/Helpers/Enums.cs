@@ -754,7 +754,8 @@ namespace RevenuePlanner.Helpers
             Plan_Campaign_Program_Tactic,
             Plan_Improvement_Campaign,
             Plan_Improvement_Campaign_Program,
-            Plan_Improvement_Campaign_Program_Tactic
+            Plan_Improvement_Campaign_Program_Tactic,
+            Global  //  Added by Sohel Pathan on 02/12/2014 for PL ticket #993
         }
 
         /// <summary>

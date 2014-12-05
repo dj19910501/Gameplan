@@ -18,6 +18,7 @@ namespace RevenuePlanner.Models
         {
             this.CustomField_Entity = new HashSet<CustomField_Entity>();
             this.CustomFieldOptions = new HashSet<CustomFieldOption>();
+            this.IntegrationInstanceDataTypeMappings = new HashSet<IntegrationInstanceDataTypeMapping>();
         }
     
         public int CustomFieldId { get; set; }
@@ -36,5 +37,6 @@ namespace RevenuePlanner.Models
         public virtual CustomFieldType CustomFieldType { get; set; }
         public virtual ICollection<CustomField_Entity> CustomField_Entity { get; set; }
         public virtual ICollection<CustomFieldOption> CustomFieldOptions { get; set; }
+        public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
     }
 }

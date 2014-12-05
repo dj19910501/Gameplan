@@ -1279,12 +1279,22 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.IntegrationInstanceId = id;
-                var integrationTypeObj = (from integrationInstance in db.IntegrationInstances
-                                          join integartionType in db.IntegrationTypes on integrationInstance.IntegrationTypeId equals integartionType.IntegrationTypeId
-                                          where integrationInstance.IsDeleted == false && integartionType.IsDeleted == false && integrationInstance.IntegrationInstanceId == id
-                                          select integartionType);
-                string integrationTypeName = integrationTypeObj.Select(integartionType => integartionType.Title).FirstOrDefault();
-                string integrationTypeCode = integrationTypeObj.Select(integartionType => integartionType.Code).FirstOrDefault();
+                
+                var integrationType = (from i in db.IntegrationInstances
+                                       join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
+                                       where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
+                                       select new { t.Title, t.IntegrationTypeId, t.Code }).SingleOrDefault();
+
+                string integrationTypeName = string.Empty;
+                string integrationTypeCode = string.Empty;
+                int IntegrationTypeId = 0;
+                if (integrationType != null)
+                {
+                    integrationTypeName = integrationType.Title;
+                    IntegrationTypeId = integrationType.IntegrationTypeId;
+                    integrationTypeCode = integrationType.Code;
+                }
+
                 if (string.IsNullOrEmpty(integrationTypeName))
                 {
                     ViewBag.IntegrationTypeName = "";
@@ -1300,6 +1310,7 @@ namespace RevenuePlanner.Controllers
                 string Eloqua = Enums.IntegrationType.Eloqua.ToString();
                 string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
                 string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
+                string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
 
                 List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
                 listGameplanDataTypeStageZero = (from i in db.IntegrationInstances
@@ -1307,7 +1318,7 @@ namespace RevenuePlanner.Controllers
                                                  join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
                                                  from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
                                                  where i.IntegrationInstanceId == id && d.IsDeleted == false &&
-                                                 (integrationTypeCode == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic) : 1 == 1)
+                                                 (integrationTypeCode == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic || d.TableName == Global) : 1 == 1)
                                                  select new GameplanDataTypeModel
                                                  {
                                                      GameplanDataTypeId = d.GameplanDataTypeId,
@@ -1323,16 +1334,53 @@ namespace RevenuePlanner.Controllers
 
                 listGameplanDataTypeStageZero.ForEach(d => d.DisplayFieldName = d.DisplayFieldName.Replace("Audience", Common.CustomLabelFor(Enums.CustomLabelCode.Audience)));
 
+                //// Start - Added by :- Sohel Pathan on 03/12/2014 for PL #993
+                string Campaign_EntityType = Enums.EntityType.Campaign.ToString();
+                string Program_EntityType = Enums.EntityType.Program.ToString();
+                string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
+                string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
+                string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
+                
+                List<GameplanDataTypeModel> listGameplanDataTypeCustomFields = new List<GameplanDataTypeModel>();
+                listGameplanDataTypeCustomFields = (from c in db.CustomFields
+                                                    join m1 in db.IntegrationInstanceDataTypeMappings on c.CustomFieldId equals m1.CustomFieldId into mapping
+                                                    from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                    where c.IsDeleted == false &&
+                                                    (integrationTypeCode == Eloqua ? (c.EntityType == Tactic_EntityType) : 1 == 1)
+                                                    select new GameplanDataTypeModel
+                                                    {
+                                                        GameplanDataTypeId = c.CustomFieldId,   // For Custom Fields CustomFieldId is GameplanDataType Id in Mapping
+                                                        IntegrationTypeId = IntegrationTypeId,
+                                                        TableName = c.EntityType == Campaign_EntityType ? Plan_Campaign : (c.EntityType == Program_EntityType ? Plan_Campaign_Program : (c.EntityType == Tactic_EntityType ? Plan_Campaign_Program_Tactic : string.Empty)),
+                                                        ActualFieldName = c.Name,
+                                                        DisplayFieldName = c.Name,
+                                                        IsGet = false,
+                                                        IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                                                        IntegrationInstanceId = id,
+                                                        TargetDataType = m.TargetDataType,
+                                                        IsCustomField = true
+                                                    }).ToList();
+                //// End - Added by :- Sohel Pathan on 03/12/2014 for PL #993
+
                 if (listGameplanDataTypeStageZero != null && listGameplanDataTypeStageZero.Count > 0)
                 {
+                    listGameplanDataTypeStageZero.AddRange(listGameplanDataTypeCustomFields);
                     return listGameplanDataTypeStageZero.OrderBy(map => map.TableName).ToList();
                 }
                 //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id
                 else
                 {
+                    if (listGameplanDataTypeCustomFields != null && listGameplanDataTypeCustomFields.Count > 0)
+                    {
+                        listGameplanDataTypeStageZero = listGameplanDataTypeCustomFields;
+                        return listGameplanDataTypeStageZero.OrderBy(map => map.TableName).ToList();
+                    }
+                else
+                {
                     TempData["DataMappingErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
                     return listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
                 }
+            }
             }
             catch
             {
@@ -1466,7 +1514,16 @@ namespace RevenuePlanner.Controllers
                                 int instanceId;
                                 int.TryParse(Convert.ToString(obj.IntegrationInstanceId), out instanceId);
                                 objMapping.IntegrationInstanceId = instanceId;
+                                //// Start - Modified by :- Sohel Pathan on 03/12/2014 for PL #993
+                                if (obj.IsCustomField.Equals(true))
+                                {
+                                    objMapping.CustomFieldId = obj.GameplanDataTypeId;      // For Custom Fields CustomFieldId is GameplanDataType Id in Mapping
+                                }
+                                else
+                                {
                                 objMapping.GameplanDataTypeId = obj.GameplanDataTypeId;
+                                }
+                                //// End - Modified by :- Sohel Pathan on 03/12/2014 for PL #993
                                 objMapping.TargetDataType = obj.TargetDataType;
                                 objMapping.CreatedDate = DateTime.Now;
                                 objMapping.CreatedBy = Sessions.User.UserId;

@@ -16,7 +16,7 @@
                     <div class="content-colum-mapDataTypes width100 float-left">
                         <table id="tblDataMapping" class="tblFieldMapping">
                             <tbody>
-                                @{bool CampaignHeaderSet = false, ProgramHeaderSet = false, TacticHeaderSet = false;}
+                                @{bool GlobalHeaderSet  = false, CampaignHeaderSet = false, ProgramHeaderSet = false, TacticHeaderSet = false;}
                                 @{bool ImprovemntCampaignHeaderSet = false, ImprovemntProgramHeaderSet = false, ImprovemntTacticHeaderSet = false;}
                                 @for (var i = 0; i < Model.Count; i++)
                                 {
@@ -28,14 +28,26 @@
                                     @Html.HiddenFor(x => x[i].IsGet)   
                                     @Html.HiddenFor(x => x[i].IntegrationInstanceDataTypeMappingId)   
                                     @Html.HiddenFor(x => x[i].IntegrationInstanceId) 
-                                    if (!CampaignHeaderSet || !ProgramHeaderSet || !TacticHeaderSet || !ImprovemntCampaignHeaderSet || !ImprovemntProgramHeaderSet || !ImprovemntTacticHeaderSet)
+                                    @Html.HiddenFor(x => x[i].IsCustomField) 
+                                    if (!GlobalHeaderSet || !CampaignHeaderSet || !ProgramHeaderSet || !TacticHeaderSet || !ImprovemntCampaignHeaderSet || !ImprovemntProgramHeaderSet || !ImprovemntTacticHeaderSet)
                                     {
-                                        if (CampaignHeaderSet == false && Model[i].TableName == Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString())
+                                        if (GlobalHeaderSet == false && Model[i].TableName == Enums.IntegrantionDataTypeMappingTableName.Global.ToString())
                                         {
                                             <tr>
                                                 <td colspan="2">
                                                     <div class="padding-right5">
-                                                        <h5 class="title-header">Gameplan Fields - Campaign - Data Mapping</h5>
+                                                        <h5 class="title-header">Gameplan Fields - Global</h5>
+                                                        @{GlobalHeaderSet = true;}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else if (CampaignHeaderSet == false && Model[i].TableName == Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString())
+                                        {
+                                            <tr>
+                                                <td colspan="2">
+                                                    <div class="padding-right5">
+                                                        <h5 class="title-header">Gameplan Fields - Campaign</h5>
                                                         @{CampaignHeaderSet = true;}
                                                     </div>
                                                 </td>
@@ -46,7 +58,7 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <div class="padding-right5">
-                                                        <h5 class="title-header">Gameplan Fields - Program - Data Mapping</h5>
+                                                        <h5 class="title-header">Gameplan Fields - Program</h5>
                                                         @{ProgramHeaderSet = true;}
                                                     </div>
                                                 </td>
@@ -57,7 +69,7 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <div class="padding-right5">
-                                                        <h5 class="title-header">Gameplan Fields - Tactic - Data Mapping</h5>
+                                                        <h5 class="title-header">Gameplan Fields - Tactic</h5>
                                                         @{TacticHeaderSet = true;}
                                                     </div>
                                                 </td>
@@ -68,7 +80,7 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <div class="padding-right5">
-                                                        <h5 class="title-header">Gameplan Fields - Improvement Campaign - Data Mapping</h5>
+                                                        <h5 class="title-header">Gameplan Fields - Improvement Campaign</h5>
                                                         @{ImprovemntCampaignHeaderSet = true;}
                                                     </div>
                                                 </td>
@@ -79,7 +91,7 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <div class="padding-right5">
-                                                        <h5 class="title-header">Gameplan Fields - Improvement Program - Data Mapping</h5>
+                                                        <h5 class="title-header">Gameplan Fields - Improvement Program</h5>
                                                         @{ImprovemntProgramHeaderSet = true;}
                                                     </div>
                                                 </td>
@@ -90,7 +102,7 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <div class="padding-right5">
-                                                        <h5 class="title-header">Gameplan Fields - Improvement Tactic - Data Mapping</h5>
+                                                        <h5 class="title-header">Gameplan Fields - Improvement Tactic</h5>
                                                         @{ImprovemntTacticHeaderSet = true;}
                                                     </div>
                                                 </td>
@@ -102,7 +114,7 @@
                                             @Html.DisplayFor(x => x[i].DisplayFieldName)
                                         </td>
                                         <td class="width60">
-                                            <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldList"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle", id = i.ToString(), tabindex=((int)(100 + i)).ToString() })</span>  @* Modified by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once. *@
+                                            <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldList"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle", id = i.ToString(), tabindex = ((int)(100 + i)).ToString() })</span>  @* Modified by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once. *@
                                         </td>
                                     </tr>
                                 }
@@ -134,7 +146,7 @@
                             </span>
                         </div>
                     
-                 }
+                }
             </div>   
         }
     </div>

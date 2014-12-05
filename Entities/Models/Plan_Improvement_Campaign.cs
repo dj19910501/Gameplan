@@ -27,6 +27,7 @@ namespace RevenuePlanner.Models
         public bool IsDeployedToIntegration { get; set; }
         public string IntegrationInstanceCampaignId { get; set; }
         public Nullable<System.DateTime> LastSyncDate { get; set; }
+        public string Description { get; set; }
     
         public virtual Plan Plan { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }

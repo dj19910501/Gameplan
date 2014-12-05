@@ -16,11 +16,13 @@ namespace RevenuePlanner.Models
     {
         public int IntegrationInstanceDataTypeMappingId { get; set; }
         public int IntegrationInstanceId { get; set; }
-        public int GameplanDataTypeId { get; set; }
+        public Nullable<int> GameplanDataTypeId { get; set; }
         public string TargetDataType { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
+        public Nullable<int> CustomFieldId { get; set; }
     
+        public virtual CustomField CustomField { get; set; }
         public virtual GameplanDataType GameplanDataType { get; set; }
         public virtual IntegrationInstance IntegrationInstance { get; set; }
     }
