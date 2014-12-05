@@ -1593,7 +1593,6 @@ namespace RevenuePlanner.Controllers
                 // Added by dharmraj for Ticket #537
                 try
                 {
-                    throw new Exception();
                     var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
                     var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList().Select(u => u.UserId).ToList();
                     if (lstSubordinates.Count > 0)
