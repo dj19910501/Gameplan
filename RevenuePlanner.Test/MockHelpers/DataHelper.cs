@@ -81,5 +81,27 @@ namespace RevenuePlanner.Test.MockHelpers
             string published = Convert.ToString(Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower();
             return db.Models.Where(m => m.IsDeleted == false && m.Status.ToLower() == published).Select(m => m.ModelId).FirstOrDefault();
         }
+
+        /// <summary>
+        /// Get single published plan id.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetPlanId()
+        {
+            MRPEntities db = new MRPEntities();
+            string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
+            return db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.PlanId).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Get single published multiple plan id.
+        /// </summary>
+        /// <returns></returns>
+        public static List<int> GetMultiplePlanId()
+        {
+            MRPEntities db = new MRPEntities();
+            string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
+            return db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.PlanId).Take(5).ToList();
+        }
     }
 }

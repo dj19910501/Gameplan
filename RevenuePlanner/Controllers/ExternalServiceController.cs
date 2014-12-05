@@ -107,11 +107,10 @@ namespace RevenuePlanner.Controllers
         /// This will return view for Integration folder.
         /// </summary>
         /// <param name="id">Integration id.</param>
-        /// <param name="TypeId">Integration type id.</param>
-        /// <param name="year">Year for plan selection.</param>
+        /// <param name="TypeId">Integration type id.</param>        
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]
-        public ActionResult GetIntegrationFolder(int id = 0, int TypeId = 0)
+        public ActionResult GetIntegrationFolder(int TypeId, int id = 0)
         {
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
@@ -119,7 +118,11 @@ namespace RevenuePlanner.Controllers
             ViewBag.IntegrationTypeId = TypeId;
 
             var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == TypeId).FirstOrDefault();
-            ViewBag.IntegrationTypeCode = integrationTypeObj.Code;
+
+            if (integrationTypeObj != null)
+            {
+                ViewBag.IntegrationTypeCode = integrationTypeObj.Code;
+            }
 
             string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
 
@@ -173,8 +176,6 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveIntegrationFolderPlanList(List<IntegrationPlanList> IntegrationPlanList)
         {
-            string Year = DateTime.Now.Year.ToString();
-
             try
             {
                 using (MRPEntities mrp = new MRPEntities())
@@ -183,8 +184,6 @@ namespace RevenuePlanner.Controllers
                     {
                         if (IntegrationPlanList.Count > 0)
                         {
-                            Year = IntegrationPlanList[0].Year;
-
                             //// Iterate Integration model list and save it to database.
                             foreach (var item in IntegrationPlanList)
                             {
