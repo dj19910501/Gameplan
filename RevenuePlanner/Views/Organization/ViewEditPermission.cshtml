@@ -668,6 +668,12 @@ else
                 if (result.returnURL != 'undefined' && result.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
+                else if (result.serviceUnavailable != 'undefined' && result.serviceUnavailable == '#') {
+                    //// Function to redirect to login page on unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
                 else {
                 // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                     if (result.status == true) {
@@ -699,6 +705,12 @@ else
                 // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                 if (result.returnURL != 'undefined' && result.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
+                }
+                else if (result.serviceUnavailable != 'undefined' && result.serviceUnavailable == '#') {
+                    //// Function to redirect to login page on unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
                 // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check

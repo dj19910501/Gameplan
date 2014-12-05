@@ -62,8 +62,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
                 else
                 {
@@ -112,8 +111,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
                 else
                 {
@@ -135,6 +133,8 @@ namespace RevenuePlanner.Controllers
                 //Session["session"] = objrole;commented by uday for functional review point...3-7-2014
                 TempData["objrole"] = objrole;
 
+                try
+                {
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                 int retval = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId,Sessions.User.ClientId);
                 if (retval == 1)
@@ -146,6 +146,20 @@ namespace RevenuePlanner.Controllers
                     return Json(false);
                 }
             }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+
             return Json(false);
             //return Json(new { name = "dsfsdf" });
             //return RedirectToAction("Edit", "Organization");
@@ -164,7 +178,6 @@ namespace RevenuePlanner.Controllers
 
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                 var rolelist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
-
                 if (roleId == Guid.Empty)//changed by uday for functional review point...3-7-2014;
                 {
                     var prevrole = (Role)TempData["objrole"];//changed by uday for functional review point...3-7-2014;
@@ -205,8 +218,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
                 else
                 {
@@ -220,11 +232,11 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult RoleDelete(Guid roleid, string selectedrole)
         {
-
-            ViewData["users"] = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
-            //changed by uday for functional review point...3-7-2014;
             try
             {
+            ViewData["users"] = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
+            //changed by uday for functional review point...3-7-2014;
+
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
                 
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
@@ -241,6 +253,17 @@ namespace RevenuePlanner.Controllers
             catch (Exception ex)
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
+
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (ex is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
             }
 
             return PartialView("RoleDelete");//name change by uday for functional review point...3-7-2014
@@ -248,6 +271,8 @@ namespace RevenuePlanner.Controllers
 
         public ActionResult CheckPermission(Guid roleid, string permission)
         {
+            try
+            {
             List<User> user_list = new List<User>();
             var user_role_mapping = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
             //var user_activity_mapping = objBDSServiceClient.GetUserActivityPermission(Sessions.ApplicationId,)
@@ -259,8 +284,7 @@ namespace RevenuePlanner.Controllers
             }
 
             var activity_CodeList = activitylist.Where(activity => idsList.Contains(activity.ApplicationActivityId)).ToList();
-            try
-            {
+
 
                 foreach (var user_role_map in user_role_mapping)
                 {
@@ -278,6 +302,16 @@ namespace RevenuePlanner.Controllers
             catch (Exception ex)
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (ex is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
             }
 
             return PartialView("CheckPermission");
@@ -302,6 +336,8 @@ namespace RevenuePlanner.Controllers
                 reassignroleid = Guid.Empty;
             }
 
+            try
+            {
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
             int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId, Sessions.User.UserId, Sessions.User.ClientId);
             
@@ -315,10 +351,29 @@ namespace RevenuePlanner.Controllers
                 return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             }
         }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new { status = false }, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpPost]
         public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission, string LoginId = "")
         {
+            try
+            {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             if (!string.IsNullOrEmpty(LoginId))
             {
@@ -343,6 +398,23 @@ namespace RevenuePlanner.Controllers
                 return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             }
         }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new { status = false }, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpPost]
         public JsonResult CopyRole(string copyroledesc, Guid originalroleid, string LoginId = "")
@@ -364,6 +436,8 @@ namespace RevenuePlanner.Controllers
                 objrole.Description = copyroledesc;
                 objrole.Title = copyroledesc.Trim();
                 Session["session"] = objrole;
+                try
+                {
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                 int retvalcheck = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId,Sessions.User.ClientId);
                 if (retvalcheck == 1)
@@ -382,6 +456,21 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     return Json(new { status = false }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                }
+            }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        //// Flag to indicate unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                    }
                 }
             }
             return Json(new { status = false }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
@@ -417,8 +506,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
                 else
                 {
@@ -633,8 +721,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
                 else
                 {
@@ -680,8 +767,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
@@ -727,8 +813,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {

@@ -220,6 +220,13 @@
                     type: 'POST',
                     cache: false,
                     success: function (result) {
+                    if (result.serviceUnavailable != 'undefined' && result.serviceUnavailable == '#') {
+                        //// Function to redirect to login page on unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
                         if (result == true) {
                             url = '@Url.Content("~/Organization/RoleEdit")';//name change by uday for functional review point...3-7-2014
                             window.location.href = url + "?roleId=" + '@emptyGuidId';
@@ -230,6 +237,7 @@
                             $("#spanErrorMessageRole").text(msgspan);
                         }
                     }
+                }
                 });
 
         }
@@ -271,6 +279,12 @@
                     if (result.returnURL != 'undefined' && result.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';
                     }
+                    else if (result.serviceUnavailable != 'undefined' && result.serviceUnavailable == '#') {
+                        //// Function to redirect to login page on unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
                     else {
                     // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53  to implement user session check
                         if (result.status == true) {
@@ -304,7 +318,14 @@ $('.delete-temp-program').click(function () {
     var roleselected = $("#rolelabel" + id).html();
     var url = '@Url.Content("~/Organization/RoleDelete/")';//name change by uday for functional review point...3-7-2014
         //how to load partial view....
-        $("#loaddiv").load(url + "?roleId=" + id, "&selectedrole=" + roleselected);
+        $("#loaddiv").load(url + "?roleId=" + id, "&selectedrole=" + roleselected, function (response, status, xhr) {
+            if (response.indexOf('serviceUnavailable') != -1) {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
     });
 </script>
 
