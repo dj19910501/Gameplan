@@ -214,14 +214,22 @@
             document.getElementById('mqlP').innerHTML = FormatCommas(document.getElementById('mqlP').innerHTML, false);
             document.getElementById('lblTotalMQL').innerHTML = FormatCommas(document.getElementById('lblTotalMQL').innerHTML, false);
 
-            document.getElementById('cwP').innerHTML = FormatCommas(document.getElementById('cwP').innerHTML, false);
+            document.getElementById('cwP').innerHTML = FormatCommas(document.getElementById('cwP').innerHTML, true);
             document.getElementById('lblTotalCW').innerHTML = FormatCommas(document.getElementById('lblTotalCW').innerHTML, false);
 
-            document.getElementById('rP').innerHTML = FormatCurrency(document.getElementById('rP').innerHTML, false);
+            document.getElementById('rP').innerHTML = FormatCurrency(document.getElementById('rP').innerHTML, true);
             document.getElementById('lblTotalRevenue').innerHTML = FormatCurrency(document.getElementById('lblTotalRevenue').innerHTML, false);
 
             document.getElementById('cP').innerHTML = FormatCurrency(document.getElementById('cP').innerHTML, false);
             document.getElementById('cT').innerHTML = FormatCurrency(document.getElementById('cT').innerHTML, false);
+
+            var pcost = parseFloat(ReplaceCC(document.getElementById('cP').innerHTML));
+            if (pcost != 0 && !isNaN(pcost)) {
+                var prevenue = parseFloat(ReplaceCC($("#rP").text()));
+                var roip = prevenue / pcost;
+                $("#roiP").text(roip.toFixed(2));
+            }
+
             //$('#mqlP').val(FormatCommas($('#mqlP').val(), false));
             //$('#cwP').val(FormatCommas($('#cwP').val(), false));
             //$('#rP').val(FormatCurrency($('#rP').val(), false));
@@ -298,7 +306,7 @@
         }
         $('#cT').bind('change', calculateRIO);
         $('#cT').bind('keyup', calculateRIO);
-
+        
         function calculateRIO() {
             var pcost = parseFloat(ReplaceCC($("#cp").text()));
             if (pcost != 0 && !isNaN(pcost)) {

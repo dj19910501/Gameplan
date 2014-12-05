@@ -375,6 +375,22 @@
                 $('.truncate').tipsy({ gravity: 's' });
             });
 
+            //Format Commas For Projected Value
+            $("div[id^='ProjectedlblValueCW']").each(function () {
+                $(this).text(FormatCommas($(this).text(), true));
+                var txtvalue = $(this).text();
+                $(this).attr('title', txtvalue);
+                $('.truncate').tipsy({ gravity: 's' });
+            });
+
+            //Format Commas For Projected Value Revenue
+            $("div[id^='ProjectedlblValueRevenue']").each(function () {
+                $(this).text(FormatCurrency($(this).text(), true));
+                var txtvalue = $(this).text();
+                $(this).attr('title', txtvalue);
+                $('.truncate').tipsy({ gravity: 's' });
+            });
+
             //Format Currency For Projected Value
             $("div[id^='ProjectedlblC']").each(function () {
                 $(this).text(FormatCurrency($(this).text(), false));
@@ -462,7 +478,7 @@
             function calculateRIO(id) {
                 var pcost = parseFloat(ReplaceCC($("#ProjectedlblCCost" + id).text()));
                 if (pcost != 0 && !isNaN(pcost)) {
-                    var prevenue = parseFloat(ReplaceCC($("#ProjectedlblCRevenue" + id).text()));
+                    var prevenue = parseFloat(ReplaceCC($("#ProjectedlblValueRevenue" + id).text()));
                     var roip = prevenue / pcost;
                     $("#ProjectedROI" + id).text(roip.toFixed(2));
                 }
@@ -740,9 +756,9 @@
                                             '</div>' +
                                         '</div>' +
                                     '</div>';
-
+            
             $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left truncate" id="ProjectedlblPCW' + _id + '">' +
+                                            '<div class="table-info-actual-left truncate" id="ProjectedlblValueCW' + _id + '">' +
                                                 _cwProjected +
                                             '</div>' +
                                             '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPCW' + _id + '">' +
@@ -752,7 +768,7 @@
                                     '</div>';
 
             $html += '<div class="body-toogle-actual">Revenue<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left truncate" id="ProjectedlblCRevenue' + _id + '">' +
+                                            '<div class="table-info-actual-left truncate" id="ProjectedlblValueRevenue' + _id + '">' +
                                                 _revenueProjected +
                                             '</div>' +
                                             '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblCRevenue' + _id + '">' +
@@ -776,11 +792,16 @@
                                 '</div>' +
                             '</div>';
 
+            var roiProjectedValue = 0;
+            if (_costProjected != 0 && !isNaN(_costProjected)) {
+                var prevenue = parseFloat(_revenueProjected);
+                roiProjectedValue = (Math.round(prevenue / parseFloat(_costProjected) * 100) /100);
+            }
 
             $html += '<div class="body-toogle-actual">ROI' +
                                     '<div id="border-right" class="table-info-actual-left-wraper">' +
                                         '<div class="table-info-actual-left truncate" id="ProjectedROI' + _id + '">' +
-                                            _roiProjected +
+                                            roiProjectedValue +
                                         '</div>' +
                                         '<div class="table-info-actual-left table-info-actual-width truncate green-value" id="ActualROI' + _id + '">' +
                                             _roiActual +

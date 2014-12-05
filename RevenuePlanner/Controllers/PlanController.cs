@@ -1191,8 +1191,8 @@ namespace RevenuePlanner.Controllers
                                 pcobj.INQs = (form.INQs == null ? 0 : form.INQs);
                                 pcobj.MQLs = (form.MQLs == null ? 0 : form.MQLs);
                                 pcobj.Cost = (form.Cost == null ? 0 : form.Cost);
-                                pcobj.StartDate = DateTime.Now;
-                                pcobj.EndDate = DateTime.Now.AddMonths(1);
+                                pcobj.StartDate = GetCurrentDateBasedOnPlan();
+                                pcobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                 pcobj.CreatedBy = Sessions.User.UserId;
                                 pcobj.CreatedDate = DateTime.Now;
                                 pcobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign table 
@@ -1219,8 +1219,8 @@ namespace RevenuePlanner.Controllers
                                             pcpobj.INQs = 0;
                                             pcpobj.MQLs = 0;
                                             pcpobj.Cost = 0;
-                                            pcpobj.StartDate = DateTime.Now;
-                                            pcpobj.EndDate = DateTime.Now.AddMonths(1);
+                                            pcpobj.StartDate = GetCurrentDateBasedOnPlan();
+                                            pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                             pcpobj.CreatedBy = Sessions.User.UserId;
                                             pcpobj.CreatedDate = DateTime.Now;
                                             pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign_Program table 
@@ -1501,8 +1501,8 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.VerticalId = form.VerticalId;
                                 pcpobj.AudienceId = form.AudienceId;
                                 pcpobj.GeographyId = form.GeographyId;
-                                pcpobj.StartDate = DateTime.Now;
-                                pcpobj.EndDate = DateTime.Now.AddMonths(1);
+                                pcpobj.StartDate = GetCurrentDateBasedOnPlan();
+                                pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                 pcpobj.CreatedBy = Sessions.User.UserId;
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); //status field added for Plan_Campaign_Program table
@@ -1536,8 +1536,8 @@ namespace RevenuePlanner.Controllers
                                         totalinq += pcptobj.INQs;
                                         totalmql += pcptobj.MQLs;
                                         totalcost += pcptobj.Cost;
-                                        pcptobj.StartDate = DateTime.Now;
-                                        pcptobj.EndDate = DateTime.Now.AddMonths(1);
+                                        pcptobj.StartDate = GetCurrentDateBasedOnPlan();
+                                        pcptobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                         pcptobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
                                         pcptobj.BusinessUnitId = (from m in db.Models
                                                                   join p in db.Plans on m.ModelId equals p.ModelId
@@ -1841,8 +1841,8 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.INQs = form.INQs;
                                 pcpobj.MQLs = form.MQLs;
                                 pcpobj.Cost = form.Cost;
-                                pcpobj.StartDate = DateTime.Now;
-                                pcpobj.EndDate = DateTime.Now.AddMonths(1);
+                                pcpobj.StartDate = GetCurrentDateBasedOnPlan();
+                                pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
                                 pcpobj.BusinessUnitId = (from m in db.Models
                                                          join p in db.Plans on m.ModelId equals p.ModelId
@@ -2500,6 +2500,34 @@ namespace RevenuePlanner.Controllers
                 return Json(new { successmsg = string.Format(Common.objCached.PlanDeleteSuccessful, PlanName) }, JsonRequestBehavior.AllowGet);
             else
                 return Json(new { errorMsg = string.Format(Common.objCached.PlanDeleteError, PlanName) }, JsonRequestBehavior.AllowGet);
+        }
+
+        #endregion
+
+        #region Plan General Function
+
+        /// <summary>
+        /// Get Current Date Based on Plan Year.
+        /// </summary>
+        /// <param name="isEndDate"></param>
+        /// <returns></returns>
+        private DateTime GetCurrentDateBasedOnPlan(bool isEndDate = false)
+        {
+            string Year = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.Year).SingleOrDefault();
+            DateTime CurrentDate = DateTime.Now;
+            int CurrentYear = CurrentDate.Year;
+            int diffYear = Convert.ToInt32(Year) - CurrentYear;
+            DateTime returnDate = DateTime.Now;
+            if(isEndDate)
+            {
+                DateTime lastEndDate = new DateTime(CurrentDate.AddYears(diffYear).Year, 12, 31);
+                DateTime endDate = CurrentDate.AddYears(diffYear).AddMonths(1);
+                returnDate = endDate > lastEndDate ? lastEndDate : endDate;
+            }
+            else{
+                returnDate = DateTime.Now.AddYears(diffYear);
+            }
+            return returnDate;
         }
 
         #endregion

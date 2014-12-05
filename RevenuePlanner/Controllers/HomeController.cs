@@ -1521,7 +1521,7 @@ namespace RevenuePlanner.Controllers
             List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate(tid);
             im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
             tacticList = ReportController.ProjectedRevenueCalculate(tid, true);
-            //im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
+            im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(),2);
             ViewBag.TacticDetail = im;
             bool isValidUser = true;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
