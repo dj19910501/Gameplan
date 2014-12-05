@@ -1067,7 +1067,7 @@ namespace RevenuePlanner.Controllers
 
             return PartialView("_ApplytoCalendarPlanList", objHomePlan);
         }
-               
+
         #region Get Collaborator Details
 
         /// <summary>
@@ -1591,13 +1591,31 @@ namespace RevenuePlanner.Controllers
                 //    if (planTactic.CreatedBy != Sessions.User.UserId) isDirectorLevelUser = true;
                 //}
                 // Added by dharmraj for Ticket #537
-                var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-                var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList().Select(u => u.UserId).ToList();
-                if (lstSubordinates.Count > 0)
+                try
                 {
-                    if (lstSubordinates.Contains(planTactic.CreatedBy))
+                    throw new Exception();
+                    var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                    var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList().Select(u => u.UserId).ToList();
+                    if (lstSubordinates.Count > 0)
                     {
-                        isDirectorLevelUser = true;
+                        if (lstSubordinates.Contains(planTactic.CreatedBy))
+                        {
+                            isDirectorLevelUser = true;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        //// Flag to indicate unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
                     }
                 }
 
@@ -1921,7 +1939,7 @@ namespace RevenuePlanner.Controllers
             return Json(lstCampaign, JsonRequestBehavior.AllowGet);
 
         }
-             
+
         /// <summary>
         /// Added By: Dharmraj Mangukiya.
         /// Action to Get month/Quarter wise budget Value Of campaign.
@@ -2247,7 +2265,7 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { });
         }
-        
+
         /// <summary>
         /// Added By: Bhavesh Dobariya.
         /// Action to Get Tactic Type INQ,MQL,Cost,Stage Value.
@@ -4210,11 +4228,11 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { id = retVal, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) }, JsonRequestBehavior.AllowGet);
         }
-       
+
         #endregion
 
         #region Get Plan Budget Allocation
-      
+
         /// <summary>
         /// Get plan bedget allocation by planId
         /// </summary>
@@ -4282,11 +4300,11 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { status = 0 }, JsonRequestBehavior.AllowGet);
         }
-        
+
         #endregion
 
         #region Get Budget Allocation Data For Plan For Slide Panel
-       
+
         /// <summary>
         /// Action to Get monthly or quarterly budget value of Plan.
         /// </summary>
@@ -4369,7 +4387,7 @@ namespace RevenuePlanner.Controllers
 
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
-       
+
         #endregion
 
         #endregion
@@ -4377,7 +4395,7 @@ namespace RevenuePlanner.Controllers
         #region Budget Review Section
 
         #region Constant variable declaration those needs to move to common
-        
+
         public const string Jan = "Y1";
         public const string Feb = "Y2";
         public const string Mar = "Y3";
@@ -5721,7 +5739,7 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
-        
+
         #endregion
     }
 }

@@ -33,13 +33,14 @@
 </style>
 
 @section nlFormContent{
-      <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
 }
 @Html.HiddenFor(m => m.PlanId)
-<input type="hidden" id="hdnRefresh" value="ApplyToCalendar" />     @*Added by Viral Kadiya on 11/10/2014 for PL #941 to check flag in _plan.cshtml page to refresh gantt.*@
+<input type="hidden" id="hdnRefresh" value="ApplyToCalendar" />
+@*Added by Viral Kadiya on 11/10/2014 for PL #941 to check flag in _plan.cshtml page to refresh gantt.*@
 <script type="text/javascript">
     //var CurrentPlanId = 0;
     var CurrentBid = 0;
@@ -146,7 +147,7 @@
         //onClickPlanTitle();
           @* changed by Nirav for Custom Dropdown - 388*@
         var id = $('#ddlBusinessUnit').val();
-        $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid='+id);
+        $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=' + id);
         onClickActivity();
         //onClickBusinessUnit();
 
@@ -238,7 +239,7 @@
     }
 </script>
 @section Sidebar{
-  @Html.Partial("~/Views/Plan/_plan.cshtml")
+    @Html.Partial("~/Views/Plan/_plan.cshtml")
 }
 
 <!--success message-->
@@ -257,7 +258,7 @@
 <div class="light-blue-chart cf">
     @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
-  @* changed by Nirav for Custom Dropdown - 388*@
+@* changed by Nirav for Custom Dropdown - 388*@
 @*@{
     if (showBid == true)
     {
@@ -278,7 +279,7 @@
     if (showBid == true)
     {
         //Modified By : Kalpesh Sharma #859 Different Business Unit Drop Down List on Plan Pages
-        <span class="selectBox" id="dropdown-business-unit" style="width: 158px;">
+    <span class="selectBox" id="dropdown-business-unit" style="width: 158px;">
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
         {
             @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", @RevenuePlanner.Helpers.Sessions.BusinessUnitId))
@@ -296,10 +297,11 @@
 </script>
 <div id="DivloadPlan">
 </div>
-<div class="tab-content all-height cf" style="padding-right:18px;">
+<div class="tab-content all-height cf" style="padding-right: 18px;">
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
-            <div class="pull-left" id="divCollaborator" style="position:relative;"> <!-- position:relative = added by kapil -->
+            <div class="pull-left" id="divCollaborator" style="position: relative;">
+                <!-- position:relative = added by kapil -->
             </div>
             @* Start - Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen *@
             <div class="pull-right toggle-status source-sans-proregular">
@@ -346,13 +348,13 @@
 </div>
 <div id="DivPartialViewForDeleteImpTactic">
 </div>
-  <div class="container-fluid all-height" id="modalMainContainer">
+<div class="container-fluid all-height" id="modalMainContainer">
     <div class="row-fluid calc-height">
         <div class="container-fluid">
             <div class="row-fluid ">
                 <div class="span12">
 
-  <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed;">
+                    <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed;">
                         <div style="margin: 80px auto !important">
                             <div id="successMessage" class="alert alert-success message-position-popup" style="display: none; margin: auto !important; max-width: 1000px !important;">
                                 <a class="close">×</a>
@@ -373,7 +375,7 @@
             </div>
         </div>
     </div>
-                    </div>
+</div>
 <div id="divBackground" class="modal-backdrop fade in" style="display: none"></div>
 @Html.Hidden("hdnMsg", (string)ViewBag.Msg, new { id = "hdnMsg" })
 @Html.Hidden("hdnisError", (bool)ViewBag.isError, new { id = "hdnisError" })
@@ -406,7 +408,7 @@
     $(document).on("click", "#LeftNavCampaigns", function (e) {
         displayconfirm('@Url.Action("Assortment", "Plan")');
     });
-    $(document).on("click", "#LeftNavInput", function (e) {        
+    $(document).on("click", "#LeftNavInput", function (e) {
         //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs
         displayconfirm('@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "");
     });
@@ -417,7 +419,7 @@
     });
     $(document).on("click", "#aBudgeting", function (e) {
         displayconfirm('@Url.Action("Budgeting", "Plan")');
-     });
+    });
     //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
     $("#header a").not("#ContactSupport").click(function () {
         //alert($(this).attr('href'));
@@ -500,21 +502,21 @@
            });
        });
 
-    function displayConfirmCommon(functionName) {
-        if (isDataChanged()) {
-            $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-            $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
-            $("#btnConfirmOK").click(function () {
-                //alert(id);
-                $('#cErrorDuplicatePlan').html("");
-                $("#errorMessageDuplicatePlan").hide();
-                eval(functionName);
-            });
-        }
-        else {
-            eval(functionName);
-        }
-    }
+       function displayConfirmCommon(functionName) {
+           if (isDataChanged()) {
+               $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+               $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
+               $("#btnConfirmOK").click(function () {
+                   //alert(id);
+                   $('#cErrorDuplicatePlan').html("");
+                   $("#errorMessageDuplicatePlan").hide();
+                   eval(functionName);
+               });
+           }
+           else {
+               eval(functionName);
+           }
+       }
 
        function DuplicatePlan() {
            $.ajax({
@@ -577,8 +579,8 @@
        }
 
        var planYear;
-    //// Function to make ajax request.
-    //// Modified By Maninder Singh Wadhva to Address PL#203
+       //// Function to make ajax request.
+       //// Modified By Maninder Singh Wadhva to Address PL#203
        function AjaxRequest() {
            GetNumberOfActivityPerMonByPlanId(CurrentPlanId);
            var isPublished = false;
@@ -603,8 +605,8 @@
          });
      }
 
-    //// Function to get collaborators list
-    //// Modified By Maninder Singh Wadhva to Address PL#203
+     //// Function to get collaborators list
+     //// Modified By Maninder Singh Wadhva to Address PL#203
      function GetCollaborators(planId) {
          if (planId != null) {
              $.ajax(
@@ -692,92 +694,92 @@
             type: "GET",
             cache: false,
             url: '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")',
-           data: {
-               planid: intplanid,
-               strparam: strParam
-           },
-           dataType: "json",
-           success: function (data) {
-               if (data != null) {
-                   $(".dhx_canvas_text").remove();
-                   $("canvas").remove();
-                   setgraphdata(data);
+            data: {
+                planid: intplanid,
+                strparam: strParam
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data != null) {
+                    $(".dhx_canvas_text").remove();
+                    $("canvas").remove();
+                    setgraphdata(data);
 
-               }
-           }
-       });
-   }
-   function setgraphdata(data) {
+                }
+            }
+        });
+    }
+    function setgraphdata(data) {
 
-       var barChart2 = new dhtmlXChart({
-           view: "bar",
-           container: "chart2",
-           value: "#NoOfActivity#",
-           label: "#NoOfActivity#",
-           color: "#Color#",
-           radius: 3,
-           padding: {
-               top: 25,
-               bottom: 16,
-               right: 00,
-               left: 00
+        var barChart2 = new dhtmlXChart({
+            view: "bar",
+            container: "chart2",
+            value: "#NoOfActivity#",
+            label: "#NoOfActivity#",
+            color: "#Color#",
+            radius: 3,
+            padding: {
+                top: 25,
+                bottom: 16,
+                right: 00,
+                left: 00
 
-           },
-           xAxis: {
+            },
+            xAxis: {
 
-               template: "#Month#"
-           },
-       });
-       barChart2.parse(data.lstchart, "json");
-   }
+                template: "#Month#"
+            },
+        });
+        barChart2.parse(data.lstchart, "json");
+    }
 
-   ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-   function getCSSForTask(task) {
-       var cssClass = task.color + ' cursorPointer';
-       var isImprovement = false;   //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
-       ///Modified by Dharmraj PL Ticket#394 - Apply required styling on the Improvement activity in calendar
-       //if (typeof task.isImprovement != 'undefined' &&
-       //    task.isImprovement == true &&
-       //    typeof task.ImprovementPlanTacticId != 'undefined') {
-       //    cssClass += ' improvement border-top resize';
-       //    }
+    ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+    function getCSSForTask(task) {
+        var cssClass = task.color + ' cursorPointer';
+        var isImprovement = false;   //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
+        ///Modified by Dharmraj PL Ticket#394 - Apply required styling on the Improvement activity in calendar
+        //if (typeof task.isImprovement != 'undefined' &&
+        //    task.isImprovement == true &&
+        //    typeof task.ImprovementPlanTacticId != 'undefined') {
+        //    cssClass += ' improvement border-top resize';
+        //    }
 
-       if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
-           if (typeof task.ImprovementPlanTacticId != 'undefined') {
-               cssClass += ' improvement border-top resize';
-               isImprovement = true;    //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
-           }
-           else {
-               if (!task.$open) {
-                   cssClass = ' improvement improvementcolor27A4E5 colorC6EBF3-with-border cursorPointer resize ';
-               }
-           }
-       }
+        if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+            if (typeof task.ImprovementPlanTacticId != 'undefined') {
+                cssClass += ' improvement border-top resize';
+                isImprovement = true;    //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
+            }
+            else {
+                if (!task.$open) {
+                    cssClass = ' improvement improvementcolor27A4E5 colorC6EBF3-with-border cursorPointer resize ';
+                }
+            }
+        }
 
-       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
-       if (showTacticStatus == true) {
-           if (task.Status == "Created")
-               cssClass += " tactic-created";
-           else if (task.Status == "Submitted")
-               cssClass += " tactic-submitted ";
-           else if (task.Status == "Approved" || task.Status == "Complete" || task.Status == "In-Progress")
-               cssClass += " tactic-approved";
-           else if (task.Status == "Rejected" || task.Status == "Declined")
-               cssClass += " tactic-rejected";
+        //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
+        if (showTacticStatus == true) {
+            if (task.Status == "Created")
+                cssClass += " tactic-created";
+            else if (task.Status == "Submitted")
+                cssClass += " tactic-submitted ";
+            else if (task.Status == "Approved" || task.Status == "Complete" || task.Status == "In-Progress")
+                cssClass += " tactic-approved";
+            else if (task.Status == "Rejected" || task.Status == "Declined")
+                cssClass += " tactic-rejected";
 
-           if (isImprovement == true)
-               cssClass += " improvement-border-top-status";
-       }
+            if (isImprovement == true)
+                cssClass += " improvement-border-top-status";
+        }
 
-       return cssClass;
-   }
+        return cssClass;
+    }
 
     // Variable to maintein closed task in calendar.
-   var arrClosedTask = [];
-   var AllClosedTask = '@TempData["ClosedTask"]';
-    if (AllClosedTask != "") {
-        arrClosedTask = AllClosedTask.split(',');
-    }
+    var arrClosedTask = [];
+    var AllClosedTask = '@TempData["ClosedTask"]';
+   if (AllClosedTask != "") {
+       arrClosedTask = AllClosedTask.split(',');
+   }
 
    //// Function to render gantt i.e. for this year or this quarter.
    function renderGantt(taskData) {
@@ -928,7 +930,7 @@
 
        // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
        $(".gantt_container .gantt_tree_content").each(function (index, element) {
-           $(element).attr("title",htmlDecode( element.innerHTML));
+           $(element).attr("title", htmlDecode(element.innerHTML));
        });
    }
 
@@ -1036,140 +1038,148 @@
 
    function ShowCampaign(id) {
        var mode = "Edit";
-       ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id,"0",'@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
+       ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    function ShowProgram(id) {
-     
+
        var mode = "Edit";
        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    function ShowTactic(id) {
-     
+
        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    //// Modified By Maninder Singh Wadhva PL Ticket#47
    function ShowImprovementTactic(id) {
-        ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
-    }
+       ShowModel('@Enums.InspectPopupMode.Edit.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
+   }
 
-    //// Function to set common properties of gantt.
-    function SetGantt() {
-        gantt.config.grid_width = 236;
-        gantt.config.readonly = false;
-        gantt.config.show_progress = true;
-        gantt.config.autofit = true;
-        gantt.config.drag_links = false;
-        gantt.config.drag_progress = false;
+   //// Function to set common properties of gantt.
+   function SetGantt() {
+       gantt.config.grid_width = 236;
+       gantt.config.readonly = false;
+       gantt.config.show_progress = true;
+       gantt.config.autofit = true;
+       gantt.config.drag_links = false;
+       gantt.config.drag_progress = false;
 
-        if ($('#IsPlanEditable').val() != 'True') {
-            gantt.config.drag_resize = false;
-        }
-        else {
-            gantt.config.drag_resize = true;
-        }
-    }
+       if ($('#IsPlanEditable').val() != 'True') {
+           gantt.config.drag_resize = false;
+       }
+       else {
+           gantt.config.drag_resize = true;
+       }
+   }
 
-    //// Attaching function to after task drag event handler.
-    gantt.attachEvent("onAfterTaskDrag", function (id, mode, e) { AfterTaskDrag(id, mode, e); });
+   //// Attaching function to after task drag event handler.
+   gantt.attachEvent("onAfterTaskDrag", function (id, mode, e) { AfterTaskDrag(id, mode, e); });
 
-    //// Attaching code to before task drag event handler to avoid move of task whose either or both dates are not plotted on current view.
-    gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
-        var modes = gantt.config.drag_mode;
-        if (mode == modes.move) {
-            var task = gantt.getTask(id);
-            if (task.IsHideDragHandleLeft || task.IsHideDragHandleRight) {
-                return false;
-            }
-        }
-        return true;
-    });
+   //// Attaching code to before task drag event handler to avoid move of task whose either or both dates are not plotted on current view.
+   gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
+       var modes = gantt.config.drag_mode;
+       if (mode == modes.move) {
+           var task = gantt.getTask(id);
+           if (task.IsHideDragHandleLeft || task.IsHideDragHandleRight) {
+               return false;
+           }
+       }
+       return true;
+   });
 
-    //// Function to set after start_date and duration.
-    //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
-    //// Modified By: Maninder Singh Wadhva PL Ticket#47
-    function AfterTaskDrag(id, mode, e) {
-        var modes = gantt.config.drag_mode;
-        switch (mode) {
-            case modes.move:
-            case modes.resize:
-                var task = gantt.getTask(id);
-                if (typeof task.isImprovement != 'undefined' && task.isImprovement == true && typeof task.ImprovementPlanTacticId != 'undefined') {
-                    UpdateEffectiveDateImprovement(task.ImprovementPlanTacticId, task.start_date)
-                } else if (typeof task.PlanCampaignId != 'undefined') {
-                    UpdateStartEndDate(task.PlanCampaignId, task.start_date, task.duration - 1, true, false, false)
-                } else if (typeof task.PlanProgramId != 'undefined') {
-                    UpdateStartEndDate(task.PlanProgramId, task.start_date, task.duration - 1, false, true, false)
-                } else if (typeof task.plantacticid != 'undefined') {
-                    UpdateStartEndDate(task.plantacticid, task.start_date, task.duration - 1, false, false, true)
-                }
-                break;
-        }
-    }
+   //// Function to set after start_date and duration.
+   //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
+   //// Modified By: Maninder Singh Wadhva PL Ticket#47
+   function AfterTaskDrag(id, mode, e) {
+       var modes = gantt.config.drag_mode;
+       switch (mode) {
+           case modes.move:
+           case modes.resize:
+               var task = gantt.getTask(id);
+               if (typeof task.isImprovement != 'undefined' && task.isImprovement == true && typeof task.ImprovementPlanTacticId != 'undefined') {
+                   UpdateEffectiveDateImprovement(task.ImprovementPlanTacticId, task.start_date)
+               } else if (typeof task.PlanCampaignId != 'undefined') {
+                   UpdateStartEndDate(task.PlanCampaignId, task.start_date, task.duration - 1, true, false, false)
+               } else if (typeof task.PlanProgramId != 'undefined') {
+                   UpdateStartEndDate(task.PlanProgramId, task.start_date, task.duration - 1, false, true, false)
+               } else if (typeof task.plantacticid != 'undefined') {
+                   UpdateStartEndDate(task.plantacticid, task.start_date, task.duration - 1, false, false, true)
+               }
+               break;
+       }
+   }
 
-    function CheckDate(date, duration) {
-        var startDate = null;
-        var endDate = null;
-        updatedStartDate = null;
-        updatedDuration = null;
+   function CheckDate(date, duration) {
+       var startDate = null;
+       var endDate = null;
+       updatedStartDate = null;
+       updatedDuration = null;
 
-        if (isQuater == "thisquarter") {
-            //// Getting quarter
-            startDate = getQarterStartDate();
-            endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 0);
-        } else if (isQuater == "thisyear") {
-            // Changed variable name.
-            var currentDate = new Date();
-            startDate = new Date(currentDate.getFullYear(), 00, 01);
-            endDate = new Date(currentDate.getFullYear() + 1, 00, 0);
-        }
-        else if (isQuater == "thismonth") {
-            var currentDate = new Date(), m = currentDate.getMonth();
-            startDate = new Date(currentDate.getFullYear(), m, 01);
-            endDate = new Date(currentDate.getFullYear(), m + 1, 0);
-        }
-        else if (isQuater == "nextyear") {
-            var currentDate = new Date();
-            startDate = new Date(currentDate.getFullYear() + 1, 00, 01);
-            endDate = new Date(currentDate.getFullYear() + 2, 00, 0);
-        } else if (isQuater == "planYear") {
-            //Edited to add PlanYear option.
-            startDate = new Date(planYear, 00, 01);
-            endDate = new Date(planYear + 1, 00, 0);
-        }
+       if (isQuater == "thisquarter") {
+           //// Getting quarter
+           startDate = getQarterStartDate();
+           endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 0);
+       } else if (isQuater == "thisyear") {
+           // Changed variable name.
+           var currentDate = new Date();
+           startDate = new Date(currentDate.getFullYear(), 00, 01);
+           endDate = new Date(currentDate.getFullYear() + 1, 00, 0);
+       }
+       else if (isQuater == "thismonth") {
+           var currentDate = new Date(), m = currentDate.getMonth();
+           startDate = new Date(currentDate.getFullYear(), m, 01);
+           endDate = new Date(currentDate.getFullYear(), m + 1, 0);
+       }
+       else if (isQuater == "nextyear") {
+           var currentDate = new Date();
+           startDate = new Date(currentDate.getFullYear() + 1, 00, 01);
+           endDate = new Date(currentDate.getFullYear() + 2, 00, 0);
+       } else if (isQuater == "planYear") {
+           //Edited to add PlanYear option.
+           startDate = new Date(planYear, 00, 01);
+           endDate = new Date(planYear + 1, 00, 0);
+       }
 
-        var taskEndDate = new Date(date);
-        taskEndDate.setDate(date.getDate() + duration);
+       var taskEndDate = new Date(date);
+       taskEndDate.setDate(date.getDate() + duration);
 
-        if (date < startDate) {
-            updatedStartDate = startDate;
-            updatedDuration = Math.round(duration - ((startDate - date) / (1000 * 60 * 60 * 24)));
-        } else if (taskEndDate > endDate) {
-            updatedStartDate = date;
-            updatedDuration = Math.round((endDate - date) / (1000 * 60 * 60 * 24));
-        }
-        else {
-            updatedStartDate = date;
-            updatedDuration = duration;
-        }
-    }
+       if (date < startDate) {
+           updatedStartDate = startDate;
+           updatedDuration = Math.round(duration - ((startDate - date) / (1000 * 60 * 60 * 24)));
+       } else if (taskEndDate > endDate) {
+           updatedStartDate = date;
+           updatedDuration = Math.round((endDate - date) / (1000 * 60 * 60 * 24));
+       }
+       else {
+           updatedStartDate = date;
+           updatedDuration = duration;
+       }
+   }
 
-    var updatedStartDate = null;
-    var updatedDuration = null;
-    //// Function to update start or end date.
-    function UpdateStartEndDate(id, startDate, duration, isPlanCampaign, isPlanProgram, isPlanTactic) {
-        CheckDate(startDate, duration);
-        updatedStartDate = (updatedStartDate.getMonth() + 1) + '/' + (updatedStartDate.getDate()) + '/' + updatedStartDate.getFullYear();
+   var updatedStartDate = null;
+   var updatedDuration = null;
+   //// Function to update start or end date.
+   function UpdateStartEndDate(id, startDate, duration, isPlanCampaign, isPlanProgram, isPlanTactic) {
+       CheckDate(startDate, duration);
+       updatedStartDate = (updatedStartDate.getMonth() + 1) + '/' + (updatedStartDate.getDate()) + '/' + updatedStartDate.getFullYear();
 
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Action("UpdateStartEndDate", "Plan")',
+       $.ajax({
+           type: 'POST',
+           url: '@Url.Action("UpdateStartEndDate", "Plan")',
             data: { id: id, startDate: updatedStartDate, duration: updatedDuration, isPlanCampaign: isPlanCampaign, isPlanProgram: isPlanProgram, isPlanTactic: isPlanTactic },
             dataType: 'json',
             success: function (data) {
-                return data;
+                if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                    //// Function to redirect to login page on unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+                else {
+                    return data;
+                }
             },
             error: function () {
                 GoToLogin();
@@ -1187,23 +1197,23 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Action("UpdateEffectiveDateImprovement", "Plan")',
-             data: { id: id, effectiveDate: updatedStartDate },
-             dataType: 'json',
-             success: function (data) {
-                 return data;
-             },
-             error: function () {
-                 GoToLogin();
-                 GetTactics();
-             }
-         });
+            data: { id: id, effectiveDate: updatedStartDate },
+            dataType: 'json',
+            success: function (data) {
+                return data;
+            },
+            error: function () {
+                GoToLogin();
+                GetTactics();
+            }
+        });
     }
 
     function RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId) {
         if (requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
             RefreshCalendar();
         }
-        
+
         return false;
     }
 
