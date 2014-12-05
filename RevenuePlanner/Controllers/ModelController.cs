@@ -455,7 +455,22 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
+                            try
+                            {
                             XMLRead(intFunnelMarketing, intFunnelTeleprospecting, intFunnelSales);
+                        }
+                            catch (Exception e)
+                            {
+                                ErrorSignal.FromCurrentContext().Raise(e);
+
+                                //// Flag to indicate unavailability of web service.
+                                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                //// Ticket: 942 Exception handeling in Gameplan.
+                                if (e is System.ServiceModel.EndpointNotFoundException)
+                                {
+                                    return RedirectToAction("ServiceUnavailable", "Login");
+                                }
+                            }
                         }
                         if (isbenchmarkdb != null)
                         {
@@ -683,9 +698,26 @@ namespace RevenuePlanner.Controllers
 
                 //// load object of BDSServiceClient
                 BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                string clientcode = string.Empty;
 
+                try
+                {
                 //// get Client code from logged in client id.
-                string clientcode = objBDSUserRepository.GetClientById(Sessions.User.ClientId).Code;
+                    clientcode = objBDSUserRepository.GetClientById(Sessions.User.ClientId).Code;
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+
                 bool stageExistsForClient = false;
                 bool anyTargetStageExists = false;
 

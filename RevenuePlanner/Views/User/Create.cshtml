@@ -458,6 +458,12 @@
                         $('#isEmailExist').addClass('field-validation-error');
                         $('#isEmailExist').html('@Common.objCached.EmailAlreadyExits');
                     }
+                    else if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                        //// Function to redirect to login page on unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
                     else if (data == '0') {
                         $('#isEmailExist').addClass('field-validation-success');
                         $('#isEmailExist').html('@Common.objCached.EmailAvailable');

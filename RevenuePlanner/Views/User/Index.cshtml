@@ -302,6 +302,12 @@
                 if (data == 'success') {
                     window.location.reload(true);
                 }
+                else if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                    //// Function to redirect to login page on unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
                 else {
                     alert(data);
                 }
@@ -325,12 +331,19 @@
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if (data != null && data != 'undefined') {
+                        if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                        //// Function to redirect to login page on unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                     } else {
                     $("#dvMyTeam").css('display', 'none');
                     $("#hdrMyTeam").css('display', 'none');
                     $("#hdrEditUser").css('display', 'block');
                     $("#dvEditUser").css('display', 'block');
                     $("#dvEditUserDetails").html(data);
                     LoadUserImage(userid);
+                }
                 }
                 //alert(data);
                 //window.location.href = data;
@@ -348,10 +361,18 @@
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if (data != null && data != 'undefined') {
+                    if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                        //// Function to redirect to login page on unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
                     var imag = "<img  alt=''"
                      + "src='" + "data:image/jpg;base64,"
                      + data.base64imgage + "' class='img-user' style='height:140px; width:140px;'/>";
                     $("#dvUserImage").html(imag);
+                    }
                 }
             }
         });

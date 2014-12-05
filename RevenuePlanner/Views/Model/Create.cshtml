@@ -1152,12 +1152,20 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 //data: { ModelId: 0, StageId: 0, isBanchMarked: $('#IsBenchmarked').val() },
                 dataType: "json",
                 success: function (data) {
+                    if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                        //// Function to redirect to login page on unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
                     if (data.errorMessage != '') {
                         $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + data.errorMessage)
                         $("#errorMessage").slideDown(400);
                         $("html, body").animate({ scrollTop: 0 }, 1000);
                         isError = true;
                          
+                        }
                     }
                 }
             });
