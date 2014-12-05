@@ -690,7 +690,7 @@ function modalFullPosition() {
     var winW = $(window).width();
     var winH = $(window).height();
     //$('#modal-container-186470.modal-full-view').css('width', winW - 23);
-    $('#modal-container-186470.modal-full-view').css({ 'height': winH - 190, 'min-height': winH - 190 });
+    $('#modal-container-186470.modal-full-view').css({ 'height': winH - 178, 'min-height': winH - 178 });
     //$('#modal-container-186470.modal-full-view').css('left', ($('#modal-container-186470.modal-full-view').width() / 2));
     $('body').addClass('bodyOverflow');
     $('.modal-backdrop').addClass('hide');

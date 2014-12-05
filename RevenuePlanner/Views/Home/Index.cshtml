@@ -972,7 +972,7 @@
    }
 
    function SetCollaboratorImage(collaborator, appendtag) {
-       console.log(collaborator);
+       
        // Get collaborator image
        var imgs = collaborator.imageBytes;
        var username = collaborator.name;
@@ -2576,7 +2576,7 @@
                  
                 
 				  loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
-                  modalBackdropDisplayNone();
+                  //modalBackdropDisplayNone();
             }
                 //// Checking whether current task is tactic or not.
             else if (typeof planTacticId != 'undefined' && planTacticId != 0) {
@@ -2590,7 +2590,7 @@
 				$("#modal-container-186470").modal('show');
                
 				loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()",0,"@Enums.InspectPopupRequestedModules.Index.ToString()");
-                modalBackdropDisplayNone();
+                //modalBackdropDisplayNone();
 
                
             }
@@ -2608,7 +2608,7 @@
                 
                 
 				loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
-                modalBackdropDisplayNone();
+                //modalBackdropDisplayNone();
             }
 
                 //// Checking whether current task is tactic or not.
@@ -2624,7 +2624,7 @@
                 
                
 				loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
-                modalBackdropDisplayNone();
+                //modalBackdropDisplayNone();
             }
             else if (typeof planId != 'undefined' && planId != 0) {
                 modalFullPosition();
@@ -2634,7 +2634,7 @@
                 $("#errorMessage").css("display", "none");
                 $("#modal-container-186470").modal('show');
                 loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()");
-				modalBackdropDisplayNone();
+				//modalBackdropDisplayNone();
             }
 }
 
@@ -2667,7 +2667,7 @@
     var url = '@Url.Content("~/Home/LoadInspectPopup")';
     $("#divPartial").empty();
     //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
-    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()');
+    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function () { modalBackdropDisplayNone(); });
 }
 
 //End Script Of Bhaveh
@@ -2787,7 +2787,7 @@ function ApproveTactic(e, task) {
                         task.isDeclined = false;
                         task.isSubmitted = false;
                         activities.data.splice(index, 1);
-                        console.log($('#index_activity'));
+                        
                         $('#table_activities tbody tr').remove();
                         FillTacticsTable();
                         gantt.refreshData();
