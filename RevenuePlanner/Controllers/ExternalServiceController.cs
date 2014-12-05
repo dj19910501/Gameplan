@@ -137,7 +137,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.Year = objPlan;
            
-            return View();
+            return View("IntegrationFolder");
         }
 
         /// <summary>
