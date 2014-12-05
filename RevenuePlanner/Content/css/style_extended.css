@@ -3482,3 +3482,15 @@ a:focus {
     font-family:"source_sans_prolight",Helvetica,Arial,sans-serif !important;
 }
 /* End - Added by Pratik for PL ticket #998 */
+/* Start - Added by Viral for PL ticket #1017 */
+.ellipsis-left {
+    width: auto;
+    max-width:95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    margin-right: 1px;
+    float:left;
+}
+/* End - Added by Viral for PL ticket #1017 */

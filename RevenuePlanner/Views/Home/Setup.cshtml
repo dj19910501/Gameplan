@@ -46,7 +46,7 @@
             @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
         </div>
         <div class="span3" id="inspect-modal-left-column3">
-            <p>Owner</p>
+            <p>Owner <span class="required-asterisk">*</span></p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
             <p style="width: 110%;">Deployed to Integration</p>
             @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
@@ -81,7 +81,7 @@
     </ul>
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
         <div class="span3 margin-top10">
-            <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience) <span class="required-asterisk">*</span></p>
+            <p class="ellipsis-left" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p> <span class="required-asterisk">*</span>
             @Html.TextBox("txtAudience", (string)ViewBag.Audience, new { @class = "span12 input-small", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.Audience })
         </div>
         <div class="span3 margin-top10 paddingleft25px">

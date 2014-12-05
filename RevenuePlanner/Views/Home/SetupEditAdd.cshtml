@@ -115,7 +115,7 @@
                 </span>
         </div>
         <div class="span3" id="inspect-modal-left-column3">
-            <p>Owner</p>
+            <p>Owner <span class="required-asterisk">*</span></p>
             @if (IsTackticAddEdit)
             {
                 <span style="min-width:100%; position:relative;">
@@ -175,7 +175,7 @@
 
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
         <div class="span3 margin-top10" style="clear: both;">
-            <p class="ellipsis left" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p> <span class="required-asterisk">*</span>
+            <p class="ellipsis-left" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p> <span class="required-asterisk">*</span>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
                 @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", label = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience), require = "true" })
             </span>
