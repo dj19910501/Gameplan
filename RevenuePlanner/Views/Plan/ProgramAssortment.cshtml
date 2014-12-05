@@ -95,17 +95,17 @@
             {
                 <div class="cf width100">
                     <div class="width65px margin-right20 pull-left">
-                        <label>@Html.LabelForINQ("INQ")</label>
+                        <label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>
                         @Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                     </div>
 
                     <div class="width65px margin-right20 pull-left">
-                        <label>@Html.LabelForMQL("MQL")</label>
+                        <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
                         @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                     </div>
 
                     <div class="width65px pull-left">
-                        <label>Cost</label>
+                        <label title="Cost">Cost</label>
                         @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                     </div>
                 </div>

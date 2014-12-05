@@ -99,17 +99,17 @@
         <div class="content dark inline-ellipsis">
             <div class="cf width100">
                 <div class="width65px margin-right20 pull-left">
-                    <label>@Html.LabelForINQ("INQ")</label>
+                    <label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>
                     @Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
                 <div class="width65px margin-right20 pull-left">
-                    <label>@Html.LabelForMQL("MQL")</label>
+                    <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
                     @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @readonly = "true" })
                 </div>
 
                 <div class="width65px pull-left">
-                    <label>Cost</label>
+                    <label title="Cost">Cost</label>
                     @*  TFS Bug 207 : Cant override the Cost from the defaults coming out of the model
                                     changed by Nirav shah on 10 feb 2014  *@
                     @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
@@ -152,7 +152,7 @@
         $("span.tool-tip").tooltip();
 
         $(".alert").find(".close").on("click", function (e) {
-           
+
             e.stopPropagation();
             e.preventDefault();
             $(this).closest(".alert").slideUp(400);
@@ -170,20 +170,20 @@
 
         var mqlConversion = 0;
         function GetConversionRate(inqValue) {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/CalculateMQL")',
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/CalculateMQL")',
                 data: $("form").serialize() + '&RedirectType=' + isAssortment,
-            success: function (data) {
-                mqlConversion = data.mql;
+                success: function (data) {
+                    mqlConversion = data.mql;
                     $("#txtmql").val(FormatCommas(Math.round(mqlConversion * inqValue).toString(), false));
-            },
-            error: function () {
-                ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                },
+                error: function () {
+                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                 myApp.hidePleaseWait();
             }
-        });
-        }
+            });
+    }
 
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
@@ -236,7 +236,7 @@
                 //if (!validateDateCompare(edate, cedate, "Campaign End Date")) return false;
             }
 
-            
+
             $("#txtinq").val(ReplaceCC($("#txtinq").val()));
             $("#txtmql").val(ReplaceCC($("#txtmql").val()));
             $("#txtCost").val(ReplaceCC($("#txtCost").val()));
@@ -280,7 +280,7 @@
                         pcost = data.revenue;
                         $("#txtinq").val(pinq);
                         GetConversionRate(pinq);
-                       // $("#txtmql").val(FormatCommas(Math.round(mqlConversion * pinq).toString(), false));
+                        // $("#txtmql").val(FormatCommas(Math.round(mqlConversion * pinq).toString(), false));
                         $("#txtCost").val(pcost);
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });

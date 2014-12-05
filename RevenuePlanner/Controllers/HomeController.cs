@@ -149,6 +149,9 @@ namespace RevenuePlanner.Controllers
                     //End Maninder Singh Wadhva : 11/25/2013 - Getting list of geographies and individuals.
 
                     Sessions.PlanId = planmodel.PlanId;
+
+                    planmodel.CollaboratorId = GetCollaborator(currentPlan);
+
                 }
                 catch (Exception e)
                 {
@@ -242,6 +245,53 @@ namespace RevenuePlanner.Controllers
             objHomePlan.plans = planList;
             return PartialView("_PlanDropdown", objHomePlan);
         }
+        #endregion
+
+        #region "Getting list of collaborator for current plan"
+
+        /// <summary>
+        /// Getting list of collaborator for current plan.
+        /// </summary>
+        /// <param name="plan">Plan</param>
+        /// <returns>Returns list of collaborators for current plan.</returns>
+        private List<string> GetCollaborator(Plan plan)
+        {
+            List<string> collaboratorId = new List<string>();
+            if (plan.ModifiedBy != null)
+            {
+                collaboratorId.Add(plan.ModifiedBy.ToString());
+            }
+
+            if (plan.CreatedBy != null)
+            {
+                collaboratorId.Add(plan.CreatedBy.ToString());
+            }
+
+            var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId)).Select(t => t);
+
+            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+
+            var planProgramModifiedBy = planTactic.ToList().Where(t => t.Plan_Campaign_Program.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.ModifiedBy.ToString()).ToList();
+            var planProgramCreatedBy = planTactic.ToList().Select(t => t.Plan_Campaign_Program.CreatedBy.ToString()).ToList();
+
+            var planCampaignModifiedBy = planTactic.ToList().Where(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy.ToString()).ToList();
+            var planCampaignCreatedBy = planTactic.ToList().Select(t => t.Plan_Campaign_Program.Plan_Campaign.CreatedBy.ToString()).ToList();
+
+            var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId))
+                                                                           .Select(pc => pc);
+            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+
+            collaboratorId.AddRange(planTacticCreatedBy);
+            collaboratorId.AddRange(planTacticModifiedBy);
+            collaboratorId.AddRange(planProgramCreatedBy);
+            collaboratorId.AddRange(planProgramModifiedBy);
+            collaboratorId.AddRange(planCampaignCreatedBy);
+            collaboratorId.AddRange(planCampaignModifiedBy);
+            collaboratorId.AddRange(planTacticCommentCreatedBy);
+            return collaboratorId.Distinct().ToList<string>();
+        }
+
         #endregion
 
         #region "UserPhoto"

@@ -8,16 +8,16 @@
         </div>*@
 </div>
 <div class="white-chart">
-    <p class="source-sans-probold">Tactics</p>
+    <p class="source-sans-probold" title="Tactics">Tactics</p>
     @*<p class="value source-sans-prolight">@Html.Label(ViewData["TacticCount"].ToString())</p>*@
     <p class="value source-sans-prolight" id="ptacticcount">@Html.DisplayFor(model => model.TacticCount)</p>
 </div>
 <div class="white-chart">
-    <p class="source-sans-probold" id="pcostLabel">@Html.DisplayFor(model => model.costLabel)</p>
+    <p class="source-sans-probold" id="pcostLabel" title="@Html.DisplayFor(model => model.costLabel)">@Html.DisplayFor(model => model.costLabel)</p>
     <p class="value source-sans-prolight" id="pbudget">$ @Html.DisplayFor(model => model.Budget)</p>
 </div>
 <div class="white-chart">
-    <p class="source-sans-probold" id="pmqlLabel">@Html.DisplayFor(model => model.mqlLabel)</p>
+    <p class="source-sans-probold" id="pmqlLabel" title="@Html.DisplayFor(model => model.mqlLabel)">@Html.DisplayFor(model => model.mqlLabel)</p>
     <p class="value source-sans-prolight" id="pMQLs">@Html.DisplayFor(model => model.MQLs)</p>
 </div>
 
