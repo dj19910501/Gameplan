@@ -301,13 +301,11 @@
     $(document).ready(
       function () {
 
-          //SetFormatForLabel("#inq-id", 5);
-          //SetFormatForLabel("#mqls-id", 5);
 
           //Added By : Kalpesh Sharma
           //PL #508 Set format for label in tool tip
-          SetLabelFormaterWithTipsy("#inq-id");
-          SetLabelFormaterWithTipsy("#mqls-id");
+          SetPriceValue("#inq-id");
+          SetPriceValue("#mqls-id");
           NumberFormatterTipsyTitle(".tipsyclassTitle", 33);
 
           $("#BtnShareTactic").click(function () {

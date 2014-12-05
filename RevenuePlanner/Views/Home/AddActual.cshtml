@@ -777,7 +777,7 @@
                                     $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                                     document.getElementById(ida).innerHTML = totalvalue;
                                     document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
-                                    SetLabelFormaterWithTipsyNumbers(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                                    SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                                 }
                             }
                             calculateRIO(costlbl);
@@ -997,12 +997,12 @@
 
                 $('.addFormatterActualCurrency').each(function () {
                     //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                    SetLabelFormaterWithTipsy($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points
+                    SetBudget($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points
                 });
 
                 $('.addFormatterActualNumber').each(function () {
                     //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                    SetLabelFormaterWithTipsyNumbers($(this));
+                    SetPriceValue($(this));
                 });
 
                 // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760

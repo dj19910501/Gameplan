@@ -337,12 +337,7 @@
                     getLoadActual();
                     AssignDefaultValue(); // added by dharmraj, #547
                     fillTotalActualCost();
-                    //Fetch all the row values from the tables
-                    $('.ActualsFormater').each(function () {
-                        //Added By : Kalpesh Sharma
-                        //PL #508 Set Currency formatter for label & tool tip.
-                        SetLabelFormaterWithTipsy($(this));
-                    });
+                    
 
                     // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
                     $('.setBudget').each(function () {
@@ -352,7 +347,7 @@
 
                     // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742.
                     $('.addFormatterActualNumber').each(function () {
-                        SetLabelFormaterWithTipsyNumbers($(this));
+                        SetPriceValue($(this));
                     });
                     // End - Added by Sohel Pathan on 02/09/2014 for PL ticket #742.
                 },
@@ -629,7 +624,7 @@
                             $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                             document.getElementById(ida).innerHTML = totalvalue;
                             document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
-                            SetLabelFormaterWithTipsyNumbers(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                            SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                         }
 
                         calculateRIO();

@@ -94,7 +94,6 @@
             success: function (r) {
                 improvementTactics = r;
                 fillTacticsTable();
-                NumberFormatterTipsy(".tipsyclass", 9);
                 myApp.hidePleaseWait();
             }
         });
@@ -261,12 +260,11 @@
                 $('#table_boost > tbody').append('<tr><td colspan="8" class="gray">No saved improvement tactics to display.</td></tr>');
             }
         }
-
         //Fetch all the row values from the tables
         $('.FormaterBoostCost').each(function () {
             //Added By : Kalpesh Sharma
             //PL #508 Set format for label in tool tip
-            SetLabelFormaterWithTipsy($(this));
+            SetBudget($(this), 9);
         });
 
     }

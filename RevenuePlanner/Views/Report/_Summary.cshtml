@@ -216,20 +216,18 @@
         //// Date 1/28/2014
         //// Function to set tooltip for large numbers.
         function SetTipsy() {
-            //SetFormatForLabel("#h3MQLActual", 5);
-            //SetFormatForLabel("#h3Revenue", 5);
 
             //Set Tipsy with number formatter
             /*Added By : Kalpesh Sharma PL #508*/
-            SetLabelFormaterWithTipsy("#h3MQLActual");
-            SetLabelFormaterWithTipsy("#h3Revenue");
+            SetPriceValue("#h3MQLActual");
+            SetBudget("#h3Revenue");
 
             //// Added By Maninder Singh Wadhva to address PL#465 Realized Revenue Number Not Displaying
-            var h3Revenue = $("#h3Revenue");
-            var isCurrencySymbolExist = (h3Revenue.text().indexOf('$') == -1);
-            if (isCurrencySymbolExist) {
-                h3Revenue.text('$' + h3Revenue.text());
-            }
+            //var h3Revenue = $("#h3Revenue");
+            //var isCurrencySymbolExist = (h3Revenue.text().indexOf('$') == -1);
+            //if (isCurrencySymbolExist) {
+            //    h3Revenue.text('$' + h3Revenue.text());
+            //}
         }
     });
 

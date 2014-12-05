@@ -215,7 +215,7 @@
     /*End : Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
     //Added By : Kalpesh Sharma
     //PL #508 Set format for label in tool tip
-    SetLabelFormaterWithTipsy("#spanBudget");
+    SetBudget("#spanBudget");
 
     $("#spanBudget").text(FormatCurrency($("#spanBudget").text(), false));
     var spantitle = $("#spanTitle").html();
@@ -1218,7 +1218,6 @@
                     FillGrayImprovementContainerEmpty();
                     LoadClickEvents();
                 }
-                //NumberFormatterTipsy(".tipsyclass", 9);
 
                 loadscript();
             }
@@ -1717,7 +1716,6 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
             //Added By : Kalpesh Sharma
             //PL #508 Set format for label in tool tip
             //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-            //SetLabelFormaterWithTipsy($(this));
             SetLabelFormaterWithTitle($(this));
             //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
         });
@@ -2002,7 +2000,6 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
                 //Added By : Kalpesh Sharma
                 //PL #508 Set format for label in tool tip
                 //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                //SetLabelFormaterWithTipsy($(this));
                 SetLabelFormaterWithTitle($(this));
                 //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
             });

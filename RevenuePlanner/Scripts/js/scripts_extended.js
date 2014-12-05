@@ -165,9 +165,10 @@ function ReplaceCC(text) {
 //// Modified By: Viral Kadiya
 //// Date 10/29/2014
 //// Remove extra code from this function cause it work same as setLabelToolTip function.
-function SetBudget(idName) {
+function SetBudget(idName, maxsize) {
     var budgetValue = $(idName).html();
-    setLabelToolTip(idName, budgetValue, 5, true);
+    if (typeof(maxsize) === 'undefined') maxsize = 5;
+    setLabelToolTip(idName, budgetValue, maxsize, true);
 }
 
 //PL #508 Label formater with tipsy 
@@ -215,68 +216,6 @@ function SetLabelFormaterWithTitle(idName) {
     }
 }
 
-//End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-//PL #508 Label formater with tipsy 
-//Added By Kalpesh Sharma 
-function SetLabelFormaterWithTipsy(idName) {
-    var budgetValue = $(idName).html();
-
-    if (budgetValue) { //Check whether the number is empty or not
-        budgetValue = RemoveExtraCharactersFromString(budgetValue); //Function that remove the special char from the string 
-        if (budgetValue.length >= 5) {
-            //SetFormatForLabel(idName, 5);
-            SetFormatForLabelExtended(idName);
-            $(idName).html('$' + $(idName).html());
-
-            //Here we store floating value from the string after format of our string , we will added into end of the string.  
-            var remNumber = '';
-            if (budgetValue.indexOf(".") != -1) {
-                remNumber = budgetValue.substr(budgetValue.indexOf('.'));
-            }
-
-            //Add tipsy for the current label.
-            $(idName).attr('title', budgetValue);
-            $(idName).prop('title', "$" + number_format(budgetValue.toString(), 0, '.', ',') + remNumber);
-            $(idName).addClass('north');
-            $('.north').tipsy({ gravity: 'n' });
-        }
-    }
-
-}
-
-
-//PL #508 Add tipsy on Html control
-//Added By Kalpesh Sharma 
-function addTipsy(idName) {
-    $(idName).attr('title', $(idName).val());
-    $(idName).prop('title', "$" + number_format($(idName).val().toString(), 0, '.', ','));
-    $(idName).addClass('north');
-    $('.north').tipsy({ gravity: 'n' });
-}
-
-
-//PL #508 Label formater for Numbers with tipsy 
-//Added By Kalpesh Sharma 
-function SetLabelFormaterWithTipsyNumbers(idName) {
-    var budgetValue = $(idName).text();
-    if (budgetValue) {
-        budgetValue = RemoveExtraCharactersFromString(budgetValue); //Function that remove the special char from the string 
-        if (budgetValue.length >= 5) {
-            SetFormatForLabelExtended(idName);
-            $(idName).prop('title', number_format(budgetValue.toString(), 0, '.', ','));
-            $(idName).addClass('north');
-            $('.north').tipsy({ gravity: 'n' });
-        }
-        // Start - Added by Sohel Pathan on 03/09/2014 for Internal Review Points
-        else {
-            $(idName).removeAttr('original-title');
-            $(idName).removeAttr('title');
-            $(idName).removeClass('north');
-        }
-        // End - Added by Sohel Pathan on 03/09/2014 for Internal Review Points
-    }
-}
-
 //// Modified By: Viral Kadiya
 //// Date 10/29/2014
 //// Remove extra code from this function cause it work same as setLabelToolTip function.
@@ -288,95 +227,6 @@ function SetPriceValue(idName) {
 function getblurvalue(sender) {
 
     $(".nl-field-go").click();
-}
-
-//Added By : Kalpesh Sharma
-//Date : 06/26/2014
-//PL #508 Extended method for Set formatter for label
-function SetFormatForLabelExtended(lableId) {
-    var txtvalue = $(lableId).text();
-    if (txtvalue) {
-        txtvalue = RemoveExtraCharactersFromString(txtvalue); //Function that remove the special char from the string 
-        if (txtvalue.indexOf('.') != -1) {
-            txtvalue = txtvalue.substring(0, txtvalue.indexOf('.'))
-        }
-        $(lableId).text(GetAbberiviatedValue(txtvalue));
-        $(lableId).attr('title', txtvalue);
-        $(lableId).addClass('north');
-        $('.north').tipsy({ gravity: 's' });
-    }
-}
-
-function SetFormatForLabel(lableId, maxSize) {
-    var txtvalue = $(lableId).text();
-    var lengthvalue = txtvalue.length;
-    if (lengthvalue >= maxSize) {
-        var firstString;
-        var lastString;
-        var SK = "k";
-        var SM = "M";
-        var SB = "B";
-        var ST = "T";
-        switch (lengthvalue) {
-            case 5:
-                firstString = txtvalue.substring(0, 2);
-                lastString = SK;
-                break;
-            case 6:
-                firstString = txtvalue.substring(0, 3);
-                lastString = SK;
-                break;
-            case 7:
-                firstString = txtvalue.substring(0, 1);
-                lastString = SM;
-                break;
-            case 8:
-                firstString = txtvalue.substring(0, 2);
-                lastString = SM;
-                break;
-            case 9:
-                firstString = txtvalue.substring(0, 3);
-                lastString = SM;
-                break;
-            case 10:
-                firstString = txtvalue.substring(0, 1);
-                lastString = SB;
-                break;
-            case 11:
-                firstString = txtvalue.substring(0, 2);
-                lastString = SB;
-                break;
-            case 12:
-                firstString = txtvalue.substring(0, 3);
-                lastString = SB;
-                break;
-            case 13:
-                firstString = txtvalue.substring(0, 1);
-                lastString = ST;
-                break;
-            case 14:
-                firstString = txtvalue.substring(0, 2);
-                lastString = ST;
-                break;
-            case 15:
-                firstString = txtvalue.substring(0, 3);
-                lastString = ST;
-                break;
-            default:
-                var defaultValue = lengthvalue - 13;
-                firstString = txtvalue.substring(0, defaultValue);
-                lastString = ST;
-                break;
-        }
-        $(lableId).text(firstString + lastString);
-        $(lableId).attr('title', txtvalue);
-        $(lableId).addClass('north');
-        $('.north').tipsy({ gravity: 's' });
-    }
-    else {
-        $(lableId).removeAttr('original-title');
-        $(lableId).removeClass('north');
-    }
 }
 
 function CheckDateYear(sdate, hdnYear, msg) {
@@ -631,24 +481,6 @@ function FormatINQMQL(value, isAbbreriviation) {
     //}
 }
 
-// Added by Juned - Bug# 244
-function NumberFormatterTipsy(lableId, maxSize) {
-    $(lableId).each(function () {
-        var txtvalue = $(this).text();
-        var lengthvalue = txtvalue.length;
-        if (lengthvalue > maxSize) {
-            $(this).text(txtvalue.substring(0, maxSize) + "...");
-            $(this).attr('title', txtvalue);
-            $(this).addClass('north');
-            $('.north').tipsy({ gravity: 's' });
-        }
-        else {
-            $(this).removeAttr('original-title');
-            $(this).removeClass('north');
-        }
-    });
-}
-
 // Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model
 function ImageTipsy(lableId) {
     $(lableId).each(function () {
@@ -670,8 +502,6 @@ function NumberFormatterTipsyTitle(lableId, maxSize) {
             $(this).text(txtvalue.substring(0, maxSize) + "...");
         }
         $(this).attr('title', txtvalue);
-        //  $(this).addClass('north');
-        //  $('.north').tipsy({ gravity: 's' });
     });
 }
 
