@@ -182,8 +182,11 @@
                     planLineItemId: planLineItemId
                 },
                 success: function (data) {
-
                     if (typeof data != 'undefined') {
+                        if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                        }
+                        else {
                         var actualData = data.ActualData;
                         if (actualData.length) {
                             for (i in actualData) {
@@ -199,6 +202,8 @@
                         if (lastupdatedby != null)
                             $("#last-updated").text(lastupdatedby);
                     }
+                    }
+
                     CalculateTotalCost();
                     $('.setBudget').each(function () {
                         var cntrlid = ("#" + $(this).attr('id'));

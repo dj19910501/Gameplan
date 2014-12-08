@@ -1827,6 +1827,12 @@ namespace RevenuePlanner.Helpers
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    throw new System.ServiceModel.EndpointNotFoundException();
+                }
             }
             finally
             {

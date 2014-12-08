@@ -68,7 +68,22 @@ namespace RevenuePlanner.Controllers
                     bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                     bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                     //Get all subordinates of current user upto n level
-                    var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                    var lstSubOrdinates = new List<Guid>();
+                    try
+                    {
+                        lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorSignal.FromCurrentContext().Raise(e);
+
+                        //To handle unavailability of BDSService
+                        if (e is System.ServiceModel.EndpointNotFoundException)
+                        {
+                            return RedirectToAction("ServiceUnavailable", "Login");
+                        }
+                    }
+
                     bool IsPlanEditable = false;
                     if (objplan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                     {
@@ -99,8 +114,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
 
@@ -882,8 +896,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
 
@@ -930,6 +943,9 @@ namespace RevenuePlanner.Controllers
                     isError = true;
                 }
             }
+
+            try
+            {
             //planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
             var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
             List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
@@ -945,8 +961,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                try
-                {
+
                     // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                     if (lstAllowedBusinessUnitIds.Count > 0)
                     {
@@ -972,6 +987,10 @@ namespace RevenuePlanner.Controllers
                         ViewBag.BusinessUnitIds = items;
                     }
                     // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+
+
+                    ViewBag.showBid = true;
+                }
                 }
                 catch (Exception e)
                 {
@@ -983,9 +1002,6 @@ namespace RevenuePlanner.Controllers
                         TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
                         return RedirectToAction("Index", "Login");
                     }
-                }
-
-                ViewBag.showBid = true;
             }
             ViewBag.Msg = ismsg;
             ViewBag.isError = isError;
@@ -1078,7 +1094,27 @@ namespace RevenuePlanner.Controllers
         /// <returns>Json Result.</returns>
         public JsonResult GetCollaboratorDetails(int currentPlanId)
         {
-            JsonResult collaboratorsImage = Common.GetCollaboratorImage(currentPlanId);
+            JsonResult collaboratorsImage = null;
+
+            try
+            {
+                collaboratorsImage = Common.GetCollaboratorImage(currentPlanId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
             return Json(new
             {
                 collaboratorsImage = collaboratorsImage,
@@ -1154,7 +1190,25 @@ namespace RevenuePlanner.Controllers
             Sessions.PlanId = planId;
             Plan plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId));
             bool isPublished = plan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
-            List<object> ganttTaskData = GetTaskDetailTactic(plan, isQuater);
+            List<object> ganttTaskData = new List<object>();
+            try
+            {
+                ganttTaskData = GetTaskDetailTactic(plan, isQuater);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = "#" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
 
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) &&
@@ -1582,6 +1636,9 @@ namespace RevenuePlanner.Controllers
                 var planTactic = db.Plan_Campaign_Program_Tactic.Single(pt => pt.PlanTacticId.Equals(id));
 
                 bool isApproved = planTactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+
+                try
+                {
                 //// Changing status of tactic to submitted.
                 //Start Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
                 //planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
@@ -1591,8 +1648,7 @@ namespace RevenuePlanner.Controllers
                 //    if (planTactic.CreatedBy != Sessions.User.UserId) isDirectorLevelUser = true;
                 //}
                 // Added by dharmraj for Ticket #537
-                try
-                {
+
                     var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
                     var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList().Select(u => u.UserId).ToList();
                     if (lstSubordinates.Count > 0)
@@ -1602,21 +1658,6 @@ namespace RevenuePlanner.Controllers
                             isDirectorLevelUser = true;
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(e);
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    if (e is System.ServiceModel.EndpointNotFoundException)
-                    {
-                        //// Flag to indicate unavailability of web service.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
-                        return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
-                    }
-                }
 
                 if (!isDirectorLevelUser)
                 {
@@ -1648,6 +1689,22 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        //// Flag to indicate unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+
                 //End Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
 
                 //// Setting start and end date.
@@ -1739,7 +1796,26 @@ namespace RevenuePlanner.Controllers
                 else if (IsPlanEditSubordinatesAuthorized)
                 {
                     //Get all subordinates of current user upto n level
-                    var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                    var lstSubOrdinates = new List<Guid>();
+                    try
+                    {
+                        lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorSignal.FromCurrentContext().Raise(e);
+                        //// Flag to indicate unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        if (e is System.ServiceModel.EndpointNotFoundException)
+                        {
+                            //// Flag to indicate unavailability of web service.
+                            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                            //// Ticket: 942 Exception handeling in Gameplan.
+                            return RedirectToAction("ServiceUnavailable", "Login");
+                        }
+                    }
+
                     if (lstSubOrdinates.Contains(plan.CreatedBy))
                     {
                         IsPlanEditable = true;
@@ -1824,7 +1900,25 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result.</returns>
         public JsonResult GetCampaign()
         {
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
+            try
+            {
+                lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = "#" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
             List<Plan_Campaign> CampaignList = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             List<int> CampaignIds = CampaignList.Select(pc => pc.PlanCampaignId).ToList();
             List<Plan_Campaign_Program> ProgramList = db.Plan_Campaign_Program.Where(pcp => CampaignIds.Contains(pcp.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList();
@@ -2698,7 +2792,27 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetPlanSelectorData(string Year, string BusinessUnit)
         {
             //Get all subordinates of current user upto n level
-            var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+            var lstOwnAndSubOrdinates = new List<Guid>();
+
+            try
+            {
+                lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
             // Get current user permission for edit own and subordinates plans.
             bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             // To get permission status for Plan Edit, By dharmraj PL #519
@@ -2823,6 +2937,8 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetBUTab()
         {
+            try
+            {
             var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
             List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
             if (lstAllowedBusinessUnits.Count > 0)
@@ -2862,6 +2978,22 @@ namespace RevenuePlanner.Controllers
                 }
                 // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             }
+        }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = "#" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
 
@@ -4489,6 +4621,16 @@ namespace RevenuePlanner.Controllers
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
+                }
             }
             return View();
 
@@ -4503,7 +4645,27 @@ namespace RevenuePlanner.Controllers
         public ActionResult GetAllocatedBugetData(int PlanId)
         {
             //PlanId = 334;
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
+            try
+            {
+                lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+
+                }
+            }
+
             var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var campaignobj = campaign.Select(p => new
             {
@@ -4882,7 +5044,27 @@ namespace RevenuePlanner.Controllers
         {
             TempData["ViewBy"] = (int)viewBy;
             //PlanId = 443;
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
+            try
+            {
+                lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+
+                }
+            }
+
             var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var campaignobj = campaign.Select(p => new
             {
@@ -5662,9 +5844,19 @@ namespace RevenuePlanner.Controllers
 
                 return Json(returndata, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                ErrorSignal.FromCurrentContext().Raise(ex);
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                }
             }
 
             return Json(new { }, JsonRequestBehavior.AllowGet);

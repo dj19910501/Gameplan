@@ -477,6 +477,9 @@
                   },
                   success: function (data) {
                       if (data != 'undefined') {
+                          if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                              window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                          } else {
                           if (data.id != 0) {
                               $("#successMessage").css("display", "block");
                               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
@@ -490,6 +493,7 @@
 
                               $("#spanMessageError").empty();
                               $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                              }
                           }
                       }
                   },
@@ -534,6 +538,10 @@
                   },
                   success: function (data) {
                       if (data != 'undefined') {
+                          if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                              window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                          }
+                          else {
                           if (data.id != 0) {
                               $("#successMessage").css("display", "block");
                               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
@@ -558,6 +566,7 @@
 
                           // Added by Dharmraj to refresh current tab for PL #364,#365,#366
                           //RefreshCurrentTab();
+                          }
                       }
                   },
                   error: function () {

@@ -273,7 +273,14 @@
         var tabtext = ($("#li" + InspectValue).children('a').text());
         var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
-        $("#divPartial").load(url + '?id=' + id + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()" + '&RequestedModule=' + requestedModule);
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()" + '&RequestedModule=' + requestedModule, function (response, status, xhr) {
+            if (response.indexOf('serviceUnavailable') != -1) {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
     }
 
     $('#btnEditCancel').click(function () {

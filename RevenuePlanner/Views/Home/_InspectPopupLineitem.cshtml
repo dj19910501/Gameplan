@@ -5,6 +5,10 @@
     var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
     bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
     var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
+    //// Flag to indicate unavailability of web service.
+    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+    //// Ticket: 942 Exception handeling in Gameplan.
+    bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
@@ -133,9 +137,21 @@
     var divTab = "#divTab";
     var TabActual = "Actuals";	
  var PlanLineItemId = $("#hdnPlanLineItemID").val();
+ //// Function to redirect to login page on unavailability of web service.
+ //// Added By: Maninder Singh Wadhva on 11/24/2014.
+ //// Ticket: 942 Exception handeling in Gameplan.
+ function redirectOnServiceUnavailibility() {
+     if ('@Html.Raw(Json.Encode(isServiceUnavailable))' == 'true') {
+            window.location = '@Url.Content(RevenuePlanner.Helpers.Common.RedirectOnServiceUnavailibilityPage)';
+        }
+ }
 
     $(document).ready(
      function () {
+         //// Call function to redirect on service unavailibility.
+         //// Added By: Maninder Singh Wadhva on 11/24/2014.
+         //// Ticket: 942 Exception handeling in Gameplan.
+         redirectOnServiceUnavailibility();
          CloseIconClick();
          $("#btnEditlineItem").css("display", "block");
          $("#AddForm").css("display", "block");

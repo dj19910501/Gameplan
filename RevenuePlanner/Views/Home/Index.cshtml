@@ -83,14 +83,35 @@
             if (($('#ActiveMenu').val().toLowerCase() == "plan")) {
                 if (showBid == 'True') {
                     var id = $('#ddlBusinessUnit').val();
-                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+                        if (response.indexOf('serviceUnavailable') != -1) {
+                            //// Call function to redirect on service unavailibility.
+                            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                            //// Ticket: 942 Exception handeling in Gameplan.
+                            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                        }
+                    });//activeMenu parameter added
                 }
                 else {
-                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+                        if (response.indexOf('serviceUnavailable') != -1) {
+                            //// Call function to redirect on service unavailibility.
+                            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                            //// Ticket: 942 Exception handeling in Gameplan.
+                            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                        }
+                    });//activeMenu parameter added
                 }
             }
             else {
-                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + filters.BUId.toString() + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + filters.BUId.toString() + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+                    if (response.indexOf('serviceUnavailable') != -1) {
+                        //// Call function to redirect on service unavailibility.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                });//activeMenu parameter added
             }
 
             switch ($('#ActiveMenu').val().toLowerCase()) {
@@ -267,7 +288,14 @@
                     $("#selected-option").html(Title);
                     $("#DivloadPlan").html('');
                     var pid = $('#PlanId').val();
-                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val()); //activeMenu parameter added
+                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+                    if (response.indexOf('serviceUnavailable') != -1) {
+                        //// Call function to redirect on service unavailibility.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                }); //activeMenu parameter added
             });
         }
 
@@ -955,6 +983,10 @@
                data: { currentPlanId: planId },
                dataType: "json",
                success: function (data) {
+                   if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                       window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                   }
+                   else {
                    // Set collaborator details
                    $('#divCollaborator').empty(); // Clear collaborators div content
                    ////  set collaborator's image
@@ -966,6 +998,7 @@
                    $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
                    //added by uday for #416
                    ProfileAttachToolTip();//function written in scripts.js
+               }
                }
            });
        }
@@ -1128,6 +1161,10 @@
                 dataType: "json",
                 async: false,
                 success: function (data) {
+               if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                   window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+               }
+               else {
                     if (data.isSuccess == true) {
                         if (data.AllowedGeography != 'undefined' && data.AllowedGeography != null) {
                             geographyCount = data.AllowedGeography.length;
@@ -1199,6 +1236,7 @@
                         }
                     }
                 }
+           }
             });
         }
 
@@ -1399,7 +1437,14 @@
         $("#CurrentPlanId").val(CurrentPlanId);
         if (CurrentPlanId > 0) {
             BindUpcomingActivites(CurrentPlanId);
-            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val());
+           $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+               if (response.indexOf('serviceUnavailable') != -1) {
+                   //// Call function to redirect on service unavailibility.
+                   //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                   //// Ticket: 942 Exception handeling in Gameplan.
+                   window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+               }
+           });
         }
 
     });
@@ -1811,6 +1856,10 @@
               },
               dataType: "json",
               success: function (data) {
+                    if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
                   type = data.ViewBy.toString();
                   if (getViewByList == true) {
                       BindViewSelections(data.ViewById, type);
@@ -1901,6 +1950,7 @@
 
                   //gantt.render();     ////Added by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
               }
+                }
           });
       }	 
  else {
@@ -1945,6 +1995,12 @@
                       planId: CurrentPlanId
                   },
                   success: function (data) {
+            if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                //// Function to redirect to login page on unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            } else {
                       if (data.IsPlanEditable) {
 
                           switch ($('#ActiveMenu').val().toLowerCase()) {
@@ -1973,6 +2029,7 @@
                           $("#isViewOnly").val(false);
                       }
                   }
+        }
               });
           }
 
@@ -2667,7 +2724,16 @@
     var url = '@Url.Content("~/Home/LoadInspectPopup")';
     $("#divPartial").empty();
     //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
-    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function () { modalBackdropDisplayNone(); });
+    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function (response, status, xhr) {
+        if (response.indexOf('serviceUnavailable') != -1) {
+            //// Call function to redirect on service unavailibility.
+            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+            //// Ticket: 942 Exception handeling in Gameplan.
+            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+        }
+
+        modalBackdropDisplayNone();
+    });
 }
 
 //End Script Of Bhaveh
@@ -2778,6 +2844,10 @@ function ApproveTactic(e, task) {
                 },
                 dataType: "json",
                 success: function (data) {
+            if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+            else {
                     if (data.result == true) {
                         if (task.isSubmitted) {
                             $('#RequestCount').html($('#RequestCount').html() - 1);
@@ -2799,6 +2869,7 @@ function ApproveTactic(e, task) {
                         alert('Not Approved');
                     }
                 }
+        }
             });
         }
 
@@ -2829,6 +2900,10 @@ function ApproveTactic(e, task) {
                 },
                 dataType: "json",
                 success: function (data) {
+            if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+            else {
                     if (data.result == true) {
                         if (task.isSubmitted) {
                             $('#RequestCount').html($('#RequestCount').html() - 1);
@@ -2850,6 +2925,7 @@ function ApproveTactic(e, task) {
                         alert('Not Declined');
                     }
                 }
+        }
             });
         }
 

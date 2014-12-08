@@ -351,7 +351,14 @@
 
         $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog")';
-        $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");
+        $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId", function (response, status, xhr) {
+            if (response.indexOf('serviceUnavailable') != -1) {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
 
         @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
         hdnPlanId = "@RevenuePlanner.Helpers.Sessions.PlanId";
@@ -1521,6 +1528,13 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
         data: {
         },
         success: function (r) {
+            if (r.serviceUnavailable != 'undefined' && r.serviceUnavailable == '#') {
+                //// Function to redirect to login page on unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+            else {
             var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
             $tableCampaigns.html('');
             var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
@@ -1534,6 +1548,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
             LoadImprovementTactic();
             NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
             Showmsg();
+            }
         }
     });
 }

@@ -376,7 +376,14 @@ function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule
     RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
     var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
-        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + RequestedModule);
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + RequestedModule, function (response, status, xhr) {
+            if (response.indexOf('serviceUnavailable') != -1) {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
     }
 
     function CloseIconClick() {

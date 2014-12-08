@@ -81,7 +81,22 @@ namespace RevenuePlanner.Controllers
             ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
             ViewBag.IsBenchmarked = (IsBenchmarked != null) ? IsBenchmarked : true;
-            BaselineModel objBaselineModel = FillInitialData(id, businessunit);
+            BaselineModel objBaselineModel = new BaselineModel();
+            try
+            {
+                objBaselineModel = FillInitialData(id, businessunit);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return RedirectToAction("ServiceUnavailable", "Login");
+                }
+            }
+
             string Title = objBaselineModel.Versions.Where(s => s.IsLatest == true).Select(s => s.Title).FirstOrDefault();
             if (Title != null && Title != string.Empty)
             {
@@ -132,8 +147,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
             // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
@@ -588,6 +602,8 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.Flag = chekckParentPublishModel(currentModelId);
             }
+            BaselineModel objBaselineModel = new BaselineModel();
+
             // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             try
             {
@@ -600,6 +616,8 @@ namespace RevenuePlanner.Controllers
                     lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
                     ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(tempBU);
                 }
+
+                objBaselineModel = FillInitialData(currentModelId, tempBU);
             }
             catch (Exception e)
             {
@@ -608,12 +626,11 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
             // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            BaselineModel objBaselineModel = FillInitialData(currentModelId, tempBU);
+
             return View(objBaselineModel);
         }
 
@@ -1086,8 +1103,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
 
@@ -1144,13 +1160,14 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public JsonResult GetModelList(string listType)
         {
+            try
+            {
             List<Model> objModelList = new List<Model>();
             var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
             List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
             if (lstAllowedBusinessUnits.Count > 0)
                 lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
-            try
-            {
+
                 if (!String.IsNullOrWhiteSpace(listType))
                 {
                     Guid clientId = Sessions.User.ClientId;
@@ -1204,11 +1221,7 @@ namespace RevenuePlanner.Controllers
                     }
 
                 }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
+
             var lstModel = objModelList.Select(p => new
             {
                 id = p.ModelId,
@@ -1222,6 +1235,23 @@ namespace RevenuePlanner.Controllers
             }).OrderBy(p => p.title);
             return Json(lstModel, JsonRequestBehavior.AllowGet);
         }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { serviceUnavailable = "#" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
 
         /// <summary>
         /// Load overview
@@ -1233,12 +1263,29 @@ namespace RevenuePlanner.Controllers
         public ActionResult LoadModelOverview(string title, string BusinessUnitId, int ModelId)
         {
             ModelOverView m = new ModelOverView();
+
+            try
+            {
+                ViewBag.IsServiceUnavailable = false;
             var List = GetBusinessUnitsByClient();
             TempData["BusinessUnitList"] = new SelectList(List, "BusinessUnitId", "Title");
             m.ModelId = ModelId;
             m.Title = title;
             m.BusinessUnitId = string.IsNullOrEmpty(BusinessUnitId) || BusinessUnitId == "0" ? Sessions.User.BusinessUnitId : Guid.Parse(BusinessUnitId);
             m.BusinessUnitName = Convert.ToString(List.Where(l => l.BusinessUnitId == m.BusinessUnitId).Select(l => l.Title).FirstOrDefault());
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    ViewBag.IsServiceUnavailable = true;
+                }
+            }
+
+
             return PartialView("_modeloverview", m);
         }
 
@@ -2351,8 +2398,25 @@ namespace RevenuePlanner.Controllers
             var businessunit = db.Models.Where(b => b.ModelId == mid1 && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
             ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
-            BaselineModel objBaselineModel = FillInitialData(mid1, businessunit);
+            BaselineModel objBaselineModel = new BaselineModel();
+            try
+            {
+                objBaselineModel = FillInitialData(mid1, businessunit);
             ViewData["BaselineModel"] = objBaselineModel;
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return RedirectToAction("ServiceUnavailable", "Login");
+                }
+            }
+
+
+
 
             List<ModelReview> modelReview = db.ModelReviews.Where(m => m.Model_Funnel.ModelId == mid1).ToList(); //Version 1
             List<ModelReview> compModelReview = db.ModelReviews.Where(m => m.Model_Funnel.ModelId == mid2).ToList(); //Version 2
@@ -2952,8 +3016,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
             // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
@@ -3851,7 +3914,23 @@ namespace RevenuePlanner.Controllers
             ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
             ViewBag.IsBenchmarked = (IsBenchmarked != null) ? IsBenchmarked : true;
-            BaselineModel objBaselineModel = FillInitialData(id, businessunit);
+            BaselineModel objBaselineModel = new BaselineModel();
+
+            try
+            {
+                objBaselineModel = FillInitialData(id, businessunit);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return RedirectToAction("ServiceUnavailable", "Login");
+                }
+            }
+
             string Title = objBaselineModel.Versions.Where(s => s.IsLatest == true).Select(s => s.Title).FirstOrDefault();
 
             //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
@@ -3895,8 +3974,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
             // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
@@ -4684,8 +4762,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
             List<IntegrationSelectionModel> lstIntegrationOverview = new List<IntegrationSelectionModel>();
@@ -4794,7 +4871,22 @@ namespace RevenuePlanner.Controllers
             var businessunit = db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
             ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
-            BaselineModel objBaselineModel = FillInitialData(id, businessunit);
+            BaselineModel objBaselineModel = new BaselineModel();
+            try
+            {
+                objBaselineModel = FillInitialData(id, businessunit);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return RedirectToAction("ServiceUnavailable", "Login");
+                }
+            }
+
             ViewBag.LatestModelID = objBaselineModel.Versions.Where(s => s.IsLatest == true).Select(s => s.ModelId).FirstOrDefault();
             objBaselineModel.IntegrationInstanceId = objModel.IntegrationInstanceId;
             objBaselineModel.IntegrationInstanceIdCW = objModel.IntegrationInstanceIdCW;
@@ -4834,8 +4926,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
             /*List of integration instance of model*/

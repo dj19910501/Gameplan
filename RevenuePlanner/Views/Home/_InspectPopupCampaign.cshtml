@@ -219,7 +219,16 @@
               if (tabtext == "Setup") {
                   url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
                   $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + planCampaignId);
+                  $("#divTab").load(url + '?id=' + planCampaignId
+, function (response, status, xhr) {
+    if (response.indexOf('serviceUnavailable') != -1) {
+        //// Call function to redirect on service unavailibility.
+        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //// Ticket: 942 Exception handeling in Gameplan.
+        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+    }
+});
+
               }
               else if (tabtext == "Budget") {
                   url = '@Url.Content("~/Home/LoadCampaignBudgetAllocation/")';
@@ -229,7 +238,16 @@
               else if (tabtext == "Review") {
                   url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
                       $("#divTab").empty();
-                      $("#divTab").load(url + '?id=' + planCampaignId);
+                  $("#divTab").load(url + '?id=' + planCampaignId
+, function (response, status, xhr) {
+    if (response.indexOf('serviceUnavailable') != -1) {
+        //// Call function to redirect on service unavailibility.
+        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //// Ticket: 942 Exception handeling in Gameplan.
+        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+    }
+});
+
                       RemoveTabClass();
                       $("#liSetup").removeClass('pull-left');
                       $("#liSetup").addClass('active pull-left');

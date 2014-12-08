@@ -479,7 +479,14 @@
     function ShowChangeLog() {
         $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog/")';
-        $('.changes').load(url + '?objectId=' + CurrentPlanId);
+        $('.changes').load(url + '?objectId=' + CurrentPlanId, function (response, status, xhr) {
+            if (response.indexOf('serviceUnavailable') != -1) {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
     }
     $(document).ready(
        function () {
@@ -592,6 +599,9 @@
              data: { PlanId: CurrentPlanId, isQuater: isQuater },
              dataType: "json",
              success: function (data) {
+                 if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                 } else {
                  planYear = parseInt(data.planYear);
                  isPublished = data.isPublished;
                  renderGantt(data.taskData);
@@ -601,6 +611,7 @@
                  else {
                      $("#BtnPublishPlan").show();
                  }
+             }
              }
          });
      }
@@ -617,6 +628,10 @@
                 data: { currentPlanId: planId },
                 dataType: "json",
                 success: function (data) {
+                    if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
                     // Set collaborator details
                     $('#divCollaborator').empty(); // Clear collaborators div content
 
@@ -630,6 +645,7 @@
                     $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
                     //added by uday for #416
                     ProfileAttachToolTip();//function written in scripts.js
+                    }
                 }
             });
         }

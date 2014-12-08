@@ -1,6 +1,13 @@
 ﻿@model RevenuePlanner.Models.ModelOverView
+@{
+    //// Flag to indicate unavailability of web service.
+    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+    //// Ticket: 942 Exception handeling in Gameplan.
+    bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
+}
 @if (Model.ModelId != 0)
 {
+   
     @Html.HiddenFor(m => m.Title)
     @Html.HiddenFor(m => m.BusinessUnitId)
     <div id="nl-form" class="nl-form">
@@ -29,6 +36,15 @@ else
 }
 <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
 <script>
+    //// Function to redirect to login page on unavailability of web service.
+    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+    //// Ticket: 942 Exception handeling in Gameplan.
+    function redirectOnServiceUnavailibility() {
+        if ('@Html.Raw(Json.Encode(isServiceUnavailable))' == 'true') {
+            window.location = '@Url.Content(RevenuePlanner.Helpers.Common.RedirectOnServiceUnavailibilityPage)';
+        }
+    }
+
     var nlform = new NLForm(document.getElementById('nl-form'));
     $('.nl-field').each(function () {
         if ($(this).next().attr('datadefault') == "Title") {
@@ -60,5 +76,13 @@ else
         }
         $(".nl-field-go").click();
     }
+
+    $(document).ready(
+     function () {
+         //// Call function to redirect on service unavailibility.
+         //// Added By: Maninder Singh Wadhva on 11/24/2014.
+         //// Ticket: 942 Exception handeling in Gameplan.
+         redirectOnServiceUnavailibility();
+     });
 </script>
 

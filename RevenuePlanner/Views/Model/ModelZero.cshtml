@@ -212,11 +212,19 @@ else
                     data: { listType: modelsFor },
                     dataType: "json",
                     success: function (r) {
+                        if (r.serviceUnavailable != 'undefined' && r.serviceUnavailable == '#') {
+                            //// Function to redirect to login page on unavailability of web service.
+                            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                            //// Ticket: 942 Exception handeling in Gameplan.
+                            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                        } else {
+
                         baselinesModels = r;
                         //Added By : Kalpesh Sharma Functional Review Point #75
                         $('#table_baseline > tbody').html("");
                         fillBaselineTable();
                         myApp.hidePleaseWait();
+                        }
                     }
                 });
             }
@@ -228,6 +236,12 @@ else
                     data: { listType: modelsFor },
                     dataType: "json",
                     success: function (r) {
+                        if (r.serviceUnavailable != 'undefined' && r.serviceUnavailable == '#') {
+                            //// Function to redirect to login page on unavailability of web service.
+                            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                            //// Ticket: 942 Exception handeling in Gameplan.
+                            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                        } else {
                         baselinesModels = r;
                         //Added By : Kalpesh Sharma Functional Review Point #75
                         if (baselinesModels.length) {
@@ -240,6 +254,7 @@ else
                             $baselineTable.append($html);
                         }
                         myApp.hidePleaseWait();
+                    }
                     }
                 });
             }

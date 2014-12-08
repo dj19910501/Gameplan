@@ -115,7 +115,14 @@
         // Code to load change log
         var url = '@Url.Content("~/Home/LoadChangeLog/")';
         $('.changes').html('');
-        $('.changes').load(url + '?objectId=0');
+        $('.changes').load(url + '?objectId=0', function (response, status, xhr) {
+            if (response.indexOf('serviceUnavailable') != -1) {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
 
         // Style tweek to handle position of Error/Success message
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
@@ -258,9 +265,17 @@
             type: 'POST',
             url: '@Url.Content("~/Plan/GetBUTab/")',
             success: function (r) {
+                if (r.serviceUnavailable != 'undefined' && r.serviceUnavailable == '#') {
+                    //// Function to redirect to login page on unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+                else {
                 BindBUTabs(r);
                 TabClick();
                 //myApp.hidePleaseWait();
+            }
             }
         });
     }
@@ -345,6 +360,10 @@
             data: { Year: SelectedYear, BusinessUnit: SelectedBU },
             dataType: "json",
             success: function (r) {
+                if (r.serviceUnavailable != 'undefined' && r.serviceUnavailable == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+                else {
                 baselinesModels = r;
                 //Added By : Kalpesh Sharma Functional Review Point 07/24/2014
                 if (baselinesModels.lstPlanSelector != "") {
@@ -359,6 +378,7 @@
                     $baselineTable.append($html);
                 }
                 myApp.hidePleaseWait();
+                }
             }
         });
     }

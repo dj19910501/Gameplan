@@ -299,7 +299,14 @@
           if (hdnPlanId != 0) {
               $('.changes').html('');
               var url = '@Url.Content("~/Home/LoadChangeLog")';
-              $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");
+              $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId", function (response, status, xhr) {
+                  if (response.indexOf('serviceUnavailable') != -1) {
+                      //// Call function to redirect on service unavailibility.
+                      //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                      //// Ticket: 942 Exception handeling in Gameplan.
+                      window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+              });
           }
           // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
           if ($('#IsBusinessUnitEditable').val().toLowerCase() == 'false') {
