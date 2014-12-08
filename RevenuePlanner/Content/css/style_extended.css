@@ -3494,3 +3494,10 @@ a:focus {
     float:left;
 }
 /* End - Added by Viral for PL ticket #1017 */
+
+/* Start - Added by Sohel Pathan on 08/12/2014 for PL ticket #993 */
+#frmDataMapping .verticalIdSelectBox .sbSelector {
+    font-size: 14px;
+    width:90%;
+}
+/* End - Added by Sohel Pathan on 08/12/2014 for PL ticket #993 */

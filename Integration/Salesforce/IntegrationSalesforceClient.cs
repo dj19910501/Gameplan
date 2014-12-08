@@ -4,16 +4,10 @@ using SalesforceSharp.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using System.Transactions;
-using System.Dynamic;
 using System.Reflection;
-using Integration.BDSService;
 using Newtonsoft.Json.Linq;
-using System.Security.Cryptography;
-using System.IO;
 using System.Configuration;
 using Integration.Helper;
 
@@ -146,6 +140,10 @@ namespace Integration.Salesforce
             return TargetDataTypeList.OrderBy(q => q).ToList();
         }
 
+        /// <summary>
+        /// Function to sync data from gameplan to salesforce.
+        /// </summary>
+        /// <returns>returns flag for sync status</returns>
         public bool SyncData()
         {
             // Insert log into IntegrationInstanceSection, Dharmraj PL#684
@@ -749,6 +747,9 @@ namespace Integration.Salesforce
         //    }
         //}
 
+        /// <summary>
+        /// Function to set mapping details.
+        /// </summary>
         private void SetMappingDetails()
         {
             // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
@@ -1777,6 +1778,9 @@ namespace Integration.Salesforce
             return planIMPTactic;
         }
 
+        /// <summary>
+        /// Function to Synchronize instance data.
+        /// </summary>
         private void SyncInstanceData()
         {
             List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
@@ -2078,7 +2082,7 @@ namespace Integration.Salesforce
         /// <param name="obj">Plan or improvement tactic.</param>
         /// <param name="sourceProps">Array of properties for given obj.</param>
         /// <param name="mapping">Mapping field item</param>
-        /// <returns>Mapped object of Custom Field</returns>
+        /// <returns>String array with two elements: one Key and one value, to be added in custom field maaping dictionary</returns>
         private string[] MapCustomField<T>(object obj, PropertyInfo[] sourceProps, KeyValuePair<string, string> mapping)
         {
             if (_mappingCustomFields != null)

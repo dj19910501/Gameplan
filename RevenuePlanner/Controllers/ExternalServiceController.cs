@@ -10,6 +10,13 @@ using System.Transactions;
 using System.Web.Mvc;
 using Integration.Salesforce;
 using Integration.Eloqua;
+
+/*
+ * Author : Sohel Pathan
+ * Created Date : 
+ * Purpose : External Service Integration
+*/
+
 namespace RevenuePlanner.Controllers
 {
     public class ExternalServiceController : CommonController
@@ -885,10 +892,11 @@ namespace RevenuePlanner.Controllers
         #endregion
         
         /// <summary>
-        /// Sync service
+        /// Sync data to external service based on Integration selection
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Integration Instance Id</param>
+        /// <param name="UserId">user id of the logged in user</param>
+        /// <returns>returns json result object with sync status flag and sync timestamp</returns>
         public JsonResult SyncNow(int id, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
@@ -1171,8 +1179,8 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>05/08/2014</CreatedDate>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Integration Instance Id</param>
+        /// <returns>Returns list of gameplan data type model</returns>
         public IList<GameplanDataTypeModel> GetGameplanDataTypeList(int id)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
@@ -1272,8 +1280,8 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Get gameplan datatype list from database based on IntegrationInstanceId
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Integration Instance Id</param>
+        /// <returns>returns list of gameplan datatype list with custom fields</returns>
         public List<GameplanDataTypeModel> GetGameplanDataTypeListFromDB(int id)
         {
             try
@@ -1470,9 +1478,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>05/08/2014</CreatedDate>
-        /// <param name="id"></param>
-        /// <param name="form"></param>
-        /// <returns></returns>
+        /// <param name="form">form object of post request</param>
+        /// <param name="IntegrationInstanceId">Integration Id</param>
+        /// <param name="UserId">user of current logged in user</param>
+        /// <returns>returns json result with data save status flag and success/error message</returns>
         [HttpPost]
         public JsonResult SaveDataMapping(IList<GameplanDataTypeModel> form, int IntegrationInstanceId, string UserId = "")
         {
