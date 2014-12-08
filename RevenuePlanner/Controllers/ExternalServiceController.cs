@@ -18,6 +18,12 @@ using Integration.Eloqua;
 
 #endregion
 
+/*
+ * Author : Sohel Pathan
+ * Created Date : 
+ * Purpose : External Service Integration
+*/
+
 namespace RevenuePlanner.Controllers
 {
     public class ExternalServiceController : CommonController
@@ -28,7 +34,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Integration Listing
-        
+
         /// <summary>
         /// Integration data listing
         /// </summary>
@@ -38,7 +44,7 @@ namespace RevenuePlanner.Controllers
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            
+
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
 
             //-- Get list of IntegrationTypes
@@ -137,12 +143,12 @@ namespace RevenuePlanner.Controllers
 
                 Guid clientId = Sessions.User.ClientId;
 
-                ////Get published plan list year for logged in client.
-                var objPlan = (from p in db.Plans
-                               join m in db.Models on p.ModelId equals m.ModelId
-                               join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
-                               where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false && p.IsDeleted == false && p.Status == status
-                               select p).OrderBy(q => q.Year).ToList().Select(p => p.Year).Distinct().ToList();
+            ////Get published plan list year for logged in client.
+            var objPlan = (from p in db.Plans
+                           join m in db.Models on p.ModelId equals m.ModelId
+                           join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
+                           where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false && p.IsDeleted == false && p.Status == status
+                           select p).OrderBy(q => q.Year).ToList().Select(p => p.Year).Distinct().ToList();
 
                 ViewBag.Year = objPlan;
             }
@@ -231,7 +237,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Add Integration
-        
+
         /// <summary>
         /// Add new Integration Service
         /// </summary>
@@ -341,7 +347,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else if (form.SyncFrequency.Frequency == "Weekly")
                             {
-                                DateTime nextDate = GetNextDateForDay(DateTime.Now,(DayOfWeek)Enum.Parse(typeof(DayOfWeek),objSyncFrequency.DayofWeek));
+                                DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
                                 TimeSpan time = (TimeSpan)objSyncFrequency.Time;
                                 objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                             }
@@ -631,7 +637,7 @@ namespace RevenuePlanner.Controllers
                         else
                             objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
                     }
-                    objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;    
+                    objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;
                 }
                 objView.SyncFrequency = objSync;
 
@@ -668,7 +674,7 @@ namespace RevenuePlanner.Controllers
             if (id > 0)
             {
                 objView.GameplanDataTypeModelList = GetGameplanDataTypeList(id);   // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
-                objView.ExternalServer = GetExternalServer(id);    
+                objView.ExternalServer = GetExternalServer(id);
 
                 // Dharmraj Start : #658: Integration - UI - Pulling Revenue - Salesforce.com
                 objView.GameplanDataTypePullModelList = GetGameplanDataTypePullList(id);
@@ -903,12 +909,13 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
-        
+
         /// <summary>
-        /// Sync service
+        /// Sync data to external service based on Integration selection
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Integration Instance Id</param>
+        /// <param name="UserId">user id of the logged in user</param>
+        /// <returns>returns json result object with sync status flag and sync timestamp</returns>
         public JsonResult SyncNow(int id, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
@@ -1078,22 +1085,22 @@ namespace RevenuePlanner.Controllers
 
                 List<GameplanDataTypeModel> listGameplanDataTypeStageOne = new List<GameplanDataTypeModel>();
                 listGameplanDataTypeStageOne = (from i in db.IntegrationInstances
-                                                 join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
-                                                 join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
-                                                 from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
+                                                join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
+                                                from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false && listStageCode.Contains(d.ActualFieldName)
-                                                 select new GameplanDataTypeModel
-                                                 {
-                                                     GameplanDataTypeId = d.GameplanDataTypeId,
-                                                     IntegrationTypeId = d.IntegrationTypeId,
-                                                     TableName = d.TableName,
-                                                     ActualFieldName = d.ActualFieldName,
-                                                     DisplayFieldName = d.DisplayFieldName,
-                                                     IsGet = d.IsGet,
-                                                     IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
-                                                     IntegrationInstanceId = i.IntegrationInstanceId,
-                                                     TargetDataType = m.TargetDataType
-                                                 }).ToList();
+                                                select new GameplanDataTypeModel
+                                                {
+                                                    GameplanDataTypeId = d.GameplanDataTypeId,
+                                                    IntegrationTypeId = d.IntegrationTypeId,
+                                                    TableName = d.TableName,
+                                                    ActualFieldName = d.ActualFieldName,
+                                                    DisplayFieldName = d.DisplayFieldName,
+                                                    IsGet = d.IsGet,
+                                                    IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                                                    IntegrationInstanceId = i.IntegrationInstanceId,
+                                                    TargetDataType = m.TargetDataType
+                                                }).ToList();
 
                 foreach (var item in listGameplanDataTypeStageOne)
                 {
@@ -1101,7 +1108,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 listGameplanDataTypeStageZero.AddRange(listGameplanDataTypeStageOne);
-                
+
                 if (listGameplanDataTypeStageZero != null && listGameplanDataTypeStageZero.Count > 0)
                 {
                     TempData["TargetFieldInvalidMsg"] = Common.objCached.TargetFieldInvalidMsg;
@@ -1191,13 +1198,13 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>05/08/2014</CreatedDate>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Integration Instance Id</param>
+        /// <returns>Returns list of gameplan data type model</returns>
         public IList<GameplanDataTypeModel> GetGameplanDataTypeList(int id)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            
+
             List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
 
             try
@@ -1292,14 +1299,14 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Get gameplan datatype list from database based on IntegrationInstanceId
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Integration Instance Id</param>
+        /// <returns>returns list of gameplan datatype list with custom fields</returns>
         public List<GameplanDataTypeModel> GetGameplanDataTypeListFromDB(int id)
         {
             try
             {
                 ViewBag.IntegrationInstanceId = id;
-                
+
                 var integrationType = (from i in db.IntegrationInstances
                                        join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
                                        where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
@@ -1360,7 +1367,7 @@ namespace RevenuePlanner.Controllers
                 string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
                 string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
                 string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
-                
+
                 List<GameplanDataTypeModel> listGameplanDataTypeCustomFields = new List<GameplanDataTypeModel>();
                 listGameplanDataTypeCustomFields = (from c in db.CustomFields
                                                     join m1 in db.IntegrationInstanceDataTypeMappings on c.CustomFieldId equals m1.CustomFieldId into mapping
@@ -1395,12 +1402,12 @@ namespace RevenuePlanner.Controllers
                         listGameplanDataTypeStageZero = listGameplanDataTypeCustomFields;
                         return listGameplanDataTypeStageZero.OrderBy(map => map.TableName).ToList();
                     }
-                else
-                {
-                    TempData["DataMappingErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
-                    return listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
+                    else
+                    {
+                        TempData["DataMappingErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
+                        return listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
+                    }
                 }
-            }
             }
             catch
             {
@@ -1490,9 +1497,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>05/08/2014</CreatedDate>
-        /// <param name="id"></param>
-        /// <param name="form"></param>
-        /// <returns></returns>
+        /// <param name="form">form object of post request</param>
+        /// <param name="IntegrationInstanceId">Integration Id</param>
+        /// <param name="UserId">user of current logged in user</param>
+        /// <returns>returns json result with data save status flag and success/error message</returns>
         [HttpPost]
         public JsonResult SaveDataMapping(IList<GameplanDataTypeModel> form, int IntegrationInstanceId, string UserId = "")
         {
@@ -1525,7 +1533,7 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
                         }
-                        
+
                         foreach (GameplanDataTypeModel obj in form)
                         {
                             if (!string.IsNullOrEmpty(obj.TargetDataType))
@@ -1541,7 +1549,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                objMapping.GameplanDataTypeId = obj.GameplanDataTypeId;
+                                    objMapping.GameplanDataTypeId = obj.GameplanDataTypeId;
                                 }
                                 //// End - Modified by :- Sohel Pathan on 03/12/2014 for PL #993
                                 objMapping.TargetDataType = obj.TargetDataType;
@@ -1714,27 +1722,27 @@ namespace RevenuePlanner.Controllers
         // Delete the Integration Instance
         // Added By : Kalpesh Sharma 08/08/2014
         public int DeleteIntegrationSettings(IntegrationModel form, ref string message)
-        { 
-           int Result = 0;
-         
-               IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IsDeleted.Equals(false) &&
-                               a.ClientId == Sessions.User.ClientId).FirstOrDefault();
+        {
+            int Result = 0;
 
-               if (objIntegrationInstance != null)
-               {
-                   objIntegrationInstance.IsDeleted = true;
-                   Common.DeleteIntegrationInstance(form.IntegrationInstanceId, true);
-                   DeleteExternalServer(form.IntegrationInstanceId);
-                   db.SaveChanges();
-                   message = Common.objCached.IntegrationDeleted;
-                   Result = 3;
-               }
-               else
-               {
-                   message = Common.objCached.ErrorOccured;
-               }
+            IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IsDeleted.Equals(false) &&
+                            a.ClientId == Sessions.User.ClientId).FirstOrDefault();
 
-               return Result;
+            if (objIntegrationInstance != null)
+            {
+                objIntegrationInstance.IsDeleted = true;
+                Common.DeleteIntegrationInstance(form.IntegrationInstanceId, true);
+                DeleteExternalServer(form.IntegrationInstanceId);
+                db.SaveChanges();
+                message = Common.objCached.IntegrationDeleted;
+                Result = 3;
+            }
+            else
+            {
+                message = Common.objCached.ErrorOccured;
+            }
+
+            return Result;
         }
 
 
@@ -1756,7 +1764,7 @@ namespace RevenuePlanner.Controllers
             if (Convert.ToString(form.IsDeleted).ToLower() == "true" && !IsAddOperation)
             {
                 ID = form.IntegrationInstanceId;
-                return (DeleteIntegrationSettings(form , ref message));
+                return (DeleteIntegrationSettings(form, ref message));
             }
 
             if (TestIntegrationCredentialsWithForm(form) && !form.IsDeleted)
@@ -2008,7 +2016,8 @@ namespace RevenuePlanner.Controllers
 
                                 //Identify IntegrationInstanceId for INQ in Model Table and set reference null
                                 db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceIdINQ == form.IntegrationInstanceId).ToList().ForEach(
-                                    INQ => {
+                                    INQ =>
+                                    {
                                         INQ.IntegrationInstanceIdINQ = null;
                                         INQ.ModifiedDate = DateTime.Now;
                                         INQ.ModifiedBy = Sessions.User.UserId;
@@ -2250,7 +2259,7 @@ namespace RevenuePlanner.Controllers
                 model.SFTPServerName = obj.SFTPServerName;
                 model.SFTPFileLocation = obj.SFTPFileLocation;
                 model.SFTPUserName = obj.SFTPUserName;
-                model.SFTPPassword = Common.Decrypt(obj.SFTPPassword); 
+                model.SFTPPassword = Common.Decrypt(obj.SFTPPassword);
                 model.SFTPPort = obj.SFTPPort;
             }
             return model;
