@@ -855,4 +855,10 @@
 		<value>Character &#60; , &#62; are not allowed in description field.</value>
 	</Field>
 	<!--End Added by Pratik -->
+  <!--Start Added by Pratik -->
+  <Field>
+    <Name>IntegrationFolderPathSaved</Name>
+    <value>Integration folder path(s) saved.</value>
+  </Field>
+  <!--End Added by Pratik -->
 </Messages>

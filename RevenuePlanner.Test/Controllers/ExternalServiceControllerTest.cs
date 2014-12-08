@@ -31,7 +31,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //Eloqua
             var result = controller.GetIntegrationFolder(0, 1) as ViewResult;
-            Assert.AreEqual("", result.ViewName);
+            Assert.AreEqual("IntegrationFolder", result.ViewName);
 
             //Check for the Year view bag, if it is null then view can give an error
             Assert.IsNotNull(controller.ViewBag.Year);
@@ -50,7 +50,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //Eloqua
             var result = controller.GetIntegrationFolder(1) as ViewResult;
-            Assert.AreEqual("", result.ViewName);
+            Assert.AreEqual("IntegrationFolder", result.ViewName);
 
             //Check for the Year view bag, if it is null then view can give an error
             Assert.IsNotNull(controller.ViewBag.Year);
@@ -69,7 +69,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //Eloqua
             var result = controller.GetIntegrationFolder(1, 0) as ViewResult;
-            Assert.AreEqual("", result.ViewName);
+            Assert.AreEqual("IntegrationFolder", result.ViewName);
 
             //Check for the Integration Type Code view bag, if it is null then view can give an error
             Assert.IsNotNull(controller.ViewBag.IntegrationTypeCode);
@@ -97,22 +97,22 @@ namespace RevenuePlanner.Test.Controllers
 
         #region Save Integration Folder Plan List
 
-        /// <summary>
-        /// To check that it returns a proper result after save with zero list in plan
-        /// <author>Pratik</author>
-        /// <createddate>04Dec2014</createddate>
-        /// </summary>
-        [TestMethod]
-        public void Save_Integration_Folder_Plan_List_With_Zero_List()
-        {
-            List<IntegrationPlanList> lst = new List<IntegrationPlanList>();
+        ///// <summary>
+        ///// To check that it returns a proper result after save with zero list in plan
+        ///// <author>Pratik</author>
+        ///// <createddate>04Dec2014</createddate>
+        ///// </summary>
+        //[TestMethod]
+        //public void Save_Integration_Folder_Plan_List_With_Zero_List()
+        //{
+        //    List<IntegrationPlanList> lst = new List<IntegrationPlanList>();
 
-            ExternalServiceController controller = new ExternalServiceController();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    ExternalServiceController controller = new ExternalServiceController();
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
 
-            var result = controller.SaveIntegrationFolderPlanList(lst) as JsonResult;
-            Assert.IsNotNull(result);
-        }
+        //    var result = controller.SaveIntegrationFolderPlanList(lst) as JsonResult;
+        //    Assert.IsNotNull(result);
+        //}
 
         ///// <summary>
         ///// To check that it returns a proper result after save with one list in plan

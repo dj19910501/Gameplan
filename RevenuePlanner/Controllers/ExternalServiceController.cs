@@ -1,4 +1,9 @@
-﻿using Elmah;
+﻿//// Controller to handle external service method(s).
+//// It includes method(s) to interact with database, eloqua etc.
+
+#region Using
+
+using Elmah;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using Integration;
@@ -10,6 +15,9 @@ using System.Transactions;
 using System.Web.Mvc;
 using Integration.Salesforce;
 using Integration.Eloqua;
+
+#endregion
+
 namespace RevenuePlanner.Controllers
 {
     public class ExternalServiceController : CommonController
@@ -113,9 +121,12 @@ namespace RevenuePlanner.Controllers
         public ActionResult GetIntegrationFolder(int TypeId, int id = 0)
         {
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
 
-            ViewBag.IntegrationInstanceId = id;
-            ViewBag.IntegrationTypeId = TypeId;
+            try
+            {
+                ViewBag.IntegrationInstanceId = id;
+                ViewBag.IntegrationTypeId = TypeId;
 
             var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == TypeId).FirstOrDefault();
 
@@ -124,19 +135,23 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IntegrationTypeCode = integrationTypeObj.Code;
             }
 
-            string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
+                Guid clientId = Sessions.User.ClientId;
 
-            Guid clientId = Sessions.User.ClientId;
-            
-            ////Get published plan list year for logged in client.
-            var objPlan = (from p in db.Plans
-                           join m in db.Models on p.ModelId equals m.ModelId
-                           join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
-                           where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false && p.IsDeleted == false && p.Status == status
-                           select p).OrderBy(q => q.Year).ToList().Select(p => p.Year).Distinct().ToList();
+                ////Get published plan list year for logged in client.
+                var objPlan = (from p in db.Plans
+                               join m in db.Models on p.ModelId equals m.ModelId
+                               join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
+                               where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false && p.IsDeleted == false && p.Status == status
+                               select p).OrderBy(q => q.Year).ToList().Select(p => p.Year).Distinct().ToList();
 
-            ViewBag.Year = objPlan;
-           
+                ViewBag.Year = objPlan;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
             return View("IntegrationFolder");
         }
 
@@ -149,20 +164,26 @@ namespace RevenuePlanner.Controllers
         {
             List<IntegrationPlanList> objIntegrationPlanList = new List<IntegrationPlanList>();
 
-            Guid clientId = Sessions.User.ClientId;
-            string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
-
-            int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
-
-            // Get the list of plan, filtered by Business Unit , Year selected and published plan for logged in client.
-            if (Int_Year > 0)
+            try
             {
-                objIntegrationPlanList = (from p in db.Plans
-                                          join m in db.Models on p.ModelId equals m.ModelId
-                                          join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
-                                          where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false &&
-                                          p.IsDeleted == false && p.Year == Year && p.Status == status
-                                          select p).OrderByDescending(p => p.ModifiedDate ?? p.CreatedDate).ThenBy(p => p.Title).ToList().Select(p => new IntegrationPlanList { PlanId = p.PlanId, PlanTitle = p.Title, FolderPath = p.EloquaFolderPath }).ToList();
+                Guid clientId = Sessions.User.ClientId;
+                string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
+                int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
+
+                // Get the list of plan, filtered by Business Unit , Year selected and published plan for logged in client.
+                if (Int_Year > 0)
+                {
+                    objIntegrationPlanList = (from p in db.Plans
+                                              join m in db.Models on p.ModelId equals m.ModelId
+                                              join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
+                                              where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false &&
+                                              p.IsDeleted == false && p.Year == Year && p.Status == status
+                                              select p).OrderByDescending(p => p.ModifiedDate ?? p.CreatedDate).ThenBy(p => p.Title).ToList().Select(p => new IntegrationPlanList { PlanId = p.PlanId, PlanTitle = p.Title, FolderPath = p.EloquaFolderPath }).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
             }
 
             return PartialView("_IntegrationFolderPlanList", objIntegrationPlanList);
@@ -195,8 +216,7 @@ namespace RevenuePlanner.Controllers
                         }
 
                         scope.Complete();
-                        string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);
-                        return Json(new { IsSaved = true, Message = strMessag });
+                        return Json(new { IsSaved = true, Message = Common.objCached.IntegrationFolderPathSaved.ToString() });
                     }
                 }
             }

@@ -2261,6 +2261,17 @@ private string _CannotAllocateMorethanRemainingBudgeted;
 
         //// End - Ticket #994, by Pratik chauhan
 
+        //// Start - Ticket #998, by Pratik chauhan
+        private string _IntegrationFolderPathSaved;
+
+        public string IntegrationFolderPathSaved
+        {
+            get { return _IntegrationFolderPathSaved; }
+            set { _IntegrationFolderPathSaved = value; }
+        }
+
+        //// End - Ticket #998, by Pratik chauhan
+
         #endregion
 
         #region  Functions
@@ -2964,6 +2975,9 @@ private string _CannotAllocateMorethanRemainingBudgeted;
 											 break;
                                         case "InvalidCharacterofDescription":
                                             _InvalidCharacterofDescription = strMsgValue;
+                                            break;
+                                        case "IntegrationFolderPathSaved":
+                                            _IntegrationFolderPathSaved = strMsgValue;
                                             break;
                                     }
                                 }

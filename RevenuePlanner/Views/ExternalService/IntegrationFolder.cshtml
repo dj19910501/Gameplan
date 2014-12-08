@@ -11,7 +11,7 @@
 @Html.Hidden("InActiveConfirmationMsg", TempData["InActiveConfirmationMsg"])
 
 @{
-    ViewBag.Title = "Edit External Service Integrations";
+    ViewBag.Title = "Configure Integration Folder Path";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.PageTitle = "EloquaFolder";
@@ -38,7 +38,7 @@
     <!--success message-->
     <ul class="nav nav-tabs margin-bottom0">
         <li class="source-sans-proregular">
-            <h2 class="title-header">@( IntegrationInstanceId == 0 ? "Create" : "Edit") External Service Integrations</h2>
+            <h2 class="title-header">Configure Integration Folder Path</h2>
         </li>
     </ul>
 
