@@ -3,10 +3,7 @@ using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using SalesforceSharp;
 using Integration.Eloqua;
 using Integration.Helper;
 
@@ -90,6 +87,9 @@ namespace Integration
             _entityType = entityType;
         }
 
+        /// <summary>
+        /// call sync method based on sync entity selected
+        /// </summary>
         public void Sync()
         {
             if (EntityType.Tactic.Equals(_entityType))
@@ -114,6 +114,9 @@ namespace Integration
             }
         }
 
+        /// <summary>
+        /// ImprovementTactic synchronization
+        /// </summary>
         private void SyncImprovementTactic()//new code added for #532 by uday
         {
             /// Write query to get integration instance id and integration type.
@@ -125,6 +128,9 @@ namespace Integration
             }
         }
 
+        /// <summary>
+        /// Tactic synchronization
+        /// </summary>
         private void SyncTactic()
         {
             /// Write query to get integration instance id and integration type.
@@ -136,6 +142,9 @@ namespace Integration
             }
         }
 
+        /// <summary>
+        /// Program synchronization
+        /// </summary>
         private void SyncProgram()
         {
             /// Write query to get integration instance id and integration type.
@@ -147,6 +156,9 @@ namespace Integration
             }
         }
 
+        /// <summary>
+        /// Campaign synchronization
+        /// </summary>
         private void SyncCampaing()
         {
             /// Write query to get integration instance id and integration type.
@@ -158,6 +170,9 @@ namespace Integration
             }
         }
 
+        /// <summary>
+        /// synchronization all data integrated with selected Instance.
+        /// </summary>
         private void SyncInstance()
         {
             _integrationInstanceId = _id;
@@ -168,6 +183,9 @@ namespace Integration
             }
         }
 
+        /// <summary>
+        /// call intergration api and sync data based on selected IntegrationType 
+        /// </summary>
         private void IdentifyIntegration()
         {
             ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic

@@ -9,8 +9,6 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Transactions;
 
 namespace Integration.Eloqua
@@ -190,7 +188,7 @@ namespace Integration.Eloqua
         /// Added By: Maninder Singh Wadhva
         /// Function to sync data from gameplan to eloqua.
         /// </summary>
-        /// <returns>Returns a flag to determine whether synchronization was successfull or not.</returns>
+        /// <returns>returns flag for sync status</returns>
         public bool SyncData()
         {
             // Insert log into IntegrationInstanceSection, Dharmraj PL#684
@@ -1124,11 +1122,11 @@ namespace Integration.Eloqua
         /// Added Date: 04/12/2014
         /// Description: Map Custom Field Data for Integration
         /// </summary>
-        /// <typeparam name="T">Plan or improvement tactic type.</typeparam>
-        /// <param name="obj">Plan or improvement tactic.</param>
-        /// <param name="sourceProps">Array of properties for given obj.</param>
+        /// <typeparam name="T">Plan or improvement tactic type</typeparam>
+        /// <param name="obj">Plan or improvement tactic</param>
+        /// <param name="sourceProps">Array of properties for given obj</param>
         /// <param name="mapping">Mapping field item</param>
-        /// <returns>Mapped object of Custom Field</returns>
+        /// <returns>returns object of FieldValue</returns>
         private FieldValue MapCustomField<T>(object obj, PropertyInfo[] sourceProps, KeyValuePair<string, string> mapping)
         {
             if (_mappingCustomFields != null)

@@ -164,6 +164,13 @@
         var sbValue = $(this).attr('sb');
         var selValue = $("#frmDataMapping").find('#sbSelector_' + $(this).attr('sb')).html();   /* Modified by Sohel Pathan on 20/08/2014 for Internal Review Point */
         $("#frmDataMapping").find('select[sb="' + sbValue + '"]').val(selValue);    /* Modified by Sohel Pathan on 20/08/2014 for Internal Review Point */
+        var currentSelectedValue = $(this).next().find('.sbSelector').html();
+        if (!(currentSelectedValue == '' || currentSelectedValue == 'Select')) {
+            $(this).next('.sbHolder').prop("title", currentSelectedValue);
+        }
+        else {
+            $(this).next('.sbHolder').prop("title", '');
+        }
     });
     
     $("#btnSaveDataMappings").click(function (e) {
@@ -275,7 +282,18 @@
     function AssignDefaultValueDataMapping() {
         $('#frmDataMapping').find("input[type=text],textarea,select,input[type=password]").each(function () {
             $(this).attr("myValue", $(this).val());
+            if ($(this).hasClass('ddlStyle'))
+            {
+                if (!($(this).val() == '' || $(this).val() == 'Select')) {
+                    $(this).next('.sbHolder').prop("title", $(this).val());
+                }
+                else {
+                    $(this).next('.sbHolder').prop("title", '');
+                }
+            }
         });
+
+
     }
     // End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
 

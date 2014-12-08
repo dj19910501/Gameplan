@@ -167,11 +167,11 @@ namespace Integration.Helper
         /// To insert log in IntegrationInstanceSection
         /// Added by Dharmraj on 18-8-2014, PL#684
         /// </summary>
-        /// <param name="IntegartionInstanceLogId"></param>
-        /// <param name="IntegartionInstanceId"></param>
-        /// <param name="SectionName"></param>
-        /// <param name="SyncStart"></param>
-        /// <param name="CreateBy"></param>
+        /// <param name="IntegartionInstanceLogId">IntegartionInstanceLogId</param>
+        /// <param name="IntegartionInstanceId">Integration Instance Id</param>
+        /// <param name="SectionName">Name of section (Entity) for which sync starts</param>
+        /// <param name="SyncStart">sync start timestamp</param>
+        /// <param name="CreateBy">logged in user id</param>
         /// <returns>IntegrationInstanceSectionId</returns>
         public static int CreateIntegrationInstanceSection(int IntegartionInstanceLogId, int IntegartionInstanceId, string SectionName, DateTime SyncStart, Guid CreateBy)
         {
