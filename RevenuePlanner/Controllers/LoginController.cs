@@ -68,10 +68,12 @@ namespace RevenuePlanner.Controllers
 
             /* Bug 25:Unavailability of BDSService leads to no error shown to user */
 
+            bool isErrorMessageAddedToModel = false;
             if (!string.IsNullOrEmpty(Convert.ToString(TempData["ErrorMessage"])))
             {
                 ModelState.AddModelError("", Convert.ToString(TempData["ErrorMessage"]));
                 TempData["ErrorMessage"] = null;
+                isErrorMessageAddedToModel = true;
             }
 
             /* Bug 25:Unavailability of BDSService leads to no error shown to user */
@@ -98,7 +100,10 @@ namespace RevenuePlanner.Controllers
                 {
                     Sessions.Clear();
                     System.Web.Security.FormsAuthentication.SignOut();
-                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                    if (!isErrorMessageAddedToModel)
+                    {
+                        ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                    }
                 }
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
             }
