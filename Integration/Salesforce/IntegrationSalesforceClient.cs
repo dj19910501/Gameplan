@@ -156,7 +156,7 @@ namespace Integration.Salesforce
                 Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).SingleOrDefault();
                 // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
-                CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                 // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 planTactic = SyncTacticData(planTactic);
                 db.SaveChanges();
@@ -166,7 +166,7 @@ namespace Integration.Salesforce
                 Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id).SingleOrDefault();
                 // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
-                CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                _mappingCustomFields = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
                 // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 planProgram = SyncProgramData(planProgram);
                 db.SaveChanges();
@@ -176,7 +176,7 @@ namespace Integration.Salesforce
                 Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id).SingleOrDefault();
                 // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 List<int> campaignIdList = new List<int>(){ planCampaign.PlanCampaignId };
-                CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
                 // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 planCampaign = SyncCampaingData(planCampaign);
                 db.SaveChanges();
@@ -1074,12 +1074,21 @@ namespace Integration.Salesforce
                     instanceLogCampaign.SyncTimeStamp = DateTime.Now;
                     try
                     {
-                    _parentId = CreateCampaign(planCampaign);
-                    planCampaign.IntegrationInstanceCampaignId = _parentId;
+                        // Start - Added by Sohel Pathan on 09/12/2014 for PL ticket #995, 996, & 997
+                        List<int> campaignIdList = new List<int>() { planCampaign.PlanCampaignId };
+                        var lstCustomFieldsCampaign = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                        if (lstCustomFieldsCampaign.Count > 0)
+                        {
+                            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                        }
+                        // End - Added by Sohel Pathan on 09/12/2014 for PL ticket #995, 996, & 997
+
+                        _parentId = CreateCampaign(planCampaign);
+                        planCampaign.IntegrationInstanceCampaignId = _parentId;
                         planCampaign.LastSyncDate = DateTime.Now;
                         planCampaign.ModifiedDate = DateTime.Now;
                         planCampaign.ModifiedBy = _userId;
-                    db.Entry(planCampaign).State = EntityState.Modified;
+                        db.Entry(planCampaign).State = EntityState.Modified;
                         instanceLogCampaign.Status = StatusResult.Success.ToString();
                     }
                     catch (SalesforceException e)
@@ -1103,7 +1112,7 @@ namespace Integration.Salesforce
                     instanceLogProgram.SyncTimeStamp = DateTime.Now;
                     try
                     {
-                planProgram.IntegrationInstanceProgramId = CreateProgram(planProgram);
+                        planProgram.IntegrationInstanceProgramId = CreateProgram(planProgram);
                         planProgram.LastSyncDate = DateTime.Now;
                         planProgram.ModifiedDate = DateTime.Now;
                         planProgram.ModifiedBy = _userId;
@@ -1288,6 +1297,15 @@ namespace Integration.Salesforce
                         instanceLogCampaign.SyncTimeStamp = DateTime.Now;
                         try
                         {
+                            // Start - Added by Sohel Pathan on 09/12/2014 for PL ticket #995, 996, & 997
+                            List<int> campaignIdList = new List<int>() { planCampaign.PlanCampaignId };
+                            var lstCustomFieldsCampaign = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                            if (lstCustomFieldsCampaign.Count > 0)
+                            {
+                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                            }
+                            // End - Added by Sohel Pathan on 09/12/2014 for PL ticket #995, 996, & 997
+
                             _parentId = CreateCampaign(planCampaign);
                             planCampaign.IntegrationInstanceCampaignId = _parentId;
                             planCampaign.LastSyncDate = DateTime.Now;
@@ -1317,6 +1335,16 @@ namespace Integration.Salesforce
                         instanceLogProgram.SyncTimeStamp = DateTime.Now;
                         try
                         {
+                            // Start - Added by Sohel Pathan on 09/12/2014 for PL ticket #995, 996, & 997
+                            List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
+                            var lstCustomFieldsProgram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                            if (lstCustomFieldsProgram.Count > 0)
+                            {
+                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsProgram).ToDictionary(c => c.Key, c => c.Value);
+                            }
+
+                            // End - Added by Sohel Pathan on 09/12/2014 for PL ticket #995, 996, & 997
+
                             _parentId = CreateProgram(planProgram);
                             planProgram.IntegrationInstanceProgramId = _parentId;
                             planProgram.LastSyncDate = DateTime.Now;
@@ -1791,7 +1819,7 @@ namespace Integration.Salesforce
                     List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId)).ToList();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
-                    CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                    _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     for (int index = 0; index < campaignList.Count; index++)
                     {
@@ -1806,7 +1834,7 @@ namespace Integration.Salesforce
                     List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => planIds.Contains(program.Plan_Campaign.PlanId)).ToList();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
-                    CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                    _mappingCustomFields = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     for (int index = 0; index < programList.Count; index++)
                     {
@@ -1821,7 +1849,7 @@ namespace Integration.Salesforce
                     List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
-                    CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                    _mappingCustomFields =  CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     for (int index = 0; index < tacticList.Count; index++)
                     {
@@ -2093,17 +2121,21 @@ namespace Integration.Salesforce
                     string EntityType = ((T)obj).GetType().BaseType.Name;
                     string EntityTypeId = string.Empty;
                     PropertyInfo propInfoCustom = null;
+                    string EntityTypeInitial = string.Empty;
 
                     if (EntityType == Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString())
                     {
+                        EntityTypeInitial = "T";
                         propInfoCustom = sourceProps.FirstOrDefault(property => property.Name.Equals("PlanTacticId", StringComparison.OrdinalIgnoreCase));
                     }
                     else if (EntityType == Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString())
                     {
+                        EntityTypeInitial = "P";
                         propInfoCustom = sourceProps.FirstOrDefault(property => property.Name.Equals("PlanProgramId", StringComparison.OrdinalIgnoreCase));
                     }
                     else if (EntityType == Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString())
                     {
+                        EntityTypeInitial = "C";
                         propInfoCustom = sourceProps.FirstOrDefault(property => property.Name.Equals("PlanCampaignId", StringComparison.OrdinalIgnoreCase));
                     }
 
@@ -2111,7 +2143,7 @@ namespace Integration.Salesforce
                     {
                         EntityTypeId = Convert.ToString(propInfoCustom.GetValue(((T)obj), null));
                     }
-                    mappingKey = mapping.Key + "-" + EntityTypeId;
+                    mappingKey = EntityTypeInitial + "-" + EntityTypeId + "-" + mapping.Key;
 
                     if (_mappingCustomFields.ContainsKey(mappingKey))
                     {
@@ -2156,27 +2188,31 @@ namespace Integration.Salesforce
         /// </summary>
         /// <param name="EntityIdList">List of Entity Ids with which Custom Fields are associated like PlanCampaignIds for Campaign Entity Type</param>
         /// <param name="EntityType">Type of Entity with which Custom Fields are associated like Campaign, Program or Tactic</param>
-        private void CreateMappingCustomFieldDictionary(List<int> EntityIdList, string EntityType)
+        /// <returns>returns dictionary of custom field mapping</returns>
+        private Dictionary<string, string> CreateMappingCustomFieldDictionary(List<int> EntityIdList, string EntityType)
         {
             var CustomFieldList = db.CustomField_Entity.Where(ce => EntityIdList.Contains(ce.EntityId) && ce.CustomField.EntityType == EntityType)
                                                         .Select(ce => new { ce.CustomField, ce.CustomFieldEntityId, ce.CustomFieldId, ce.EntityId, ce.Value }).ToList();
             List<int> CustomFieldIdList = CustomFieldList.Select(cf => cf.CustomFieldId).Distinct().ToList();
             var CustomFieldOptionList = db.CustomFieldOptions.Where(cfo => CustomFieldIdList.Contains(cfo.CustomFieldId)).Select(cfo => new { cfo.CustomFieldOptionId, cfo.Value });
 
-            _mappingCustomFields = new Dictionary<string, string>();
+            Dictionary<string, string> CustomFieldsList = new Dictionary<string, string>();
+            string EntityTypeInitial = EntityType.Substring(0, 1);
 
             foreach (var item in CustomFieldList)
             {
                 if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
                 {
-                    _mappingCustomFields.Add(item.CustomFieldId + "-" + item.EntityId, item.Value);
+                    CustomFieldsList.Add(EntityTypeInitial + "-" + item.EntityId + "-" + item.CustomFieldId, item.Value);
                 }
                 else if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.DropDownList.ToString())
                 {
                     int CustomFieldOptionId = Convert.ToInt32(item.Value);
-                    _mappingCustomFields.Add(item.CustomFieldId + "-" + item.EntityId, CustomFieldOptionList.Where(cfo => cfo.CustomFieldOptionId == CustomFieldOptionId).Select(cfo => cfo.Value).FirstOrDefault());
+                    CustomFieldsList.Add(EntityTypeInitial + "-" + item.EntityId + "-" + item.CustomFieldId, CustomFieldOptionList.Where(cfo => cfo.CustomFieldOptionId == CustomFieldOptionId).Select(cfo => cfo.Value).FirstOrDefault());
                 }
             }
+
+            return CustomFieldsList;
         }
     }
 }
