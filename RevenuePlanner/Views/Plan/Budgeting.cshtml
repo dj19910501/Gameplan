@@ -114,7 +114,7 @@
         $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog/")';
         $('.changes').load(url + '?objectId=' + CurrentPlanId, function (response, status, xhr) {
-            if (response.indexOf('serviceUnavailable') != -1) {
+            if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
                 //// Call function to redirect on service unavailibility.
                 //// Added By: Maninder Singh Wadhva on 11/24/2014.
                 //// Ticket: 942 Exception handeling in Gameplan.
@@ -287,7 +287,7 @@
             $('#nl-form2').show();
         if (currentTab == 'aAllocated') {
             $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function (response, status, xhr) {
-                if (response.indexOf('serviceUnavailable') != -1) {
+                if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
                     //// Call function to redirect on service unavailibility.
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
                     //// Ticket: 942 Exception handeling in Gameplan.
@@ -300,7 +300,7 @@
         else if (currentTab == 'aPlanned') {
                 $('#divViewBy').show();
             $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&budgetTab=1&viewBy=' + CurrentView, function (response, status, xhr) {
-                if (response.indexOf('serviceUnavailable') != -1) {
+                if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
                     //// Call function to redirect on service unavailibility.
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
                     //// Ticket: 942 Exception handeling in Gameplan.
@@ -313,7 +313,7 @@
         else if (sender == 'aActuals') {
             $('#divViewBy').show();
             $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&budgetTab=2&viewBy=' + CurrentView, function (response, status, xhr) {
-        if (response.indexOf('serviceUnavailable') != -1) {
+                if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
             //// Call function to redirect on service unavailibility.
             //// Added By: Maninder Singh Wadhva on 11/24/2014.
             //// Ticket: 942 Exception handeling in Gameplan.

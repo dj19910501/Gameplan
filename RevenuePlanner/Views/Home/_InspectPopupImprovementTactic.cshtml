@@ -217,7 +217,7 @@
 
           if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()') {
               $("#divTab").load(url + '?id=' + '@PlanProgrameId' + '&InspectPopupMode=' + '@InspectMode', function (response, status, xhr) {
-                  if (response.indexOf('serviceUnavailable') != -1) {
+                  if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
                       //// Call function to redirect on service unavailibility.
                       //// Added By: Maninder Singh Wadhva on 11/24/2014.
                       //// Ticket: 942 Exception handeling in Gameplan.
@@ -227,7 +227,7 @@
         }
         else {
               $("#divTab").load(url + '?id=' + id + '&InspectPopupMode=' + '@InspectMode', function (response, status, xhr) {
-                  if (response.indexOf('serviceUnavailable') != -1) {
+                  if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
                       //// Call function to redirect on service unavailibility.
                       //// Added By: Maninder Singh Wadhva on 11/24/2014.
                       //// Ticket: 942 Exception handeling in Gameplan.
@@ -242,7 +242,7 @@
         var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
         $("#divPartial").load(url + '?id=' + @PlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()" + '&RequestedModule=' + '@RequestedModule', function (response, status, xhr) {
-            if (response.indexOf('serviceUnavailable') != -1) {
+            if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
                 //// Call function to redirect on service unavailibility.
                 //// Added By: Maninder Singh Wadhva on 11/24/2014.
                 //// Ticket: 942 Exception handeling in Gameplan.
