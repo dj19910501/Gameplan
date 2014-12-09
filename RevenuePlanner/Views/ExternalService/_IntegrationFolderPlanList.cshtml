@@ -36,7 +36,7 @@
                             @if (item.Permission == (int)Enums.CustomRestrictionPermission.ViewOnly)
                             {
 
-                                <input type="text" maxlength="4000" style="float: left;margin-bottom:0px;" id="txt_@item.PlanId" value="@item.FolderPath" class="FolderPath" placeholder="Type in server path" readonly="true">
+                                <input type="text" maxlength="4000" style="float: left;margin-bottom:0px;" value="@item.FolderPath" class="FolderPath" placeholder="Type in server path" readonly="true">
                             }
                             else
                             {
