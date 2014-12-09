@@ -84,7 +84,7 @@
                 if (showBid == 'True') {
                     var id = $('#ddlBusinessUnit').val();
                     $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
-                        if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
+                        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                             //// Call function to redirect on service unavailibility.
                             //// Added By: Maninder Singh Wadhva on 11/24/2014.
                             //// Ticket: 942 Exception handeling in Gameplan.
@@ -94,7 +94,7 @@
                 }
                 else {
                     $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
-                        if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
+                        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                             //// Call function to redirect on service unavailibility.
                             //// Added By: Maninder Singh Wadhva on 11/24/2014.
                             //// Ticket: 942 Exception handeling in Gameplan.
@@ -105,7 +105,7 @@
             }
             else {
                 $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + filters.BUId.toString() + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
-                    if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
+                    if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                         //// Call function to redirect on service unavailibility.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.
                         //// Ticket: 942 Exception handeling in Gameplan.
@@ -289,7 +289,7 @@
                     $("#DivloadPlan").html('');
                     var pid = $('#PlanId').val();
                 $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
-                    if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
+                    if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                         //// Call function to redirect on service unavailibility.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.
                         //// Ticket: 942 Exception handeling in Gameplan.
@@ -1438,7 +1438,7 @@
         if (CurrentPlanId > 0) {
             BindUpcomingActivites(CurrentPlanId);
            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
-               if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
+               if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                    //// Call function to redirect on service unavailibility.
                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
                    //// Ticket: 942 Exception handeling in Gameplan.
@@ -2725,7 +2725,7 @@
     $("#divPartial").empty();
     //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
     $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function (response, status, xhr) {
-        if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
+        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
             //// Call function to redirect on service unavailibility.
             //// Added By: Maninder Singh Wadhva on 11/24/2014.
             //// Ticket: 942 Exception handeling in Gameplan.

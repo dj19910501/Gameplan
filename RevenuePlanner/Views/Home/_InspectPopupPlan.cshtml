@@ -231,7 +231,7 @@
 
         $("#divTab").empty();
         $("#divTab").load(url + '?id=' + id + '&InspectPopupMode=' + '@InspectMode', function (response, status, xhr) {
-            if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
+            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                 //// Call function to redirect on service unavailibility.
                 //// Added By: Maninder Singh Wadhva on 11/24/2014.
                 //// Ticket: 942 Exception handeling in Gameplan.
@@ -383,7 +383,7 @@
         var url = '@Url.Content("~/Home/LoadInspectPopup")';
         $("#divPartial").empty();
         $("#divPartial").load(url + '?id=' + planId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()" + '&RequestedModule=' + '@RequestedModule', function (response, status, xhr) {
-            if (response.indexOf('{"serviceUnavailable":"~/Login/ServiceUnavailable"}') != -1) {
+            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                 //// Call function to redirect on service unavailibility.
                 //// Added By: Maninder Singh Wadhva on 11/24/2014.
                 //// Ticket: 942 Exception handeling in Gameplan.
