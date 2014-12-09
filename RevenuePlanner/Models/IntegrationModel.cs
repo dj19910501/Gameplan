@@ -81,9 +81,9 @@ namespace RevenuePlanner.Models
         //Dharmraj Start PL#680 Integration - UI - Pull responses from Salesforce
         public IList<GameplanDataTypePullModel> GameplanDataTypePullRevenueModelList { get; set; }
         //Dharmraj End PL#680 Integration - UI - Pull responses from Salesforce
-    } 
+    }
 
-//Added by Mitesh Vaishnav for PL ticket #659
+    //Added by Mitesh Vaishnav for PL ticket #659
     public class IntegrationSelectionModel
     {
         public string Setup { get; set; }
@@ -91,15 +91,17 @@ namespace RevenuePlanner.Models
         public string IntegrationType { get; set; }
         public string LastSync { get; set; }
     }
-//End : Added by Mitesh Vaishnav for PL ticket #659
+    //End : Added by Mitesh Vaishnav for PL ticket #659
 
-//Start :Added by Pratik for PL ticket #998
+    //Start :Added by Pratik for PL ticket #998
     public class IntegrationPlanList
-    {     
+    {
         public string Year { get; set; }
         public int PlanId { get; set; }
         public string PlanTitle { get; set; }
         public string FolderPath { get; set; }
+        public int Permission { get; set; }
+        public Guid BUId { get; set; }
     }
-//End :Added by Pratik for PL ticket #998
+    //End :Added by Pratik for PL ticket #998
 }

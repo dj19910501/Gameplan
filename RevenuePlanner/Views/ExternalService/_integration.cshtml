@@ -3,18 +3,22 @@
 <!DOCTYPE html>
 
 <div class="span2 myaccount-colum">
-    <div class="width216">
-        <ul class="nav nav-pills nav-stacked width216">
+    <div class="width217">
+        <ul class="nav nav-pills nav-stacked width217">
             <li id="Icredential" class="active">
                 @if (ViewBag.PageTitle == "MapDataType")
                 {
                     /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
+
+
 
                     <a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Settings</a>
                 }
                 else
                 {
                     /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
+
+
 
                     <a href="@Url.Content("~/ExternalService/Edit?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Settings</a>
                         
@@ -25,7 +29,8 @@
                 {
                     if (ViewBag.IntegrationTypeCode == Enums.IntegrationType.Eloqua.ToString())
                     {
-                    <a href="@Url.Content("~/ExternalService/GetIntegrationFolder?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Folders(Eloqua only)</a>
+
+                    <a href="@Url.Content("~/ExternalService/GetIntegrationFolder?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Folders (Eloqua only)</a>
                     }
                     else
                     {
@@ -34,20 +39,25 @@
                 }
                 else
                 {
-                 if (ViewBag.IntegrationTypeCode == Enums.IntegrationType.Eloqua.ToString())
+                    if (ViewBag.IntegrationTypeCode == Enums.IntegrationType.Eloqua.ToString())
                     {
-                    <a href="@Url.Content("~/ExternalService/GetIntegrationFolder?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Folders(Eloqua only)</a>
-                    }   
+
+                    <a href="@Url.Content("~/ExternalService/GetIntegrationFolder?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Folders (Eloqua only)</a>
+                    }
                 }
             </li>
             <li id="MdataType" style="display: none;">
                 @if (ViewBag.PageTitle == "Edit")
                 {
 
+
+
                     <a href="@Url.Content("~/ExternalService/MapDataTypes/")@ViewBag.IntegrationInstanceId.ToString()">Map Data Types</a>
                 }
                 else
                 {
+
+
 
                     <a href="#">Map Data Types</a>
                 }

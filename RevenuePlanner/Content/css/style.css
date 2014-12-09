@@ -11149,3 +11149,9 @@ li.close-list {
 float:left;
 }
 /* End - Added by Viral Kadiya on 12/4/2014 for PL ticket #1017 */
+
+/* Start - Added by Pratik on 12/9/2014 for PL ticket #998 */
+.width217 {
+    width:217px !important;
+}
+/* End - Added by Pratik on 12/9/2014 for PL ticket #998 */

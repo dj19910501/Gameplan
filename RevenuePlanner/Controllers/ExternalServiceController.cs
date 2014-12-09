@@ -134,21 +134,21 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IntegrationInstanceId = id;
                 ViewBag.IntegrationTypeId = TypeId;
 
-            var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == TypeId).FirstOrDefault();
+                var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == TypeId).FirstOrDefault();
 
-            if (integrationTypeObj != null)
-            {
-                ViewBag.IntegrationTypeCode = integrationTypeObj.Code;
-            }
+                if (integrationTypeObj != null)
+                {
+                    ViewBag.IntegrationTypeCode = integrationTypeObj.Code;
+                }
 
                 Guid clientId = Sessions.User.ClientId;
 
-            ////Get published plan list year for logged in client.
-            var objPlan = (from p in db.Plans
-                           join m in db.Models on p.ModelId equals m.ModelId
-                           join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
-                           where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false && p.IsDeleted == false && p.Status == status
-                           select p).OrderBy(q => q.Year).ToList().Select(p => p.Year).Distinct().ToList();
+                ////Get published plan list year for logged in client.
+                var objPlan = (from p in db.Plans
+                               join m in db.Models on p.ModelId equals m.ModelId
+                               join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
+                               where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false && p.IsDeleted == false && p.Status == status
+                               select p).OrderBy(q => q.Year).ToList().Select(p => p.Year).Distinct().ToList();
 
                 ViewBag.Year = objPlan;
             }
@@ -176,6 +176,21 @@ namespace RevenuePlanner.Controllers
                 string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
                 int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
 
+                List<string> lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+
+                List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
+                lstUserCustomRestriction = Common.GetUserCustomRestriction();
+
+                int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                lstUserCustomRestriction = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).ToList();
+
+                List<Guid> lstBUs = new List<Guid>();
+                foreach (UserCustomRestrictionModel o in lstUserCustomRestriction)
+                {
+                    lstBUs.Add(new Guid(o.CustomFieldId));
+                }
+
                 // Get the list of plan, filtered by Business Unit , Year selected and published plan for logged in client.
                 if (Int_Year > 0)
                 {
@@ -183,8 +198,20 @@ namespace RevenuePlanner.Controllers
                                               join m in db.Models on p.ModelId equals m.ModelId
                                               join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
                                               where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false &&
-                                              p.IsDeleted == false && p.Year == Year && p.Status == status
-                                              select p).OrderByDescending(p => p.ModifiedDate ?? p.CreatedDate).ThenBy(p => p.Title).ToList().Select(p => new IntegrationPlanList { PlanId = p.PlanId, PlanTitle = p.Title, FolderPath = p.EloquaFolderPath }).ToList();
+                                              p.IsDeleted == false && p.Year == Year && p.Status == status && lstBUs.Contains(m.BusinessUnitId)
+                                              select new { p, m }).OrderByDescending(d => d.p.ModifiedDate ?? d.p.CreatedDate).ThenBy(d => d.p.Title).ToList().Select(d => new IntegrationPlanList { PlanId = d.p.PlanId, PlanTitle = d.p.Title, FolderPath = d.p.EloquaFolderPath, BUId = d.m.BusinessUnitId }).ToList();
+
+                    //// Set permission for the plan on bases of BU permission
+                    foreach (var item in objIntegrationPlanList)
+                    {
+                        foreach (var list in lstUserCustomRestriction)
+                        {
+                            if (item.BUId.ToString() == list.CustomFieldId)
+                            {
+                                item.Permission = list.Permission;
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception e)

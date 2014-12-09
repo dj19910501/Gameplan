@@ -858,7 +858,7 @@
   <!--Start Added by Pratik -->
   <Field>
     <Name>IntegrationFolderPathSaved</Name>
-    <value>Integration folder path(s) saved.</value>
+    <value>Folder paths saved.</value>
   </Field>
   <!--End Added by Pratik -->
 </Messages>
