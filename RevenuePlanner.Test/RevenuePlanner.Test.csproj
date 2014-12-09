@@ -162,6 +162,10 @@
       <Project>{c7aa3463-8e84-4280-a893-c6e7d38ea8d2}</Project>
       <Name>Entities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Integration\Integration.csproj">
+      <Project>{b312ef9a-c33a-4e44-8bd6-b141080302e0}</Project>
+      <Name>Integration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RevenuePlanner\RevenuePlanner.csproj">
       <Project>{9704e4cd-7ab2-418f-90f3-56a41c4d9e3f}</Project>
       <Name>RevenuePlanner</Name>

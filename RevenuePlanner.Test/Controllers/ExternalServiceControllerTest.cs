@@ -1,6 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Integration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RevenuePlanner.BDSService;
 using RevenuePlanner.Controllers;
+using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using RevenuePlanner.Test.MockHelpers;
 using System;
@@ -165,6 +167,95 @@ namespace RevenuePlanner.Test.Controllers
         //    Assert.IsNotNull(result);
         //}
 
+        #endregion
+
+        #endregion
+
+        #region PL#993, #995, #996 and #997 Custom fields integration: Change layout of existing UI and Custom fields integration: Tactic/Program/Campaign custom fields
+
+        #region Sync InterationInstance without InterationInstanceId
+        /// <summary>
+        /// To check whether sync method properly handles exception or not in case of no integrationInstance selected
+        /// <author>Sohel Pathan</author>
+        /// <createdDate>08Dec2014</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void Sync_Interation_Instance_Without_Interation_Instance_Id()
+        {
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            ExternalServiceController controller = new ExternalServiceController();
+
+            //Parameter IntegrationInstancesId = 0
+            var res = controller.SyncNow(0) as JsonResult;
+
+            // Check Json result data should not be null
+            Assert.IsNotNull(res.Data);
+
+            // Check sync status is success or not
+            Assert.AreEqual("Error", res.GetValue("status").ToString(), true);
+        }
+        #endregion
+
+        #region Sync InterationInstance with InterationInstanceId of Salesforce
+        /// <summary>
+        /// To check sync method of salesforce intrgration
+        /// <author>Sohel Pathan</author>
+        /// <createdDate>08Dec2014</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void Sync_Interation_Instance_With_Interation_Instance_Id_SalesForce()
+        {
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            ExternalServiceController controller = new ExternalServiceController();
+
+            // Parameter IntegrationInstancesId = 43 (SF Maninder)
+            int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Salesforce.ToString());
+            var res = controller.SyncNow(IntegrationInstanceId) as JsonResult;
+
+            // Check Json result data object is null or not
+            Assert.IsNotNull(res.Data);
+
+            // Check sync status is success or not
+            if (res.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
+            {
+                Assert.AreEqual("Success", res.GetValue("status").ToString(), true);
+            }
+            else
+            {
+                Assert.AreEqual("Error", res.GetValue("status").ToString(), true);
+            }
+        }
+        #endregion
+
+        #region Sync InterationInstance with InterationInstanceId of Eloqua
+        /// <summary>
+        /// To check sync method of eloqua intrgration
+        /// <author>Sohel Pathan</author>
+        /// <createdDate>08Dec2014</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void Sync_Interation_Instance_With_Interation_Instance_Id_Eloqua()
+        {
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            ExternalServiceController controller = new ExternalServiceController();
+
+            // Parameter IntegrationInstancesId = 87 (TechnologyPartnerBulldog)
+            int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Eloqua.ToString());
+            var res = controller.SyncNow(IntegrationInstanceId) as JsonResult;
+
+            // Check Json result data object is null or not
+            Assert.IsNotNull(res.Data);
+
+            // Check sync status is success or not
+            if (res.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
+            {
+                Assert.AreEqual("Success", res.GetValue("status").ToString(), true);
+            }
+            else
+            {
+                Assert.AreEqual("Error", res.GetValue("status").ToString(), true);
+            }
+        }
         #endregion
 
         #endregion

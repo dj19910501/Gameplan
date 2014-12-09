@@ -103,5 +103,20 @@ namespace RevenuePlanner.Test.MockHelpers
             string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
             return db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.PlanId).Take(5).ToList();
         }
+
+        /// <summary>
+        /// Get a integrationInstanceId for the given IntegrationType
+        /// </summary>
+        /// <param name="integrationType">name of Integration type</param>
+        /// <returns>returns an integration instance id for given integration type</returns>
+        public static int GetIntegrationInstanceId(string integrationType)
+        {
+            MRPEntities db = new MRPEntities();
+            var IntegrationInstanceId = (from i in db.IntegrationInstances
+                                        join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
+                                        where i.IsDeleted == false && t.IsDeleted == false && t.Code == integrationType
+                                        select i.IntegrationInstanceId).FirstOrDefault();
+            return IntegrationInstanceId;
+        }
     }
 }
