@@ -29,6 +29,20 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        private string _DatabaseServiceUnavailableMessage;
+        public string DatabaseServiceUnavailableMessage
+        {
+            get
+            {
+                return _DatabaseServiceUnavailableMessage;
+            }
+            set
+            {
+                _DatabaseServiceUnavailableMessage = value;
+            }
+        }
+
+
         private string _InvalidProfileImage;
         public string InvalidProfileImage
         {
@@ -2466,6 +2480,9 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             break;
                                         case "ServiceUnavailableMessage":
                                             _ServiceUnavailableMessage = strMsgValue;
+                                            break;
+                                        case "DatabaseServiceUnavailableMessage":
+                                            _DatabaseServiceUnavailableMessage = strMsgValue;
                                             break;
                                         case "StageNotDefined":
                                             _StageNotDefined = strMsgValue;

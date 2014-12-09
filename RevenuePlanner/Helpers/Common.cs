@@ -158,6 +158,7 @@ namespace RevenuePlanner.Helpers
         public static string ColorCodeForCustomField = "";
 
         public static string RedirectOnServiceUnavailibilityPage = "~/Login/ServiceUnavailable";
+        public static string RedirectOnDBServiceUnavailibilityPage = "~/Login/DBServiceUnavailable";
         #endregion
 
         #region Functions for File and IO Handling

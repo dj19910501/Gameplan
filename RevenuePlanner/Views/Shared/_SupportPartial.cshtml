@@ -195,6 +195,12 @@
                         type: 'POST',
                         cache: false,
                         success: function (result) {
+                            if (result.DBServiceUnavailable != 'undefined' && result.DBServiceUnavailable == '#') {
+                                //// Function to redirect to login page on unavailability of web service.
+                                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                //// Ticket: 942 Exception handeling in Gameplan.
+                                window.location = '@Url.Content(Common.RedirectOnDBServiceUnavailibilityPage)';
+                            } else {
                             if (result == true) {
                                 //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
                                 SetHeight("#DivContactSupportPopup", 60, true);
@@ -211,6 +217,7 @@
                                 $("#spanErrorMessageContactSupportPopup").text(msgspan);
                                 //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
                                 SetHeight("#DivContactSupportPopup", 60, true);
+                                }
                             }
                         }
                     });

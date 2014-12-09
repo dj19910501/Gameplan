@@ -29,6 +29,17 @@ namespace RevenuePlanner.Controllers
 
         #region Login
 
+        public ActionResult DBServiceUnavailable()
+        {
+            //// Flag to indicate unavailability of web service.
+            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+            //// Ticket: 942 Exception handeling in Gameplan.
+            Sessions.Clear();
+            System.Web.Security.FormsAuthentication.SignOut();
+            TempData["ErrorMessage"] = Common.objCached.DatabaseServiceUnavailableMessage;
+            return RedirectToAction("Index");
+        }
+
         public ActionResult ServiceUnavailable()
         {
             //// Flag to indicate unavailability of web service.
@@ -316,6 +327,13 @@ namespace RevenuePlanner.Controllers
                     return RedirectToAction("ServiceUnavailable", "Login");
                 }
 
+                if (e is System.Data.EntityException || e is System.Data.SqlClient.SqlException)
+                {
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("DBServiceUnavailable", "Login");                    
+                }
+
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
             }
 
@@ -589,6 +607,8 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult ContactSupport(string emailId, string CompanyName, string Issue)
         {
+            try
+            {
             string notificationContactSupport = Enums.Custom_Notification.ContactSupport.ToString();
             string emailSubject = Sessions.ApplicationName + "/" + CompanyName;
             Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationContactSupport));
@@ -655,6 +675,25 @@ namespace RevenuePlanner.Controllers
             }
             else
                 return Json(false, JsonRequestBehavior.AllowGet);
+        }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+                //To handle unavailability of BDSService
+                if (e is System.Data.EntityException || e is System.Data.SqlClient.SqlException)
+                {
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { DBServiceUnavailable = "#" }, JsonRequestBehavior.AllowGet);
+                }
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+            }
+
+            return Json(false, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult LoadSupportPartialOnLogin()     //// Method Signature Modified by Sohel Pathan on 23/05/2014 for internal review points.
@@ -767,6 +806,12 @@ namespace RevenuePlanner.Controllers
                     return RedirectToAction("ServiceUnavailable", "Login");
                 }
 
+                if (ex is System.Data.EntityException || ex is System.Data.SqlClient.SqlException)
+                {
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("DBServiceUnavailable", "Login");
+                }
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
             }
 

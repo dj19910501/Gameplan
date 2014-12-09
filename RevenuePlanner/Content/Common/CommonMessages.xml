@@ -5,6 +5,10 @@
 		<value>This application is currently unavailable. The site administrators are currently working hard to address this issue.</value>
 	</Field>
 	<Field>
+		<Name>DatabaseServiceUnavailableMessage</Name>
+		<value>The application database is currently unavailable. The site administrators are currently working hard to address this issue.</value>
+	</Field>
+	<Field>
 		<Name>InvalidProfileImage</Name>
 		<value>Only files with extensions (JPG and PNG) and size upto 1MB are allowed.</value>
 	</Field>
@@ -855,10 +859,10 @@
 		<value>Character &#60; , &#62; are not allowed in description field.</value>
 	</Field>
 	<!--End Added by Pratik -->
-  <!--Start Added by Pratik -->
-  <Field>
-    <Name>IntegrationFolderPathSaved</Name>
-    <value>Folder paths saved.</value>
-  </Field>
-  <!--End Added by Pratik -->
+	<!--Start Added by Pratik -->
+	<Field>
+		<Name>IntegrationFolderPathSaved</Name>
+		<value>Folder paths saved.</value>
+	</Field>
+	<!--End Added by Pratik -->
 </Messages>
