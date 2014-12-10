@@ -39,6 +39,8 @@ namespace Integration.Eloqua
         /// Modified Date: 08/20/2014
         /// Ticket #717 Pulling from Eloqua - Actual Cost 
         public double actualCost { get; set; }
+
+        public int folderId { get; set; }
     }
 
     public class FieldValue

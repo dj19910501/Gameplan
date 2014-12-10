@@ -550,153 +550,87 @@ namespace Integration.Eloqua
             }
         }
 
+        
         /// <summary>
         /// Added By: Maninder Singh Wadhva
-        /// Function to synchronize tactic data.
+        /// Function to create eloqua campaign.
         /// </summary>
-        /// <param name="planTactic">Plan tactic.</param>
-        /// <returns>Returns updated plan tactic.</returns>
-        private Plan_Campaign_Program_Tactic SyncTacticData(Plan_Campaign_Program_Tactic planTactic)
+        /// <param name="tactic">Plan tactic or improvement tactic.</param>
+        /// <returns>Returns id of campaign create on eloqua.</returns>
+        private string CreateEloquaCampaign(IDictionary<string, object> tactic)
         {
-            Enums.Mode currentMode = Common.GetMode(planTactic.IsDeleted, planTactic.IsDeployedToIntegration, planTactic.IntegrationInstanceTacticId, planTactic.Status);
-            if (currentMode.Equals(Enums.Mode.Create))
+            RestRequest request = new RestRequest(Method.POST)
             {
-                IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
-                instanceLogTactic.EntityId = planTactic.PlanTacticId;
-                instanceLogTactic.EntityType = EntityType.Tactic.ToString();
-                instanceLogTactic.Operation = Operation.Create.ToString();
-                instanceLogTactic.SyncTimeStamp = DateTime.Now;
-                try
-                {
-                    planTactic.IntegrationInstanceTacticId = CreateTactic(planTactic);
-                    planTactic.LastSyncDate = DateTime.Now;
-                    planTactic.ModifiedDate = DateTime.Now;
-                    planTactic.ModifiedBy = _userId;
-                    instanceLogTactic.Status = StatusResult.Success.ToString();
+                Resource = "/assets/campaign",
+                RequestFormat = DataFormat.Json
+            };
 
-                    //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
-                    Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
-                    objTacticComment.PlanTacticId = planTactic.PlanTacticId;
-                    objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Eloqua.ToString();
-                    objTacticComment.CreatedDate = DateTime.Now;
-                    ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                    if (Common.IsAutoSync)
-                    {
-                        objTacticComment.CreatedBy = new Guid();
-                    }
-                    else
-                    {
-                        objTacticComment.CreatedBy = this._userId;
-                    }
+            request.AddBody(tactic);
+            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
 
-                    db.Entry(objTacticComment).State = EntityState.Added;
-                    db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
-                    // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
-                }
-                catch (Exception e)
-                {
-                    instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = GetErrorMessage(e);
-                }
-
-                instanceLogTactic.CreatedBy = this._userId;
-                instanceLogTactic.CreatedDate = DateTime.Now;
-                db.Entry(instanceLogTactic).State = EntityState.Added;
+            string tactidId = string.Empty;
+            if (response != null && response.ResponseStatus == ResponseStatus.Completed && response.StatusCode == HttpStatusCode.Created)
+            {
+                tactidId = response.Data.id;
             }
-            else if (currentMode.Equals(Enums.Mode.Update))
+            else
             {
-                IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
-                instanceLogTactic.EntityId = planTactic.PlanTacticId;
-                instanceLogTactic.EntityType = EntityType.Tactic.ToString();
-                instanceLogTactic.Operation = Operation.Update.ToString();
-                instanceLogTactic.SyncTimeStamp = DateTime.Now;
-                try
-                {
-                    if (UpdateTactic(planTactic))
-                    {
-                        planTactic.LastSyncDate = DateTime.Now;
-                        planTactic.ModifiedDate = DateTime.Now;
-                        planTactic.ModifiedBy = _userId;
-                        instanceLogTactic.Status = StatusResult.Success.ToString();
-                    }
-                    else
-                    {
-                        instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = Common.UnableToUpdate;
-                    }
-                }
-                catch (Exception e)
-                {
-                    if (e.Message.Contains(NotFound))
-                    {
-                        planTactic.IntegrationInstanceTacticId = null;
-                        planTactic = SyncTacticData(planTactic);
-                        return planTactic;
-                    }
-                    else
-                    {
-                        instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
-                    }
-                }
-
-                instanceLogTactic.CreatedBy = this._userId;
-                instanceLogTactic.CreatedDate = DateTime.Now;
-                db.Entry(instanceLogTactic).State = EntityState.Added;
-            }
-            else if (currentMode.Equals(Enums.Mode.Delete))
-            {
-                IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
-                instanceLogTactic.EntityId = planTactic.PlanTacticId;
-                instanceLogTactic.EntityType = EntityType.Tactic.ToString();
-                instanceLogTactic.Operation = Operation.Delete.ToString();
-                instanceLogTactic.SyncTimeStamp = DateTime.Now;
-                try
-                {
-                    if (Delete(planTactic.IntegrationInstanceTacticId))
-                    {
-                        planTactic.IntegrationInstanceTacticId = null;
-                        planTactic.LastSyncDate = DateTime.Now;
-                        planTactic.ModifiedDate = DateTime.Now;
-                        planTactic.ModifiedBy = _userId;
-                        instanceLogTactic.Status = StatusResult.Success.ToString();
-                    }
-                    else
-                    {
-                        instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = Common.UnableToDelete;
-                    }
-                }
-                catch (Exception e)
-                {
-                    if (e.Message.Contains(NotFound))
-                    {
-                        planTactic.IntegrationInstanceTacticId = null;
-                        planTactic.LastSyncDate = DateTime.Now;
-                        planTactic.ModifiedDate = DateTime.Now;
-                        planTactic.ModifiedBy = _userId;
-                        instanceLogTactic.Status = StatusResult.Success.ToString();
-                    }
-                    else
-                    {
-                        instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
-                    }
-                }
-
-                instanceLogTactic.CreatedBy = this._userId;
-                instanceLogTactic.CreatedDate = DateTime.Now;
-                db.Entry(instanceLogTactic).State = EntityState.Added;
+                throw new Exception(response.StatusCode.ToString(), response.ErrorException);
             }
 
-            return planTactic;
+            return tactidId;
         }
+
+        /// <summary>
+        /// Function to get Eloqua Campaign.
+        /// Added By: Maninder Singh
+        /// Added Date: 08/20/2014
+        /// Ticket #717 Pulling from Eloqua - Actual Cost 
+        /// </summary>
+        /// <param name="eloquaCampaignId">Eloqua campaign Id.</param>
+        /// <returns>Returns eloqua campaign object.</returns>
+        private EloquaCampaign GetEloquaCampaign(string elouqaCampaignId)
+        {
+            RestRequest request = new RestRequest(Method.GET)
+            {
+                Resource = "/assets/campaign/" + elouqaCampaignId,
+                RequestFormat = DataFormat.Json
+            };
+
+            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
+            return response.Data;
+        }
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva
+        /// Function to update eloqua campaign.
+        /// </summary>
+        /// <param name="id">Integration instance id.</param>
+        /// <param name="tactic">Plan tactic or improvement tactic.</param>
+        /// <returns>Returns flag to determine whether update was successfull or not.</returns>
+        private bool UpdateEloquaCampaign(string id, IDictionary<string, object> tactic)
+        {
+            IntegrationInstanceTacticIds.Add(Convert.ToString(id));
+            RestRequest request = new RestRequest(Method.PUT)
+            {
+                Resource = string.Format("/assets/campaign/{0}", id),
+                RequestFormat = DataFormat.Json
+            };
+            request.AddBody(tactic);
+
+            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
+
+            if (response.Data != null)
+            {
+                return response.Data.id.Equals(id);
+            }
+            else
+            {
+                throw new Exception(string.Format("[{0}] [{1}]", response.StatusCode.ToString(), response.StatusDescription), response.ErrorException);
+            }
+        }
+
+        #region Improvement Tactic
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva
@@ -707,6 +641,20 @@ namespace Integration.Eloqua
         private Plan_Improvement_Campaign_Program_Tactic SyncImprovementData(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
             Enums.Mode currentMode = Common.GetMode(planIMPTactic.IsDeleted, planIMPTactic.IsDeployedToIntegration, planIMPTactic.IntegrationInstanceTacticId, planIMPTactic.Status);
+
+            if (currentMode == Enums.Mode.Update)
+            {
+                int _folderId = 0;
+                _folderId = GetEloquaFolderIdImprovementTactic(planIMPTactic);
+
+                int GPFolderId = GetEloquaCampaign(planIMPTactic.IntegrationInstanceTacticId).folderId;
+                if (GPFolderId != _folderId)
+                {
+                    currentMode = Enums.Mode.Create;
+                    planIMPTactic.IntegrationInstanceTacticId = null;
+                }
+            }
+
             if (currentMode.Equals(Enums.Mode.Create))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
@@ -849,18 +797,6 @@ namespace Integration.Eloqua
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva
-        /// Function to create plan tactic.
-        /// </summary>
-        /// <param name="planTactic">Plan tactic.</param>
-        /// <returns>Returns id of tactic created on eloqua.</returns>
-        private string CreateTactic(Plan_Campaign_Program_Tactic planTactic)
-        {
-            IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
-            return CreateEloquaCampaign(tactic);
-        }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva
         /// Function to create improvement tactic.
         /// </summary>
         /// <param name="planIMPTactic">Improvement tactic.</param>
@@ -870,69 +806,7 @@ namespace Integration.Eloqua
             IDictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Create);
             return CreateEloquaCampaign(tactic);
         }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva
-        /// Function to create eloqua campaign.
-        /// </summary>
-        /// <param name="tactic">Plan tactic or improvement tactic.</param>
-        /// <returns>Returns id of campaign create on eloqua.</returns>
-        private string CreateEloquaCampaign(IDictionary<string, object> tactic)
-        {
-            RestRequest request = new RestRequest(Method.POST)
-            {
-                Resource = "/assets/campaign",
-                RequestFormat = DataFormat.Json
-            };
-
-            request.AddBody(tactic);
-            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
-
-            string tactidId = string.Empty;
-            if (response != null && response.ResponseStatus == ResponseStatus.Completed && response.StatusCode == HttpStatusCode.Created)
-            {
-                tactidId = response.Data.id;
-            }
-            else
-            {
-                throw new Exception(response.StatusCode.ToString(), response.ErrorException);
-            }
-
-            return tactidId;
-        }
-
-        /// <summary>
-        /// Function to get Eloqua Campaign.
-        /// Added By: Maninder Singh
-        /// Added Date: 08/20/2014
-        /// Ticket #717 Pulling from Eloqua - Actual Cost 
-        /// </summary>
-        /// <param name="eloquaCampaignId">Eloqua campaign Id.</param>
-        /// <returns>Returns eloqua campaign object.</returns>
-        private EloquaCampaign GetEloquaCampaign(string elouqaCampaignId)
-        {
-            RestRequest request = new RestRequest(Method.GET)
-            {
-                Resource = "/assets/campaign/" + elouqaCampaignId,
-                RequestFormat = DataFormat.Json
-            };
-
-            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
-            return response.Data;
-        }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva
-        /// Function to update plan tactic on eloqua.
-        /// </summary>
-        /// <param name="planTactic">Plan tactic.</param>
-        /// <returns>Returns flag to determine whether udpate was successfull or not.</returns>
-        private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
-        {
-            IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
-            return UpdateEloquaCampaign(planTactic.IntegrationInstanceTacticId, tactic);
-        }
-
+        
         /// <summary>
         /// Added By: Maninder Singh Wadhva
         /// Function to update improvement tactictactic on eloqua.
@@ -944,35 +818,34 @@ namespace Integration.Eloqua
             IDictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Update);
             return UpdateEloquaCampaign(planIMPTactic.IntegrationInstanceTacticId, tactic);
         }
-
+        
         /// <summary>
         /// Added By: Maninder Singh Wadhva
-        /// Function to update eloqua campaign.
+        /// Function to get improvement tactic.
         /// </summary>
-        /// <param name="id">Integration instance id.</param>
-        /// <param name="tactic">Plan tactic or improvement tactic.</param>
-        /// <returns>Returns flag to determine whether update was successfull or not.</returns>
-        private bool UpdateEloquaCampaign(string id, IDictionary<string, object> tactic)
+        /// <param name="planIMPTactic">Improvement tactic.</param>
+        /// <param name="mode">Mode of operations.</param>
+        /// <returns>Returns improvement tactic.</returns>
+        private IDictionary<string, object> GetImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, Enums.Mode mode)
         {
-            IntegrationInstanceTacticIds.Add(Convert.ToString(id));
-            RestRequest request = new RestRequest(Method.PUT)
-            {
-                Resource = string.Format("/assets/campaign/{0}", id),
-                RequestFormat = DataFormat.Json
-            };
-            request.AddBody(tactic);
+            IDictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
+            tactic.Add("type", "Campaign");
+            tactic.Add("id", planIMPTactic.IntegrationInstanceTacticId);
 
-            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
+            int _folderId = 0;
+            _folderId = GetEloquaFolderIdImprovementTactic(planIMPTactic);
 
-            if (response.Data != null)
+            if (_folderId > 0)
             {
-                return response.Data.id.Equals(id);
+                tactic.Add("folderId", _folderId);
             }
-            else
-            {
-                throw new Exception(string.Format("[{0}] [{1}]", response.StatusCode.ToString(), response.StatusDescription), response.ErrorException);
-            }
+
+            return tactic;
         }
+        
+        #endregion
+
+        #region Tactic
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva
@@ -997,6 +870,194 @@ namespace Integration.Eloqua
 
             return tactic;
         }
+        
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva
+        /// Function to update plan tactic on eloqua.
+        /// </summary>
+        /// <param name="planTactic">Plan tactic.</param>
+        /// <returns>Returns flag to determine whether udpate was successfull or not.</returns>
+        private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
+        {
+            IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
+            return UpdateEloquaCampaign(planTactic.IntegrationInstanceTacticId, tactic);
+        }
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva
+        /// Function to synchronize tactic data.
+        /// </summary>
+        /// <param name="planTactic">Plan tactic.</param>
+        /// <returns>Returns updated plan tactic.</returns>
+        private Plan_Campaign_Program_Tactic SyncTacticData(Plan_Campaign_Program_Tactic planTactic)
+        {
+            Enums.Mode currentMode = Common.GetMode(planTactic.IsDeleted, planTactic.IsDeployedToIntegration, planTactic.IntegrationInstanceTacticId, planTactic.Status);
+
+            if (currentMode == Enums.Mode.Update)
+            {
+                int _folderId = 0;
+                _folderId = GetEloquaFolderIdTactic(planTactic);
+
+                int GPFolderId = GetEloquaCampaign(planTactic.IntegrationInstanceTacticId).folderId;
+                if (GPFolderId != _folderId)
+                {
+                    currentMode = Enums.Mode.Create;
+                    planTactic.IntegrationInstanceTacticId = null;
+                }
+            }
+
+            if (currentMode.Equals(Enums.Mode.Create))
+            {
+                IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
+                instanceLogTactic.EntityId = planTactic.PlanTacticId;
+                instanceLogTactic.EntityType = EntityType.Tactic.ToString();
+                instanceLogTactic.Operation = Operation.Create.ToString();
+                instanceLogTactic.SyncTimeStamp = DateTime.Now;
+                try
+                {
+                    planTactic.IntegrationInstanceTacticId = CreateTactic(planTactic);
+                    planTactic.LastSyncDate = DateTime.Now;
+                    planTactic.ModifiedDate = DateTime.Now;
+                    planTactic.ModifiedBy = _userId;
+                    instanceLogTactic.Status = StatusResult.Success.ToString();
+
+                    //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+                    Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                    objTacticComment.PlanTacticId = planTactic.PlanTacticId;
+                    objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Eloqua.ToString();
+                    objTacticComment.CreatedDate = DateTime.Now;
+                    ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
+                    if (Common.IsAutoSync)
+                    {
+                        objTacticComment.CreatedBy = new Guid();
+                    }
+                    else
+                    {
+                        objTacticComment.CreatedBy = this._userId;
+                    }
+
+                    db.Entry(objTacticComment).State = EntityState.Added;
+                    db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
+                    // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+                }
+                catch (Exception e)
+                {
+                    instanceLogTactic.Status = StatusResult.Error.ToString();
+                    instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                }
+
+                instanceLogTactic.CreatedBy = this._userId;
+                instanceLogTactic.CreatedDate = DateTime.Now;
+                db.Entry(instanceLogTactic).State = EntityState.Added;
+            }
+            else if (currentMode.Equals(Enums.Mode.Update))
+            {
+                IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
+                instanceLogTactic.EntityId = planTactic.PlanTacticId;
+                instanceLogTactic.EntityType = EntityType.Tactic.ToString();
+                instanceLogTactic.Operation = Operation.Update.ToString();
+                instanceLogTactic.SyncTimeStamp = DateTime.Now;
+                try
+                {
+                    if (UpdateTactic(planTactic))
+                    {
+                        planTactic.LastSyncDate = DateTime.Now;
+                        planTactic.ModifiedDate = DateTime.Now;
+                        planTactic.ModifiedBy = _userId;
+                        instanceLogTactic.Status = StatusResult.Success.ToString();
+                    }
+                    else
+                    {
+                        instanceLogTactic.Status = StatusResult.Error.ToString();
+                        instanceLogTactic.ErrorDescription = Common.UnableToUpdate;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (e.Message.Contains(NotFound))
+                    {
+                        planTactic.IntegrationInstanceTacticId = null;
+                        planTactic = SyncTacticData(planTactic);
+                        return planTactic;
+                    }
+                    else
+                    {
+                        instanceLogTactic.Status = StatusResult.Error.ToString();
+                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                    }
+                }
+
+                instanceLogTactic.CreatedBy = this._userId;
+                instanceLogTactic.CreatedDate = DateTime.Now;
+                db.Entry(instanceLogTactic).State = EntityState.Added;
+            }
+            else if (currentMode.Equals(Enums.Mode.Delete))
+            {
+                IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
+                instanceLogTactic.EntityId = planTactic.PlanTacticId;
+                instanceLogTactic.EntityType = EntityType.Tactic.ToString();
+                instanceLogTactic.Operation = Operation.Delete.ToString();
+                instanceLogTactic.SyncTimeStamp = DateTime.Now;
+                try
+                {
+                    if (Delete(planTactic.IntegrationInstanceTacticId))
+                    {
+                        planTactic.IntegrationInstanceTacticId = null;
+                        planTactic.LastSyncDate = DateTime.Now;
+                        planTactic.ModifiedDate = DateTime.Now;
+                        planTactic.ModifiedBy = _userId;
+                        instanceLogTactic.Status = StatusResult.Success.ToString();
+                    }
+                    else
+                    {
+                        instanceLogTactic.Status = StatusResult.Error.ToString();
+                        instanceLogTactic.ErrorDescription = Common.UnableToDelete;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (e.Message.Contains(NotFound))
+                    {
+                        planTactic.IntegrationInstanceTacticId = null;
+                        planTactic.LastSyncDate = DateTime.Now;
+                        planTactic.ModifiedDate = DateTime.Now;
+                        planTactic.ModifiedBy = _userId;
+                        instanceLogTactic.Status = StatusResult.Success.ToString();
+                    }
+                    else
+                    {
+                        instanceLogTactic.Status = StatusResult.Error.ToString();
+                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                    }
+                }
+
+                instanceLogTactic.CreatedBy = this._userId;
+                instanceLogTactic.CreatedDate = DateTime.Now;
+                db.Entry(instanceLogTactic).State = EntityState.Added;
+            }
+
+            return planTactic;
+        }
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva
+        /// Function to create plan tactic.
+        /// </summary>
+        /// <param name="planTactic">Plan tactic.</param>
+        /// <returns>Returns id of tactic created on eloqua.</returns>
+        private string CreateTactic(Plan_Campaign_Program_Tactic planTactic)
+        {
+            IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
+            return CreateEloquaCampaign(tactic);
+        }
+        
+        #endregion
 
         #region Eloqua Folder Search and Set
 
@@ -1238,29 +1299,7 @@ namespace Integration.Eloqua
 
         #endregion
 
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva
-        /// Function to get improvement tactic.
-        /// </summary>
-        /// <param name="planIMPTactic">Improvement tactic.</param>
-        /// <param name="mode">Mode of operations.</param>
-        /// <returns>Returns improvement tactic.</returns>
-        private IDictionary<string, object> GetImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, Enums.Mode mode)
-        {
-            IDictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
-            tactic.Add("type", "Campaign");
-            tactic.Add("id", planIMPTactic.IntegrationInstanceTacticId);
-
-            int _folderId = 0;
-            _folderId = GetEloquaFolderIdImprovementTactic(planIMPTactic);
-
-            if (_folderId > 0)
-            {
-                tactic.Add("folderId", _folderId);
-            }
-
-            return tactic;
-        }
+        #region Common
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva
@@ -1470,6 +1509,8 @@ namespace Integration.Eloqua
                 throw new Exception("Registry data on the Central Standard Time zone has been corrupted.");
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva
