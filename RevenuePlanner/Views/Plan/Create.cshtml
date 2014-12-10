@@ -286,15 +286,6 @@
     
     $(document).ready(
       function () {
-          
-          //$(".white-bg").mCustomScrollbar({
-          //    scrollButtons: {
-          //        enable: true
-          //    },
-          //    horizontalScroll: true,
-          //    advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: false }
-          //});
-
           var hdnPlanId = $("#hdnPlanId").val();
           if (hdnPlanId != 0) {
               $('.changes').html('');
@@ -373,16 +364,6 @@
                       var tValue = $(this).children('a').text();
 
                       if (tValue == '' || tValue == "Plan Title") {
-                          $(this).children('a').addClass("error-form");
-                          isError = true;
-                      }
-                      else {
-                          $(this).children('a').removeClass("error-form");
-                      }
-                  }
-                  else if ($(this).next().attr('datadefault') == "GoalValue") { @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
-                      var tValue = $(this).children('a').text();
-                      if (tValue == '' || tValue == '0') {
                           $(this).children('a').addClass("error-form");
                           isError = true;
                       }

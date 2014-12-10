@@ -3912,10 +3912,10 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>15/07/2014</CreatedDate>
-        /// <param name="modelId"></param>
-        /// <param name="goalType"></param>
-        /// <param name="goalValue"></param>
-        /// <returns></returns>
+        /// <param name="modelId">Model id of selected plan</param>
+        /// <param name="goalType">goal type of selected plan</param>
+        /// <param name="goalValue">goal value for goal type of selected plan</param>
+        /// <returns>return BudgetAllocationModel object</returns>
         public static BudgetAllocationModel CalculateBudgetInputs(int modelId, string goalType, string goalValue, double averageDealSize)
         {
             BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();

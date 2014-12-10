@@ -186,13 +186,13 @@ namespace RevenuePlanner.Test.Controllers
             ExternalServiceController controller = new ExternalServiceController();
 
             //Parameter IntegrationInstancesId = 0
-            var res = controller.SyncNow(0) as JsonResult;
+            var result = controller.SyncNow(0) as JsonResult;
 
             // Check Json result data should not be null
-            Assert.IsNotNull(res.Data);
+            Assert.IsNotNull(result.Data);
 
             // Check sync status is success or not
-            Assert.AreEqual("Error", res.GetValue("status").ToString(), true);
+            Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
         }
         #endregion
 
@@ -208,21 +208,21 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
 
-            // Parameter IntegrationInstancesId = 43 (SF Maninder)
+            // Set Parameter IntegrationInstancesId
             int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Salesforce.ToString());
-            var res = controller.SyncNow(IntegrationInstanceId) as JsonResult;
+            var result = controller.SyncNow(IntegrationInstanceId) as JsonResult;
 
             // Check Json result data object is null or not
-            Assert.IsNotNull(res.Data);
+            Assert.IsNotNull(result.Data);
 
             // Check sync status is success or not
-            if (res.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
+            if (result.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
             {
-                Assert.AreEqual("Success", res.GetValue("status").ToString(), true);
+                Assert.AreEqual("Success", result.GetValue("status").ToString(), true);
             }
             else
             {
-                Assert.AreEqual("Error", res.GetValue("status").ToString(), true);
+                Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
             }
         }
         #endregion
@@ -239,21 +239,21 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
 
-            // Parameter IntegrationInstancesId = 87 (TechnologyPartnerBulldog)
+            // Set Parameter IntegrationInstancesId
             int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Eloqua.ToString());
-            var res = controller.SyncNow(IntegrationInstanceId) as JsonResult;
+            var result = controller.SyncNow(IntegrationInstanceId) as JsonResult;
 
             // Check Json result data object is null or not
-            Assert.IsNotNull(res.Data);
+            Assert.IsNotNull(result.Data);
 
             // Check sync status is success or not
-            if (res.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
+            if (result.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
             {
-                Assert.AreEqual("Success", res.GetValue("status").ToString(), true);
+                Assert.AreEqual("Success", result.GetValue("status").ToString(), true);
             }
             else
             {
-                Assert.AreEqual("Error", res.GetValue("status").ToString(), true);
+                Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
             }
         }
         #endregion

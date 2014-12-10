@@ -7,11 +7,12 @@ using System.Data;
 using System.Linq;
 using System.Web.Mvc;
 using System.Transactions;
-using System.Data.Objects;
-using System.IO;
-using RevenuePlanner.BDSService;
-using System.Web;
-using Newtonsoft.Json;
+
+/*
+ * Added By :
+ * Added Date :
+ * Description : Plan related events and methos
+ */
 
 namespace RevenuePlanner.Controllers
 {
@@ -486,10 +487,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>15/07/2014</CreatedDate>
-        /// <param name="modelId"></param>
-        /// <param name="goalType"></param>
-        /// <param name="goalValue"></param>
-        /// <returns></returns>
+        /// <param name="modelId">Model id of selected plan</param>
+        /// <param name="goalType">goal type of selected plan</param>
+        /// <param name="goalValue">goal value for goal type of selected plan</param>
+        /// <returns>returns json result object</returns>
         public JsonResult CalculateBudget(int modelId, string goalType, string goalValue)
         {
             string msg1 = "", msg2 = "";
@@ -508,31 +509,39 @@ namespace RevenuePlanner.Controllers
                 if (goalType.ToString() != "")
                 {
                     BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();
-                    objBudgetAllocationModel = Common.CalculateBudgetInputs(modelId, goalType, goalValue, ADS);
+                    // Start - Modified by Sohel Pathan on 09/12/2014 for PL ticket #975
+                    bool isGoalValueZero = false;
+                    if (goalValue != "" && Convert.ToInt32(goalValue) != 0)
+                    {
+                        isGoalValueZero = true;
+                        objBudgetAllocationModel = Common.CalculateBudgetInputs(modelId, goalType, goalValue, ADS);
+                    }
+                    
                     List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
 
                     if (goalType.ToString().ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower())
                     {
                         msg1 = stageList.Where(a => a.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(a => a.Title.ToLower()).FirstOrDefault();
                         msg2 = " in revenue";
-                        input1 = objBudgetAllocationModel.MQLValue.ToString();
-                        input2 = objBudgetAllocationModel.RevenueValue.ToString();
+                        input1 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                        input2 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
 
                     }
                     else if (goalType.ToString().ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
                     {
                         msg1 = stageList.Where(a => a.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(a => a.Title.ToLower()).FirstOrDefault();
                         msg2 = " in revenue";
-                        input1 = objBudgetAllocationModel.INQValue.ToString();
-                        input2 = objBudgetAllocationModel.RevenueValue.ToString();
+                        input1 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                        input2 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
                     }
                     else if (goalType.ToString().ToLower() == Enums.PlanGoalType.Revenue.ToString().ToLower())
                     {
                         msg1 = stageList.Where(a => a.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(a => a.Title.ToLower()).FirstOrDefault();
                         msg2 = stageList.Where(a => a.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(a => a.Title.ToLower()).FirstOrDefault();
-                        input1 = objBudgetAllocationModel.MQLValue.ToString();
-                        input2 = objBudgetAllocationModel.INQValue.ToString();
+                        input1 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                        input2 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.INQValue.ToString();
                     }
+                    // End - Modified by Sohel Pathan on 09/12/2014 for PL ticket #975
                 }
             }
             catch (Exception e)
