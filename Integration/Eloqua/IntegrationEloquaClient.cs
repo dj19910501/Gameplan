@@ -22,8 +22,8 @@ namespace Integration.Eloqua
 {
     public class IntegrationEloquaClient
     {
-        #region Variables        
-        
+        #region Variables
+
         private MRPEntities db = new MRPEntities();
         static readonly Guid BDSApplicationCode = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
 
@@ -58,9 +58,9 @@ namespace Integration.Eloqua
         #endregion
 
         #region Properties
-        
+
         private int _integrationInstanceSectionId { get; set; }
-        
+
         public bool IsAuthenticated
         {
             get
@@ -988,7 +988,7 @@ namespace Integration.Eloqua
             tactic.Add("id", planTactic.IntegrationInstanceTacticId);
 
             int _folderId = 0;
-            _folderId = getFolderId(planTactic);
+            _folderId = GetEloquaFolderIdTactic(planTactic);
 
             if (_folderId > 0)
             {
@@ -1001,16 +1001,44 @@ namespace Integration.Eloqua
         #region Eloqua Folder Search and Set
 
         /// <summary>
+        /// Class to store folder search response.
+        /// </summary>
+        public class folderResponse
+        {
+            public List<elements> elements { get; set; }
+            public string page { get; set; }
+            public string pageSize { get; set; }
+            public string total { get; set; }
+        }
+
+        /// <summary>
+        /// Class to store folder search response element(s).
+        /// </summary>
+        public class elements
+        {
+            public string type { get; set; }
+            public string id { get; set; }
+            public string createdAt { get; set; }
+            public string createdBy { get; set; }
+            public string depth { get; set; }
+            public string folderId { get; set; }
+            public string name { get; set; }
+            public string updatedAt { get; set; }
+            public string updatedBy { get; set; }
+            public string isSystem { get; set; }
+        }
+
+        /// <summary>
         /// Search for folder Id to upload tactic data in Eloqua.
         /// </summary>
         /// <param name="planTactic"> Tactic obj.</param>
         /// <returns> Return folder Id.</returns>
-        private int getFolderId(Plan_Campaign_Program_Tactic planTactic)
+        public int GetEloquaFolderIdTactic(Plan_Campaign_Program_Tactic planTactic)
         {
             int folderId = 0;
 
             //// Get Plan Id for selected Tactic.
-            var planId = db.Plan_Campaign.Where(pc => pc.PlanCampaignId.Equals(db.Plan_Campaign_Program.Where(prog => prog.PlanProgramId.Equals(planTactic.PlanProgramId)).Select(prog => prog.PlanCampaignId).FirstOrDefault())).Select(pc => pc.PlanId).SingleOrDefault();
+            var planId = db.Plan_Campaign.Where(pc => pc.PlanCampaignId.Equals(db.Plan_Campaign_Program.Where(prog => prog.PlanProgramId.Equals(planTactic.PlanProgramId)).Select(prog => prog.PlanCampaignId).FirstOrDefault())).Select(pc => pc.PlanId).FirstOrDefault();
 
             //// Get Folder Path for selected plan.
             var folderPath = db.Plans.Where(p => p.PlanId.Equals(planId)).Select(p => p.EloquaFolderPath).FirstOrDefault();
@@ -1025,7 +1053,7 @@ namespace Integration.Eloqua
                 string[] folderPathArray = folderPath.Split('/');
 
                 //// Call function to search folder name from Eloqua.
-                IRestResponse response = SearchFolder(folderPathArray.Last());
+                IRestResponse response = SearchFolderInEloqua(folderPathArray.Last());
 
                 //// Convert Json response into class.
                 folderResponse respo = JsonConvert.DeserializeObject<folderResponse>(response.Content);
@@ -1039,7 +1067,7 @@ namespace Integration.Eloqua
                         //// If folder search result get more than one result.
 
                         //// Search for all folder.
-                        response = SearchFolder("*");
+                        response = SearchFolderInEloqua("*");
 
                         //// Convert Json response into class.
                         respo = JsonConvert.DeserializeObject<folderResponse>(response.Content);
@@ -1096,31 +1124,98 @@ namespace Integration.Eloqua
         }
 
         /// <summary>
-        /// Class to store folder search response.
+        /// Search for folder Id to upload improvement tactic data in Eloqua.
         /// </summary>
-        public class folderResponse
+        /// <param name="planIMPTactic">Improvement tactic obj.</param>
+        /// <returns> Return folder Id.</returns>
+        public int GetEloquaFolderIdImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
-            public List<elements> elements { get; set; }
-            public string page { get; set; }
-            public string pageSize { get; set; }
-            public string total { get; set; }
-        }
+            int folderId = 0;
 
-        /// <summary>
-        /// Class to store folder search response element(s).
-        /// </summary>
-        public class elements
-        {
-            public string type { get; set; }
-            public string id { get; set; }
-            public string createdAt { get; set; }
-            public string createdBy { get; set; }
-            public string depth { get; set; }
-            public string folderId { get; set; }
-            public string name { get; set; }
-            public string updatedAt { get; set; }
-            public string updatedBy { get; set; }
-            public string isSystem { get; set; }
+            //// Get Plan Id for selected Tactic.
+            var planId = db.Plan_Improvement_Campaign.Where(pc => pc.ImprovementPlanCampaignId.Equals(db.Plan_Improvement_Campaign_Program.Where(prog => prog.ImprovementPlanProgramId.Equals(planIMPTactic.ImprovementPlanProgramId)).Select(prog => prog.ImprovementPlanCampaignId).FirstOrDefault())).Select(pc => pc.ImprovePlanId).SingleOrDefault();
+
+            //// Get Folder Path for selected plan.
+            var folderPath = db.Plans.Where(p => p.PlanId.Equals(planId)).Select(p => p.EloquaFolderPath).FirstOrDefault();
+
+            //// Check weather folder path exist or not.
+            if (folderPath != null)
+            {
+                //// Remove first occurrence of "/" from folder path if exist.
+                folderPath = (folderPath[0].ToString() == "/") ? folderPath.Remove(0, 1) : folderPath;
+
+                //// Convert folder path into String array.
+                string[] folderPathArray = folderPath.Split('/');
+
+                //// Call function to search folder name from Eloqua.
+                IRestResponse response = SearchFolderInEloqua(folderPathArray.Last());
+
+                //// Convert Json response into class.
+                folderResponse respo = JsonConvert.DeserializeObject<folderResponse>(response.Content);
+
+                //// If response is null skip.
+                if (respo != null)
+                {
+
+                    if (respo.elements.Count > 1)
+                    {
+                        //// If folder search result get more than one result.
+
+                        //// Search for all folder.
+                        response = SearchFolderInEloqua("*");
+
+                        //// Convert Json response into class.
+                        respo = JsonConvert.DeserializeObject<folderResponse>(response.Content);
+
+                        //// Get Id of folder from Eloqua for root folder of folder path defined in plan.
+                        var parentId = respo.elements.Where(p => p.name.Equals(folderPathArray.First())).Select(p => new { p.id }).FirstOrDefault();
+
+                        string parentFolderId = Convert.ToString(parentId.id); ;
+
+                        //// Iterate folder path array and find folder.
+                        for (int i = 1; i < folderPathArray.Length; i++)
+                        {
+                            //// Get list of folder which contain parent Id.
+                            var list = respo.elements.Where(p => p.folderId == parentFolderId && p.folderId != null).ToList().Select(p => new { p.name, p.id, p.folderId }).ToList();
+
+                            //// Iterate list and get folder id as parent id.
+                            foreach (var item in list)
+                            {
+                                if (item.name.ToString() == folderPathArray.ElementAt(i))
+                                {
+                                    parentFolderId = respo.elements.Where(p => p.folderId == item.folderId).Select(p => p.id).FirstOrDefault();
+                                }
+                            }
+                        }
+
+                        //// Check weather selected folder is correct folder or not.
+                        parentFolderId = respo.elements.Where(p => p.id == parentFolderId && p.name == folderPathArray.Last()).Select(p => p.id).FirstOrDefault();
+
+                        if (parentFolderId != null)
+                        {
+                            return folderId = Convert.ToInt32(parentFolderId);
+                        }
+                        else
+                        {
+                            return folderId = 0;
+                        }
+                    }
+                    else if (respo.elements.Count > 0)
+                    {
+                        //// If folder search result get only one result.
+                        int _folderId;
+                        int.TryParse(respo.elements.FirstOrDefault().id, out _folderId);
+                        folderId = _folderId;
+                    }
+                    else
+                    {
+                        //// default value return.
+                        return 0;
+                    }
+                }
+            }
+
+            return folderId;
         }
 
         /// <summary>
@@ -1128,7 +1223,7 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="FolderName"> Folder Name for Search</param>
         /// <returns>Return folder search response.</returns>
-        public IRestResponse SearchFolder(string FolderName)
+        public IRestResponse SearchFolderInEloqua(string FolderName)
         {
             RestRequest request = new RestRequest(Method.GET)
             {
@@ -1155,6 +1250,15 @@ namespace Integration.Eloqua
             IDictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
             tactic.Add("type", "Campaign");
             tactic.Add("id", planIMPTactic.IntegrationInstanceTacticId);
+
+            int _folderId = 0;
+            _folderId = GetEloquaFolderIdImprovementTactic(planIMPTactic);
+
+            if (_folderId > 0)
+            {
+                tactic.Add("folderId", _folderId);
+            }
+
             return tactic;
         }
 

@@ -14,6 +14,12 @@ namespace RevenuePlanner.Test.MockHelpers
 {
     public static class DataHelper
     {
+        #region Variables
+
+        public static MRPEntities db = new MRPEntities();
+
+        #endregion
+
         /// <summary>
         /// Get Value of json result property
         /// </summary>
@@ -58,17 +64,17 @@ namespace RevenuePlanner.Test.MockHelpers
         public static HttpContext SetUserAndPermission()
         {
             RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
-            
+
 
             string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
             string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
             Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
             string singlehash = DataHelper.ComputeSingleHash(password);
-            
+
 
             HttpContext.Current = MockHelpers.FakeHttpContext();
 
-            HttpContext.Current.Session["User"] =  objBDSServiceClient.ValidateUser(applicationId, userName, singlehash);
+            HttpContext.Current.Session["User"] = objBDSServiceClient.ValidateUser(applicationId, userName, singlehash);
 
             HttpContext.Current.Session["Permission"] = objBDSServiceClient.GetPermission(applicationId, ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).RoleId); ;
 
@@ -77,7 +83,6 @@ namespace RevenuePlanner.Test.MockHelpers
 
         public static int GetModelId()
         {
-            MRPEntities db = new MRPEntities();
             string published = Convert.ToString(Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower();
             return db.Models.Where(m => m.IsDeleted == false && m.Status.ToLower() == published).Select(m => m.ModelId).FirstOrDefault();
         }
@@ -88,7 +93,6 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <returns></returns>
         public static int GetPlanId()
         {
-            MRPEntities db = new MRPEntities();
             string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
             return db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.PlanId).FirstOrDefault();
         }
@@ -99,7 +103,6 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <returns></returns>
         public static List<int> GetMultiplePlanId()
         {
-            MRPEntities db = new MRPEntities();
             string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
             return db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.PlanId).Take(5).ToList();
         }
@@ -111,12 +114,26 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <returns>returns an integration instance id for given integration type</returns>
         public static int GetIntegrationInstanceId(string integrationType)
         {
-            MRPEntities db = new MRPEntities();
             var IntegrationInstanceId = (from i in db.IntegrationInstances
-                                        join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
-                                        where i.IsDeleted == false && t.IsDeleted == false && t.Code == integrationType
-                                        select i.IntegrationInstanceId).FirstOrDefault();
+                                         join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
+                                         where i.IsDeleted == false && t.IsDeleted == false && t.Code == integrationType
+                                         select i.IntegrationInstanceId).FirstOrDefault();
             return IntegrationInstanceId;
         }
+
+        #region Integration
+
+        public static Plan_Campaign_Program_Tactic Get_Plan_Campaign_Program_Tactic(int tacticId)
+        {
+            Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = new Plan_Campaign_Program_Tactic();
+
+            var obj = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.PlanTacticId == tacticId).Select(tactic => tactic).FirstOrDefault();
+
+            objPlan_Campaign_Program_Tactic = obj;
+
+            return objPlan_Campaign_Program_Tactic;
+        }
+
+        #endregion
     }
 }

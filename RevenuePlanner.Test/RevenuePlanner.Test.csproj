@@ -72,6 +72,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controllers\PlanControllerTest.cs" />
+    <Compile Include="Integration\IntegrationEloquaClientTest.cs" />
     <Compile Include="MockHelpers\DataHelper.cs" />
     <Compile Include="MockHelpers\MockHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
