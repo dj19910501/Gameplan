@@ -1110,6 +1110,9 @@ namespace Integration.Eloqua
                 //// Remove first occurrence of "/" from folder path if exist.
                 folderPath = (folderPath[0].ToString() == "/") ? folderPath.Remove(0, 1) : folderPath;
 
+                //// Remove last occurrence of "/" from folder path if exist.
+                folderPath = (folderPath[folderPath.Length - 1].ToString() == "/") ? folderPath.Remove(folderPath.Length - 1, 1) : folderPath;
+
                 //// Convert folder path into String array.
                 string[] folderPathArray = folderPath.Split('/');
 
@@ -1205,6 +1208,9 @@ namespace Integration.Eloqua
                 //// Remove first occurrence of "/" from folder path if exist.
                 folderPath = (folderPath[0].ToString() == "/") ? folderPath.Remove(0, 1) : folderPath;
 
+                //// Remove last occurrence of "/" from folder path if exist.
+                folderPath = (folderPath[folderPath.Length - 1].ToString() == "/") ? folderPath.Remove(folderPath.Length - 1, 1) : folderPath;
+                
                 //// Convert folder path into String array.
                 string[] folderPathArray = folderPath.Split('/');
 
