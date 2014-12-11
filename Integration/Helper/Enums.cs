@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Integration.Helper
 {
@@ -83,5 +79,23 @@ namespace Integration.Helper
             TextBox,
             DropDownList
         }
+        #region Custom Naming Structure
+
+        /// <summary>
+        /// Enum for table's name of custom namimg structure
+        /// Added by Mitesh Vaishnav for PL ticket #1000
+        /// </summary>
+        public enum CustomNamingTables
+        {
+            Audience,
+            BusinessUnit,
+            CustomField,
+            Geography,
+            Plan_Campaign,
+            Plan_Campaign_Program,
+            Plan_Campaign_Program_Tactic,
+            Vertical
+        }
+        #endregion
     }
 }

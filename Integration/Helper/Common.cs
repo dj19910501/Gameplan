@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using RevenuePlanner.Models;
+using System.Text.RegularExpressions;
 
 namespace Integration.Helper
 {
@@ -260,5 +260,86 @@ namespace Integration.Helper
                 return strActualCost;
             }
         }
+
+        #region Custom Naming Structure
+        /// <summary>
+        /// Function generate custom name for tactic using abbreviation.
+        /// Added by Mitesh Vaishnav on 04/12/2014
+        /// #1000 - Custom naming: Campaign name structure
+        /// </summary>
+        /// <param name="objTactic">Contains details of tactic</param>
+        /// <param name="CustomFields">Contains details of custom fields of particular tactic</param>
+        /// <returns></returns>
+        public static string GenerateCustomName(Plan_Campaign_Program_Tactic objTactic, Guid clientId)
+        {
+            MRPEntities db = new MRPEntities();
+            StringBuilder customTacticName = new StringBuilder();
+            //Fetch custom name convention sequence
+            List<CampaignNameConvention> SequencialOrderedTableList = db.CampaignNameConventions.Where(c => c.ClientId == clientId && c.IsDeleted == false).OrderBy(c => c.Sequence).ToList();
+            if (SequencialOrderedTableList.Count > 0)
+            {
+                var customFieldsForSequencialOrderedList = db.CustomField_Entity.ToList().Where(cf => SequencialOrderedTableList.Select(a => a.CustomFieldId).ToList().Contains(cf.CustomFieldId) && cf.EntityId == objTactic.PlanTacticId).ToList().Select(cf => new
+                {
+                    CustomFieldId = cf.CustomFieldId,
+                    Type = cf.CustomField.CustomFieldType.Name,
+                    Abbreviation = string.Compare(cf.CustomField.CustomFieldType.Name, Enums.CustomFieldType.TextBox.ToString(), true) == 0 ? cf.Value : cf.CustomField.CustomFieldOptions.Where(cfo => cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault(),
+                });
+
+                foreach (CampaignNameConvention objCampaignNameConvention in SequencialOrderedTableList)
+                {
+                    if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.CustomField.ToString())
+                    {
+                        var objCustomField = customFieldsForSequencialOrderedList.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId).FirstOrDefault();
+                        if (objCustomField != null && !string.IsNullOrEmpty(objCustomField.Abbreviation))
+                        {
+                            customTacticName.Append(Regex.Replace(objCustomField.Abbreviation,@"[^0-9a-zA-Z]+","") + "_");
+                        }
+                    }
+                    else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Audience.ToString())
+                    {
+                        string audienceTitle =Regex.Replace((objTactic.Audience.Abbreviation != null ? objTactic.Audience.Abbreviation : objTactic.Audience.Title),@"[^0-9a-zA-Z]+","");
+                        customTacticName.Append(audienceTitle + "_");
+                    }
+                    else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.BusinessUnit.ToString())
+                    {
+                        string businessunitTitle = Regex.Replace((objTactic.BusinessUnit.Abbreviation != null ? objTactic.BusinessUnit.Abbreviation : objTactic.BusinessUnit.Title), @"[^0-9a-zA-Z]+", "");
+                        customTacticName.Append(businessunitTitle + "_");
+                    }
+                    else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Geography.ToString())
+                    {
+                        string geographyTitle = Regex.Replace((objTactic.Geography.Abbreviation != null ? objTactic.Geography.Abbreviation : objTactic.Geography.Title), @"[^0-9a-zA-Z]+", "");
+                        customTacticName.Append( geographyTitle+ "_");
+                    }
+                    else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Vertical.ToString())
+                    {
+                        string verticalTitle = Regex.Replace((objTactic.Vertical.Abbreviation != null ? objTactic.Vertical.Abbreviation : objTactic.Vertical.Title), @"[^0-9a-zA-Z]+", "");
+                        customTacticName.Append(verticalTitle + "_");
+                    }
+                    //else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign.ToString())
+                    //{
+                    //    customTacticName.Append((objTactic.Plan_Campaign_Program.Plan_Campaign.Abbreviation != null ? objTactic.Plan_Campaign_Program.Plan_Campaign.Abbreviation : objTactic.Plan_Campaign_Program.Plan_Campaign.Title.Replace(" ", "_")) + "_");
+                    //}
+                    //else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program.ToString())
+                    //{
+                    //    customTacticName.Append((objTactic.Plan_Campaign_Program.Abbreviation != null ? objTactic.Plan_Campaign_Program.Abbreviation : objTactic.Plan_Campaign_Program.Title.Replace(" ", "_")) + "_");
+                    //}
+                    else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program_Tactic.ToString())
+                    {
+                        customTacticName.Append(Regex.Replace((objTactic.Title.Replace(" ", "_")),@"[^0-9a-zA-Z]+","") + "_");
+                    }
+                }
+                
+                
+            }
+            else
+            {
+                customTacticName.Append(objTactic.Title);
+            }
+
+
+            return customTacticName.ToString().Remove(customTacticName.ToString().Length - 1, 1);
+        }
+
+        #endregion
     }
 }

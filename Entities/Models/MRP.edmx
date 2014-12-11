@@ -9,6 +9,7 @@
           <EntitySet Name="Audience" EntityType="MRPModel.Store.Audience" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="BestInClass" EntityType="MRPModel.Store.BestInClass" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="BusinessUnit" EntityType="MRPModel.Store.BusinessUnit" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CampaignNameConvention" EntityType="MRPModel.Store.CampaignNameConvention" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ChangeLog" EntityType="MRPModel.Store.ChangeLog" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ClientTacticType" EntityType="MRPModel.Store.ClientTacticType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomField" EntityType="MRPModel.Store.CustomField" store:Type="Tables" Schema="dbo" />
@@ -90,6 +91,10 @@
           <AssociationSet Name="FK_BestInClass_Stage" Association="MRPModel.Store.FK_BestInClass_Stage">
             <End Role="Stage" EntitySet="Stage" />
             <End Role="BestInClass" EntitySet="BestInClass" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CampaignNameConvention_CustomField" Association="MRPModel.Store.FK_CampaignNameConvention_CustomField">
+            <End Role="CustomField" EntitySet="CustomField" />
+            <End Role="CampaignNameConvention" EntitySet="CampaignNameConvention" />
           </AssociationSet>
           <AssociationSet Name="FK_CustomField_CustomFieldType" Association="MRPModel.Store.FK_CustomField_CustomFieldType">
             <End Role="CustomFieldType" EntitySet="CustomFieldType" />
@@ -457,6 +462,20 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="CampaignNameConvention">
+          <Key>
+            <PropertyRef Name="CampaignNameConventionId" />
+          </Key>
+          <Property Name="CampaignNameConventionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TableName" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="FieldName" Type="nvarchar" MaxLength="255" />
+          <Property Name="CustomFieldId" Type="int" />
+          <Property Name="Sequence" Type="int" Nullable="false" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="ChangeLog">
           <Key>
@@ -998,7 +1017,7 @@
           <Property Name="GoalType" Type="varchar" Nullable="false" MaxLength="50" />
           <Property Name="GoalValue" Type="float" Nullable="false" />
           <Property Name="AllocatedBy" Type="varchar" Nullable="false" MaxLength="50" />
-          <Property Name="EloquaFolderPath" Type="nvarchar" MaxLength="500" />
+          <Property Name="EloquaFolderPath" Type="nvarchar" />
         </EntityType>
         <EntityType Name="Plan_Budget">
           <Key>
@@ -1443,6 +1462,18 @@
             </Principal>
             <Dependent Role="BestInClass">
               <PropertyRef Name="StageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CampaignNameConvention_CustomField">
+          <End Role="CustomField" Type="MRPModel.Store.CustomField" Multiplicity="0..1" />
+          <End Role="CampaignNameConvention" Type="MRPModel.Store.CampaignNameConvention" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="CampaignNameConvention">
+              <PropertyRef Name="CustomFieldId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2816,6 +2847,11 @@
             <End Role="Plan_Improvement_Campaign_Program" EntitySet="Plan_Improvement_Campaign_Program" />
             <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
           </AssociationSet>
+          <EntitySet Name="CampaignNameConventions" EntityType="MRPModel.CampaignNameConvention" />
+          <AssociationSet Name="FK_CampaignNameConvention_CustomField" Association="MRPModel.FK_CampaignNameConvention_CustomField">
+            <End Role="CustomField" EntitySet="CustomFields" />
+            <End Role="CampaignNameConvention" EntitySet="CampaignNameConventions" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -3387,7 +3423,7 @@
           <NavigationProperty Name="Plan_Budget" Relationship="MRPModel.FK_Plan_Budget_Plan" FromRole="Plan" ToRole="Plan_Budget" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Team" Relationship="MRPModel.FK_Plan_Collaborator_Plan" FromRole="Plan" ToRole="Plan_Team" />
-          <Property Type="String" Name="EloquaFolderPath" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="EloquaFolderPath" MaxLength="4000" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Plan_Improvement_Campaign" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Plan" FromRole="Plan" ToRole="Plan_Improvement_Campaign" />
         </EntityType>
         <EntityType Name="Plan_Budget">
@@ -4713,6 +4749,7 @@
           <NavigationProperty Name="CustomField_Entity" Relationship="MRPModel.FK_CustomField_Entity_CustomField" FromRole="CustomField" ToRole="CustomField_Entity" />
           <NavigationProperty Name="CustomFieldOptions" Relationship="MRPModel.FK_CustomFieldOption_CustomField" FromRole="CustomField" ToRole="CustomFieldOption" />
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_CustomField_CustomFieldId" FromRole="CustomField" ToRole="IntegrationInstanceDataTypeMapping" />
+          <NavigationProperty Name="CampaignNameConventions" Relationship="MRPModel.FK_CampaignNameConvention_CustomField" FromRole="CustomField" ToRole="CampaignNameConvention" />
         </EntityType>
         <EntityType Name="CustomField_Entity">
           <Key>
@@ -4978,6 +5015,33 @@
             </Principal>
             <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
               <PropertyRef Name="ImprovementPlanProgramId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CampaignNameConvention">
+          <Key>
+            <PropertyRef Name="CampaignNameConventionId" />
+          </Key>
+          <Property Type="Int32" Name="CampaignNameConventionId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="TableName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="FieldName" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="CustomFieldId" />
+          <Property Type="Int32" Name="Sequence" Nullable="false" />
+          <Property Type="Guid" Name="ClientId" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CampaignNameConvention_CustomField" FromRole="CampaignNameConvention" ToRole="CustomField" />
+        </EntityType>
+        <Association Name="FK_CampaignNameConvention_CustomField">
+          <End Type="MRPModel.CustomField" Role="CustomField" Multiplicity="0..1" />
+          <End Type="MRPModel.CampaignNameConvention" Role="CampaignNameConvention" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="CampaignNameConvention">
+              <PropertyRef Name="CustomFieldId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6015,6 +6079,21 @@
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="ImprovementPlanCampaignId" ColumnName="ImprovementPlanCampaignId" />
                 <ScalarProperty Name="ImprovementPlanProgramId" ColumnName="ImprovementPlanProgramId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CampaignNameConventions">
+            <EntityTypeMapping TypeName="MRPModel.CampaignNameConvention">
+              <MappingFragment StoreEntitySet="CampaignNameConvention">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
+                <ScalarProperty Name="FieldName" ColumnName="FieldName" />
+                <ScalarProperty Name="TableName" ColumnName="TableName" />
+                <ScalarProperty Name="CampaignNameConventionId" ColumnName="CampaignNameConventionId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

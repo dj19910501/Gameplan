@@ -55,6 +55,9 @@
     <Compile Include="Models\BusinessUnit.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CampaignNameConvention.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ChangeLog.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

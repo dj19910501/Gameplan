@@ -155,6 +155,8 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Plan" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" />
+        <EntityTypeShape EntityType="MRPModel.CampaignNameConvention" Width="1.5" PointX="2.678263525794383" PointY="8.173886630765109" />
+        <AssociationConnector Association="MRPModel.FK_CampaignNameConvention_CustomField" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

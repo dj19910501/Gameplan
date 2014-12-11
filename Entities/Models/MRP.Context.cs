@@ -90,5 +90,6 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
+        public DbSet<CampaignNameConvention> CampaignNameConventions { get; set; }
     }
 }

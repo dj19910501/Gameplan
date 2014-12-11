@@ -17,6 +17,11 @@ using System.Reflection;
 using System.Transactions;
 
 #endregion
+/*
+ *  Author: 
+ *  Created Date: 
+ *  Purpose: Integration with Eloqua  
+  */
 
 namespace Integration.Eloqua
 {
@@ -1082,6 +1087,14 @@ namespace Integration.Eloqua
         private string CreateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
             IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
+            if (_mappingTactic.ContainsKey("Title"))
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                if (tactic.ContainsKey(titleMappedValue))
+                {
+                    tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, planTactic.BusinessUnit.ClientId);
+                }
+            }  
             return CreateEloquaCampaign(tactic);
         }
 
