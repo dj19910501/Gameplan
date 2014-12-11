@@ -76,7 +76,7 @@ namespace RevenuePlanner.Test.MockHelpers
 
             HttpContext.Current.Session["User"] = objBDSServiceClient.ValidateUser(applicationId, userName, singlehash);
 
-            HttpContext.Current.Session["Permission"] = objBDSServiceClient.GetPermission(applicationId, ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).RoleId); ;
+            HttpContext.Current.Session["Permission"] = objBDSServiceClient.GetPermission(applicationId, ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).RoleId);
 
             return HttpContext.Current;
         }
@@ -95,6 +95,12 @@ namespace RevenuePlanner.Test.MockHelpers
         {
             string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
             return db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.PlanId).FirstOrDefault();
+        }
+
+        public static Plan_Campaign_Program_Tactic GetPlanTactic(Guid clientId)
+        {
+            var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.BusinessUnit.ClientId == clientId && a.IsDeleted == false).FirstOrDefault();
+            return objTactic;
         }
 
         /// <summary>

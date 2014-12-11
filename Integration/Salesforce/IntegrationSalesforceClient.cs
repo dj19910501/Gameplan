@@ -30,7 +30,7 @@ namespace Integration.Salesforce
     public class IntegrationSalesforceClient
     {
         static readonly Guid BDSApplicationCode = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
-        
+
         public string _username { get; set; }
         public string _password { get; set; }
         public string _consumerKey { get; set; }
@@ -181,7 +181,7 @@ namespace Integration.Salesforce
             {
                 Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id).SingleOrDefault();
                 // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                List<int> campaignIdList = new List<int>(){ planCampaign.PlanCampaignId };
+                List<int> campaignIdList = new List<int>() { planCampaign.PlanCampaignId };
                 _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
                 // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 planCampaign = SyncCampaingData(planCampaign);
@@ -217,7 +217,7 @@ namespace Integration.Salesforce
                 if (isImport)
                 {
                     //GetDataForTacticandUpdate();  // Commented by Sohel Pathan on 12/09/2014 for PL ticket #773
-                    PullingResponses();   
+                    PullingResponses();
                     PullingCWRevenue();
                 }
             }
@@ -506,7 +506,7 @@ namespace Integration.Salesforce
                                     }
                                     ).Where(om => om.IsYear).ToList();
 
-                               
+
 
                                 foreach (var tactic in tacticList)
                                 {
@@ -702,7 +702,7 @@ namespace Integration.Salesforce
         //                        }
 
         //                        // End Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
-                                
+
         //                        tactic.ModifiedBy = _userId;
         //                        tactic.ModifiedDate = DateTime.Now;
         //                        tactic.LastSyncDate = DateTime.Now;
@@ -779,13 +779,13 @@ namespace Integration.Salesforce
                                                 .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
                                                 .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
-            _mappingProgram = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program 
+            _mappingProgram = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program
                                                     || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Program_EntityType) &&
                                                     (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
                                                 .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
                                                 .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
-            _mappingCampaign = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign 
+            _mappingCampaign = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign
                                                     || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Campaign_EntityType) &&
                                                     (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
                                                 .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
@@ -797,12 +797,12 @@ namespace Integration.Salesforce
             // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
 
             // Start - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-            _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign_Program_Tactic 
+            _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign_Program_Tactic
                                                             || (gameplandata.GameplanDataType.TableName == Global && gameplandata.GameplanDataType.IsImprovement == true)) &&
                                                                 !gameplandata.GameplanDataType.IsGet)
                                             .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                             .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
-                        
+
             _mappingImprovementProgram = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign_Program
                                                             || (gameplandata.GameplanDataType.TableName == Global && gameplandata.GameplanDataType.IsImprovement == true)) &&
                                                                 !gameplandata.GameplanDataType.IsGet)
@@ -825,7 +825,7 @@ namespace Integration.Salesforce
                                 .ToDictionary(b => b.BusinessUnitId, b => b.Title);
             _mappingGeography = db.Geographies.Where(g => g.ClientId == clientId).Select(g => new { g.GeographyId, g.Title })
                                 .ToDictionary(g => g.GeographyId, g => g.Title);
-            
+
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             _mappingUser = objBDSservice.GetUserListByClientId(clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
 
@@ -845,7 +845,7 @@ namespace Integration.Salesforce
                 instanceLogCampaign.SyncTimeStamp = DateTime.Now;
                 try
                 {
-                planCampaign.IntegrationInstanceCampaignId = CreateCampaign(planCampaign);
+                    planCampaign.IntegrationInstanceCampaignId = CreateCampaign(planCampaign);
                     planCampaign.LastSyncDate = DateTime.Now;
                     planCampaign.ModifiedDate = DateTime.Now;
                     planCampaign.ModifiedBy = _userId;
@@ -870,9 +870,9 @@ namespace Integration.Salesforce
                 instanceLogCampaign.Operation = Operation.Update.ToString();
                 instanceLogCampaign.SyncTimeStamp = DateTime.Now;
                 try
-            {
-                if (UpdateCampaign(planCampaign))
                 {
+                    if (UpdateCampaign(planCampaign))
+                    {
                         planCampaign.LastSyncDate = DateTime.Now;
                         planCampaign.ModifiedDate = DateTime.Now;
                         planCampaign.ModifiedBy = _userId;
@@ -894,8 +894,8 @@ namespace Integration.Salesforce
                     }
                     else
                     {
-                    instanceLogCampaign.Status = StatusResult.Error.ToString();
-                    instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                        instanceLogCampaign.Status = StatusResult.Error.ToString();
+                        instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
                     }
                 }
 
@@ -909,35 +909,35 @@ namespace Integration.Salesforce
                 var programList = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == planCampaign.PlanCampaignId).ToList();
                 if (tacticList.Where(tactic => tactic.IsDeployedToIntegration && !tactic.IsDeleted).Count() == 0)
                 {
-                // Set null value if delete true to integrationinstance..id
+                    // Set null value if delete true to integrationinstance..id
                     tacticList = tacticList.Where(tactic => tactic.IntegrationInstanceTacticId != null).ToList();
-                foreach (var t in tacticList)
-                {
-                    IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                    instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                    instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
-                    instanceLogTactic.EntityId = t.PlanTacticId;
-                    instanceLogTactic.EntityType = EntityType.Tactic.ToString();
-                    instanceLogTactic.Operation = Operation.Delete.ToString();
-                    instanceLogTactic.SyncTimeStamp = DateTime.Now;
-                    try
+                    foreach (var t in tacticList)
                     {
-                        if (Delete(t.IntegrationInstanceTacticId))
+                        IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
+                        instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                        instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
+                        instanceLogTactic.EntityId = t.PlanTacticId;
+                        instanceLogTactic.EntityType = EntityType.Tactic.ToString();
+                        instanceLogTactic.Operation = Operation.Delete.ToString();
+                        instanceLogTactic.SyncTimeStamp = DateTime.Now;
+                        try
                         {
-                            t.IntegrationInstanceTacticId = null;
-                            t.LastSyncDate = DateTime.Now;
-                            t.ModifiedDate = DateTime.Now;
-                            t.ModifiedBy = _userId;
-                            instanceLogTactic.Status = StatusResult.Success.ToString();
+                            if (Delete(t.IntegrationInstanceTacticId))
+                            {
+                                t.IntegrationInstanceTacticId = null;
+                                t.LastSyncDate = DateTime.Now;
+                                t.ModifiedDate = DateTime.Now;
+                                t.ModifiedBy = _userId;
+                                instanceLogTactic.Status = StatusResult.Success.ToString();
+                            }
+                            else
+                            {
+                                instanceLogTactic.Status = StatusResult.Error.ToString();
+                                instanceLogTactic.ErrorDescription = UnableToDelete;
+                            }
                         }
-                        else
+                        catch (SalesforceException e)
                         {
-                            instanceLogTactic.Status = StatusResult.Error.ToString();
-                            instanceLogTactic.ErrorDescription = UnableToDelete;
-                        }
-                    }
-                    catch (SalesforceException e)
-                    {
                             if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                             {
                                 t.IntegrationInstanceTacticId = null;
@@ -948,48 +948,48 @@ namespace Integration.Salesforce
                             }
                             else
                             {
-                        instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                                instanceLogTactic.Status = StatusResult.Error.ToString();
+                                instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                             }
-                    }
+                        }
 
-                    instanceLogTactic.CreatedBy = this._userId;
-                    instanceLogTactic.CreatedDate = DateTime.Now;
-                    db.Entry(instanceLogTactic).State = EntityState.Added;
-                }
+                        instanceLogTactic.CreatedBy = this._userId;
+                        instanceLogTactic.CreatedDate = DateTime.Now;
+                        db.Entry(instanceLogTactic).State = EntityState.Added;
+                    }
 
 
                     if (programList.Where(program => program.IsDeployedToIntegration && !program.IsDeleted).Count() == 0)
                     {
-                // Set null value if delete true to integrationinstance..id
+                        // Set null value if delete true to integrationinstance..id
                         programList = programList.Where(program => program.IntegrationInstanceProgramId != null).ToList();
-                foreach (var p in programList)
-                {
-                    IntegrationInstancePlanEntityLog instanceLogProgram = new IntegrationInstancePlanEntityLog();
-                    instanceLogProgram.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                    instanceLogProgram.IntegrationInstanceId = _integrationInstanceId;
-                    instanceLogProgram.EntityId = p.PlanProgramId;
-                    instanceLogProgram.EntityType = EntityType.Program.ToString();
-                    instanceLogProgram.Operation = Operation.Delete.ToString();
-                    instanceLogProgram.SyncTimeStamp = DateTime.Now;
-                    try
-                    {
-                        if (Delete(p.IntegrationInstanceProgramId))
+                        foreach (var p in programList)
                         {
-                            p.IntegrationInstanceProgramId = null;
-                            p.LastSyncDate = DateTime.Now;
-                            p.ModifiedDate = DateTime.Now;
-                            p.ModifiedBy = _userId;
-                            instanceLogProgram.Status = StatusResult.Success.ToString();
-                        }
-                        else
-                        {
-                            instanceLogProgram.Status = StatusResult.Error.ToString();
-                            instanceLogProgram.ErrorDescription = UnableToDelete;
-                        }
-                    }
-                    catch (SalesforceException e)
-                    {
+                            IntegrationInstancePlanEntityLog instanceLogProgram = new IntegrationInstancePlanEntityLog();
+                            instanceLogProgram.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                            instanceLogProgram.IntegrationInstanceId = _integrationInstanceId;
+                            instanceLogProgram.EntityId = p.PlanProgramId;
+                            instanceLogProgram.EntityType = EntityType.Program.ToString();
+                            instanceLogProgram.Operation = Operation.Delete.ToString();
+                            instanceLogProgram.SyncTimeStamp = DateTime.Now;
+                            try
+                            {
+                                if (Delete(p.IntegrationInstanceProgramId))
+                                {
+                                    p.IntegrationInstanceProgramId = null;
+                                    p.LastSyncDate = DateTime.Now;
+                                    p.ModifiedDate = DateTime.Now;
+                                    p.ModifiedBy = _userId;
+                                    instanceLogProgram.Status = StatusResult.Success.ToString();
+                                }
+                                else
+                                {
+                                    instanceLogProgram.Status = StatusResult.Error.ToString();
+                                    instanceLogProgram.ErrorDescription = UnableToDelete;
+                                }
+                            }
+                            catch (SalesforceException e)
+                            {
                                 if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                                 {
                                     p.IntegrationInstanceProgramId = null;
@@ -1000,42 +1000,42 @@ namespace Integration.Salesforce
                                 }
                                 else
                                 {
-                        instanceLogProgram.Status = StatusResult.Error.ToString();
-                        instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                                    instanceLogProgram.Status = StatusResult.Error.ToString();
+                                    instanceLogProgram.ErrorDescription = GetErrorMessage(e);
                                 }
-                    }
+                            }
 
-                    instanceLogProgram.CreatedBy = this._userId;
-                    instanceLogProgram.CreatedDate = DateTime.Now;
-                    db.Entry(instanceLogProgram).State = EntityState.Added;
-                }
+                            instanceLogProgram.CreatedBy = this._userId;
+                            instanceLogProgram.CreatedDate = DateTime.Now;
+                            db.Entry(instanceLogProgram).State = EntityState.Added;
+                        }
 
-                // Set null value if delete true to integrationinstance..id
-                IntegrationInstancePlanEntityLog instanceLogCampaign = new IntegrationInstancePlanEntityLog();
-                instanceLogCampaign.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                instanceLogCampaign.IntegrationInstanceId = _integrationInstanceId;
-                instanceLogCampaign.EntityId = planCampaign.PlanCampaignId;
-                instanceLogCampaign.EntityType = EntityType.Campaign.ToString();
-                instanceLogCampaign.Operation = Operation.Delete.ToString();
-                instanceLogCampaign.SyncTimeStamp = DateTime.Now;
-                try
-                {
-                    if (Delete(planCampaign.IntegrationInstanceCampaignId))
-                    {
-                        planCampaign.IntegrationInstanceCampaignId = null;
-                        planCampaign.LastSyncDate = DateTime.Now;
-                        planCampaign.ModifiedDate = DateTime.Now;
-                        planCampaign.ModifiedBy = _userId;
-                        instanceLogCampaign.Status = StatusResult.Success.ToString();
-                    }
-                    else
-                    {
-                        instanceLogCampaign.Status = StatusResult.Error.ToString();
-                        instanceLogCampaign.ErrorDescription = UnableToDelete;
-                    }
-                }
-                catch (SalesforceException e)
-                {
+                        // Set null value if delete true to integrationinstance..id
+                        IntegrationInstancePlanEntityLog instanceLogCampaign = new IntegrationInstancePlanEntityLog();
+                        instanceLogCampaign.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                        instanceLogCampaign.IntegrationInstanceId = _integrationInstanceId;
+                        instanceLogCampaign.EntityId = planCampaign.PlanCampaignId;
+                        instanceLogCampaign.EntityType = EntityType.Campaign.ToString();
+                        instanceLogCampaign.Operation = Operation.Delete.ToString();
+                        instanceLogCampaign.SyncTimeStamp = DateTime.Now;
+                        try
+                        {
+                            if (Delete(planCampaign.IntegrationInstanceCampaignId))
+                            {
+                                planCampaign.IntegrationInstanceCampaignId = null;
+                                planCampaign.LastSyncDate = DateTime.Now;
+                                planCampaign.ModifiedDate = DateTime.Now;
+                                planCampaign.ModifiedBy = _userId;
+                                instanceLogCampaign.Status = StatusResult.Success.ToString();
+                            }
+                            else
+                            {
+                                instanceLogCampaign.Status = StatusResult.Error.ToString();
+                                instanceLogCampaign.ErrorDescription = UnableToDelete;
+                            }
+                        }
+                        catch (SalesforceException e)
+                        {
                             if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                             {
                                 planCampaign.IntegrationInstanceCampaignId = null;
@@ -1046,14 +1046,14 @@ namespace Integration.Salesforce
                             }
                             else
                             {
-                    instanceLogCampaign.Status = StatusResult.Error.ToString();
-                    instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                                instanceLogCampaign.Status = StatusResult.Error.ToString();
+                                instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
                             }
-                }
+                        }
 
-                instanceLogCampaign.CreatedBy = this._userId;
-                instanceLogCampaign.CreatedDate = DateTime.Now;
-                db.Entry(instanceLogCampaign).State = EntityState.Added;
+                        instanceLogCampaign.CreatedBy = this._userId;
+                        instanceLogCampaign.CreatedDate = DateTime.Now;
+                        db.Entry(instanceLogCampaign).State = EntityState.Added;
                     }
                 }
             }
@@ -1146,9 +1146,9 @@ namespace Integration.Salesforce
                 instanceLogProgram.Operation = Operation.Update.ToString();
                 instanceLogProgram.SyncTimeStamp = DateTime.Now;
                 try
-            {
-                if (UpdateProgram(planProgram))
                 {
+                    if (UpdateProgram(planProgram))
+                    {
                         planProgram.LastSyncDate = DateTime.Now;
                         planProgram.ModifiedDate = DateTime.Now;
                         planProgram.ModifiedBy = _userId;
@@ -1170,8 +1170,8 @@ namespace Integration.Salesforce
                     }
                     else
                     {
-                    instanceLogProgram.Status = StatusResult.Error.ToString();
-                    instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                        instanceLogProgram.Status = StatusResult.Error.ToString();
+                        instanceLogProgram.ErrorDescription = GetErrorMessage(e);
                     }
                 }
 
@@ -1185,33 +1185,33 @@ namespace Integration.Salesforce
                 if (tacticList.Where(tactic => tactic.IsDeployedToIntegration && !tactic.IsDeleted).Count() == 0)
                 {
                     tacticList = tacticList.Where(tactic => tactic.IntegrationInstanceTacticId != null).ToList();
-                foreach (var t in tacticList)
-                {
-                    IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                    instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                    instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
-                    instanceLogTactic.EntityId = t.PlanTacticId;
-                    instanceLogTactic.EntityType = EntityType.Tactic.ToString();
-                    instanceLogTactic.Operation = Operation.Delete.ToString();
-                    instanceLogTactic.SyncTimeStamp = DateTime.Now;
-                    try
+                    foreach (var t in tacticList)
                     {
-                        if (Delete(t.IntegrationInstanceTacticId))
+                        IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
+                        instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                        instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
+                        instanceLogTactic.EntityId = t.PlanTacticId;
+                        instanceLogTactic.EntityType = EntityType.Tactic.ToString();
+                        instanceLogTactic.Operation = Operation.Delete.ToString();
+                        instanceLogTactic.SyncTimeStamp = DateTime.Now;
+                        try
                         {
-                            t.IntegrationInstanceTacticId = null;
-                            t.LastSyncDate = DateTime.Now;
-                            t.ModifiedDate = DateTime.Now;
-                            t.ModifiedBy = _userId;
-                            instanceLogTactic.Status = StatusResult.Success.ToString();
+                            if (Delete(t.IntegrationInstanceTacticId))
+                            {
+                                t.IntegrationInstanceTacticId = null;
+                                t.LastSyncDate = DateTime.Now;
+                                t.ModifiedDate = DateTime.Now;
+                                t.ModifiedBy = _userId;
+                                instanceLogTactic.Status = StatusResult.Success.ToString();
+                            }
+                            else
+                            {
+                                instanceLogTactic.Status = StatusResult.Error.ToString();
+                                instanceLogTactic.ErrorDescription = UnableToDelete;
+                            }
                         }
-                        else
+                        catch (SalesforceException e)
                         {
-                            instanceLogTactic.Status = StatusResult.Error.ToString();
-                            instanceLogTactic.ErrorDescription = UnableToDelete;
-                        }
-                    }
-                    catch (SalesforceException e)
-                    {
                             if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                             {
                                 t.IntegrationInstanceTacticId = null;
@@ -1222,41 +1222,41 @@ namespace Integration.Salesforce
                             }
                             else
                             {
-                        instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                                instanceLogTactic.Status = StatusResult.Error.ToString();
+                                instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                             }
+                        }
+
+                        instanceLogTactic.CreatedBy = this._userId;
+                        instanceLogTactic.CreatedDate = DateTime.Now;
+                        db.Entry(instanceLogTactic).State = EntityState.Added;
                     }
 
-                    instanceLogTactic.CreatedBy = this._userId;
-                    instanceLogTactic.CreatedDate = DateTime.Now;
-                    db.Entry(instanceLogTactic).State = EntityState.Added;
-                }
-
-                IntegrationInstancePlanEntityLog instanceLogProgram = new IntegrationInstancePlanEntityLog();
-                instanceLogProgram.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                instanceLogProgram.IntegrationInstanceId = _integrationInstanceId;
-                instanceLogProgram.EntityId = planProgram.PlanProgramId;
-                instanceLogProgram.EntityType = EntityType.Program.ToString();
-                instanceLogProgram.Operation = Operation.Delete.ToString();
-                instanceLogProgram.SyncTimeStamp = DateTime.Now;
-                try
-                {
-                    if (Delete(planProgram.IntegrationInstanceProgramId))
+                    IntegrationInstancePlanEntityLog instanceLogProgram = new IntegrationInstancePlanEntityLog();
+                    instanceLogProgram.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                    instanceLogProgram.IntegrationInstanceId = _integrationInstanceId;
+                    instanceLogProgram.EntityId = planProgram.PlanProgramId;
+                    instanceLogProgram.EntityType = EntityType.Program.ToString();
+                    instanceLogProgram.Operation = Operation.Delete.ToString();
+                    instanceLogProgram.SyncTimeStamp = DateTime.Now;
+                    try
                     {
-                        planProgram.IntegrationInstanceProgramId = null;
-                        planProgram.LastSyncDate = DateTime.Now;
-                        planProgram.ModifiedDate = DateTime.Now;
-                        planProgram.ModifiedBy = _userId;
-                        instanceLogProgram.Status = StatusResult.Success.ToString();
+                        if (Delete(planProgram.IntegrationInstanceProgramId))
+                        {
+                            planProgram.IntegrationInstanceProgramId = null;
+                            planProgram.LastSyncDate = DateTime.Now;
+                            planProgram.ModifiedDate = DateTime.Now;
+                            planProgram.ModifiedBy = _userId;
+                            instanceLogProgram.Status = StatusResult.Success.ToString();
+                        }
+                        else
+                        {
+                            instanceLogProgram.Status = StatusResult.Error.ToString();
+                            instanceLogProgram.ErrorDescription = UnableToDelete;
+                        }
                     }
-                    else
+                    catch (SalesforceException e)
                     {
-                        instanceLogProgram.Status = StatusResult.Error.ToString();
-                        instanceLogProgram.ErrorDescription = UnableToDelete;
-                    }
-                }
-                catch (SalesforceException e)
-                {
                         if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                         {
                             planProgram.IntegrationInstanceProgramId = null;
@@ -1267,15 +1267,15 @@ namespace Integration.Salesforce
                         }
                         else
                         {
-                    instanceLogProgram.Status = StatusResult.Error.ToString();
-                    instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                            instanceLogProgram.Status = StatusResult.Error.ToString();
+                            instanceLogProgram.ErrorDescription = GetErrorMessage(e);
                         }
-                }
+                    }
 
-                instanceLogProgram.CreatedBy = this._userId;
-                instanceLogProgram.CreatedDate = DateTime.Now;
-                db.Entry(instanceLogProgram).State = EntityState.Added;
-            }
+                    instanceLogProgram.CreatedBy = this._userId;
+                    instanceLogProgram.CreatedDate = DateTime.Now;
+                    db.Entry(instanceLogProgram).State = EntityState.Added;
+                }
             }
 
             return planProgram;
@@ -1601,7 +1601,7 @@ namespace Integration.Salesforce
                     db.Entry(instanceLogCampaign).State = EntityState.Added;
                 }
             }
-            
+
             return planIMPCampaign;
         }
 
@@ -1627,10 +1627,10 @@ namespace Integration.Salesforce
                         instanceLogCampaign.SyncTimeStamp = DateTime.Now;
                         try
                         {
-                        _parentId = CreateImprovementCampaign(planIMPCampaign);
-                        planIMPCampaign.IntegrationInstanceCampaignId = _parentId;
+                            _parentId = CreateImprovementCampaign(planIMPCampaign);
+                            planIMPCampaign.IntegrationInstanceCampaignId = _parentId;
                             planIMPCampaign.LastSyncDate = DateTime.Now;
-                        db.Entry(planIMPCampaign).State = EntityState.Modified;
+                            db.Entry(planIMPCampaign).State = EntityState.Modified;
                             instanceLogCampaign.Status = StatusResult.Success.ToString();
                         }
                         catch (SalesforceException e)
@@ -1654,10 +1654,10 @@ namespace Integration.Salesforce
                         instanceLogProgram.SyncTimeStamp = DateTime.Now;
                         try
                         {
-                    _parentId = CreateImprovementProgram(planIMPProgram);
-                    planIMPProgram.IntegrationInstanceProgramId = _parentId;
+                            _parentId = CreateImprovementProgram(planIMPProgram);
+                            planIMPProgram.IntegrationInstanceProgramId = _parentId;
                             planIMPProgram.LastSyncDate = DateTime.Now;
-                    db.Entry(planIMPProgram).State = EntityState.Modified;
+                            db.Entry(planIMPProgram).State = EntityState.Modified;
                             instanceLogProgram.Status = StatusResult.Success.ToString();
                         }
                         catch (SalesforceException e)
@@ -1683,7 +1683,7 @@ namespace Integration.Salesforce
                     instanceLogTactic.SyncTimeStamp = DateTime.Now;
                     try
                     {
-                planIMPTactic.IntegrationInstanceTacticId = CreateImprovementTactic(planIMPTactic);
+                        planIMPTactic.IntegrationInstanceTacticId = CreateImprovementTactic(planIMPTactic);
                         planIMPTactic.LastSyncDate = DateTime.Now;
                         planIMPTactic.ModifiedDate = DateTime.Now;
                         planIMPTactic.ModifiedBy = _userId;
@@ -1700,7 +1700,7 @@ namespace Integration.Salesforce
                         }
                         else
                         {
-                        objImpTacticComment.CreatedBy = this._userId;
+                            objImpTacticComment.CreatedBy = this._userId;
                         }
 
                         db.Entry(objImpTacticComment).State = EntityState.Added;
@@ -1753,8 +1753,8 @@ namespace Integration.Salesforce
                     }
                     else
                     {
-                    instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                        instanceLogTactic.Status = StatusResult.Error.ToString();
+                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                     }
                 }
 
@@ -1799,8 +1799,8 @@ namespace Integration.Salesforce
                     }
                     else
                     {
-                    instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                        instanceLogTactic.Status = StatusResult.Error.ToString();
+                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                     }
                 }
 
@@ -1855,7 +1855,7 @@ namespace Integration.Salesforce
                     List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
-                    _mappingCustomFields =  CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                    _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     for (int index = 0; index < tacticList.Count; index++)
                     {
@@ -1911,7 +1911,7 @@ namespace Integration.Salesforce
         private string CreateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
             Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
-            if (_mappingTactic.ContainsKey("Title"))
+            if (_mappingTactic.ContainsKey("Title") && planTactic!=null)
             {
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
@@ -1964,7 +1964,7 @@ namespace Integration.Salesforce
 
         private bool UpdateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
-            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic,Enums.Mode.Update);
+            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Update);
             return _client.Update(objectName, planIMPTactic.IntegrationInstanceTacticId, tactic);
         }
 

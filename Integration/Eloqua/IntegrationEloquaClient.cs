@@ -1087,7 +1087,7 @@ namespace Integration.Eloqua
         private string CreateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
             IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
-            if (_mappingTactic.ContainsKey("Title"))
+            if (_mappingTactic.ContainsKey("Title") && planTactic!=null)
             {
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
@@ -1668,6 +1668,15 @@ namespace Integration.Eloqua
                     _mappingCustomFields.Add(item.CustomFieldId + "-" + item.EntityId, CustomFieldOptionList.Where(cfo => cfo.CustomFieldOptionId == CustomFieldOptionId).Select(cfo => cfo.Value).FirstOrDefault());
                 }
             }
+        }
+        public string TestGenerateCustomName(Plan_Campaign_Program_Tactic planTactic, Guid clientId)
+        {
+            string customName = "";
+            if (planTactic != null)
+            {
+                customName = Common.GenerateCustomName(planTactic, planTactic.BusinessUnit.ClientId);
+            }
+            return customName;
         }
     }
 }
