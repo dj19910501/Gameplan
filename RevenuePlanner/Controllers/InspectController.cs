@@ -5090,13 +5090,19 @@ namespace RevenuePlanner.Controllers
                                 where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
                                 orderby lit.Title
                                 select lit;
+
+            string lineItemTypeName = "";
+
             foreach (var item in lineItemTypes)
             {
-                item.Title = HttpUtility.HtmlDecode(item.Title);
+                if (pcptl.LineItemTypeId.ToString() == item.LineItemTypeId.ToString())
+                {
+                    lineItemTypeName= HttpUtility.HtmlDecode(item.Title);    
+                }
             }
 
             //// Set respected values to ViewBag.
-            ViewBag.lineItemTypes = lineItemTypes;
+            ViewBag.lineItemTypes = lineItemTypeName;
             ViewBag.TacticTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Title);
             ViewBag.ProgramTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title);
             ViewBag.CampaignTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);

@@ -1,18 +1,13 @@
 ﻿@model RevenuePlanner.Models.Plan_Campaign_Program_Tactic_LineItemModel
 @using RevenuePlanner.Helpers
 @{
-    //var campaign = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
-    
-    //var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
-    //deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
-    //string campaignBudget = Convert.ToString(ViewBag.CampaignBudget);
-    string planTitle=Convert.ToString(ViewBag.PlanTitle);
+    string planTitle = Convert.ToString(ViewBag.PlanTitle);
     string campaignTitle = Convert.ToString(ViewBag.CampaignTitle);
     string programTitle = Convert.ToString(ViewBag.ProgramTitle);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
     string owner = Convert.ToString(ViewBag.Owner);
-    var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
-    
+    var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.    
+    string lineItemType = ViewBag.lineItemTypes;
 }
 
 @using (Html.BeginForm())
@@ -44,7 +39,7 @@
              @Html.TextBox("txtTacticTitle",tacticTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTitle", @readonly = "true" })
             <p id="lblType">Type <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;" id="ddlTypeArea">
-                @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Type" })
+                @Html.TextBox("txtLineItemTypeId", lineItemType, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTitle", @readonly = "true" })
             </span>
              
             
@@ -57,19 +52,7 @@
         </div>
     </div>
     
-    //Start - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section
-      @*<ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div" id="InspectTab">
-        <li class="pull-right">
-            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
-        </li>
-    </ul>
-          <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
-        
-         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(campaign.PlanCampaignId, Enums.EntityType.Campaign.ToString(),1)
-    </div>     
-    //End - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section    
-                                        
-    *@<span class="flag-icon"></span>
+    <span class="flag-icon"></span>
     <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
         id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;" />
 }
