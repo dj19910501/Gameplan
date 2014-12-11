@@ -4275,54 +4275,31 @@ namespace RevenuePlanner.Helpers
         /// <param name="planTacticIds">List of id</param>
         /// <param name="type">Section name(Like Campaign,Program and Tactic)</param>
         /// <returns>List of ViewbyModel</returns>
-        public static List<ViewByModel> GetCustomFields(List<int> Ids, string type)
+        public static List<ViewByModel> GetCustomFields(List<int> tacticids,List<int> programids, List<int> campaignids)
         {
             MRPEntities db = new MRPEntities();
             List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
-            string CustomTitleName = CustomTitle;
-            if (Ids == null)
-            {
-                Ids = new List<int>();
-            }
-
-            var CustomFields = (dynamic)null;
             string CampaignCustomText = Enums.EntityType.Campaign.ToString(),
                 ProgramCustomText = Enums.EntityType.Program.ToString(),
                 TacticCustomText = Enums.EntityType.Tactic.ToString();
 
-            if (type == Enums.Section.Campaign.ToString())
-            {
-                CustomTitleName = CampaignCustomTitle;
-                CustomFields = (from cf in db.CustomFields
-                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                join t in db.Plan_Campaign on cfe.EntityId equals t.PlanCampaignId
-                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == CampaignCustomText && cf.ClientId == Sessions.User.ClientId && Ids.Contains(t.PlanCampaignId)
-                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
-            }
-            else if (type == Enums.Section.Program.ToString())
-            {
-                CustomTitleName = ProgramCustomTitle;
-                CustomFields = (from cf in db.CustomFields
-                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                join t in db.Plan_Campaign_Program on cfe.EntityId equals t.PlanProgramId
-                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == ProgramCustomText && cf.ClientId == Sessions.User.ClientId && Ids.Contains(t.PlanProgramId)
-                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
-            }
-            else
-            {
-                CustomTitleName = TacticCustomTitle;
-                CustomFields = (from cf in db.CustomFields
-                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
-                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == TacticCustomText && cf.ClientId == Sessions.User.ClientId && Ids.Contains(t.PlanTacticId)
-                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
-            }
+            var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.IsDeleted == false).ToList();
+            var customfieldentity = (from customfield in customfieldlist
+                                     join cfe in db.CustomField_Entity on customfield.CustomFieldId equals cfe.CustomFieldId
+                                     select cfe).ToList();
+            
+            var campaigncustomids = customfieldentity.Where(cfe => campaignids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
+            List<ViewByModel> lstCustomFieldsViewByTabCampaign = customfieldlist.Where(cf => cf.EntityType == CampaignCustomText && campaigncustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = CampaignCustomTitle + cf.CustomFieldId.ToString() }).ToList();
+            lstCustomFieldsViewByTabCampaign = lstCustomFieldsViewByTabCampaign.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+            var programcustomids = customfieldentity.Where(cfe => programids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
+            List<ViewByModel> lstCustomFieldsViewByTabProgram = customfieldlist.Where(cf => cf.EntityType == ProgramCustomText && programcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = ProgramCustomTitle + cf.CustomFieldId.ToString() }).ToList();
+            lstCustomFieldsViewByTabProgram = lstCustomFieldsViewByTabProgram.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+            var tacticcustomids = customfieldentity.Where(cfe => tacticids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
+            List<ViewByModel> lstCustomFieldsViewByTabTactic = customfieldlist.Where(cf => cf.EntityType == TacticCustomText && tacticcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = TacticCustomTitle + cf.CustomFieldId.ToString() }).ToList();
+            lstCustomFieldsViewByTabTactic = lstCustomFieldsViewByTabTactic.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
 
-            //ittrate the custom fields and insert into the temp list
-            foreach (var item in CustomFields)
-            {
-                lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", CustomTitleName, item.CustomFieldId.ToString()) });
-            }
+            lstCustomFieldsViewByTab = lstCustomFieldsViewByTab.Concat(lstCustomFieldsViewByTabCampaign).Concat(lstCustomFieldsViewByTabProgram).Concat(lstCustomFieldsViewByTabTactic).ToList();
+
             return lstCustomFieldsViewByTab;
         }
 

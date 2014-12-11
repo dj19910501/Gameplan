@@ -135,6 +135,7 @@
         //// Calculating step value.
         var stepValue = endValue/10;
 
+        //// Set Grap Data
         setgraphdata(data);
         function setgraphdata(data) {
             var barChart = new dhtmlXChart({
@@ -207,28 +208,9 @@
             });
         }
 
-        //// Added By Maninder Singh 
-        //// Date 1/28/2014
-        //// Added Set tooltip
-        SetTipsy();
-
-        //// Added By Maninder Singh 
-        //// Date 1/28/2014
-        //// Function to set tooltip for large numbers.
-        function SetTipsy() {
-
-            //Set Tipsy with number formatter
-            /*Added By : Kalpesh Sharma PL #508*/
+        // Set Tipsy for below value
             SetPriceValue("#h3MQLActual");
             SetBudget("#h3Revenue");
-
-            //// Added By Maninder Singh Wadhva to address PL#465 Realized Revenue Number Not Displaying
-            //var h3Revenue = $("#h3Revenue");
-            //var isCurrencySymbolExist = (h3Revenue.text().indexOf('$') == -1);
-            //if (isCurrencySymbolExist) {
-            //    h3Revenue.text('$' + h3Revenue.text());
-            //}
-        }
     });
 
     function ShowHideReport() {

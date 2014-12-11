@@ -26,8 +26,6 @@
                 <th></th>
                 <th class="width275" id="ActivityName"></th>
                 <th class="width83">New @Html.LabelForINQ("INQ")</th>
-                @* Comment line as per Pl Ticket 356. *@
-                @*<th class="width83">@Html.LabelForINQ("INQ")→@Html.LabelForMQL("MQL")</th>*@
                 <th class="width83">@Html.LabelForMQL("MQL")</th>
                 <th class="width83">@Html.LabelForCW("CW")</th>
                 <th class="width83">ADS</th>
@@ -54,7 +52,7 @@
              @Html.DropDownList("ddlParentConversionPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text", Common.RevenueAudience.ToString()))
          </span>
           <span class="margin-left20px">
-             @Html.DropDownList("ddlChildConversionPlan",new SelectList((System.Collections.IEnumerable)ChildEmptyList, "Value", "Text"))
+             @Html.DropDownList("ddlChildConversionPlan",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"))
          </span>
     </div>
         </div>
@@ -112,7 +110,6 @@
 </div>
 
 <script type="text/javascript">
-    //var selectOption = "@ViewBag.SelectOption"
     var TempreportTableInfo2; var Tempdataset;
     var tempreportDataPrevious; var tempDataSetPrevious;
     var ddlChildConversionPlanId = 'ddlChildConversionPlan';
@@ -127,6 +124,7 @@
         var ColMQLDifference = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         var ColTotalMQL = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
+        //NOTE : Please don't change class name, it is used in js.
         $('.summary-btns').find('select').each(function () {
             if ($(this).attr('id') != ddlChildConversionPlanId && $(this).attr('id') != 'ddlParentConversionPerformance') {
             $(this).multiselect({
@@ -151,12 +149,13 @@
         });
         // End - Added by Sohel Pathan on 11/11/2014 for PL ticket #934
 
+        // load multiselect
         GenerateCustomizeMultiselect(ddlChildConversionPlanId, true, false, false);
         GenerateCustomizeMultiselect('ddlParentConversionPerformance', false, false, false);
         parentSummaryTab = $('#ddlParentConversionSummery').val();
         $("#ActivityName").html($("#ddlParentConversionSummery option[value='" + parentSummaryTab + "']").text());
        
-
+        // conversion plan change event
         $('#ddlParentConversionPlan').bind('change', function () {
             var selectedOption = $(this).val();
             loadChildListData(selectedOption, ddlChildConversionPlanId);
@@ -164,24 +163,27 @@
             
         });
 
+        // conversion summary change event
         $('#ddlParentConversionSummery').bind('change', function () {
             parentSummaryTab = $(this).val();
             $("#ActivityName").html($("#ddlParentConversionSummery option[value='" + parentSummaryTab + "']").text());
             LoadConversionSummaryData();
         });
+
+        // conversion plan child change event
         $('#ddlChildConversionPlan').bind('change', function () {
             LoadData();
         });
         
+        // conversion performance change event
         $('#ddlParentConversionPerformance').bind('change', function () {
             LoadPerformanceData();
         });
 
-        loadChildListData($('#ddlParentConversionPlan').val(), ddlChildConversionPlanId);
-        
-        
-
-
+        // load child dropdown for conversion plan
+       // loadChildListData($('#ddlParentConversionPlan').val(), ddlChildConversionPlanId);
+        LoadData();
+        // load child dropdown for conversion plan
         function loadChildListData(parentOption, id) {
             $.ajax({
                 type: 'POST',
@@ -197,6 +199,7 @@
             });
         }
 
+        // load child dropdown
         function PopulateConversionChildDDL(items, id) {
             var $dropdown = $("#" + id);
             $dropdown.empty();
@@ -205,7 +208,7 @@
 
                 $.each(items, function (index, planobj) {
 
-                    $html += '<option value="' + planobj.id + '">' + planobj.title + '</option>';
+                    $html += '<option value="' + planobj.Value + '">' + planobj.Text + '</option>';
 
                 });
             }
@@ -215,7 +218,7 @@
             
         }
 
-
+        // Load header data
         LoadHeaderData();
         function LoadHeaderData() {
             $.ajax({
@@ -233,24 +236,20 @@
             });
         }
 
+        // bind header data
         function setLabel(data) {
-            //setLabelToolTip("#revenueTrend", data.TrendRevenue, 5, true);
             setLabelToolTip("#mqlProjected", data.ProjectedMQLValue, 5, false);
             setLabelToolTip("#mqlActual", data.ActualMQLValue, 5, false);
-            // setLabelToolTip("#mqlTrend", data.TrendMQL, 5, false);
             var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
             if (parseFloat(data.ProjectedMQLValue) > 0) {
                 mqlActualPercentage = (((parseFloat(data.ActualMQLValue) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
-                // mqlTrendPercentage = (((parseFloat(data.TrendMQL) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
             }
             if (parseFloat(data.ProjectedRevenueValue) > 0) {
-                // revenueTrendPercentage = (((parseFloat(data.TrendRevenue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
             }
-            // setPercentage("#mqlTrendPercentage", mqlTrendPercentage);
             setPercentage("#mqlActualPercentage", mqlActualPercentage);
-            // setPercentage("#revenueTrendPercentage", revenueTrendPercentage);
         }
 
+        // set percentage value
         function setPercentage(id, value) {
             var absValue = FormatNumber(Math.abs(parseFloat(value)), true);
             var isNegative = value < 0;
@@ -272,7 +271,7 @@
         }
 
         LoadConversionSummaryData(); // this will load default data for conversion summary
-
+        // load conversion summary report
         function LoadConversionSummaryData() {
             $.ajax({
                 type: 'POST',
@@ -379,8 +378,6 @@
             $tableReports.append('<tr><td></td>' +
                                 '<td class="border-r">' + _title + '</td>' +
                                 '<td class="border-r large-bold-text">' + FormatWithRoundValue(_Inq) + '</td>' +
-                                // Comment line as per Pl Ticket 356.
-                                //'<td class="border-r"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
                                 '<td class="border-r large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
                                 '<td class="border-r large-bold-text">' + FormatWithRoundValue(_actualcw) + '</td>' +
                                 '<td class="border-r"><div class="div-line">' + FormatNumber(_actualADS, false) + '</div><div>' + FormatNumber(_projectedADS, false) + '</div></td>' +
@@ -558,7 +555,6 @@
                      },
                      dataType: "json",
                      success: function (data) {
-                         // console.log(data);
                          dataset1 = null;
                          dataset2 = null;
                          dataset3 = null;
@@ -573,7 +569,6 @@
                          dataset1 = data.ChartBusinessUnit;
                          dataset2 = data.ChartGeography;
                          dataset3 = data.ChartVertical;
-                         //dataset = data.chartData;
                          //fill data on reports table
                          FillChartSourcePerformanceBusinessUnit();
                          FillChartSourcePerformanceGeography();
@@ -582,6 +577,7 @@
                  });
              }
 
+        // chart for businessunit
         function FillChartSourcePerformanceBusinessUnit() {
             $('#chartDiv1Parent').find('#chartDiv1').remove();
             $('#chartDiv1Parent').append('<div id="chartDiv1" class="report-chart4"></div>');
@@ -638,6 +634,7 @@
             });
         }
 
+        // chart for geography
         function FillChartSourcePerformanceGeography() {
             $('#chartDiv2Parent').find('#chartDiv2').remove();
             $('#chartDiv2Parent').append('<div id="chartDiv2" class="report-chart5"></div>');
@@ -693,6 +690,8 @@
                 }
             });
         }
+
+        // chart for vertical
         function FillChartSourcePerformanceVertical() {
             $('#chartDiv3Parent').find('#chartDiv3').remove();
             $('#chartDiv3Parent').append('<div id="chartDiv3" class="report-chart6"></div>');

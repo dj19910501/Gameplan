@@ -1,7 +1,4 @@
 ﻿@using RevenuePlanner.Helpers
-@{
-    List<RevenuePlanner.Models.ViewByModel> ChildEmptyList = new List<RevenuePlanner.Models.ViewByModel>();
-}
 <div class="block-summary">
 <ul class="nav nav-tabs" id="ParentULRevenueSummary">
     <li class="source-sans-proregular">
@@ -11,10 +8,10 @@
     <div id="DivSummaryButtonsRevenueSummary" class="summary-btns">
         <p>View By:</p>
      <span>
-             @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text", Common.RevenueGeography.ToString()))
+             @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text"))
          </span>
       <span class="margin-left20px">
-             @Html.DropDownList("ddlChildRevenueSummery", new SelectList((System.Collections.IEnumerable)ChildEmptyList, "Value", "Text"))
+             @Html.DropDownList("ddlChildRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"))
          </span>
          @*<button id="btnMultiselect_ddlTempViewBy" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" aria-haspopup="true">
                 <span>APAC</span>
@@ -55,10 +52,10 @@
                 @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934*@
         <p>View By:</p>
             <span>
-             @Html.DropDownList("ddlParentRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueToPlan, "Value", "Text", Common.RevenueOrganization.ToString()))
+             @Html.DropDownList("ddlParentRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueToPlan, "Value", "Text"))
          </span>
       <span class="margin-left20px">
-             @Html.DropDownList("ddlChildRevenueToPlan",new SelectList((System.Collections.IEnumerable)ChildEmptyList, "Value", "Text"))
+             @Html.DropDownList("ddlChildRevenueToPlan",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"))
          </span>
     </div>
         </div>
@@ -104,19 +101,22 @@
                 }
             @*</span>
             <span class="selectBox" id="ddlCampaignSelectBox">*@
-                <select id="ddlCampaign" name="ddlCampaign" class="ddlStyleReport">
+                @*<select id="ddlCampaign" name="ddlCampaign" class="ddlStyleReport">
                     <option value="0">All Campaigns</option>
-                </select>
+                </select>*@
+                 @Html.DropDownList("ddlCampaign", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"), new { @class = "ddlStyleReport" })
             @*</span>
             <span class="selectBox" id="ddlProgramSelectBox">*@
-                <select id="ddlProgram" name="ddlProgram" class="ddlStyleReport">
+                @*<select id="ddlProgram" name="ddlProgram" class="ddlStyleReport">
                     <option value="0">All Programs</option>
-                </select>
+                </select>*@
+                  @Html.DropDownList("ddlProgram", new SelectList((System.Collections.IEnumerable)ViewBag.ProgramDropdownList, "PlanProgramId", "Title"), new { @class = "ddlStyleReport" })
             @*</span>
             <span class="selectBox" id="ddlTacticSelectBox">*@
-                <select id="ddlTactic" name="ddlTactic" class="ddlStyleReport">
+              @*  <select id="ddlTactic" name="ddlTactic" class="ddlStyleReport">
                     <option value="0">All Tactics</option>
-                </select>
+                </select>*@
+                  @Html.DropDownList("ddlTactic", new SelectList((System.Collections.IEnumerable)ViewBag.TacticDropdownList, "PlanTacticId", "Title"), new { @class = "ddlStyleReport" })
             @*</span>*@
 
         </div>
@@ -195,9 +195,10 @@
                 {
                     <th class="border-r table_header">
                       @*  <span class="selectBox" id="ddlBusinessSelectBox">*@
-                            <select id="ddlBusinessUnitContribution" name="ddlBusinessUnitContribution" class="ddlStyleReport">
+                           @* <select id="ddlBusinessUnitContribution" name="ddlBusinessUnitContribution" class="ddlStyleReport">
                                 <option value="0">All Business Units</option>
-                            </select>
+                            </select>*@
+                         @Html.DropDownList("ddlBusinessUnitContribution",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListBusinessUnit, "Value", "Text"), new { @class = "ddlStyleReport" })
                         @*</span>*@
                     </th>
                 }
@@ -276,8 +277,10 @@
             var selectedOption = $(this).val();
             loadChildListData(selectedOption, ddlChildRevenueToPlanId, false);
         });
-        loadChildListData($('#ddlParentRevenueSummery').val(), ddlChildRevenueSummeryId, true);
-        loadChildListData($('#ddlParentRevenueToPlan').val(), ddlChildRevenueToPlanId, false);
+       // loadChildListData($('#ddlParentRevenueSummery').val(), ddlChildRevenueSummeryId, true);
+        // loadChildListData($('#ddlParentRevenueToPlan').val(), ddlChildRevenueToPlanId, false);
+        LoadData($('#ddlChildRevenueSummery').val());
+        FillRevenueToPlan($('#ddlChildRevenueToPlan').val());
         function loadChildListData(parentOption,id, isRevenueSummary) {
             $.ajax({
                 type: 'POST',
@@ -306,7 +309,7 @@
 
                 $.each(items, function (index, planobj) {
                   
-                    $html += '<option value="' + planobj.id + '">' + planobj.title + '</option>';
+                    $html += '<option value="' + planobj.Value + '">' + planobj.Text + '</option>';
                     
                 });
                 $('#btnMultiselect_' + id).attr('style', 'display:block;');
@@ -337,8 +340,15 @@
             var id = $(this).val();
             FillRevenueToPlan(id);
         });
+
+        var BusinessUnitId = $('#ddlBusinessUnit').val();
+        var campaignId = $('#ddlCampaign').val();
+        var programId = $('#ddlProgram').val();
+        var sumColTotalRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
         LoadHeaderData();
-        fillCampaignDropdown();
+        LoadDataRevenueRealization()
+       // fillCampaignDropdown();
         function LoadHeaderData() {
             $.ajax({
                 type: 'POST',
@@ -358,19 +368,13 @@
         function setLabel(data) {
             setLabelToolTip("#revenueProjected", data.ProjectedRevenueValue, 5, true);
             setLabelToolTip("#revenueActual", data.ActualRevenueValue, 5, true);
-            // setLabelToolTip("#revenueTrend", data.TrendRevenue, 5, true);
-            // setLabelToolTip("#mqlTrend", data.TrendMQL, 5, false);
             var revenuePercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
             if (parseFloat(data.ProjectedRevenueValue) > 0) {
                 revenuePercentage = (((parseFloat(data.ActualRevenueValue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
-                //revenueTrendPercentage = (((parseFloat(data.TrendRevenue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
             }
             if (parseFloat(data.ProjectedMQLValue) > 0) {
-                // mqlTrendPercentage = (((parseFloat(data.TrendMQL) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
             }
             setPercentage("#revenueActualPercentage", revenuePercentage);
-            //setPercentage("#revenueTrendPercentage", revenueTrendPercentage);
-            // setPercentage("#mqlTrendPercentage", mqlTrendPercentage);
         }
 
         function setPercentage(id, value) {
@@ -1190,10 +1194,7 @@
         /* Start Revenue Realization Script */
         /// Start Script For Revenue Realization
 
-        var BusinessUnitId = $('#ddlBusinessUnit').val();
-        var campaignId = $('#ddlCampaign').val();
-        var programId = $('#ddlProgram').val();
-        var sumColTotalRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+       
 
         $('#ddlBusinessUnit').change(function () {
             $('#ddlCampaign').empty();
@@ -1762,7 +1763,8 @@
             
         });
         
-        addHeaderPart();
+        //addHeaderPart();
+        LoadRevenueContributionData();
         function LoadRevenueContributionData() {
             var buid = 0;
             // if (parentLabelContribution != "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
@@ -1804,7 +1806,7 @@
                     $("#ddlBusinessUnitContribution").empty();
                     $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
                     $.each(data, function (index, optionData) {
-                        $("#ddlBusinessUnitContribution").append("<option value='" + optionData.id + "'>" + optionData.title + "</option>");
+                        $("#ddlBusinessUnitContribution").append("<option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
                     });
                     //$(".selectBox select").selectbox("attach");
                     $("#ddlBusinessUnitContribution").multiselect("refresh");
@@ -1838,7 +1840,7 @@
                     }
                     addLastRow();
                 } else {
-                    $('#table_reports4 > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
+                    $('#table_reports4 > tbody').append('<tr><td colspan="9" class="gray">No saved reports to display.</td></tr>');
                 }
             }
         }

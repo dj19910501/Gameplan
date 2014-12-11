@@ -17,19 +17,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
-<link href="@Url.Content("~/Content/css/dhtmlxchart.css")" rel="stylesheet" type="text/css" />
-@section nlFormContent{
-       <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
-    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
-}
-<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slimscroll.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/slimScrollHorizontal.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.actual.js")"></script>
-
+<link href="@Url.Content("~/Content/css/dhtmlxchart.css")" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <style type="text/css">
     .verticalIdSelectBox .sbHolder {
         width: 10% !important;
@@ -165,7 +158,7 @@
         </div>
     </div>
     <div class="budgetReportFilter-area-right">
-        <button id="button-save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" name="button-save">Update</button>
+        <button id="updatedata" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" name="updatedata">Update</button>
     </div>
 </div>
 <!-- Budget Reporting Filter area -->
@@ -212,6 +205,8 @@
 
         $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
         $("#ddlViewAudience").next().attr('title', '@AudienceLabelTitle');
+
+        // Load Multiselect Dropdown list i.e. Bind with new design
         LoadCheckBoxValue(multiselectPlanId, filterPlanid);
         LoadCheckBoxValue(ddlViewAudience, audiencedetail);
         LoadCheckBoxValue(ddlViewVertical, verticaldetail);
@@ -219,8 +214,11 @@
         LoadCheckBoxValue(ddlViewGeography, geographydetail);
         LoadYearDropdown();
         loadBasedOnPlan();
+
         $("#DivShareReport").hide();
         GetFilterIdForPlan(multiselectPlanId); 
+
+        // Make code for multiselect dropdown close
             $(document).mouseup(function (e) {
             var BUcontainer = $('#multipleselect_ddlViewBusinessUnit');
             var BUbutton = $('#btnMultiselect_ddlViewBusinessUnit');
@@ -233,6 +231,7 @@
 
     // <--- End document.ready Event --->
 
+    //// Load Check value in multiselect dropdown - common for all dropdown
     function LoadCheckBoxValue(multiselectId, filterid) {
         var finalValue = "";
         var isAll = true;
@@ -254,6 +253,7 @@
         $(filterid).html(finalValue);
     }
 
+    //// Load Plan data based on selected year
     function LoadPlanData() {
         var strYear=OptionMain;
         if (OptionMain == 'thisquarter') {
@@ -266,14 +266,12 @@
                 Year: strYear
                 },
                 success: function (r) {
-                
-                //   alert(JSON.stringify(r));
                 populatePlan(r, "ddlPlan");
-
                 }
             });
         }
 
+    //// Remove actiave class from left sidebar menu li
         function RemoveAllActiveItem() {
             $('#ulLeftPane li').each(function () {
                 if ($(this).hasClass('active')) {
@@ -282,6 +280,7 @@
             });
         }
 
+    //// Load respective data based on selected option
         function LoadRespectiveData() {
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
                 LoadRevenueData();
@@ -290,6 +289,7 @@
                 LoadConversionData();
             }
         }
+
     ///Added by Mitesh Vaishnav for PL ticket #846
     ///If running tab is summary or Revenue or conversion than hide specific filters
     function HideFilters() {
@@ -303,6 +303,7 @@
         $('#lblAudience').css('display', 'none');
         $('#audiencedetail').css('display', 'none');
     }
+
     ///Added by Mitesh Vaishnav for PL ticket #846
     ///If running tab is budgeting than show specific filters
     function ShowFilters() {
@@ -316,12 +317,13 @@
         $('#lblAudience').css('display', 'initial');
         $('#audiencedetail').css('display', 'initial');
     }
+
+    //// Load Summary view using ajax - partial view
         function LoadSummary() {
         HideFilters();
         $('#budgetHeader').css('display', 'none');
             $('#UlPlanHeader').css('display', 'block');
             $('#formSideFilter').css('display', 'block');
-        //$("#divAddActual").css("display", "block");
             $('#divMainReportPart').empty();
         $('#conversionHeader').css('display', 'none');
         $('#revenueHeader').css('display', 'none');
@@ -334,18 +336,21 @@
 
         }
 
+    //// Load Revenue view section
         function LoadRevenueView() {
         HideFilters();
         $('#conversionHeader').css('display', 'none');
         $('#revenueHeader').css('display', 'block');
         }
 
+    //// Load Conversion view section
         function LoadConversionView() {
         HideFilters();
         $('#conversionHeader').css('display', 'block');
         $('#revenueHeader').css('display', 'none');
         }
 
+    //// Call function based on option
         function loadBasedOnPlan() {	   
 			 var isActualVisible = "@ViewBag.TacticActualsAddEdit"
             if (isActualVisible.toString().toLowerCase() == 'true') {
@@ -368,6 +373,7 @@
             }
     }
 
+    //// Load Revenue Data
         function LoadRevenueData() {
         $('#budgetHeader').css('display', 'none');
             $('#UlPlanHeader').css('display', 'block');
@@ -382,6 +388,7 @@
             });
         }
 
+    //// Load Conversion Data
         function LoadConversionData() {
         $('#budgetHeader').css('display', 'none');
             $('#UlPlanHeader').css('display', 'block');
@@ -395,6 +402,7 @@
             });
         }
 
+    //// Load Budget View
         function LoadBudgetView() {
         ShowFilters();
         $('#budgetHeader').css('display', 'block');
@@ -410,6 +418,7 @@
             });
         }
         
+    //// Get Plan Ids from multiselect list
         function GetFilterIdForPlan(multiselectId) {
             var finalValue = "";
             var isShowAddActual = 0;
@@ -435,6 +444,8 @@
             return finalValue;
 
         }
+
+    //// Get id from multiselect
         function GetFilterId(multiselectId) {
             var finalValue = "";
             $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
@@ -450,6 +461,8 @@
             return finalValue;
 
         }
+
+    //// Load Budget Data
         function LoadBudgetData() {
             if (isByAllocated) {
                 myApp.showPleaseWait();
@@ -460,6 +473,7 @@
         }
     }
 
+    //// Load plan in multiselect 
     function populatePlan(items, id) {
         var $dropdown = $("#" + id);
         $dropdown.empty();
@@ -476,17 +490,12 @@
         }
         // alert($html);
         $dropdown.append($html);
-
-        //start Added by Mitesh Vaishnav for PL ticket #727
-        //update multiselect box as its related dropdownlist's option will be changed
-        // var updatedOption = $("#ddlPlan").find('option');
-
-        //End Added by Mitesh Vaishnav for PL ticket #727
         $("#multipleselect_ddlPlan").find("input[type='search']").val('');
         $('#ddlPlan').multiselect("refresh");
         LoadCheckBoxValue(multiselectPlanId, filterPlanid);
     }
 
+    //// Load Share report section
         function ShowShareReport() {
             var url = '@Url.Content("~/Report/ShowShareReport/")';
             $("#DivShareReport").empty()
@@ -494,23 +503,32 @@
                                        .show();
         }
 
+    //// on select simple selector dropdown close multiselect dropdown
     $(".sbSelector").click(function () {
         $(".ui-multiselect-menu").each(function () {
             $(this).css("display", "none");
         });
     });
 
-    $('#button-save').click(function () {
+    //// handle update button event
+    $('#updatedata').click(function () {
+
+        //// close multiselect
         $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
             $(this).multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu 
         });
+
         OptionMain = $('#ddlYear').val();
         $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
+
+        //// load active filter based on selected value in multiselect
         LoadCheckBoxValue(multiselectPlanId, filterPlanid);
         LoadCheckBoxValue(ddlViewAudience, audiencedetail);
         LoadCheckBoxValue(ddlViewVertical, verticaldetail);
         LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
         LoadCheckBoxValue(ddlViewGeography, geographydetail);
+
+        //// get selected value from multiselect 
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         VerticalIds = GetFilterId(ddlViewVertical);
         GeographyIds = GetFilterId(ddlViewGeography);
@@ -545,6 +563,7 @@
         });
     });
 
+    //// Year dropdown change event
 $("#ddlYear").change(function () {
     OptionMain = $('#ddlYear').val();
     if (IsCallFromYearDropdown) {
@@ -573,16 +592,14 @@ function LoadYearDropdown() {
             if (isClick == true) {
                 $(this).parent().css('display', 'none');
             }
-            else
-            {
+                else {
                 $(this).parent().css('display', 'block');
             }
         }
     });
     $("#ddlYear").next().find('ul li a').each(function () {
         var selectedValue=$("#ddlYear").val();
-        if (isClick == true && selectedValue == 'thisquarter')
-        {
+            if (isClick == true && selectedValue == 'thisquarter') {
             var selectedvalue = $(this).attr('rel');
             if (selectedvalue == '@RevenuePlanner.Helpers.Common.GetCurrentYear()') {
                 IsCallFromYearDropdown = false;
@@ -594,6 +611,7 @@ function LoadYearDropdown() {
     });
 }
 
+    //// summary click event
 $('#liSummary').click(function () {
     if (isAllowClick) {
         document.title = "Summary";
@@ -604,16 +622,10 @@ $('#liSummary').click(function () {
         $(this).addClass('active');
         isBusinessUnit = false;
         loadBasedOnPlan();
-        //loadPlanFromBusinessUnit();
-        //if (SelectedPlanId == 0) {
-
-        //}
-        //else {
-        //    LoadSummary();
-        //}
     }
 });
 
+    //// revenue click event
     $('#liRevenue').click(function () {
         if (isAllowClick) {
             document.title = "Revenue";
@@ -625,10 +637,10 @@ $('#liSummary').click(function () {
         isBusinessUnit = false;
         LoadRevenueView();
         loadBasedOnPlan();
-        //FillTimeFrameDropDown();
     }
 });
 
+    //// conversion click event
     $('#liConversion').click(function () {
         if (isAllowClick) {
             document.title = "Conversion";
@@ -640,10 +652,10 @@ $('#liSummary').click(function () {
                 isBusinessUnit = false;
                 LoadConversionView();
                 loadBasedOnPlan();
-                //FillTimeFrameDropDown();
             }
         });
 
+    //// budget click event
         $('#liBudget').click(function () {
             if (isAllowClick) {
                 document.title = "Budget";
@@ -655,9 +667,12 @@ $('#liSummary').click(function () {
                 LoadBudgetView();
             }
         });
+
+    //// share report event
         $("#BtnShareReport").click(function () {
             ShowShareReport();
     });
+
         ///Added by Mitesh Vaishnav for generate multiselect dropdownlist with no filter or no custom border
         function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, isMultiple) {
             var custom="";
@@ -679,5 +694,5 @@ $('#liSummary').click(function () {
                     CustomName: custom
                 });
             }
-            };
+    }
 </script>
