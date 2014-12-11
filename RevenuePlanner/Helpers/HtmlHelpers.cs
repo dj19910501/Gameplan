@@ -3726,7 +3726,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
         /// <param name="section">Parameter contains value from enum EntityType like Campaign or Program or Tactic.</param>
         /// <returns>If Plan Tactic or Plan Campaign or Plan Program contains custom fields than returns html string else empty string</returns>
-        public static MvcHtmlString GenerateCustomFieldsForInspectPopup(int id, string section,int fieldCounter=0,string mode="readOnly")
+        public static MvcHtmlString GenerateCustomFieldsForInspectPopup(int id, string section, int fieldCounter = 0, string mode = "ReadOnly")
         {
             //list of custom fields for particular campaign or Program or Tactic
             List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
@@ -3756,7 +3756,7 @@ namespace RevenuePlanner.Helpers
                     {
                         //When item value contains double quots then it would be replaced 
                         string customFieldEntityValue = item.value != null ? item.value.Replace("\"", "&quot;") : string.Empty;
-                        if (mode=="readOnly")
+                        if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
                             sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");    
                         }
@@ -3774,29 +3774,50 @@ namespace RevenuePlanner.Helpers
                     }
                     else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                     {
-                        sb.Append("<span class=\"selectBox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"");
-                        if (item.isRequired)
+                        if (mode == Enums.InspectPopupMode.Edit.ToString())
                         {
-                            sb.Append(" require=\"true\"");
-                        }
-                        sb.Append("><option value=\"\">Please Select</option>");
-                        //set dropdown option values
-                        if (item.option.Count != 0)
-                        {
-                            foreach (var objOption in item.option)
+                            sb.Append("<span class=\"selectBox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"");
+                            if (item.isRequired)
                             {
-                                //check - if custom field's value inserted before from dropdownlist then set it as selected
-                                if (item.value != objOption.customFieldOptionId.ToString())
+                                sb.Append(" require=\"true\"");
+                            }
+                            sb.Append("><option value=\"\">Please Select</option>");
+                            //set dropdown option values
+                            if (item.option.Count != 0)
+                            {
+                                foreach (var objOption in item.option)
                                 {
-                                    sb.Append("<option value=\"" + objOption.customFieldOptionId + "\">" + objOption.value + "</option>");
-                                }
-                                else
-                                {
-                                    sb.Append("<option value=\"" + objOption.customFieldOptionId + "\" selected=true>" + objOption.value + "</option>");
+                                    //check - if custom field's value inserted before from dropdownlist then set it as selected
+                                    if (item.value != objOption.customFieldOptionId.ToString())
+                                    {
+                                        sb.Append("<option value=\"" + objOption.customFieldOptionId + "\">" + objOption.value + "</option>");
+                                    }
+                                    else
+                                    {
+                                        sb.Append("<option value=\"" + objOption.customFieldOptionId + "\" selected=true>" + objOption.value + "</option>");
+                                    }
                                 }
                             }
+                            sb.Append("</select></span></div>");
                         }
-                        sb.Append("</select></span></div>");
+                        else
+                        {
+                            string customFieldEntityValue = "";
+                            if (item.option.Count != 0)
+                            {
+                                foreach (var objOption in item.option)
+                                {
+                                    //check - if custom field's value inserted before from dropdownlist then set it as selected
+                                    if (item.value == objOption.customFieldOptionId.ToString())
+                                    {
+                                        customFieldEntityValue = item.value != null ? objOption.value.Replace("\"", "&quot;") : string.Empty;
+                                    }
+                                }
+                            }
+
+                            sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
+                            sb.Append("></div>");
+                        }
                     }
 
                     fieldCounter = fieldCounter + 1;

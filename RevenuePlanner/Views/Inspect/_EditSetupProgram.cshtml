@@ -165,7 +165,7 @@
                 <p>Business Unit</p>
                 @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
             </div>
-            @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanProgramId, Enums.EntityType.Program.ToString(), 1, "Edit")
+            @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanProgramId, Enums.EntityType.Program.ToString(), 1, Enums.InspectPopupMode.Edit.ToString())
         </div>
                  
         if ((bool)ViewBag.IsOwner)

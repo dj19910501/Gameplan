@@ -196,7 +196,7 @@
                 @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", label = "Geography" })
             </span>
         </div>
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 4, "addEdit")
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 4, Enums.InspectPopupMode.Edit.ToString())
     </div>   
 
     <div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
