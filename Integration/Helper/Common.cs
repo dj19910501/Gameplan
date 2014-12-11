@@ -315,21 +315,15 @@ namespace Integration.Helper
                         string verticalTitle = Regex.Replace((objTactic.Vertical.Abbreviation != null ? objTactic.Vertical.Abbreviation : objTactic.Vertical.Title), @"[^0-9a-zA-Z]+", "");
                         customTacticName.Append(verticalTitle + "_");
                     }
-                    //else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign.ToString())
-                    //{
-                    //    customTacticName.Append((objTactic.Plan_Campaign_Program.Plan_Campaign.Abbreviation != null ? objTactic.Plan_Campaign_Program.Plan_Campaign.Abbreviation : objTactic.Plan_Campaign_Program.Plan_Campaign.Title.Replace(" ", "_")) + "_");
-                    //}
-                    //else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program.ToString())
-                    //{
-                    //    customTacticName.Append((objTactic.Plan_Campaign_Program.Abbreviation != null ? objTactic.Plan_Campaign_Program.Abbreviation : objTactic.Plan_Campaign_Program.Title.Replace(" ", "_")) + "_");
-                    //}
                     else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program_Tactic.ToString())
                     {
                         customTacticName.Append(Regex.Replace((objTactic.Title.Replace(" ", "_")),@"[^0-9a-zA-Z]+","") + "_");
                     }
                 }
-                
-                
+                if (customTacticName.ToString().Length > 0)
+                {
+                    customTacticName.ToString().Remove(customTacticName.ToString().Length - 1, 1);
+                }
             }
             else
             {
@@ -337,7 +331,7 @@ namespace Integration.Helper
             }
 
 
-            return customTacticName.ToString().Remove(customTacticName.ToString().Length - 1, 1);
+            return customTacticName.ToString();
         }
 
         #endregion
