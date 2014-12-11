@@ -265,6 +265,7 @@
     $('#btnEditCancel').click(function () {
         if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()') {
             $('#modal-container-186470').modal("hide");
+            $('body').removeClass('bodyOverflow');
         }else
         {
             returnToReadOnlyMode();
