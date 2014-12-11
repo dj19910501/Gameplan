@@ -550,7 +550,7 @@ namespace Integration.Eloqua
             }
         }
 
-        
+
         /// <summary>
         /// Added By: Maninder Singh Wadhva
         /// Function to create eloqua campaign.
@@ -647,11 +647,25 @@ namespace Integration.Eloqua
                 int _folderId = 0;
                 _folderId = GetEloquaFolderIdImprovementTactic(planIMPTactic);
 
-                int GPFolderId = GetEloquaCampaign(planIMPTactic.IntegrationInstanceTacticId).folderId;
-                if (GPFolderId != _folderId)
+                _folderId = (_folderId.ToString() == "0") ? GetEloquaRootFolderId() : _folderId;
+
+                try
                 {
-                    currentMode = Enums.Mode.Create;
-                    planIMPTactic.IntegrationInstanceTacticId = null;
+                    int GPFolderId = GetEloquaCampaign(planIMPTactic.IntegrationInstanceTacticId).folderId;
+                    if (GPFolderId != _folderId)
+                    {
+                        currentMode = Enums.Mode.Create;
+                        planIMPTactic.IntegrationInstanceTacticId = null;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (e.Message.Contains(NotFound))
+                    {
+                        planIMPTactic.IntegrationInstanceTacticId = null;
+                        planIMPTactic = SyncImprovementData(planIMPTactic);
+                        return planIMPTactic;
+                    }
                 }
             }
 
@@ -806,7 +820,7 @@ namespace Integration.Eloqua
             IDictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Create);
             return CreateEloquaCampaign(tactic);
         }
-        
+
         /// <summary>
         /// Added By: Maninder Singh Wadhva
         /// Function to update improvement tactictactic on eloqua.
@@ -818,7 +832,7 @@ namespace Integration.Eloqua
             IDictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Update);
             return UpdateEloquaCampaign(planIMPTactic.IntegrationInstanceTacticId, tactic);
         }
-        
+
         /// <summary>
         /// Added By: Maninder Singh Wadhva
         /// Function to get improvement tactic.
@@ -842,7 +856,7 @@ namespace Integration.Eloqua
 
             return tactic;
         }
-        
+
         #endregion
 
         #region Tactic
@@ -870,7 +884,7 @@ namespace Integration.Eloqua
 
             return tactic;
         }
-        
+
         /// <summary>
         /// Added By: Maninder Singh Wadhva
         /// Function to update plan tactic on eloqua.
@@ -898,11 +912,25 @@ namespace Integration.Eloqua
                 int _folderId = 0;
                 _folderId = GetEloquaFolderIdTactic(planTactic);
 
-                int GPFolderId = GetEloquaCampaign(planTactic.IntegrationInstanceTacticId).folderId;
-                if (GPFolderId != _folderId)
+                _folderId = (_folderId.ToString() == "0") ? GetEloquaRootFolderId() : _folderId;
+
+                try
                 {
-                    currentMode = Enums.Mode.Create;
-                    planTactic.IntegrationInstanceTacticId = null;
+                    int GPFolderId = GetEloquaCampaign(planTactic.IntegrationInstanceTacticId).folderId;
+                    if (GPFolderId != _folderId)
+                    {
+                        currentMode = Enums.Mode.Create;
+                        planTactic.IntegrationInstanceTacticId = null;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (e.Message.Contains(NotFound))
+                    {
+                        planTactic.IntegrationInstanceTacticId = null;
+                        planTactic = SyncTacticData(planTactic);
+                        return planTactic;
+                    }
                 }
             }
 
@@ -1056,7 +1084,7 @@ namespace Integration.Eloqua
             IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
             return CreateEloquaCampaign(tactic);
         }
-        
+
         #endregion
 
         #region Eloqua Folder Search and Set
@@ -1087,6 +1115,7 @@ namespace Integration.Eloqua
             public string updatedAt { get; set; }
             public string updatedBy { get; set; }
             public string isSystem { get; set; }
+            public string description { get; set; }
         }
 
         /// <summary>
@@ -1210,7 +1239,7 @@ namespace Integration.Eloqua
 
                 //// Remove last occurrence of "/" from folder path if exist.
                 folderPath = (folderPath[folderPath.Length - 1].ToString() == "/") ? folderPath.Remove(folderPath.Length - 1, 1) : folderPath;
-                
+
                 //// Convert folder path into String array.
                 string[] folderPathArray = folderPath.Split('/');
 
@@ -1306,6 +1335,27 @@ namespace Integration.Eloqua
         #endregion
 
         #region Common
+
+        /// <summary>
+        /// Search and Get Eloqua Root folder Id.
+        /// </summary>
+        /// <returns>Return Eloqua Root folder Id.</returns>
+        public int GetEloquaRootFolderId()
+        {
+            IRestResponse response = SearchFolderInEloqua("*");
+
+            //// Convert Json response into class.
+            folderResponse respo = JsonConvert.DeserializeObject<folderResponse>(response.Content);
+
+            if (respo != null)
+            {
+                var parentId = respo.elements.Where(p => p.description == "Root" && p.isSystem.ToLower() == "true").Select(p => new { p.id }).FirstOrDefault();
+
+                return Convert.ToInt32(parentId.id);
+            }
+
+            return 0;
+        }
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva
