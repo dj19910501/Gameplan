@@ -291,6 +291,13 @@
         $('#dp_start').datepicker('hide');
     });
 
+    $('.dp').datepicker({
+        format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+          autoclose: true,
+      }).on('changeDate', function (ev) {
+          $(this).datepicker('hide');
+      });
+    
     $('#dp_start .add-on').click(function (e) {
         $('#dp_start').datepicker('show');
         $('#dp_end').datepicker('hide');
@@ -314,7 +321,10 @@
                     display: 'block'
                 });
             }
-        }, 10);
+        }, 1);
+
+        //// To resolve issue of Ticket #1025, Pratik 
+        $(".datepicker.dropdown-menu").last().css("display", "none");
     })
 
     $('#dp_end .add-on').click(function () {
@@ -342,17 +352,14 @@
                 });
             }
         }, 1);
+
+        //// To resolve issue of Ticket #1025, Pratik 
+        $(".datepicker.dropdown-menu").first().css("display", "none");
     })
 
 
 
-    $('.dp').datepicker({
-        format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
-        autoclose: true,
-    }).on('changeDate', function (ev) {
-        $(this).datepicker('hide');
-    });
-
+  
         $(".alert").find(".close").on("click", function (e) {
             e.stopPropagation();
             e.preventDefault();

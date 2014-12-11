@@ -335,6 +335,9 @@
                       });
                   }
               }, 1);
+
+              //// To resolve issue of Ticket #1025, Pratik 
+              $(".datepicker.dropdown-menu").last().css("display", "none");
           })
 
           $('#dp_end .add-on').click(function () {
@@ -360,6 +363,9 @@
                       });
                   }
               }, 1);
+
+              //// To resolve issue of Ticket #1025, Pratik 
+              $(".datepicker.dropdown-menu").first().css("display", "none");
           })
 
           var arLineitem = [];
