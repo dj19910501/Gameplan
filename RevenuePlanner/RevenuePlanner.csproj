@@ -197,6 +197,7 @@
     <Compile Include="Controllers\ExternalServiceController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImprovementController.cs" />
+    <Compile Include="Controllers\InspectController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\NoAccessController.cs" />
@@ -639,26 +640,12 @@
     <Content Include="Views\Plan\_ApplytoCalendarPlanList.cshtml">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Views\Home\_InspectPopupCampaign.cshtml" />
-    <Content Include="Views\Home\_InspectPopupProgram.cshtml" />
-    <Content Include="Views\Home\_ReviewCampaign.cshtml">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="Views\Home\_ReviewProgram.cshtml" />
-    <Content Include="Views\Home\_SetupCampaign.cshtml" />
-    <Content Include="Views\Home\_SetupProgram.cshtml" />
-    <Content Include="Views\Home\_ShareCampaign.cshtml" />
-    <Content Include="Views\Home\_ShareProgram.cshtml" />
     <Content Include="Views\Report\Conversion.cshtml" />
     <Content Include="Views\Report\ConversionReportHeader.cshtml" />
     <Content Include="Views\Report\ReportHeader.cshtml" />
     <Content Include="Views\Report\Revenue.cshtml" />
     <Content Include="Views\Report\ShareReport.cshtml" />
     <Content Include="Views\Report\_Summary.cshtml" />
-    <Content Include="Views\Home\_ImpactImprovementTactic.cshtml" />
-    <Content Include="Views\Home\_InspectPopupImprovementTactic.cshtml" />
-    <Content Include="Views\Home\_ReviewImprovementTactic.cshtml" />
-    <Content Include="Views\Home\_SetupImprovementTactic.cshtml" />
     <Content Include="Views\Plan\_DeleteImprovementTactic.cshtml" />
     <None Include="Properties\PublishProfiles\MRP-Dev.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
@@ -756,10 +743,7 @@
     <Content Include="Views\Plan\Create.cshtml" />
     <Content Include="Views\Plan\NoModel.cshtml" />
     <Content Include="Views\Plan\PlanZero.cshtml" />
-    <Content Include="Views\Home\Actual.cshtml" />
     <Content Include="Views\Home\Homezero.cshtml" />
-    <Content Include="Views\Home\Review.cshtml" />
-    <Content Include="Views\Home\Setup.cshtml" />
     <Content Include="Views\Shared\InspectPopup.cshtml" />
     <Content Include="Views\User\Notifications.cshtml" />
     <Content Include="Views\Home\AddActual.cshtml" />
@@ -768,7 +752,6 @@
     <Content Include="Views\Model\Tactics.cshtml" />
     <Content Include="Views\Model\_modeloverview.cshtml" />
     <Content Include="Views\Model\_contactinquiry.cshtml" />
-    <Content Include="Views\Home\ShareTactic.cshtml" />
     <Content Include="Web.Config">
       <SubType>Designer</SubType>
     </Content>
@@ -864,26 +847,45 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <Content Include="Views\Home\_EditSetupProgram.cshtml" />
-    <Content Include="Views\Home\_SetupProgramBudget.cshtml" />
-    <Content Include="Views\Home\SetupEditAdd.cshtml" />
-    <Content Include="Views\Home\_EditSetupCampaign.cshtml" />
     <Content Include="Views\Home\_ResubmissionPopup.cshtml" />
-    <Content Include="Views\Home\_SetupCampaignBudgetAllocation.cshtml" />
-    <Content Include="Views\Home\_SetupTacticBudgetAllocation.cshtml" />
     <Content Include="Views\User\_UpdateUserDetails.cshtml" />
     <Content Include="Views\Boost\_InspectPopupImprovementTacticType.cshtml" />
-    <Content Include="Views\Home\_InspectPopupLineitem.cshtml" />
-    <Content Include="Views\Home\_SetupLineitem.cshtml" />
-    <Content Include="Views\Home\_BudgetPlan.cshtml" />
-    <Content Include="Views\Home\_InspectPopupPlan.cshtml" />
-    <Content Include="Views\Home\_SetupPlan.cshtml" />
-    <Content Include="Views\Home\_SetupLineitemBudgetAllocation.cshtml" />
-    <Content Include="Views\Home\_ActualLineitem.cshtml" />
-    <Content Include="Views\Home\_EditSetupLineitem.cshtml" />
     <Content Include="Views\Shared\PageNotFound.cshtml" />
     <Content Include="Views\ExternalService\_IntegrationFolderPlanList.cshtml" />
     <Content Include="Views\ExternalService\IntegrationFolder.cshtml" />
+    <Content Include="Views\Inspect\Actual.cshtml" />
+    <Content Include="Views\Inspect\InspectPopup.cshtml" />
+    <Content Include="Views\Inspect\Review.cshtml" />
+    <Content Include="Views\Inspect\Setup.cshtml" />
+    <Content Include="Views\Inspect\SetupEditAdd.cshtml" />
+    <Content Include="Views\Inspect\ShareTactic.cshtml" />
+    <Content Include="Views\Inspect\_ActualLineitem.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Inspect\_BudgetPlan.cshtml" />
+    <Content Include="Views\Inspect\_EditSetupCampaign.cshtml" />
+    <Content Include="Views\Inspect\_EditSetupLineitem.cshtml" />
+    <Content Include="Views\Inspect\_EditSetupProgram.cshtml" />
+    <Content Include="Views\Inspect\_ImpactImprovementTactic.cshtml" />
+    <Content Include="Views\Inspect\_InspectPopupCampaign.cshtml" />
+    <Content Include="Views\Inspect\_InspectPopupImprovementTactic.cshtml" />
+    <Content Include="Views\Inspect\_InspectPopupLineitem.cshtml" />
+    <Content Include="Views\Inspect\_InspectPopupPlan.cshtml" />
+    <Content Include="Views\Inspect\_InspectPopupProgram.cshtml" />
+    <Content Include="Views\Inspect\_ReviewCampaign.cshtml" />
+    <Content Include="Views\Inspect\_ReviewImprovementTactic.cshtml" />
+    <Content Include="Views\Inspect\_ReviewProgram.cshtml" />
+    <Content Include="Views\Inspect\_SetupCampaign.cshtml" />
+    <Content Include="Views\Inspect\_SetupCampaignBudgetAllocation.cshtml" />
+    <Content Include="Views\Inspect\_SetupImprovementTactic.cshtml" />
+    <Content Include="Views\Inspect\_SetupLineitem.cshtml" />
+    <Content Include="Views\Inspect\_SetupLineitemBudgetAllocation.cshtml" />
+    <Content Include="Views\Inspect\_SetupPlan.cshtml" />
+    <Content Include="Views\Inspect\_SetupProgram.cshtml" />
+    <Content Include="Views\Inspect\_SetupProgramBudget.cshtml" />
+    <Content Include="Views\Inspect\_SetupTacticBudgetAllocation.cshtml" />
+    <Content Include="Views\Inspect\_ShareCampaign.cshtml" />
+    <Content Include="Views\Inspect\_ShareProgram.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
@@ -934,7 +936,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>52622</DevelopmentServerPort>
+          <DevelopmentServerPort>64160</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

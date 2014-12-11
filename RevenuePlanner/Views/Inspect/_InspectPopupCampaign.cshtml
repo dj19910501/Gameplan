@@ -217,7 +217,7 @@
               var tabtext = ($("#li" + InspectValue).children('a').text());
 
               if (tabtext == "Setup") {
-                  url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
+                  url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
                   $("#divTab").empty();
                   $("#divTab").load(url + '?id=' + planCampaignId
 , function (response, status, xhr) {
@@ -231,12 +231,12 @@
 
               }
               else if (tabtext == "Budget") {
-                  url = '@Url.Content("~/Home/LoadCampaignBudgetAllocation/")';
+                  url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
                   $("#divTab").empty();
                   $("#divTab").load(url + '?id=' + planCampaignId);
               }
               else if (tabtext == "Review") {
-                  url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
+                  url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
                       $("#divTab").empty();
                   $("#divTab").load(url + '?id=' + planCampaignId
 , function (response, status, xhr) {
@@ -309,10 +309,10 @@
               if (CampaignOpt == "Edit") {
                   $('#txtTitle').css('display', 'block');
                   $('#lblCampaignTitle').css('display', 'none');
-                  url = '@Url.Content("~/Home/LoadEditSetupCampaign/")';
+                  url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
               }
               else {
-                  url = '@Url.Content("~/Home/LoadSetupCampaign/")';
+                  url = '@Url.Content("~/Inspect/LoadSetupCampaign/")';
               }
           }
           if (tabValue == TabReview) {
@@ -320,7 +320,7 @@
                   $('#txtTitle').css('display', 'none');
                   $('#lblCampaignTitle').css('display', 'block');
               }
-              url = '@Url.Content("~/Home/LoadReviewCampaign/")';
+              url = '@Url.Content("~/Inspect/LoadReviewCampaign/")';
         }
 
         if (tabValue == TabBudget) {
@@ -328,7 +328,7 @@
                 $('#txtTitle').css('display', 'block');
                 $('#lblCampaignTitle').css('display', 'none');
             }
-            url = '@Url.Content("~/Home/LoadCampaignBudgetAllocation/")';
+            url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
         }
 
         RemoveTabClass();
@@ -355,7 +355,7 @@
         var tabtext = ($("#li" + InspectValue).children('a').text());
         var planId = '@planId';
         if (tabtext == "Setup") {
-            url = '@Url.Content("~/Home/CreateCampaign/")';
+            url = '@Url.Content("~/Inspect/CreateCampaign/")';
             $("#divTab").empty();
             $("#divTab").load(url + '?id=@planId');
         }
@@ -390,7 +390,7 @@
         var Title = $("#lblCampaignTitle").html();
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/Home/Clone")',
+            url: '@Url.Content("~/Inspect/Clone")',
             data: {
                 CloneType: '@Enums.DuplicationModule.Campaign', 
                 Id: idPlanCamaign,
@@ -464,7 +464,7 @@
             }
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Home/DeleteSection")',
+                url: '@Url.Content("~/Inspect/DeleteSection")',
                  data: {
                      ID: campaignId
                      , DeleteType: '@Enums.DuplicationModule.Campaign'

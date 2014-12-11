@@ -1,0 +1,473 @@
+﻿@using RevenuePlanner.Helpers;
+@{
+    var popupvalue = (string)ViewBag.InspectPopup;
+    var RedirectType = (string)ViewBag.RedirectType;
+    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
+    var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
+}
+@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
+<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+@{
+    var planProgramId = 0;
+    var programStatus = "";
+    string colorCode = "C6EBF3";
+    string programTitle = "";
+    var campaignId=Convert.ToString(ViewBag.CampaignId);
+    RevenuePlanner.Models.InspectModel programMaster=null;
+    if (ViewBag.ProgramDetail!=null){
+    programMaster = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
+    planProgramId = programMaster.PlanProgramId;
+    programStatus = programMaster.Status;
+    colorCode = programMaster.ColorCode;
+    programTitle = programMaster.ProgramTitle;
+    TempData["ProgramModel"] = programMaster;
+    }
+    bool IsPlanEditable = false;
+    if (ViewBag.IsPlanEditable!=null){
+        IsPlanEditable =(bool)ViewBag.IsPlanEditable;
+    }
+    
+    //bool IsPlanOwner = (bool)ViewBag.InspectPopUpIsOwner;
+}
+@Html.Hidden("hdnPlanProgramId", planProgramId, new { id = "hdnPlanProgramId" })
+@Html.Hidden("hdnProgramStatus", programStatus, new { id = "hdnProgramStatus" })
+@Html.Hidden("hdnProgramOpt", "View", new { id = "hdnProgramOpt" })
+@Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
+
+<style type="text/css">
+    #successMessageViewProgram, #errorMessageEditProgram
+    {
+        margin-bottom: 15px !important;
+    }
+
+</style>
+
+<div id="successMessageViewProgram" class="alert hide alert-success message-position-small">
+    <a class="close">×</a>
+      <strong>Success.</strong>
+    <span id="spanSuccessMessageViewProgram"></span>
+</div>
+
+<div id="errorMessageEditProgram" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <strong>Error!</strong>
+    <span id="spanMessageEditProgram"></span>
+</div>
+<form>
+    <div class="modal-popup-title">
+        <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>
+        <h2 class="title-simple source-sans-prolight">
+            @if(programMaster!=null)
+            {
+            <span>
+                <span id="lblProgramTitle"  class="tipsyclassTitle ConcatTextlength" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
+                  @if (programMaster.OwnerId == Sessions.User.UserId)
+                    {
+                        <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
+                            <button class="delete-btn-gray" id="deleteProgram" type="button">Delete</button>
+                        </div>
+                    }
+
+                <div style="float: right;position:relative;">
+                    <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer;margin-right:10px;" id="AddForm"></span>
+                    <div class="btn-dropdwn" style="display:none;position:absolute;top:40px;" id="popupnewprogram">
+                                <ul style="margin:0;">
+                                    <li class="new-prog" id="NewTactic">New Tactic</li>
+                                    <li class="copy-camp" id="CloneProgram">Copy Program</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
+                {
+                    
+                    @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
+                }
+            </span>
+            }
+            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { placeholder = "Program name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = programTitle })
+            @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
+        </h2>
+
+    </div>
+</form>
+@if (programMaster!=null)
+{
+<div class="modal-popup-summary">
+    <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
+    <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
+        I'm running a program called 
+            <span id="tactic-name" class="source-sans-prosemibold color5693B3">@HttpUtility.HtmlDecode(programMaster.ProgramTitle)</span>
+        from
+            <span id="start-date" class="source-sans-prosemibold color5693B3">@programMaster.StartDate.ToString(Common.DateFormateForInspectPopupDescription)</span>
+        to
+            <span id="end-date" class="source-sans-prosemibold color5693B3">@programMaster.EndDate.ToString(Common.DateFormateForInspectPopupDescription)</span>. 
+        <p class="modal-status">
+            Status: 
+
+            @if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
+            {
+                <span id="status" class="source-sans-prosemibold statussubmitted">@programMaster.Status</span>
+            }
+            else if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value)
+            {
+                <span id="status" class="source-sans-prosemibold statusrejected">@programMaster.Status</span>
+            }
+            else if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value ||
+                     programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value ||
+                     programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value)
+            {
+                <span id="status" class="source-sans-prosemibold statusapproved">@programMaster.Status</span>
+            }
+            else if (programMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
+            {
+                <span id="status" class="source-sans-prosemibold statuscreated">@programMaster.Status</span>
+            }
+        </p>
+    </div>
+</div>
+}
+<div>
+
+    <ul class="nav nav-tabs new-margin" id="InspectTab">
+        <li class="active pull-left" id="liSetup">
+            <a>Setup</a>
+        </li>
+        <li class="pull-left" id="liReview">
+            <a>Review</a>
+        </li>
+        <li class="pull-left" id="liBudget">
+            <a>Budget</a>
+        </li>
+        <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
+        </li>
+    </ul>
+
+    <div id="divTab">
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var divPartial = "#divPartial";
+    var TabSetup = "Setup";
+    var TabReview = "Review";
+    var TabBudget = "Budget";
+
+    var divTab = "#divTab";
+
+    $(document).ready(
+      function () {
+          CloseIconClick();
+          NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
+          var InspectValue = $("#hdnInspectPopup").val();
+          var planProgramId = $("#hdnPlanProgramId").val();
+          // Call Remove Tabclass
+          RemoveTabClass();
+
+          $("#li" + InspectValue).removeClass("pull-left");
+          $("#li" + InspectValue).addClass("active pull-left");
+          var tabtext = ($("#li" + InspectValue).children('a').text());
+          $('#div' + tabtext).css({ display: "block" });
+
+         
+          
+
+          // Click on Tab Partialview Refresh Based On Selected Tab
+          $("#liSetup,#liReview,#liBudget").on("click", function () {
+              $("#successMessageViewProgram").slideUp(50);
+              RemoveTabClass();
+              $(this).removeClass("pull-left");
+              $(this).addClass("active pull-left");
+              $("#errorMessage").css("display", "none");
+              $("#successMessage").css("display", "none");
+              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+              var tabtext = ($(this).children('a').text());
+              var planTacticId = $("#hdnPlanTacticId").val();
+              loadReview(planProgramId, tabtext);
+
+          });
+          if ($("#hdnPlanProgramId").val() != '0') {
+              loadReview(planProgramId, tabtext);
+          }
+          else {
+
+              $("#liReview,#liBudget,#liSetup").unbind('click');
+              loadAddSetup();
+          }
+          $("#EditProgram").on("click", function () {
+              var url;
+              $("#successMessageViewProgram").slideUp(50);
+              $("#errorMessageEditProgram").slideUp(50);
+              $("#successMessage").css("display", "none");
+              $("#txtProgramTitle").removeClass("error");
+              $("#hdnProgramOpt").val("Edit");
+              var InspectValue = $("#hdnInspectPopup").val();
+              var tabtext = ($("#li" + InspectValue).children('a').text());
+
+              if (tabtext == "Setup") {
+                  url = '@Url.Content("~/Inspect/LoadSetupProgramEdit/")';
+                  $("#divTab").empty();
+                  $("#divTab").load(url + '?id=' + planProgramId);
+              }
+              else if (tabtext == "Budget") {
+                  url = '@Url.Content("~/Inspect/LoadSetupProgramBudget/")';
+                      $("#divTab").empty();
+                      $("#divTab").load(url + '?id=' + planProgramId);
+                  }
+              else if (tabtext == "Review") {
+                  url = '@Url.Content("~/Inspect/LoadSetupProgramEdit/")';
+                  $("#divTab").empty();
+                  $("#divTab").load(url + '?id=' + planProgramId);
+                  RemoveTabClass();
+                  $("#liSetup").removeClass('pull-left');
+                  $("#liSetup").addClass('active pull-left');
+              }
+
+              $("#EditProgram").css("display", "none"); 
+              $("#DeleteForm").css("display", "none");
+              $("#AddForm").css("display", "none");
+              $('#txtProgramTitle').css('display', 'block');
+              $('#lblProgramTitle').css('display', 'none');
+              $("#txtProgramTitle").prop('readonly', false);
+              $('#divDeleteProgram').css('display', 'none');
+              return false;
+          });
+
+          // Close event for Error Message & Success Message Close button 
+          $(".alert").find(".close").on("click", function (e) {
+              e.stopPropagation();
+              e.preventDefault();
+              $(this).closest(".alert").css("display", "none");
+              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+          });
+
+
+          $(".edit-icon-white .btn-blue btn-large").on("click", function () {
+              var tabtext = ($(this).children('a').text());
+              var planTacticId = $("#hdnPlanTacticId").val();
+              loadReview(planProgramId, tabtext);
+              return false;
+          });
+
+
+          $("#NewTactic").on("click", function () {
+              $("#errorMessage").css("display", "none");
+              $("#successMessage").css("display", "none");
+              loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', planProgramId, $("#hdnRedirectType").val());
+              return false;
+          });
+      });
+
+      function RemoveTabClass() {
+          $('#InspectTab').children().each(function () {
+              if ($(this).hasClass('active pull-left')) {
+                  $(this).removeClass("active pull-left");
+                  $(this).addClass("pull-left");
+              }
+          });
+      }
+
+      function loadReview(id, tabValue) {
+          $("#hdnInspectPopup").val(tabValue);
+          $.ajaxSetup({ cache: false });
+          var url;
+          var ProgramOpt = $("#hdnProgramOpt").val();
+          if (tabValue == TabSetup) {
+              if (ProgramOpt == "Edit") {
+                  $('#txtProgramTitle').css('display', 'block');
+                  $('#lblProgramTitle').css('display', 'none');
+                  url = '@Url.Content("~/Inspect/LoadSetupProgramEdit/")';
+              }
+              else {
+                  url = '@Url.Content("~/Inspect/LoadSetupProgram/")';
+              }
+          }
+          if (tabValue == TabReview) {
+              if (ProgramOpt == "Edit") {
+                  $('#txtProgramTitle').css('display', 'none');
+                  $('#lblProgramTitle').css('display', 'block');
+              }
+              url = '@Url.Content("~/Inspect/LoadReviewProgram/")';
+        }
+
+        if (tabValue == TabBudget) {
+              if (ProgramOpt == "Edit") {
+                  $('#txtProgramTitle').css('display', 'block');
+                  $('#lblProgramTitle').css('display', 'none');
+              }
+            url = '@Url.Content("~/Inspect/LoadSetupProgramBudget/")';
+          }
+
+          RemoveTabClass();
+          $("#li" + tabValue).removeClass("pull-left");
+          $("#li" + tabValue).addClass("active pull-left");
+          $('#div' + tabValue).css({ display: "block" });
+
+          $("#divTab").empty();
+
+          $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
+              if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                  //// Call function to redirect on service unavailibility.
+                  //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                  //// Ticket: 942 Exception handeling in Gameplan.
+                  window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+          });
+      }
+    function loadAddSetup() {
+        $("#errorMessage").css("display", "none");
+        $("#successMessage").css("display", "none");
+        $("#hdnCampaignOpt").val("Edit");
+        var InspectValue = $("#hdnInspectPopup").val();
+        var tabtext = ($("#li" + InspectValue).children('a').text());
+        if (tabtext == "Setup") {
+            url = '@Url.Content("~/Inspect/CreateProgram/")';
+            $("#divTab").empty();
+            $("#divTab").load(url + '?id=@campaignId');
+              }
+        $("#EditProgram").css("display", "none");
+              //$("#btnAddCampaign").css("display", "none");
+        $('#txtProgramTitle').css('display', 'block');
+        $('#txtProgramTitle').text('');
+        $('#lblProgramTitle').css('display', 'none');
+              return false;
+          }
+
+    $('#AddForm').click(function () {
+        if ($('#popupnewprogram').css('display') == 'none') {
+            $('#popupnewprogram').css('display', 'block')
+        }
+        else {
+            $('#popupnewprogram').css('display', 'none')
+        }
+    });
+
+    $(document).mouseup(function (e) {
+        var popup = $('#popupnewprogram');
+        var button = $('#AddForm');
+        if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
+            $('#popupnewprogram').css('display', 'none');
+        }
+    });
+
+    $('#CloneProgram').click(function () {
+        var idPlanProgram = $("#hdnPlanProgramId").val();
+        var Title = $("#lblProgramTitle").html();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/Clone")',
+            data: {
+                CloneType: '@Enums.DuplicationModule.Program',
+                Id: idPlanProgram,
+                title: Title,
+                CalledFromBudget: '@CalledFromBudget',
+                    RequsetedModule: '@RedirectType'
+            },
+            success: function (data) {
+                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else if (data.IsSuccess) {
+                    
+                        var currentTab = "Setup";
+
+                        if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                            currentTab = "Budget";
+                        }
+
+                        var planProgramId = data.Id;
+                        var expandplanProgramId = data.expand;
+                        var planCampaignId = '@campaignId';
+
+                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
+                            $("#hdnBudgetingExpandId").val(expandplanProgramId);
+                            $("#hdnBudgetingIsSave").val("true");
+                        }
+                        else {
+                            RefreshCurrentTab('@RedirectType', planCampaignId, 0, 0);
+                        }
+
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessage").css("display", "none");
+                        ///window.location.href = data.redirect;
+                        return;
+                    }
+                    else {
+                        $("#successMessageViewProgram").slideUp(50);
+                        $("#errorMessageEditProgram").slideDown(400);
+                        $("#spanMessageEditProgram").empty();
+                        $("#spanMessageEditProgram").val(data.msg);
+                        return false;
+                    }
+            }
+        });
+      });
+
+    function SaveMessageOnParent(value) {
+        $("#modal-container-186470").modal('hide');
+        $("#errorMessageDuplicatePlan").slideUp(50);
+        $("#successMessageDuplicatePlan").slideDown(400);
+        $("#cSuccessDuplicatePlan").empty();
+        $("#cSuccessDuplicatePlan").text(htmlDecode(value));
+        $("#successMessageDuplicatePlan").removeClass("message-position");
+        $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
+        RefreshCurrentTab();
+    }
+
+    $("#deleteProgram").click(function () {
+        if (confirm('@Common.objCached.ConfirmationForDeleteProgram')) {
+            var ProgramId = $("#hdnPlanProgramId").val();
+            var uId = $(window).attr('name');
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Inspect/DeleteSection")',
+                 data: {
+                     ID: ProgramId
+                     , DeleteType: '@Enums.DuplicationModule.Program'
+                     , UserId: uId
+                     , closedTask: arrClosedTaskString
+                     , CalledFromBudget: '@CalledFromBudget'
+                        , IsIndex: '@isIndex'
+                        , RedirectType: '@RedirectTypeMode'
+                    },
+                 success: function (data) {
+                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                         window.location = '@Url.Content("~/Login/Index")';
+                        }
+                        else {
+                         if (data.IsSuccess && data.opt != 'undefined') {
+                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                                 SaveMessageOnParent(data.msg);
+                                 //Added By : Kalpesh Sharma Internal review points 18/11/2014
+                                 RefershPlanHeaderCalc();
+                                 $('body').removeClass('bodyOverflow');
+                                }
+                                else {
+                                    window.location.href = data.redirect;
+                                    return;
+                                }
+                            }
+                            else {
+                                $("#successMessageViewProgram").slideUp(50);
+                                $("#errorMessageEditProgram").slideDown(400);
+                                $("#spanMessageEditProgram").empty();
+                                $("#spanMessageEditProgram").val(data.msg);
+                                return false;
+                            }
+                        }
+                    }
+             });
+            }
+    });
+</script>

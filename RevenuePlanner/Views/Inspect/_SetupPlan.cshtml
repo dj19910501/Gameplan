@@ -216,7 +216,7 @@
                 var uId = $(window).attr('name');
                 $.ajax({
                     type: 'POST',
-                    url: '@Url.Content("~/Home/SavePlanDetails")',
+                    url: '@Url.Content("~/Inspect/SavePlanDetails")',
                     data: formData + '&BudgetInputValues=' + '' + '&RedirectType=' + RedirectType + '&UserId=' + uId,
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -271,7 +271,7 @@
     function returnToReadOnlyMode(id) {
         var InspectValue = $("#hdnInspectPopup").val();
         var tabtext = ($("#li" + InspectValue).children('a').text());
-        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+        var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
         $("#divPartial").empty();
         $("#divPartial").load(url + '?id=' + id + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.ReadOnly.ToString()" + '&RequestedModule=' + requestedModule, function (response, status, xhr) {
             if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {

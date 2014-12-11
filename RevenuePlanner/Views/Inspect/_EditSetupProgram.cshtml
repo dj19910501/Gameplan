@@ -408,7 +408,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Home/SetupSaveProgram")',
+                url: '@Url.Content("~/Inspect/SetupSaveProgram")',
                 data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserId=' + uId + '&title=' + escape(title) ,
                 success: function (data) {
                     if (data.IsSaved) {

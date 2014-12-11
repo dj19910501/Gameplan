@@ -207,7 +207,7 @@
         var InspectValue = $("#hdnInspectPopup").val();
         var tabtext = ($("#li" + InspectValue).children('a').text());
         if (tabtext == "Setup") {
-            url = '@Url.Content("~/Home/LoadEditSetupLineitem/")';
+            url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
 			      $("#divTab").empty();
 			      $("#divTab").load(url + '?id=' + PlanLineItemId, function (response, status, xhr) {
 			          if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
@@ -219,7 +219,7 @@
 			      });
 			  }
 			  else if (tabtext == "Budget") {
-			      url = '@Url.Content("~/Home/LoadLineItemBudgetAllocation/")';
+			      url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
                       $("#divTab").empty();
                       $("#divTab").load(url + '?id=' + PlanLineItemId);
                   }
@@ -275,10 +275,10 @@
             if (LineitemOpt == "Edit") {
                 $('#txtTitle').css('display', 'block');
                 $('#lblLineitemTitle').css('display', 'none');
-                url = '@Url.Content("~/Home/LoadEditSetupLineitem/")';
+                url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
             }
             else {
-                url = '@Url.Content("~/Home/LoadSetupLineitem/")';
+                url = '@Url.Content("~/Inspect/LoadSetupLineitem/")';
             }
         }
 
@@ -287,10 +287,10 @@
                 $('#txtTitle').css('display', 'block');
                 $('#lblLineitemTitle').css('display', 'none');
             }
-            url = '@Url.Content("~/Home/LoadLineItemBudgetAllocation/")';
+            url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
         }
         if (tabValue == TabActual) {
-            url = '@Url.Content("~/Home/LoadActualsLineItem/")';
+            url = '@Url.Content("~/Inspect/LoadActualsLineItem/")';
         }
 
         RemoveTabClass();
@@ -319,7 +319,7 @@
         var Title = $("#lblLineitemTitle").html();
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/Home/Clone")',
+            url: '@Url.Content("~/Inspect/Clone")',
             data: {
                 CloneType: '@Enums.DuplicationModule.LineItem',
                 Id: idPlanProgram,
@@ -398,7 +398,7 @@ $("#deleteLineItem").click(function () {
             }
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Home/DeleteSection")',
+                url: '@Url.Content("~/Inspect/DeleteSection")',
                 data: {
                     ID: ProgramId
                     , DeleteType: '@Enums.DuplicationModule.LineItem'
@@ -443,7 +443,7 @@ $("#deleteLineItem").click(function () {
         var tabtext = ($("#li" + InspectValue).children('a').text());
         var tacticId = '@tacticId';
         if (tabtext == "Setup") {
-            url = '@Url.Content("~/Home/createLineitem/")';
+            url = '@Url.Content("~/Inspect/createLineitem/")';
             $("#divTab").empty();
             $("#divTab").load(url + '?id='+tacticId);
         }

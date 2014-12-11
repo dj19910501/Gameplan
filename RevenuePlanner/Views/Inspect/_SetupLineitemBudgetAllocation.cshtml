@@ -378,7 +378,7 @@
         var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/Home/SaveLineItemBudgetAllocation")',
+            url: '@Url.Content("~/Inspect/SaveLineItemBudgetAllocation")',
             data: $("form").serialize() + '&CostInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
             success: function (data) {
                 if (data.IsSaved) {

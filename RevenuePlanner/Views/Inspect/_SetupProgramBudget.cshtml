@@ -479,7 +479,7 @@
          var uId = $(window).attr('name');
          $.ajax({
              type: 'POST',
-             url: '@Url.Content("~/Home/SaveProgramBudgetAllocation")',
+             url: '@Url.Content("~/Inspect/SaveProgramBudgetAllocation")',
              data: $("form").serialize() + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
              success: function (data) {
                  if (data.IsSaved) {

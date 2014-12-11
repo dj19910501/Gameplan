@@ -2721,7 +2721,7 @@
 /// Modified by Kunal to add  section parameter to open popup campaign, program or tactic wise
     function loadInspectPopup(id, section, tabValue, mode, parentId) {
         parentId = typeof parentId !== 'undefined' ? parentId : '0';
-    var url = '@Url.Content("~/Home/LoadInspectPopup")';
+    var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
     $("#divPartial").empty();
     //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
     $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function (response, status, xhr) {
@@ -2836,7 +2836,7 @@ function ApproveTactic(e, task) {
 
     $.ajax({
         type: 'POST',
-        url: '@Url.Content("~/Home/ApproveDeclineTactic/")',
+        url: '@Url.Content("~/Inspect/ApproveDeclineTactic/")',
                 data: {
                     planTacticId: approveDeclineTacticId,
                     isApprove: true,
@@ -2892,7 +2892,7 @@ function ApproveTactic(e, task) {
 
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Home/ApproveDeclineTactic/")',
+                url: '@Url.Content("~/Inspect/ApproveDeclineTactic/")',
                 data: {
                     planTacticId: approveDeclineTacticId,
                     isApprove: false,
@@ -2924,8 +2924,8 @@ function ApproveTactic(e, task) {
                     else {
                         alert('Not Declined');
                     }
+                    }
                 }
-        }
             });
         }
 

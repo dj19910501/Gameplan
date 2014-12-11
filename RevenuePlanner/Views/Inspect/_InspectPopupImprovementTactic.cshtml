@@ -187,7 +187,7 @@
         $.ajaxSetup({ cache: false });
         var url;
         if (tabValue == TabSetup) {
-            url = '@Url.Content("~/Home/LoadImprovementSetup/")';
+            url = '@Url.Content("~/Inspect/LoadImprovementSetup/")';
             if ('@InspectMode' == '@Enums.InspectPopupMode.Edit.ToString()' || '@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()') {
                 $('#txtTitle').css('display', 'inline');
                 $('#spnImprovementTacticTitle').css('display', 'none');
@@ -198,12 +198,12 @@
             }
         }
         else if (tabValue == TabReview) {
-              url = '@Url.Content("~/Home/LoadImprovementReview/")';
+              url = '@Url.Content("~/Inspect/LoadImprovementReview/")';
             $('#txtTitle').css('display', 'none');
             $('#spnImprovementTacticTitle').css('display', 'inline');
         }
         else if (tabValue == TabActual) {
-            url = '@Url.Content("~/Home/LoadImprovementImpact/")';
+            url = '@Url.Content("~/Inspect/LoadImprovementImpact/")';
             $('#txtTitle').css('display', 'none');
             $('#spnImprovementTacticTitle').css('display', 'inline');
         }
@@ -239,7 +239,7 @@
 
     $('#lnkEdit').click(function () {
         HideAllMessages();
-        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+        var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
         $("#divPartial").empty();
         $("#divPartial").load(url + '?id=' + @PlanTacticId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" + '&TabValue=' + "Setup" + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()" + '&RequestedModule=' + '@RequestedModule', function (response, status, xhr) {
             if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {

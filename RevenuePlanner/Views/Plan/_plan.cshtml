@@ -210,38 +210,38 @@
             if (!$('#liDefination').hasClass('active')) {
                 $('#liDefination').addClass('active');
                 if ('@strPlanid' == '' || '@strPlanid' == '0') {
-                        $('#LeftNavCampaigns').attr('style', 'cursor:default !important');
-                        $('#aApplyToCalender').attr('style', 'cursor:default !important');
-                        $('#aBudgeting').attr('style', 'cursor:default !important');
+                    $('#LeftNavCampaigns').attr('style', 'cursor:default !important');
+                    $('#aApplyToCalender').attr('style', 'cursor:default !important');
+                    $('#aBudgeting').attr('style', 'cursor:default !important');
 
-                        $('#liCampaign').attr('style', 'on:default !important');
-                        $('#ulplan').removeClass();
-                        $('#ulplan').addClass('nav nav-list nav-gray-planc');
-                        $('#LeftNavCampaigns').removeAttr('id');
-                        $('#LeftNavCampaigns').attr('href', '#');
-                        $('#aApplyToCalender').removeAttr('id');
-                        $('#aApplyToCalender').attr('href', '#');
-                        $('#aBudgeting').removeAttr('id');
-                        $('#aBudgeting').attr('href', '#');
+                    $('#liCampaign').attr('style', 'on:default !important');
+                    $('#ulplan').removeClass();
+                    $('#ulplan').addClass('nav nav-list nav-gray-planc');
+                    $('#LeftNavCampaigns').removeAttr('id');
+                    $('#LeftNavCampaigns').attr('href', '#');
+                    $('#aApplyToCalender').removeAttr('id');
+                    $('#aApplyToCalender').attr('href', '#');
+                    $('#aBudgeting').removeAttr('id');
+                    $('#aBudgeting').attr('href', '#');
 
-                        $('#LeftNavInput').removeAttr('id');
-                    }
-                    else {
-                        //$('#ulplan').removeClass();
-                        //$('#ulplan').addClass('nav nav-listc nav-gray-plan');
-                        $('#LeftNavAddActivity').removeAttr("disabled", "disabled");
-                        $('#LeftNavCampaigns').attr("id", "LeftNavCampaigns");
-                        $('#LeftNavCampaigns').removeAttr('href', '#');
-                        $('#aApplyToCalender').attr("id", "aApplyToCalender");
-                        $('#aApplyToCalender').removeAttr('href', '#');
-                        $('#aBudgeting').attr("id", "aBudgeting");
-                        $('#aBudgeting').removeAttr('href', '#');
-                        $('#LeftNavInput').removeAttr('id');
-                    }
+                    $('#LeftNavInput').removeAttr('id');
                 }
-
+                else {
+                    //$('#ulplan').removeClass();
+                    //$('#ulplan').addClass('nav nav-listc nav-gray-plan');
+                    $('#LeftNavAddActivity').removeAttr("disabled", "disabled");
+                    $('#LeftNavCampaigns').attr("id", "LeftNavCampaigns");
+                    $('#LeftNavCampaigns').removeAttr('href', '#');
+                    $('#aApplyToCalender').attr("id", "aApplyToCalender");
+                    $('#aApplyToCalender').removeAttr('href', '#');
+                    $('#aBudgeting').attr("id", "aBudgeting");
+                    $('#aBudgeting').removeAttr('href', '#');
+                    $('#LeftNavInput').removeAttr('id');
+                }
             }
-            else if ('@ViewBag.PageTitle' == 'Assortment') {
+
+        }
+        else if ('@ViewBag.PageTitle' == 'Assortment') {
             $('#LeftNavAddActivity').removeAttr("disabled", "disabled");
             if (!$('#liCampaign').hasClass('active')) {
                 $('#liCampaign').addClass('active');
@@ -252,27 +252,27 @@
         }
         else if ('@ViewBag.PageTitle' == 'ApplyToCallender') {
                 var isplanEdit = '@IsPlanEditable.ToString()';
-                if (!$('#liCalender').hasClass('active')) {
-                    $('#liCalender').addClass('active');
-                    $('#aApplyToCalender').removeAttr('id');
-                    $('#aApplyToCalender').attr("href", "#");
-                    $('#aApplyToCalender').removeAttr('id');
-                }
-                if (isplanEdit == 'false') {
-                    $('#Addactivityarea').hide();
-                }
-                else {
-                    $('#Addactivityarea').show();
-                }
+            if (!$('#liCalender').hasClass('active')) {
+                $('#liCalender').addClass('active');
+                $('#aApplyToCalender').removeAttr('id');
+                $('#aApplyToCalender').attr("href", "#");
+                $('#aApplyToCalender').removeAttr('id');
             }
-            else if ('@ViewBag.PageTitle' == 'Budgeting') {
-                if (!$('#liBudgeting').hasClass('active')) {
-                    $('#liBudgeting').addClass('active');
-                    $('#aBudgeting').removeAttr('id');
-                    $('#aBudgeting').attr("href", "#");
-                    $('#aBudgeting').removeAttr('id');
-                }
+            if (isplanEdit == 'false') {
+                $('#Addactivityarea').hide();
             }
+            else {
+                $('#Addactivityarea').show();
+            }
+        }
+        else if ('@ViewBag.PageTitle' == 'Budgeting') {
+            if (!$('#liBudgeting').hasClass('active')) {
+                $('#liBudgeting').addClass('active');
+                $('#aBudgeting').removeAttr('id');
+                $('#aBudgeting').attr("href", "#");
+                $('#aBudgeting').removeAttr('id');
+            }
+        }
     });
 //function displayconfirm(strURL) {
 //    if (isDataChanged()) {
@@ -350,22 +350,22 @@ function ShowModel(mode, section, id, ParentId, RequestedModule) {
         else {
             loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
         }
-    } 
- else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()") {
+    }
+    else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
-            loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
+         loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
         }
         else {
             loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
         }
- }
- else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()") {
+    }
+    else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()") {
      if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
          loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
-        }
-        else {
+     }
+     else {
          loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
-        }
+     }
  }
 
     modalBackdropDisplayNone();
@@ -374,14 +374,14 @@ function ShowModel(mode, section, id, ParentId, RequestedModule) {
 function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule) {
     parentId = typeof parentId != 'undefined' ? parentId : '0';
     RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
-    var url = '@Url.Content("~/Home/LoadInspectPopup")';
-        $("#divPartial").empty();
-        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + RequestedModule, function (response, status, xhr) {
-            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                //// Call function to redirect on service unavailibility.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+    var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
+    $("#divPartial").empty();
+    $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + RequestedModule, function (response, status, xhr) {
+        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+            //// Call function to redirect on service unavailibility.
+            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+            //// Ticket: 942 Exception handeling in Gameplan.
+            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
         });
     }
@@ -389,12 +389,12 @@ function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule
     function CloseIconClick() {
         $('.close-x-big-icon').click(function () {
             $('body').removeClass('bodyOverflow');
-            
+
             if ((($("#hdnBudgetingIsSave").val().toLowerCase().toString()) == "true") && ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == $("#hdnRequestedModule").val())) {
                 $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + $("#hdnBudgetingBussinessUnitId").val(), function () { TabLoad($("#hdnBudgetingCurrentTab").val()); ShowChangeLog($("#hdnBudgetingCurrentPlanId").val()); hideAllMessages = true; });
                 $("#hdnBudgetingIsSave").val("false");
             }
-            
+
                 @*//window.location = '@Url.Content("~/Plan/Assortment")';*@
             //Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
             var hdnRefresh = $("#hdnRefresh").val();    // This hidden value set from ApplyToCalendar page, to check flag, whether this page called from ApplyTocalender or not.
@@ -415,6 +415,6 @@ function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule
             });
         }, 500);
     };
-    
+
 </script>
 

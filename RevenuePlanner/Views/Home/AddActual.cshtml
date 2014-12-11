@@ -807,7 +807,7 @@
                 $("#errorMessage").css("display", "none");
                 $("#successMessage").css("display", "none");
                 $("#DivPartialShareTactic").empty();
-                var url = '@Url.Content("~/Home/ShowShareTactic/")';
+                var url = '@Url.Content("~/Inspect/ShowShareTactic/")';
                 $("#DivPartialShareTactic").load(url + '?planTacticId=' + $(this).attr('tacticId') + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()');
             });
 
@@ -913,7 +913,7 @@
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json',
                     type: 'POST',
-                    url: '@Url.Content("~/Home/UploadResult/")?UserId=' + $(window).attr('name'),
+                    url: '@Url.Content("~/Inspect/UploadResult/")?UserId=' + $(window).attr('name'),
                     data: _tactic,
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {

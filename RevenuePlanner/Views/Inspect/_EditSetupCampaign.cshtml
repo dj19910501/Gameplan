@@ -511,7 +511,7 @@
         var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/home/SaveCampaign")',
+            url: '@Url.Content("~/Inspect/SaveCampaign")',
             data: formData + '&UserId=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues) + '&planId=@Model.PlanId',
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {

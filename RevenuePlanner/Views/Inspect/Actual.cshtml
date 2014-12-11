@@ -319,7 +319,7 @@
         else {
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Home/GetActualTacticData/")',
+                url: '@Url.Content("~/Inspect/GetActualTacticData/")',
                 data: {
                     id: planTacticId
                 },
@@ -768,7 +768,7 @@
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 type: 'POST',
-                url: '@Url.Content("~/Home/UploadResult/")',
+                url: '@Url.Content("~/Inspect/UploadResult/")',
                 data: JSON.stringify({ tacticactual: _tactic, lineItemActual: _LineItems, tactictitle: title }),    // Modified by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
                 success: function (data) {
                     if (data != 'undefined') {

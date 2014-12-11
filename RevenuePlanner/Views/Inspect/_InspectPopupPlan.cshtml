@@ -218,10 +218,10 @@
         $.ajaxSetup({ cache: false });
         var url;
         if (tabValue == TabSetup) {
-            url = '@Url.Content("~/Home/LoadPlanSetup/")';
+            url = '@Url.Content("~/Inspect/LoadPlanSetup/")';
         }
         else if (tabValue == TabBudget) {
-            url = '@Url.Content("~/Home/LoadPlanBudget/")';
+            url = '@Url.Content("~/Inspect/LoadPlanBudget/")';
         }
 
         RemoveTabClass();
@@ -380,7 +380,7 @@
         var tabtext = ($("#li" + InspectValue).children('a').text());
         var planId = $("#hdnPlanId").val();
         HideAllMessages();
-        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+        var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
         $("#divPartial").empty();
         $("#divPartial").load(url + '?id=' + planId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()" + '&RequestedModule=' + '@RequestedModule', function (response, status, xhr) {
             if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
@@ -402,7 +402,7 @@
             }
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Home/DeleteSection")',
+                url: '@Url.Content("~/Inspect/DeleteSection")',
                 data: {
                     ID: planId,
                     DeleteType: '@Enums.DuplicationModule.Plan',

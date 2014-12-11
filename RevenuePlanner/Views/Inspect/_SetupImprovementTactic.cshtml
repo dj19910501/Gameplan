@@ -273,7 +273,7 @@
 
     function returnToReadOnlyMode(id)
     {
-        var url = '@Url.Content("~/Home/LoadInspectPopup")';
+        var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
         $("#divPartial").empty();
         
         var ImprovementPlanTacticId;
@@ -392,7 +392,7 @@
         
         _resubmissionLabelValues = [];
         if (checkChangeValue(".resubmission", true) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
-            url = '@Url.Content("~/Home/LoadResubmission")';
+            url = '@Url.Content("~/Inspect/LoadResubmission")';
             $("#divResubmission").load(url + '?redirectionType='+'@Convert.ToString(Enums.ResubmissionOpenFrom.ImprovementTactic)'+'&labelValues=' + _resubmissionLabelValues);
         } else {
             SaveImprovementTactic();
@@ -404,7 +404,7 @@
         var isAssortment = false;
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/Home/SaveImprovementTactic")',
+            url: '@Url.Content("~/Inspect/SaveImprovementTactic")',
                 data: $("form").serialize() + '&RedirectType=' + isAssortment,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -483,7 +483,7 @@ $("#t_integration_status").click(function () {
         var ImprovementTacticTypeId = $('#ddlTacticType').val();
         $.ajax({
             type: 'GET',
-            url: '@Url.Content("~/Home/LoadImprovementTacticTypeData?")' + 'ImprovementTacticTypeId=' + ImprovementTacticTypeId,
+            url: '@Url.Content("~/Inspect/LoadImprovementTacticTypeData?")' + 'ImprovementTacticTypeId=' + ImprovementTacticTypeId,
             success: function (data) {
                 if (data.isSuccess) {
                     ValueCost = data.cost;

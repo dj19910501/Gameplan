@@ -257,7 +257,7 @@
         document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/home/SaveLineitem")',
+            url: '@Url.Content("~/Inspect/SaveLineitem")',
             data: $("form").serialize() + '&title='+escape(lineItemTitle)+'&tacticId=@Model.PlanTacticId'+'&UserId='+uId,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {

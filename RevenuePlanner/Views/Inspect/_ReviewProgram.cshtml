@@ -358,7 +358,7 @@
 
           $("#BtnShareTactic").click(function () {
               $("#DivPartialShareTactic").empty();
-              var url = '@Url.Content("~/Home/ShowShareTactic/")';
+              var url = '@Url.Content("~/Inspect/ShowShareTactic/")';
               $("#DivPartialShareTactic").load(url + '?planTacticId=' + $('#hdnPlanProgramId').val() + '&section=program');
           });
 
@@ -378,7 +378,7 @@
 
               $.ajax({
                   type: 'POST',
-                  url: '@Url.Content("~/Home/SaveSyncToIntegration/")',
+                  url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
                   data: {
                       id: PlanProgramId,
                       section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", //section parameter added to save tactic comment
@@ -451,7 +451,7 @@
               var PlanTacticId = $('#hdnPlanProgramId').val();
               $.ajax({
                   type: 'POST',
-                  url: '@Url.Content("~/Home/SaveComment/")',
+                  url: '@Url.Content("~/Inspect/SaveComment/")',
                   data: {
                       comment: commentText,
                       planTacticId: PlanTacticId,
@@ -509,7 +509,7 @@
 
               $.ajax({
                   type: 'POST',
-                  url: '@Url.Content("~/Home/ApprovedTactic/")',
+                  url: '@Url.Content("~/Inspect/ApprovedTactic/")',
                   data: {
                       status: stat,
                       planTacticId: PlanTacticId,

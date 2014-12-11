@@ -1,32 +1,43 @@
 ﻿@using RevenuePlanner.Helpers
 @{
-    var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
-    bool IsDeployToIntegrationVisible = (bool)ViewBag.IsDeployToIntegrationVisible;
+    var campaignReview = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
+    var db = new RevenuePlanner.Models.MRPEntities();
+    bool IsCampaignEditable = (bool)ViewBag.IsCampaignEditable;
     ////Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
-    string IntegrationStatus = tacticReview.IsIntegrationInstanceExist;
-    if (tacticReview.IsIntegrationInstanceExist == "Yes" && !tacticReview.IsDeployedToIntegration)
+    string IntegrationStatus = campaignReview.IsIntegrationInstanceExist;
+    if (campaignReview.IsIntegrationInstanceExist == "Yes" && !campaignReview.IsDeployedToIntegration)
     {
         IntegrationStatus = "No";
-    }
+    }           
 }
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 420px !important;">
-    @*<div class="font-size18">Overview</div>*@
-    <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
-        <div style="float: left; width: 48%;">
-            <div class="source-sans-prosemibold">Parent Campaign</div>
-            <div>
-                <div id="campaign-title" class="tipsyclassTitle sub-head">@Html.Raw(tacticReview.CampaignTitle)</div>
-            </div>
-        </div>
-    </div>
-    @*<div id="campaign-title" class="bold padding-top16 font-size18 tipsyclassTitle">@Html.Raw(tacticReview.CampaignTitle)</div>*@
-    @*<div id="program-title" class="font-size18">@tacticReview.ProgramTitle</div>*@
+
     <div class="cf source-sans-proregular padding-top32">
-        <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow review-box">
-            <div class="padding-top16"><span id="startDay-id" class="font_size30" style="line-height: 24px;">@tacticReview.StartDate.ToString("dd")</span></div>
+        <div class="chart-gray pull-left  size80x78 without-padding remove-box-shadow review-box">
+            <div class="padding-top16"><span id="startDay-id" class="font_size30" style="line-height: 24px;">@campaignReview.StartDate.ToString("dd")</span></div>
             @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
-            <span id="startMonth-id" class="font_size16">@tacticReview.StartDate.ToString("MMM")</span>
-            <div class="margin-top16" style="margin-top: 20px !important;">Effective</div>
+            <span id="startMonth-id" class="font_size16">@campaignReview.StartDate.ToString("MMM")</span>
+            <div class="margin-top16" style="margin-top: 20px !important;">Start</div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+        </div>
+        <div class="chart-gray pull-left  size80x78 without-padding remove-box-shadow review-box">
+            <div class="padding-top16"><span id="endDay-id" class="font_size30" style="line-height: 24px;">@campaignReview.EndDate.ToString("dd")</span></div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            <span id="endMonth-id" class="font_size16">@campaignReview.EndDate.ToString("MMM")</span>
+            <div class="margin-top16" style="margin-top: 20px !important;">End</div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+        </div>
+        @* Commented by Dharmraj for ticlet #440 *@
+        @*<div class="chart-gray pull-left size65x38 without-padding">
+            <div class="padding-top16"><span id="inq-id" class="font_size30" style="line-height:24px;">@campaignReview.INQs</span></div>*@    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+        @*<span class="font_size16">@Html.LabelForINQ("INQ")</span>
+            <div class="margin-top16">Goal</div>*@    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+        @*</div>*@
+        <div class="chart-gray pull-left  size80x78 without-padding remove-box-shadow review-box">
+            <div class="padding-top16"><span id="mqls-id" class="font_size30 addFormatterActualNumber" style="line-height: 24px;">@campaignReview.MQLs</span></div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            <span class="font_size16" title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</span>
+            <div class="margin-top16" style="margin-top: 20px !important;">Goal</div>
             @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
     </div>
@@ -34,33 +45,35 @@
         <div class="pull-left size65x38 ">
             <div class="busunit"></div>
             <div>Bus. Unit</div>
+            <!-- remove bold class by kapil - 100614 - #509 -->
             <span id="busunit-id" class="blue-text bold" title="@ViewBag.BudinessUnitTitle">@ViewBag.BudinessUnitTitle</span>
         </div>
         <div class="pull-left size65x38  margin-left20">
             <div class="owner"></div>
             <div>Owner</div>
-            <span id="owner-id" class="blue-text bold" title="@tacticReview.Owner">@tacticReview.Owner</span>
+            <!-- remove bold class by kapil - 100614 - #509 -->
+            <span id="owner-id" class="blue-text bold" title="@campaignReview.Owner">@campaignReview.Owner</span>
         </div>
+        @*        <div class="pull-left size65x38 margin-left20">
+            <div class="vertical"></div>
+            <div>Vertical</div>
+            <span id="vertical-id" class="blue-text bold">@campaignReview.VerticalTitle</span>
+        </div>
+        <div class="pull-left size65x38 margin-left20">
+            <div class="audience-review"></div>
+            <div>
+                <label id="audience">Audience</label>
+            </div>
+            <span id="audience-id" class="blue-text bold">@campaignReview.AudiencTitle</span>
+        </div>*@
         <div class="pull-left size65x38 margin-left20">
             <div class="integration-review"></div>
             <div>
                 <label id="integration">Integration</label>
             </div>
-            <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus
-            </span>
+            <!-- remove bold class by kapil - 100614 - #509 -->
+            <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
         </div>
-
-        @*<div class="pull-left size65x38 margin-left20">
-            <div class="vertical"></div>
-            <div>Vertical</div>
-            <span id="vertical-id" class="blue-text bold">@tacticReview.VerticalTitle</span>
-        </div>
-        <div class="pull-left size65x38 margin-left20">
-            <div class="audience-review"></div>
-            <div>
-                <label id="audience">Audience</label></div>
-            <span id="audience-id" class="blue-text bold">@tacticReview.AudiencTitle</span>
-        </div>*@
     </div>
 </div>
 
@@ -93,7 +106,7 @@
 
             @*<img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "User", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />*@
             @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-blue-background" })
-            @if ((bool)ViewBag.IsBusinessUnitEditable)
+            @if (IsCampaignEditable && (bool)ViewBag.IsBusinessUnitEditable)
             {
                 <img id="btnComment" src="~/Content/images/chat-button.png" alt="" style="float: right" />
             }
@@ -107,49 +120,96 @@
         </div>
     }
     @* End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
+
 </div>
 
 <div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
 
 
-
     @{
+        
         string Submit = "Submit for Approval";
         string Approve = "Approve";
         string Reject = "Reject";
         List<string> aryStatus = new List<string>();
         bool isVisibleStatus = true;
-        if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
+
+        var countNotCreatedTactic = 0;
+        var countNotCreatedProgram = 0;
+        var countNotApprovedTactic = 0;
+        var countNotSubmittedTactic = 0;
+        var countNotApprovedProgram = 0;
+        var countNotSubmittedProgram = 0;
+        var countNotDeclineTactic = 0;
+        var countNotDeclineProgram = 0;
+
+        string statuscreate = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString();
+        string statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
+        string statusapprve = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString();
+        string statusinprogress = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString();
+        string statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
+        string statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
+
+        var tacticList = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false).ToList();
+        countNotCreatedTactic = tacticList.Where(p => !p.Status.Equals(statuscreate)).Count();
+        countNotApprovedTactic = tacticList.Where(p => !p.Status.Equals(statusapprve) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete)).Count();
+        countNotSubmittedTactic = tacticList.Where(p => !p.Status.Equals(statussubmit)).Count();
+        countNotDeclineTactic = tacticList.Where(p => !p.Status.Equals(statusdecline)).Count();
+
+        countNotCreatedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false && !p.Status.Equals(statuscreate)).Count();
+        countNotApprovedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false && (!p.Status.Equals(statusapprve) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete))).Count();
+        countNotSubmittedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false && !p.Status.Equals(statussubmit)).Count();
+        countNotDeclineTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false && !p.Status.Equals(statusdecline)).Count();
+
+        var programList = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false).ToList();
+        countNotCreatedProgram = programList.Where(p => !p.Status.Equals(statuscreate)).Count();
+        countNotApprovedProgram = programList.Where(p => !p.Status.Equals(statusapprve) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete)).Count();
+        countNotSubmittedProgram = programList.Where(p => !p.Status.Equals(statussubmit)).Count();
+        countNotDeclineProgram = programList.Where(p => !p.Status.Equals(statusdecline)).Count();
+
+        if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
         {
 
-            //if ((bool)ViewBag.IsValidDirectorUser)
-            //{
-            //    if ((bool)ViewBag.IsValidOwner)
-            //    {
-            //        aryStatus.Add(Submit);
-            //    }
-            //    else
-            //    {
-            //        isVisibleStatus = false;
-            //    }
-            //}
-            //else
-            //{
             if ((bool)ViewBag.IsValidOwner)
             {
-                aryStatus.Add(Submit);
+
+                if (countNotSubmittedTactic == 0 && countNotSubmittedProgram == 0)
+                {
+                    aryStatus.Add(Submit);
+                }
+                else if (countNotCreatedTactic == 0 && countNotCreatedProgram == 0)
+                {
+                    aryStatus.Add(Submit);
+                }
             }
             else
             {
                 isVisibleStatus = false;
             }
-            //}
         }
-        else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
+        else if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
         {
-            if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
+            if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.isValidDirectorUser)
             {
-                aryStatus.Add(Approve);
+                if (countNotApprovedTactic != 0 && countNotApprovedProgram != 0)
+                {
+                    aryStatus.Add(Approve);
+                    aryStatus.Add(Reject);
+                }
+                else
+                {
+                    isVisibleStatus = false;
+                }
+            }
+            else
+            {
+                isVisibleStatus = false;
+            }
+        }
+        else if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
+        {
+            if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.isValidDirectorUser)
+            {
                 aryStatus.Add(Reject);
             }
             else
@@ -157,28 +217,33 @@
                 isVisibleStatus = false;
             }
         }
-        else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
+        else if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
         {
-            if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
+            if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.isValidDirectorUser)
             {
-                aryStatus.Add(Reject);
-            }
-            else
-            {
-                isVisibleStatus = false;
-            }
-        }
-        else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
-        {
-            if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
-            {
-                aryStatus.Add(Approve);
+                if ((bool)ViewBag.IsValidOwner)
+                {
+                    if (countNotDeclineProgram == 0 && countNotDeclineTactic == 0)
+                    {
+                        aryStatus.Add(Submit);
+                    }
+                }
+                else
+                {
+                    if (countNotDeclineProgram == 0 && countNotDeclineTactic == 0)
+                    {
+                        aryStatus.Add(Approve);
+                    }
+                }
             }
             else
             {
                 if ((bool)ViewBag.IsValidOwner)
                 {
-                    aryStatus.Add(Submit);
+                    if (countNotDeclineProgram == 0 && countNotDeclineTactic == 0)
+                    {
+                        aryStatus.Add(Submit);
+                    }
                 }
                 else
                 {
@@ -188,7 +253,7 @@
         }
         else
         {
-            if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
+            if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.isValidDirectorUser)
             {
                 aryStatus.Add(Reject);
             }
@@ -198,7 +263,7 @@
             }
         }
 
-        if (IsDeployToIntegrationVisible)
+        if (IsCampaignEditable)
         {
             if ((bool)ViewBag.IsModelDeploy)
             {
@@ -207,7 +272,7 @@
                 <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
                     <span class="flag-icon sync-icon-dropdown"></span>
                     <span id="spanSyncStatus">
-                        @if (tacticReview.IsDeployedToIntegration)
+                        @if (campaignReview.IsDeployedToIntegration)
                         {
                             @Html.Raw("Sync")
                         }
@@ -218,7 +283,7 @@
 
                     </span>
                 </button>
-                @if (tacticReview.IsDeployedToIntegration)
+                @if (campaignReview.IsDeployedToIntegration)
                 {
                     @Html.Hidden("hdnSyncStatusValue", "Sync", new { id = "hdnSyncStatusValue" });
                 }
@@ -248,7 +313,7 @@
             if (len > 0)
             {
                 string firstStatus = aryStatus[0];
-                
+               
         <div class="margin-top23" style="float: left;">
             <div id="btn_change_status" class="btn-group dropup">
                 <button id="btnApproved" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 125px;">
@@ -257,7 +322,7 @@
                 </button>
                 @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
                     @if (len >= 2)
-                    {
+                    {   
                         <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
                             <span class="caret "></span>
                         </button>
@@ -274,6 +339,7 @@
                         <script type="text/javascript">
                             $("#btnApproved").css("width", "90px");
                         </script>
+                        
                     }
                     else
                     {
@@ -301,16 +367,16 @@
     $(document).ready(
       function () {
 
-
           //Added By : Kalpesh Sharma
           //PL #508 Set format for label in tool tip
-        
-          NumberFormatterTipsyTitle(".tipsyclassTitle", 33);
+          $('.addFormatterActualNumber').each(function () {
+              SetPriceValue($(this));
+          });
 
           $("#BtnShareTactic").click(function () {
               $("#DivPartialShareTactic").empty();
-              var url = '@Url.Content("~/Home/ShowShareTactic/")';
-              $("#DivPartialShareTactic").load(url + '?planTacticId=' + $('#hdnPlanTacticId').val() + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()'); // section parameter added to open share tactic popup
+              var url = '@Url.Content("~/Inspect/ShowShareTactic/")';
+              $("#DivPartialShareTactic").load(url + '?planTacticId=' + $('#hdnPlanCampaignId').val() + '&section=campaign');
           });
 
           $("#uldiv li a").click(function () {
@@ -319,27 +385,26 @@
           });
 
           $("#btnSync").click(function () {
-
               var IsDeployedToIntegration = false;
               var spanSyncStatus = $("#hdnSyncStatusValue").val();
               if (spanSyncStatus == 'Sync') {
                   IsDeployedToIntegration = true;
               }
-              var PlanTacticId = $('#hdnPlanTacticId').val();
+              var PlanCampaignId = $('#hdnPlanCampaignId').val();
 
               $.ajax({
                   type: 'POST',
-                  url: '@Url.Content("~/Home/SaveSyncToIntegration/")',
+                  url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
                   data: {
-                      id: PlanTacticId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", //section parameter added to save tactic comment
+                      id: PlanCampaignId,
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", //section parameter added to save tactic comment
                       IsDeployedToIntegration: IsDeployedToIntegration
                   },
                   success: function (data) {
                       if (data.result) {
                           /*Added by Mitesh Vaishnav for PL ticket #690 
                         Change of sync to don’t sync or vice versa integration section update to 'Yes' and 'No'  */
-                          if ('@tacticReview.IsIntegrationInstanceExist' == 'Yes') {
+                          if ('@campaignReview.IsIntegrationInstanceExist' == 'Yes') {
                               if (IsDeployedToIntegration) {
                                   $('#integration-id').html('Yes')
                               }
@@ -365,6 +430,7 @@
           $("#uldivSync li a").click(function () {
               $("#spanSyncStatus").html($(this).text());
               $("#hdnSyncStatusValue").val($(this).text());
+
           });
 
 
@@ -375,11 +441,12 @@
           $("#btnComment").click(function () {
               $("#successMessage").css("display", "none");
               $("#errorMessage").css("display", "none");
+              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
               var commentText = $('#txtAreaComment').val();
               if (commentText == '') {
                   var msgspan = "@Common.objCached.ValidateForEmptyFieldAndValid";
                   $("#errorMessage").css("display", "block");
-                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                  /*end*/
                   $("#txtAreaComment").addClass("error");
                   $("#spanMessageError").text(msgspan);
                   return false;
@@ -391,6 +458,7 @@
                   //    /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
                   //    var topsize = $(document).scrollTop() + 41;
                   //    $("#modal-container-186470").css("top", topsize + "px");
+                  //    /*end*/
                   //    $("#txtAreaComment").addClass("error");
                   //    $("#spanMessageError").text(msgspan);
                   //    return false;
@@ -398,38 +466,41 @@
                   $("#txtAreaComment").removeClass("error");
               }
 
-              var PlanTacticId = $('#hdnPlanTacticId').val();
+              var PlanTacticId = $('#hdnPlanCampaignId').val();
               $.ajax({
                   type: 'POST',
-                  url: '@Url.Content("~/Home/SaveComment/")',
+                  url: '@Url.Content("~/Inspect/SaveComment/")',
                   data: {
                       comment: commentText,
                       planTacticId: PlanTacticId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" //section parameter added to save tactic comment
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()"
                   },
                   success: function (data) {
                       if (data != 'undefined') {
                           if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                               window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                          }
-                          else {
+                          } else {
                           if (data.id != 0) {
                               $("#successMessage").css("display", "block");
                               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                              /*end*/
                               $("#spanMessageSuccess").empty();
                               $("#spanMessageSuccess").text(data.msg);
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", data.TabValue);//section parameter passed to open tactic popup
+                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue);
                           }
                           else {
                               $("#errorMessage").css("display", "block");
+
                               $("#spanMessageError").empty();
                               $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                              }
                           }
-                      }
                       }
                   },
                   error: function () {
                       $("#errorMessage").css("display", "block");
+                      /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                      /*end*/
                       $("#spanMessageError").empty();
                       GoToLogin();
                       return false;
@@ -441,8 +512,9 @@
           $("#btnApproved").click(function () {
               $("#successMessage").css("display", "none");
               $("#errorMessage").css("display", "none");
+              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
               statusValue = $("#hdnStatusValue").val();
-              var PlanTacticId = $('#hdnPlanTacticId').val();
+              var PlanTacticId = $('#hdnPlanCampaignId').val();
               var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
               if (statusValue == "Submit for Approval") {
                   stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";
@@ -453,45 +525,62 @@
               else if (statusValue == "Reject") {
                   stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
               }
+
+              var RedirectType = $("#hdnRedirectType").val();
+
               $.ajax({
                   type: 'POST',
-                  url: '@Url.Content("~/Home/ApprovedTactic/")',
+                  url: '@Url.Content("~/Inspect/ApprovedTactic/")',
                   data: {
                       status: stat,
                       planTacticId: PlanTacticId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" //section parameter added to approve tactic
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()"
                   },
                   success: function (data) {
                       if (data != 'undefined') {
                           if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                               window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                          } else {
+                          }
+                          else {
                           if (data.id != 0) {
                               $("#successMessage").css("display", "block");
+                              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+
                               $("#spanMessageSuccess").empty();
                               $("#spanMessageSuccess").text(data.msg);
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", data.TabValue); //section parameter passed to open tactic popup
+                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue);
+
+                              //Added By : Kalpesh Sharma Internal review points 18/11/2014
+                              if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
+                                RefershPlanHeaderCalc();
+                            }
+
                           }
                           else {
                               $("#errorMessage").css("display", "block");
+                              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+
                               $("#spanMessageError").empty();
                               $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                           }
-                          }
+
                           // Added by Dharmraj to refresh current tab for PL #364,#365,#366
                           //RefreshCurrentTab();
+                          }
                       }
                   },
                   error: function () {
                       $("#errorMessage").css("display", "block");
+                      /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+
                       $("#spanMessageError").empty();
                       GoToLogin();
                       return false;
                   }
               });
           });
-	  
-	  //// Slim Scroll bar for comment div.
+
+        //// Slim Scroll bar for comment div.
         var r = $('#content_wraper').height() - 170;
         $('.comment-scroll-section').css('height', r);
         $(function () {
@@ -505,6 +594,6 @@
         }
         $('.accordion').on('hidden.bs.collapse', toggleChevron);
         $('.accordion').on('shown.bs.collapse', toggleChevron);
-	  
+
       });
 </script>

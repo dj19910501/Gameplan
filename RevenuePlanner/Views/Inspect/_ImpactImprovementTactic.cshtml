@@ -29,7 +29,7 @@
             var Id = $('#hdnPlanTacticId').val();
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Home/LoadImpactImprovementStages")',
+                url: '@Url.Content("~/Inspect/LoadImpactImprovementStages")',
                 data: {
                     ImprovementPlanTacticId: Id
                 },

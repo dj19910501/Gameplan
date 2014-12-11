@@ -534,7 +534,7 @@
           _resubmissionLabelValues = [];
 
           if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
-              url = '@Url.Content("~/Home/LoadResubmission")';
+              url = '@Url.Content("~/Inspect/LoadResubmission")';
               $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
           } else {
               saveTactic();
@@ -555,7 +555,7 @@
 
           $.ajax({
               type: 'POST',
-              url: '@Url.Content("~/Home/SetupSaveTactic")',
+              url: '@Url.Content("~/Inspect/SetupSaveTactic")',
               data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) ,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -759,7 +759,7 @@
         if ($('#ddlTacticType').val() != '') {
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Home/CalculateMQL")',
+                url: '@Url.Content("~/Inspect/CalculateMQL")',
                     data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
                     success: function (data) {
                         if (data.mql == 'N/A') {
@@ -804,7 +804,7 @@
         $.ajax({
             type: 'GET',
             cache: false,
-            url: '@Url.Content("~/Home/fillOwner/")',
+            url: '@Url.Content("~/Inspect/fillOwner/")',
             data: { BusinessUnitId: businessUnitId, GeographyId: geographyId, VerticalId: verticalId, UserId: uId },
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
