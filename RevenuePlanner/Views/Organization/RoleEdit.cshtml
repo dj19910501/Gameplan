@@ -91,7 +91,6 @@
                     <table width="100%" class="source-sans-proregular">
                         @foreach (var item in lstActivity)
                         {
-@*<input  type="hidden"  name="txtActivityId"  value="@item.ApplicationActivityId" >*@
                             if (item.ParentId == Convert.ToInt32(0))
                             {            
                             <tr>
@@ -193,7 +192,6 @@
         var title = '@ViewBag.current';
         var coloredit = '@ViewBag.colorcode';
         if (roleid != '@Guid.Empty') {//changed by uday for functional review point...3-7-2014
-            //$('.nl-field').find('.nl-field-toggle').html(title);
             $('.color-id').css('background-color', coloredit);//to set color while edit mode
             colorCode = coloredit;
             $('.nl-dd-checked').attr('value', roleid.toString());//review point
@@ -282,9 +280,6 @@
 
                         var strsa = permissions.split(",");
                         for (var i = 0; i < strsa.length; i++) {
-                            ////var split = [];
-                            ////split = strsa[i].split("_");
-                            //originalpermissions.push(split[1]);commented by uday for functional review point...3-7-2014
                             originalpermissions.push(strsa[i]);
                         }
                         if (originalpermissions.length > 0) {
@@ -306,7 +301,6 @@
                         globaldeleteids = unmatch;
                         var url = '';
                         url = '@Url.Content("~/Organization/CheckPermission/")';
-                    //window.location.href = url + "?roleId=" + '@ViewBag.roleid' + "&permission=" + unmatch.toString();
                         $("#loaddiv").load(url + "?roleId=" + '@ViewBag.roleid' + "&permission=" + unmatch.toString(), function (response, status, xhr) {
                             if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                                 //// Call function to redirect on service unavailibility.

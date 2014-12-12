@@ -1,13 +1,11 @@
 ﻿@using RevenuePlanner.Helpers;
 
 @{
-    //var srcval = (string)ViewBag.SourceValue;
     var currentUserId = Sessions.User.UserId;
         ViewBag.Title = "My Account";
     ViewBag.PageTitle = "Edit";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref; 
     Layout = "~/Views/Shared/_Layout.cshtml";
-    //string isViewOnly = ViewBag.IsViewOnly;
     ViewBag.ModuleTitle = "MyProfile";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
 }
 

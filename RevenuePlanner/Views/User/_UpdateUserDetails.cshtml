@@ -54,7 +54,6 @@
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.Phone)
             @if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)
-                    //@if (permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                 @Html.TextBoxFor(model => model.Phone, new { maxlength = "12", placeholder = "000-000-0000" })
                 @Html.ValidationMessageFor(model => model.Phone)
@@ -102,18 +101,6 @@
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.ClientId)
             @*Start Modified by Dharmraj for ticket #583 on 7th July 2014 *@
-            @*
-                    @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId)) //Model.IsSystemAdmin)
-                    {
-                        //Modified by :- Sohel on 27 March 2014 for ticket #334
-                        <div class="selectBox UserProfile" id="ddlClientIdSelectBox">
-                            @Html.DropDownListFor(c => c.ClientId, new SelectList((System.Collections.IEnumerable)ViewData["Clients"], "ClientId", "Name"), "Please Select")
-                        </div>
-                        @Html.ValidationMessageFor(model => model.ClientId)
-                        @Html.Label("", "The Organization field is required.", new { @class = "field-validation-error selectbox-validation-message", id = "lblClientIdRequired" })  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                    }
-                    else
-                    {*@
 
             @Html.HiddenFor(model => model.ClientId)
             @Html.HiddenFor(model => model.Client)
@@ -125,8 +112,6 @@
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.BusinessUnitId)
             @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
-                    //@if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
-                    //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                         //Modified by :- Sohel on 27 March 2014 for ticket #334
                 <div class="selectBox UserProfile" id="ddlBusinessUnitIdSelectBox">
@@ -146,8 +131,6 @@
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.RoleId)
             @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
-                    //@if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
-                    //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                         //Modified by :- Sohel on 27 March 2014 for ticket #334
                 <div class="selectBox UserProfile" id="ddlRoleIdSelectBox">
@@ -166,11 +149,7 @@
                 
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517   
         <div class="cf inputs-aligned-horizontal" id="divManager">
-            @*if ((currentUserRole.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || currentUserRole.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase)) &&
-                    //    !Model.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase))
-                      {*@
             @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
-                        //@if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
                         {
                 @Html.Label("Manager")
                 <div class="selectBox UserProfile" id="ddlManagerIdSelectBox">
@@ -192,13 +171,6 @@
                 @Html.HiddenFor(model => model.ManagerName)     // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
                 @Html.TextBox("txtManager", Model.ManagerName, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.ManagerName })
                         }
-            @*}
-                    else
-                    {
-                        @Html.Label("Manager")
-                        @Html.HiddenFor(model => model.ManagerId)
-                        @Html.TextBox("txtManager", Model.ManagerName, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.ManagerName })
-                    } *@
         </div>
                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517   
                 
@@ -228,12 +200,8 @@
                         @Html.DropDownListFor(c => c.IsDeleted, new SelectList(items, "Value", "Text"), new { style = "width:54px; height:23px;float:right;margin-top:10px;margin-right:12px;" })
                     </div>
                 </div>
-                @*@if ((currentUserRole.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || currentUserRole.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase)) &&
-                                !Model.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase))
-                            {*@
                 <div id="divNewManager">
-                    @*@if (currentUserRole.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || currentUserRole.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
-                                    {*@
+                   
                     @Html.Label("Reassign Subordinates to")
                     <div class="selectBox" id="ddlNewManagerIdSelectBox">
                         @if(ViewBag.isForDelete == "true")
@@ -245,9 +213,7 @@
                             @Html.DropDownListFor(c => c.NewManagerId, Enumerable.Empty<SelectListItem>(), "Please Select")
                                             }
                     </div>
-                    @*}*@
                 </div>
-                @*}*@
             </div>
             @Html.Label("", Common.objCached.ReassignRequired, new { @class="field-validation-error selectbox-validation-message", id="lblNewManagerIdRequired" })  @* Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
         </div>
@@ -265,14 +231,11 @@
 
                 if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)//isViewOnly != "true")
                 {
-                    //if (currentUserId == Convert.ToString(Model.UserId) || permRoleCodesForDel.Contains(Model.RoleCode))
-                    //{
         <div class="cf inputs-aligned-horizontal">
             <div class="container-button">
                 <input id="btnSubmit" type="submit" value="Save" title="save" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 179px;" />
             </div>
         </div>
-                    //}
                 }
             }
 </div>
@@ -328,8 +291,6 @@
             }
 
             // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-            //if ($('#hdnLoggedInUserRole').val().toUpperCase() == 'SA' || $('#hdnLoggedInUserRole').val().toUpperCase() == 'CA') {
-                //if ($('#RoleId').next('div').find('.sbSelector').html().toLowerCase() != 'client admin' && $('#RoleId').next('div').find('.sbSelector').html().toLowerCase() != 'system admin') {
             if (($("#ManagerId option").eq(0).val() == "" && $("#ManagerId").val() == "") && $('#IsDeleted').val().toLowerCase() != 'yes') {
                     $("#ddlManagerIdSelectBox .sbHolder").addClass("selectBoxError");
                         $('#lblManagerIdRequired').show();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
@@ -339,7 +300,6 @@
                         $("#ddlManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
                         $('#lblManagerIdRequired').hide();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
-                //}
 
                 if ($('#IsDeleted').val().toLowerCase() == 'yes' && $('#IsManager').val().toLowerCase() == 'true') {
                     if ($("#NewManagerId option").eq(0).val() == "" && $("#NewManagerId").val() == "") {
@@ -352,25 +312,12 @@
                         $('#lblNewManagerIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
                 }
-            //}
             // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-
-            // Start - Code commented by :- Sohel Pathan on 17/06/2014 due to recursive call of button submit event 
-            //CheckUserSession("#btnSubmit", true);
-            //if (reason == 'user') {
-            //    return false;
-            //}
-            // End - Code commented by :- Sohel Pathan on 17/06/2014 due to recursive call of button submit event
             return isValid;
         });
         //
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-
-        //if ($('#IsViewOnly').val() != '') {
-        //    $("#content :input").attr("disabled", true);
-        //}
-
         $("#aRemoveImage").click(function () {
             var src = $(this).attr('prop');
             $('#userImage').attr('src', 'data:image/jpg;base64,' + src);
@@ -378,12 +325,6 @@
         });
 
         $('#btnSubmit').click(function () {
-            // Start - Code commented by :- Sohel Pathan on 17/06/2014 due to recursive call of button submit event
-            //CheckUserSession("#btnSubmit", true);
-            //if (reason == 'user') {
-            //    return false;
-            //}
-            // End - Code commented by :- Sohel Pathan on 17/06/2014 due to recursive call of button submit event
             $('#content :input').each(function () {
                 if (($(this).attr('type') == 'text' || $(this).attr('type') == 'select') && this.id != 'Phone') {   // Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                     var input = $(this).val();
@@ -419,7 +360,6 @@
         }
         else {
             $("#successMessage").slideDown(1200);
-           // $("#successMessage").slideUp(3000);
         }
         if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
             $("#errorMessage").slideUp(400);
@@ -522,16 +462,6 @@
             $('#divNewManager').hide();
         }
         // End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-
-        //if ($('#hdnLoggedInUserRole').val().toUpperCase() == 'SA' || $('#hdnLoggedInUserRole').val().toUpperCase() == 'CA') {
-        //    if ($('#RoleId').next('div').find('.sbSelector').html().toLowerCase() == 'client admin' || $('#RoleId').next('div').find('.sbSelector').html().toLowerCase() == 'system admin') {
-        //        $('#divManager').hide();
-        //    }
-        //    else {
-        //        $('#divManager').show();
-        //    }
-        //}
-        // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
     });
     $('#Email').keyup(function () {
         $('#isEmailExist').html('');
@@ -637,18 +567,6 @@
         return false;
     }
 
-    // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-    //$('#RoleId').change(function () {
-    //    if ($('#hdnLoggedInUserRole').val().toUpperCase() == 'SA' || $('#hdnLoggedInUserRole').val().toUpperCase() == 'CA') {
-    //        if ($(this).next('div').find('.sbSelector').html().toLowerCase() == 'client admin' || $(this).next('div').find('.sbSelector').html().toLowerCase() == 'system admin') {
-    //            $('#divManager').hide();
-    //        }
-    //        else {
-    //            $('#divManager').show();
-    //        }
-    //    }
-    //});
-
     // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
     function loadNewManagers(clientId) {
         if (clientId != "" && clientId != "0" && clientId != "null") {
@@ -678,7 +596,6 @@
     // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
 
     $('#IsDeleted').change(function () {
-        //if ($('#hdnLoggedInUserRole').val().toUpperCase() == 'SA' || $('#hdnLoggedInUserRole').val().toUpperCase() == 'CA') {
             if ($('#IsManager').val().toLowerCase() == 'true') {
                 if ($(this).val().toLowerCase() == 'yes') {
                     $('#divNewManager').show();

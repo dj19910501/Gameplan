@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using RevenuePlanner.Models;
 using RevenuePlanner.BDSService;
@@ -15,64 +14,22 @@ namespace RevenuePlanner.Controllers
         //
         // GET: /Organization/
 
+        #region "Variables"
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         private MRPEntities db = new MRPEntities();
+        #endregion
 
+        #region "Index"
         public ActionResult Index()
         {
             return View();
         }
+        #endregion
 
-        public ActionResult Hierarchy()
-        {
-            List<OrganizationModel> listorganizationmodel = new List<OrganizationModel>();
-
-            try
-            {
-                //string systemadmin = Enums.RoleCodes.SA.ToString();
-                //string clientadmin = Enums.RoleCodes.CA.ToString();
-                //string director = Enums.RoleCodes.D.ToString();
-                //string planner = Enums.RoleCodes.P.ToString();
-
-                BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
-                var memberlist = bdsuserrepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);//Sessions.IsSystemAdmin);
-                foreach (var item in memberlist)
-                {
-                    OrganizationModel obj = new OrganizationModel();
-                    obj.UserId = item.UserId;
-                    //obj.GeographyId = item.GeographyId;   // Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-                    obj.Client = item.Client;
-                    obj.ClientId = item.ClientId;
-                    obj.DisplayName = item.DisplayName;
-                    obj.Email = item.Email;
-                    obj.FirstName = item.FirstName;
-                    obj.RoleCode = item.RoleCode;
-                    obj.RoleId = item.RoleId;
-                    obj.RoleTitle = item.RoleTitle;
-                    obj.LastName = item.LastName;
-                    obj.BusinessUnitId = item.BusinessUnitId;
-                    obj.JobTitle = item.JobTitle;
-                    listorganizationmodel.Add(obj);
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
-                }
-            }
-
-            return View(listorganizationmodel.AsEnumerable());
-        }
-
+        /// <summary>
+        /// Manage Role.
+        /// </summary>
+        /// <returns>Return ManageRoles view with RoleModel.</returns>
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult ManageRoles()
         {
@@ -87,22 +44,15 @@ namespace RevenuePlanner.Controllers
                 
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                 var memberlist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
-                //foreach (var item in memberlist)
-                //{
-                //    RoleModel role = new RoleModel();
-                //    role.RoleTitle = item.Title;
-                //    role.RoleCode = item.Code;
-                //    role.RoleId = item.RoleId;
-                //    listrolemodel.Add(role);
-                //}
-                // Added by dharmraj to remove above foreach loop, 10-7-2014
-                listrolemodel = memberlist.Select(r => new RoleModel
-                                                 {
-                                                     RoleTitle = r.Title,
-                                                     RoleCode = r.Code,
-                                                     RoleId = r.RoleId
-                                                 }).ToList();
 
+                // Added by dharmraj to remove above foreach loop, 10-7-2014
+                //// Get Members Role details.
+                listrolemodel = memberlist.Select(member => new RoleModel
+                                                 {
+                                                     RoleTitle = member.Title,
+                                                     RoleCode = member.Code,
+                                                     RoleId = member.RoleId
+                                                 }).ToList();
             }
             catch (Exception e)
             {
@@ -122,29 +72,35 @@ namespace RevenuePlanner.Controllers
             return View(listrolemodel.AsEnumerable());
         }
 
+        /// <summary>
+        /// Add new Role.
+        /// </summary>
+        /// <param name="roledesc">Role Decription</param>
+        /// <returns>Return flag value in Json</returns>
         [HttpPost]
         public JsonResult AddRole(string roledesc)
         {
-            if (roledesc != null && roledesc != string.Empty)
-            {
+            if (string.IsNullOrEmpty(roledesc))
+                return Json(false);
+
+            //// Add New Role description to Tempdata.
                 BDSService.Role objrole = new BDSService.Role();
                 objrole.Description =roledesc;////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 objrole.Title =roledesc;////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                //Session["session"] = objrole;commented by uday for functional review point...3-7-2014
                 TempData["objrole"] = objrole;
 
                 try
                 {
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+
+                //// Check Role duplication.
                 int retval = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId,Sessions.User.ClientId);
+
+                //// if duplicate role then return false otherwise true.
                 if (retval == 1)
-                {
                     return Json(true);
-                }
                 else
-                {
                     return Json(false);
-                }
             }
                 catch (Exception e)
                 {
@@ -158,13 +114,14 @@ namespace RevenuePlanner.Controllers
                         return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
                     }
                 }
-            }
-
             return Json(false);
-            //return Json(new { name = "dsfsdf" });
-            //return RedirectToAction("Edit", "Organization");
         }
 
+        /// <summary>
+        /// Edit Role.
+        /// <param name="roleId">Edit Role details by RoleId</param>
+        /// </summary>
+        /// <returns>Return RoleEdit view</returns>
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult RoleEdit(Guid roleId)//changed by uday for functional review point...3-7-2014;
         {
@@ -193,16 +150,21 @@ namespace RevenuePlanner.Controllers
                     ViewBag.roleid = roleId;
                     ViewBag.colorcode = rolelist.Where(role => role.RoleId == roleId).Select(role => role.ColorCode).FirstOrDefault();
 
-                    rolelist = rolelist.Where(a => a.RoleId != roleId).ToList();//review point
+                    rolelist = rolelist.Where(a => a.RoleId != roleId).ToList();
                 }
                 List<RoleModel> listrolemodel = new List<RoleModel>();
                 IList<SelectListItem> RoleList = new List<SelectListItem>();
                 RoleList = rolelist.Select(role => new SelectListItem() { Text = role.Title, Value = role.RoleId.ToString(), Selected = false })
                                 .OrderBy(it => it.Text).ToList();
+                
+                //// Get Application Activity.
                 var activitylist = bdsuserrepository.GetApplicationactivitylist(Sessions.ApplicationId);
+
+                //// Get Role Activity permissions by RoleId.
                 var filterlist = bdsuserrepository.GetRoleactivitypermissions(roleId);
                 ViewData["permissionlist"] = filterlist;
                 ViewData["activitylist"] = activitylist;
+
                 string ids = string.Empty;
                 if (filterlist.Count > 0)
                 {
@@ -229,6 +191,12 @@ namespace RevenuePlanner.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Delete Role.
+        /// <param name="roleid">User RoleId</param>
+        /// <param name="selectedrole">Role Text</param>
+        /// </summary>
+        /// <returns>Return RoleDelete partialview.</returns>
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult RoleDelete(Guid roleid, string selectedrole)
         {
@@ -269,13 +237,22 @@ namespace RevenuePlanner.Controllers
             return PartialView("RoleDelete");//name change by uday for functional review point...3-7-2014
         }
 
+        /// <summary>
+        /// Check User Role Permission.
+        /// <param name="roleid">User RoleId</param>
+        /// <param name="permission">Role Text</param>
+        /// </summary>
+        /// <returns>Return CheckPermission partialview.</returns>
         public ActionResult CheckPermission(Guid roleid, string permission)
         {
             try
             {
             List<User> user_list = new List<User>();
+
+                //// Get User Role mapping list by ApplicationId and RoleId.
             var user_role_mapping = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
-            //var user_activity_mapping = objBDSServiceClient.GetUserActivityPermission(Sessions.ApplicationId,)
+
+                //// Get Application Activity List.
             var activitylist = objBDSServiceClient.GetApplicationactivitylist(Sessions.ApplicationId);
             List<int> idsList = new List<int>();
             foreach (string id in permission.Split(','))
@@ -283,9 +260,10 @@ namespace RevenuePlanner.Controllers
                 idsList.Add(Convert.ToInt32(id));
             }
 
+                //// filter Activity list.
             var activity_CodeList = activitylist.Where(activity => idsList.Contains(activity.ApplicationActivityId)).ToList();
 
-
+                //// Get list of Users using User_Role mapping list.
                 foreach (var user_role_map in user_role_mapping)
                 {
                     List<string> user_activity_mapping = objBDSServiceClient.GetUserActivityPermission(user_role_map.UserId, Sessions.ApplicationId);
@@ -296,7 +274,6 @@ namespace RevenuePlanner.Controllers
                 }
 
                 ViewData["users"] = user_list;
-
                 ViewData["apptitle"] = activity_CodeList.Select(listt => listt.ActivityTitle).ToList();
             }
             catch (Exception ex)
@@ -317,6 +294,13 @@ namespace RevenuePlanner.Controllers
             return PartialView("CheckPermission");
         }
 
+        /// <summary>
+        /// Delete Role by RoelId.
+        /// <param name="delroleid">Delete RoleId</param>
+        /// <param name="reassignroleid">Reassign new RoleId</param>
+        /// <param name="LoginId">Check loginId with current loggined UserId</param>
+        /// </summary>
+        /// <returns>Return status flag value. in jsonresult</returns>
         [HttpPost]
         public JsonResult DeleteRole(Guid delroleid, Guid? reassignroleid, string LoginId = "")
         {
@@ -332,13 +316,13 @@ namespace RevenuePlanner.Controllers
             // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
             if (reassignroleid == null)
-            {
                 reassignroleid = Guid.Empty;
-            }
 
             try
             {
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+
+                //// Delete role and reassign new role value.
             int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId, Sessions.User.UserId, Sessions.User.ClientId);
             
             if (retval == 1)
@@ -369,6 +353,16 @@ namespace RevenuePlanner.Controllers
             return Json(new { status = false }, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Create New Role.
+        /// <param name="roledesc">Role Description</param>
+        /// <param name="checkbox">CheckboxId</param>
+        /// <param name="colorcode">Color code</param>
+        /// <param name="roleid">RoleId</param>
+        /// <param name="delpermission"></param>
+        /// <param name="LoginId">LoginId</param>
+        /// </summary>
+        /// <returns>Return status flag value.</returns>
         [HttpPost]
         public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission, string LoginId = "")
         {
@@ -388,6 +382,8 @@ namespace RevenuePlanner.Controllers
             string permissionID = checkbox.ToString();
 
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+
+                //// Create new Role with Details.
             int retval = objBDSServiceClient.CreateRole(roledesc, permissionID, colorcode, Sessions.ApplicationId, Sessions.User.UserId, roleid, delpermission,Sessions.User.ClientId);
             if (retval == 1)
             {
@@ -416,6 +412,13 @@ namespace RevenuePlanner.Controllers
             return Json(new { status = false }, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Create clone of Role.
+        /// <param name="copyroledesc">Copy Role Description</param>
+        /// <param name="originalroleid">Original RoleID</param>
+        /// <param name="LoginId">User LoginId</param>
+        /// </summary>
+        /// <returns>Return status flag value.</returns>
         [HttpPost]
         public JsonResult CopyRole(string copyroledesc, Guid originalroleid, string LoginId = "")
         {
@@ -430,7 +433,7 @@ namespace RevenuePlanner.Controllers
             }
             // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
-            if (copyroledesc != null && copyroledesc != string.Empty)
+            if (!string.IsNullOrEmpty(copyroledesc))
             {
                 BDSService.Role objrole = new BDSService.Role();
                 objrole.Description = copyroledesc;
@@ -440,8 +443,11 @@ namespace RevenuePlanner.Controllers
                 {
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                 int retvalcheck = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId,Sessions.User.ClientId);
+
+                    //// Not Duplicate Role.
                 if (retvalcheck == 1)
                 {
+                        //// Copy Role.
                     int retval = objBDSServiceClient.CopyRole(copyroledesc.Trim(), originalroleid, Sessions.ApplicationId, Sessions.User.UserId,Sessions.User.ClientId);
                     if (retval == 1)
                     {
@@ -479,7 +485,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Organization Hierarchy
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Return OrganizationHierarchy view</returns>
         public ActionResult OrganizationHierarchy()
         {
             // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
@@ -493,11 +499,12 @@ namespace RevenuePlanner.Controllers
                 lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
                 // To sort all users by role title, by Dharmraj, #579
                 lstUserHierarchy = lstUserHierarchy.OrderBy(u => u.RoleTitle).ToList();
-                List<BDSService.UserHierarchy> lstManagerUserHierarchy = lstUserHierarchy.Where(u => u.ManagerId == null).ToList();
+
+                //// Get list of Manager Users.
+                List<BDSService.UserHierarchy> lstManagerUserHierarchy = lstUserHierarchy.Where(user => user.ManagerId == null).ToList();
 
                 var result = lstManagerUserHierarchy.Select(u => CreateUserHierarchy(lstUserHierarchy, u)).ToList();
                 ViewBag.UserHierarchy = result;
-
             }
             catch (Exception e)
             {
@@ -513,9 +520,7 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
-
             return View();
-
         }
 
         /// <summary>
@@ -524,13 +529,13 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="lstUserHierarchy"></param>
         /// <param name="managerId"></param>
-        /// <returns></returns>
+        /// <returns>Return list of UserHierarchy</returns>
         public List<BDSService.UserHierarchy> GetSubUsers(List<BDSService.UserHierarchy> lstUserHierarchy, Guid? managerId)
         {
             if (managerId == null)
                 return null;
             else
-                return lstUserHierarchy.Where(u => u.ManagerId == managerId).ToList();
+                return lstUserHierarchy.Where(user => user.ManagerId == managerId).ToList();
         }
 
         /// <summary>
@@ -539,9 +544,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="lstUserHierarchy"></param>
         /// <param name="objUserHierarchy"></param>
-        /// <returns></returns>
+        /// <returns>Returns UserHierarchyModel</returns>
         public UserHierarchyModel CreateUserHierarchy(List<BDSService.UserHierarchy> lstUserHierarchy, BDSService.UserHierarchy objUserHierarchy)
         {
+            //// Set User Hierarchy details.
             Guid userid = objUserHierarchy.UserId;
             string FirstName = objUserHierarchy.FirstName;
             string LastName = objUserHierarchy.LastName;
@@ -550,7 +556,6 @@ namespace RevenuePlanner.Controllers
             string RoleTitle = objUserHierarchy.RoleTitle;
             string ColorCode = objUserHierarchy.ColorCode;
             string JobTitle = objUserHierarchy.JobTitle;
-            //Guid GeographyId = objUserHierarchy.GeographyId;  // Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
             var objGeography = db.Geographies.FirstOrDefault(g => g.GeographyId == objUserHierarchy.GeographyId);
             string Geography = objGeography == null ? string.Empty : objGeography.Title;
             string Phone = objUserHierarchy.Phone;
@@ -561,9 +566,12 @@ namespace RevenuePlanner.Controllers
             // Modified by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
             return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers }; 
         }
+        
         /// <summary>
         /// Added By: Mitesh Vaishnav for PL ticket #521
         /// View/Edit user permission.
+        /// <param name="Id">UserId</param>
+        /// <param name="Mode">UserPermission mode</param>
         /// </summary>
         public ActionResult ViewEditPermission(string Id, string Mode)
         {
@@ -574,10 +582,10 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
                 ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
+                //// Check User permissions.
                 if ((bool)ViewBag.IsUserAdminAuthorized == false && Mode.ToLower() != Enums.UserPermissionMode.View.ToString().ToLower() && Mode.ToLower() != Enums.UserPermissionMode.MyPermission.ToString().ToLower())
-                {
                     return RedirectToAction("Index", "NoAccess");
-                }
+                
                 // End - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
 
                 ViewBag.PermissionMode = Mode;
@@ -591,20 +599,25 @@ namespace RevenuePlanner.Controllers
                 ViewBag.RoleColorCode = roleColorCode;
                 ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
                 ViewBag.RoleName = userDetails.RoleTitle;
-                //ViewBag.userGeography = userDetails.GeographyId.ToString();   // Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
                 ViewBag.userBusinessUnit = userDetails.BusinessUnitId.ToString();
                 //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+                
+                //// Get Verticals list by ClientId.
                 var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId && ver.IsDeleted==false).ToList();
+                //// Get Geographies list by ClientId.
                 var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId && geo.IsDeleted==false).ToList();
+                //// Get BusinessUnit list by ClientId.
                 var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId && bu.IsDeleted==false).ToList();
+
                 //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
                 var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(UserId, Sessions.ApplicationId);
-                var allAtctivity = objBDSServiceClient.GetAllApplicationActivity(Sessions.ApplicationId);
+                var allActivity = objBDSServiceClient.GetAllApplicationActivity(Sessions.ApplicationId);
                 var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
 
 
-                foreach (var item in allAtctivity)
+                foreach (var item in allActivity)
                 {
+                    //// Set data to User_Activity_Permission model.
                     UserActivityPermissionModel uapobj = new UserActivityPermissionModel();
                     uapobj.ApplicationActivityId = item.ApplicationActivityId;
                     uapobj.ApplicationId = item.ApplicationId;
@@ -629,8 +642,10 @@ namespace RevenuePlanner.Controllers
                     userActivityPermissionList.Add(uapobj);
                 }
                 List<CustomRestrictionModel> customRestrictionList = new List<CustomRestrictionModel>();
+                //// Set data to Custom_Restriction model for Verticals.
                 foreach (var item in clientVerticals)
                 {
+                    
                     CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
                     cRestrictionobj.Title = item.Title;
                     cRestrictionobj.CustomField = Enums.CustomRestrictionType.Verticals.ToString();
@@ -639,17 +654,19 @@ namespace RevenuePlanner.Controllers
                     if (IsUserRestrictionExist != null)
                     {
                         string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
-                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(permission)).Value;
                         cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
                     }
                     else
                     {
                         string none = Enums.CustomRestrictionPermission.None.ToString();
-                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
+                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(none)).Value;
                         cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
                     }
                     customRestrictionList.Add(cRestrictionobj);
                 }
+
+                //// Set data to Custom_Restriction model for Geography.
                 foreach (var item in clientGeography)
                 {
                     CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
@@ -657,31 +674,26 @@ namespace RevenuePlanner.Controllers
                     cRestrictionobj.CustomField = Enums.CustomRestrictionType.Geography.ToString();
                     cRestrictionobj.CustomFieldId = item.GeographyId.ToString();
                     // Start - Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-                    //if (userDetails.GeographyId != item.GeographyId)
-                    //{
+                    
                         var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.GeographyId.ToString().ToLower() && ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()).FirstOrDefault() : null;
                         if (IsUserRestrictionExist != null)
                         {
                             string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
-                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(permission)).Value;
                             cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
                         }
                         else
                         {
                             string none = Enums.CustomRestrictionPermission.None.ToString();
-                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
+                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(none)).Value;
                             cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
                         }
-                    //}
-                    //else
-                    //{
-                    //    string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
-                    //    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
-                    //    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                    //}
+                    
                     // End - Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
                     customRestrictionList.Add(cRestrictionobj);
                 }
+
+                //// Set data to Custom_Restriction model for BusinessUnit.
                 foreach (var item in clientBusinessUnit)
                 {
                     CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
@@ -694,20 +706,20 @@ namespace RevenuePlanner.Controllers
                         if (IsUserRestrictionExist != null)
                         {
                             string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
-                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(permission)).Value;
                             cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
                         }
                         else
                         {
                             string none = Enums.CustomRestrictionPermission.None.ToString();
-                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
+                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(none)).Value;
                             cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
                         }
                     }
                     else
                     {
                         string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
-                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
+                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
                         cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                     }
                     customRestrictionList.Add(cRestrictionobj);
@@ -734,7 +746,11 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Added By: Mitesh Vaishnav
         /// update user's activity permissions.
+        /// <param name="permissionIds">comma separated permissionIds.</param>
+        /// <param name="userId"></param>
+        /// <param name="LoginId"></param>
         /// </summary>
+        /// <returns>Return status flag value.</returns>
         [HttpPost]
         public JsonResult SaveUserPermission(string permissionIds, string userId, string LoginId = "")
         {
@@ -754,8 +770,10 @@ namespace RevenuePlanner.Controllers
                 string[] arrPermissionId = permissionIds.Split(',');
                 Guid UserId = Guid.Parse(userId);
                 Guid CurrentUserID = Sessions.User.UserId;
-                int i = objBDSServiceClient.AddUserActivityPermissions(UserId, CurrentUserID, arrPermissionId.ToList(), Sessions.ApplicationId);
-                if (i >= 1)
+
+                //// Save User Activity Permissions.
+                int result = objBDSServiceClient.AddUserActivityPermissions(UserId, CurrentUserID, arrPermissionId.ToList(), Sessions.ApplicationId);
+                if (result >= 1)
                 {
                     return Json(new { status = true }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                 }
@@ -780,7 +798,10 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Added By: Mitesh Vaishnav
         /// Reset user's activity permissions as per his role default permission.
+        /// <param name="userId"></param>
+        /// <param name="LoginId"></param>
         /// </summary>
+        /// <returns>Return status flag value.</returns>
         [HttpPost]
         public JsonResult ResetToRoleDefault(string userId, string LoginId = "")
         {
@@ -799,8 +820,10 @@ namespace RevenuePlanner.Controllers
             {
                 Guid UserId = Guid.Parse(userId);
                 Guid creatorId = Sessions.User.UserId;
-                int i = objBDSServiceClient.resetToRoleDefault(UserId, creatorId, Sessions.ApplicationId);
-                if (i >= 1)
+
+                //// Reset Default Role settings.
+                int result = objBDSServiceClient.resetToRoleDefault(UserId, creatorId, Sessions.ApplicationId);
+                if (result >= 1)
                 {
                     TempData["SuccessMessage"] = Common.objCached.UserPermissionsResetToDefault;
                     return Json(new { status = true }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check

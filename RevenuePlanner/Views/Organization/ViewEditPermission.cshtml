@@ -10,7 +10,6 @@
     string varUrl = Url.Action("vieweditpermission", "Organization");
     string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission"; 
     //Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
-    string PageTitle = "";
     if (ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
     {
         ViewBag.PageTitle = "MyPermission";
@@ -344,13 +343,8 @@ else
                                 <div class="dd-row">
                                     <label>@item.Title</label>
                                         @* Commented By Sohel Pathan on 18/07/2014 for PL ticket #594 *@
-                                        @*@if (ViewBag.userGeography != item.CustomFieldId)
-                                        {*@
                                             @if (@item.Permission == 0)
                                             {
-
-
-
                                         <span class="radioGrp">
                                             <span class="check_signup">
                                                 <input type="radio" name="radio_geography_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" checked="checked" />
@@ -405,29 +399,6 @@ else
                                                 </span>
                                                 </span>
                                     }
-                                        @* Start - Commented By Sohel Pathan on 18/07/2014 for PL ticket #594 *@
-                                        @*}
-                                        else
-                                        {
-
-                                            <span class="radioGrp">
-                                                <span class="check_signup">
-                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" disabled="disabled" onclick="alert('hi'); return false;"/>
-                                                    None
-                                                </span>
-
-                                                <span class="check_signup">
-                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" disabled="disabled"  />
-                                                    View Only
-                                                </span>
-                                                <span class="check_signup">
-                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" checked="checked" disabled="disabled" />
-                                                    View/Edit
-                                                </span>
-                                            </span>
-                                        }*@
-                                        @* End - Commented By Sohel Pathan on 18/07/2014 for PL ticket #594 *@
-
                                 </div>
                             }
 
@@ -567,7 +538,6 @@ else
                         </div>
                         <div style="z-index: 9999" class="modal-backdrop fade in" id="divbackgroundsharetactic1"></div>
                     </div>
-                    @*fdfd*@
                     <div class="bottom-btns">
                         <span class="btn-group">
                             <button class="btn btn-blue btn-large without-text-shadow source-sans-proregular" type="submit" value="Submit" id="savebtn">Save &amp; Close</button>
@@ -612,9 +582,6 @@ else
             var msgspan = "@Common.objCached.UserPermissionsResetToDefault";
             $("#spanSuccessMessage").text(msgspan);
             $("#successMessage").slideDown(600);
-            //$("#successMessage").slideUp(1200).promise().always(function () {
-            //    close_popup();
-            //});
         }
        
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
@@ -624,7 +591,6 @@ else
             $('.tipsy').addClass('blue-tipsy');
 
             var tipsyOffset = $('.tipsy').offset();
-            //alert(tipsyOffset.top);
             $('.tipsy').css('top', tipsyOffset.top - 38);
         };
 
@@ -740,8 +706,5 @@ else
         url = '@Url.Content("~/Organization/OrganizationHierarchy")';
         window.location.href = url;
     });
-
-
-
 </script>
 

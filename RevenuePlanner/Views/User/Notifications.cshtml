@@ -8,14 +8,12 @@
     ViewBag.Title = "My Notifications";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    //string isViewOnly = ViewBag.IsViewOnly;
     int SMCount = (int)ViewBag.SMCount;
     int AMCount = (int)ViewBag.AMCount;
     ViewBag.PageTitle = "Notifications";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     ViewBag.ModuleTitle = "MyProfile";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
 }
 
-@*@Html.Hidden("IsViewOnly", isViewOnly)*@
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 
@@ -106,14 +104,11 @@
                 </div>
             }
 
-            @*@if (isViewOnly != "true")
-            {*@
                 <div class="cf inputs-aligned-horizontal">
                     <div class="container-button">
                         <input type="submit" value="Save" title="save" id="saveNotifications" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
                     </div>
                 </div>
-            @*}*@
         </div>
     </div>
 </div>
@@ -123,10 +118,6 @@
     $(document).ready(function () {
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-
-        //if ($('#IsViewOnly').val() != '') {
-        //    $("#content :input").attr("disabled", true);
-        //}
 
         /*close x event on message*/
         $(".close").click(function (e) {
@@ -140,7 +131,6 @@
         }
         else {
             $("#successMessage").slideDown(1200);
-           // $("#successMessage").slideUp(3000);
         }
         if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
             $("#errorMessage").slideUp(400);
@@ -175,7 +165,3 @@
        });
     });
 </script>
-
-@*@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}*@

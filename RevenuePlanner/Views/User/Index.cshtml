@@ -10,12 +10,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.PageTitle = "TeamMember";
     ViewBag.ModuleTitle = "MyProfile";
-    //string isViewOnly = ViewBag.IsViewOnly;
-    //var isAdmin = (string)ViewBag.IsAdmin;
-    //var permRoleCodesForDel = (string)ViewBag.PermRoleCodesForDel;
 }
 
-@*@Html.Hidden("IsViewOnly", isViewOnly)*@
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 
@@ -101,7 +97,7 @@
                             <td title="@item.RoleTitle">
                                 @Html.DisplayFor(model => item.RoleTitle)
                             </td>
-                            @if((bool)ViewBag.IsUserAdminAuthorized) //@if (permRoleCodesForDel != null)
+                            @if((bool)ViewBag.IsUserAdminAuthorized) 
                             {
                                 //if (permRoleCodesForDel.Contains(item.RoleCode))
                                 //{
@@ -122,22 +118,14 @@
                                         </a>
                                     }
                                     @* End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
-                                </td>@*
+                                </td>
                                     }
                                     else
                                     {
                                 <td class="userDelete">
                                     <span></span>
                                 </td>
-                                    }*@
                                 }
-                                else
-                                {
-                                <td class="userDelete">
-                                    <span></span>
-                                </td>
-                                }
-                            @*}*@
                         </tr>
                     }
                 </tbody>
@@ -151,7 +139,6 @@
         @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
         @if ((bool)ViewBag.IsUserAdminAuthorized)
         {
-            @*<div class="span2 myaccount-colum"></div>*@   // Modified by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62
             if ((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers != null)
                 {
                     if (((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers).Count > 0)
@@ -202,7 +189,6 @@
     @* Start - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
     <div class="row" id="dvEditUser" style="display: none;">
         <div class="span2 content-colum-left content-img-user">
-            @*<img id="userImage" src="@Url.Action("LoadUserImage", "User", new { id = string.Empty, width = 60, height = 60 })" class="img-user" style="height:140px; width:140px;">*@
             <div id="dvUserImage"></div>
 </div>
         <div id="dvEditUserDetails"></div>
@@ -216,12 +202,6 @@
         $(".selectBox select").selectbox(); @* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-
-        //if ($('#IsViewOnly').val() != '') {
-        //    $('#lnkAddUser').remove();
-        //    //$("#userTable:input").attr("disabled", true);
-        //}
-
         /*close x event on message*/
         $(".close").click(function (e) {
             e.stopPropagation();
@@ -234,7 +214,6 @@
         }
         else {
             $("#successMessage").slideDown(1200);
-           // $("#successMessage").slideUp(3000);
         }
         if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
             $("#errorMessage").slideUp(400);
@@ -245,9 +224,6 @@
         }
 
         $('.myteam td').click(function () {
-            //if ($('#IsViewOnly').val() != '') {
-            //    return false;
-            //}
             var tdClass = this.getAttribute('class');
             var userId = $(this).closest('tr').attr('id');
             if (tdClass == null || tdClass == '') {
@@ -266,7 +242,6 @@
     // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
     function DeleteOnEdit(userId) {
         alert('@ViewBag.NotifyBeforManagerDeletion');
-        //window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam&isForDelete=true";
         OnTeamMemberClick(userId);
     }
 
@@ -322,8 +297,6 @@
         $('#ErrMsg').val('');
         $("#successMessage").slideUp(1);
         $("#errorMessage").slideUp(1);
-        //$("#successMessage").css('display', 'none');
-        //$("#errorMessage").css('display', 'none');
         $.ajax({
             url: '@Url.Content("~/user/EditUserDetails")', type: "GET",
             data: { usrid: userid, src: 'myteam' },
@@ -345,8 +318,6 @@
                     LoadUserImage(userid);
                 }
                 }
-                //alert(data);
-                //window.location.href = data;
             }
         });
     }
@@ -379,7 +350,3 @@
     }
     @* End - Added by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
 </script>
-
-@*@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}*@
