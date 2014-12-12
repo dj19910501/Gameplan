@@ -1,13 +1,4 @@
 ﻿@using RevenuePlanner.Helpers
-@{
-    //string AudienceLabel = Common.CustomLabelFor(Enums.CustomLabelCode.Audience);
-    //string AudienceLabelTitle = string.Empty;
-    //if (AudienceLabel.Length > 10)
-    //{
-    //    AudienceLabelTitle = AudienceLabel;
-    //    AudienceLabel = AudienceLabel.Substring(0, 10) + "...";
-    //}
-}
 <div class="budgetReport">
     <div style="margin-left: 18px; margin-right: 20px; margin-bottom: 10px; width: 97%; float: left;">
         <div class="title-header source-sans-proregular bold budget-title">
@@ -71,20 +62,12 @@
             advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
         });
         $(".selectBox select").selectbox();
-        //GenerateCustomizeMultiselect('ddlTabViewBy', true, true, false);
         
         $(".sbSelector").click(function () {
             $(".ui-multiselect-menu").each(function () {
                 $(this).css("display", "none");
             });
         });
-
-
-        @*$("#ddlViewAudience").next().attr('title', '@AudienceLabelTitle');*@
-
-       
-       
-
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         VerticalIds = GetFilterId(ddlViewVertical);
         GeographyIds = GetFilterId(ddlViewGeography);
@@ -118,12 +101,6 @@
 
         });
     }
-
-    @*function LoadBudgetData() {
-        if (isByAllocated) {
-            $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?GeographyIds=' + GeographyIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + Year + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId);
-        }
-    }*@
 
     function DisableViewByAllocated() {
         $('#ddlAllocatedBySelectBox').find("li").each(function () {

@@ -104,18 +104,13 @@
             $(sortid).addClass('DownArrowReportBlue');
         }
         else if ($(sortid).hasClass('UpperArrowReportBlue')) {
-            //$(sortid).removeClass('UpperArrowReport');
-            //$(sortid).addClass('UpperArrowReportBlue');
         }
         else if ($(sortid).hasClass('DownArrowReportBlue')) {
-           // $(sortid).removeClass('UpperArrowReport');
-           // $(sortid).addClass('UpperArrowReportBlue');
         }
     }
 
     LoadBudgetSortingEvent();
     $(document).ready(function () {
-       // $('.budget-table .sub').css('display', 'block');
 
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
@@ -137,7 +132,6 @@
         else {
             intWidth = $(this).width();
         }
-        //$(this).attr('title', intWidth);
         return $(this).width();
     }).get();
 
@@ -152,20 +146,10 @@
 
         //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
         var data = $(".column1").get(0);
-        //var trCounter = 0;
-        //var OpenPanelCounter = 0;
         $(".budget-table .column1 > tr").each(function () {
             $(this).width(data.scrollWidth);
-            //trCounter = trCounter + 1;
         });
 
-        //OpenPanelCounter = $('.budget-table .column1 > tr .firstLevel.open').length;
-        //if (OpenPanelCounter == (trCounter - 2)) {
-        //    $('.budget-table .column1').css('overflow-x', 'hidden');
-        //}
-        //else {
-        //    $('.budget-table .column1').css('overflow-x', 'auto');
-        //}
     });
 
     $("#campaignLevel").css('background', '#F2F2F2');

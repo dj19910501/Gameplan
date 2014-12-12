@@ -13,10 +13,6 @@
       <span class="margin-left20px">
              @Html.DropDownList("ddlChildRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"))
          </span>
-         @*<button id="btnMultiselect_ddlTempViewBy" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" aria-haspopup="true">
-                <span>APAC</span>
-                <span class="ui-icon ui-icon-triangle-1-s"></span>
-            </button>*@
     </div>
     </div>
 
@@ -88,7 +84,6 @@
     <div class="title-header-reports border-btm">
         <h4>Revenue Realization</h4>
             <div id="DivSummaryButtonsRevenueRealization">
-            @*<span class="selectBox" id="ddlBusinessUnitSelectBox">*@
                 @if (RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds != null && RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.Count == 1)
                 {
                     @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title", @RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.FirstOrDefault()), new { @class = "ddlStyleReport", @disabled = "disabled" })
@@ -99,26 +94,12 @@
                     @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title"), new { @class = "ddlStyleReport" })
                     @Html.Hidden("hdnBusinessUnitId", false);
                 }
-            @*</span>
-            <span class="selectBox" id="ddlCampaignSelectBox">*@
-                @*<select id="ddlCampaign" name="ddlCampaign" class="ddlStyleReport">
-                    <option value="0">All Campaigns</option>
-                </select>*@
                  @Html.DropDownList("ddlCampaign", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"), new { @class = "ddlStyleReport" })
-            @*</span>
-            <span class="selectBox" id="ddlProgramSelectBox">*@
-                @*<select id="ddlProgram" name="ddlProgram" class="ddlStyleReport">
-                    <option value="0">All Programs</option>
-                </select>*@
+            
                   @Html.DropDownList("ddlProgram", new SelectList((System.Collections.IEnumerable)ViewBag.ProgramDropdownList, "PlanProgramId", "Title"), new { @class = "ddlStyleReport" })
-            @*</span>
-            <span class="selectBox" id="ddlTacticSelectBox">*@
-              @*  <select id="ddlTactic" name="ddlTactic" class="ddlStyleReport">
-                    <option value="0">All Tactics</option>
-                </select>*@
+            
                   @Html.DropDownList("ddlTactic", new SelectList((System.Collections.IEnumerable)ViewBag.TacticDropdownList, "PlanTacticId", "Title"), new { @class = "ddlStyleReport" })
-            @*</span>*@
-
+           
         </div>
     </div>
         
@@ -194,12 +175,7 @@
                 @if (RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds != null && RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.Count > 1)
                 {
                     <th class="border-r table_header">
-                      @*  <span class="selectBox" id="ddlBusinessSelectBox">*@
-                           @* <select id="ddlBusinessUnitContribution" name="ddlBusinessUnitContribution" class="ddlStyleReport">
-                                <option value="0">All Business Units</option>
-                            </select>*@
                          @Html.DropDownList("ddlBusinessUnitContribution",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListBusinessUnit, "Value", "Text"), new { @class = "ddlStyleReport" })
-                        @*</span>*@
                     </th>
                 }
                 else
@@ -209,14 +185,11 @@
                 }
                 <th class="table_header">Plan</th>
                 <th class="table_header">Actual</th>
-                @*<th class="table_header">Trend</th>*@
                 <th class="border-r table_header"></th>
                 <th class="table_header">Plan</th>
                 <th class="table_header">Actual</th>
-                @*         <th class="table_header">Trend</th>*@
                 <th class="border-r table_header"></th>
                 <th class="table_header">Trend</th>
-                @*<th class="table_header">Pipeline Converage</th>*@
                 <th class="table_header">ROI</th>
             </tr>
         </thead>
@@ -277,8 +250,6 @@
             var selectedOption = $(this).val();
             loadChildListData(selectedOption, ddlChildRevenueToPlanId, false);
         });
-       // loadChildListData($('#ddlParentRevenueSummery').val(), ddlChildRevenueSummeryId, true);
-        // loadChildListData($('#ddlParentRevenueToPlan').val(), ddlChildRevenueToPlanId, false);
         LoadData($('#ddlChildRevenueSummery').val());
         FillRevenueToPlan($('#ddlChildRevenueToPlan').val());
         function loadChildListData(parentOption,id, isRevenueSummary) {
@@ -348,7 +319,6 @@
 
         LoadHeaderData();
         LoadDataRevenueRealization()
-       // fillCampaignDropdown();
         function LoadHeaderData() {
             $.ajax({
                 type: 'POST',
@@ -390,10 +360,7 @@
                 $(id).addClass("green-value");
                 $(id).text("+" + absValue);
             }
-
         }
-
-
         var totalMonthIncluded = 12;
         var sumColProjectedRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         var sumColActualRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -498,8 +465,6 @@
                     $('#table_reports > tbody').append('<tr><td colspan="16" class="gray" style="text-align:left;">No saved reports to display.</td></tr>');
                 }
             }
-            /*change value on MQL totals*/
-            // sumMQLTotals();
         }
 
         function addRowReport(_index, _id, _title, _monthList, _trevenueProjected, _tProject, _tRevenueActual, _tActual, _type) {
@@ -676,8 +641,6 @@
                             $(amid).html(FormatINQMQL(blueMql1, true));
                             var pmid = "#totalMQLP" + cid;
                             $(pmid).html(FormatINQMQL(blueMql2, true));
-                            // $(this).find('.div-line').html(FormatINQMQL(blueMql1, false));
-                            //  $(this).find('.div-below-line').html(FormatINQMQL(blueMql2, false));
                             sumCol[totalMonthIncluded] = sumCol[totalMonthIncluded] + blueMql1;
                             sumCol2[totalMonthIncluded] = sumCol2[totalMonthIncluded] + blueMql2;
                             return false;
@@ -706,7 +669,6 @@
             var isreturn = false;
             var parentLabelRevenueToPLan = $('#ddlParentRevenueToPlan').val();
             var cQuarter = "@Common.GetCurrentQuarter()"
-            //var quarter = ((n - 1) / 3) + 1;
             var quarter = parseInt(cQuarter);
             if (selectOption == "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisquarter.ToString()") {
                 if (quarter == 1) {
@@ -1330,7 +1292,6 @@
 
     }
         function LoadDataRevenueRealization() {
-            //$(".selectBox select").selectbox('detach');
             var id;
             var Type = '';
             var tacticId = $("#ddlTactic").val();
@@ -1364,7 +1325,6 @@
         success: function (r) {
             reportTableInfo3 = r;
             fillReportTable3();
-            //$(".selectBox select").selectbox('attach');
             if ($("#hdnBusinessUnitId").val() == 'True') {
                 $("#ddlBusinessUnitSelectBox").find('.sbSelector').each(function () {
                     $(this).unbind("click");
@@ -1751,27 +1711,22 @@
         $('#ddlParentRevenueContribution').bind('change', function () {
             var id = $(this).val();
             if (id == "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
-                  //  $("#ddlBusinessUnitContribution").css("display", "none");
                     $("#ddlBusinessUnitContribution").next().hide();
                 LoadRevenueContributionData();
                 }
                 else {
-                    //$("#ddlBusinessUnitContribution").css("display", "block");
                     $("#ddlBusinessUnitContribution").next().show();
                 addHeaderPart();
             }
             
         });
         
-        //addHeaderPart();
         LoadRevenueContributionData();
         function LoadRevenueContributionData() {
             var buid = 0;
-            // if (parentLabelContribution != "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
             if ($("#ddlBusinessUnitContribution").length > 0) {
             buid = $("#ddlBusinessUnitContribution").val();
             }
-            // }
             var isBusiness = true;
             if (buid == 0) {
                 isBusiness = false;
@@ -1796,7 +1751,6 @@
         }
         function AddDropdown() {
             
-            //$(".selectBox select").selectbox("detach");
             var plabel = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
             $.ajax({
                 type: 'POST',
@@ -1808,13 +1762,11 @@
                     $.each(data, function (index, optionData) {
                         $("#ddlBusinessUnitContribution").append("<option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
                     });
-                    //$(".selectBox select").selectbox("attach");
                     $("#ddlBusinessUnitContribution").multiselect("refresh");
                     LoadRevenueContributionData();
                 },
                 error: function () {
                     $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
-                    //$(".selectBox select").selectbox("attach");
                     $("#ddlBusinessUnitContribution").multiselect("refresh");
                     GoToLogin();
                 }
@@ -1849,8 +1801,7 @@
             htmlLastRow += '<tr>' +
                                '<td class="total-row border-r">Total</td>' +
                                '<td class="total-row">' + FormatNumber(planRevenueTotal, false) + '</td>' +
-                               '<td class="total-row">' + FormatNumber(actualRevenueTotal, false) + '</td>';// +
-            //'<td class="total-row">' + FormatNumber(trendRevenueTotal, false) + '</td>';
+                               '<td class="total-row">' + FormatNumber(actualRevenueTotal, false) + '</td>';
             var perTotalRevenue = 0;
             if (planRevenueTotal != 0) {
                 perTotalRevenue = ((parseFloat(actualRevenueTotal) - parseFloat(planRevenueTotal)) / parseFloat(planRevenueTotal)) * 100;
@@ -1868,10 +1819,8 @@
             else {
                 htmlLastRow += '<td class="total-row border-r"><span>' + FormatNumber(perTotalRevenue, true) + '</span></td>';
             }
-            //'<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span class="pull-left">0</span></td>' +
             htmlLastRow += '<td class="total-row">' + FormatNumber(planCostTotal, false) + '</td>' +
-               '<td class="total-row">' + FormatNumber(actualCostTotal, false) + '</td>';// +
-            //'<td class="total-row">' + FormatNumber(trendCostTotal, false) + '</td>';
+               '<td class="total-row">' + FormatNumber(actualCostTotal, false) + '</td>';
 
             var perTotalCost = 0;
             if (planCostTotal != 0) {
@@ -1891,8 +1840,7 @@
                 htmlLastRow += '<td class="total-row border-r"><span>' + FormatNumber(perTotalCost, true) + '</span></td>';
             }
 
-            htmlLastRow += '<td class="total-row">' + FormatNumber(runRateTotal, false) + '</td>';//+
-            //'<td class="total-row">' + FormatNumber(pipelineTotal, false) + '</td>';
+            htmlLastRow += '<td class="total-row">' + FormatNumber(runRateTotal, false) + '</td>';
 
             var perRevSpend = 0;
             if (totalRevSpendCost != 0) {
@@ -1901,8 +1849,6 @@
             else if (totalRevSpendRevenue) {
                 perRevSpend = 100;
             }
-            // Change for PL issue 353 to percentage.
-            //perRevSpend = (Math.round(perRevSpend * 100) / 100)
             if (perRevSpend < 0) {
                 htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perRevSpend) * 100, true) + '</span></td>';
             }
@@ -1937,8 +1883,7 @@
             htmlCon += '<tr>' +
                                 '<td class="border-r">' + _title + '</td>' +
                                 '<td>' + FormatNumber(_PlanRevenue, false) + '</td>' +
-                                '<td>' + FormatNumber(_ActualRevenue, false) + '</td>';// +
-            //'<td>' + FormatNumber(_TrendRevenue, false) + '</td>';
+                                '<td>' + FormatNumber(_ActualRevenue, false) + '</td>';
             var perRevenue = 0;
             if (_PlanRevenue != 0) {
                 perRevenue = ((parseFloat(_ActualRevenue) - parseFloat(_PlanRevenue)) / parseFloat(_PlanRevenue)) * 100;
@@ -1957,8 +1902,7 @@
                 htmlCon += '<td class="border-r"><span>' + FormatNumber(perRevenue, true) + '</span></td>';
             }
             htmlCon += '<td>' + FormatNumber(_PlanCost, false) + '</td>' +
-                                    '<td>' + FormatNumber(_ActualCost, false) + '</td>';// +
-            //'<td>' + FormatNumber(_TrendCost, false) + '</td>';
+                                    '<td>' + FormatNumber(_ActualCost, false) + '</td>';
             var perCost = 0;
             if (_PlanCost != 0) {
                 perCost = ((parseFloat(_ActualCost) - parseFloat(_PlanCost)) / parseFloat(_PlanCost)) * 100;
@@ -1977,15 +1921,12 @@
                 htmlCon += '<td class="border-r"><span>' + FormatNumber(perCost, true) + '</span></td>';
             }
 
-            htmlCon += '<td>' + FormatNumber(_RunRate, false) + '</td>'; //+
-            //'<td>' + FormatNumber(_PipelineCoverage, false) + '</td>';
+            htmlCon += '<td>' + FormatNumber(_RunRate, false) + '</td>'; 
             if (_RevSpend < 0) {
                 // Change related to PL Ticket 353, ROI in percentage
-                //htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + numberWithCommas(Math.round(Math.abs(_RevSpend) * 100) / 100) + '</span></td>';
                 htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(_RevSpend) * 100, true) + '</span></td>';
             }
             else if (_RevSpend > 0) {
-                //htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + numberWithCommas(Math.round(_RevSpend * 100) / 100) + '</span></td>';
                 htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(_RevSpend * 100, true) + '</span></td>';
             }
             else {
