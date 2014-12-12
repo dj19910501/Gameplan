@@ -584,6 +584,14 @@
     <div id="cErrorDuplicatePlan">@Html.Raw(HttpUtility.HtmlDecode((string)ViewBag.ErrorMessageDuplicatePlan))</div>
 </div>
 <!--error message-->
+@* Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 *@
+<!--error message Inspect Popup-->
+<div id="errorMessageInspectPopup" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <div id="cErrorInspectPopup"></div>
+</div>
+<!--error message Inspect Popup-->
+@* End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 *@
 <div class="light-blue-chart cf" id="planHeader">
     @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
@@ -1549,10 +1557,27 @@
             var strflg = "";
             var PlanIdsCustom;
             SetGantt();
-            ShowInspectForPlanTacticId();
-            //functions added to show campagin and program popup from email url link click when email sent to user when comapign or program shared
-            ShowInspectForPlanCampaignId();
-            ShowInspectForPlanProgramId();
+
+            // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
+            if ('@((bool)ViewBag.ShowInspectPopup)' != '@false') {
+                ShowInspectForPlanTacticId();
+                //functions added to show campagin and program popup from email url link click when email sent to user when comapign or program shared
+                ShowInspectForPlanCampaignId();
+                ShowInspectForPlanProgramId();
+            }
+            else {
+                if ($('#cErrorInspectPopup').html() == '') {
+                    $('#cErrorInspectPopup').html('<strong>Error! </strong> ' + '@ViewBag.ShowInspectPopupErrorMessage');
+                    $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+                    $('#errorMessageInspectPopup').slideDown(3000);
+                }
+                else {
+                    $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+                    $('#errorMessageInspectPopup').slideUp(400);
+                }
+            }
+            // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
+
             if (activeMenu.toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 SetBusinessUnitSection();
                 PlanIdsCustom = filters.SelectedPlans.toString();

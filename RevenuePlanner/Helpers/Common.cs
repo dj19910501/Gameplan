@@ -4275,7 +4275,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="planTacticIds">List of id</param>
         /// <param name="type">Section name(Like Campaign,Program and Tactic)</param>
         /// <returns>List of ViewbyModel</returns>
-        public static List<ViewByModel> GetCustomFields(List<int> tacticids,List<int> programids, List<int> campaignids)
+        public static List<ViewByModel> GetCustomFields(List<int> tacticids, List<int> programids, List<int> campaignids)
         {
             MRPEntities db = new MRPEntities();
             List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
@@ -4287,7 +4287,7 @@ namespace RevenuePlanner.Helpers
             var customfieldentity = (from customfield in customfieldlist
                                      join cfe in db.CustomField_Entity on customfield.CustomFieldId equals cfe.CustomFieldId
                                      select cfe).ToList();
-            
+
             var campaigncustomids = customfieldentity.Where(cfe => campaignids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
             List<ViewByModel> lstCustomFieldsViewByTabCampaign = customfieldlist.Where(cf => cf.EntityType == CampaignCustomText && campaigncustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = CampaignCustomTitle + cf.CustomFieldId.ToString() }).ToList();
             lstCustomFieldsViewByTabCampaign = lstCustomFieldsViewByTabCampaign.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
@@ -4825,6 +4825,108 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["ApplicationName"] = applicationName;
             }
         }
+
+        #region Validate share link of Notification email for Inspect popup
+        /// <summary>
+        /// Function to validate shared link for cases such as Valid Entity, is deleted entity, or cross client login
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>11/12/2014</CreatedDate>
+        /// <param name="PlanId">planId from query string parameter of shared link</param>
+        /// <param name="InspectEntityId">planCampaignId/planProgramId/planTacticId from query string parameter of shared link</param>
+        /// <param name="EntityType">EntityType Campaign/Program/Tactic/ImprovementTactic as per InspectEntityId from query string parameter of shared link</param>
+        /// <param name="IsDeleted">out parameter : flag to indicate Entity is deleted or not</param>
+        /// <param name="IsEntityExists">out parameter : flag to indicate Entity exists in DB or not</param>
+        /// <param name="IsCorrectPlanId">out parameter : flag to indicate planId given in shared link is valid or not</param>
+        /// <returns>returns flag to indicate user is valid or not with some out parameters</returns>
+        public static bool ValidateNotificationShaedLink(int PlanId, int InspectEntityId, string EntityType, out bool IsDeleted, out bool IsEntityExists, out bool IsCorrectPlanId)
+        {
+            using (MRPEntities objMRPEntities = new MRPEntities())
+            {
+                bool isValidUser = false;
+                IsDeleted = false;
+                IsEntityExists = false;
+                IsCorrectPlanId = false;
+
+                try
+                {
+                    if (EntityType.Equals(Enums.PlanEntity.Tactic.ToString()))
+                    {
+                        var entityObj = objMRPEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == InspectEntityId).Select(tactic => new { tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnit.ClientId, tactic.IsDeleted, tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId });
+                        if (entityObj.Count() != 0)
+                        {
+                            IsEntityExists = true;
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            {
+                                isValidUser = true;
+                                IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
+                                if (entityObj.Select(entity => entity.PlanId).First() == PlanId)
+                                {
+                                    IsCorrectPlanId = true;
+                                }
+                            }
+                        }
+                    }
+                    else if (EntityType.Equals(Enums.PlanEntity.Program.ToString()))
+                    {
+                        var entityObj = objMRPEntities.Plan_Campaign_Program.Where(program => program.PlanProgramId == InspectEntityId).Select(program => new { program.Plan_Campaign.Plan.Model.BusinessUnit.ClientId, program.IsDeleted, program.Plan_Campaign.Plan.PlanId });
+                        if (entityObj.Count() != 0)
+                        {
+                            IsEntityExists = true;
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            {
+                                isValidUser = true;
+                                IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
+                                if (entityObj.Select(entity => entity.PlanId).First() == PlanId)
+                                {
+                                    IsCorrectPlanId = true;
+                                }
+                            }
+                        }
+                    }
+                    else if (EntityType.Equals(Enums.PlanEntity.Campaign.ToString()))
+                    {
+                        var entityObj = objMRPEntities.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == InspectEntityId).Select(campaign => new { campaign.Plan.Model.BusinessUnit.ClientId, campaign.IsDeleted, campaign.Plan.PlanId });
+                        if (entityObj.Count() != 0)
+                        {
+                            IsEntityExists = true;
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            {
+                                isValidUser = true;
+                                IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
+                                if (entityObj.Select(entity => entity.PlanId).First() == PlanId)
+                                {
+                                    IsCorrectPlanId = true;
+                                }
+                            }
+                        }
+                    }
+                    else if (EntityType.Equals(Enums.PlanEntity.ImprovementTactic.ToString()))
+                    {
+                        var entityObj = objMRPEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => improvementTactic.ImprovementPlanTacticId == InspectEntityId).Select(improvementTactic => new { improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.BusinessUnit.ClientId, improvementTactic.IsDeleted, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId });
+                        if (entityObj.Count() != 0)
+                        {
+                            IsEntityExists = true;
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            {
+                                isValidUser = true;
+                                IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
+                                if (entityObj.Select(entity => entity.PlanId).First() == PlanId)
+                                {
+                                    IsCorrectPlanId = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(ex);
+                }
+                return isValidUser;
+            }
+        }
+        #endregion
     }
 
     /// <summary>

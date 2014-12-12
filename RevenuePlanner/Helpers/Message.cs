@@ -2286,6 +2286,48 @@ private string _CannotAllocateMorethanRemainingBudgeted;
 
         //// End - Ticket #998, by Pratik chauhan
 
+        // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
+        private string _CrossClientLoginForInspectPopup;
+
+        public string CrossClientLoginForInspectPopup
+        {
+            get { return _CrossClientLoginForInspectPopup; }
+            set { _CrossClientLoginForInspectPopup = value; }
+        }
+
+        private string _DeletedEntityForInspectPopup;
+
+        public string DeletedEntityForInspectPopup
+        {
+            get { return _DeletedEntityForInspectPopup; }
+            set { _DeletedEntityForInspectPopup = value; }
+        }
+
+        private string _CustomRestrictionFailedForInspectPopup;
+
+        public string CustomRestrictionFailedForInspectPopup
+        {
+            get { return _CustomRestrictionFailedForInspectPopup; }
+            set { _CustomRestrictionFailedForInspectPopup = value; }
+        }
+
+        private string _FakeEntityForInspectPopup;
+
+        public string FakeEntityForInspectPopup
+        {
+            get { return _FakeEntityForInspectPopup; }
+            set { _FakeEntityForInspectPopup = value; }
+        }
+
+        private string _InvalidURLForInspectPopup;
+
+        public string InvalidURLForInspectPopup
+        {
+            get { return _InvalidURLForInspectPopup; }
+            set { _InvalidURLForInspectPopup = value; }
+        }
+        // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
+
         #endregion
 
         #region  Functions
@@ -2996,6 +3038,23 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                         case "IntegrationFolderPathSaved":
                                             _IntegrationFolderPathSaved = strMsgValue;
                                             break;
+                                        // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
+                                        case "CrossClientLoginForInspectPopup":
+                                            _CrossClientLoginForInspectPopup = strMsgValue;
+                                            break;
+                                        case "DeletedEntityForInspectPopup":
+                                            _DeletedEntityForInspectPopup = strMsgValue;
+                                            break;
+                                        case "FakeEntityForInspectPopup":
+                                            _FakeEntityForInspectPopup = strMsgValue;
+                                            break;
+                                        case "CustomRestrictionFailedForInspectPopup":
+                                            _CustomRestrictionFailedForInspectPopup = strMsgValue;
+                                            break;
+                                        case "InvalidURLForInspectPopup":
+                                            _InvalidURLForInspectPopup = strMsgValue;
+                                            break;
+                                        // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
                                     }
                                 }
                                 i = i + 1;

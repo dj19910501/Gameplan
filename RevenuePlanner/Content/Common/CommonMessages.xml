@@ -865,4 +865,26 @@
 		<value>Folder paths saved.</value>
 	</Field>
 	<!--End Added by Pratik -->
+  <!--Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 --> 
+  <Field>
+    <Name>CrossClientLoginForInspectPopup</Name>
+    <value>You may not have required permissions to view this activity.</value>
+  </Field>
+  <Field>
+    <Name>DeletedEntityForInspectPopup</Name>
+    <value>Activity you are trying to view is deleted.</value>
+  </Field>
+  <Field>
+    <Name>FakeEntityForInspectPopup</Name>
+    <value>Activity you are trying to view is deleted.</value>
+  </Field>
+  <Field>
+    <Name>CustomRestrictionFailedForInspectPopup</Name>
+    <value>You may not have required permissions to view this activity.</value>
+  </Field>
+  <Field>
+    <Name>InvalidURLForInspectPopup</Name>
+    <value>Activity you are trying to view is invalid or deleted.</value>
+  </Field>
+  <!--End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 -->
 </Messages>

@@ -69,6 +69,26 @@ namespace RevenuePlanner.Controllers
 
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             ViewBag.IsImprovement = isImprovement;
+            // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
+            if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+            {
+                currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement);
+            }
+            else if (activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
+            {
+                ViewBag.ShowInspectPopup = false;
+                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
+            }
+            else if ((activeMenu.Equals(Enums.ActiveMenu.Plan) || activeMenu.Equals(Enums.ActiveMenu.Home)) && currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
+            {
+                ViewBag.ShowInspectPopup = false;
+                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
+            }
+            else
+            {
+                ViewBag.ShowInspectPopup = true;
+            }
+            // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
 
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
@@ -108,14 +128,17 @@ namespace RevenuePlanner.Controllers
 
             if (lstAllowedBusinessUnits.Count > 0)
                 lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+
+            var lstClientBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId);
+
             if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0) //else if (Sessions.IsDirector || Sessions.IsClientAdmin)
             {
-                var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
-                businessUnitIds = clientBusinessUnit.ToList();
-                var lstBusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
-                lstBusinessUnitIds = lstBusinessUnitIds.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
-                planmodel.BusinessUnitIds = lstBusinessUnitIds;
-                ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
+                //var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
+                //businessUnitIds = clientBusinessUnit.ToList();
+                lstClientBusinessUnits = lstClientBusinessUnits.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+                planmodel.BusinessUnitIds = lstClientBusinessUnits;
+                ViewBag.BusinessUnitIds = lstClientBusinessUnits;
+                businessUnitIds = lstClientBusinessUnits.ToList().Select(b => Guid.Parse(b.Text)).ToList();
                 if (businessUnitIds.Count > 1)
                     ViewBag.showBid = true;
                 else
@@ -126,11 +149,10 @@ namespace RevenuePlanner.Controllers
                 // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 if (lstAllowedBusinessUnits.Count > 0)
                 {
-                    lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
-                    var lstClientBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId);
-                    lstClientBusinessUnits = lstClientBusinessUnits.Where(a => businessUnitIds.Contains(Guid.Parse(a.Value))).ToList().Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
-                    planmodel.BusinessUnitIds = lstClientBusinessUnits;
-                    ViewBag.BusinessUnitIds = lstClientBusinessUnits;
+                    //lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+                    var lstAllowedUserBusinessUnits = lstClientBusinessUnits.Where(a => businessUnitIds.Contains(Guid.Parse(a.Value))).ToList().Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+                    planmodel.BusinessUnitIds = lstAllowedUserBusinessUnits;
+                    ViewBag.BusinessUnitIds = lstAllowedUserBusinessUnits;
                     if (lstAllowedBusinessUnits.Count >= 1)
                         ViewBag.showBid = true;
                     else
@@ -215,6 +237,14 @@ namespace RevenuePlanner.Controllers
                         {
                             ViewBag.BusinessUnitTitle = planmodel.BusinessUnitIds.Where(b => b.Value.ToLower() == currentPlan.Model.BusinessUnitId.ToString().ToLower()).Select(b => b.Text).FirstOrDefault();
                         }
+                        // Start - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
+                        else
+                        {
+                            currentPlan = activePlan.Select(p => p).FirstOrDefault();
+                            ViewBag.BusinessUnitTitle = planmodel.BusinessUnitIds.Where(b => b.Value.ToLower() == currentPlan.Model.BusinessUnitId.ToString().ToLower()).Select(b => b.Text).FirstOrDefault();
+                            currentPlanId = currentPlan.PlanId;
+                        }
+                        // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
                     }
                     else if (!Common.IsPlanPublished(Sessions.PlanId))
                     {
@@ -289,6 +319,21 @@ namespace RevenuePlanner.Controllers
 
                     Sessions.PlanId = planmodel.PlanId;
 
+                    // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
+                    if (ViewBag.ShowInspectPopup != null)
+                    {
+                        if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+                        {
+                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, lstUserCustomRestriction, lstAllowedGeographyId, ViewOnlyPermission, ViewEditPermission);
+                            ViewBag.ShowInspectPopup = isCustomRestrictionPass;
+                            if (isCustomRestrictionPass.Equals(false))
+                            {
+                                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.CustomRestrictionFailedForInspectPopup.ToString();
+                            }
+
+                        }
+                    }
+                    // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
                 }
                 catch (Exception e)
                 {
@@ -3899,7 +3944,166 @@ namespace RevenuePlanner.Controllers
             yearlistAfter.ForEach(p => UpcomingActivityList.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
             return UpcomingActivityList;
         }
-        
 
+        #region Validate share link of Notification email for Inspect popup
+
+        /// <summary>
+        /// Function to validate shared link for cases such as Valid Entity, is deleted entity, or cross client login
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy> 
+        /// <CreatedDate>11/12/2014</CreatedDate>
+        /// <param name="currentPlanId">planId from query string parameter of shared link</param>
+        /// <param name="planCampaignId">planCampaignId from query string parameter of shared link</param>
+        /// <param name="planProgramId">planProgramId from query string parameter of shared link</param>
+        /// <param name="planTacticId">planTacticId from query string parameter of shared link</param>
+        /// <param name="isImprovement">isImprovement flag from query string parameter of shared link</param>
+        /// <returns>returns currentPlanId</returns>
+        private int InspectPopupSharedLinkValidation(int currentPlanId, int planCampaignId, int planProgramId, int planTacticId, bool isImprovement)
+        {
+            bool IsEntityDeleted = false;
+            bool isValidLoginUser = true;
+            bool isEntityExists = true;
+            bool isCorrectPlanId = true;
+
+            if (planTacticId > 0 && isImprovement.Equals(false))
+            {
+                isValidLoginUser = Common.ValidateNotificationShaedLink(currentPlanId, planTacticId, Enums.PlanEntity.Tactic.ToString(), out IsEntityDeleted, out isEntityExists, out isCorrectPlanId);
+            }
+            else if (planProgramId > 0)
+            {
+                isValidLoginUser = Common.ValidateNotificationShaedLink(currentPlanId, planProgramId, Enums.PlanEntity.Program.ToString(), out IsEntityDeleted, out isEntityExists, out isCorrectPlanId);
+            }
+            else if (planCampaignId > 0)
+            {
+                isValidLoginUser = Common.ValidateNotificationShaedLink(currentPlanId, planCampaignId, Enums.PlanEntity.Campaign.ToString(), out IsEntityDeleted, out isEntityExists, out isCorrectPlanId);
+            }
+            else if (planTacticId > 0 && isImprovement.Equals(true))
+            {
+                isValidLoginUser = Common.ValidateNotificationShaedLink(currentPlanId, planTacticId, Enums.PlanEntity.ImprovementTactic.ToString(), out IsEntityDeleted, out isEntityExists, out isCorrectPlanId);
+            }
+            else
+            {
+                //// Invalid URL
+                ViewBag.ShowInspectPopup = false;
+            }
+
+            if (isEntityExists.Equals(false))
+            {
+                //// Entity does not exists in DB
+                ViewBag.ShowInspectPopup = false;
+                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.FakeEntityForInspectPopup.ToString();
+                if (isValidLoginUser.Equals(false))
+                {
+                    currentPlanId = 0;
+                }
+            }
+            else if (isValidLoginUser.Equals(false))
+            {
+                //// Cross client login
+                currentPlanId = 0;
+                ViewBag.ShowInspectPopup = false;
+                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.CrossClientLoginForInspectPopup.ToString();
+            }
+            else if (isCorrectPlanId.Equals(false))
+            {
+                //// PlanId and EntityId does not match
+                ViewBag.ShowInspectPopup = false;
+                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
+                if (isValidLoginUser.Equals(false))
+                {
+                    currentPlanId = 0;
+                }
+            }
+            else if (IsEntityDeleted.Equals(true))
+            {
+                //// Entity is deleted
+                ViewBag.ShowInspectPopup = false;
+                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.DeletedEntityForInspectPopup.ToString();
+            }
+            else
+            {
+                //// Valid notification shared link
+                ViewBag.ShowInspectPopup = true;
+            }
+
+            return currentPlanId;
+        }
+
+        /// <summary>
+        /// Function to validate shared link as per Custom Restrictions
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy> 
+        /// <CreatedDate>11/12/2014</CreatedDate>
+        /// <param name="planCampaignId">planCampaignId from query string parameter of shared link</param>
+        /// <param name="planProgramId">planProgramId from query string parameter of shared link</param>
+        /// <param name="planTacticId">planTacticId from query string parameter of shared link</param>
+        /// <param name="isImprovement">isImprovement flag from query string parameter of shared link</param>
+        /// <param name="lstUserCustomRestriction">list of custom restrictions for current logged in user</param>
+        /// <param name="lstAllowedGeographyIds">list of GeographyIds allowed to current logged in user</param>
+        /// <param name="ViewOnlyPermission">ViewOnlyPermission flag in form of int</param>
+        /// <param name="ViewEditPermission">ViewEditPermission flag in form of int</param>
+        /// <returns>returns flag for custom restriction as per custom restriction</returns>
+        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, List<UserCustomRestrictionModel> lstUserCustomRestriction, List<Guid> lstAllowedGeographyIds, int ViewOnlyPermission, int ViewEditPermission)
+        {
+            bool isValidEntity = false;
+
+            var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestrictions => (customRestrictions.Permission == ViewOnlyPermission || customRestrictions.Permission == ViewEditPermission) && customRestrictions.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestrictions => customRestrictions.CustomFieldId).ToList();
+            List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+            lstAllowedBusinessUnits.ForEach(businessUnit => lstAllowedBusinessUnitIds.Add(Guid.Parse(businessUnit)));
+
+            if (planTacticId > 0 && isImprovement.Equals(false))
+            {
+                var lstAllowedVerticals = lstUserCustomRestriction.Where(customRestrictions => (customRestrictions.Permission == ViewOnlyPermission || customRestrictions.Permission == ViewEditPermission) && customRestrictions.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(customRestrictions => customRestrictions.CustomFieldId).ToList();
+                List<int> lstAllowedVerticalIds = new List<int>();
+                lstAllowedVerticals.ForEach(vertical => lstAllowedVerticalIds.Add(int.Parse(vertical)));
+
+                var objTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == planTacticId && tactic.IsDeleted == false
+                                                                    && lstAllowedBusinessUnitIds.Contains(tactic.BusinessUnitId)
+                                                                    && lstAllowedGeographyIds.Contains(tactic.GeographyId)
+                                                                    && lstAllowedVerticalIds.Contains(tactic.VerticalId)).Select(tactic => tactic.PlanTacticId);
+
+                if (objTactic.Count() != 0)
+                {
+                    isValidEntity = true;
+                }
+            }
+            else if (planProgramId > 0)
+            {
+                var objProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == planProgramId && program.IsDeleted == false
+                                                                && lstAllowedBusinessUnitIds.Contains(program.Plan_Campaign.Plan.Model.BusinessUnitId)
+                                                                ).Select(program => program);
+
+                if (objProgram.Count() != 0)
+                {
+                    isValidEntity = true;
+                }
+            }
+            else if (planCampaignId > 0)
+            {
+                var objCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == planCampaignId && campaign.IsDeleted == false
+                                                                && lstAllowedBusinessUnitIds.Contains(campaign.Plan.Model.BusinessUnitId)
+                                                                ).Select(campaign => campaign.PlanCampaignId);
+
+                if (objCampaign.Count() != 0)
+                {
+                    isValidEntity = true;
+                }
+            }
+            else if (planTacticId > 0 && isImprovement.Equals(true))
+            {
+                var objImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => improvementTactic.ImprovementPlanTacticId == planTacticId && improvementTactic.IsDeleted == false
+                                                                                        && lstAllowedBusinessUnitIds.Contains(improvementTactic.BusinessUnitId))
+                                                                                        .Select(improvementTactic => improvementTactic.ImprovementPlanTacticId);
+
+                if (objImprovementTactic.Count() != 0)
+                {
+                    isValidEntity = true;
+                }
+            }
+
+            return isValidEntity;
+        }
+
+        #endregion
     }
 }
