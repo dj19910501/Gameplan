@@ -661,3 +661,15 @@ function closeDataLoseConfirmationMsg()
     });
 }
 // End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+
+//// Start - Added by Pratik on 12/12/2014 for PL ticket #898
+function bootstrapetitle(obj, titleText, titleTextColorClass) {
+    $(obj).popover({
+        trigger: 'hover',
+        placement: 'top',
+        container: 'body',
+        html: true,
+        content: '<span class="' + titleTextColorClass + '">' + titleText + '</span>'
+    });
+}
+//// End - Added by Pratik on 12/12/2014 for PL ticket #898 

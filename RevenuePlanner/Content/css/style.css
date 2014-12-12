@@ -11155,3 +11155,24 @@ float:left;
     width:217px !important;
 }
 /* End - Added by Pratik on 12/9/2014 for PL ticket #998 */
+
+/* Start - Added by Pratik on 12/12/2014 for PL ticket #898 */
+   .popover.top > .arrow:after {
+        border-top-color: black;
+    }
+
+    .popover.top > .arrow {
+        margin-left: -5px;
+        border-top-color: black;
+        margin-top: 0px;
+    }
+
+    .popover {
+        background-color: black;
+    }
+
+    .popover-title {
+        display: none;
+    }
+
+    /* End - Added by Pratik on 12/12/2014 for PL ticket #898 */

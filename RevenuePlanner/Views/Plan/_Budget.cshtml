@@ -188,11 +188,8 @@
     });
 
     function AddTipsy() {
-        //alert($("div[allocated]").length);
         $("div[allocated]").each(function () {
-            $(this).prop('title', 'Allocated' + ' : $' + $(this).attr('allocated'));
-            $(this).addClass('north');
-            $('.north').tipsy({ gravity: 's' });
+            bootstrapetitle($(this), 'Allocated : $' + $(this).attr('allocated'), "tipsy-innerWhite");
         });
     }
 
@@ -207,8 +204,8 @@
             var sumMonth = number_format('@sumMonth', 0, '.', ',');
             var allocated = number_format('@plan.Allocated', 0, '.', ',');
             $('#planCostValue').prop('title', '$' + sumMonth + '/' + '$' + allocated);
-            $('#planCostValue').addClass('north');
-            $('.north').tipsy({ gravity: 's' });
+            $('#planCostValue').popover('destroy');
+            bootstrapetitle($('#planCostValue'), '$' + sumMonth + '/' + '$' + allocated, "tipsy-innerWhite");
 
             sumMonth = FormatNumber('@sumMonth', false);
             allocated = FormatNumber('@plan.Allocated', false);

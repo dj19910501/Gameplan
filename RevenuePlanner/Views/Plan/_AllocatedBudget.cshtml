@@ -158,24 +158,23 @@
         $("div[allocated]").each(function () {
             var num = $(this).attr('allocated');
             if (parseInt(num) < 0) {
-                $(this).prop('title', 'Remaining: ' + num.replace('-', '-$'));
+                bootstrapetitle($(this), 'Remaining: ' + num.replace('-', '-$'), "tipsy-innerWhite");
             }
             else {
-                $(this).prop('title', 'Remaining: $' + num);
+                bootstrapetitle($(this), 'Remaining: $' + num, "tipsy-innerWhite");
             }
-            $(this).addClass('north');
-            $('.north').tipsy({ gravity: 's' });
         });
     }
     function SetHeader() {
         $('#divViewBy').hide();
         if ('@AllocatedBy' != '@strDefault') {
-        $('#planCostTitle').html('Planned Budget Allocation');
-        var sumMonth = number_format('@sumMonth', 0, '.', ',');
-        var allocated = number_format('@plan.Budgeted', 0, '.', ',');
-        $('#planCostValue').prop('title', '$' + sumMonth + '/' + '$' + allocated);
-        $('#planCostValue').addClass('north');
-        $('.north').tipsy({ gravity: 's' });
+            $('#planCostTitle').html('Planned Budget Allocation');
+            var sumMonth = number_format('@sumMonth', 0, '.', ',');
+            var allocated = number_format('@plan.Budgeted', 0, '.', ',');
+            $('#planCostValue').prop('title', '$' + sumMonth + '/' + '$' + allocated);
+
+            $('#planCostValue').popover('destroy');
+            bootstrapetitle($('#planCostValue'), '$' + sumMonth + '/' + '$' + allocated, "tipsy-innerWhite");
 
         sumMonth = FormatNumber('@sumMonth', false);
         allocated = FormatNumber('@plan.Budgeted', false);
