@@ -857,7 +857,11 @@
             else {
                 $('#ownerdetail').html(None);
             }
-		}
+        }
+        // Start - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
+        $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+        $('#errorMessageInspectPopup').slideUp(400);
+        // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
     }
 
     function removeByValue(arr, val) {
@@ -1566,7 +1570,13 @@
                 ShowInspectForPlanProgramId();
             }
             else {
-                if ($('#cErrorInspectPopup').html() == '') {
+                var currentUrlQueryString = window.location.search.toString().toLowerCase();
+                var isNotificationEmailShareLink = false;
+                if (currentUrlQueryString.indexOf('plancampaignid') > 0 || currentUrlQueryString.indexOf('planprogramid') > 0 || currentUrlQueryString.indexOf('plantacticid') > 0)
+                {
+                    isNotificationEmailShareLink = true;
+                }
+                if ($('#cErrorInspectPopup').html() == '' && isNotificationEmailShareLink == true) {
                     $('#cErrorInspectPopup').html('<strong>Error! </strong> ' + '@ViewBag.ShowInspectPopupErrorMessage');
                     $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
                     $('#errorMessageInspectPopup').slideDown(3000);

@@ -511,7 +511,8 @@ namespace RevenuePlanner.Controllers
                     BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();
                     // Start - Modified by Sohel Pathan on 09/12/2014 for PL ticket #975
                     bool isGoalValueZero = false;
-                    if (goalValue != "" && Convert.ToInt32(goalValue) != 0)
+                    goalValue = goalValue.Replace(",", "");
+                    if (goalValue != "" && Convert.ToInt64(goalValue) != 0)
                     {
                         isGoalValueZero = true;
                         objBudgetAllocationModel = Common.CalculateBudgetInputs(modelId, goalType, goalValue, ADS);

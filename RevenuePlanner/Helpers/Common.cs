@@ -3948,12 +3948,14 @@ namespace RevenuePlanner.Helpers
                         mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
                         var modelFunnelStageListMQL = ModelFunnelStageList.Where(mfs => mqlStagelist.Contains(mfs.StageId)).ToList();
                         double MQLValue = (inputValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
+                        MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.MQLValue = MQLValue;
 
                         // Calculate Revenue
                         cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
                         double RevenueValue = (inputValue) * (modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize;
+                        RevenueValue = (RevenueValue.Equals(double.NaN) || RevenueValue.Equals(double.NegativeInfinity) || RevenueValue.Equals(double.PositiveInfinity)) ? 0 : RevenueValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.RevenueValue = RevenueValue;
                     }
                     else if (goalType == Enums.PlanGoalType.MQL.ToString())
@@ -3963,12 +3965,14 @@ namespace RevenuePlanner.Helpers
                         mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
                         var modelFunnelStageListINQ = ModelFunnelStageList.Where(mfs => mqlStagelist.Contains(mfs.StageId)).ToList();
                         double INQValue = (inputValue) / (modelFunnelStageListINQ.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
+                        INQValue = (INQValue.Equals(double.NaN) || INQValue.Equals(double.NegativeInfinity) || INQValue.Equals(double.PositiveInfinity)) ? 0 : INQValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.INQValue = INQValue;
 
                         // Calculate Revenue
                         cwStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
                         double RevenueValue = (inputValue) * (modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize; // Modified by Maninder Singh Wadhva on 10/14/2014 for PL ticket #775
+                        RevenueValue = (RevenueValue.Equals(double.NaN) || RevenueValue.Equals(double.NegativeInfinity) || RevenueValue.Equals(double.PositiveInfinity)) ? 0 : RevenueValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.RevenueValue = RevenueValue;
 
                     }
@@ -3979,12 +3983,14 @@ namespace RevenuePlanner.Helpers
                         var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
                         double convalue = ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
                         double INQValue = (inputValue) / convalue;
+                        INQValue = (INQValue.Equals(double.NaN) || INQValue.Equals(double.NegativeInfinity) || INQValue.Equals(double.PositiveInfinity)) ? 0 : INQValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.INQValue = INQValue;
 
                         // Calculate MQL
                         cwStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListMQL = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
                         double MQLValue = (inputValue) / (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)) * averageDealSize); // Modified by Sohel Pathan on 12/09/2014 for PL ticket #775
+                        MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.MQLValue = MQLValue;
                     }
                 }
@@ -4037,7 +4043,9 @@ namespace RevenuePlanner.Helpers
                         mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
                         var modelFunnelStageListMQL = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
                         double MQLValue = (inputValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
-                        MQLValue = MQLValue.Equals(double.NaN) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
+                        // Start - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
+                        MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
+                        // End - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         return MQLValue;
                     }
                     else if (goalType == Enums.PlanGoalType.Revenue.ToString().ToUpper())
@@ -4048,11 +4056,14 @@ namespace RevenuePlanner.Helpers
                         cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListCW = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && cwStagelist.Contains(mfs.StageId) && cwStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
                         double INQValue = (inputValue) / ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
+                        INQValue = (INQValue.Equals(double.NaN) || INQValue.Equals(double.NegativeInfinity) || INQValue.Equals(double.PositiveInfinity)) ? 0 : INQValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
 
                         // Calculate MQL
                         var modelFunnelStageListMQL = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
                         double MQLValue = (INQValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
-                        MQLValue = MQLValue.Equals(double.NaN) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
+                        // Start - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
+                        MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
+                        // End - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         return MQLValue;
                     }
                 }
