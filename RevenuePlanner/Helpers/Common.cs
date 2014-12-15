@@ -1516,32 +1516,36 @@ namespace RevenuePlanner.Helpers
 
         #region Plan Header
 
+        /// <summary>
+        /// Function to get Plan header values based on selected plan id
+        /// </summary>
+        /// <param name="planId">selected plan id</param>
+        /// <returns>returns  HomePlanModelHeader object</returns>
         public static HomePlanModelHeader GetPlanHeaderValue(int planId)
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
-            MRPEntities db = new MRPEntities();
+            MRPEntities objDbMrpEntities = new MRPEntities();
             List<string> tacticStatus = GetStatusListAfterApproved();
 
-            var plan = db.Plans.Where(p => p.PlanId == planId && p.IsDeleted == false && p.IsActive == true).Select(m => m).FirstOrDefault();
-            if (plan != null)
+            var objPlan = objDbMrpEntities.Plans.Where(plan => plan.PlanId == planId && plan.IsDeleted == false && plan.IsActive == true).Select(plan => plan).FirstOrDefault();
+            if (objPlan != null)
             {
-                List<Plan_Campaign_Program_Tactic> planTacticIds = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList();
+                List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList();
 
-                if (plan.Status == Enums.PlanStatusValues[Enums.PlanStatus.Draft.ToString()].ToString())
+                if (objPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Draft.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    //objHomePlanModelHeader.MQLs = plan.MQLs;  // Commented by Sohel Pathan on 15/07/2014 for PL ticket #566
                     // Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
-                    if (plan.GoalType.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
+                    if (objPlan.GoalType.Equals(Enums.PlanGoalType.MQL.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        objHomePlanModelHeader.MQLs = plan.GoalValue;
+                        objHomePlanModelHeader.MQLs = objPlan.GoalValue;
                     }
                     else
                     {
-                        // Get ADS value
+                        //// Get ADS value
                         string marketing = Enums.Funnel.Marketing.ToString();
-                        double ADSValue = db.Model_Funnel.Single(mf => mf.ModelId == plan.ModelId && mf.Funnel.Title == marketing).AverageDealSize;
-                        List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
-                        objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(plan.ModelId, plan.GoalType, plan.GoalValue.ToString(), ADSValue, stageList);
+                        double ADSValue = objDbMrpEntities.Model_Funnel.Single(modelFunnel => modelFunnel.ModelId == objPlan.ModelId && modelFunnel.Funnel.Title == marketing).AverageDealSize;
+                        List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                        objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(objPlan.ModelId, objPlan.GoalType, objPlan.GoalValue.ToString(), ADSValue, stageList);
                     }
                     // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
                     string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
@@ -1553,14 +1557,14 @@ namespace RevenuePlanner.Helpers
                     {
                         objHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
                     }
-                    objHomePlanModelHeader.Budget = plan.Budget;
+                    objHomePlanModelHeader.Budget = objPlan.Budget;
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
                 }
                 else
                 {
-                    // Added BY Bhavesh
-                    // Calculate MQL at runtime #376
-                    objHomePlanModelHeader.MQLs = GetTacticStageRelation(planTacticIds, false).Sum(t => t.MQLValue); ;// Common.GetMQLValueTacticList(planTacticIds).Sum(tm => tm.MQL);
+                    //// Added BY Bhavesh
+                    //// Calculate MQL at runtime #376
+                    objHomePlanModelHeader.MQLs = GetTacticStageRelation(planTacticIds, false).Sum(tactic => tactic.MQLValue);
                     string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
                     if (string.IsNullOrEmpty(MQLStageLabel))
                     {
@@ -1573,20 +1577,20 @@ namespace RevenuePlanner.Helpers
                     if (planTacticIds.Count() > 0)
                     {
                         ////Start Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
-                        var tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
-                        objHomePlanModelHeader.Budget = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticIds.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList().Sum(l => l.Cost);//planTacticIds.Sum(t => t.Cost);
+                        var tacticIds = planTacticIds.Select(tactic => tactic.PlanTacticId).ToList();
+                        objHomePlanModelHeader.Budget = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).ToList().Sum(lineItem => lineItem.Cost);
                         ////End Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
                     }
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
                 }
 
-                var impList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == planId && !imp.IsDeleted).ToList();
-                if (impList.Count > 0)
+                var improvementTacticList = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == planId && !improvementTactic.IsDeleted).ToList();
+                if (improvementTacticList.Count > 0)
                 {
-                    /// Added By: Maninder Singh Wadhva
-                    /// Addressed PL Ticket: 37,38,47,49
+                    //// Added By: Maninder Singh Wadhva
+                    //// Addressed PL Ticket: 37,38,47,49
                     //// Getting improved MQL.
-                    double? improvedMQL = GetTacticStageRelation(planTacticIds, true).Sum(t => t.MQLValue);
+                    double? improvedMQL = GetTacticStageRelation(planTacticIds, true).Sum(tactic => tactic.MQLValue);
 
                     //// Calculating percentage increase.
                     if (improvedMQL.HasValue && objHomePlanModelHeader.MQLs != 0)
@@ -1885,15 +1889,15 @@ namespace RevenuePlanner.Helpers
         /// <summary>
         /// Get Client wise stage lable name
         /// </summary>
-        /// <param name="Mode"></param>
-        /// <returns></returns>
-        public static string GetLabel(int Mode) //1. INQ, 2.MQL, 3.CW
+        /// <param name="Mode">mode value in int (1 = INQ, 2 = MQL, 3 = CW)</param>
+        /// <returns>returns string value for Label</returns>
+        public static string GetLabel(int Mode)
         {
-            MRPEntities db = new MRPEntities();
+            MRPEntities objDbMrpEntities = new MRPEntities();
             string strStageLabel = string.Empty;
             try
             {
-                string StageCode = "";
+                string StageCode = string.Empty;
                 if (Mode == StageModeINQ)
                 {
                     StageCode = StageCodeINQ;
@@ -1906,12 +1910,12 @@ namespace RevenuePlanner.Helpers
                 {
                     StageCode = StageCodeCW;
                 }
-                strStageLabel = db.Stages.Where(s => s.Code == StageCode && s.IsDeleted == false && s.ClientId == Sessions.User.ClientId).Select(s => s.Title).FirstOrDefault();
+                strStageLabel = objDbMrpEntities.Stages.Where(stage => stage.Code == StageCode && stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId).Select(stage => stage.Title).FirstOrDefault();
                 return strStageLabel;
             }
-            catch (Exception)
+            catch
             {
-                db = null;
+                objDbMrpEntities = null;
                 return string.Empty;
             }
         }
@@ -2601,7 +2605,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="tlist">List collection of tactics</param>
         /// <param name="isIncludeImprovement">boolean flag that indicate tactic included imporvement sections</param>
-        /// <returns></returns>
+        /// <returns>returns list tactic stage values</returns>
         public static List<TacticStageValue> GetTacticStageRelation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true)
         {
             MRPEntities dbStage = new MRPEntities();
@@ -3548,79 +3552,85 @@ namespace RevenuePlanner.Helpers
         /// Function to get all own upto n level and peers subordinates of current user
         /// Added By Dharmraj for ticket #573, 4-07-2014
         /// </summary>
-        /// <returns></returns>
+        /// <returns>returns list of userIds</returns>
         public static List<Guid> GetSubOrdinatesWithPeersNLevel()
         {
-            //Get all subordinates of current user
+            //// Get all subordinates of current user
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
             lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-            List<Guid> lstSubordinaresId = new List<Guid>();
-            List<Guid> lstSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
-                                                         .Select(u => u.UserId).Distinct().ToList();    // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
+            List<Guid> lstSubordinatesId = new List<Guid>();
+            //// Get list of subordinates of current logged in user
+            List<Guid> lstSubOrdinates = lstUserHierarchy.Where(user => user.ManagerId == Sessions.User.UserId)
+                                                         .Select(user => user.UserId).Distinct().ToList();    // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
 
             while (lstSubOrdinates.Count > 0)
             {
-                lstSubOrdinates.ForEach(u => lstSubordinaresId.Add(u));
-                lstSubOrdinates = lstUserHierarchy.Where(u => lstSubOrdinates.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty))).Select(u => u.UserId).Distinct().ToList();
+                lstSubOrdinates.ForEach(user => lstSubordinatesId.Add(user));
+                lstSubOrdinates = lstUserHierarchy.Where(user => lstSubOrdinates.Contains(user.ManagerId.GetValueOrDefault(Guid.Empty))).Select(user => user.UserId).Distinct().ToList();
             }
 
-            // Get current user permission for Tactic ApproveForPeers.
+            //// Get current user permission for Tactic ApproveForPeers.
             bool IsTacticApproveForPeersAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveForPeers);
             List<Guid> lstUpperMostLevelManagers = new List<Guid>();    // Added by Sohel Pathan on 13/08/2014 for PL ticket #689
-            var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UserId == Sessions.User.UserId).ManagerId;
+            //// Get ManagerId of current logged in user
+            var ManagerId = lstUserHierarchy.FirstOrDefault(user => user.UserId == Sessions.User.UserId).ManagerId;
             if (ManagerId != null)
             {
-                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId).Select(u => u.UserId).Distinct().ToList();
+                //// Get list of peers of manager of current logged in user 
+                var lstPeersId = lstUserHierarchy.Where(user => user.ManagerId == ManagerId).Select(user => user.UserId).Distinct().ToList();
 
                 if (lstPeersId.Count > 0)
                 {
-                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
-                                                            .Select(u => u.UserId).Distinct().ToList(); // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
+                    //// Get list of subordinates for above selected peers
+                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(user => lstPeersId.Contains(user.ManagerId.GetValueOrDefault(Guid.Empty)))
+                                                            .Select(user => user.UserId).Distinct().ToList(); // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
 
                     if (IsTacticApproveForPeersAuthorized)
                     {
-                        lstSubordinaresId = lstSubordinaresId.Concat(lstPeersSubOrdinatesId).Distinct().ToList();   // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
-                        lstSubordinaresId = lstSubordinaresId.Concat(lstPeersId).Distinct().ToList(); /// Added by Sohel Pathan on 08/08/201 for PL ticket #689.
+                        lstSubordinatesId = lstSubordinatesId.Concat(lstPeersSubOrdinatesId).Distinct().ToList();   // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
+                        lstSubordinatesId = lstSubordinatesId.Concat(lstPeersId).Distinct().ToList(); /// Added by Sohel Pathan on 08/08/201 for PL ticket #689.
                     }
                 }
             }
-            // Start - Added by Sohel Pathan on 13/08/2014 for PL ticket #689
+            //// Start - Added by Sohel Pathan on 13/08/2014 for PL ticket #689
             else
             {
                 if (IsTacticApproveForPeersAuthorized)
                 {
-                    lstUpperMostLevelManagers = lstUserHierarchy.Where(u => u.ManagerId == null).Select(u => u.UserId).Distinct().ToList();
+                    //// Get list of user who dont have manager (i.e. most Upper level users)
+                    lstUpperMostLevelManagers = lstUserHierarchy.Where(user => user.ManagerId == null).Select(user => user.UserId).Distinct().ToList();
                     if (lstUpperMostLevelManagers.Count > 0)
                     {
-                        lstSubordinaresId = lstSubordinaresId.Concat(lstUpperMostLevelManagers).Distinct().ToList();
+                        lstSubordinatesId = lstSubordinatesId.Concat(lstUpperMostLevelManagers).Distinct().ToList();
 
-                        List<Guid> lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(u => lstUpperMostLevelManagers.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
-                                                                                .Select(u => u.UserId).Distinct().ToList();
+                        List<Guid> lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(user => lstUpperMostLevelManagers.Contains(user.ManagerId.GetValueOrDefault(Guid.Empty)))
+                                                                                .Select(user => user.UserId).Distinct().ToList();
 
                         while (lstSubOrdinatesOfUpperMostLevelManagers.Count > 0)
                         {
-                            lstSubOrdinatesOfUpperMostLevelManagers.ForEach(u => lstSubordinaresId.Add(u));
-                            lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(u => lstSubOrdinatesOfUpperMostLevelManagers.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty))).Select(u => u.UserId).Distinct().ToList();
+                            lstSubOrdinatesOfUpperMostLevelManagers.ForEach(user => lstSubordinatesId.Add(user));
+                            lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(user => lstSubOrdinatesOfUpperMostLevelManagers.Contains(user.ManagerId.GetValueOrDefault(Guid.Empty))).Select(user => user.UserId).Distinct().ToList();
                         }
                     }
                 }
             }
-            // End - Added by Sohel Pathan on 13/08/2014 for PL ticket #689
+            //// End - Added by Sohel Pathan on 13/08/2014 for PL ticket #689
 
-            /*Start :Added by Mitesh Vaishnav for PL ticket #688 and #689*/
+            //// Start :Added by Mitesh Vaishnav for PL ticket #688 and #689
             bool IsTacticApproveOwn = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveOwn);
             if (IsTacticApproveOwn)
             {
-                lstSubordinaresId.Add(Sessions.User.UserId);
+                lstSubordinatesId.Add(Sessions.User.UserId);
             }
             else
             {
-                lstSubordinaresId.Remove(Sessions.User.UserId);     // Added by Sohel Pathan on 13/08/2014 for PL ticket #689
+                //// Added by Sohel Pathan on 13/08/2014 for PL ticket #689
+                lstSubordinatesId.Remove(Sessions.User.UserId);
             }
-            /*End :Added by Mitesh Vaishnav for PL ticket #688 and #689*/
+            //// End :Added by Mitesh Vaishnav for PL ticket #688 and #689
 
-            return lstSubordinaresId.Distinct().ToList();   // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
+            return lstSubordinatesId.Distinct().ToList();   //// Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
         }
 
         /// <summary>
@@ -3815,21 +3825,21 @@ namespace RevenuePlanner.Helpers
 
         #region Check ViewEdit rights on businessUnit
         /// <summary>
-        /// Check wheather ViewEdit rights on businessUnit is given otr not - for custo restriction
+        /// Check wheather ViewEdit rights on businessUnit is given otr not - for custom restriction
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>02/07/2014</CreatedDate>
-        /// <param name="businessUnitId"></param>
-        /// <returns></returns>
+        /// <param name="businessUnitId">businessUnit id</param>
+        /// <returns>returns flag value</returns>
         public static bool IsBusinessUnitEditable(Guid businessUnitId)
         {
             var lstUserCustomRestriction = Common.GetUserCustomRestriction();
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestriction => customRestriction.Permission == ViewEditPermission && customRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestriction => customRestriction.CustomFieldId).ToList();
             if (lstAllowedBusinessUnits.Count > 0)
             {
                 List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
+                lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
                 return lstViewEditBusinessUnits.Contains(businessUnitId);
             }
             return true;
@@ -4010,23 +4020,24 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>16/07/2014</CreatedDate>
-        /// <param name="modelId"></param>
-        /// <param name="goalType"></param>
-        /// <param name="goalValue"></param>
-        /// <param name="averageDealSize"></param>
-        /// <returns></returns>
+        /// <param name="modelId">model id of selected plan</param>
+        /// <param name="goalType">goal type of selected plan</param>
+        /// <param name="goalValue">goal values of selected plan</param>
+        /// <param name="averageDealSize">Average deal size of selected plan</param>
+        /// <param name="stageList">list of stages</param>
+        /// <returns>returns MQL value</returns>
         public static double CalculateMQLOnly(int modelId, string goalType, string goalValue, double averageDealSize, List<Stage> stageList)
         {
             try
             {
-                MRPEntities dbStage = new MRPEntities();
+                MRPEntities objDbMrpEntities = new MRPEntities();
 
                 string stageINQ = Enums.Stage.INQ.ToString();
-                int levelINQ = stageList.Single(s => s.Code.Equals(stageINQ)).Level.Value;
+                int levelINQ = stageList.Single(stage => stage.Code.Equals(stageINQ)).Level.Value;
                 string stageMQL = Enums.Stage.MQL.ToString();
-                int levelMQL = stageList.Single(s => s.Code.Equals(stageMQL)).Level.Value;
+                int levelMQL = stageList.Single(stage => stage.Code.Equals(stageMQL)).Level.Value;
                 string stageCW = Enums.Stage.CW.ToString();
-                int levelCW = stageList.Single(s => s.Code.Equals(stageCW)).Level.Value;
+                int levelCW = stageList.Single(stage => stage.Code.Equals(stageCW)).Level.Value;
 
                 List<int> mqlStagelist = new List<int>();
                 List<int> cwStagelist = new List<int>();
@@ -4036,30 +4047,30 @@ namespace RevenuePlanner.Helpers
                     string CR = Enums.StageType.CR.ToString();
                     double inputValue = Convert.ToInt64(goalValue.Trim().Replace(",", "").Replace("$", ""));
                     string marketing = Enums.Funnel.Marketing.ToString();
-                    if (goalType == Enums.PlanGoalType.INQ.ToString())
+                    if (goalType.Equals(Enums.PlanGoalType.INQ.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        // Calculate MQL
+                        //// Calculate MQL
                         int projectedStageLevel = levelINQ;
-                        mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
-                        var modelFunnelStageListMQL = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
+                        mqlStagelist = stageList.Where(stage => stage.Level >= projectedStageLevel && stage.Level < levelMQL).Select(stage => stage.StageId).ToList();
+                        var modelFunnelStageListMQL = objDbMrpEntities.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
                         double MQLValue = (inputValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
                         // Start - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
                         // End - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         return MQLValue;
                     }
-                    else if (goalType == Enums.PlanGoalType.Revenue.ToString().ToUpper())
+                    else if (goalType.Equals(Enums.PlanGoalType.Revenue.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        // Calculate INQ
+                        //// Calculate INQ
                         int projectedStageLevel = levelINQ;
-                        mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
-                        cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
-                        var modelFunnelStageListCW = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && cwStagelist.Contains(mfs.StageId) && cwStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
+                        mqlStagelist = stageList.Where(stage => stage.Level >= projectedStageLevel && stage.Level < levelMQL).Select(stage => stage.StageId).ToList();
+                        cwStagelist = stageList.Where(stage => stage.Level >= projectedStageLevel && stage.Level <= levelCW).Select(stage => stage.StageId).ToList();
+                        var modelFunnelStageListCW = objDbMrpEntities.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && cwStagelist.Contains(mfs.StageId) && cwStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
                         double INQValue = (inputValue) / ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
                         INQValue = (INQValue.Equals(double.NaN) || INQValue.Equals(double.NegativeInfinity) || INQValue.Equals(double.PositiveInfinity)) ? 0 : INQValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
 
-                        // Calculate MQL
-                        var modelFunnelStageListMQL = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
+                        //// Calculate MQL
+                        var modelFunnelStageListMQL = objDbMrpEntities.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
                         double MQLValue = (INQValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
                         // Start - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.

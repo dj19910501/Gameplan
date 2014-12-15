@@ -270,7 +270,14 @@ namespace RevenuePlanner.Controllers
                         plan.Version = version.ToString();
                         plan.Title = objPlanModel.Title.Trim();
                         plan.GoalType = objPlanModel.GoalType;
-                        plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                        if (objPlanModel.GoalValue != null)
+                        {
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                        }
+                        else
+                        {
+                            plan.GoalValue = 0;
+                        }
                         plan.AllocatedBy = objPlanModel.AllocatedBy;
                         plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
                         plan.ModelId = objPlanModel.ModelId;
@@ -303,7 +310,14 @@ namespace RevenuePlanner.Controllers
 
                         plan.Title = objPlanModel.Title.Trim();
                         plan.GoalType = objPlanModel.GoalType;
-                        plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                        if (objPlanModel.GoalValue != null)
+                        {
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                        }
+                        else
+                        {
+                            plan.GoalValue = 0;
+                        }
                         plan.AllocatedBy = objPlanModel.AllocatedBy;
                         plan.Description = objPlanModel.Description;    /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
                         plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));

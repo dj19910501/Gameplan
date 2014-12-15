@@ -83,7 +83,7 @@
             if (($('#ActiveMenu').val().toLowerCase() == "plan")) {
                 if (showBid == 'True') {
                     var id = $('#ddlBusinessUnit').val();
-                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?businessUnitId=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
                         if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                             //// Call function to redirect on service unavailibility.
                             //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -93,7 +93,7 @@
                     });//activeMenu parameter added
                 }
                 else {
-                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?businessUnitId=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
                         if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                             //// Call function to redirect on service unavailibility.
                             //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -104,7 +104,7 @@
                 }
             }
             else {
-                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + filters.BUId.toString() + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?businessUnitId=' + filters.BUId.toString() + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
                     if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                         //// Call function to redirect on service unavailibility.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -288,7 +288,7 @@
                     $("#selected-option").html(Title);
                     $("#DivloadPlan").html('');
                     var pid = $('#PlanId').val();
-                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?businessUnitId=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
                     if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                         //// Call function to redirect on service unavailibility.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -1449,7 +1449,7 @@
         $("#CurrentPlanId").val(CurrentPlanId);
         if (CurrentPlanId > 0) {
             BindUpcomingActivites(CurrentPlanId);
-           $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?businessUnitId=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                    //// Call function to redirect on service unavailibility.
                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -1880,7 +1880,7 @@
               data: {
                   viewBy: type,
                   PlanId: Planid.toString(),
-                  IsQuarter: isQuater,
+                  timeFrame: isQuater,
                   businessunitIds: BUId.toString(),
                   geographyIds: GeoId.toString(),
                   verticalIds: VerticalId.toString(),
@@ -3806,6 +3806,9 @@ function ApproveTactic(e, task) {
         GetHealderData(SelectedPlanIds);
         GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
     }
-
+    
+    $('#errorMessageInspectPopup .close').click(function () {
+        $('#content_wraper').removeClass('padding-top40');
+    });
    
 </script>

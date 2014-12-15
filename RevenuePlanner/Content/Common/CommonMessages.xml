@@ -872,11 +872,11 @@
   </Field>
   <Field>
     <Name>DeletedEntityForInspectPopup</Name>
-    <value>Activity you are trying to view does not exists.</value>
+    <value>Activity you are trying to view does not exist.</value>
   </Field>
   <Field>
     <Name>FakeEntityForInspectPopup</Name>
-    <value>Activity you are trying to view does not exists.</value>
+    <value>Activity you are trying to view does not exist.</value>
   </Field>
   <Field>
     <Name>CustomRestrictionFailedForInspectPopup</Name>
@@ -884,7 +884,7 @@
   </Field>
   <Field>
     <Name>InvalidURLForInspectPopup</Name>
-    <value>Activity you are trying to view does not exists.</value>
+    <value>Activity you are trying to view does not exist.</value>
   </Field>
   <!--End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 -->
 </Messages>
