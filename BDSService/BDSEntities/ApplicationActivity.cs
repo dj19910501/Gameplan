@@ -26,4 +26,20 @@ namespace BDSService.BDSEntities
         public DateTime? CreatedDate { get; set; }
 
     }
+
+    [DataContract]
+    public class ClientApplicationActivity
+    {
+        [DataMember]
+        public int ApplicationActivityId { get; set; }
+        [DataMember]
+        public Guid ApplicationId { get; set; }
+        [DataMember]
+        public string ActivityTitle { get; set; }
+        [DataMember]
+        public string Code { get; set; }
+        [DataMember]
+        public Guid ClientId { get; set; }
+
+    }
 }

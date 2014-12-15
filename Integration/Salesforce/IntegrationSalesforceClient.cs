@@ -67,6 +67,11 @@ namespace Integration.Salesforce
         private bool _isResultError { get; set; }
         public string _ErrorMessage { get; set; }
         private int _integrationInstanceSectionId { get; set; }
+        //Start - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
+        private Guid _clientId { get; set; }
+        private bool _CustomNamingPermissionForInstance = false;
+        private List<BDSService.ClientApplicationActivity> _clientActivityList { get; set; }
+        //End - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
 
         public bool IsAuthenticated
         {
@@ -101,6 +106,7 @@ namespace Integration.Salesforce
             string SecurityToken = "SecurityToken";
 
             IntegrationInstance integrationInstance = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).SingleOrDefault();
+            _CustomNamingPermissionForInstance = integrationInstance.CustomNamingPermission;
             Dictionary<string, string> attributeKeyPair = db.IntegrationInstance_Attribute.Where(attribute => attribute.IntegrationInstanceId == _integrationInstanceId).Select(attribute => new { attribute.IntegrationTypeAttribute.Attribute, attribute.Value }).ToDictionary(attribute => attribute.Attribute, attribute => attribute.Value);
             //// Get integration instance and set below properties using integrationInstanceId property.
             this._securityToken = attributeKeyPair[SecurityToken]; //"6to1YjygSTkAiZUusnuoJBAN";
@@ -816,18 +822,21 @@ namespace Integration.Salesforce
                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
             // End - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
 
-            Guid clientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
-            _mappingVertical = db.Verticals.Where(v => v.ClientId == clientId).Select(v => new { v.VerticalId, v.Title })
+            _clientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+
+            _mappingVertical = db.Verticals.Where(v => v.ClientId == _clientId).Select(v => new { v.VerticalId, v.Title })
                                 .ToDictionary(v => v.VerticalId, v => v.Title);
-            _mappingAudience = db.Audiences.Where(a => a.ClientId == clientId).Select(a => new { a.AudienceId, a.Title })
+            _mappingAudience = db.Audiences.Where(a => a.ClientId == _clientId).Select(a => new { a.AudienceId, a.Title })
                                 .ToDictionary(a => a.AudienceId, a => a.Title);
-            _mappingBusinessunit = db.BusinessUnits.Where(b => b.ClientId == clientId).Select(b => new { b.BusinessUnitId, b.Title })
+            _mappingBusinessunit = db.BusinessUnits.Where(b => b.ClientId == _clientId).Select(b => new { b.BusinessUnitId, b.Title })
                                 .ToDictionary(b => b.BusinessUnitId, b => b.Title);
-            _mappingGeography = db.Geographies.Where(g => g.ClientId == clientId).Select(g => new { g.GeographyId, g.Title })
+            _mappingGeography = db.Geographies.Where(g => g.ClientId == _clientId).Select(g => new { g.GeographyId, g.Title })
                                 .ToDictionary(g => g.GeographyId, g => g.Title);
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-            _mappingUser = objBDSservice.GetUserListByClientId(clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
+            _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
+            _clientActivityList = objBDSservice.GetClientActivity(_clientId);
+
 
         }
 
@@ -1911,12 +1920,13 @@ namespace Integration.Salesforce
         private string CreateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
             Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
-            if (_mappingTactic.ContainsKey("Title") && planTactic!=null)
+            if (_mappingTactic.ContainsKey("Title") && planTactic!=null && _clientActivityList.Where(clientActivity=>clientActivity.Code==Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any() && _CustomNamingPermissionForInstance)
             {
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, planTactic.BusinessUnit.ClientId);
+                    tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, _clientId);
+                    planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                 }
             }
             string tacticId = _client.Create(objectName, tactic);

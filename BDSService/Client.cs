@@ -18,6 +18,7 @@ namespace BDSService
         {
             this.Users = new HashSet<User>();
             this.Roles = new HashSet<Role>();
+            this.Client_Activity = new HashSet<Client_Activity>();
         }
     
         public System.Guid ClientId { get; set; }
@@ -38,5 +39,6 @@ namespace BDSService
     
         public virtual ICollection<User> Users { get; set; }
         public virtual ICollection<Role> Roles { get; set; }
+        public virtual ICollection<Client_Activity> Client_Activity { get; set; }
     }
 }

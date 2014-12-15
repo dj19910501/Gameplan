@@ -159,6 +159,7 @@ namespace RevenuePlanner.Models
         public string GoalValue { get; set; }
         public double Budget { get; set; }
         public string AllocatedBy { get; set; }
+        public string TacticCustomName { get; set; }
     }
 
     public class InspectReviewModel

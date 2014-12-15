@@ -158,7 +158,7 @@ namespace RevenuePlanner.Controllers
                                 .OrderBy(it => it.Text).ToList();
                 
                 //// Get Application Activity.
-                var activitylist = bdsuserrepository.GetApplicationactivitylist(Sessions.ApplicationId);
+                var activitylist = bdsuserrepository.GetUserApplicationactivitylist(Sessions.ApplicationId);
 
                 //// Get Role Activity permissions by RoleId.
                 var filterlist = bdsuserrepository.GetRoleactivitypermissions(roleId);
@@ -253,7 +253,7 @@ namespace RevenuePlanner.Controllers
             var user_role_mapping = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
 
                 //// Get Application Activity List.
-            var activitylist = objBDSServiceClient.GetApplicationactivitylist(Sessions.ApplicationId);
+            var activitylist = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);
             List<int> idsList = new List<int>();
             foreach (string id in permission.Split(','))
             {
@@ -611,7 +611,7 @@ namespace RevenuePlanner.Controllers
 
                 //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
                 var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(UserId, Sessions.ApplicationId);
-                var allActivity = objBDSServiceClient.GetAllApplicationActivity(Sessions.ApplicationId);
+                var allActivity = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);
                 var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
 
 

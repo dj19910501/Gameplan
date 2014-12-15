@@ -24,5 +24,10 @@ namespace BDSService.Helpers
             Geography,
             BusinessUnit
         }
+        public enum ActivityType
+        {
+            User,
+            Client
+        }
     }
 }

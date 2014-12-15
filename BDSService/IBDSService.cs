@@ -124,7 +124,7 @@ namespace BDSService
 
         /// added by uday for #513
         [OperationContract]
-        List<BDSEntities.ApplicationActivity> GetApplicationactivitylist(Guid applicationid);
+        List<BDSEntities.ApplicationActivity> GetUserApplicationactivitylist(Guid applicationid);
 
         /// added by uday for #513
         [OperationContract]
@@ -152,9 +152,9 @@ namespace BDSService
         [OperationContract]
         List<BDSEntities.ApplicationActivity> GetRoleactivitypermissions(Guid roleid);
 
-        /* Added by Mitesh Vaishnav #521 */
-        [OperationContract]
-        List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId);
+        ///* Added by Mitesh Vaishnav #521 */
+        //[OperationContract]
+        //List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId);
 
         [OperationContract]
         List<BDSEntities.UserApplicationPermission> GetUserActivity(Guid userId, Guid applicationId);
@@ -193,5 +193,8 @@ namespace BDSService
         
         [OperationContract]
         List<BDSEntities.User> GetMultipleTeamMemberName(string userIdList);
+
+        [OperationContract]
+        List<BDSEntities.ClientApplicationActivity> GetClientActivity(Guid clientId);
     }
 }

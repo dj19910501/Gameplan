@@ -96,6 +96,11 @@ namespace Integration.Helper
             Plan_Campaign_Program_Tactic,
             Vertical
         }
+
+        public enum clientAcivity
+        {
+            CustomCampaignNameConvention
+        }
         #endregion
     }
 }

@@ -20,7 +20,6 @@
     var PlanProgramId = ViewBag.PlanProgrameId;
     var colorCode = "";
     string RequestedModule = (ViewBag.RedirectType != "") ? ViewBag.RedirectType : "";
-
     if (tacticMaster != null)
     {
         TempData["TacticModel"] = tacticMaster;
@@ -57,7 +56,7 @@
 @Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
 
 <form>
-<div class="modal-popup-title">
+<div class="modal-popup-title" style="margin-bottom:3px;">
     <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>
     <h2 class="title-simple source-sans-prolight">
         @if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
@@ -92,6 +91,10 @@
         @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
     </h2>
 </div>
+    @if(tacticMaster!=null && !string.IsNullOrEmpty(tacticMaster.TacticCustomName))
+    {   
+    <div>Machine Name : @tacticMaster.TacticCustomName</div>
+    }
 </form>
 
 @if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))

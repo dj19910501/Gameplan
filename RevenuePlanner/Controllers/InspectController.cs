@@ -6574,7 +6574,8 @@ namespace RevenuePlanner.Controllers
                                   StageTitle = pcpt.Stage.Title,
                                   StageLevel = pcpt.Stage.Level,
                                   ProjectedStageValue = pcpt.ProjectedStageValue,
-                                  GeographyTitle = pcpt.Geography.Title
+                                  GeographyTitle = pcpt.Geography.Title,
+                                  TacticCustomName=pcpt.TacticCustomName
 
                               }).FirstOrDefault();
 

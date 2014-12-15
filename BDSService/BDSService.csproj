@@ -124,6 +124,9 @@
     <Compile Include="Client.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
+    <Compile Include="Client_Activity.cs">
+      <DependentUpon>BDSAuth.tt</DependentUpon>
+    </Compile>
     <Compile Include="CommonFile.cs" />
     <Compile Include="CustomRestriction.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>

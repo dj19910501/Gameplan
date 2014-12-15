@@ -218,10 +218,10 @@ namespace BDSService
         }
 
         /// added by uday for #513
-        public List<BDSEntities.ApplicationActivity> GetApplicationactivitylist(Guid applicationid)
+        public List<BDSEntities.ApplicationActivity> GetUserApplicationactivitylist(Guid applicationid)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.GetApplicationactivitylist(applicationid);
+            return obj.GetUserApplicationactivitylist(applicationid);
         }
 
         /// added by uday for #513
@@ -277,11 +277,11 @@ namespace BDSService
             return obj.GetAllRoleList(applicationid, ClientId);
         }
 
-        public List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId)
-        {
-            BDSUserRepository obj = new BDSUserRepository();
-            return obj.GetAllApplicationActivity(applicationId);
-        }
+        //public List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId)
+        //{
+        //    BDSUserRepository obj = new BDSUserRepository();
+        //    return obj.GetAllApplicationActivity(applicationId);
+        //}
 
         public List<BDSEntities.UserApplicationPermission> GetUserActivity(Guid userId, Guid applicationId)
         {
@@ -349,6 +349,12 @@ namespace BDSService
         {
             BDSUserRepository obj = new BDSUserRepository();
             return obj.GetMultipleTeamMemberName(userIdList);
+        }
+        //Added by Mitesh Vaishnav for PL ticket #1002
+        public List<BDSEntities.ClientApplicationActivity> GetClientActivity(Guid clientId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetClientActivity(clientId);
         }
     }
 

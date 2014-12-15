@@ -126,6 +126,9 @@
     <None Include="Service References\BDSService\Integration.BDSService.Client.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
+    <None Include="Service References\BDSService\Integration.BDSService.ClientApplicationActivity.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Service References\BDSService\Integration.BDSService.CustomRestriction.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
