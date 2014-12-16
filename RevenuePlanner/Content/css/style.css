@@ -8748,7 +8748,11 @@ a:hover, a:focus {
     margin-left: 6px;
 }
 
-.budgetCompareInner.innerSection-height.mCustomScrollbar._mCS_1 {    margin-left: 8px;}
+.budgetCompareInner.innerSection-height.mCustomScrollbar._mCS_1 {    
+    margin-left: 8px;
+    padding-left: 15px;
+    width: 97% !important;
+}
 /* End -  Added by Pratik, #921 changes.*/
 
 .plannedCost { /*min-width:410px;*/ /*min-width:36%; width:36%; margin-right:20px; padding-left:20px !important; padding-right:10px !important;*/
@@ -8805,6 +8809,7 @@ a:hover, a:focus {
 .budgetCompareInner {
     width: 100%;
     height: 45px;
+    padding-left:15px;
 }
 
     .budgetCompareInner .mCSB_horizontal > .mCSB_container {
@@ -9609,7 +9614,7 @@ footer {
     min-width: 540px;
     /*border-right: 1px solid #e6e6e6 !important;*/
     padding-top: 10px;
-    width: 57%;
+    width: 48%;
 }
 
 /* Start -  Added by Pratik, #921 changes.*/
@@ -9638,8 +9643,9 @@ footer {
 }
 
     .budgetReporting .budgetCompare h3 {
-        font-size: 24px;
+        font-size: 29px;
         padding-bottom: 0;
+        padding-left:15px;
     }
 
 .budgetReportFilter-area {
@@ -10598,9 +10604,10 @@ li.close-list {
 }
 
 .monthContainerBudget {
-    max-width: 380px;
+    min-width: 380px;
     padding-left: 15px;
     float: none !important;
+    width:50%;
 }
 
 /* Start - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */
