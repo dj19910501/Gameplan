@@ -498,13 +498,6 @@
 
         function displayconfirm(strURL) {
             window.location.href = strURL;
-            //if (isDataChanged()) {
-            //    $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-            //    $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
-            //}
-            //else {
-            //    window.location.href = strURL;
-            //}
         }
         //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
 
@@ -554,7 +547,6 @@
                 $(this).addClass('1');
             }
 
-            //displayconfirmForTacticEvent(idTactic);
             displayConfirmCommon('tacticCommonClick(' + idTactic + ');');
 
         });
@@ -637,9 +629,6 @@
             displayconfirmForDeleteEvent(idTactic, 'impTactic');
             e.stopPropagation();
         });
-
-
-
         //Dharmraj Start 8July2014 Common function to handle tactic/program/campaign delete event
         function deleteCommonClick(id, type) {
             if (type == "lineitem") {
@@ -983,7 +972,6 @@
             $html += '<div class="cf padding-left20">' +
                             '<div class="pull-left width55"></div>' +
                             '<div class="height40 pull-right width50px"></div>' +
-                            //'<div class="total height40 pull-right width3"></div>' +
                             '<div class="total markTotal pull-right width100px text-right">' + FormatCommas(programTotal.toString(), false) + '</div>' +
                             '<div class="total markTotal pull-right width150px text-right tipsyclass costAssotment">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
                             '<div class="total markTotal pull-right width100px text-right tipsyclass costAssotment">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
@@ -1123,7 +1111,6 @@
                                 $html += 'collapse lineitem-level "' + 'program_' + _programs[i].tactics[k].id + '>' +
                               '<div class="accordion-inner">' +
                                   '<div class="accordion-group">';
-                                /*  alert(_programs[i].tactics[k].lineitems);*/
                                 if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
 
                                     if (_programs[i].tactics[k].lineitems.length > 0) {
@@ -1378,23 +1365,19 @@
                         //Modified by : Kalpesh Sharma
                         //PL #508 Set format for label in tool tip
                         $html += '<span id="spanRevenueImpact" >' + '-' + FormatCurrency(Math.abs(revenueValue).toString(), true) + '</span>';
-                        //$html += '-' + FormatCurrency(Math.abs(revenueValue).toString(), true);
                     }
                     else {
                         $html += '<span id="spanRevenueImpact" >' + '' + FormatCurrency(revenueValue.toString(), true) + '</span>';
-                        //$html += '' + FormatCurrency(revenueValue.toString(), true);
                     }
 
                     $html += '<br> on ';
 
                     var costValue = parseFloat(data.Cost);
                     if (costValue < 0) {
-                        //$html += FormatCurrency(Math.abs(costValue).toString(), false) + ' decreased';
                         $html += '<span id="spanRevenuecostValue" >' + '-' + FormatCurrency(Math.abs(costValue).toString(), false) + '</span>' + ' decreased';
                     }
                     else {
                         $html += '<span id="spanRevenuecostValue" >' + FormatCurrency(costValue.toString(), false) + '</span>' + ' decreased';
-                        //$html += FormatCurrency(costValue.toString(), false) + ' increased';
                     }
 
                     $html += ' spend.</p>';
@@ -1413,11 +1396,8 @@
                     //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
 
                 }
-
             }
         });
-
-
     }
 
     ////Modified by Mitesh Vaishnav for PL ticket #619
@@ -1454,8 +1434,6 @@
                 return false;
             }
 }
-
-
 
 
 function loadscript() {
@@ -1734,10 +1712,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
             SetLabelFormaterWithTitle($(this));
             //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
         });
-
-
     }
-
 
     // Added By Bhavesh
     // PL Ticket 289,377,378
@@ -1794,7 +1769,6 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
         $tableImprovementTactic.append($html);
 
     }
-
 
     // Added By Bhavesh
     // PL Ticket 289,377,378
@@ -1871,10 +1845,6 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
                 success: function (data) {
                     RecommendedImprovementTacticType = data;
                     fillRecommendedConversionImprovement();
-                    //  fillRecommendedImprovementTacticType();
-
-                    //  $("#defaultSortingId").focus().click();
-
                     $.ajax({
                         type: 'POST',
                         url: '@Url.Content("~/Plan/GetHeaderValueForSuggestedImprovement/")',
@@ -2018,8 +1988,6 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
                 SetLabelFormaterWithTitle($(this));
                 //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
             });
-
-
         }
 
         // Added By Bhavesh

@@ -11,7 +11,6 @@
 @{
     BudgetMonth PercAllocated = ViewBag.PercAllocated;
     double planAllocation = 0;
-    //planAllocation = (plan.Budgeted == 0 && plan.Allocated == 0) ? 0 : (plan.Budgeted == 0 && plan.Allocated > 0) ? 101 : plan.Allocated / plan.Budgeted * 100;
     double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
     planAllocation = (sumMonth == 0 && plan.Allocated == 0) ? 0 : (sumMonth > 0 && plan.Allocated == 0) ? 101 : sumMonth / plan.Allocated * 100;
 }

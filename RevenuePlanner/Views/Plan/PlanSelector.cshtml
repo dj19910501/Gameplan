@@ -4,17 +4,10 @@
     ViewBag.Title = "Plan Selector";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    //string isViewOnly = ViewBag.IsViewOnly;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string strConfirmationmessage = Common.objCached.PlanDeleteConfirmMessage;
     string errorMsg=(string)TempData["ErrorMessage"];
-    //bool IsPlanEditAllAuthorized = (bool)ViewBag.IsPlanEditAllAuthorized;
-    //bool IsPlanEditOwnAndSubordinatesAuthorized = (bool)ViewBag.IsPlanEditOwnAndSubordinatesAuthorized;
-     
 }
-
-@*@Html.Hidden("IsPlanEditOwnAndSubordinatesAuthorized", IsPlanEditOwnAndSubordinatesAuthorized)
-@Html.Hidden("IsPlanEditAllAuthorized", IsPlanEditAllAuthorized)*@
 
 @section Sidebar
 {
@@ -75,10 +68,6 @@
                 <th>Status</th>
                 <th class="width75">Last Updated</th>
                 <th class="width50px">Action</th>
-                @*@if (IsPlanEditAllAuthorized || IsPlanEditOwnAndSubordinatesAuthorized)
-                {
-                    <th class="width50px">Action</th>
-                }*@
             </tr>
         </thead>
         <tbody>
@@ -99,13 +88,11 @@
         }
         /*End: Added by Mitesh Vaishnav on 16/07/2014 for functional review point 64   */
         LoadYearsData(); //function call to load Years tabs
-        //LoadBUData(); //function call to load Business Units tabs
 
         // Code to set Error/Success message
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
             $("#successMessage").slideDown(1200); // Show the Alert
-           // $("#successMessage").slideUp(3000);
         }
         if ($('#cError').html() != '') {
             $('#cError').html('<strong>Error!</strong> ' + $('#cError').html())
@@ -154,7 +141,6 @@
         $('#table_baseline').on('click', 'tbody tr td .edit-temp-program', function (e) {
             e.stopPropagation();
             var PlanId = $(this).parent().parent().attr("id");
-            //alert(PlanId);
             if (PlanId != null) {
                 var url = '@Url.Content("~/Plan/Create/")' + PlanId;
                 window.location.href = url;
@@ -183,7 +169,6 @@
                                 $('#successMessage').css("display", "block");
                                 $('#cSuccess').html('<strong>Success.</strong> ' + data.successmsg)
                                 $("#successMessage").slideDown(1200); // Show the Alert
-                               // $("#successMessage").slideUp(3000);
                                 $('#errorMessage').css("display", "none");
                             }
                             TabClick();
@@ -214,9 +199,7 @@
             url: '@Url.Content("~/Plan/GetYearsTab/")',
             success: function (r) {
                 BindYearTabs(r);
-                //TabClick();
                 LoadBUData(); //function call to load Business Units tabs
-                //myApp.hidePleaseWait();
             }
         });
     }
@@ -234,12 +217,10 @@
                 $('#YearTabs > li > a').each(function () {
                     if ($(this).text() == Year) {
                         $(this).parent().addClass("active");
-                        //TabClick();/* commented by Nirav shah for TFS Point : 218 on 13 March 2014*/
                     }
                 });
             }
             else {
-                //$("#YearTabs").append('No Records found for This Selection.');
                 if ('@errorMsg' == '') {
                 $('#errorMessage').css("display", "block");
                 $('#cError').html('<strong>Error!</strong> @Common.objCached.NoPublishPlanAvailable');  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
@@ -274,7 +255,6 @@
                 else {
                 BindBUTabs(r);
                 TabClick();
-                //myApp.hidePleaseWait();
             }
             }
         });
@@ -340,14 +320,12 @@
                 '<td>' + _LastUpdated + '</td>';
 
         // Modified by Dharmraj for #712 Edit Own and Subordinate Plan
-        //if ($('#IsPlanEditAllAuthorized').val() == 'True' || $("#IsPlanEditOwnAndSubordinatesAuthorized").val() == 'True') {
             if (_IsPlanEditable) {
                 $html += '<td><span class="delete-temp-program width5"></span><span class="edit-temp-program width5"></span></td>';
             }
             else {
                 $html += '<td></td>';
             }
-        //}
 
         $html += '</tr>';
         $baselineTable.append($html);

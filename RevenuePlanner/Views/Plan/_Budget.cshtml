@@ -145,7 +145,6 @@
         else {
             intWidth = $(this).width();
         }
-        //$(this).attr('title', intWidth);
         return $(this).width();
     }).get();
     $(document).ready(function () {
@@ -154,11 +153,6 @@
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
-        //var test = $('.column1').hasScrollBar();
-
-        //if (test == true) {
-        //    $('.column1 tr').addClass('displayRow');
-        //}
     });
     $('.accordionClick').on('click', function () {
         var accordionId = $(this).parent().attr('id');
@@ -171,20 +165,10 @@
 
         //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
         var data = $(".column1").get(0);
-        //var trCounter = 0;
-        //var OpenPanelCounter = 0;
         $(".budget-table .column1 > tr").each(function () {
             $(this).width(data.scrollWidth);
-            //trCounter = trCounter + 1;
     });
 
-        //OpenPanelCounter = $('.budget-table .column1 > tr .firstLevel.open').length;
-        //if (OpenPanelCounter == (trCounter - 2)) {
-        //    $('.budget-table .column1').css('overflow-x', 'hidden');
-        //}
-        //else {
-        //    $('.budget-table .column1').css('overflow-x', 'auto');
-        //}
     });
 
     function AddTipsy() {
@@ -238,12 +222,6 @@
             $('#monthCompareTitle').html('Planned vs Allocated');
             $('.progressPlanned').show();
         }
-    //else {
-    //    $('#planCostTitle').html('');
-    //    $('#planCostValue').html('');
-    //    $('#monthCompareTitle').html('');
-    //    $('.progressPlanned').hide();
-    //}
         var strMonthHTML = '';
         if ('@AllocatedBy' == '@strMonths') {
             for (var i = 1; i <= 12; i++) {

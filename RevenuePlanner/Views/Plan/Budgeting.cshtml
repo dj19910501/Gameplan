@@ -13,9 +13,7 @@
     {
         type = "allocated";
     }
-    //string errMsg = Convert.ToString(TempData["ErrorMessage"]);
     string sucMsg = Convert.ToString(TempData["SuccessMessage"]);
-    //TempData["ErrorMessage"] = "";
     TempData["SuccessMessage"] = null;
     string myView = "0";
     if(TempData["ViewBy"] != null)
@@ -130,18 +128,6 @@
     var hideAllMessages = false;
     $(document).ready(function () {
         $("#errorMessageDuplicatePlan").slideUp(300);
-
-       @* if ('@sucMsg' != '') {
-            $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-            $('#listingspanMessageSuccess').html('@sucMsg')
-            $("#listingsuccessMessage").slideDown(400);
-        }
-        else {
-            $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
-            $("#listingsuccessMessage").slideUp(1);
-            $('#listingspanMessageSuccess').html('');
-        }*@
-
         $(".selectBox select").selectbox();
         LoadPlanBuBusinessUnit($('#ddlBusinessUnit').val());
         $("#hdnBudgetingBussinessUnitId").val($('#ddlBusinessUnit').val());
@@ -159,8 +145,6 @@
                     $(".sub[data-parent='" + currObj + "']").css('display', 'block');
                     $('#' + currObj + ' a:first-child').addClass('collapse');
                 });
-
-              
             }
 
             var strExpand = expand;
@@ -273,8 +257,6 @@
         HideMessages();
     });
     function TabLoad(sender) {
-
-        //alert(currentTab);
         currentTab = sender;
         $("#hdnBudgetingCurrentTab").val(currentTab);
         $("#hdnBudgetingCurrentPlanId").val(CurrentPlanId);
@@ -379,7 +361,6 @@ function LoadPlanBuBusinessUnit(Bid) {
 
     $(document).on("click", "#LeftNavInput", function (e) {
         //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs
-        @*displayconfirm('@Url.Action("Create", "Plan", new { id = CurrentPlanId })');*@
         displayconfirm('@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "");
     });
     $(document).on("click", "#LeftNavAddActivity", function (e) {
@@ -395,14 +376,6 @@ $(document).on("click", "#aApplyToCalender", function (e) {
 function displayconfirm(strURL) {
     HideMessages();
     window.location.href = strURL;
-    //if (isDataChanged()) {
-
-    //    $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-    //    $("#errorMessageDuplicatePlan").slideDown(400); // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
-    //}
-    //else {
-    //    window.location.href = strURL;
-    //}
 }
 $(document).on("click", "#confirmClose", function (e) {
     $("#errorMessageDuplicatePlan").slideUp(400);   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points

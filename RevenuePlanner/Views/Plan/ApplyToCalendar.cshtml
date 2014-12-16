@@ -4,7 +4,6 @@
     ViewBag.Title = "Plan";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    //string isViewOnly = ViewBag.IsViewOnly;
     bool showBid = ViewBag.showBid;
     string Planid = Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
@@ -42,7 +41,6 @@
 <input type="hidden" id="hdnRefresh" value="ApplyToCalendar" />
 @*Added by Viral Kadiya on 11/10/2014 for PL #941 to check flag in _plan.cshtml page to refresh gantt.*@
 <script type="text/javascript">
-    //var CurrentPlanId = 0;
     var CurrentBid = 0;
     // Edited to add PlanYear option.
     var Currenttime = "planYear";
@@ -71,9 +69,6 @@
             // Comment by bhavesh , Now we can use direct value for nl form dropdown
             // PL Ticket 399
             // Date : 28-3-2014
-            //var planTitle = $(this).text();
-            //var option = $.grep($('#dropdown-plan-title option'), function (value) { return $(value).text() == planTitle; })
-            //CurrentPlanId = $(option[0]).val();
             CurrentPlanId = $(this).attr('value');
             ShowChangeLog();
             //// Modified By Maninder Singh Wadhva to Address PL#203
@@ -112,44 +107,11 @@
             }
         });
     }
-@*    function addBusinessUnitItems(items, id) {
-        var $dropDown = $('#dropdown-business-unit ul');
-        var $html = "";
-        $('#dropdown-business-unit > ul > li').remove();//first clear menu
-        if (typeof items != 'undefined') {
-            if (typeof items.length) {
-                for (i in items) {
-                    $html += '<li id=' + items[i].Value + '><a id="option" name=' + items[i].Value + ' href="#">' + items[i].Text + '</a></li>';
-                }
-                $dropDown.append($html);
-            }
-            else {
-                $html += '<li id=0><a href="#">Nothing to load</a></li>';
-                $dropDown.append($html);
-            }
-        }
-    }
-    function onClickBusinessUnit() {
-        $('#dropdown-business-unit').find('a#option').click(function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            var Title = $(this).text();
-            var id = $(this).attr("name");
-            $("#selected-option").html('');
-            $("#selected-option").html(Title);
-            $("#DivloadPlan").html('');
-            var pid = $('#PlanId').val();
-            $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=' + id);
-
-        });
-    }*@
     $(document).ready(function () {
-        //onClickPlanTitle();
           @* changed by Nirav for Custom Dropdown - 388*@
         var id = $('#ddlBusinessUnit').val();
         $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=' + id);
         onClickActivity();
-        //onClickBusinessUnit();
 
         //// Start - Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
         $('.toggleStatus').click(function () {
@@ -259,22 +221,7 @@
     @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
 @* changed by Nirav for Custom Dropdown - 388*@
-@*@{
-    if (showBid == true)
-    {
-    <div id="dropdown-business-unit" class="btn-group">
-        <a id="selected-option" class="dropdown-toggle" href="#" data-toggle="dropdown">Business Unit</a>
-        <ul class="dropdown-menu">
-            <li>
-                <script>
-                    var BusinessUnitIds = @Html.Raw(Json.Encode(Model.BusinessUnitIds))
-                    addBusinessUnitItems(BusinessUnitIds, "dropdown-business-unit");
-                </script>
-            </li>
-        </ul>
-    </div>
-    }
-}*@
+
 @{
     if (showBid == true)
     {
@@ -320,8 +267,6 @@
                     <div id="gantt_here"></div>
                 </div>
                 <div class="margin-top20">
-                    @* <a href="url">< @Html.ActionLink("Back", "Assortment", "Plan")
-                    </a>*@
                     <a id="lnkGoBack" style="cursor: pointer;">Back</a>
                     @if (IsPlanEditable)
                     {
@@ -414,7 +359,6 @@
     });
 
     $(document).on("click", "#LeftNavAddActivity", function (e) {
-        //displayconfirm('@Url.Action("Assortment", "Plan")');
         displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + CurrentPlanId + "");
     });
     $(document).on("click", "#aBudgeting", function (e) {
@@ -422,7 +366,6 @@
     });
     //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
     $("#header a").not("#ContactSupport").click(function () {
-        //alert($(this).attr('href'));
         if (isDataChanged()) {
             displayconfirm($(this).attr('href'));
             return false;
@@ -463,14 +406,6 @@
     }
     function displayconfirm(strURL) {
         window.location.href = strURL;
-
-        //if (isDataChanged()) {
-        //    $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-        //    $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
-        //}
-        //else {
-        //    window.location.href = strURL;
-        //}
     }
     $(document).on("click", "#confirmClose", function (e) {
         $("#errorMessageDuplicatePlan").slideUp(400);       // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
@@ -492,18 +427,9 @@
        function () {
            $('#BtnGroup').click(function (e) {
                if ($(this).html().toLowerCase() == "duplicate") {
-                   //CheckUserSession("#BtnGroup", true);
-                   //if (reason == 'user') {
-                   //    return false;
-                   //}
-                   //DuplicatePlan();
-                   //Dharmraj 11July2014 : 547 (Warning of data loss during make duplicate plan)
-                   //displayConfirmCommon('DuplicatePlan();');      // Commented by Sohel Pathan on 19/08/2014 for Internal Review Points
                }
                else {
                    //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
-                   @*var url = '@Url.Content("~/Plan/Create/0")';
-                   window.location.href = url;*@
                    displayconfirm('@Url.Content("~/Plan/Create/0")');
                }
            });
@@ -514,7 +440,6 @@
                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
                $("#btnConfirmOK").click(function () {
-                   //alert(id);
                    $('#cErrorDuplicatePlan').html("");
                    $("#errorMessageDuplicatePlan").hide();
                    eval(functionName);
@@ -562,7 +487,6 @@
            else {
                $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + ismsg);
                $("#successMessageDuplicatePlan").slideDown(3000);
-               //$("#successMessageDuplicatePlan").slideUp(1200);
            }
        }
        /*close x event on message*/
@@ -754,11 +678,6 @@
         var cssClass = task.color + ' cursorPointer';
         var isImprovement = false;   //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
         ///Modified by Dharmraj PL Ticket#394 - Apply required styling on the Improvement activity in calendar
-        //if (typeof task.isImprovement != 'undefined' &&
-        //    task.isImprovement == true &&
-        //    typeof task.ImprovementPlanTacticId != 'undefined') {
-        //    cssClass += ' improvement border-top resize';
-        //    }
 
         if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
             if (typeof task.ImprovementPlanTacticId != 'undefined') {

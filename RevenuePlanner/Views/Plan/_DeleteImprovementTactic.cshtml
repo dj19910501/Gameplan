@@ -38,7 +38,6 @@
         $("#btnDeleteImpTactic").click(function () {
             var idTactic = $("#hdnImprovementPlanTacticId").val();
             // Comment confirm alert becuase of ticket no 385. Not require again confirmation.
-              //if (confirm('Are you sure you want to delete this improvement tactic?')) {
                 var isAssortment = $("#hdnRedirectType").val();
                 $.ajax({
                     type: 'POST',
@@ -59,10 +58,6 @@
 
                     }
                 });
-            //}
-            //else {
-            //    return false;
-            //}
         });
     });
 

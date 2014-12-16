@@ -97,11 +97,9 @@
 
 <ul id="ulplan" class="nav nav-list nav-gray-plan">
     <li id="liDefination" class="item ">
-        @*<a class="source-sans-probold inputs" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = Planid })'"><span></span>@Html.Raw("PLAN DEFINITION")</a>*@
         <a class="source-sans-probold inputs" id="LeftNavInput"><span></span>@Html.Raw("PLAN DEFINITION")</a>
     </li>
     <li id="liCampaign" class="item">
-        @*<a class="source-sans-probold audience" onclick="window.location.href='@Url.Action("Assortment", "Plan")'"><span></span>@Html.Raw("CAMPAIGNS")</a>*@
         <a class="source-sans-probold audience" id="LeftNavCampaigns"><span></span>@Html.Raw("CAMPAIGNS")</a>
     </li>
     <li id="liCalender" class="item">
@@ -187,20 +185,6 @@
             });
         }
         // End - Added by Sohel Pathan on 18/08/2014 for Internal Review Points
-
-        @*$(document).on("click", "#LeftNavCampaigns", function (e) {
-            displayconfirm('@Url.Action("Assortment", "Plan")');
-        });
-        $(document).on("click", "#LeftNavInput", function (e) {
-            displayconfirm('@Url.Action("Create", "Plan", new { id = Planid })');
-        });
-
-        $(document).on("click", "#LeftNavAddActivity", function (e) {
-            displayconfirm('@Url.Action("Assortment", "Plan")');
-        });
-        $(document).on("click", "#aApplyToCalender", function (e) {
-            displayconfirm('@Url.Action("ApplyToCalendar", "Plan")');
-        });*@
         $('.nav nav-list nav-gray-plan li').each(function () {
             $(this).removeClass('active');
         });
@@ -227,8 +211,6 @@
                     $('#LeftNavInput').removeAttr('id');
                 }
                 else {
-                    //$('#ulplan').removeClass();
-                    //$('#ulplan').addClass('nav nav-listc nav-gray-plan');
                     $('#LeftNavAddActivity').removeAttr("disabled", "disabled");
                     $('#LeftNavCampaigns').attr("id", "LeftNavCampaigns");
                     $('#LeftNavCampaigns').removeAttr('href', '#');
@@ -274,33 +256,6 @@
             }
         }
     });
-//function displayconfirm(strURL) {
-//    if (isDataChanged()) {
-//        $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a><a id='aclose' class='close confirmClose'>×</a>");
-//        $("#errorMessage").slideDown(3000);
-//    }
-//    else {
-//        window.location.href = strURL;
-//    }
-//};
-//function isDataChanged() {
-//    var changed = false;
-//    $('.myValue').each(function () {
-//        var iv = $(this).attr("placeholder");
-//        if ($(this).val() != iv) {
-//            changed = true;
-//        }
-//    });
-//    $('.myValueFormat').each(function () {
-//        var iv = $(this).attr("placeholder");
-//        if (ReplaceCC($(this).val()) != ReplaceCC(iv)) {
-//            changed = true;
-//        }
-//    });
-//    return changed;
-//}
-
-
 function ShowModel(mode, section, id, ParentId, RequestedModule) {
     modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 

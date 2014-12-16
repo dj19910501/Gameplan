@@ -53,9 +53,8 @@
                         <div class="bold font_size16">1. Plan definition</div>
                         <div id="divPlanDefinationEnabled">
                         I'm using the 
-					    @*@Html.DropDownList("ddlModel", (SelectList)TempData["selectList"])*@
                         @{
-                        if (strPlanId == "" || strPlanId == "0")//if (strPlanId == "" || strPlanId == "0" || Model.IsDirector)
+                        if (strPlanId == "" || strPlanId == "0")
                         {
                             @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget", placeholder = @Model.ModelId })
                             <span id="ModelTitle" class="source-sans-proregular"></span>
@@ -145,7 +144,6 @@
                     <input type="button" value="Next" id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" />
                     <input type="button" value="Back" id="button-back" class="btn btn-gray text-shadow-blue source-sans-proregular padding-side20" />
                 </td>
-                @*@Html.Hidden("PlanId", strPlanId)*@           @* Commented By Sohel Pathan on 28/07/2014 for PL ticket #597 as PlanId ID conflict because used twice. *@
                 @Html.HiddenFor(model => model.ModelId)
                 @Html.HiddenFor(model => model.PlanId)
                 @Html.HiddenFor(model => model.TotalAllocatedCampaignBudget)
@@ -1122,12 +1120,6 @@
                                         //if (parseInt(allocatedAmount) > 0) {
                                         $('#M' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).val(FormatCommas(allocatedAmount, false));
                                         $('#M' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
-                                        //}
-                                        //else {
-                                        //$('#M' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).attr('oldValue', '');
-                                        //}
-                                        //if (data.planCampaignBudgetAllocationList != 'undefined') {
-                                            //if (data.planCampaignBudgetAllocationList.length > 0) {
                                                 var campaignAllocatedAmount = data.planBudgetAllocationList[i - 1].campaignMonthlyBudget.toString();
                                                 if (parseInt(campaignAllocatedAmount) > 0) {
                                                     $('#hdnM' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).val(campaignAllocatedAmount);
@@ -1150,8 +1142,6 @@
                                                 else {
                                                     $('#MY' + i).removeClass('campaignBudgetError');
                                                 }
-                                            //}
-                                        //}
                                         // End - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
                                         $('#MY' + i).addClass('myValue-budget');
                                     }
@@ -1162,21 +1152,12 @@
                                 }
                                 else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
                                     // Start - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
-                                    //var i;
                                     var r = data.planBudgetAllocationList;
-                                    //for (i = 1; i <= 12; i = i++) {
                                     for (i in r) {
                                         var allocatedAmount = r[i].budgetValue.toString();
                                         // Modified by Dharmraj to handle case were user update empty or zero allocation value.
-                                        //if (parseInt(allocatedAmount) > 0) {
                                         $('#Q' + r[i].periodTitle.toString()).val(FormatCommas(allocatedAmount, false));
                                         $('#Q' + r[i].periodTitle.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
-                                        //}
-                                        //else {
-                                        //$('#Q' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).attr('oldValue', '');
-                                        //}
-                                        //if (data.planCampaignBudgetAllocationList != 'undefined') {
-                                            //if (data.planCampaignBudgetAllocationList.length > 0) {
                                                 var campaignAllocatedAmount = r[i].campaignMonthlyBudget.toString();
                                                 if (parseInt(campaignAllocatedAmount) > 0) {
                                                     $('#hdnQ' + r[i].periodTitle.toString()).val(campaignAllocatedAmount);
@@ -1198,8 +1179,6 @@
                                                 else {
                                                     $('#Q' + r[i].periodTitle.toString()).removeClass('campaignBudgetError');
                                                 }
-                                            //}
-                                        //}
                                         $('#Q' + r[i].periodTitle.toString()).addClass('myValue-budget');
                                         // End - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
                                     }
