@@ -18,7 +18,6 @@ namespace BDSService
         {
             this.Role_Activity_Permission = new HashSet<Role_Activity_Permission>();
             this.User_Activity_Permission = new HashSet<User_Activity_Permission>();
-            this.Client_Activity = new HashSet<Client_Activity>();
         }
     
         public int ApplicationActivityId { get; set; }
@@ -32,6 +31,5 @@ namespace BDSService
         public virtual Application Application { get; set; }
         public virtual ICollection<Role_Activity_Permission> Role_Activity_Permission { get; set; }
         public virtual ICollection<User_Activity_Permission> User_Activity_Permission { get; set; }
-        public virtual ICollection<Client_Activity> Client_Activity { get; set; }
     }
 }

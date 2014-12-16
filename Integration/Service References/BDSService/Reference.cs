@@ -1964,115 +1964,6 @@ namespace Integration.BDSService {
         }
     }
     
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ClientApplicationActivity", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class ClientApplicationActivity : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ActivityTitleField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int ApplicationActivityIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid ApplicationIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid ClientIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CodeField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ActivityTitle {
-            get {
-                return this.ActivityTitleField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ActivityTitleField, value) != true)) {
-                    this.ActivityTitleField = value;
-                    this.RaisePropertyChanged("ActivityTitle");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int ApplicationActivityId {
-            get {
-                return this.ApplicationActivityIdField;
-            }
-            set {
-                if ((this.ApplicationActivityIdField.Equals(value) != true)) {
-                    this.ApplicationActivityIdField = value;
-                    this.RaisePropertyChanged("ApplicationActivityId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid ApplicationId {
-            get {
-                return this.ApplicationIdField;
-            }
-            set {
-                if ((this.ApplicationIdField.Equals(value) != true)) {
-                    this.ApplicationIdField = value;
-                    this.RaisePropertyChanged("ApplicationId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid ClientId {
-            get {
-                return this.ClientIdField;
-            }
-            set {
-                if ((this.ClientIdField.Equals(value) != true)) {
-                    this.ClientIdField = value;
-                    this.RaisePropertyChanged("ClientId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Code {
-            get {
-                return this.CodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CodeField, value) != true)) {
-                    this.CodeField = value;
-                    this.RaisePropertyChanged("Code");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="BDSService.IBDSService")]
     public interface IBDSService {
@@ -2395,11 +2286,11 @@ namespace Integration.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberName", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameResponse")]
         System.Threading.Tasks.Task<System.Collections.Generic.List<Integration.BDSService.User>> GetMultipleTeamMemberNameAsync(string userIdList);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetClientActivity", ReplyAction="http://tempuri.org/IBDSService/GetClientActivityResponse")]
-        System.Collections.Generic.List<Integration.BDSService.ClientApplicationActivity> GetClientActivity(System.Guid clientId);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetClientApplicationactivitylist", ReplyAction="http://tempuri.org/IBDSService/GetClientApplicationactivitylistResponse")]
+        System.Collections.Generic.List<Integration.BDSService.ApplicationActivity> GetClientApplicationactivitylist(System.Guid applicationid);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetClientActivity", ReplyAction="http://tempuri.org/IBDSService/GetClientActivityResponse")]
-        System.Threading.Tasks.Task<System.Collections.Generic.List<Integration.BDSService.ClientApplicationActivity>> GetClientActivityAsync(System.Guid clientId);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetClientApplicationactivitylist", ReplyAction="http://tempuri.org/IBDSService/GetClientApplicationactivitylistResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<Integration.BDSService.ApplicationActivity>> GetClientApplicationactivitylistAsync(System.Guid applicationid);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -2853,12 +2744,12 @@ namespace Integration.BDSService {
             return base.Channel.GetMultipleTeamMemberNameAsync(userIdList);
         }
         
-        public System.Collections.Generic.List<Integration.BDSService.ClientApplicationActivity> GetClientActivity(System.Guid clientId) {
-            return base.Channel.GetClientActivity(clientId);
+        public System.Collections.Generic.List<Integration.BDSService.ApplicationActivity> GetClientApplicationactivitylist(System.Guid applicationid) {
+            return base.Channel.GetClientApplicationactivitylist(applicationid);
         }
         
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<Integration.BDSService.ClientApplicationActivity>> GetClientActivityAsync(System.Guid clientId) {
-            return base.Channel.GetClientActivityAsync(clientId);
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<Integration.BDSService.ApplicationActivity>> GetClientApplicationactivitylistAsync(System.Guid applicationid) {
+            return base.Channel.GetClientApplicationactivitylistAsync(applicationid);
         }
     }
 }

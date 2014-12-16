@@ -88,7 +88,8 @@ namespace IntegrationWinService
         {
             try
             {
-                ScheduledExternalIntegration obj = new ScheduledExternalIntegration();
+                Guid applicationId =Guid.Parse( System.Configuration.ConfigurationManager.AppSettings.Get("BDSApplicationCode"));
+                ScheduledExternalIntegration obj = new ScheduledExternalIntegration(applicationId);
                 obj.ScheduledSync();
             }
             catch (Exception ex)

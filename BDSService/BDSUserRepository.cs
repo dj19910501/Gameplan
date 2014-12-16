@@ -1517,7 +1517,29 @@ namespace BDSService
 
             return ApplicationActivityList;
         }
+        /// <summary>
+        /// Function to get client's Application activity list
+        /// </summary>
+        /// added by Mitesh
+        /// <returns>Application activity list .</returns>
+        public List<BDSEntities.ApplicationActivity> GetClientApplicationactivitylist(Guid applicationid)
+        {
+            List<BDSEntities.ApplicationActivity> ApplicationActivityList = new List<BDSEntities.ApplicationActivity>();
+            //List<Application_Activity> ApplicationActivity = new List<Application_Activity>();
+            string activityType = Enums.ActivityType.Client.ToString();
+            var ApplicationActivity = db.Application_Activity.Where(application => application.ApplicationId == applicationid && application.ActivityType == activityType).ToList();
+            ApplicationActivityList = ApplicationActivity.Select(a => new BDSEntities.ApplicationActivity
+            {
+                ApplicationActivityId = a.ApplicationActivityId,
+                ApplicationId = a.ApplicationId,
+                CreatedDate = a.CreatedDate,
+                ActivityTitle = a.ActivityTitle,
+                ParentId = Convert.ToInt32(a.ParentId),
+                Code = a.Code
+            }).ToList();
 
+            return ApplicationActivityList;
+        }
         #endregion
 
         #region DuplicateRoleCheck
@@ -2076,27 +2098,6 @@ namespace BDSService
             }
             return null;
 
-        }
-
-        /// <summary>
-        /// Added by Mitesh Vaishnav on 12-12-2014 for PL ticket 1002 - Custom Naming: Integration
-        /// </summary>
-        /// <param name="clientId">Its unique id for client</param>
-        /// <returns>returns list of client's activity based on clientId</returns>
-        public List<BDSEntities.ClientApplicationActivity> GetClientActivity(Guid clientId)
-        {
-            var clientActivity = db.Client_Activity.Where(client => client.ClientId == clientId).ToList().Select(client => new BDSEntities.ClientApplicationActivity
-                {
-                    ApplicationActivityId=client.ApplicationActivityId,
-                    ActivityTitle=client.Application_Activity.ActivityTitle,
-                    Code=client.Application_Activity.Code,
-                    ClientId=clientId
-                }).ToList();
-            if (clientActivity.Count > 0)
-            {
-                return clientActivity;
-            }
-            return new List<BDSEntities.ClientApplicationActivity>();
         }
 
         /// <summary>
@@ -2677,7 +2678,5 @@ namespace BDSService
             }
             return teamMemberList;
         }
-
-
     }
 }

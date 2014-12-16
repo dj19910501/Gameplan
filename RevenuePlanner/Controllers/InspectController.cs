@@ -4288,7 +4288,7 @@ namespace RevenuePlanner.Controllers
                                         //added by uday for #532
                                         if (improvementPlanTactic.IsDeployedToIntegration == true)
                                         {
-                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, new Guid(), EntityType.ImprovementTactic);
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.ImprovementTactic);
                                             externalIntegration.Sync();
                                         }
                                         //added by uday for #532
@@ -4351,7 +4351,7 @@ namespace RevenuePlanner.Controllers
                                         //// added by uday for #532
                                         if (tactic.IsDeployedToIntegration == true)
                                         {
-                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, new Guid(), EntityType.Tactic);
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId,Sessions.ApplicationId, new Guid(), EntityType.Tactic);
                                             externalIntegration.Sync();
                                         }
                                         //// End by uday for #532
@@ -7049,7 +7049,7 @@ namespace RevenuePlanner.Controllers
                                             //added by uday for #532 
                                             if (tactic.IsDeployedToIntegration == true)
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, new Guid(), EntityType.Tactic);
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId,Sessions.ApplicationId, new Guid(), EntityType.Tactic);
                                                 externalIntegration.Sync();
                                             }
                                             //end
@@ -7101,7 +7101,7 @@ namespace RevenuePlanner.Controllers
                                             //added by uday for #532
                                             if (tactic.IsDeployedToIntegration == true)
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, new Guid(), EntityType.ImprovementTactic);
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId,Sessions.ApplicationId, new Guid(), EntityType.ImprovementTactic);
                                                 externalIntegration.Sync();
                                             }
                                             //end by uday for #532

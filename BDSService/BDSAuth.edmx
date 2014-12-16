@@ -10,7 +10,6 @@
           <EntitySet Name="Application_Activity" EntityType="BDSAuthModel.Store.Application_Activity" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Application_Role" EntityType="BDSAuthModel.Store.Application_Role" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Client" EntityType="BDSAuthModel.Store.Client" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Client_Activity" EntityType="BDSAuthModel.Store.Client_Activity" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomRestriction" EntityType="BDSAuthModel.Store.CustomRestriction" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Menu_Application" EntityType="BDSAuthModel.Store.Menu_Application" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="PasswordResetRequest" EntityType="BDSAuthModel.Store.PasswordResetRequest" store:Type="Tables" Schema="dbo" />
@@ -36,14 +35,6 @@
           <AssociationSet Name="FK_Application_Role_Role" Association="BDSAuthModel.Store.FK_Application_Role_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="Application_Role" EntitySet="Application_Role" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Client_Activity_Application_Activity" Association="BDSAuthModel.Store.FK_Client_Activity_Application_Activity">
-            <End Role="Application_Activity" EntitySet="Application_Activity" />
-            <End Role="Client_Activity" EntitySet="Client_Activity" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Client_Activity_Client" Association="BDSAuthModel.Store.FK_Client_Activity_Client">
-            <End Role="Client" EntitySet="Client" />
-            <End Role="Client_Activity" EntitySet="Client_Activity" />
           </AssociationSet>
           <AssociationSet Name="FK_CustomRestriction_User" Association="BDSAuthModel.Store.FK_CustomRestriction_User">
             <End Role="User" EntitySet="User" />
@@ -177,16 +168,6 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
-        </EntityType>
-        <EntityType Name="Client_Activity">
-          <Key>
-            <PropertyRef Name="ClientActivityId" />
-          </Key>
-          <Property Name="ClientActivityId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ApplicationActivityId" Type="int" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="CustomRestriction">
           <Key>
@@ -371,30 +352,6 @@
             </Principal>
             <Dependent Role="Application_Role">
               <PropertyRef Name="RoleId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Client_Activity_Application_Activity">
-          <End Role="Application_Activity" Type="BDSAuthModel.Store.Application_Activity" Multiplicity="1" />
-          <End Role="Client_Activity" Type="BDSAuthModel.Store.Client_Activity" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Application_Activity">
-              <PropertyRef Name="ApplicationActivityId" />
-            </Principal>
-            <Dependent Role="Client_Activity">
-              <PropertyRef Name="ApplicationActivityId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Client_Activity_Client">
-          <End Role="Client" Type="BDSAuthModel.Store.Client" Multiplicity="1" />
-          <End Role="Client_Activity" Type="BDSAuthModel.Store.Client_Activity" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Client">
-              <PropertyRef Name="ClientId" />
-            </Principal>
-            <Dependent Role="Client_Activity">
-              <PropertyRef Name="ClientId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -725,16 +682,7 @@
             <End Role="Client" EntitySet="Clients" />
             <End Role="Role" EntitySet="Roles" />
           </AssociationSet>
-          <EntitySet Name="Client_Activity" EntityType="BDSAuthModel.Client_Activity" />
-          <AssociationSet Name="FK_Client_Activity_Application_Activity" Association="BDSAuthModel.FK_Client_Activity_Application_Activity">
-            <End Role="Application_Activity" EntitySet="Application_Activity" />
-            <End Role="Client_Activity" EntitySet="Client_Activity" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Client_Activity_Client" Association="BDSAuthModel.FK_Client_Activity_Client">
-            <End Role="Client" EntitySet="Clients" />
-            <End Role="Client_Activity" EntitySet="Client_Activity" />
-          </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
         <EntityType Name="Application">
           <Key>
             <PropertyRef Name="ApplicationId" />
@@ -769,7 +717,6 @@
           <NavigationProperty Name="Role_Activity_Permission" Relationship="BDSAuthModel.FK_Role_Activity_Permission_Application_Activity" FromRole="Application_Activity" ToRole="Role_Activity_Permission" />
           <NavigationProperty Name="User_Activity_Permission" Relationship="BDSAuthModel.FK_User_Activity_Permission_Application_Activity" FromRole="Application_Activity" ToRole="User_Activity_Permission" />
           <Property Type="String" Name="ActivityType" MaxLength="255" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Client_Activity" Relationship="BDSAuthModel.FK_Client_Activity_Application_Activity" FromRole="Application_Activity" ToRole="Client_Activity" />
         </EntityType>
         <EntityType Name="Application_Role">
           <Key>
@@ -807,7 +754,6 @@
           <Property Name="ModifiedBy" Type="Guid" />
           <NavigationProperty Name="Users" Relationship="BDSAuthModel.FK_User_Client" FromRole="Client" ToRole="User" />
           <NavigationProperty Name="Roles" Relationship="BDSAuthModel.FK_Role_Client" FromRole="Client" ToRole="Role" />
-          <NavigationProperty Name="Client_Activity" Relationship="BDSAuthModel.FK_Client_Activity_Client" FromRole="Client" ToRole="Client_Activity" />
         </EntityType>
         <EntityType Name="CustomRestriction">
           <Key>
@@ -1257,43 +1203,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Client_Activity">
-          <Key>
-            <PropertyRef Name="ClientActivityId" />
-          </Key>
-          <Property Type="Int32" Name="ClientActivityId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Guid" Name="ClientId" Nullable="false" />
-          <Property Type="Int32" Name="ApplicationActivityId" Nullable="false" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Application_Activity" Relationship="BDSAuthModel.FK_Client_Activity_Application_Activity" FromRole="Client_Activity" ToRole="Application_Activity" />
-          <NavigationProperty Name="Client" Relationship="BDSAuthModel.FK_Client_Activity_Client" FromRole="Client_Activity" ToRole="Client" />
-        </EntityType>
-        <Association Name="FK_Client_Activity_Application_Activity">
-          <End Type="BDSAuthModel.Application_Activity" Role="Application_Activity" Multiplicity="1" />
-          <End Type="BDSAuthModel.Client_Activity" Role="Client_Activity" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Application_Activity">
-              <PropertyRef Name="ApplicationActivityId" />
-            </Principal>
-            <Dependent Role="Client_Activity">
-              <PropertyRef Name="ApplicationActivityId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Client_Activity_Client">
-          <End Type="BDSAuthModel.Client" Role="Client" Multiplicity="1" />
-          <End Type="BDSAuthModel.Client_Activity" Role="Client_Activity" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Client">
-              <PropertyRef Name="ClientId" />
-            </Principal>
-            <Dependent Role="Client_Activity">
-              <PropertyRef Name="ClientId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -1508,17 +1418,6 @@
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Client_Activity">
-            <EntityTypeMapping TypeName="BDSAuthModel.Client_Activity">
-              <MappingFragment StoreEntitySet="Client_Activity">
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="ApplicationActivityId" ColumnName="ApplicationActivityId" />
-                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
-                <ScalarProperty Name="ClientActivityId" ColumnName="ClientActivityId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

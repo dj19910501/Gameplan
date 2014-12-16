@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BDSService
+namespace RevenuePlanner.Models
 {
     using System;
     using System.Collections.Generic;
@@ -19,8 +19,5 @@ namespace BDSService
         public int ApplicationActivityId { get; set; }
         public System.Guid CreatedBy { get; set; }
         public System.DateTime CreatedDate { get; set; }
-    
-        public virtual Application_Activity Application_Activity { get; set; }
-        public virtual Client Client { get; set; }
     }
 }

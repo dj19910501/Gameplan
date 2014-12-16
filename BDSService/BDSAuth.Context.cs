@@ -39,6 +39,5 @@ namespace BDSService
         public DbSet<User_Activity_Permission> User_Activity_Permission { get; set; }
         public DbSet<User_Application> User_Application { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Client_Activity> Client_Activity { get; set; }
     }
 }

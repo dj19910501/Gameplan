@@ -70,7 +70,8 @@ namespace Integration.Salesforce
         //Start - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
         private Guid _clientId { get; set; }
         private bool _CustomNamingPermissionForInstance = false;
-        private List<BDSService.ClientApplicationActivity> _clientActivityList { get; set; }
+        private bool IsClientAllowedForCustomNaming = false;
+        Guid _applicationId = Guid.Empty;
         //End - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
 
         public bool IsAuthenticated
@@ -85,13 +86,14 @@ namespace Integration.Salesforce
         {
         }
 
-        public IntegrationSalesforceClient(int integrationInstanceId, int id, EntityType entityType, Guid userId, int integrationInstanceLogId)
+        public IntegrationSalesforceClient(int integrationInstanceId, int id, EntityType entityType, Guid userId, int integrationInstanceLogId,Guid applicationId)
         {
             _integrationInstanceId = integrationInstanceId;
             _id = id;
             _entityType = entityType;
             _userId = userId;
             _integrationInstanceLogId = integrationInstanceLogId;
+            _applicationId = applicationId;
             this.objectName = "Campaign";
 
             SetIntegrationInstanceDetail();
@@ -835,7 +837,17 @@ namespace Integration.Salesforce
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
-            _clientActivityList = objBDSservice.GetClientActivity(_clientId);
+           var clientActivityList = db.Client_Activity.Where(clientActivity=>clientActivity.ClientId==_clientId).ToList();
+           var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
+           var clientApplicationActivityList = (from c in clientActivityList
+                                                join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
+                                                select new
+                                                {
+                                                    Code = ca.Code,
+                                                    ActivityTitle = ca.ActivityTitle,
+                                                    clientId = c.ClientId
+                                                }).Select(c => c).ToList();
+           IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(clientActivity => clientActivity.Code == Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any();
 
 
         }
@@ -1920,7 +1932,7 @@ namespace Integration.Salesforce
         private string CreateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
             Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
-            if (_mappingTactic.ContainsKey("Title") && planTactic!=null && _clientActivityList.Where(clientActivity=>clientActivity.Code==Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any() && _CustomNamingPermissionForInstance)
+            if (_mappingTactic.ContainsKey("Title") && planTactic != null && _CustomNamingPermissionForInstance && IsClientAllowedForCustomNaming)
             {
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))

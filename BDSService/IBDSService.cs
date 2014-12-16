@@ -195,6 +195,7 @@ namespace BDSService
         List<BDSEntities.User> GetMultipleTeamMemberName(string userIdList);
 
         [OperationContract]
-        List<BDSEntities.ClientApplicationActivity> GetClientActivity(Guid clientId);
+        List<BDSEntities.ApplicationActivity> GetClientApplicationactivitylist(Guid applicationid);
+
     }
 }

@@ -19,8 +19,12 @@ namespace Integration
     public class ScheduledExternalIntegration
     {
         MRPEntities db = new MRPEntities();
+        Guid _applicationId = Guid.Empty;
 
-
+        public ScheduledExternalIntegration(Guid applicationId)
+        {
+            _applicationId = applicationId;
+        }
         public void ScheduledSync()
         {
             //string dayWeek = DateTime.Now.DayOfWeek.ToString();
@@ -28,6 +32,7 @@ namespace Integration
             DateTime currentDate = DateTime.Now;
             int todaysDay = currentDate.Day;
             int currentHour = currentDate.Hour;
+            //Guid applicationId=
             var lstIntegrationInstanceId = db.SyncFrequencies.Where(varS => varS.NextSyncDate.Value.Day == todaysDay &&
                                                                             varS.NextSyncDate.Value.Hour == currentHour &&
                                                                             varS.IntegrationInstance.IsDeleted == false)////Modified by Mitesh Vaishnav For PL ticket #743 -Actuals Inspect: User Name for Scheduler Integration (Add condition for checking isDeleted flag)
@@ -37,7 +42,7 @@ namespace Integration
             foreach (var id in lstIntegrationInstanceId)
             {
                 UpdateNextSyncDate(id);
-                ExternalIntegration objInt = new ExternalIntegration(id);
+                ExternalIntegration objInt = new ExternalIntegration(id,_applicationId);
                 objInt.Sync();
             }
 

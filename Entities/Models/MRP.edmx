@@ -11,6 +11,7 @@
           <EntitySet Name="BusinessUnit" EntityType="MRPModel.Store.BusinessUnit" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CampaignNameConvention" EntityType="MRPModel.Store.CampaignNameConvention" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ChangeLog" EntityType="MRPModel.Store.ChangeLog" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Client_Activity" EntityType="MRPModel.Store.Client_Activity" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ClientTacticType" EntityType="MRPModel.Store.ClientTacticType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomField" EntityType="MRPModel.Store.CustomField" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomField_Entity" EntityType="MRPModel.Store.CustomField_Entity" store:Type="Tables" Schema="dbo" />
@@ -494,6 +495,16 @@
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="ClientId" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="Client_Activity">
+          <Key>
+            <PropertyRef Name="ClientActivityId" />
+          </Key>
+          <Property Name="ClientActivityId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ApplicationActivityId" Type="int" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="ClientTacticType">
           <Key>
@@ -2853,6 +2864,7 @@
             <End Role="CustomField" EntitySet="CustomFields" />
             <End Role="CampaignNameConvention" EntitySet="CampaignNameConventions" />
           </AssociationSet>
+          <EntitySet Name="Client_Activity" EntityType="MRPModel.Client_Activity" />
         </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -5047,6 +5059,16 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Client_Activity">
+          <Key>
+            <PropertyRef Name="ClientActivityId" />
+          </Key>
+          <Property Type="Int32" Name="ClientActivityId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="ClientId" Nullable="false" />
+          <Property Type="Int32" Name="ApplicationActivityId" Nullable="false" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6097,6 +6119,17 @@
                 <ScalarProperty Name="FieldName" ColumnName="FieldName" />
                 <ScalarProperty Name="TableName" ColumnName="TableName" />
                 <ScalarProperty Name="CampaignNameConventionId" ColumnName="CampaignNameConventionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Client_Activity">
+            <EntityTypeMapping TypeName="MRPModel.Client_Activity">
+              <MappingFragment StoreEntitySet="Client_Activity">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ApplicationActivityId" ColumnName="ApplicationActivityId" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="ClientActivityId" ColumnName="ClientActivityId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -350,11 +350,10 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.GetMultipleTeamMemberName(userIdList);
         }
-        //Added by Mitesh Vaishnav for PL ticket #1002
-        public List<BDSEntities.ClientApplicationActivity> GetClientActivity(Guid clientId)
+        public List<BDSEntities.ApplicationActivity> GetClientApplicationactivitylist(Guid applicationid)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.GetClientActivity(clientId);
+            return obj.GetClientApplicationactivitylist(applicationid);
         }
     }
 

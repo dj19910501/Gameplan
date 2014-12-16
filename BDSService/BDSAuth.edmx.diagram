@@ -42,10 +42,7 @@
         <AssociationConnector Association="BDSAuthModel.FK_User_Application_User" />
         <AssociationConnector Association="BDSAuthModel.FK_User_User" />
         <AssociationConnector Association="BDSAuthModel.FK_Role_Client" />
-        <EntityTypeShape EntityType="BDSAuthModel.Client_Activity" Width="1.5" PointX="3.217021176226913" PointY="19.821784937671286" />
-        <AssociationConnector Association="BDSAuthModel.FK_Client_Activity_Application_Activity" />
-        <AssociationConnector Association="BDSAuthModel.FK_Client_Activity_Client" />
-      </Diagram>
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

@@ -900,9 +900,6 @@
     <Content Include="Views\Inspect\_SetupTacticBudgetAllocation.cshtml" />
     <Content Include="Views\Inspect\_ShareCampaign.cshtml" />
     <Content Include="Views\Inspect\_ShareProgram.cshtml" />
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ClientApplicationActivity.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

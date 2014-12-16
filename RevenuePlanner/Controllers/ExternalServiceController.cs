@@ -1073,7 +1073,7 @@ namespace RevenuePlanner.Controllers
             //}
             try
             {
-                ExternalIntegration objEx = new ExternalIntegration(id);
+                ExternalIntegration objEx = new ExternalIntegration(id,Sessions.ApplicationId);
                 List<string> ExternalFields = objEx.GetTargetDataMember();
                 if (ExternalFields == null)
                 {
@@ -1236,7 +1236,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                ExternalIntegration objEx = new ExternalIntegration(id);
+                ExternalIntegration objEx = new ExternalIntegration(id,Sessions.ApplicationId);
                 List<string> ExternalFields = objEx.GetTargetDataMember();
                 if (ExternalFields == null)
                 {
@@ -1269,7 +1269,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                ExternalIntegration objEx = new ExternalIntegration(id);
+                ExternalIntegration objEx = new ExternalIntegration(id,Sessions.ApplicationId);
                 List<string> ExternalFieldsCloseDeal = objEx.GetTargetDataMemberCloseDeal();
                 if (ExternalFieldsCloseDeal == null)
                 {
@@ -1302,7 +1302,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                ExternalIntegration objEx = new ExternalIntegration(id);
+                ExternalIntegration objEx = new ExternalIntegration(id,Sessions.ApplicationId);
                 List<string> ExternalFieldsCloseDeal = objEx.GetTargetDataMemberRevenue();
                 if (ExternalFieldsCloseDeal == null)
                 {

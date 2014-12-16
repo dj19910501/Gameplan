@@ -64,6 +64,7 @@ namespace Integration
         EntityType _entityType { get; set; }
         string _integrationType { get; set; }
         bool _isResultError { get; set; }
+        Guid _applicationId { get; set; }
         MRPEntities db = new MRPEntities();
         /// <summary>
         /// Data Dictionary to hold tactic status values.
@@ -80,11 +81,12 @@ namespace Integration
             {TacticStatus.Complete.ToString(), "Complete"}
         };
 
-        public ExternalIntegration(int id, Guid UserId = new Guid(), EntityType entityType = EntityType.IntegrationInstance)
+        public ExternalIntegration(int id,Guid applicationId, Guid UserId = new Guid(), EntityType entityType = EntityType.IntegrationInstance)
         {
             _id = id;
             _userId = UserId;
             _entityType = entityType;
+            _applicationId = applicationId;
         }
 
         /// <summary>
@@ -212,7 +214,7 @@ namespace Integration
                 IntegrationInstanceLog instanceLogEnd = db.IntegrationInstanceLogs.SingleOrDefault(instance => instance.IntegrationInstanceLogId == integrationinstanceLogId);
                 if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
                 {
-                    IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId);
+                    IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId,_applicationId);
                     if (integrationSalesforceClient.IsAuthenticated)
                     {
                         _isResultError = integrationSalesforceClient.SyncData();
@@ -225,7 +227,7 @@ namespace Integration
                 }
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
                 {
-                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId);
+                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId,_applicationId);
                     if (integrationEloquaClient.IsAuthenticated)
                     {
                         _isResultError = integrationEloquaClient.SyncData();
@@ -268,7 +270,7 @@ namespace Integration
 
             if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
             {
-                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0,_applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
                     return integrationSalesforceClient.GetTargetDataType("Campaign");
@@ -276,7 +278,7 @@ namespace Integration
             }
             else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
             {
-                IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
+                IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0,_applicationId);
                 if (integrationEloquaClient.IsAuthenticated)
                 {
                     return integrationEloquaClient.GetTargetDataType();
@@ -300,7 +302,7 @@ namespace Integration
 
             if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
             {
-                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0,_applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
                     return integrationSalesforceClient.GetTargetDataType("Opportunity");
@@ -324,7 +326,7 @@ namespace Integration
 
             if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
             {
-                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0,_applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
                     return integrationSalesforceClient.GetTargetDataType("CampaignMember");
