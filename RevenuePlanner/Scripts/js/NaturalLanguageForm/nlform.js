@@ -129,7 +129,7 @@
 			this.optionsList.innerHTML = ihtml;
 		    // Added by Bhavesh Dobariya
             // Date : 21-4-2014 , Overflow add in nl drop down
-			this.optionsList.setAttribute('style', 'overflow:auto; max-height: 400px;');
+			this.optionsList.setAttribute('style', 'overflow:auto; max-height: 350px;');
 			this.fld.appendChild( this.toggle );
 			this.fld.appendChild( this.optionsList );
 			this.elOriginal.parentNode.insertBefore( this.fld, this.elOriginal );

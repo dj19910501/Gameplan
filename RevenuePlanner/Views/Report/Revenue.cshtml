@@ -1791,8 +1791,18 @@
                         addRowReport4(reportTableInfo4[i].Title, reportTableInfo4[i].PlanRevenue, reportTableInfo4[i].ActualRevenue, reportTableInfo4[i].TrendRevenue, reportTableInfo4[i].PlanCost, reportTableInfo4[i].ActualCost, reportTableInfo4[i].TrendCost, reportTableInfo4[i].RunRate, reportTableInfo4[i].PipelineCoverage, reportTableInfo4[i].RevSpend, reportTableInfo4[i].RevenueTotal, reportTableInfo4[i].CostTotal);
                     }
                     addLastRow();
+                    if (reportTableInfo4.length < 3) {
+                        $("#multipleselect_ddlParentRevenueContribution .ui-multiselect-checkboxes").css("max-height", "95px");
+                        $("#multipleselect_ddlBusinessUnitContribution .ui-multiselect-checkboxes").css("max-height", "33px");
+
+                    } else {
+                        $("#multipleselect_ddlParentRevenueContribution .ui-multiselect-checkboxes").css("max-height", "150px");
+                        $("#multipleselect_ddlBusinessUnitContribution .ui-multiselect-checkboxes").css("max-height", "80px");
+                    }
                 } else {
-                    $('#table_reports4 > tbody').append('<tr><td colspan="9" class="gray">No saved reports to display.</td></tr>');
+                    $('#table_reports4 > tbody').append('<tr><td colspan="9" class="gray"><div style="min-height:130px;">No saved reports to display.</div></td></tr>');
+                    $("#multipleselect_ddlParentRevenueContribution .ui-multiselect-checkboxes").css("max-height", "175px");
+                    $("#multipleselect_ddlBusinessUnitContribution .ui-multiselect-checkboxes").css("max-height", "93px");
                 }
             }
         }
