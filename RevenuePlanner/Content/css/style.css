@@ -87,7 +87,7 @@ body {
     height: 100%;*/
     width: 280px;
     float: left; /* added by kapil - #139 - to resolve popup issue */
-    max-height: 500px !important;
+    /*max-height: 500px !important;*/
 }
 
 #content_wraper {
@@ -9293,11 +9293,11 @@ div.sub {
 footer {
     text-align: center;
     /*#832  Footer should run all the way below the left bar*/
-    position: fixed;
+    position: relative;
     bottom: 0;
     width: 100%;
     /*width: 83%;*/
-    z-index: 1999;
+    z-index: 10001;
     /*margin-left: 280px;*/
     /*End #832*/
 }
@@ -10649,11 +10649,11 @@ li.close-list {
 
 /*Added By Kalpesh*/
 #improvements {
-    margin-bottom: 70px !important;
+    margin-bottom: 17px !important;
 }
 
 #change-log {
-    margin-bottom: 50px;
+    margin-bottom: 17px;
 }
 
 .clear-section {
