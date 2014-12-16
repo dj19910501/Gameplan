@@ -224,7 +224,6 @@
         });
 
         $('#tblActual').find('input').each(function () {
-            //debugger;
             $(this).keyup(function () {
                 CalculateTotalCost();
             });
@@ -238,7 +237,6 @@
                     totalvalue = cvalue + parseFloat(totalvalue);
                 }
             });
-            //alert($(cntrlid).html());
             $("#lblTotalCost").text(totalvalue);
             var cntrlid = "#lblTotalCost";
             setLabelToolTip(cntrlid, totalvalue, 5, true);
@@ -260,7 +258,6 @@
             $('#lblLineitemTitle').css('display', 'block');
             $("#lblLineitemTitle").removeAttr("style");
             $("#divDeleteProgram").css("display", "block");
-            //$('#divDeleteTactic').css('display', 'block');
         }
         $("#SaveLineitemActualSection").css("display", "none");
 
@@ -317,8 +314,6 @@
                         if (!data.IsDuplicate) {
                         if (data.id != 0) {
                             $("#successMessage").css("display", "block");
-                            // var topsize = $(document).scrollTop() + 41;
-                            //  $("#modal-container-186470").css("top", topsize + "px");
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
                             var requestedModule = $("#hdnRedirectType").val();
@@ -341,7 +336,6 @@
                     }
                     else {
                         ShowError(data.errormsg);
-                            //$("#errorMessage").slideUp(30);
                         return;
                     }
                 }

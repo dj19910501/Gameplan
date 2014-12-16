@@ -68,8 +68,6 @@
                         <button type="button" id="deletePlan" class="delete-btn-gray">Delete</button>
                     </div>
                 }
-                //if (IsPlanCreateAuthorized)
-                //{
                 <div style="float: right; position: relative;">
                     <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;" class="add-icon-white btn-blue btn-large"></span>
                     <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
@@ -79,11 +77,8 @@
                         </ul>
                     </div>
                 </div>
-                //}
                 if (IsPlanEditable)
                 {
-@*<a id="lnkEdit" class="edit-icon-white btn-blue btn-large" style="cursor: pointer; margin-right: 15px;"></a>*@
-                
                 <div style="float: right; position: relative;">
                     <span id="EditForm" style="display: block; cursor: pointer; margin-right: 10px;" class="edit-icon-white btn-blue btn-large"></span>
                     <div id="popupeditplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
@@ -114,10 +109,6 @@
         <span id="revenueSign" class="source-sans-prosemibold color5693B3">$ </span>
             <span id="inq-value" class="source-sans-prosemibold color5693B3">@planDetails.GoalValue</span>
             which will require 
-        @*<span id="inquiries" class="source-sans-prosemibold color5693B3">@planDetails.MQLs</span> 
-        and 
-        <span id="revenue" class="source-sans-prosemibold color5693B3">@planDetails.Revenues</span>*@
-
             <span id="input1" class="source-sans-prosemibold color5693B3"></span>
             <span id="msg1" class="source-sans-prosemibold color5693B3"></span>
             <span id="conjuntionWord">and </span>
@@ -329,15 +320,6 @@
                     }
                     else {
                         if (data.redirect) {
-                            @* $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html());
-                            if (data.planId) {
-                                CurrentPlanId = data.planId;
-                            }
-                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() 
-                            if ($('#ActiveMenu').val() == '@Enums.ActiveMenu.Plan.ToString()') {
-                                url = url + '&currentPlanId=' + data.planId;
-                            }*@
-
                             var currentTab = "Setup";
 
                             if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
@@ -419,8 +401,6 @@
                     else {
                         if (data.IsSuccess && data.opt != 'undefined') {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                //SaveMessageOnParent(data.msg);
-                                //$('body').removeClass('bodyOverflow');
                                 $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + data.msg);
                                 var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val();
                                 window.location.href = url;

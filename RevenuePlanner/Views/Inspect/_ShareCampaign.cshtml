@@ -106,23 +106,11 @@
                 ////
                 $("#spanMessageErrorShareTacticPopup").text(msgspan);
             }
-            ////Commented By Sohel on 2nd April 2014 to remove special character validations that was provided in OptionalMessage textbox. 
-                //// Validating Optional message.
-            //else if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#TxtOptionalMessage").val())) {
-            //    var msgspan = "Special character are not allowed, try again.";
-            //    $("#errorMessageShareTacticPopup").css("display", "block");
-            //    $("#TxtOptionalMessage").addClass("error");
-            //    $(".input-block-level").removeClass("error");
-            //    $("#spanMessageErrorShareTacticPopup").text(msgspan);
-            //}
-            ////
             else {
                 $(".input-block-level").removeClass("error");
                 ////Modified By Sohel on 2nd April 2014 to remove special character validations that was provided in OptionalMessage textbox. 
-                //$("#TxtOptionalMessage").removeClass("error");
                 $(".select2-choices").removeClass("error-background");
                 $("#errorMessageShareTacticPopup").css("display", "none");
-                ////
                 // Send mail and show confirmation popup.
                 ShareTactic($("#select2Email").select2("val").toString(), $("#TxtOptionalMessage").val());
             }
@@ -154,7 +142,6 @@
                 if (data != 'undefined' && data != false) {
                     ////Added by Sohel on 28th March 2014 for Wrapping the emaild ids.
                     email = email.replace(/,/g, ", ");
-                    ////
                     ShowConfirmation(email);
                     return false;
                 }

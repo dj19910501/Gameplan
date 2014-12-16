@@ -112,19 +112,7 @@
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $(".verticalIdSelectBox select").selectbox();
 
-        // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-        //var _description = $("#hdnDescription").val();
-        //$("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
-        // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-
         if ('@isOtherLineitem.ToString().ToLower()' == 'true') {
-    //        $('form').find(".sbSelector").each(function () {
-    //            $(this).unbind("click");
-    //            $(this).removeAttr("href");
-    //            $(this).prev().unbind("click");
-    //            $(this).prev().removeAttr("href");
-
-            //});
             $("#lblType").css("display", "none");
             $("#ddlTypeArea").css("display", "none");
             $('#txtLineItemCost').attr('readonly', true);
@@ -162,7 +150,6 @@
         $('#txtTitle').css('display', 'none');
         $('#lblLineitemTitle').css('display', 'block');
         $("#lblLineitemTitle").removeAttr("style");
-       // $('#divDeleteCampaign').css('display', 'block');
     }
     $(".alert").find(".close").on("click", function (e) {
         e.stopPropagation();
@@ -233,24 +220,6 @@
         }
 
         $("#txtLineItemCost").val(ReplaceCC($("#txtLineItemCost").val()));
-        //var arrClosedTaskString = null;
-        //if (typeof arrClosedTask != 'undefined') {
-        //    arrClosedTaskString = arrClosedTask.toString();
-        //}
-
-        //var allocationValue = [];
-        //var lstAllocInputs = $(".budget-section input");
-        //for (var i = 0; i < lstAllocInputs.length; i++) {
-        //    allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
-        //}
-
-        //Added By : Kalpesh Sharma #697 08/26/2014
-        //var ActualallocationValue = [];
-        //var lstActualAllocInputs = $(".budget-section-Actual input");
-        //for (var i = 0; i < lstActualAllocInputs.length; i++) {
-        //    ActualallocationValue.push(ReplaceCC($(lstActualAllocInputs[i]).val()));
-        //}
-        
         document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
         var uId = $(window).attr('name');
 
@@ -265,7 +234,6 @@
                 }
                 else {
                     if (data.isSaved) {
-                        /// CancelEvent();
                         var activeTab = $("#InspectTab li.active a").text()
                         var planLineItemId = $("#PlanLineItemId").val();
                         $("#successMessage").css("display", "block");
@@ -292,14 +260,8 @@
                         else {
                             RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         }
-                        //$("#errorMessageEditCampaign").slideUp(50);
-                        //$("#spanSuccessMessageViewCampaign").empty();
-                        //$("#successMessageViewCampaign").slideDown(400);
-                        //$("#spanSuccessMessageViewCampaign").empty();
-                        //$("#spanSuccessMessageViewCampaign").html(data.msg);
                     }
                     else {
-                        //CancelEvent();
                         ShowError(data.msg);
                     }
                 }

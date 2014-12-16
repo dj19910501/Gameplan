@@ -242,8 +242,6 @@
     function ShowBudgetError(value) {
         $("#successMessageEditCampaignBudget").slideUp(400);
         $("#divBudgetError").slideDown(400);
-        //$("#BudgetErrorMessage").empty();
-        //$("#BudgetErrorMessage").html(value);
     }
 
     $("#txtCampaignBudget").keyup(function () {
@@ -559,7 +557,6 @@
                      }
                  }
                  else {
-                     //CancelEvent();
                      ShowError(data.msg);
                  }
 

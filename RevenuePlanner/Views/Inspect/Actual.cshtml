@@ -132,8 +132,6 @@
                                 }
                                 <th class="border-r font3F3F3F ">
                                     <input id="@ids" class="@classes" placeholder="- - -" maxlength="@maxL"></th>
-@* @Html.TextBox(s + "-Y" + j, null, new { @class = "backgroundC6EBF3 width75px input-table error" })
-                     </th>*@
                             }
                         </tr>
                     }
@@ -289,13 +287,6 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        //$("#months_container").mCustomScrollbar({
-        //    scrollButtons: {
-        //        enable: true
-        //    },
-        //    horizontalScroll: true,
-        //    advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
-        //});
         var TacticActual;
         var planTacticId = $("#hdnPlanTacticId").val();
         function ActualTab() {
@@ -354,8 +345,6 @@
                 error: function () {
                     $("#errorMessage").css("display", "block");
                     /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                    //var topsize = $(document).scrollTop() + 41;
-                    //$("#modal-container-186470").css("top", topsize + "px");
                     $("#spanMessageError").empty();
                     GoToLogin();
                     return false;
@@ -555,47 +544,8 @@
                 var roip = (prevenue - pcost) / pcost;
                 $("#roiP").text(roip.toFixed(2));
             }
-
-            //$('#mqlP').val(FormatCommas($('#mqlP').val(), false));
-            //$('#cwP').val(FormatCommas($('#cwP').val(), false));
-            //$('#rP').val(FormatCurrency($('#rP').val(), false));
-            //$('#rT').val(FormatCurrency($('#rT').val(), false));
-
-
-            //$('#months_container').parent().css("padding-right", "40px");
             $('#months_container').parent().css("width", "970px");////modified by mitesh for PL ticket #812 change width 870 to 970
-            //$('#months_container').parent().css("height", "275px");//removed by mitesh vaishnav for pl ticket #812
-            //$('#months_container').css("width", "820px");//modified by mitesh for PL ticket #812 change width 600 to 820
-            //$('#months_container').css("overflow-x", "scroll");
-            //$(function () {
-            //    $('#months_container').slimScrollHorizontal({
-            //        height: '300px',
-            //        width: '650px',
-            //        alwaysVisible: false,
-            //        start: 'left',
-            //        position: 'bottom',
-            //        wheelStep: 10
-            //    }).css({ paddingBottom: '10px' });
-            //});
-            //$('#months_container').slimScrollHorizontal().bind('slimscroll', function (e, pos) {
-            //    console.log(e);
-            //    $('#months_container').parent().css("width", "650px");
-            //    $('#months_container').parent().addClass("pull-left");
-            //    $('#months_container').css("width", "650px");
-            //    if (pos != 'right')
-            //        $('.table-up').addClass("shadow-table");
-            //    else
-            //        $('.table-up').removeClass("shadow-table");
-            //});
-            //$('.priceValue').each(function () {
-            //    var txtvalue = $(this).val();
-            //    $(this).attr('title', txtvalue);//uday 2-7-2014 //added by uday for internal point 2-7-2014
-            //});
 
-            //$('.currency_dollar').each(function () {
-            //    var txtvalue = $(this).val();
-            //    $(this).attr('title', txtvalue);//uday 3-7-2014 //added by uday for internal point 2-7-2014
-            //});
         }
 
         $('#tblActual').find('input').each(function () {
@@ -657,7 +607,6 @@
             var isError = false;
             var isData = false;
             var isLineItem = false;
-            //var totalINQActual = (document.getElementById('lblTotalINQ').innerHTML).trim().replace(/,/g, '').replace('$', '');
             //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
             var totalProjectedStageValueActual = $("#hdnlblTotalProjectedStageValue").val();
 
@@ -732,8 +681,6 @@
             if (isError) {
                 $("#errorMessage").css("display", "block");
                 /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                //var topsize = $(document).scrollTop() + 41;
-                //$("#modal-container-186470").css("top", topsize + "px");
                 $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
                 return false;
             }
@@ -742,8 +689,6 @@
                 var msgdisplay = msg.replace('{0}', FormatCommas(totalMQLActual.toString())).replace('{1}', '@ViewBag.TacticStageTitle').replace('{3}', '@ViewBag.TacticStageTitle').replace('{2}', FormatCommas(totalProjectedStageValueActual.toString())).replace(/{4\}/g, '@MQlTitle');
                 $("#spanMessageError").text(msgdisplay);
                 $("#errorMessage").css("display", "block");
-               // var topsize = $(document).scrollTop() + 41;
-               // $("#modal-container-186470").css("top", topsize + "px");
                 return false;
             }
             if (!isData) {
@@ -776,8 +721,6 @@
                             if (data.id != 0) {
                                 var requestedModule = $("#hdnRequestedModule").val();
                                 $("#successMessage").css("display", "block");
-                                // var topsize = $(document).scrollTop() + 41;
-                                //  $("#modal-container-186470").css("top", topsize + "px");
                                 $("#spanMessageSuccess").empty();
                                 $("#spanMessageSuccess").text(data.msg);
                                 loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
@@ -798,16 +741,12 @@
                         }
                     else {
                             ShowError(data.errormsg);
-                            //$("#errorMessage").slideUp(30);
                         return;
                     }
                     }
                 },
                 error: function () {
                     $("#errorMessage").css("display", "block");
-                    /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                   // var topsize = $(document).scrollTop() + 41;
-                    //$("#modal-container-186470").css("top", topsize + "px");
                     $("#spanMessageError").empty();
                     GoToLogin();
                     return false;

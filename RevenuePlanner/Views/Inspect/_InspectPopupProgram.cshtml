@@ -27,8 +27,6 @@
     if (ViewBag.IsPlanEditable!=null){
         IsPlanEditable =(bool)ViewBag.IsPlanEditable;
     }
-    
-    //bool IsPlanOwner = (bool)ViewBag.InspectPopUpIsOwner;
 }
 @Html.Hidden("hdnPlanProgramId", planProgramId, new { id = "hdnPlanProgramId" })
 @Html.Hidden("hdnProgramStatus", programStatus, new { id = "hdnProgramStatus" })
@@ -171,9 +169,6 @@
           $("#li" + InspectValue).addClass("active pull-left");
           var tabtext = ($("#li" + InspectValue).children('a').text());
           $('#div' + tabtext).css({ display: "block" });
-
-         
-          
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liBudget").on("click", function () {
@@ -329,7 +324,6 @@
             $("#divTab").load(url + '?id=@campaignId');
               }
         $("#EditProgram").css("display", "none");
-              //$("#btnAddCampaign").css("display", "none");
         $('#txtProgramTitle').css('display', 'block');
         $('#txtProgramTitle').text('');
         $('#lblProgramTitle').css('display', 'none');
@@ -396,7 +390,6 @@
                         $("#spanMessageSuccess").empty();
                         $("#spanMessageSuccess").text(data.msg);
                         $("#errorMessage").css("display", "none");
-                        ///window.location.href = data.redirect;
                         return;
                     }
                     else {

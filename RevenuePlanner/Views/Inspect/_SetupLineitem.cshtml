@@ -16,8 +16,6 @@
      @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="padding-top:15px;">
         <div class="span6" id="inspect-modal-left-column1">
-          @*  <p>@Html.Raw("Parent Plan")</p>
-             @Html.TextBox("txtPlanTitle",planTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtPlanTitle", @readonly = "true" })*@
              <p>@Html.Raw("Parent Campaign")</p>
              @Html.TextBox("txtCampaignTitle",campaignTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCampaignTitle", @readonly = "true" })
              <p>@Html.Raw("Parent Program")</p>

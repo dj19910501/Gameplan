@@ -170,10 +170,6 @@
             $("#txtTitle").prop('readonly', false);
             $(".input-budget").addClass('light-blue-background');
         }
-
-        //$("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
-        //$("#txtTacticBudget").val(FormatCommasBudget($("#txtTacticBudget").val(), false, true));
-        //FormatRemainingBudget();
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
@@ -321,7 +317,6 @@
 
         $("#hdnTotalLineItemCost").val(newAllLineItemCost);
         $("#hdnOldLineitemCost").val(LineitemCostValue);
-        //$("#lblTotalLineItemCost").html($("#txtLineItemCost").val());
     });
 
 
@@ -386,7 +381,6 @@
                     var activeTab = $("#InspectTab li.active a").text()
                     var requestedModule = $("#hdnRedirectType").val();
                     $("#lblLineitemTitle").html(htmlEncode($('#txtTitle').val()));
-                    //$("#tactic-name").html(htmlEncode($('#txtTacticTitle').val()));
                     $("#errorMessage").slideUp(50);
                     $("#successMessage").slideDown(400);
                     $("#spanMessageSuccess").empty();
@@ -402,7 +396,6 @@
                     }
                 }
                 else {
-                    // CancelEvent();
                     $("#txtLineItemCost").val(FormatCommasBudget($("#txtLineItemCost").val(), false, true));
                     ShowError(data.msg);
                 }

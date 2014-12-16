@@ -89,9 +89,7 @@
 
                     @if (IsPlanEditable)
                     {
-                        
                     <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;"></a>
-                    @*@Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0, tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large" })*@
                     }
                 </span> 
             }
@@ -106,9 +104,7 @@
     <div class="modal-popup-summary" id="campaignSummary">
         <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
         <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
-            I'm running a
-            @*<span id="tactic-type" class="source-sans-prosemibold color5693B3">Email</span>*@
-            campaign called 
+            I'm running a campaign called 
             <span id="tactic-name" class="source-sans-prosemibold color5693B3">@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)</span>
             from
             <span id="start-date" class="source-sans-prosemibold color5693B3">@campaignMaster.StartDate.ToString(Common.DateFormateForInspectPopupDescription)</span>
@@ -266,14 +262,6 @@
           $("#btnAddCampaign").on("click", function () {
               loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId', $("#hdnRedirectType").val());
           });
-
-          @*$('#BtnGroup1').click(function () {
-
-              if ($(this).html().toLowerCase() == "new program") {
-                  loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@planCampaignId');
-              }
-              return false;
-          });*@
           $('#NewProgram').click(function () {
 
               loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanCampaignId').val(), $("#hdnRedirectType").val());
@@ -362,7 +350,6 @@
         $("#btnEditCampaign").css("display", "none");
         $("#AddForm").css("display", "none");
         $(".btn-group").css("display", "none");
-        //$("#btnAddCampaign").css("display", "none");
         $('#txtTitle').css('display', 'block');
         $('#txtTitle').text('');
         $('#lblCampaignTitle').css('display', 'none');

@@ -1,13 +1,10 @@
 ﻿@model RevenuePlanner.Models.Plan_CampaignModel
 @using RevenuePlanner.Helpers
 @{
-    // var campaign = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
     bool ExtIntService = (bool)ViewBag.ExtIntService;
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
-    //deployStatus = campaign.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     string OwnerName = ViewBag.OwnerName;
-                //string PlanTitle = ViewBag.PlanTitle;
     
     //// Flag to indicate unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -84,8 +81,6 @@
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
 
         <div class="span6" id="inspect-modal-left-column1">
-            @*<p>@Html.Raw("Parent Plan")</p>
-            @Html.TextBox("txtPlan", HttpUtility.HtmlDecode(PlanTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = PlanTitle })*@
             <p>@Html.Raw("Description")</p>
             @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
 
@@ -247,15 +242,6 @@
 
           //End - Added by Viral Kadiya on 18/11/2014 to resolve PL ticket #947.
 
-          // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-          //var _description = $("#hdnDescription").val();
-          //$("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
-          // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-          //var spanStartDate = $(".datepicker-days").eq(1).parent().html();
-          //spanStartDate.attr("id", "dp_Start_menu1");
-
-
-
       });
     //<---  End Document.ready Event --->
 
@@ -356,10 +342,6 @@
         //// To resolve issue of Ticket #1025, Pratik 
         $(".datepicker.dropdown-menu").first().css("display", "none");
     })
-
-
-
-  
         $(".alert").find(".close").on("click", function (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -526,7 +508,6 @@
                 }
                 else {
                     if (data.isSaved) {
-                        /// CancelEvent();
                         var activeTab = $("#InspectTab li.active a").text()
                         var planCampaignId = $("#PlanCampaignId").val();
                         $("#successMessage").css("display", "block");
@@ -546,14 +527,8 @@
                         else {
                             RefreshCurrentTab(requestedModule, 0, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         }
-                        //$("#errorMessageEditCampaign").slideUp(50);
-                        //$("#spanSuccessMessageViewCampaign").empty();
-                        //$("#successMessageViewCampaign").slideDown(400);
-                        //$("#spanSuccessMessageViewCampaign").empty();
-                        //$("#spanSuccessMessageViewCampaign").html(data.msg);
                     }
                     else {
-                        //CancelEvent();
                         ShowError(data.msg);
                     }
                 }

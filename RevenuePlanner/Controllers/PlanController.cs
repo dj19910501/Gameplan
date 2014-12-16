@@ -25,10 +25,7 @@ namespace RevenuePlanner.Controllers
 
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;
-
-        //Added By : Kalpesh Sharma : Functional Review Points #697
-        private string DefaultLineItemTitle = "Line Item";
-
+        private string PeriodChar = "Y";
         #endregion
 
         #region Create
@@ -350,7 +347,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if (PrevPlanBudgetAllocationList.Count > 0)
                                         {
-                                            var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                            var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
                                             if (updatePlanBudget != null)
                                             {
                                                 if (arrBudgetInputValues[i] != "")
@@ -375,7 +372,7 @@ namespace RevenuePlanner.Controllers
                                         // End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
                                         Plan_Budget objPlanBudget = new Plan_Budget();
                                         objPlanBudget.PlanId = objPlanModel.PlanId;
-                                        objPlanBudget.Period = "Y" + (i + 1);
+                                        objPlanBudget.Period = PeriodChar + (i + 1);
                                         objPlanBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                         objPlanBudget.CreatedBy = Sessions.User.UserId;
                                         objPlanBudget.CreatedDate = DateTime.Now;
@@ -394,7 +391,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if (PrevPlanBudgetAllocationList.Count > 0)
                                         {
-                                            var thisQuartersMonthList = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt)) || pb.Period == ("Y" + (QuarterCnt + 1)) || pb.Period == ("Y" + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                            var thisQuartersMonthList = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt)) || pb.Period == (PeriodChar + (QuarterCnt + 1)) || pb.Period == (PeriodChar + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
                                             var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
 
                                             if (thisQuarterFirstMonthBudget != null)
@@ -431,7 +428,7 @@ namespace RevenuePlanner.Controllers
                                                                 }
                                                                 if ((QuarterCnt + j) <= (QuarterCnt + 2))
                                                                 {
-                                                                    thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt + j))).FirstOrDefault();
+                                                                    thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt + j))).FirstOrDefault();
                                                                 }
 
                                                                 j = j + 1;
@@ -452,7 +449,7 @@ namespace RevenuePlanner.Controllers
                                         // End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
                                         Plan_Budget objPlanBudget = new Plan_Budget();
                                         objPlanBudget.PlanId = objPlanModel.PlanId;
-                                        objPlanBudget.Period = "Y" + QuarterCnt;
+                                        objPlanBudget.Period = PeriodChar + QuarterCnt;
                                         objPlanBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                         objPlanBudget.CreatedBy = Sessions.User.UserId;
                                         objPlanBudget.CreatedDate = DateTime.Now;
@@ -1233,7 +1230,7 @@ namespace RevenuePlanner.Controllers
         /// Function to get GANTT chart task detail for Tactic.
         /// Modified: To show task whose either start or end date or both date are outside current view.
         /// </summary>
-        /// <param name="planId">Plan Id.</param>
+        /// <param name="plan">Plan</param>
         /// <param name="isQuarter">Flag to indicate whether to fetch data for current Quarter.</param>
         /// <returns>Returns list of task for GANNT CHART.</returns>
         public List<object> GetTaskDetailTactic(Plan plan, string isQuater)
@@ -1543,7 +1540,6 @@ namespace RevenuePlanner.Controllers
         /// Added By: Maninder Singh Wadhva.
         /// Date: 12/04/2013
         /// </summary>
-        /// <param name="planId">Plan Id whose status is to be updated.</param>
         /// <returns>Returns ApplyToCalendar action result.</returns>
         [HttpPost]
         [ActionName("ApplyToCalendar")]
@@ -1566,9 +1562,12 @@ namespace RevenuePlanner.Controllers
         /// Date: 12/04/2013
         /// Function to update start and end date for tactic.
         /// </summary>
-        /// <param name="planTacticId">Plan Tactic Id to be updated.</param>
+        /// <param name="id"></param>
+        /// <param name="isPlanCampaign"></param>
         /// <param name="startDate">Start date field.</param>
         /// <param name="duration">Duration of task.</param>
+        /// <param name="isPlanProgram"></param>
+        /// <param name="isPlanTactic"></param>
         /// <returns>Returns json result that indicate whether date was updated successfully.</returns>
         public JsonResult UpdateStartEndDate(int id, string startDate, double duration, bool isPlanCampaign, bool isPlanProgram, bool isPlanTactic)
         {
@@ -1726,6 +1725,12 @@ namespace RevenuePlanner.Controllers
         /// Added By: Bhavesh Dobariya.
         /// Action to Load Assortment.
         /// </summary>
+        /// <param name="campaignId"></param>
+        /// <param name="programId"></param>
+        /// <param name="tacticId"></param>
+        /// <param name="EditObject"></param>
+        /// <param name="ismsg"></param>
+        /// <param name="isError"></param>
         /// <returns>Returns View Of Assortment.</returns>
         public ActionResult Assortment(int campaignId = 0, int programId = 0, int tacticId = 0, string ismsg = "", string EditObject = "", bool isError = false)
         {
@@ -2059,7 +2064,7 @@ namespace RevenuePlanner.Controllers
                         if ((i + 1) % 3 == 0)
                         {
                             PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
-                            objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
+                            objPlanBudgetAllocationValue.periodTitle = PeriodChar + (i - 1).ToString();
                             objPlanBudgetAllocationValue.budgetValue = lstCampaignBudget.Where(_campBdgt => quarterPeriods.Contains(_campBdgt.Period) && _campBdgt.PlanCampaignId == id).FirstOrDefault() == null ? "" : lstCampaignBudget.Where(_campBdgt => quarterPeriods.Contains(_campBdgt.Period) && _campBdgt.PlanCampaignId == id).Select(_campBdgt => _campBdgt.Value).Sum().ToString();
                             objPlanBudgetAllocationValue.remainingMonthlyBudget = (lstPlanBudget.Where(_plnBdgt => quarterPeriods.Contains(_plnBdgt.Period)).FirstOrDefault() == null ? 0 : lstPlanBudget.Where(_plnBdgt => quarterPeriods.Contains(_plnBdgt.Period)).Select(_plnBdgt => _plnBdgt.Value).Sum()) - (lstCampaignBudget.Where(_plnBdgt => quarterPeriods.Contains(_plnBdgt.Period)).Sum(_plnBdgt => _plnBdgt.Value));
                             objPlanBudgetAllocationValue.programMonthlyBudget = lstProgramBudget.Where(_prgrmBdgt => quarterPeriods.Contains(_prgrmBdgt.Period)).Select(_prgrmBdgt => _prgrmBdgt.Value).Sum();
@@ -2067,7 +2072,7 @@ namespace RevenuePlanner.Controllers
                             /// Add into return list
                             lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
 
-                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
+                            quarterPeriods = new string[] { PeriodChar + (i + 2), PeriodChar + (i + 3), PeriodChar + (i + 4) };
                         }
                     }
 
@@ -2440,14 +2445,14 @@ namespace RevenuePlanner.Controllers
                         if ((i + 1) % 3 == 0)
                         {
                             PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
-                            objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
+                            objPlanBudgetAllocationValue.periodTitle = PeriodChar + (i - 1).ToString();
                             objPlanBudgetAllocationValue.costValue = lstLineItemCost.Where(lnCost => quarterPeriods.Contains(lnCost.Period) && lnCost.PlanLineItemId == id).FirstOrDefault() == null ? "" : lstLineItemCost.Where(lnCost => quarterPeriods.Contains(lnCost.Period) && lnCost.PlanLineItemId == id).Select(lnCost => lnCost.Value).Sum().ToString();
                             objPlanBudgetAllocationValue.remainingMonthlyCost = (lstTacticCost.Where(tacCost => quarterPeriods.Contains(tacCost.Period)).FirstOrDefault() == null ? 0 : lstTacticCost.Where(tacCost => quarterPeriods.Contains(tacCost.Period)).Select(tacCost => tacCost.Value).Sum()) - (lstLineItemCost.Where(lnCost => quarterPeriods.Contains(lnCost.Period)).Sum(lnCost => lnCost.Value));
 
                             /// Add into return list
                             lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
 
-                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
+                            quarterPeriods = new string[] { PeriodChar + (i + 2), PeriodChar + (i + 3), PeriodChar + (i + 4) };
                         }
                     }
 
@@ -2484,6 +2489,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType"></param>
         /// <param name="closedTask"></param>
         /// <param name="UserId"></param>
+        /// <param name="CalledFromBudget"></param>
         /// <returns></returns>
         public ActionResult DeleteLineItem(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget = "")
         {
@@ -4206,7 +4212,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if (PrevPlanBudgetAllocationList.Count > 0)
                                         {
-                                            var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                            var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
                                             if (updatePlanBudget != null)
                                             {
                                                 // Added by Dharmraj to handle case were user update empty or zero allocation value.
@@ -4235,7 +4241,7 @@ namespace RevenuePlanner.Controllers
                                         Plan_Budget objPlan_Budget = new Plan_Budget();
 
                                         objPlan_Budget.PlanId = planId;
-                                        objPlan_Budget.Period = "Y" + (i + 1).ToString();
+                                        objPlan_Budget.Period = PeriodChar + (i + 1).ToString();
                                         objPlan_Budget.Value = Convert.ToInt64(inputValues[i]);
                                         objPlan_Budget.CreatedDate = DateTime.Now;
                                         objPlan_Budget.CreatedBy = Sessions.User.UserId;
@@ -4255,7 +4261,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if (PrevPlanBudgetAllocationList.Count > 0)
                                         {
-                                            var thisQuartersMonthList = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt)) || pb.Period == ("Y" + (QuarterCnt + 1)) || pb.Period == ("Y" + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                            var thisQuartersMonthList = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt)) || pb.Period == (PeriodChar + (QuarterCnt + 1)) || pb.Period == (PeriodChar + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
                                             var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
 
                                             if (thisQuarterFirstMonthBudget != null)
@@ -4294,7 +4300,7 @@ namespace RevenuePlanner.Controllers
                                                                 }
                                                                 if ((QuarterCnt + j) <= (QuarterCnt + 2))
                                                                 {
-                                                                    thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt + j))).FirstOrDefault();
+                                                                    thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt + j))).FirstOrDefault();
                                                                 }
 
                                                                 j = j + 1;
@@ -4316,7 +4322,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         Plan_Budget objPlan_Budget = new Plan_Budget();
                                         objPlan_Budget.PlanId = planId;
-                                        objPlan_Budget.Period = "Y" + (QuarterCnt).ToString();
+                                        objPlan_Budget.Period = PeriodChar + (QuarterCnt).ToString();
                                         objPlan_Budget.Value = Convert.ToInt64(inputValues[i]);
                                         objPlan_Budget.CreatedDate = DateTime.Now;
                                         objPlan_Budget.CreatedBy = Sessions.User.UserId;
@@ -4389,14 +4395,14 @@ namespace RevenuePlanner.Controllers
                             if ((i + 1) % 3 == 0)
                             {
                                 PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
-                                objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
+                                objPlanBudgetAllocationValue.periodTitle = PeriodChar + (i - 1).ToString();
                                 objPlanBudgetAllocationValue.budgetValue = planBudgetAllocationList.Where(a => quarterPeriods.Contains(a.Period)).FirstOrDefault() == null ? "" : planBudgetAllocationList.Where(a => quarterPeriods.Contains(a.Period)).Select(a => a.Value).Sum().ToString();
                                 objPlanBudgetAllocationValue.campaignMonthlyBudget = planCampaignBudgetAllocationList.Where(pcb => quarterPeriods.Contains(pcb.Period)).Sum(pcb => pcb.Value);
 
                                 /// Add into return list
                                 lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
 
-                                quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
+                                quarterPeriods = new string[] { PeriodChar + (i + 2), PeriodChar + (i + 3), PeriodChar + (i + 4) };
                             }
                         }
 
@@ -4474,14 +4480,14 @@ namespace RevenuePlanner.Controllers
                         if ((i + 1) % 3 == 0)
                         {
                             PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
-                            objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
+                            objPlanBudgetAllocationValue.periodTitle = PeriodChar + (i - 1).ToString();
                             objPlanBudgetAllocationValue.budgetValue = lstPlanBudget.Where(a => quarterPeriods.Contains(a.Period) && a.PlanId == id).FirstOrDefault() == null ? "" : lstPlanBudget.Where(a => quarterPeriods.Contains(a.Period) && a.PlanId == id).Select(a => a.Value).Sum().ToString();
                             objPlanBudgetAllocationValue.campaignMonthlyBudget = lstCampaignBudget.Where(a => quarterPeriods.Contains(a.Period)).Select(a => a.Value).Sum();
 
                             /// Add into return list
                             lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
 
-                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
+                            quarterPeriods = new string[] { PeriodChar + (i + 2), PeriodChar + (i + 3), PeriodChar + (i + 4) };
                         }
                     }
 
@@ -4631,7 +4637,6 @@ namespace RevenuePlanner.Controllers
         /// model for the allocated tab
         /// </summary>
         /// <param name="PlanId"></param>
-        /// <param name="budgetTab"></param>
         /// <returns></returns>
         public ActionResult GetAllocatedBugetData(int PlanId)
         {
@@ -5454,6 +5459,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="model"></param>
         /// <param name="ParentActivityType"></param>
         /// <param name="ChildActivityType"></param>
+        /// <param name="budgetTab"></param>
         /// <returns></returns>
         public List<BudgetModel> CalculateBottomUp(List<BudgetModel> model, string ParentActivityType, string ChildActivityType, BudgetTab budgetTab)
         {
@@ -5572,6 +5578,12 @@ namespace RevenuePlanner.Controllers
             return model;
         }
 
+        /// <summary>
+        /// Action to Get Program Budget allocation data.
+        /// </summary>
+        /// <param name="CampaignId"></param>
+        /// <param name="PlanProgramId"></param>
+        /// <returns></returns>
         public JsonResult GetBudgetAllocationProgrmaData(int CampaignId, int PlanProgramId)
         {
             try
@@ -5628,7 +5640,7 @@ namespace RevenuePlanner.Controllers
                         if ((i + 1) % 3 == 0)
                         {
                             PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
-                            objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
+                            objPlanBudgetAllocationValue.periodTitle = PeriodChar + (i - 1).ToString();
                             objPlanBudgetAllocationValue.budgetValue = lstProgramBudget.Where(c => quarterPeriods.Contains(c.Period) && c.PlanProgramId == PlanProgramId).FirstOrDefault() == null ? "" : lstProgramBudget.Where(c => quarterPeriods.Contains(c.Period) && c.PlanProgramId == PlanProgramId).Select(a => a.Value).Sum().ToString();
                             objPlanBudgetAllocationValue.remainingMonthlyBudget = lstCampaignBudget.Where(p => quarterPeriods.Contains(p.Period)).FirstOrDefault() == null ? 0 : lstCampaignBudget.Where(p => quarterPeriods.Contains(p.Period)).Sum(a => a.Value) - (lstProgramBudget.Where(c => quarterPeriods.Contains(c.Period)).Sum(c => c.Value));
                             objPlanBudgetAllocationValue.programMonthlyBudget = lstTacticsBudget.Where(c => quarterPeriods.Contains(c.Period)).Sum(c => c.Value);
@@ -5636,7 +5648,7 @@ namespace RevenuePlanner.Controllers
                             /// Add into return list
                             lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
 
-                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
+                            quarterPeriods = new string[] { PeriodChar + (i + 2), PeriodChar + (i + 3), PeriodChar + (i + 4) };
                         }
                     }
 
@@ -5763,7 +5775,7 @@ namespace RevenuePlanner.Controllers
                         if ((i + 1) % 3 == 0)
                         {
                             PlanBudgetAllocationValue objPlanBudgetAllocationValue = new PlanBudgetAllocationValue();
-                            objPlanBudgetAllocationValue.periodTitle = "Y" + (i - 1).ToString();
+                            objPlanBudgetAllocationValue.periodTitle = PeriodChar + (i - 1).ToString();
                             objPlanBudgetAllocationValue.budgetValue = lstTacticsBudget.Where(a => quarterPeriods.Contains(a.Period) && a.PlanTacticId == PlanTacticId).FirstOrDefault() == null ? "" : lstTacticsBudget.Where(a => quarterPeriods.Contains(a.Period) && a.PlanTacticId == PlanTacticId).Select(a => a.Value).Sum().ToString();
                             objPlanBudgetAllocationValue.remainingMonthlyBudget = (lstProgramBudget.Where(a => quarterPeriods.Contains(a.Period)).FirstOrDefault() == null ? 0 : lstProgramBudget.Where(a => quarterPeriods.Contains(a.Period)).Select(a => a.Value).Sum()) - (lstTacticsBudget.Where(a => quarterPeriods.Contains(a.Period)).Sum(c => c.Value));
                             objPlanBudgetAllocationValue.programMonthlyBudget = lstTacticsLineItemCost.Where(a => quarterPeriods.Contains(a.Period)).Select(a => a.Value).Sum();
@@ -5771,7 +5783,7 @@ namespace RevenuePlanner.Controllers
                             /// Add into return list
                             lstPlanBudgetAllocationValue.Add(objPlanBudgetAllocationValue);
 
-                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
+                            quarterPeriods = new string[] { PeriodChar + (i + 2), PeriodChar + (i + 3), PeriodChar + (i + 4) };
                         }
                     }
 
@@ -5917,7 +5929,7 @@ namespace RevenuePlanner.Controllers
                     {
                         Plan_Campaign_Program_Tactic_LineItem_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
                         obPlanCampaignProgramTacticActual.PlanLineItemId = PlanLineItemId;
-                        obPlanCampaignProgramTacticActual.Period = "Y" + (i + 1);
+                        obPlanCampaignProgramTacticActual.Period = PeriodChar + (i + 1);
                         obPlanCampaignProgramTacticActual.Value = Convert.ToDouble(arrActualCostInputValues[i]);
                         obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
                         obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
@@ -5940,6 +5952,12 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "Common Methods"
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Action to Get TacticTypes based on ModelId.
+        /// </summary>
+        /// <param name="ModelId">Model Id</param>
+        /// <returns>Returns list of TacticTypes</returns>
         public List<string> GetTacticTypeListbyModelId(int ModelId)
         {
             List<string> lstTacticType = new List<string>();

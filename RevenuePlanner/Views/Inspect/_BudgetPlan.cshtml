@@ -93,7 +93,6 @@
             $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
         }
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-        //$("#txtPlanBudget").val(FormatCommasBudget($("#txtPlanBudget").val(), false, true));
         $("#txtPlanBudget").attr('title', $("#txtPlanBudget").val());
 
         if ($("#hdnIsBudgetAllocated").val() == "True") {
@@ -107,7 +106,6 @@
                 $(this).parent().removeClass('light-blue-background');
                 $(this).parent().addClass('unallocated-span');
                 $(this).addClass('unallocated-text-BudgetPopUp');
-                //$(this).prop('disabled', 'disabled');
             });
         }
 
@@ -389,7 +387,6 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/SavePlanDetails")',
-                //data: formData + '&RedirectType=' + RedirectType + '&UserId=' + uId,
                 data: formData + '&BudgetInputValues=' + allocationValue.toString() + '&planBudget=' + planBudget + '&RedirectType=' + RedirectType + '&UserId=' + uId,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -397,17 +394,7 @@
                     }
                     else {
                         if (data.succmsg != "") {
-                            if (data.redirect != "") {
-                                @*if ('@CalledFromBudget' != '') {
-                                    var strURL = '@Url.Content("~/Plan/Budgeting")';
-                                    window.location.href = strURL + '?type=' + '@CalledFromBudget';
-                                }
-                                else {
-                                    window.location.href = data.redirect;
-                                }*@
-
-                            }
-                            else {
+                            if (data.redirect == "" || data.redirect.length <= 0) {
                                 $("#successMessage").css("display", "block");
                                 $("#spanMessageSuccess").empty();
                                 $("#spanMessageSuccess").text(data.succmsg);

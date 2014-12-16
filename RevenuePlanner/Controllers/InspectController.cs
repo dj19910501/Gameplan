@@ -30,12 +30,15 @@ namespace RevenuePlanner.Controllers
         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
         private const string GameplanIntegrationService = "Gameplan Integration Service";
         private string DefaultLineItemTitle = "Line Item";
+        private string PeriodChar = "Y";
         #endregion
 
+        #region "Inspect Index"
         public ActionResult Index()
         {
             return View();
         }
+        #endregion
 
         #region "Plan related Functions"
 
@@ -46,6 +49,7 @@ namespace RevenuePlanner.Controllers
         /// Action to Load Setup Tab for Plan.
         /// </summary>
         /// <param name="id">Plan Id.</param>
+        /// <param name="InspectPopupMode"></param>
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadPlanSetup(int id, string InspectPopupMode = "")
         {
@@ -103,6 +107,7 @@ namespace RevenuePlanner.Controllers
         /// Action to Load Budget Tab for Plan.
         /// </summary>
         /// <param name="id">Plan Id.</param>
+        /// <param name="InspectPopupMode"></param>
         /// <returns>Returns Partial View Of Budget Tab.</returns>
         public ActionResult LoadPlanBudget(int id, string InspectPopupMode = "")
         {
@@ -231,7 +236,7 @@ namespace RevenuePlanner.Controllers
                                             if (PrevPlanBudgetAllocationList.Count > 0)
                                             {
                                                 //// Get budget value periodically.
-                                                var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                                var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
                                                 if (updatePlanBudget != null)
                                                 {
                                                     if (arrBudgetInputValues[i] != "")
@@ -259,7 +264,7 @@ namespace RevenuePlanner.Controllers
                                             //// End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
                                             Plan_Budget objPlanBudget = new Plan_Budget();
                                             objPlanBudget.PlanId = objPlanModel.PlanId;
-                                            objPlanBudget.Period = "Y" + (i + 1);
+                                            objPlanBudget.Period = PeriodChar + (i + 1);
                                             objPlanBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                             objPlanBudget.CreatedBy = Sessions.User.UserId;
                                             objPlanBudget.CreatedDate = DateTime.Now;
@@ -277,7 +282,7 @@ namespace RevenuePlanner.Controllers
                                         if (PrevPlanBudgetAllocationList != null && PrevPlanBudgetAllocationList.Count > 0)
                                         {
                                             //// Get current Quarter months budget.
-                                            var thisQuartersMonthList = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt)) || pb.Period == ("Y" + (QuarterCnt + 1)) || pb.Period == ("Y" + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                            var thisQuartersMonthList = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt)) || pb.Period == (PeriodChar + (QuarterCnt + 1)) || pb.Period == (PeriodChar + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
                                             var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
 
                                             if (thisQuarterFirstMonthBudget != null)
@@ -317,7 +322,7 @@ namespace RevenuePlanner.Controllers
                                                                 }
                                                                 if ((QuarterCnt + j) <= (QuarterCnt + 2))
                                                                 {
-                                                                    thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt + j))).FirstOrDefault();
+                                                                    thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt + j))).FirstOrDefault();
                                                                 }
 
                                                                 j = j + 1;
@@ -338,7 +343,7 @@ namespace RevenuePlanner.Controllers
                                             //// End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
                                             Plan_Budget objPlanBudget = new Plan_Budget();
                                             objPlanBudget.PlanId = objPlanModel.PlanId;
-                                            objPlanBudget.Period = "Y" + QuarterCnt;
+                                            objPlanBudget.Period = PeriodChar + QuarterCnt;
                                             objPlanBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                             objPlanBudget.CreatedBy = Sessions.User.UserId;
                                             objPlanBudget.CreatedDate = DateTime.Now;
@@ -629,6 +634,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Mitesh Vaishnav.
         /// Action to Create Campaign.
         /// </summary>
+        /// <param name="id">Plan Id</param>
         /// <returns>Returns Partial View Of Campaign.</returns>
         public PartialViewResult CreateCampaign(int id)
         {
@@ -840,8 +846,11 @@ namespace RevenuePlanner.Controllers
         /// Action to Save Campaign.
         /// </summary>
         /// <param name="form">Form object of Plan_CampaignModel.</param>
-        /// <param name="programs">Program list string array.</param>
+        /// <param name="UserId">User Id.</param>
         /// <param name="RedirectType">Redirect Type.</param>
+        /// <param name="title"></param>
+        /// <param name="customFieldInputs"></param>
+        /// <param name="planId"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         public ActionResult SaveCampaign(Plan_CampaignModel form, string title, string customFieldInputs, string UserId = "", int planId = 0)
@@ -1037,7 +1046,8 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
         /// <param name="BudgetInputValues">Budget Input Values.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
+        /// <param name="UserId">User Id.</param>
+        /// <param name="title"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         public ActionResult SaveCampaignBudgetAllocation(Plan_CampaignModel form, string BudgetInputValues, string UserId = "", string title = "")
@@ -1095,7 +1105,7 @@ namespace RevenuePlanner.Controllers
                                         if (PrevAllocationList != null && PrevAllocationList.Count > 0)
                                         {
                                             //// Get previous campaign budget values by Period.
-                                            var updatePlanCampaignBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                            var updatePlanCampaignBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
                                             if (updatePlanCampaignBudget != null)
                                             {
                                                 if (arrBudgetInputValues[i] != "")
@@ -1121,7 +1131,7 @@ namespace RevenuePlanner.Controllers
                                             // End - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
                                             Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
                                             objPlanCampaignBudget.PlanCampaignId = form.PlanCampaignId;
-                                            objPlanCampaignBudget.Period = "Y" + (i + 1);
+                                            objPlanCampaignBudget.Period = PeriodChar + (i + 1);
                                             objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                             objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
                                             objPlanCampaignBudget.CreatedDate = DateTime.Now;
@@ -1139,7 +1149,7 @@ namespace RevenuePlanner.Controllers
                                         if (PrevAllocationList != null && PrevAllocationList.Count > 0)
                                         {
                                             //// Get Quarter budget list.
-                                            var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt)) || pb.Period == ("Y" + (QuarterCnt + 1)) || pb.Period == ("Y" + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                            var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt)) || pb.Period == (PeriodChar + (QuarterCnt + 1)) || pb.Period == (PeriodChar + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
 
                                             //// Get First month values from Quarterly budget list.
                                             var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
@@ -1178,7 +1188,7 @@ namespace RevenuePlanner.Controllers
                                                                 }
                                                                 if ((QuarterCnt + j) <= (QuarterCnt + 2))
                                                                 {
-                                                                    thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt + j))).FirstOrDefault();
+                                                                    thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt + j))).FirstOrDefault();
                                                                 }
 
                                                                 j = j + 1;
@@ -1199,7 +1209,7 @@ namespace RevenuePlanner.Controllers
                                             // End - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
                                             Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
                                             objPlanCampaignBudget.PlanCampaignId = form.PlanCampaignId;
-                                            objPlanCampaignBudget.Period = "Y" + QuarterCnt;
+                                            objPlanCampaignBudget.Period = PeriodChar + QuarterCnt;
                                             objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                             objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
                                             objPlanCampaignBudget.CreatedDate = DateTime.Now;
@@ -1843,6 +1853,8 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
         /// <param name="BudgetInputValues">Budget allocation inputs values.</param>
+        /// <param name="title"></param>
+        /// <param name="UserId"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         public ActionResult SaveProgramBudgetAllocation(Plan_Campaign_ProgramModel form, string BudgetInputValues, string UserId = "", string title = "")
@@ -1898,7 +1910,7 @@ namespace RevenuePlanner.Controllers
                                     if (PrevAllocationList != null && PrevAllocationList.Count > 0)
                                     {
                                         //// Get previous campaign budget values by Period.
-                                        var updatePlanProgramBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                        var updatePlanProgramBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
                                         if (updatePlanProgramBudget != null)
                                         {
                                             if (arrBudgetInputValues[i] != "")
@@ -1924,7 +1936,7 @@ namespace RevenuePlanner.Controllers
                                         // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
                                         Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
                                         objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
-                                        objPlanCampaignProgramBudget.Period = "Y" + (i + 1);
+                                        objPlanCampaignProgramBudget.Period = PeriodChar + (i + 1);
                                         objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                         objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
                                         objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
@@ -1942,7 +1954,7 @@ namespace RevenuePlanner.Controllers
                                     if (PrevAllocationList != null && PrevAllocationList.Count > 0)
                                     {
                                         //// Get Quarter budget list.
-                                        var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 1)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                        var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (BudgetInputValuesCounter)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 1)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
 
                                         //// Get First month values from Quarterly budget list.
                                         var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
@@ -1981,7 +1993,7 @@ namespace RevenuePlanner.Controllers
                                                             }
                                                             if ((BudgetInputValuesCounter + j) <= (BudgetInputValuesCounter + 2))
                                                             {
-                                                                thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter + j))).FirstOrDefault();
+                                                                thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (BudgetInputValuesCounter + j))).FirstOrDefault();
                                                             }
 
                                                             j = j + 1;
@@ -2002,7 +2014,7 @@ namespace RevenuePlanner.Controllers
                                         // End - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
                                         Plan_Campaign_Program_Budget objPlanCampaignProgramBudget = new Plan_Campaign_Program_Budget();
                                         objPlanCampaignProgramBudget.PlanProgramId = form.PlanProgramId;
-                                        objPlanCampaignProgramBudget.Period = "Y" + BudgetInputValuesCounter;
+                                        objPlanCampaignProgramBudget.Period = PeriodChar + BudgetInputValuesCounter;
                                         objPlanCampaignProgramBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                         objPlanCampaignProgramBudget.CreatedBy = Sessions.User.UserId;
                                         objPlanCampaignProgramBudget.CreatedDate = DateTime.Now;
@@ -2036,6 +2048,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Mitesh Vaishnav.
         /// Action to Create Program.
         /// </summary>
+        /// <param name="id"></param>
         /// <returns>Returns Partial View Of Program.</returns>
         public PartialViewResult CreateProgram(int id = 0)
         {
@@ -2158,6 +2171,7 @@ namespace RevenuePlanner.Controllers
         /// Action to Load Setup Tab.
         /// </summary>
         /// <param name="id">Plan Tactic Id.</param>
+        /// <param name="Mode"></param>
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadSetup(int id, string Mode = "View")
         {
@@ -2683,6 +2697,9 @@ namespace RevenuePlanner.Controllers
         /// Action to UpdateResult.
         /// </summary>
         /// <param name="tacticactual">List of InspectActual.</param>
+        /// <param name="lineItemActual"></param>
+        /// <param name="tactictitle"></param>
+        /// <param name="UserId"></param>
         /// <returns>Returns JsonResult.</returns>
         [HttpPost]
         public JsonResult UploadResult(List<InspectActual> tacticactual, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActual, string UserId = "", string tactictitle = "")
@@ -2855,6 +2872,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id">Tactic Id.</param>
         /// <param name="RedirectType">Redirect Type</param>
+        /// <param name="CalledFromBudget"></param>
         /// <returns>Returns Partial View Of Tactic.</returns>
         public ActionResult EditTactic(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
@@ -3139,8 +3157,11 @@ namespace RevenuePlanner.Controllers
         /// Action to Save Tactic.
         /// </summary>
         /// <param name="form">Form object of Plan_Campaign_Program_TacticModel.</param>
-        /// <param name="programs">Program list string array.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
+        /// <param name="lineitems"></param>
+        /// <param name="closedTask"></param>
+        /// <param name="customFieldInputs"></param>
+        /// <param name="UserId"></param>
+        /// <param name="strDescription"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, string UserId = "", string strDescription = "")
@@ -3595,6 +3616,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Pratik Chauhan.
         /// Action to Create Tactic.
         /// </summary>
+        /// <param name="id">Plan Program Id</param>
         /// <returns>Returns Partial View Of Tactic.</returns>
         public PartialViewResult CreateTactic(int id = 0)
         {
@@ -3721,6 +3743,10 @@ namespace RevenuePlanner.Controllers
         /// Modified By: Maninder Singh Wadhva to address TFS Bug#280 :Error Message Showing when editing a tactic - Preventing MQLs from updating
         /// Modified By: Maninder Singh Wadhva 1-March-2014 to address TFS Bug#322 : Changes made to INQ, MQL and Projected Revenue Calculation.
         /// </summary>
+        /// <param name="form"></param>
+        /// <param name="projectedStageValue"></param>
+        /// <param name="RedirectType"></param>
+        /// <param name="isTacticTypeChange"></param>
         /// <returns>JsonResult MQl Rate.</returns>
         public JsonResult CalculateMQL(Inspect_Popup_Plan_Campaign_Program_TacticModel form, double projectedStageValue, bool RedirectType, bool isTacticTypeChange)
         {
@@ -3878,7 +3904,8 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
         /// <param name="BudgetInputValues">Budget Input Values.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
+        /// <param name="UserId">User Id.</param>
+        /// <param name="title"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         public ActionResult SaveTacticBudgetAllocation(Plan_Campaign_Program_TacticModel form, string BudgetInputValues, string UserId = "", string title = "")
@@ -3935,7 +3962,7 @@ namespace RevenuePlanner.Controllers
                                     if (PrevAllocationList != null && PrevAllocationList.Count > 0)
                                     {
                                         //// Get previous campaign budget values by Period.
-                                        var updatePlanTacticBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                        var updatePlanTacticBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
                                         if (updatePlanTacticBudget != null)
                                         {
                                             if (arrBudgetInputValues[i] != "")
@@ -3962,7 +3989,7 @@ namespace RevenuePlanner.Controllers
                                         // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
                                         Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
                                         obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
-                                        obPlanCampaignProgramTacticCost.Period = "Y" + (i + 1);
+                                        obPlanCampaignProgramTacticCost.Period = PeriodChar + (i + 1);
                                         obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                         obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
                                         obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
@@ -3981,7 +4008,7 @@ namespace RevenuePlanner.Controllers
                                     if (PrevAllocationList != null && PrevAllocationList.Count > 0)
                                     {
                                         //// Get Quarter budget list.
-                                        var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 1)) || pb.Period == ("Y" + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                        var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (BudgetInputValuesCounter)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 1)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
 
                                         //// Get First month values from Quarterly budget list.
                                         var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
@@ -4020,7 +4047,7 @@ namespace RevenuePlanner.Controllers
                                                             }
                                                             if ((BudgetInputValuesCounter + j) <= (BudgetInputValuesCounter + 2))
                                                             {
-                                                                thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (BudgetInputValuesCounter + j))).FirstOrDefault();
+                                                                thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (BudgetInputValuesCounter + j))).FirstOrDefault();
                                                             }
 
                                                             j = j + 1;
@@ -4042,7 +4069,7 @@ namespace RevenuePlanner.Controllers
                                         // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
                                         Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
                                         obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
-                                        obPlanCampaignProgramTacticCost.Period = "Y" + BudgetInputValuesCounter;
+                                        obPlanCampaignProgramTacticCost.Period = PeriodChar + BudgetInputValuesCounter;
                                         obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                         obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
                                         obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
@@ -4162,7 +4189,6 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>18/11/2014</CreatedDate>
-        /// <param name="planTacticId"></param>
         /// <param name="businessUnitId"></param>
         /// <param name="GeographyId"></param>
         /// <param name="VerticalId"></param>
@@ -4207,13 +4233,14 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-
         /// <summary>
         /// Added By: Maninder Singh.
         /// Modified By Maninder Singh Wadhva PL Ticket#47
         /// Action to Save Comment & Update Status as of selected tactic.
         /// </summary>
         /// <param name="planTacticId">Plan Tactic Id.</param>
+        /// <param name="isApprove"></param>
+        /// <param name="isImprovement"></param>
         /// <returns>Returns flag to indicate whether operation was successfull or not.</returns>
         [HttpPost]
         public JsonResult ApproveDeclineTactic(int planTacticId, bool isApprove, bool isImprovement)
@@ -4613,6 +4640,7 @@ namespace RevenuePlanner.Controllers
         /// Action to Load Setup Tab.
         /// </summary>
         /// <param name="id">Plan Tactic Id.</param>
+        /// <param name="InspectPopupMode"></param>
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadImprovementSetup(int id, string InspectPopupMode = "")
         {
@@ -4779,6 +4807,7 @@ namespace RevenuePlanner.Controllers
         /// Action to Load Review Tab.
         /// </summary>
         /// <param name="id">Plan Tactic Id.</param>
+        /// <param name="InspectPopupMode"></param>
         /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadImprovementReview(int id, string InspectPopupMode = "")
         {
@@ -4932,6 +4961,12 @@ namespace RevenuePlanner.Controllers
             return PartialView("_ReviewImprovementTactic");
         }
 
+        /// <summary>
+        /// Action to Load Improvement Impact View.
+        /// </summary>
+        /// <param name="id">Plan Tactic Id.</param>
+        /// <param name="InspectPopupMode"></param>
+        /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadImprovementImpact(int id, string InspectPopupMode = "")
         {
             return PartialView("_ImpactImprovementTactic");
@@ -4941,6 +4976,7 @@ namespace RevenuePlanner.Controllers
         /// Calculate Improvenet For Tactic Type & Date.
         /// Added by Bhavesh Dobariya.
         /// </summary>
+        /// <param name="ImprovementPlanTacticId"></param>
         /// <returns>JsonResult.</returns>
         public JsonResult LoadImpactImprovementStages(int ImprovementPlanTacticId)
         {
@@ -4999,7 +5035,6 @@ namespace RevenuePlanner.Controllers
         /// Save the data into the Plan_Campaign_Program_Tactic_LineItem_Actual
         /// </summary>
         /// <param name="objInspectActual"></param>
-        /// <param name="Id"></param>
         public void SaveActualLineItem(InspectActual objInspectActual)
         {
             Plan_Campaign_Program_Tactic_LineItem_Actual objPlan_LineItem_Actual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
@@ -5229,6 +5264,14 @@ namespace RevenuePlanner.Controllers
             return PartialView("_EditSetupLineitem", pcptlm);
         }
 
+        /// <summary>
+        /// Action to Save LineItem data.
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="tacticId">Tactic Id</param>
+        /// <param name="UserId"></param>
+        /// <param name="title"></param>
+        /// <returns>Returns Partial View Of edit Setup Tab.</returns>
         [HttpPost]
         public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string UserId = "", int tacticId = 0)
         {
@@ -5558,8 +5601,9 @@ namespace RevenuePlanner.Controllers
         /// Action to Save Line Item Allocation.
         /// </summary>
         /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
-        /// <param name="BudgetInputValues">Budget Input Values.</param>
-        /// <param name="RedirectType">Redirect Type.</param>
+        /// <param name="CostInputValues">Cost Input Values.</param>
+        /// <param name="UserId">User Id</param>
+        /// <param name="title"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         public ActionResult SaveLineItemBudgetAllocation(Plan_Campaign_Program_Tactic_LineItemModel form, string CostInputValues, string UserId = "", string title = "")
@@ -5616,7 +5660,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (arrCostInputValues[i] != "")
                         {
-                            string period = "Y" + (i + 1).ToString();
+                            string period = PeriodChar + (i + 1).ToString();
                             double monthlyTotalLineItemCost = lstMonthlyLineItemCost.Where(lineCost => lineCost.Period == period).FirstOrDefault() == null ? 0 : lstMonthlyLineItemCost.Where(lineCost => lineCost.Period == period).FirstOrDefault().Cost;
                             monthlyTotalLineItemCost = monthlyTotalLineItemCost + Convert.ToDouble(arrCostInputValues[i]);
                             double monthlyTotalTacticCost = lstMonthlyTacticCost.Where(_tacCost => _tacCost.Period == period).FirstOrDefault() == null ? 0 : lstMonthlyTacticCost.Where(_tacCost => _tacCost.Period == period).FirstOrDefault().Value;
@@ -5638,9 +5682,9 @@ namespace RevenuePlanner.Controllers
                             List<string> QuarterList = new List<string>();
                             for (int J = 0; J < 3; J++)
                             {
-                                QuarterList.Add("Y" + (QuarterCnt + J).ToString());
+                                QuarterList.Add(PeriodChar + (QuarterCnt + J).ToString());
                             }
-                            //string period = "Y" + QuarterCnt.ToString();
+                            //string period = PeriodChar + QuarterCnt.ToString();
                             double monthlyTotalLineItemCost = lstMonthlyLineItemCost.Where(lineCost => QuarterList.Contains(lineCost.Period)).ToList().Sum(lineCost => lineCost.Cost);
                             monthlyTotalLineItemCost = monthlyTotalLineItemCost + Convert.ToDouble(arrCostInputValues[i]);
                             double monthlyTotalTacticCost = lstMonthlyTacticCost.Where(_tacCost => QuarterList.Contains(_tacCost.Period)).ToList().Sum(_tacCost => _tacCost.Value);
@@ -5787,7 +5831,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             if (PrevAllocationList.Count > 0)
                                             {
-                                                var updatePlanTacticBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                                var updatePlanTacticBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
                                                 if (updatePlanTacticBudget != null)
                                                 {
                                                     if (arrCostInputValues[i] != "")
@@ -5812,7 +5856,7 @@ namespace RevenuePlanner.Controllers
                                             // End - Added by Sohel Pathan on 05/09/2014 for PL ticket #759
                                             Plan_Campaign_Program_Tactic_LineItem_Cost objlineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
                                             objlineItemCost.PlanLineItemId = form.PlanLineItemId;
-                                            objlineItemCost.Period = "Y" + (i + 1);
+                                            objlineItemCost.Period = PeriodChar + (i + 1);
                                             objlineItemCost.Value = Convert.ToDouble(arrCostInputValues[i]);
                                             objlineItemCost.CreatedBy = Sessions.User.UserId;
                                             objlineItemCost.CreatedDate = DateTime.Now;
@@ -5832,7 +5876,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             if (PrevAllocationList.Count > 0)
                                             {
-                                                var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt)) || pb.Period == ("Y" + (QuarterCnt + 1)) || pb.Period == ("Y" + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
+                                                var thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt)) || pb.Period == (PeriodChar + (QuarterCnt + 1)) || pb.Period == (PeriodChar + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
                                                 var thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
 
                                                 if (thisQuarterFirstMonthBudget != null)
@@ -5869,7 +5913,7 @@ namespace RevenuePlanner.Controllers
                                                                     }
                                                                     if ((QuarterCnt + j) <= (QuarterCnt + 2))
                                                                     {
-                                                                        thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == ("Y" + (QuarterCnt + j))).FirstOrDefault();
+                                                                        thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt + j))).FirstOrDefault();
                                                                     }
 
                                                                     j = j + 1;
@@ -5891,7 +5935,7 @@ namespace RevenuePlanner.Controllers
                                             // End - Added by Sohel Pathan on 05/09/2014 for PL ticket #759
                                             Plan_Campaign_Program_Tactic_LineItem_Cost objlineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
                                             objlineItemCost.PlanLineItemId = form.PlanLineItemId;
-                                            objlineItemCost.Period = "Y" + QuarterCnt;
+                                            objlineItemCost.Period = PeriodChar + QuarterCnt;
                                             objlineItemCost.Value = Convert.ToDouble(arrCostInputValues[i]);
                                             objlineItemCost.CreatedBy = Sessions.User.UserId;
                                             objlineItemCost.CreatedDate = DateTime.Now;
@@ -5963,7 +6007,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Viral Kadiya on 11/11/2014.
         /// Action to Get Actuals cost Value Of line item.
         /// </summary>
-        /// <param name="id">Plan line item Id.</param>
+        /// <param name="planlineitemid">Plan line item Id.</param>
         /// <returns>Returns Parent Tactic Status.</returns>
         public string GetTacticStatusByPlanLineItemId(int planlineitemid)
         {
@@ -5990,6 +6034,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Mitesh Vaishnav.
         /// Action to Create Campaign.
         /// </summary>
+        /// <param name="id">Tactic Id</param>
         /// <returns>Returns Partial View Of Campaign.</returns>
         public PartialViewResult createLineitem(int id)
         {
@@ -6063,6 +6108,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Tactic Id.</param>
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="TabValue">Tab value of Popup.</param>
+        /// <param name="InspectPopupMode"></param>
+        /// <param name="parentId"></param>
+        /// <param name="RequestedModule"></param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
         public ActionResult LoadInspectPopup(int id, string section, string TabValue = "Setup", string InspectPopupMode = "", int parentId = 0, string RequestedModule = "")
         {
@@ -6517,6 +6565,8 @@ namespace RevenuePlanner.Controllers
         /// Modifled by :- Sohel Pathan on 27/05/2014 for PL ticket #425, Default parameter added named isStatusChange
         /// <param name="id">Plan Tactic Id.</param>
         /// <param section="id">.Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
+        /// <param name="section"></param>
+        /// <param name="isStatusChange"></param>
         /// <returns>Returns InspectModel.</returns>
         private InspectModel GetInspectModel(int id, string section, bool isStatusChange = true)
         {
@@ -7475,6 +7525,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="CloneType"></param>
         /// <param name="Id"></param>
         /// <param name="title"></param>
+        /// <param name="CalledFromBudget"></param>
+        /// <param name="RequsetedModule"></param>
+        /// <param name="planid"></param>
         /// <returns></returns>
         public ActionResult Clone(string CloneType, int Id, string title, string CalledFromBudget = "", string RequsetedModule = "", int planid = 0)
         {
@@ -7570,6 +7623,17 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        /// <summary>
+        /// Delete Plan,Tactic,Campaign,Program by Section.
+        /// </summary>
+        /// <param name="DeleteType"></param>
+        /// <param name="id"></param>
+        /// <param name="UserId"></param>
+        /// <param name="closedTask"></param>
+        /// <param name="CalledFromBudget"></param>
+        /// <param name="IsIndex"></param>
+        /// <param name="RedirectType"></param>
+        /// <returns></returns>
         public ActionResult DeleteSection(int id = 0, string DeleteType = "", string UserId = "", string closedTask = null, string CalledFromBudget = "", bool IsIndex = false, bool RedirectType = false)
         {
             //// check whether UserId is currently loggined user or not.
@@ -7862,7 +7926,7 @@ namespace RevenuePlanner.Controllers
         /// Return BusinessUnit ID
         /// Added by Viral Kadiya on 12/10/2014 for PL ticket #1011
         /// </summary>
-        /// <param name="businessUnitId"></param>
+        /// <param name="PlanId"></param>
         /// <returns></returns>
         public Guid GetBusinessUnitIDByPlanId(int PlanId)
         {

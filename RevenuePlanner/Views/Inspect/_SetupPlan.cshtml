@@ -82,12 +82,6 @@
         var modelId = $('#ModelId').val();
         var goalType = $('#GoalType').val();
         var goalValue = $('#GoalValue').val();
-
-        // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-        //var _description = $("#hdnDescription").val();
-        //$("#txtDescription").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
-        // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-
         calculateBudget(modelId, goalType, goalValue);
     });
 
@@ -149,15 +143,6 @@
         }
         else {
             $("#errorMessage").css("display", "none");
-            //var TotalAllocatedCampaignBudget = $('#TotalAllocatedCampaignBudget').val();
-            //var totalBudget = parseInt(ReplaceCC($("#txtPlanBudget").val()));
-            //if (TotalAllocatedCampaignBudget > totalBudget) {
-            //    $('#divErrLessBudget').css("display", "block");
-            //    iserror = true;
-            //}
-            //else {
-            //    $("#divErrLessBudget").css("display", "none");
-            //}
         }
 
         var regex = /(>|<)/m;
@@ -225,14 +210,6 @@
                         else {
                             if (data.succmsg != "") {
                                 if (data.redirect != "") {
-                                    @*if ('@CalledFromBudget' != '') {
-                                        var strURL = '@Url.Content("~/Plan/Budgeting")';
-                                        window.location.href = strURL + '?type=' + '@CalledFromBudget';
-                                    }
-                                    else {
-                                        window.location.href = data.redirect;
-                                    }*@
-
                                 }
                                 else {
                                     $("#successMessage").css("display", "block");

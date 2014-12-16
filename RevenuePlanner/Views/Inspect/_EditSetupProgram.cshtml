@@ -228,11 +228,6 @@
         $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
         $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
 
-        // Start - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-        //var _description = $("#hdnDescription").val();
-        //$("#Description").val(htmlDecode(unescape(_description))); // To decode HTML to text in TextArea.
-        // End - Added by Vira Kadiya on 11/15/2014 to resolve PL ticket #794.
-
         //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
         $('.input-setup').addClass('light-blue-background');
         $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
@@ -412,7 +407,6 @@
                 data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserId=' + uId + '&title=' + escape(title) ,
                 success: function (data) {
                     if (data.IsSaved) {
-                        //CancelEvent();
                         var activeTab = $("#InspectTab li.active a").text()
                         var planProgramId = $("#hdnPlanProgramId").val();
                         $("#successMessage").css("display", "block");
@@ -425,11 +419,6 @@
                         var campaignId = data.campaignID;
                         var requestedModule = $("#hdnRedirectType").val();
                         $("#liReview,#liBudget,#liSetup").bind('click');
-                        //$("#errorMessageEditProgram").slideUp(50);
-                        //$("#spanMessageViewProgram").empty();
-                        //$("#successMessageViewProgram").slideDown(400);
-                        //$("#spanSuccessMessageViewProgram").empty();
-                        //$("#spanSuccessMessageViewProgram").html(data.Msg);
                         loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", activeTab,"@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
                         
                         if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
@@ -442,7 +431,6 @@
                         
                     }
                     else {
-                        //CancelEvent();
                         ShowError(data.errormsg);
                     }
                 }
