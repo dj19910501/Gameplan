@@ -15,7 +15,6 @@ namespace RevenuePlanner.Controllers
     {
         #region Variable Delaration
         private MRPEntities db = new MRPEntities();
-
         static Random rnd = new Random();
         #endregion
 
@@ -26,6 +25,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Best In Class
         /// </summary>
+        /// <returns>Return BestInClass View.</returns>
         [AuthorizeUser(Enums.ApplicationActivity.BoostBestInClassNumberEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult BestInClass()
         {
@@ -33,41 +33,42 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
             ViewBag.IsBoostImprovementTacticCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
 
-            //if (Sessions.IsPlanner)
-            //{
-            //    return RedirectToAction("Index", "NoAccess");
-            //}
-
             List<BestInClassModel> listBestInClassModel = new List<BestInClassModel>();
             //added by uday for ticket #501 deleted old code and added new parameters like stagetype_cr etc.
             try
             {
+                #region "Enum Variables"
                 string StageType_CR = Enums.StageType.CR.ToString();
                 string StageType_SV = Enums.StageType.SV.ToString();
                 string StageType_Size = Enums.StageType.Size.ToString();
                 string CW = Enums.Stage.CW.ToString();
-                var bicfilter = db.BestInClasses.Where(b => b.Stage.ClientId == Sessions.User.ClientId).OrderBy(o => o.StageId).ToList();
-                var stagefilter = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId).ToList();
-                foreach (var item in stagefilter.Where(m => m.Level != null && m.Code != CW).OrderBy(o => o.Level).ToList())
+                #endregion
+
+                var bicfilter = db.BestInClasses.Where(cls => cls.Stage.ClientId == Sessions.User.ClientId).OrderBy(cls => cls.StageId).ToList();
+                var stagefilter = GetStageListbyClientId(Sessions.User.ClientId);
+
+                //// Add all  BestInClassModel details to list except CW Stage Code.
+                foreach (var item in stagefilter.Where(stage => stage.Level != null && stage.Code != CW).OrderBy(stage => stage.Level).ToList())
                     {
                         BestInClassModel objBestInClassModel = new BestInClassModel();
                         objBestInClassModel.StageName = Common.GetReplacedString(item.ConversionTitle);
-                        objBestInClassModel.ConversionValue = bicfilter.Where(b => b.StageId == item.StageId && b.StageType == StageType_CR).Select(v => v.Value).FirstOrDefault();
-                        objBestInClassModel.VelocityValue = bicfilter.Where(b => b.StageId == item.StageId && b.StageType == StageType_SV).Select(v => v.Value).FirstOrDefault();
+                        objBestInClassModel.ConversionValue = bicfilter.Where(cls => cls.StageId == item.StageId && cls.StageType == StageType_CR).Select(cls => cls.Value).FirstOrDefault();
+                        objBestInClassModel.VelocityValue = bicfilter.Where(cls => cls.StageId == item.StageId && cls.StageType == StageType_SV).Select(cls => cls.Value).FirstOrDefault();
                         objBestInClassModel.StageID_CR = item.StageId;
                         objBestInClassModel.StageID_SV = item.StageId;
                         objBestInClassModel.StageType = StageType_CR;
-
                             listBestInClassModel.Add(objBestInClassModel);
                 }
                
-                foreach (var itemSize in db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId && n.Level == null).ToList())
+                //// Add Stage level null BestInClassModel details to list.
+                List<Stage> lstStages = GetStageListbyClientId(Sessions.User.ClientId);
+                foreach (var itemSize in lstStages.Where(stage => stage.Level == null))
                 {
                     BestInClassModel objBestInClassModel = new BestInClassModel();
                         objBestInClassModel.StageID_Size = itemSize.StageId;
                         objBestInClassModel.StageName = itemSize.Title;
                         objBestInClassModel.StageType = StageType_Size;
-                        objBestInClassModel.ConversionValue = bicfilter.Where(b => b.StageId == itemSize.StageId && b.StageType == StageType_Size).Select(v => v.Value).FirstOrDefault();
+                        objBestInClassModel.ConversionValue = bicfilter.Where(cls => cls.StageId == itemSize.StageId && cls.StageType == StageType_Size).Select(cls => cls.Value).FirstOrDefault();
                     listBestInClassModel.Add(objBestInClassModel);
                 }
             }
@@ -96,37 +97,36 @@ namespace RevenuePlanner.Controllers
                     string StageType_Size = Enums.StageType.Size.ToString();
 
                     // Reset existing BIC values for specific Client
-                    foreach (var item in db.BestInClasses.Where(n => n.Stage.ClientId == Sessions.User.ClientId).ToList())
+                    foreach (var item in db.BestInClasses.Where(cls => cls.Stage.ClientId == Sessions.User.ClientId).ToList())
                     {
                         db.Entry(item).State = EntityState.Modified;
                         db.BestInClasses.Remove(item);
                             db.SaveChanges();
                         }
-
-                  
-
-                    foreach (var t in bic)
+                    foreach (var bCls in bic)
                     {
                         BestInClass objBestInClass = new BestInClass();
-                        if (t.StageType != null)
+
+                        //// Add StageId,StageType,Value to list based on StageType.
+                        if (bCls.StageType != null)
                         {
-                            if (t.StageType == StageType_CR)
+                            if (bCls.StageType == StageType_CR)
                             {
-                                objBestInClass.StageId = t.StageID_CR;
-                                objBestInClass.StageType = t.StageType;
-                                objBestInClass.Value = t.ConversionValue;
+                                objBestInClass.StageId = bCls.StageID_CR;
+                                objBestInClass.StageType = bCls.StageType;
+                                objBestInClass.Value = bCls.ConversionValue;
                             }
-                            else if (t.StageType == StageType_SV)
+                            else if (bCls.StageType == StageType_SV)
                             {
-                                objBestInClass.StageId = t.StageID_SV;
-                                objBestInClass.StageType = t.StageType;
-                                objBestInClass.Value = t.VelocityValue;
+                                objBestInClass.StageId = bCls.StageID_SV;
+                                objBestInClass.StageType = bCls.StageType;
+                                objBestInClass.Value = bCls.VelocityValue;
                             }
-                            else if (t.StageType == StageType_Size)
+                            else if (bCls.StageType == StageType_Size)
                             {
-                                objBestInClass.StageId = t.StageID_Size;
-                                objBestInClass.StageType = t.StageType;
-                                objBestInClass.Value = t.ConversionValue;
+                                objBestInClass.StageId = bCls.StageID_Size;
+                                objBestInClass.StageType = bCls.StageType;
+                                objBestInClass.Value = bCls.ConversionValue;
                             }
                         }
                         objBestInClass.CreatedBy = Sessions.User.UserId;
@@ -159,6 +159,8 @@ namespace RevenuePlanner.Controllers
             // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             var IsBoostImprovementTacticCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
             var IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
+
+            //// if BestInClass editing rights then redirect to "BestInClass" else "NoAccess" action of Index View.
             if (IsBoostImprovementTacticCreateEditAuthorized == false && IsBoostBestInClassNumberEditAuthorized == true)
             {
                 return RedirectToAction("BestInClass");
@@ -172,10 +174,6 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
 
-            //if (Sessions.IsPlanner)
-            //{
-            //    return RedirectToAction("Index", "NoAccess");
-            //}
             return View();
         }
 
@@ -188,7 +186,7 @@ namespace RevenuePlanner.Controllers
             //Modified By : Mitesh Vaishnav on 03/06/2014 for Customized Target stage - Boost Improvement Tactic
             string StageTypeCW = Enums.Stage.CW.ToString();
 
-            var objImprovementTactic = db.ImprovementTacticTypes.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId).Select(s => s).ToList();
+            var objImprovementTactic = db.ImprovementTacticTypes.Where(_imprvTacType => _imprvTacType.IsDeleted == false && _imprvTacType.ClientId == Sessions.User.ClientId).Select(_imprvTacType => _imprvTacType).ToList();
             var ImprovementTacticList = objImprovementTactic.Select(itt => new
             {
                 Id = itt.ImprovementTacticTypeId,
@@ -204,13 +202,15 @@ namespace RevenuePlanner.Controllers
                                          }).Select(ittmobj => ittmobj),
                 IsDeployedToIntegration = itt.IsDeployedToIntegration
             }).Select(itt => itt);
-            return Json(ImprovementTacticList.OrderBy(t => t.Title).ToList(), JsonRequestBehavior.AllowGet); // Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 to provide sorting for Listings
+            return Json(ImprovementTacticList.OrderBy(_imprvTac => _imprvTac.Title).ToList(), JsonRequestBehavior.AllowGet); // Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 to provide sorting for Listings
         }
 
         /// <summary>
         /// Added By: Nirav Shah.
         /// Action to show Improvement Tactics Detail.
         /// </summary>
+        /// <param name="id">ImprovementTacticTypeId</param>
+        /// <returns>Return _InspectPopupImprovementTacticType PartialView</returns>
         public PartialViewResult DetailImprovementTacticData(int id = 0)
         {
             BoostImprovementTacticModel bittobj = new BoostImprovementTacticModel();
@@ -223,7 +223,7 @@ namespace RevenuePlanner.Controllers
             /* check the mode if id has value 0 then its create mode other wise edit mode */
             if (id != 0)
             {
-                ImprovementTacticType ittobj = db.ImprovementTacticTypes.Where(itt => itt.IsDeleted == false && itt.ImprovementTacticTypeId == id).FirstOrDefault();
+                ImprovementTacticType ittobj = GetImprovementTacticTypeRecordbyId(id);
                 bittobj.Title = System.Web.HttpUtility.HtmlDecode(ittobj.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 bittobj.Description = System.Web.HttpUtility.HtmlDecode(ittobj.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 bittobj.Cost = ittobj.Cost;
@@ -253,11 +253,14 @@ namespace RevenuePlanner.Controllers
             List<MetricModel> listMetrics = new List<MetricModel>();
             List<MetricModel> listMetricssize = new List<MetricModel>();
             // Modified by Mitesh Vaishnav on 03/06/2014 for Customized Target stage - Boost Improvement Tactic
-            var stageFilterCR = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId).ToList();//modified by Mitesh Vaishnav on 13/06/2014 to address #500 Customized Target stage - Boost Improvement Tactic 
-            var stageFilterSV = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId).ToList();//modified by Mitesh Vaishnav on 13/06/2014 to address #500 Customized Target stage - Boost Improvement Tactic 
-            foreach (var itemCR in stageFilterCR.Where(m => m.Level != null && m.Code != StageTypeCW).OrderBy(o => o.Level).ToList())
+            List<Stage> lstStages = GetStageListbyClientId(Sessions.User.ClientId);
+            var stageFilterCR = lstStages;//modified by Mitesh Vaishnav on 13/06/2014 to address #500 Customized Target stage - Boost Improvement Tactic 
+            var stageFilterSV = lstStages;//modified by Mitesh Vaishnav on 13/06/2014 to address #500 Customized Target stage - Boost Improvement Tactic 
+            
+            //// Add MetricModel data to list except CW Stage Type data.
+            foreach (var itemCR in stageFilterCR.Where(stage => stage.Level != null && stage.Code != StageTypeCW).OrderBy(stage => stage.Level).ToList())
             {
-                foreach (var itemSV in stageFilterSV.Where(m => m.Level != null && m.Code != StageTypeCW).OrderBy(o => o.Level).ToList())
+                foreach (var itemSV in stageFilterSV.Where(stage => stage.Level != null && stage.Code != StageTypeCW).OrderBy(stage => stage.Level).ToList())
                 {
                     if (itemCR.Level == itemSV.Level)
                     {
@@ -273,10 +276,10 @@ namespace RevenuePlanner.Controllers
                         listMetrics.Add(Metricsobj);
                     }
                 }
-
-
             }
-            foreach (var item in db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId && n.Level == null))
+
+            //// Add null Stage Type MetricModel data to list.
+            foreach (var item in lstStages.Where(stage => stage.Level == null))
             {
                 MetricModel Metricsobj = new MetricModel();
                 Metricsobj.MetricID_Size = item.StageId;
@@ -306,6 +309,15 @@ namespace RevenuePlanner.Controllers
         /// Added By: Nirav Shah.
         /// Action to save Improvement Tactics Details in respective tables.
         /// </summary>
+        /// <param name="improvementId"></param>
+        /// <param name="improvementDetails"></param>
+        /// <param name="status"></param>
+        /// <param name="cost"></param>
+        /// <param name="desc"></param>
+        /// <param name="title"></param>
+        /// <param name="deployToIntegrationStatus"></param>
+        /// <param name="UserId"></param>
+        /// <returns>Return Save/Error messagee</returns>
         [AuthorizeUser(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult saveImprovementTacticData(int improvementId, string improvementDetails, bool status, double cost, string desc, string title, bool deployToIntegrationStatus, string UserId = "")
         {
@@ -317,8 +329,8 @@ namespace RevenuePlanner.Controllers
                 /* if id !=0 then its update into db other wise add new record in db*/
                 if (improvementId != 0)
                 {
-                    ImprovementTacticType objIt = db.ImprovementTacticTypes.Where(t => t.ImprovementTacticTypeId == improvementId && t.IsDeleted.Equals(false)).FirstOrDefault();       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
-                    var existTactic = db.ImprovementTacticTypes.Where(t => t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == title.ToLower() && t.ImprovementTacticTypeId != improvementId && t.IsDeleted.Equals(false)).ToList();       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
+                    ImprovementTacticType objIt = GetImprovementTacticTypeRecordbyId(improvementId);       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
+                    var existTactic = db.ImprovementTacticTypes.Where(_imprvTac => _imprvTac.ClientId == Sessions.User.ClientId && _imprvTac.Title.ToLower() == title.ToLower() && _imprvTac.ImprovementTacticTypeId != improvementId && _imprvTac.IsDeleted.Equals(false)).ToList();       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                     if (existTactic.Count == 0)
                     {
                         /*edit new improvementTactic record*/
@@ -349,7 +361,7 @@ namespace RevenuePlanner.Controllers
                 {
                     /*Add new improvementTactic record*/
                     ImprovementTacticType objIt = new ImprovementTacticType();
-                    var existTactic = db.ImprovementTacticTypes.Where(t => t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == title.ToLower() && t.IsDeleted.Equals(false)).ToList(); //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
+                    var existTactic = db.ImprovementTacticTypes.Where(_imprvTac => _imprvTac.ClientId == Sessions.User.ClientId && _imprvTac.Title.ToLower() == title.ToLower() && _imprvTac.IsDeleted.Equals(false)).ToList(); //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                     if (existTactic.Count == 0)
                     {
                         objIt.Title = title;
@@ -417,8 +429,12 @@ namespace RevenuePlanner.Controllers
         /// Added By: Dharmraj mangukiya
         /// Action to save deploy to integration flag for improvement tactic type
         /// </summary>
+        /// <param name="id"></param>
+        /// <param name="isDeployedToIntegration"></param>
+        /// <param name="UserId"></param>
         public JsonResult SaveDeployedToIntegrationStatus(int id, bool isDeployedToIntegration, string UserId = "")
         {
+            //// Check whether UserId is current loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -432,14 +448,13 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                var objImprovementTacticType = db.ImprovementTacticTypes.SingleOrDefault(varI => varI.ImprovementTacticTypeId == id && varI.IsDeleted.Equals(false));   //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
-
+                //// Update IsDeployedToIntegration field in Improvement Tactic Types table.
+                var objImprovementTacticType = GetImprovementTacticTypeRecordbyId(id);   //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                 objImprovementTacticType.IsDeployedToIntegration = isDeployedToIntegration;
                 db.Entry(objImprovementTacticType).State = EntityState.Modified;
                 db.SaveChanges();
 
                 message = Common.objCached.DeployedToIntegrationStatusSaveSuccess;
-
                 returnValue = true;
             }
             catch (Exception e)
@@ -449,7 +464,6 @@ namespace RevenuePlanner.Controllers
             }
 
             var obj = new { returnValue = returnValue, message = message };
-
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
 
@@ -457,8 +471,13 @@ namespace RevenuePlanner.Controllers
         /// Added By: Dharmraj mangukiya
         /// Action to save deploy status for improvement tactic type
         /// </summary>
+        /// <param name="id"></param>
+        /// <param name="isDeployed"></param>
+        /// <param name="UserId"></param>
+        /// <returns>Return Message in Json result.</returns>
         public JsonResult SaveDeployeStatus(int id, bool isDeployed, string UserId = "")
         {
+            //// Check whether UserId is current loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -472,8 +491,8 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                var objImprovementTacticType = db.ImprovementTacticTypes.SingleOrDefault(varI => varI.ImprovementTacticTypeId == id && varI.IsDeleted.Equals(false));   //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
-
+                //// Update IsDeployed field in ImprovementTacticTypes table.
+                var objImprovementTacticType = GetImprovementTacticTypeRecordbyId(id);   //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                 objImprovementTacticType.IsDeployed = isDeployed;
                 db.Entry(objImprovementTacticType).State = EntityState.Modified;
                 db.SaveChanges();
@@ -489,7 +508,6 @@ namespace RevenuePlanner.Controllers
             }
 
             var obj = new { returnValue = returnValue, message = message };
-
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
 
@@ -514,11 +532,12 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        var isDependent = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.IsDeleted.Equals(false) && t.ImprovementTacticTypeId == improvementId).Count();
+                        var isDependent = db.Plan_Improvement_Campaign_Program_Tactic.Where(_tac => _tac.IsDeleted.Equals(false) && _tac.ImprovementTacticTypeId == improvementId).Count();
 
+                        ////  if Improvement Tactic does not dependent to other field then delete it.
                         if (isDependent <= 0)
                         {
-                            ImprovementTacticType objIt = db.ImprovementTacticTypes.Where(t => t.IsDeleted.Equals(false) && t.ImprovementTacticTypeId == improvementId).FirstOrDefault();
+                            ImprovementTacticType objIt = GetImprovementTacticTypeRecordbyId(improvementId);
 
                             if (objIt != null)
                             {
@@ -560,22 +579,71 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Other
+
+        /// <summary>
+        /// Added By: Nirav Shah.
+        /// Action to show Improvement Tactic list.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="stageId"></param>
         public bool TargetStage(int id, int stageId)
         {
             bool active = true;
+            //// Get No. of Count ImprovementTacticType_Metric record based on ImprovementTacticTypeId & StageId.
             var chkStage = db.ImprovementTacticType_Metric.Where(ittm => ittm.ImprovementTacticTypeId == id && ittm.StageId == stageId).ToList();
             if (chkStage.Count == 0)
-            {
                 active = false;
-            }
             return active;
         }
+        
         List<string> colorcodeList = new List<string> { "27a4e5", "6ae11f", "bbb748", "bf6a4b", "ca3cce", "7c4bbf", "1af3c9", "f1eb13", "c7893b", "e42233", "a636d6", "2940e2", "0b3d58", "244c0a", "414018", "472519", "4b134d", "2c1947", "055e4d", "555305", "452f14", "520a10", "3e1152", "0c1556", "73c4ee", "9ceb6a", "d2cf86", "d59e89", "dc80df", "a989d5", "6bf7dc", "f6f263", "dab17d", "eb6e7a", "c57de4", "7483ec", "1472a3", "479714", "7f7c2f", "86472f", "8e2590", "542f86", "09af8f", "a6a10a", "875c26", "9e1320", "741f98", "1627a0" };
         public class StageDetails
         {
             public string StageId { get; set; }
             public string StageType { get; set; }
             public string Value { get; set; }
+        }
+
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Get Stage list by ClientId.
+        /// </summary>
+        /// <param name="clientId"></param>
+        public List<Stage> GetStageListbyClientId(Guid clientId)
+        {
+            List<Stage> lstStages = new List<Stage>();
+            try
+            {
+                lstStages = db.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == clientId).ToList();
+                if(lstStages == null)
+                    lstStages = new List<Stage>();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return lstStages;
+        }
+
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Get Stage list by ClientId.
+        /// </summary>
+        /// <param name="clientId"></param>
+        public ImprovementTacticType GetImprovementTacticTypeRecordbyId(int improvementTacticTypeId)
+        {
+            ImprovementTacticType objImprvmentTacticType;
+            try
+            {
+                objImprvmentTacticType = db.ImprovementTacticTypes.Where(_imprvTacticType => _imprvTacticType.IsDeleted == false && _imprvTacticType.ImprovementTacticTypeId == improvementTacticTypeId).FirstOrDefault();
+                if (objImprvmentTacticType == null)
+                    objImprvmentTacticType = new ImprovementTacticType();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return objImprvmentTacticType;
         }
         #endregion
 

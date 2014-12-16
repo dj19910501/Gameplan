@@ -26,6 +26,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region "Roles related Methods"
         /// <summary>
         /// Manage Role.
         /// </summary>
@@ -150,7 +151,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.roleid = roleId;
                     ViewBag.colorcode = rolelist.Where(role => role.RoleId == roleId).Select(role => role.ColorCode).FirstOrDefault();
 
-                    rolelist = rolelist.Where(a => a.RoleId != roleId).ToList();
+                    rolelist = rolelist.Where(role => role.RoleId != roleId).ToList();
                 }
                 List<RoleModel> listrolemodel = new List<RoleModel>();
                 IList<SelectListItem> RoleList = new List<SelectListItem>();
@@ -481,7 +482,9 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { status = false }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
+        #endregion
 
+        #region "User Hierarchy related Methods"
         /// <summary>
         /// Organization Hierarchy
         /// </summary>
@@ -566,7 +569,9 @@ namespace RevenuePlanner.Controllers
             // Modified by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
             return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers }; 
         }
+        #endregion
         
+        #region "Permission related Methods"
         /// <summary>
         /// Added By: Mitesh Vaishnav for PL ticket #521
         /// View/Edit user permission.
@@ -794,7 +799,9 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
+        #endregion
 
+        #region "Other"
         /// <summary>
         /// Added By: Mitesh Vaishnav
         /// Reset user's activity permissions as per his role default permission.
@@ -845,5 +852,6 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
+        #endregion
     }
 }

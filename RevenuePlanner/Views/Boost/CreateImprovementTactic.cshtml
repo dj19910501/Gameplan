@@ -142,7 +142,6 @@
         $(".priceValue").change(function (e) { priceFormatChange(e) });
         /*End By :- Mitesh Vaishnav on 30/05/2014 for ticket #492 Difficulty entering weight values when creating an improvement tactic*/
 
-        //$('#hdntitle').focus();
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
@@ -208,10 +207,6 @@
         });
 
         $("#save_tactic").click(function () {
-            //CheckUserSession("#save_tactic", true);
-            //if (reason == 'user') {
-            //    return false;
-            //}
             var iserror = false;
             var val = 0;
             var cntFill = 0;

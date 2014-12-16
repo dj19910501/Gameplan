@@ -5,7 +5,7 @@
     ViewBag.Title = "ViewPermission";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var headers = Model.Where(uact => uact.ParentId == null);
+    var headers = Model.Where(uact => uact.ParentId == null || uact.ParentId == 0);
     var cRestrictionList = ViewData["CustomRestriction"] as List<RevenuePlanner.Models.CustomRestrictionModel>;
     string varUrl = Url.Action("vieweditpermission", "Organization");
     string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission"; 
@@ -26,10 +26,7 @@
 @section Sidebar {
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
-@if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString() || ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
-{
-   
-    <!--success message-->
+<!--success message-->
 
     <div id="successMessage" class="alert hide alert-success message-position">
         <a class="close">×</a>
@@ -49,15 +46,13 @@
 
     <!--error message-->
 
-
-
+@if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString() || ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
+{
     <ul class="nav nav-tabs">
         <li class="source-sans-proregular">
             <h2 class="title-header">Organization</h2>
         </li>
     </ul>
-
-
 
     <div class="padding-content cf source-sans-proregular">
         <div class="row">
@@ -164,29 +159,6 @@
 }
 else
 {
-   
-
-
-    <!--success message-->
-
-    <div id="successMessage" class="alert hide alert-success message-position">
-        <a class="close">×</a>
-        <strong>Success.</strong><span id="spanSuccessMessage"></span>
-    </div>
-
-    <!--success message-->
-
-    <!--error message-->
-
-    <div id="errorMessage" class="alert hide alert-error message-position">
-        <a class="close">×</a>
-        <strong>Error!</strong><span id="spanErrorMessage"></span>
-    </div>
-
-    <!--error message-->
-
-
-
     <ul class="nav nav-tabs">
         <li class="source-sans-proregular">
             <h2 class="title-header">Organization</h2>

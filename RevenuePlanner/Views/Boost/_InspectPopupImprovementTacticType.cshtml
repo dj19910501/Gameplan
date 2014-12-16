@@ -167,7 +167,6 @@
         $(".priceValue").keydown(function (e) { priceFormatKeydown(e); });
         $(".priceValue").change(function (e) { priceFormatChange(e) });
 
-        //$('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
         $('.close-form', this.$panel).click(function (e) {
@@ -424,7 +423,6 @@
         $("#errorMsg").css("display", "none");
         $("#errorMessageImprovmentTacticType").slideUp(50);
         $("#spanMessageImprovmentTacticType").empty();
-        //$('body').css('overflow', 'auto');
     });
 
     $('.close-x-big-icon').click(function () {
