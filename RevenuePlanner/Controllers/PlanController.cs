@@ -2767,6 +2767,30 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetPlanSelectorData(string Year, string BusinessUnit)
         {
+            Guid BUId = Guid.Empty;
+            if (!string.IsNullOrEmpty(BusinessUnit))
+            {
+                BUId = Guid.Parse(BusinessUnit);
+            }
+            string str_Year = Convert.ToString(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
+            int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
+            List<Plan> objPlan = new List<Plan>();
+            List<Plan_Selector> lstPlanSelector = new List<Plan_Selector>();
+            try
+            {
+                Guid clientId = Sessions.User.ClientId;
+
+                // Get the list of plan, filtered by Business Unit and Year selected
+                if (!string.IsNullOrEmpty(BusinessUnit) && Int_Year > 0)
+                {
+                    var modelids = db.Models.Where(model => model.BusinessUnitId == BUId && model.IsDeleted == false).Select(model => model.ModelId).ToList();
+                    objPlan = (from p in db.Plans
+                               where modelids.Contains(p.ModelId) && p.IsDeleted == false && p.Year == str_Year
+                               select p).OrderByDescending(p => p.ModifiedDate ?? p.CreatedDate).ThenBy(p => p.Title).ToList();
+                }
+                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                if (objPlan != null && objPlan.Count > 0)
+                {
             //Get all subordinates of current user upto n level
             var lstOwnAndSubOrdinates = new List<Guid>();
 
@@ -2794,32 +2818,13 @@ namespace RevenuePlanner.Controllers
             // To get permission status for Plan Edit, By dharmraj PL #519
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
 
-            Guid BUId = Guid.Empty;
-            if (!string.IsNullOrEmpty(BusinessUnit))
-            {
-                BUId = Guid.Parse(BusinessUnit);
-            }
-            string str_Year = Convert.ToString(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
-            int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
-            List<Plan> objPlan = new List<Plan>();
-            List<Plan_Selector> lstPlanSelector = new List<Plan_Selector>();
-            try
-            {
-                Guid clientId = Sessions.User.ClientId;
-
-                // Get the list of plan, filtered by Business Unit and Year selected
-                if (!string.IsNullOrEmpty(BusinessUnit) && Int_Year > 0)
-                {
-                    objPlan = (from _pln in db.Plans
-                               join _mdl in db.Models on _pln.ModelId equals _mdl.ModelId
-                               join bu in db.BusinessUnits on _mdl.BusinessUnitId equals bu.BusinessUnitId
-                               where bu.ClientId == clientId && bu.IsDeleted == false && _mdl.IsDeleted == false &&
-                               _pln.IsDeleted == false && _pln.Year == str_Year && _mdl.BusinessUnitId.Equals(BUId)
-                               select _pln).OrderByDescending(_pln => _pln.ModifiedDate ?? _pln.CreatedDate).ThenBy(_pln => _pln.Title).ToList();
-                }
-                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
-                if (objPlan != null && objPlan.Count > 0)
-                {
+                    var modelids = objPlan.Where(plan => plan.GoalType.ToLower() != Enums.PlanGoalType.MQL.ToString().ToLower()).Select(plan => plan.ModelId).ToList();
+                    string marketing = Enums.Funnel.Marketing.ToString();
+                    int modelfunnelmarketingid = db.Funnels.Where(funnel => funnel.Title == marketing).Select(funnel => funnel.FunnelId).FirstOrDefault();
+                    var modelFunnelList = db.Model_Funnel.Where(modelfunnel => modelids.Contains(modelfunnel.ModelId) && modelfunnel.FunnelId == modelfunnelmarketingid).ToList();
+                    var modelfunnelids = modelFunnelList.Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
+                    string CR = Enums.StageType.CR.ToString();
+                    List<Model_Funnel_Stage> modelFunnelStageList = db.Model_Funnel_Stage.Where(modelfunnelstage => modelfunnelids.Contains(modelfunnelstage.ModelFunnelId) && modelfunnelstage.StageType == CR).ToList();
                     foreach (var item in objPlan)
                     {
                         var LastUpdated = !string.IsNullOrEmpty(Convert.ToString(item.ModifiedDate)) ? item.ModifiedDate : item.CreatedDate;
@@ -2836,10 +2841,10 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             // Get ADS value
-                            string marketing = Enums.Funnel.Marketing.ToString();
-                            double ADSValue = db.Model_Funnel.FirstOrDefault(mf => mf.ModelId == item.ModelId && mf.Funnel.Title == marketing).AverageDealSize;
 
-                            objPlanSelector.MQLS = Common.CalculateMQLOnly(item.ModelId, item.GoalType, item.GoalValue.ToString(), ADSValue, stageList).ToString("#,##0"); ;
+                            double ADSValue = modelFunnelList.Where(modelfunnel => modelfunnel.ModelId == item.ModelId).Select(modelfunnel => modelfunnel.AverageDealSize).FirstOrDefault();
+                            List<int> funnelids = modelFunnelList.Where(modelfunnel => modelfunnel.ModelId == item.ModelId).Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
+                            objPlanSelector.MQLS = Common.CalculateMQLOnly(funnelids, item.GoalType, item.GoalValue.ToString(), ADSValue, stageList, modelFunnelStageList).ToString("#,##0"); ;
                         }
                         // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
                         objPlanSelector.Budget = (item.Budget).ToString("#,##0");

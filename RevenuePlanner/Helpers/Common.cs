@@ -1543,9 +1543,15 @@ namespace RevenuePlanner.Helpers
                     {
                         //// Get ADS value
                         string marketing = Enums.Funnel.Marketing.ToString();
-                        double ADSValue = objDbMrpEntities.Model_Funnel.Single(modelFunnel => modelFunnel.ModelId == objPlan.ModelId && modelFunnel.Funnel.Title == marketing).AverageDealSize;
+                        var modelFunnelList = objDbMrpEntities.Model_Funnel.Where(modelfunnel => modelfunnel.ModelId == objPlan.ModelId && modelfunnel.Funnel.Title == marketing).ToList();
+                        List<int> modelfunnelids = modelFunnelList.Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
+                        string CR = Enums.StageType.CR.ToString();
+                        List<Model_Funnel_Stage> modelFunnelStageList = objDbMrpEntities.Model_Funnel_Stage.Where(modelfunnelstage => modelfunnelids.Contains(modelfunnelstage.ModelFunnelId) && modelfunnelstage.StageType == CR).ToList();
+
+
+                        double ADSValue = objDbMrpEntities.Model_Funnel.Single(mf => mf.ModelId == objPlan.ModelId && mf.Funnel.Title == marketing).AverageDealSize;
                         List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
-                        objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(objPlan.ModelId, objPlan.GoalType, objPlan.GoalValue.ToString(), ADSValue, stageList);
+                        objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(modelfunnelids, objPlan.GoalType, objPlan.GoalValue.ToString(), ADSValue, stageList, modelFunnelStageList);
                     }
                     // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
                     string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
@@ -4020,18 +4026,15 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>16/07/2014</CreatedDate>
-        /// <param name="modelId">model id of selected plan</param>
-        /// <param name="goalType">goal type of selected plan</param>
-        /// <param name="goalValue">goal values of selected plan</param>
-        /// <param name="averageDealSize">Average deal size of selected plan</param>
-        /// <param name="stageList">list of stages</param>
-        /// <returns>returns MQL value</returns>
-        public static double CalculateMQLOnly(int modelId, string goalType, string goalValue, double averageDealSize, List<Stage> stageList)
+        /// <param name="modelId"></param>
+        /// <param name="goalType"></param>
+        /// <param name="goalValue"></param>
+        /// <param name="averageDealSize"></param>
+        /// <returns></returns>
+        public static double CalculateMQLOnly(List<int> funnelids, string goalType, string goalValue, double averageDealSize, List<Stage> stageList, List<Model_Funnel_Stage> modelFunnelStageList)
         {
             try
             {
-                MRPEntities objDbMrpEntities = new MRPEntities();
-
                 string stageINQ = Enums.Stage.INQ.ToString();
                 int levelINQ = stageList.Single(stage => stage.Code.Equals(stageINQ)).Level.Value;
                 string stageMQL = Enums.Stage.MQL.ToString();
@@ -4047,30 +4050,30 @@ namespace RevenuePlanner.Helpers
                     string CR = Enums.StageType.CR.ToString();
                     double inputValue = Convert.ToInt64(goalValue.Trim().Replace(",", "").Replace("$", ""));
                     string marketing = Enums.Funnel.Marketing.ToString();
-                    if (goalType.Equals(Enums.PlanGoalType.INQ.ToString(), StringComparison.OrdinalIgnoreCase))
+                    if (goalType == Enums.PlanGoalType.INQ.ToString())
                     {
                         //// Calculate MQL
                         int projectedStageLevel = levelINQ;
-                        mqlStagelist = stageList.Where(stage => stage.Level >= projectedStageLevel && stage.Level < levelMQL).Select(stage => stage.StageId).ToList();
-                        var modelFunnelStageListMQL = objDbMrpEntities.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
+                        mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
+                        var modelFunnelStageListMQL = modelFunnelStageList.Where(mfs => funnelids.Contains(mfs.ModelFunnelId) && mqlStagelist.Contains(mfs.StageId)).ToList();
                         double MQLValue = (inputValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
                         // Start - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
                         // End - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         return MQLValue;
                     }
-                    else if (goalType.Equals(Enums.PlanGoalType.Revenue.ToString(), StringComparison.OrdinalIgnoreCase))
+                    else if (goalType == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                     {
                         //// Calculate INQ
                         int projectedStageLevel = levelINQ;
-                        mqlStagelist = stageList.Where(stage => stage.Level >= projectedStageLevel && stage.Level < levelMQL).Select(stage => stage.StageId).ToList();
-                        cwStagelist = stageList.Where(stage => stage.Level >= projectedStageLevel && stage.Level <= levelCW).Select(stage => stage.StageId).ToList();
-                        var modelFunnelStageListCW = objDbMrpEntities.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && cwStagelist.Contains(mfs.StageId) && cwStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
+                        mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
+                        cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
+                        var modelFunnelStageListCW = modelFunnelStageList.Where(mfs => funnelids.Contains(mfs.ModelFunnelId) && cwStagelist.Contains(mfs.StageId)).ToList();
                         double INQValue = (inputValue) / ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
                         INQValue = (INQValue.Equals(double.NaN) || INQValue.Equals(double.NegativeInfinity) || INQValue.Equals(double.PositiveInfinity)) ? 0 : INQValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
 
-                        //// Calculate MQL
-                        var modelFunnelStageListMQL = objDbMrpEntities.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
+                        // Calculate MQL
+                        var modelFunnelStageListMQL = modelFunnelStageList.Where(mfs => funnelids.Contains(mfs.ModelFunnelId) && mqlStagelist.Contains(mfs.StageId)).ToList();
                         double MQLValue = (INQValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
                         // Start - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.

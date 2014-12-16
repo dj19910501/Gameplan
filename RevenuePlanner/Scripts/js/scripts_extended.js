@@ -171,6 +171,15 @@ function SetBudget(idName, maxsize) {
     setLabelToolTip(idName, budgetValue, maxsize, true);
 }
 
+//// Modified By: Viral Kadiya
+//// Date 10/29/2014
+//// Remove extra code from this function cause it work same as setLabelToolTip function.
+function SetBudgetForPlanListing(idName, maxsize) {
+    var budgetValue = $(idName).html();
+    if (typeof (maxsize) === 'undefined') maxsize = 5;
+    setBootstrapTooltip(idName, budgetValue, maxsize, true);
+
+}
 //PL #508 Label formater with tipsy 
 //Added By Kalpesh Sharma 
 //This function is responsible for remove the sepcial char from the string and make it in such a way that we can use that string in our further process.
@@ -430,6 +439,38 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
         }
     }
 }
+
+function setBootstrapTooltip(lableId, value, maxSize, iscurrency) {
+    var numericval = RemoveExtraCharactersFromString(value.toString()); // Remove currency symbol($) and other characters from value.
+    if (isNaN(numericval))   // check whether value is numeric or not : if illegal then return true.
+        return value;
+    var roundValue = (Math.round(parseFloat(numericval) * 100) / 100);
+    var splitvalue = roundValue.toString().split(".");
+    var lengthvalue = splitvalue[0].toString().length;
+
+    if (lengthvalue >= maxSize) {
+        if (iscurrency) {
+            $(lableId).text("$" + GetAbberiviatedValue(numericval));
+            $(lableId).attr('title', "$" + number_format(roundValue, 0, '.', ','));
+            bootstrapetitle($(lableId), '$' + number_format(roundValue, 0, '.', ','), "tipsy-innerWhite");
+        }
+        else {
+            $(lableId).text(GetAbberiviatedValue(numericval));
+            $(lableId).attr('title', number_format(roundValue, 0, '.', ','));
+            bootstrapetitle($(lableId), number_format(roundValue, 0, '.', ','), "tipsy-innerWhite");
+        }
+    }
+    else {
+        if (iscurrency) {
+            $(lableId).text("$" + number_format(roundValue, 0, '.', ','));
+        }
+        else {
+            $(lableId).text(number_format(roundValue, 0, '.', ','));
+        }
+    }
+  //  bootstrapetitle($(this), 'Allocated : $' + $(this).attr('allocated'), "tipsy-innerWhite");
+}
+
 
 //Start Manoj: 30Jan2014 - Bug 17:Should not be able to edit a published model
 //Function added to disable all inputs
