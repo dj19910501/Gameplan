@@ -1407,7 +1407,7 @@ namespace RevenuePlanner.Controllers
                 listGameplanDataTypeCustomFields = (from custm in db.CustomFields
                                                     join m1 in db.IntegrationInstanceDataTypeMappings on custm.CustomFieldId equals m1.CustomFieldId into mapping
                                                     from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                    where custm.IsDeleted == false &&
+                                                    where custm.IsDeleted == false && custm.ClientId == Sessions.User.ClientId &&
                                                     (integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : 1 == 1)
                                                     select new GameplanDataTypeModel
                                                     {

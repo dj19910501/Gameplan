@@ -86,7 +86,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
-            ViewBag.BusinessUnitTitle = "";
+            ViewBag.BusinessUnitTitle = string.Empty;
 
             if (TempData["SuccessMessageDeletedPlan"] != null)
             {
@@ -681,9 +681,8 @@ namespace RevenuePlanner.Controllers
             //// Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
             if (viewBy.Equals(PlanGanttTypes.Request.ToString()))
             {
-                //Revise
-                lstTactic = subordinatesTactic; // lstTactic.Where(tactic => lstSubordinatesWithPeers.Contains(tactic.CreatedBy)).ToList();
-                lstImprovementTactic = subordinatesImprovementTactic;// lstImprovementTactic.Where(improvementTactic => lstSubordinatesWithPeers.Contains(improvementTactic.CreatedBy)).ToList();
+                lstTactic = subordinatesTactic;
+                lstImprovementTactic = subordinatesImprovementTactic;
             }
 
             object improvementTacticForAccordion = new object();
@@ -1193,7 +1192,7 @@ namespace RevenuePlanner.Controllers
                 duration = groupedTask.Select(task => task.duration).ToList().Max(),
                 progress = groupedTask.Select(task => task.progress).FirstOrDefault(),
                 open = groupedTask.Select(task => task.open).FirstOrDefault(),
-                color = groupedTask.ToList().Select(task => task.color).FirstOrDefault() + ((groupedTask.ToList().Select(task => task.progress).FirstOrDefault() > 0) ? "stripe" : "")
+                color = groupedTask.ToList().Select(task => task.color).FirstOrDefault() + ((groupedTask.ToList().Select(task => task.progress).FirstOrDefault() > 0) ? "stripe" : string.Empty)
             });
 
             //// Finalize Custom Field task data to be render in gantt chart
@@ -1205,7 +1204,7 @@ namespace RevenuePlanner.Controllers
                 duration = taskdata.end_date == DateTime.MaxValue ? taskdata.duration : Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, Convert.ToDateTime(taskdata.start_date), taskdata.end_date),
                 progress = taskdata.progress,
                 open = taskdata.open,
-                color = taskdata.color + ((taskdata.progress > 0) ? "stripe" : "")
+                color = taskdata.color + ((taskdata.progress > 0) ? "stripe" : string.Empty)
             });
             #endregion
 
@@ -1735,7 +1734,7 @@ namespace RevenuePlanner.Controllers
                 progress = tactic.progress,
                 open = tactic.open,
                 parent = tactic.parent,
-                color = tactic.color + (tactic.progress == 1 ? " stripe" : ""),
+                color = tactic.color + (tactic.progress == 1 ? " stripe" : string.Empty),
                 isSubmitted = tactic.isSubmitted,
                 isDeclined = tactic.isDeclined,
                 projectedStageValue = tactic.projectedStageValue,
@@ -1773,7 +1772,7 @@ namespace RevenuePlanner.Controllers
                 progress = program.progress,
                 open = program.open,
                 parent = program.parent,
-                color = (program.progress == 1 ? " stripe stripe-no-border " : (program.progress > 0 ? "partialStripe" : "")),
+                color = (program.progress == 1 ? " stripe stripe-no-border " : (program.progress > 0 ? "partialStripe" : string.Empty)),
                 planprogramid = program.planprogramid,
                 Status = program.Status
             });
@@ -1805,7 +1804,7 @@ namespace RevenuePlanner.Controllers
                 progress = campaign.progress,
                 open = campaign.open,
                 parent = campaign.parent,
-                color = campaign.color + (campaign.progress == 1 ? " stripe" : (campaign.progress > 0 ? "stripe" : "")),
+                color = campaign.color + (campaign.progress == 1 ? " stripe" : (campaign.progress > 0 ? "stripe" : string.Empty)),
                 plancampaignid = campaign.plancampaignid,
                 Status = campaign.Status
             });
@@ -1840,7 +1839,7 @@ namespace RevenuePlanner.Controllers
                 duration = plan.duration,
                 progress = plan.progress,
                 open = plan.open,
-                color = plan.color + (plan.progress > 0 ? "stripe" : ""),
+                color = plan.color + (plan.progress > 0 ? "stripe" : string.Empty),
                 planid = plan.planid
             });
             #endregion
@@ -1877,7 +1876,7 @@ namespace RevenuePlanner.Controllers
                 duration = improvementTactic.duration,
                 progress = improvementTactic.progress,
                 open = improvementTactic.open,
-                color = improvementTactic.color + (improvementTactic.progress > 0 ? "stripe" : ""),
+                color = improvementTactic.color + (improvementTactic.progress > 0 ? "stripe" : string.Empty),
                 planid = improvementTactic.planid
             });
             #endregion
@@ -2573,124 +2572,6 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-        #region "Inspect"
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Save Tactic Details.
-        /// </summary>
-        /// <param name="form">Inspect Model object</param>
-        /// <returns>Returns Partial View Of Inspect Popup.</returns>
-        //[HttpPost]
-        //public JsonResult SaveTactic(InspectModel form)
-        //{
-        //    try
-        //    {
-        //        if (ModelState.IsValid)
-        //        {
-        //            Plan_Campaign_Program_Tactic tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == form.PlanTacticId).SingleOrDefault();
-        //            if (form.PlanProgramId != 0)
-        //            {
-        //                tactic.PlanProgramId = form.PlanProgramId;
-        //            }
-
-        //            if (form.TacticTypeId != 0)
-        //            {
-        //                tactic.TacticTypeId = form.TacticTypeId;
-        //            }
-
-        //            if (form.TacticTitle.Trim() != string.Empty)
-        //            {
-        //                tactic.Title = form.TacticTitle.Trim();
-        //            }
-
-        //            if (!string.IsNullOrWhiteSpace(form.Description))
-        //            {
-        //                tactic.Description = form.Description.Trim();
-        //            }
-
-        //            if (form.VerticalId != 0)
-        //            {
-        //                tactic.VerticalId = form.tacticVerticalId;      /* changed by Nirav on 11 APR for PL 322*/
-        //            }
-
-        //            if (form.AudienceId != 0)
-        //            {
-        //                tactic.AudienceId = form.tacticAudienceId;      /* changed by Nirav on 11 APR for PL 322*/
-        //            }
-
-        //            tactic.StartDate = Convert.ToDateTime(form.StartDate);
-        //            tactic.EndDate = Convert.ToDateTime(form.EndDate);
-        //            tactic.Status = form.Status;
-        //            tactic.Cost = Convert.ToDouble(form.Cost);
-        //            tactic.ModifiedBy = Sessions.User.UserId;
-        //            tactic.ModifiedDate = DateTime.Now;
-        //            objDbMrpEntities.Entry(tactic).State = EntityState.Modified;
-        //            int result = objDbMrpEntities.SaveChanges();
-        //            return Json(new { id = form.PlanTacticId, TabValue = "Review" });
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-        //    }
-
-        //    return Json(new { id = form.PlanTacticId, TabValue = "Setup" });
-        //}
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Get Program List.
-        /// </summary>
-        /// <param name="campaignId">Campaign Id</param>
-        /// <returns>Returns Json Result of Campaign List.</returns>
-        //[HttpPost]
-        //public JsonResult LoadProgram(int campaignId)
-        //{
-        //    var program = objDbMrpEntities.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId == campaignId).OrderBy(pcp => pcp.Title);
-        //    if (program == null)
-        //        return Json(null);
-        //    var programList = (from p in program
-        //                       select new
-        //                       {
-        //                           p.PlanProgramId,
-        //                           p.Title
-        //                       }
-        //                       ).ToList();
-        //    return Json(programList, JsonRequestBehavior.AllowGet);
-        //}
-
-        /// <summary>
-        /// Added By: Pratik Chauhan.
-        /// Action to Create Improvement Tactic.
-        /// </summary>
-        /// <returns>Returns Partial View Of Tactic.</returns>
-        //public PartialViewResult CreateImprovementTactic(int id = 0)
-        //{
-        //    List<int> impTacticList = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false).Select(it => it.ImprovementTacticTypeId).ToList();
-        //    ViewBag.Tactics = from t in objDbMrpEntities.ImprovementTacticTypes
-        //                      where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
-        //                      && t.IsDeleted == false
-        //                      orderby t.Title
-        //                      select t;
-        //    ViewBag.IsCreated = true;
-
-        //    var objPlan = objDbMrpEntities.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-        //    ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
-        //    PlanImprovementTactic pitm = new PlanImprovementTactic();
-        //    pitm.ImprovementPlanProgramId = id;
-        //    // Set today date as default for effective date.
-        //    pitm.EffectiveDate = DateTime.Now;
-        //    pitm.IsDeployedToIntegration = false;
-
-        //    ViewBag.IsOwner = true;
-        //    ViewBag.RedirectType = false;
-        //    ViewBag.Year = objDbMrpEntities.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-        //    return PartialView("_SetupImprovementTactic", pitm);
-        //}
-
-        #endregion
-
         #region "Home-Zero"
         /// <summary>
         /// Action Result Method to retrieve HomeZero view
@@ -3220,7 +3101,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        objActivityChart.Month = "";
+                        objActivityChart.Month = string.Empty;
                     }
                     if (month == 11)
                     {
@@ -3849,6 +3730,8 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region Search Filter data fill
+
         /// <summary>
         /// Action method to get plans by businessunit id(s)
         /// </summary>
@@ -3955,6 +3838,10 @@ namespace RevenuePlanner.Controllers
 
             return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
         }
+        
+        #endregion
+
+        #region Upcoming Activity Methods
 
         /// <summary>
         /// Method to fetch the up comming activites value. 
@@ -3984,21 +3871,6 @@ namespace RevenuePlanner.Controllers
 
             objUpcomingActivity = objUpcomingActivity.Where(activity => !string.IsNullOrEmpty(activity.Text)).OrderBy(activity => activity.Text, new AlphaNumericComparer()).ToList();
             return Json(objUpcomingActivity.ToList(), JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Set the selected plans in Session planid
-        /// </summary>
-        /// <param name="planids">Plan id's with comma sepreated string</param>
-        /// <returns>Json Result with Sucess value and Plan Id</returns>
-        public JsonResult SetSessionPlan(string planids)
-        {
-            List<int> filterplanIds = string.IsNullOrWhiteSpace(planids) ? new List<int>() : planids.Split(',').Select(p => int.Parse(p)).ToList();
-            if (filterplanIds.Count == 1)
-            {
-                Sessions.PlanId = filterplanIds.Select(p => p).FirstOrDefault();
-            }
-            return Json(new { isSuccess = true, id = Sessions.PlanId }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -4040,6 +3912,25 @@ namespace RevenuePlanner.Controllers
             yearlistAfter.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
             return UpcomingActivityList;
         }
+        
+        #endregion
+
+        #region SetSessionPlan
+        /// <summary>
+        /// Set the selected plans in Session planid
+        /// </summary>
+        /// <param name="planids">Plan id's with comma sepreated string</param>
+        /// <returns>Json Result with Sucess value and Plan Id</returns>
+        public JsonResult SetSessionPlan(string planids)
+        {
+            List<int> filterplanIds = string.IsNullOrWhiteSpace(planids) ? new List<int>() : planids.Split(',').Select(p => int.Parse(p)).ToList();
+            if (filterplanIds.Count == 1)
+            {
+                Sessions.PlanId = filterplanIds.Select(p => p).FirstOrDefault();
+            }
+            return Json(new { isSuccess = true, id = Sessions.PlanId }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
 
         #region Validate share link of Notification email for Inspect popup
 
