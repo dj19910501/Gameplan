@@ -9,7 +9,7 @@
     <div class="nl-overlay"></div>
 </div>
 @Html.GenerateFunnel(FunnelList, @Model.MarketingLeads, @Model.MarketingDealSize, @Model.TeleprospectingLeads, @Model.TeleprospectingDealSize, @Model.SalesLeads, @Model.SalesDealSize, true)
-<script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+<script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
 <script>
     var nlform2 = new NLForm(document.getElementById('nl-form2'));
 
