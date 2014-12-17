@@ -273,8 +273,6 @@
     });
 
     function testIntegration() {
-        //alert("Test integration");
-
         $('#content :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                 if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
@@ -300,7 +298,6 @@
                             $("#cSuccess").html('');
                             $('#cSuccess').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
                             $("#successMessage").slideDown(1200);
-                           // $("#successMessage").slideUp(3000); 
                             $("#errorMessage").slideUp(1);
 
                             $('#integrationStatus').val("Active");
@@ -363,7 +360,6 @@
     }
     else {
         $("#successMessage").slideDown(1200);
-       // $("#successMessage").slideUp(3000);
     }
     if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
         $("#errorMessage").slideUp(400);

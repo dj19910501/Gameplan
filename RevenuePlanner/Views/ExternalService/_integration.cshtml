@@ -9,17 +9,11 @@
                 @if (ViewBag.PageTitle == "MapDataType")
                 {
                     /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
-
-
-
                     <a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Settings</a>
                 }
                 else
                 {
                     /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
-
-
-
                     <a href="@Url.Content("~/ExternalService/Edit?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Settings</a>
                         
                 }
@@ -49,16 +43,10 @@
             <li id="MdataType" style="display: none;">
                 @if (ViewBag.PageTitle == "Edit")
                 {
-
-
-
                     <a href="@Url.Content("~/ExternalService/MapDataTypes/")@ViewBag.IntegrationInstanceId.ToString()">Map Data Types</a>
                 }
                 else
                 {
-
-
-
                     <a href="#">Map Data Types</a>
                 }
             </li>
