@@ -23,6 +23,7 @@ IF EXISTS(SELECT * FROM sys.columns WHERE [name] = N'ActivityType' AND [object_i
 		DECLARE @count INT 
 		SELECT TOP(1) @ApplicationId=ApplicationId FROM dbo.Application WHERE IsDeleted=0 AND Code='MRP'
 		SELECT @count=MAX(ApplicationActivityId)  FROM dbo.Application_Activity
+		SELECT @count=@count+1
 		INSERT INTO [dbo].[Application_Activity]
            ([ApplicationActivityId],[ApplicationId],[ActivityTitle],[Code],[CreatedDate],[ActivityType])
         VALUES
