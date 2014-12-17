@@ -10,19 +10,17 @@
     ViewBag.PageChildTitle = "IntegrationSelection";
     string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
     string ModelTitle = Convert.ToString(ViewBag.ModelTitle);
-    string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
     int LatestModelID = Convert.ToInt32(ViewBag.LatestModelID);
     string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
     string message = TempData["SuccessMessageIntegration"] == null ? "" : TempData["SuccessMessageIntegration"].ToString();
-    @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
-                                                               string PublishedMsg = ViewBag.ModelPublishComfirmation;
+    string PublishedMsg = ViewBag.ModelPublishComfirmation;
     @Html.Hidden("PublishedMsg", PublishedMsg);
-                                              bool PublisheStatus = ViewBag.Flag;
+    bool PublisheStatus = ViewBag.Flag;
     @Html.Hidden("PublisheStatus", PublisheStatus);
-                                                  var currentdate = System.DateTime.Today.ToShortDateString();
-                                                  string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
+    var currentdate = System.DateTime.Today.ToShortDateString();
+    string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
     @Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
-                                                                  string IsOwner = Convert.ToString(ViewBag.IsOwner);
+    string IsOwner = Convert.ToString(ViewBag.IsOwner);
     @Html.Hidden("IsOwner", IsOwner);
 }
 @section Sidebar
@@ -31,10 +29,9 @@
 }
 @*Start- Added by Viral Kadiya on 11/19/2014 to implement Internal Review Points.*@
 <style type="text/css">
-    
     .inputs-aligned-horizontal .selectBox .sbSelector {
-    font-size: 11.9px !important;
-}
+        font-size: 11.9px !important;
+    }
 </style>
 @*End- Added by Viral Kadiya on 11/19/2014 to implement Internal Review Points.*@
 @Html.Hidden("hdnMsg", (string)TempData["ErrorMessage"], new { id = "hdnMsg" })
@@ -88,13 +85,7 @@
         <div class="span10 content-colum-info-user">
             @using (Html.BeginForm("SaveIntegration", "Model", new { id = @modelId }, FormMethod.Post))
             {
-                 
-                   
-                <h4 style="display: block; margin-left: 180px; margin-bottom: 20px;">Instance Selection</h4>                
-                     
-                    
-
-                
+                <h4 style="display: block; margin-left: 180px; margin-bottom: 20px;">Instance Selection</h4> 
                 <div class="cf inputs-aligned-horizontal">
                     <label>Push Tactic Data</label>
 
@@ -136,8 +127,6 @@
                     </div>
                 </div>
                 }
-                
-               
             }
         </div>
 
@@ -148,7 +137,7 @@
     </div>
 
 </div>
-     @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
+@Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
 <script type="text/javascript">
     var lastModelId = '@modelId';
     $(document).ready(function () {
@@ -168,12 +157,12 @@
             /*Check for Integration instanse of pushing tactic data is changed than confirm process*/
             if ('@Model.IntegrationInstanceId.ToString()' == $('#IntegrationInstanceId').val() || '@Model.IntegrationInstanceId' == null || '@Model.IntegrationInstanceId' == '') {
                 SaveIntegration(false);
-                 }
-                 else {
-                    var confirmMessage = confirm('@Common.objCached.ConfirmationForModifyTargetIntegration');
+            }
+            else {
+                var confirmMessage = confirm('@Common.objCached.ConfirmationForModifyTargetIntegration');
                 if (confirmMessage == true) {
-                        SaveIntegration(true);
-                    }
+                    SaveIntegration(true);
+                }
             }
 
             return false;
@@ -194,7 +183,7 @@
                     window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;
                 }
             });
-        }
+            }
 
         var ismsg = $("#hdnMsg").val();
         if ($('#cSuccess').html() != '') {
@@ -212,7 +201,6 @@
         $('#NewModel').click(function (e) {
             window.location.href = "@Url.Action("Create", "Model")";
         });
-
 
         if ('@ModelStatus' == "Draft" && ('@IsViewEditBusinessUnit.ToString().ToLower()' == 'true' || '@IsOwner.ToString().ToLower()' == 'true')) {
             $("#publish").removeClass('btn-blue-disable');
@@ -267,28 +255,28 @@
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
-                data: { modelId: '@LatestModelID' },
-                dataType: "json",
-                success: function (data) {
-                    if (data.status == 1) {
-                        $("#copymodeldesc").val(htmlDecode(data.msg));
-                        $("#original").text(htmlDecode(data.name));
-                        $("#errorMessagecopy").css("display", "none");
-                        $("#copymodeldesc").removeClass("error");
-                        $('#DivPartialShareModelDuplicate').show();
+                    data: { modelId: '@LatestModelID' },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == 1) {
+                            $("#copymodeldesc").val(htmlDecode(data.msg));
+                            $("#original").text(htmlDecode(data.name));
+                            $("#errorMessagecopy").css("display", "none");
+                            $("#copymodeldesc").removeClass("error");
+                            $('#DivPartialShareModelDuplicate').show();
+                        }
+                        else {
+                            $("#cError").html('<strong>Error! </strong>' + data.msg)
+                            $("#errorMessage").slideDown(400);
+                            $("html, body").animate({ scrollTop: 0 }, 1000);
+                        }
                     }
-                    else {
-                        $("#cError").html('<strong>Error! </strong>' + data.msg)
-                        $("#errorMessage").slideDown(400);
-                        $("html, body").animate({ scrollTop: 0 }, 1000);
-                    }
-                }
-            });
-        }
-        else {
-            var url = '@Url.Content("~/Model/Create")';
-            window.location.href = url;
-        }
+                });
+            }
+            else {
+                var url = '@Url.Content("~/Model/Create")';
+                window.location.href = url;
+            }
         });
         $('#copymodelbtn').click(function () {
             $(".copymodeldesc").removeClass("error");
@@ -311,11 +299,11 @@
                     type: "GET",
                     cache: false,
                     url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-                        data: { Title: titleName, BusinessUnitId: '@BusinessUnitId' },
-                        dataType: "json",
-                        success: function (data) {
-                            if (data == 'exist') {
-                                var msgspan = "@Common.objCached.ModelAlreadyExits";
+                    data: { Title: titleName, BusinessUnitId: '@BusinessUnitId' },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data == 'exist') {
+                            var msgspan = "@Common.objCached.ModelAlreadyExits";
                             $("#errorMessagecopy").css("display", "block");
                             $("#spanErrorMessageModelcopy").text(msgspan);
                         }
@@ -323,51 +311,38 @@
                             $('#DivPartialShareModelDuplicate').hide();
                             DuplicateModel();
                         }
-                        }
-                    });
+                    }
+                });
             }
-                 return false;
+            return false;
         });
         $('#cancelbtncopy').click(function () {
             $('#DivPartialShareModelDuplicate').hide();
         });
 
     });
-        /*Function for make model status published*/
-        function publishModel() {
+    /*Function for make model status published*/
+    function publishModel() {
 
-            var ModelId = '@modelId';
+        var ModelId = '@modelId';
 
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Model/ModelPublish/")',
-            data: 'ModelId=' + ModelId + '&EffectiveDate=' + $("#EffectiveDate").val(),
-            success: function (data) {
-                if (data.errorMessage != undefined) {
-                    url = '@Url.Content("~/Model/IntegrationSelection")';
-                        window.location.href = url + '?id=' + ModelId;
-                    }
-                    else if (data.successMessage != undefined) {
-                        var hdnShowModelResultsTab = $("#hdnShowModelResultsTab").val();
-                        if (hdnShowModelResultsTab == null || hdnShowModelResultsTab == '' || hdnShowModelResultsTab.toLowerCase() == 'true') {
-                            url = '@Url.Content("~/Model/Results")';
-                            window.location.href = url + '?mid1=' + ModelId + '&mid2=' + ModelId;
-                            return;
-                        }
-                        else {
-                            url = '@Url.Content("~/Model/ModelZero")';
-                            window.location.href = url;
-                        }
-
-                    }
-                    else {
-                        url = '@Url.Content("~/Model/ModelZero")';
-                        window.location.href = url;
-                    }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Model/ModelPublish/")',
+                data: 'ModelId=' + ModelId + '&EffectiveDate=' + $("#EffectiveDate").val(),
+                success: function (data) {
+                    if (data.errorMessage != undefined) {
+                        url = '@Url.Content("~/Model/IntegrationSelection")';
+                    window.location.href = url + '?id=' + ModelId;
                 }
-        });
+                else {
+                    url = '@Url.Content("~/Model/ModelZero")';
+                    window.location.href = url;
+                }
+            }
+            });
 
-        }
+    }
     /*Function for create duplicate model*/
     function DuplicateModel() {
         var titleName = htmlEncode($("#copymodeldesc").val().trim());

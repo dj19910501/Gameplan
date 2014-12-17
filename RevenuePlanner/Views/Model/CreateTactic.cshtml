@@ -9,11 +9,11 @@
     // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
     string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
     @Html.Hidden("hdnModelStatus", ModelStatus);
-    string TacticTypeStageId = Convert.ToString(ViewBag.TacticTypeStageId);
+                                               string TacticTypeStageId = Convert.ToString(ViewBag.TacticTypeStageId);
     @Html.Hidden("hdnStageId", TacticTypeStageId);
-    string ChangeTargetStageMsg = Convert.ToString(ViewBag.ChangeTargetStageMsg);
+                                                 string ChangeTargetStageMsg = Convert.ToString(ViewBag.ChangeTargetStageMsg);
     @Html.Hidden("hdnChangeTargetStageMsg", ChangeTargetStageMsg);
-    // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+            // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
 }
 <div class="head">
     <span class="close-form source-sans-proregular">» CLOSE MENU</span>
@@ -69,14 +69,6 @@
     {
                 <input id="t_model_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Model" maxlength="18" readonly />
     }
-@*if (Model.ClientId != null)
-                    {
-                        <span id="t_status" class="setbackground">@Html.Raw("Deployed")</span>
-                    }
-                    else
-                    {
-                        <span id="t_status" class="setbackground">@Html.Raw("Not Deployed")</span>
-                    }*@
     //End Manoj Limbachiya PL # 486
 
     if (IsModelIntegrated)
@@ -97,9 +89,6 @@
 
         <div class="content dark">
             <p>Add two or more projected or historical values for projection purposes.</p>
-
-            @*<label>Projected @Html.LabelForINQ("INQ")</label>
-                @Html.TextBoxFor(model => model.ProjectedInquiries, new {  require = "true", id = "hdnProjectedInquiries", @class="priceValue", maxlength=@RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
 
             <label id="projectStage">Projected [Stage]</label>
             @*//changes done by uday for #497*@
@@ -168,15 +157,15 @@
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
                             window.location = '@Url.Content("~/Login/Index")';
                         }
-                        // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
+                            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
                         else {
-                             if (data.status == 'SUCCESS') {
-                                  $('.close-form', this.$panel).click();
-                                  window.location.reload(true);
-                             }
-                             if (data.status == 'ERROR') {
-                                 ShowError(data.Message);
-                             }
+                            if (data.status == 'SUCCESS') {
+                                $('.close-form', this.$panel).click();
+                                window.location.reload(true);
+                            }
+                            if (data.status == 'ERROR') {
+                                ShowError(data.Message);
+                            }
                         }
                     }
                 });
@@ -187,12 +176,10 @@
         });
         if ($("#latestModelId").val() == $("#mode").val()) {
             $("#CreateTactic").show();
-           // $("#save_tactic").show();
             MakeEditable();
         }
         else {
             $("#CreateTactic").hide();
-           // $("#save_tactic").hide();
             MakeViewOnly();//Bug 17:Should not be able to edit a published model
         }
         $("span.tool-tip").tooltip();
@@ -283,114 +270,6 @@
                 }
             });
         });
-
-        @*$("#save_tactic").click(function () {
-            var iserror = false;
-            $('form').find('input[type=text], select, textarea').each(function () {
-                if ($(this).attr('require') == 'true') {
-                    if ($(this).val() == '') {
-                        $(this).addClass("error");
-                        iserror = true;
-                    }
-                    else {
-                        $(this).removeClass("error");
-                    }
-                } /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-                //if ($(this).attr('id') == 'hdnProjectedInquiries') {
-                //    var tValue = ReplaceCC($("#hdnProjectedInquiries").val());
-                //    if (isNaN(tValue)) {
-                //        $(this).addClass("error");
-                //        iserror = true;
-                //    }
-                //} //changes done by uday for PL #497
-                if ($(this).attr('id') == 'hdnProjectedStageValue') {
-                    var tValue = ReplaceCC($("#hdnProjectedStageValue").val());
-                    if (isNaN(tValue)) {
-                        $(this).addClass("error");
-                        iserror = true;
-                    }
-                }
-                if ($(this).attr('id') == 'hdnProjectedRevenue') {
-                    var tValue = ReplaceCC($("#hdnProjectedRevenue").val());
-                    if (isNaN(tValue)) {
-                        $(this).addClass("error");
-                        iserror = true;
-                    }
-                }
-            });
-
-            /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
-            var isDeployedToIntegration = false;
-
-            if ($("#t_integration_status").hasClass("icon-check-blue")) {
-                isDeployedToIntegration = true;
-            }
-
-            var isDeployedToModel = false;
-
-            if ($("#t_model_status").hasClass("icon-check-blue")) {
-                isDeployedToModel = true;
-            }
-
-            if (iserror) {
-                ShowError("Make sure all fields are filled and try again.");
-                return false;
-            }
-
-            var Title = $("#Title").val();
-            var Description = $("#Description").val();
-            var StageId = $("#StageId").val();
-            /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-            //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
-            var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val()); 
-   
-            var ProjectedRevenue = ReplaceCC($("#hdnProjectedRevenue").val());
-            var TacticTypeId = $("#hdnTacticTypeId").val();
-            //var clientId = $("#hdnClientId").val();
-            var modelID = $("#hdnModelId").val();
-
-            if (StageId == '' || StageId == 'Undefined') {
-                StageId = 'null';
-            }
-            var ModelTacticTypeId = $("#hdnTacticTypeId").val();
-
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Content("~/Home/CheckUserId/")?UserId=' + $(window).attr('name'),
-                success: function (data) {
-                    if (data.returnURL == '#') {
-                        $.ajax({
-                            type: 'POST',
-                            url: '@Url.Content("~/Model/SaveTactic/")',
-                //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
-                data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue +
-                                '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
-                            + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
-                            + '&isDeployedToModel=' + isDeployedToModel,
-                            success: function (data) {
-                                if (data.redirect) {
-                                    $("#slidepanel").css("display", "none");
-                                    $("#slidepanel-container").empty();
-                                    window.location.reload(true);
-                                    return;
-                                }
-                                if (data.errormsg) {
-                                    ShowError(data.errormsg);
-                                    return;
-                                }
-
-                            }
-                        });
-                    }
-                    else {
-                        window.location = data.returnURL;
-                    }
-                }
-            });
-
-
-        });*@
-
         $('form').find(".sbSelector").each(function () {
             $(this).next().find('li').click(function () {
                 if ($(this).parent().parent().prev().attr('require') == 'true') {
@@ -420,7 +299,7 @@
                     }
                 }
                 /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-              
+
                 //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                 if ($(this).attr('id') == 'hdnProjectedStageValue') {
                     var tValue = ReplaceCC($("#hdnProjectedStageValue").val());
@@ -439,19 +318,17 @@
             });
 
             //sbSelector
-                $('form').find('.sbSelector').each(function () {
-                    if ($(this).parent().prev().attr('require') == 'true') {
-                        if ($(this).text() == 'Please Select') {
-                            $(this).addClass("error");
-                            iserror = true;
-                        }
-                        else {
-                            $(this).removeClass("error");
-                        }
+            $('form').find('.sbSelector').each(function () {
+                if ($(this).parent().prev().attr('require') == 'true') {
+                    if ($(this).text() == 'Please Select') {
+                        $(this).addClass("error");
+                        iserror = true;
                     }
-                });
-            
-
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
 
             /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
             var isDeployedToIntegration = false;
@@ -480,7 +357,7 @@
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
             //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
             var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val());
- 
+
             var ProjectedRevenue = ReplaceCC($("#hdnProjectedRevenue").val());
             var TacticTypeId = $("#hdnTacticTypeId").val();
             if (isCreated == 'True') {

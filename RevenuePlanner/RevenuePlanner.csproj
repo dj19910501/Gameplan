@@ -647,7 +647,6 @@
     </Content>
     <Content Include="Views\Shared\_ChangeLog.cshtml" />
     <Content Include="Views\Home\_PlanDropdown.cshtml" />
-    <Content Include="Views\Model\Results.cshtml" />
     <Content Include="Views\NoAccess\Index.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
     <Content Include="Views\Shared\_SupportPartial.cshtml" />
@@ -749,7 +748,6 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Views\Model\Create.cshtml" />
-    <Content Include="Views\Model\Index.cshtml" />
     <Content Include="Views\Model\ModelZero.cshtml" />
     <Content Include="Views\Plan\ApplyToCalendar.cshtml" />
     <Content Include="Views\Plan\Assortment.cshtml" />
@@ -759,7 +757,6 @@
     <Content Include="Views\Home\Homezero.cshtml" />
     <Content Include="Views\User\Notifications.cshtml" />
     <Content Include="Views\Home\AddActual.cshtml" />
-    <Content Include="Views\Model\Audience.cshtml" />
     <Content Include="Views\Model\CreateTactic.cshtml" />
     <Content Include="Views\Model\Tactics.cshtml" />
     <Content Include="Views\Model\_modeloverview.cshtml" />

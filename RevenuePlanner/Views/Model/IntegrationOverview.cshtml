@@ -9,18 +9,16 @@
     ViewBag.PageChildTitle = "IntegrationOverview";
     string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
     string ModelTitle = Convert.ToString(ViewBag.ModelTitle);
-    string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
     int LatestModelID = Convert.ToInt32(ViewBag.LatestModelID);
     string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
-    @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
-                                                               string PublishedMsg = ViewBag.ModelPublishComfirmation;
+    string PublishedMsg = ViewBag.ModelPublishComfirmation;
     @Html.Hidden("PublishedMsg", PublishedMsg);
-                                              bool PublisheStatus = ViewBag.Flag;
+    bool PublisheStatus = ViewBag.Flag;
     @Html.Hidden("PublisheStatus", PublisheStatus);
-                                                  var currentdate = System.DateTime.Today.ToShortDateString();
-                                                  string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
+    var currentdate = System.DateTime.Today.ToShortDateString();
+    string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
     @Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
-                                                                  string IsOwner = Convert.ToString(ViewBag.IsOwner);
+    string IsOwner = Convert.ToString(ViewBag.IsOwner);
     @Html.Hidden("IsOwner", IsOwner);
 }
 @section Sidebar
@@ -32,16 +30,15 @@
 @Html.HiddenFor(model => ModelStatus, new { id = "hdnStatus" })
 @Html.Hidden("EffectiveDate", currentdate)
 <style>
-
     table.myteam tbody tr:hover > td, table.myteam tbody tr:hover > th, table.myteam.table-striped tbody > tr:nth-child(2n+1):hover > td,
     table.myteam.table-striped tbody > tr:nth-child(2n+1):hover > th {
         background-color: #dff0f8 !important;
     }
+
     table.myteam tbody tr:hover > td, table.myteam tbody tr:hover > th, table.myteam.table-striped tbody > tr:nth-child(2n):hover > td,
     table.myteam.table-striped tbody > tr:nth-child(2n):hover > th {
         background-color: transparent !important;
     }
-
 </style>
 
 <input type="hidden" value="@ViewBag.ModelId" id="latestModelId" />
@@ -97,7 +94,7 @@
                         </th>
                         <th title="Integration Type">Integration Type
                         </th>
-                        <th title="Last Sync" style="width:21%;">Last Sync
+                        <th title="Last Sync" style="width: 21%;">Last Sync
                         </th>
                         <th></th>
                     </tr>
@@ -116,23 +113,17 @@
             </table>
         </div>
     </div>
-        @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
+    @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
 </div>
 <script type="text/javascript">
-    //$('#IntegrationTable tbody tr').hover(function () {
-    //    $(this).css('background-color', 'transparent');
-    //}, function () {
-    //    $(this).css('background-color', 'transparent');
-    //});
     var lastModelId = '@modelId';
     $(document).ready(function () {
-      
+
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
         var ismsg = $("#hdnMsg").val();
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
             $("#successMessage").slideDown(1200);
-            // $("#successMessage").slideUp(3000);
         }
         if ($('#cError').html() != '') {
             $("#errorMessage").slideDown(1200);
@@ -142,7 +133,7 @@
         $('#DivNoIntegrationModelPopup').css("display", "none");
         $('#NewModel').click(function (e) {
             window.location.href = "@Url.Action("Create", "Model")";
-    });
+        });
 
 
         if ('@ModelStatus' == "Draft" && ('@IsViewEditBusinessUnit.ToString().ToLower()' == 'true' || '@IsOwner.ToString().ToLower()' == 'true')) {
@@ -198,13 +189,11 @@
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
-                    //data: { modelId: $('#hdnModelId').val() },
                     //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
                     data: { modelId: '@LatestModelID' },
                     dataType: "json",
                     success: function (data) {
                         if (data.status == 1) {
-
                             //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014
                             $("#copymodeldesc").val(htmlDecode(data.msg));
                             $("#original").text(htmlDecode(data.name));
@@ -241,7 +230,6 @@
                 $("#errorMessagecopy").css("display", "block");
                 $("#spanErrorMessageModelcopy").text(msgspan);
             } else {
-
                 //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
                 var titleName = htmlEncode($("#copymodeldesc").val().trim());
 
@@ -278,49 +266,35 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Model/ModelPublish/")',
-                  data: 'ModelId=' + ModelId + '&EffectiveDate=' + $("#EffectiveDate").val(),
-                  success: function (data) {
-                      if (data.errorMessage != undefined) {
-                          url = '@Url.Content("~/Model/IntegrationOverview")';
-                    window.location.href = url + '?id=' + ModelId;
-                }
-                else if (data.successMessage != undefined) {
-                    var hdnShowModelResultsTab = $("#hdnShowModelResultsTab").val();
-                    if (hdnShowModelResultsTab == null || hdnShowModelResultsTab == '' || hdnShowModelResultsTab.toLowerCase() == 'true') {
-                        url = '@Url.Content("~/Model/Results")';
-                        window.location.href = url + '?mid1=' + ModelId + '&mid2=' + ModelId;
-                        return;
-                    }
-                    else {
-                        url = '@Url.Content("~/Model/ModelZero")';
-                        window.location.href = url;
-                    }
-
-                }
-                else {
-                    url = '@Url.Content("~/Model/ModelZero")';
-                    window.location.href = url;
-                }
-            }
-              });
-
-}
-
-function DuplicateModel() {
-
-    //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
-    var titleName = htmlEncode($("#copymodeldesc").val().trim());
-
-    $.ajax({
-        type: 'POST',
-        url: '@Url.Content("~/Model/DuplicateModel/")',
-            //data: { modelId: $('#hdnModelId').val(), title: titleName },
-            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014 
-            data: { modelId: '@LatestModelID', title: titleName },
-            dataType: "json",
+            data: 'ModelId=' + ModelId + '&EffectiveDate=' + $("#EffectiveDate").val(),
             success: function (data) {
-                if (data.status == 1) {
-                    var url = '@Url.Content("~/Model/ModelZero")';
+                if (data.errorMessage != undefined) {
+                    url = '@Url.Content("~/Model/IntegrationOverview")';
+                          window.location.href = url + '?id=' + ModelId;
+                      }
+                      else {
+                          url = '@Url.Content("~/Model/ModelZero")';
+                          window.location.href = url;
+                      }
+                  }
+        });
+
+          }
+
+          function DuplicateModel() {
+
+              //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
+              var titleName = htmlEncode($("#copymodeldesc").val().trim());
+
+              $.ajax({
+                  type: 'POST',
+                  url: '@Url.Content("~/Model/DuplicateModel/")',
+        //Added By Kalpesh Sharma Functional and code review #560 07-16-2014 
+        data: { modelId: '@LatestModelID', title: titleName },
+        dataType: "json",
+        success: function (data) {
+            if (data.status == 1) {
+                var url = '@Url.Content("~/Model/ModelZero")';
                     window.location.href = url;
                 }
                 else {
@@ -329,7 +303,7 @@ function DuplicateModel() {
                     $("html, body").animate({ scrollTop: 0 }, 1000);
                 }
             }
-        });
+    });
     }
 </script>
 

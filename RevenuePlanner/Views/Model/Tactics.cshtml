@@ -5,9 +5,6 @@
     ViewBag.Title = "Tactic Selection";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Model;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    //string isViewOnly = ViewBag.IsViewOnly; 
-    string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
-    @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
                                                                string PublishedMsg = ViewBag.ModelPublishComfirmation;
     @Html.Hidden("PublishedMsg", PublishedMsg);
                                               bool PublisheStatus = ViewBag.Flag;
@@ -68,7 +65,6 @@
 <ul class="nav nav-tabs">
     @if (Model.Versions != null)
     {
-
         foreach (ModelVersion v in Model.Versions)
         {
             if (v.IsLatest)
@@ -82,7 +78,6 @@
         </li>
         <li id="ver_@v.ModelId" class="pull-right"  title="@v.Version">
             <a href="#" name="versionId" id="@v.ModelId"  onclick="LoadModelData(@v.ModelId,true)">@Html.Raw("v")@v.Version</a>
-            @*  <a href="#" name="versionId" id="@v.ModelId" >@Html.Raw("v")@v.Version</a>*@
         </li>
             }
             else
@@ -90,18 +85,9 @@
         @Html.HiddenFor(model => v.ModelId, new { id = "VersionModelId" })
         <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
             <a href="#"  name="versionId"  id="@v.ModelId" >@Html.Raw("v")@v.Version</a>
-            @*onclick="LoadModelData(@v.ModelId,false)"*@
         </li>
             }
         }
-        
-           //Added By : Kalpesh Sharma Functional Review Point #77
-        @*if (Model.Versions.Count == 1)
-        {
-        <li class="pull-right">
-            <a href="#">@Html.Raw("No Saved Versions")</a>
-        </li>
-        }*@
         
         if (Model.Versions.Count == 0)
         {
@@ -119,7 +105,6 @@
 </ul>
 
 @Html.Hidden("0", (int)ViewBag.Version, new { id = "mode" })
-@*@Html.Hidden("IsViewOnly", isViewOnly)*@
 @Html.Hidden("EffectiveDate", currentdate)
 <div id="table_request" class="padding-content padding-top0 cf source-sans-proregular">
 
@@ -128,7 +113,6 @@
             <tr>
                 <th class="border-r width390">Tactic Title</th>
                 <th class="border-r width86">Target Stage</th>
-            @*    <th>Projected @Html.LabelForINQ("INQ")</th>*@
                 <th class="border-r">Projected Responses</th> @* Modified by :- Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response *@
                 <th class="border-r">Projected Cost</th>
                 <th class="border-r width50px" style="text-align:center;">Deploy to Model</th>
@@ -144,14 +128,12 @@
 
         </tbody>
     </table>
-    @*@if (isViewOnly != "true")
-    {*@
    @if (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True") // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
    {
         <button id="create_new_tactic"  class="btn btn-blue btn-large text-shadow-blue source-sans-proregular pull-left font-size14" type="button">Create New Tactic</button>
         <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular pull-right font-size14" id="continue" type="button">Save & Continue</button>
    }
-    @*}*@
+   
 </div>
 
  @*Added By Kalpesh Sharma Functional and code review #560 07-16-2014   *@
@@ -171,18 +153,11 @@
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
             $("#successMessage").slideDown(1200);
-            //$("#successMessage").slideUp(3000);
         }
         if ($('#cError').html() != '') {
             $("#errorMessage").slideDown(1200);
         }
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-
-        //if ($('#IsViewOnly').val() != '') {
-        //    MakeViewOnly(); //Bug 17:Should not be able to edit a published model
-        //    $("#errorMessage").html('<a class="close">×</a> View only permission');
-        //    $("#errorMessage").slideDown(1200);
-        //}
         $('#NewModel').click(function (e) {
             window.location.href = "@Url.Action("Create", "Model")";
         });
@@ -221,8 +196,6 @@
             lastModelId = modelId;
             /*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*/
         }
-
-
         // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
         $('#copymodelbtn').click(function () {
             $(".copymodeldesc").removeClass("error");
@@ -370,8 +343,6 @@
             });
 
         });
-
-
         // Fill Tactic selection Table
         var mid;
         if ($('#hdnModelId').val() != $("#latestModelId").val()) {
@@ -445,11 +416,10 @@
             */
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
 
-            if (_IsDeployedToModel) { //if (_modelId == lastModelId) { // Modified by dharmraj #592 : Tactic type data model
+            if (_IsDeployedToModel) { 
                 $html += '<tr clientid="' + _Clientid + '" class="rejected" id="' + _id + '" data-index="' + _index + '" IsTargetStageOfModel="' + _IsTargetStageOfModel + '">' +   // Modified by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                           '<td  class="border-r sm" id="' + _id + '"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                           '<td   class="sm border-r" id="' + _id + '">' + Stage + '</td>' +
-                          //'<td   class="sm" id="' + _id + '">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                            //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
                           '<td   class="sm border-r" id="' + _id + '">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                           '<td  class="border-r sm projectedcost" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
@@ -465,7 +435,6 @@
                 $html += '<tr clientid="0" class="rejected" id="' + _id + '" data-index="' + _index + '" IsTargetStageOfModel="' + _IsTargetStageOfModel + '">' +   // Modified by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                             '<td id="' + _id + '" class="border-r sm"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                             '<td id="' + _id + '"  class="sm border-r">' + Stage + '</td>' +
-                            //'<td  id="' + _id + '" class="sm">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                              //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
                             '<td  id="' + _id + '" class="sm border-r">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                             '<td id="' + _id + '" class="border-r sm projectedcost">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
@@ -667,19 +636,6 @@
                         url = '@Url.Content("~/Model/Tactics")';
                         window.location.href = url + '?id=' + ModelId;
                     }
-                    else if (data.successMessage != undefined) {
-                        var hdnShowModelResultsTab = $("#hdnShowModelResultsTab").val();
-                        if (hdnShowModelResultsTab == null || hdnShowModelResultsTab == '' || hdnShowModelResultsTab.toLowerCase() == 'true') {
-                            url = '@Url.Content("~/Model/Results")';
-                            window.location.href = url + '?mid1=' + ModelId + '&mid2=' + ModelId;
-                            return;
-                        }
-                        else {
-                            url = '@Url.Content("~/Model/IntegrationSelection")';
-                            window.location.href = url + '?id=' + ModelId;
-                        }
-
-                    }
                     else {
                         url = '@Url.Content("~/Model/IntegrationSelection")';
                         window.location.href = url + '?id=' + ModelId;
@@ -696,7 +652,6 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
-                //data: { modelId: $('#hdnModelId').val() },
                 //Added By Kalpesh Sharma Functional and code review #560 07-16-2014 
                 data: { modelId: $('#latestModelId').val() },
                 dataType: "json",
@@ -742,7 +697,6 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Model/DuplicateModel/")',
-            //data: { modelId: $('#hdnModelId').val(), title: titleName },
             //Added By Kalpesh Sharma Functional and code review #560 07-16-2014 
             data: { modelId: $('#latestModelId').val(), title: titleName },
             dataType: "json",

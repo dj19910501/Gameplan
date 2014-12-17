@@ -5,7 +5,6 @@
     string strConfirmationmessage = Common.objCached.ModelDeleteConfirmMessage; @* added by Nirav Shah  on 14 feb 2014 forget message from commonmessage file *@
     Layout = "~/Views/Shared/_Layout.cshtml";
     bool modelExists = (bool)ViewBag.ModelExists;
-    //string isViewOnly = ViewBag.IsViewOnly; 
 }
 @section Sidebar
 {
@@ -20,21 +19,6 @@
             </div>
         </div>
     </div>
-
-    @*    <ul class="nav nav-list nav-gray">
-        <li class="item">
-            <a class="source-sans-probold inputs" href="#"><span></span>INPUTS</a>
-        </li>
-        <li class="item">
-            <a class="source-sans-probold audience" href="#"><span></span>AUDIENCE</a>
-        </li>
-        <li class="item">
-            <a class="source-sans-probold tactics" href="#"><span></span>TACTICS</a>
-        </li>
-        <li class="item">
-            <a class="source-sans-probold result" href="#"><span></span>RESULTS</a>
-        </li>
-    </ul>*@
     <ul class="nav nav-list nav-gray-plan">
         <li id="change-log" class="nav-header">
             <span>Change Log</span>
@@ -62,10 +46,10 @@
         <li class="title-header source-sans-proregular">
             <h2>Baseline Models</h2>
         </li>
-        <li class="pull-right"> @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to show by default, the Active Models tab not All Models. *@
+        <li class="pull-right">@* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to show by default, the Active Models tab not All Models. *@
             <a id="ModelAll" href="#">All</a>
         </li>
-        <li class="active pull-right"> @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to show by default, the Active Models tab not All Models. *@
+        <li class="active pull-right">@* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to show by default, the Active Models tab not All Models. *@
             <a id="ModelActive" href="#">Active Models</a>
         </li>
     </ul>
@@ -77,7 +61,8 @@
                     <th class="width75">Business Unit</th>
                     <th class="width86">Version</th>
                     <th>Status</th>
-                    <th>Effective Date</th> @* Added By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column. *@
+                    <th>Effective Date</th>
+                    @* Added By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column. *@
                 </tr>
             </thead>
             <tbody>
@@ -101,16 +86,13 @@ else
     </ul>
     <div class="padding-content cf source-sans-proregular">
         <p>No saved model version to display.</p>
-        @*@if (isViewOnly != "true")
-        {*@
-            <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular createbtn" type="button" href="@Url.Content("~/Model/Create")" >Create Baseline Model</button>
-        @*}*@
+        <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular createbtn" type="button" href="@Url.Content("~/Model/Create")" >Create Baseline Model</button>
     </div>
 }
 
-  <input type="hidden" value="0" id="hdnModelId" />
-  @*Added By Kalpesh Sharma Functional and code review #560 07-16-2014   *@
-  @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
+<input type="hidden" value="0" id="hdnModelId" />
+@*Added By Kalpesh Sharma Functional and code review #560 07-16-2014   *@
+@Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
 
 
 <script type="text/javascript">
@@ -119,7 +101,6 @@ else
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
             $("#successMessage").slideDown(1200); // Show the Alert
-            //$("#successMessage").slideUp(3000);
         }
         @* added by Nirav Shah  on 14 feb 2014 *@
         if ($('#cError').html() != '') {
@@ -137,8 +118,8 @@ else
             var id = $(this).attr("id");
             if (id != null) {
                 window.location.href = "@Url.Content("~/model/create?id=")" + id;
-                }
-            });
+            }
+        });
     });
     @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
     $(document).on('click', '.delete-temp-program', function (e) {
@@ -167,7 +148,6 @@ else
                                 $('#successMessage').css("display", "block");
                                 $('#cSuccess').html('<strong>Success.</strong> ' + data.successmsg)
                                 $("#successMessage").slideDown(1200); // Show the Alert
-                                //$("#successMessage").slideUp(3000);
                                 $('#errorMessage').css("display", "none");
                                 $('#' + id).css("display", "none");
                             }
@@ -219,11 +199,11 @@ else
                             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                         } else {
 
-                        baselinesModels = r;
-                        //Added By : Kalpesh Sharma Functional Review Point #75
-                        $('#table_baseline > tbody').html("");
-                        fillBaselineTable();
-                        myApp.hidePleaseWait();
+                            baselinesModels = r;
+                            //Added By : Kalpesh Sharma Functional Review Point #75
+                            $('#table_baseline > tbody').html("");
+                            fillBaselineTable();
+                            myApp.hidePleaseWait();
                         }
                     }
                 });
@@ -242,23 +222,23 @@ else
                             //// Ticket: 942 Exception handeling in Gameplan.
                             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                         } else {
-                        baselinesModels = r;
-                        //Added By : Kalpesh Sharma Functional Review Point #75
-                        if (baselinesModels.length) {
-                            fillBaselineTable();
-                        }
-                        else {
-                            $('#table_baseline > tbody').html("");
-                            var $baselineTable = $('#table_baseline > tbody');
-                            var $html = "@Common.objCached.NoActiveModelFound";
+                            baselinesModels = r;
+                            //Added By : Kalpesh Sharma Functional Review Point #75
+                            if (baselinesModels.length) {
+                                fillBaselineTable();
+                            }
+                            else {
+                                $('#table_baseline > tbody').html("");
+                                var $baselineTable = $('#table_baseline > tbody');
+                                var $html = "@Common.objCached.NoActiveModelFound";
                             $baselineTable.append($html);
                         }
                         myApp.hidePleaseWait();
                     }
                     }
                 });
-            }
-    }
+        }
+}
 }
 
 //fill baselinesModels table with data from json
@@ -275,7 +255,7 @@ function fillBaselineTable() {
     }
 }
 
-    //add row in baselinesModels table
+//add row in baselinesModels table
     @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column, effectiveDate parameter has been added. *@
     function addRowBaseline(_index, _id, _title, _businessUnit, _version, _status, _isOwner, _effectiveDate) {
         var $baselineTable = $('#table_baseline > tbody');
@@ -289,11 +269,11 @@ function fillBaselineTable() {
         }
      @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
         if (_isOwner == 0) {
-        $html += '<span class="delete-temp-program width5 float-left-margin-top4-margin-right10"></span>';
+            $html += '<span class="delete-temp-program width5 float-left-margin-top4-margin-right10"></span>';
         }
         else {
             $html += '<span class="width3 float-left-margin-top4-margin-right10"></span>';
-    }
+        }
 
         $html += '<span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span><span id="' + _id + '" class="duplicate-icon"></span></td>' +
         '<td>' + _businessUnit + '</td>' +
@@ -301,12 +281,12 @@ function fillBaselineTable() {
         '<td>' + _status + '</td>' +
         '<td>' + _effectiveDate + '</td>' +     @* Added By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column. *@
         '</tr>';
-    $baselineTable.append($html);
-}
+        $baselineTable.append($html);
+    }
 
-$(".createbtn").click(function () {
-    window.location.href = $(this).attr('href');
-});
+    $(".createbtn").click(function () {
+        window.location.href = $(this).attr('href');
+    });
 
 
 @*Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
@@ -320,40 +300,38 @@ $(".createbtn").click(function () {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
-            data: { modelId: id },
-            dataType: "json",
-            success: function (data) {
-                if (data.status == 1) {
+                data: { modelId: id },
+                dataType: "json",
+                success: function (data) {
+                    if (data.status == 1) {
 
-                    //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014
-                    $("#copymodeldesc").val(htmlDecode(data.msg));
-                    $("#original").text(htmlDecode(data.name));
-                    $('#DivPartialShareModelDuplicate').show();
+                        //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014
+                        $("#copymodeldesc").val(htmlDecode(data.msg));
+                        $("#original").text(htmlDecode(data.name));
+                        $('#DivPartialShareModelDuplicate').show();
+                    }
+                    else {
+                        $("#cError").html('<strong>Error! </strong>' + data.msg)
+                        $("#errorMessage").slideDown(400);
+                        $("html, body").animate({ scrollTop: 0 }, 1000);
+                    }
                 }
-                else {
-                    $("#cError").html('<strong>Error! </strong>' + data.msg)
-                    $("#errorMessage").slideDown(400);
-                    $("html, body").animate({ scrollTop: 0 }, 1000);
-                }
-            }
-        });
-    }
+            });
+        }
         return false;
     });
-function DuplicateModel() {
+    function DuplicateModel() {
+        //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
+        var titleName = htmlEncode($("#copymodeldesc").val().trim());
 
-    //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
-    var titleName = htmlEncode($("#copymodeldesc").val().trim());
-
-
-    $.ajax({
-        type: 'POST',
-        url: '@Url.Content("~/Model/DuplicateModel/")',
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Model/DuplicateModel/")',
         data: { modelId: $('#hdnModelId').val(), title: titleName },
-            dataType: "json",
-            success: function (data) {
-                if (data.status == 1) {
-                    var url = '@Url.Content("~/Model/ModelZero")';
+        dataType: "json",
+        success: function (data) {
+            if (data.status == 1) {
+                var url = '@Url.Content("~/Model/ModelZero")';
                     window.location.href = url;
                 }
                 else {
@@ -362,9 +340,8 @@ function DuplicateModel() {
                     $("html, body").animate({ scrollTop: 0 }, 1000);
                 }
             }
-        });
+    });
     }
-
 
     // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
     // Close or hide the Duplicate popup on Cancel click . 
@@ -387,17 +364,15 @@ function DuplicateModel() {
             $("#errorMessagecopy").css("display", "block");
             $("#spanErrorMessageModelcopy").text(msgspan);
         } else {
-               // var titleName = $('#copymodeldesc').val();
-                var ModelID = $('#hdnModelId').val();
+            var ModelID = $('#hdnModelId').val();
 
             //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
-                var titleName = htmlEncode($("#copymodeldesc").val().trim());
-
-                $.ajax(
-                {
-                    type: "POST",
-                    cache: false,
-                    url: '@Url.Content("~/Model/CheckDuplicateModelTitleByID")',
+            var titleName = htmlEncode($("#copymodeldesc").val().trim());
+            $.ajax(
+            {
+                type: "POST",
+                cache: false,
+                url: '@Url.Content("~/Model/CheckDuplicateModelTitleByID")',
                     data: { title: titleName, modelId: ModelID },
                     dataType: "json",
                     success: function (data) {
@@ -412,9 +387,9 @@ function DuplicateModel() {
                         }
                     }
                 });
-        }
+            }
         return false;
     });
 
-@*End By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
+    @*End By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
 </script>
