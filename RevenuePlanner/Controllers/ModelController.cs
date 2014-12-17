@@ -1098,7 +1098,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                return versionedModel;
+                return objModel;
             }
         }
 
