@@ -1,7 +1,6 @@
 ﻿using Elmah;
 using RevenuePlanner.BDSService;
 using RevenuePlanner.Models;
-using RevenuePlanner.Controllers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,7 +22,6 @@ using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Transactions;
 using System.Data;
-using System.Data.Objects.SqlClient;
 using System.Text.RegularExpressions;
 
 namespace RevenuePlanner.Helpers
@@ -1871,6 +1869,10 @@ namespace RevenuePlanner.Helpers
             return false;
         }
 
+        /// <summary>
+        /// Fuction to get list of status that comes after Approved status
+        /// </summary>
+        /// <returns>returns list of status</returns>
         public static List<string> GetStatusListAfterApproved()
         {
             List<string> tacticStatus = new List<string>();
@@ -2614,12 +2616,12 @@ namespace RevenuePlanner.Helpers
         /// <returns>returns list tactic stage values</returns>
         public static List<TacticStageValue> GetTacticStageRelation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true)
         {
-            MRPEntities dbStage = new MRPEntities();
-            //Compute the tactic relation list
+            MRPEntities objDbMRPEntities = new MRPEntities();
+            //// Compute the tactic relation list
             List<TacticStageValueRelation> tacticValueRelationList = GetCalculation(tlist, isIncludeImprovement);
-            List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
-            //fetch the tactic stages and it's value
-            //Return finalized TacticStageValue list to the Parent method 
+            List<Stage> stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            //// Fetch the tactic stages and it's value
+            //// Return finalized TacticStageValue list to the Parent method 
             return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, false); ;
         }
 
@@ -2774,9 +2776,9 @@ namespace RevenuePlanner.Helpers
         /// Added By Bhavesh
         /// Calculate Value for Tactic data for Multiple plan
         /// </summary>
-        /// <param name="tlist"></param>
-        /// <param name="isIncludeImprovement"></param>
-        /// <returns></returns>
+        /// <param name="tlist">List collection of tactics</param>
+        /// <param name="isIncludeImprovement">boolean flag that indicate tactic included imporvement sections</param>
+        /// <returns>returns list tactic stage values</returns>
         public static List<TacticStageValueRelation> GetCalculation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true)
         {
             List<TacticPlanRelation> tacticPlanList = GetTacticPlanRelationList(tlist);
@@ -4050,7 +4052,7 @@ namespace RevenuePlanner.Helpers
                     string CR = Enums.StageType.CR.ToString();
                     double inputValue = Convert.ToInt64(goalValue.Trim().Replace(",", "").Replace("$", ""));
                     string marketing = Enums.Funnel.Marketing.ToString();
-                    if (goalType == Enums.PlanGoalType.INQ.ToString())
+                    if (goalType.Equals(Enums.PlanGoalType.INQ.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         //// Calculate MQL
                         int projectedStageLevel = levelINQ;
@@ -4062,7 +4064,7 @@ namespace RevenuePlanner.Helpers
                         // End - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         return MQLValue;
                     }
-                    else if (goalType == Enums.PlanGoalType.Revenue.ToString().ToUpper())
+                    else if (goalType.Equals(Enums.PlanGoalType.Revenue.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         //// Calculate INQ
                         int projectedStageLevel = levelINQ;
@@ -4167,12 +4169,11 @@ namespace RevenuePlanner.Helpers
         /// <summary>
         /// Fetch the default Plan Gantt Types
         /// </summary>
-        /// <param name="planTacticIds">List of PlanTactic Id's</param>
-        /// <param name="planIds">list of planids with comma Sepreated</param>
+        /// <param name="lstTactic">list of plan tactics</param>
         /// <returns>List of ViewByModel</returns>
-        public static List<ViewByModel> GetDefaultGanttTypes(List<Plan_Campaign_Program_Tactic> objTactic = null)
+        public static List<ViewByModel> GetDefaultGanttTypes(List<Plan_Campaign_Program_Tactic> lstTactic = null)
         {
-            //Initialize the default Plan Gantt Types
+            //// Initialize the default Plan Gantt Types
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Vertical.ToString(), Value = PlanGanttTypes.Vertical.ToString() });
@@ -4180,22 +4181,22 @@ namespace RevenuePlanner.Helpers
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = BusinessUnit.ToString(), Value = PlanGanttTypes.BusinessUnit.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = PlanGanttTypes.Audience.ToString() });
-            lstViewByTab = lstViewByTab.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+            lstViewByTab = lstViewByTab.Where(viewBy => !string.IsNullOrEmpty(viewBy.Text)).OrderBy(viewBy => viewBy.Text, new AlphaNumericComparer()).ToList();
 
-            //Check that if PlanTactic is not null then we are going to fetch the Custom Fields
-            if (objTactic != null)
+            //// Check that if list of PlanTactic is not null then we are going to fetch the Custom Fields
+            if (lstTactic != null)
             {
-                if (objTactic.Count > 0)
+                if (lstTactic.Count > 0)
                 {
-                    var lstCampaignCustomFields = GetAllCustomFields(objTactic.Select(s => s.Plan_Campaign_Program.PlanCampaignId).ToList(), Enums.EntityType.Campaign.ToString());
-                    var lstProgramCustomFields = GetAllCustomFields(objTactic.Select(s => s.PlanProgramId).ToList(), Enums.EntityType.Program.ToString());
-                    var lstCustomFields = GetAllCustomFields(objTactic.Select(s => s.PlanTacticId).ToList(), Enums.EntityType.Tactic.ToString());
+                    var lstCampaignCustomFields = GetAllCustomFields(lstTactic.Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList(), Enums.EntityType.Campaign.ToString());
+                    var lstProgramCustomFields = GetAllCustomFields(lstTactic.Select(tactic => tactic.PlanProgramId).ToList(), Enums.EntityType.Program.ToString());
+                    var lstCustomFields = GetAllCustomFields(lstTactic.Select(tactic => tactic.PlanTacticId).ToList(), Enums.EntityType.Tactic.ToString());
 
-                    lstCampaignCustomFields = lstCampaignCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
-                    lstProgramCustomFields = lstProgramCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
-                    lstCustomFields = lstCustomFields.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
+                    lstCampaignCustomFields = lstCampaignCustomFields.Where(CampaignCustomField => !string.IsNullOrEmpty(CampaignCustomField.Text)).OrderBy(CampaignCustomField => CampaignCustomField.Text, new AlphaNumericComparer()).ToList();
+                    lstProgramCustomFields = lstProgramCustomFields.Where(ProgramCustomField => !string.IsNullOrEmpty(ProgramCustomField.Text)).OrderBy(ProgramCustomField => ProgramCustomField.Text, new AlphaNumericComparer()).ToList();
+                    lstCustomFields = lstCustomFields.Where(tacticCustomField => !string.IsNullOrEmpty(tacticCustomField.Text)).OrderBy(tacticCustomField => tacticCustomField.Text, new AlphaNumericComparer()).ToList();
 
-                    //Concat the Default list with newly fetched custom fields. 
+                    //// Concat the Default list with newly fetched custom fields. 
                     lstViewByTab = lstViewByTab.Concat(lstCampaignCustomFields).Concat(lstProgramCustomFields).Concat(lstCustomFields).ToList();
                 }
             }
@@ -4204,13 +4205,14 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
-        /// Fetch the Custom fields based upon it's PlanTactic id
+        /// Function to fetch the Custom fields based on PlanTactic id
         /// </summary>
         /// <param name="planTacticIds">List of Plan Tactic id</param>
+        /// <param name="Section">section name(campaign/program/tactic)</param>
         /// <returns>List of ViewbyModel</returns>
-        public static List<ViewByModel> GetAllCustomFields(List<int> Ids, string Section)
+        public static List<ViewByModel> GetAllCustomFields(List<int> planTacticIds, string Section)
         {
-            MRPEntities db = new MRPEntities();
+            MRPEntities objDbMrpEntities = new MRPEntities();
             List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
             bool isCampaign = (Section == Enums.EntityType.Campaign.ToString() ? true : false);
             bool isProgram = (Section == Enums.EntityType.Program.ToString() ? true : false);
@@ -4218,44 +4220,42 @@ namespace RevenuePlanner.Helpers
             string customTitles = Common.TacticCustomTitle;
             var CustomFields = (dynamic)null;
 
-            if (Ids == null)
+            if (planTacticIds == null)
             {
-                Ids = new List<int>();
+                planTacticIds = new List<int>();
             }
 
             if (isCampaign)
             {
                 customTitles = Common.CampaignCustomTitle;
-                CustomFields = (from cf in db.CustomFields
-                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.Plan_Campaign_Program.PlanCampaignId
-                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == Section && cf.ClientId == Sessions.User.ClientId &&
-                                Ids.Contains(t.Plan_Campaign_Program.PlanCampaignId)
-                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+                CustomFields = (from customfield in objDbMrpEntities.CustomFields
+                                join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
+                                join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.Plan_Campaign_Program.PlanCampaignId
+                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId &&
+                                planTacticIds.Contains(tactic.Plan_Campaign_Program.PlanCampaignId)
+                                select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
             }
             else if (isProgram)
             {
                 customTitles = Common.ProgramCustomTitle;
-                CustomFields = (from cf in db.CustomFields
-                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanProgramId
-                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == Section && cf.ClientId == Sessions.User.ClientId &&
-                                Ids.Contains(t.PlanProgramId)
-                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+                CustomFields = (from customfield in objDbMrpEntities.CustomFields
+                                join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
+                                join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.PlanProgramId
+                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId &&
+                                planTacticIds.Contains(tactic.PlanProgramId)
+                                select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
             }
             else
             {
-                CustomFields = (from cf in db.CustomFields
-                                join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
-                                join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
-                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == Section && cf.ClientId == Sessions.User.ClientId &&
-                                Ids.Contains(t.PlanTacticId)
-                                select cf).ToList().Distinct().ToList().OrderBy(cf => cf.Name).ToList();
+                CustomFields = (from customfield in objDbMrpEntities.CustomFields
+                                join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
+                                join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.PlanTacticId
+                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId &&
+                                planTacticIds.Contains(tactic.PlanTacticId)
+                                select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
             }
 
-            //Process and fetch the Custom Fields with EntityType is Tactic and PlanTactic id.
-
-            //ittrate the custom fields and insert into the temp list
+            //// Iterate the custom fields and insert into return list
             foreach (var item in CustomFields)
             {
                 lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", customTitles, item.CustomFieldId.ToString()) });

@@ -30,13 +30,6 @@
         </div>
     </div>
 
-    @*  <!--First Accordion-->
-    <div class="scrolled_div">
-        <div class="accordion colors" id="DivAccordion"></div>
-    </div>
-
-    <div class="shadow-scroll"></div>*@
-    
     <div id="sidebar" class="span2 sidebar">
         <div class="WelcomeMessageBorder"></div>
         <div class="sidebar-section scroll-section">
@@ -154,15 +147,8 @@
         </div>
     </div>
     <!--End Second Accordion-->
-    <div style="clear:both;">
-    @*<ul class="nav nav-list nav-gray-plan">
-        <li id="change-log" class="nav-header">
-            <span>Change Log</span>
-            <div class="changes"></div>
-        </li>
-    </ul>*@
-        </div>
-                }
+    <div style="clear:both;"></div>
+}
 <!--Error message-->
 <div id="errorMessage" class="alert alert-error hide message-position-small">
     <a class="close" id="aclose">×</a>
@@ -227,10 +213,6 @@
         BulkOwnerOperation(true);
         BulkTTOperation(true);
 
-       @* $('.changes').html('');
-        var url = '@Url.Content("~/Home/LoadChangeLog")';
-        $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");*@
-
         function toggleChevron(e) {
             $(e.target)
 				.prev('.accordion-heading')
@@ -241,24 +223,10 @@
         $('.accordion').on('shown.bs.collapse', toggleChevron);
         CallAjax();
         $("#liOpen a").click(function () {
-            //Status = 0;
-            //$("#liOpen").addClass('active');
-            //$("#liAll").removeClass('active');
-            //$("#errorMessage").css("display", "none");
-            //$("#successMessage").css("display", "none");
-            //$("#div-user-Note").hide();
-            //CallAjax();
             displayConfirmCommon('liOpenTabClick();');
         });
 
         $("#liAll a").click(function () {
-            //Status = 1;
-            //$("#liOpen").removeClass('active');
-            //$("#liAll").addClass('active');//#585
-            //$("#errorMessage").css("display", "none");
-            //$("#successMessage").css("display", "none");
-            //$("#div-user-Note").show();
-            //CallAjax();
             displayConfirmCommon('liAllTabClick();');
         });
 
@@ -269,7 +237,6 @@
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
             //Added By : Kalpesh Sharma Functional Review Point #76
-            //$("#div-user-Note").hide();
             $("#div-user-Note").show();
             CallAjax();
         }
@@ -284,24 +251,8 @@
             CallAjax();
         }
 
-
-
         var IsShowOnlyMyTactic = false
         $("#AShowOnlyMyTactic").click(function () {
-            @*IsShowOnlyMyTactic = !IsShowOnlyMyTactic;
-            if (IsShowOnlyMyTactic) {
-                $("#AShowOnlyMyTactic > label").html('Show All Tactics');
-                //$("#AShowOnlyMyTactic > label").css("background-color", "#FFFFFF");
-                showMyTacticId = "@RevenuePlanner.Helpers.Sessions.User.UserId"
-
-            }
-            else {
-                $("#AShowOnlyMyTactic > label").html('Show only My Tactics');
-                //$("#AShowOnlyMyTactic > label").css("background-color", "");
-                showMyTacticId = 0;
-            }
-            callFilter();
-            CallAjax();*@
             displayConfirmCommon('AShowOnlyMyTacticClick();');
 
         });
@@ -310,12 +261,10 @@
             IsShowOnlyMyTactic = !IsShowOnlyMyTactic;
             if (IsShowOnlyMyTactic) {
                 $("#AShowOnlyMyTactic > label").html('Show All Tactics');
-                //$("#AShowOnlyMyTactic > label").css("background-color", "#FFFFFF");
                 showMyTacticId = "@RevenuePlanner.Helpers.Sessions.User.UserId"
             }
             else {
                 $("#AShowOnlyMyTactic > label").html('Show only My Tactics');
-                //$("#AShowOnlyMyTactic > label").css("background-color", "");
                 showMyTacticId = 0;
             }
             callFilter();
@@ -364,15 +313,8 @@
             }
         }
 
-
-
-
-
-
-
         //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
         $("#header a").not("#ContactSupport").click(function () {
-            //alert($(this).attr('href'));
             if (isDataChanged()) {
                 displayconfirm($(this).attr('href'));
                 return false;
@@ -383,7 +325,6 @@
             });
         $(document).on("click", "#confirmClose, .confirmClose", function (e) {
             $("#errorMessage").slideUp(400);
-            //$('#spanMessageError').html("");
         });
         $(document).on("click", "#btnNPlan", function (e) {
             displayconfirm('@Url.Action("Create", "Plan")');
@@ -391,7 +332,6 @@
         $(document).on("click", "#btnAddActivity", function (e) {
             displayconfirm('@Url.Action("Assortment", "Plan")');
         });
-
         //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
         //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
@@ -410,7 +350,6 @@
                 $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessage").slideDown(400);
                 $("#btnConfirmOK").click(function () {
-                    //alert(id);
                     $('#spanMessageError').html("");
                     $("#errorMessage").hide();
                     eval(functionName);
@@ -420,8 +359,6 @@
                 eval(functionName);
             }
         }
-
-
 
         //function to check myValue attribute values and input values that any changes made?
         function isDataChanged() {
@@ -580,7 +517,6 @@
             window.onresize = function () {
                 function maskWidht() {
                     var widthHeader = $("#accordion2").width(),
-                        //widthRigth = widthHeader - 652;
 
                    //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
                    widthRigth = widthHeader - 662;
@@ -618,62 +554,6 @@
                 }
             }
 
-            //Format Commas For Projected Value
-            //$("div[id^='ProjectedlblP']").each(function () {
-            //    $(this).text(FormatCommas($(this).text(), false));
-            //    var txtvalue = $(this).text();
-            //    $(this).attr('title', txtvalue);
-            //    //$('.truncate').tipsy({ gravity: 's' });
-            //});
-
-            ////Format Commas For Projected Value
-            //$("div[id^='ProjectedlblValueCW']").each(function () {
-            //    $(this).text(FormatCommas($(this).text(), true));
-            //    var txtvalue = $(this).text();
-            //    $(this).attr('title', txtvalue);
-            //    SetTipsyNumeric($(this)); //$('.truncate').tipsy({ gravity: 's' });
-            //});
-
-            ////Format Commas For Projected Value Revenue
-            //$("div[id^='ProjectedlblValueRevenue']").each(function () {
-            //    $(this).text(FormatCurrency($(this).text(), true));
-            //    var txtvalue = $(this).text();
-            //    $(this).attr('title', txtvalue);
-            //    SetTipsyPrice($(this), txtvalue); //$('.truncate').tipsy({ gravity: 's' });
-            //});
-
-            ////Format Currency For Projected Value
-            //$("div[id^='ProjectedlblC']").each(function () {
-            //    $(this).text(FormatCurrency($(this).text(), false));
-            //    var txtvalue = $(this).text();
-            //    $(this).attr('title', txtvalue);
-            //    SetTipsyPrice($(this), txtvalue);
-            //});
-
-            ////Format Commas For Actual Value
-            //$("div[id^='ActuallblP']").each(function () {
-            //    $(this).text(FormatCommas($(this).text(), false));
-            //    var txtvalue = $(this).text();
-            //    $(this).attr('title', txtvalue);
-            //    SetTipsyNumeric($(this));
-            //});
-
-            ////Format Currency For Actual Value
-            //$("div[id^='ActuallblC']").each(function () {
-            //    $(this).text(FormatCurrency($(this).text(), false));
-            //    var txtvalue = $(this).text();
-            //    $(this).attr('title', txtvalue);
-            //    SetTipsyPrice($(this), txtvalue); //$('.truncate').tipsy({ gravity: 's' });
-            //});
-
-            //Format Currency For Actual Cost Input
-            //$("input[id^='ActuallblC']").each(function () {
-            //    $(this).val(FormatCurrency($(this).val(), false));
-            //    var txtvalue = $(this).val();
-            //    $(this).attr('title', txtvalue);
-            //    SetTipsyPrice($(this), txtvalue);
-            //});
-
             $('.currency_dollarCost').each(function () {
                 var txtvalue = $(this).val();
                 $(this).attr('title', txtvalue);
@@ -696,7 +576,6 @@
                         var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
                         currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
                         if (currentValue.match('^(0|[1-9][0-9]*)$')) {
-                            //  $(this).removeClass("error");
                             var costlbl = (this).id.replace('ActuallblCCost', '');
                             if ((this).id.replace(costlbl, '') != "ActuallblCCost") {
                                 var arr = (this).id.split('-');
@@ -721,7 +600,7 @@
                                     $('#' + ida).attr('orignal-value', totalvalue);
                                 }
 
-                                //If Tactic has not any line item at that time application will update the Actual cost and Projected Cost.
+                            //If Tactic has not any line item at that time application will update the Actual cost and Projected Cost.
                             else if (arr[1] == 'Cost') {
                                     costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
                                     var updateActalCost = "ActuallblCCost" + costlbl;
@@ -843,7 +722,6 @@
                 var tableId = "#divTable" + tacticId;
                 $(tableId).find('input').each(function () {
                     if ($(this).val().trim() != '') {
-                        //alert(ReplaceCC($(this).val()));
                         var thisValue = ReplaceCC($(this).val());
                         if (thisValue.match('^(0|[1-9][0-9]*)$')) {
                             $(this).removeClass("error");
@@ -953,7 +831,6 @@
                         if (geoArr.length != 0 || indArr.length != 0 || tacArr.length != 0) {
                             isShow = false;
                         }
-                        //, actuals[i].geographyId, actuals[i].individualId, actuals[i].tacticTypeId
                         var foundTac = -1;
                         for (var k = 0; k <= tacArr.length; k++) {
                             if (tacArr[k] == actuals[i].tacticTypeId) {
@@ -1017,7 +894,6 @@
         function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData) {
             var $tableActuals = $('.accordion-actuals');
             var num = parseInt(_index);
-            //var updateBy = '', stat;
             var $html = '<div class="accordion-group">' +
                             '<div class="accordion-heading">' +
                             '<div class="accordion-toggle">' +
@@ -1055,14 +931,13 @@
                     '</tr>' +
                 '</thead>' +
                 '<tbody>';
-            var arrStage = stageTitle; //var arrStage = ['INQ', 'MQL', 'CW', 'Revenue'];
+            var arrStage = stageTitle;
             for (var p = 0; p < arrStage.length; p = p + 1) {
                 var idtr = "tr" + _id + arrStage[p];
                 $html += '<tr id=' + idtr + '>';
                 for (var j = 1; j <= 12; j = j + 1) {
                     var tdId = _id + "-" + arrStage[p] + "-Y" + j;
                     $html += '<td><input id="' + tdId + '" placeholder="---" ';     // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
-                    //  value=' + _actualData[i].jan + '></input></td>';
                     if (arrStage[p] == 'Revenue') {
                         $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
                     }
@@ -1080,7 +955,6 @@
                         stat = _actualData[k].IsUpdate;
                     }
                     $html += ' ></input></td>';
-                    // $html += '<td><input placeholder="0" ></input></td>';
                 }
                 $html += '</tr>';
             }
@@ -1131,12 +1005,6 @@
                 $html += '</tr>';
             }
 
-
-            //if (updateBy == "") {
-            //    if (_costActual != 0) {
-            //        updateBy = _modifiedBy;
-            //    }
-            //}
             $html += '</tbody>' +
                 '</table>' +
                 '</div>' +
@@ -1205,7 +1073,6 @@
                                     '</div>' ;
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-                @*$html += '<input placeholder="---" class="currency_dollar truncate addFormatterActualCurrency" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>';    // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point*@
             $html += '<div orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(_costActual, true) + '</div>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
             $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + _costProjected + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
             $html+=     '</div>' +
@@ -1221,17 +1088,10 @@
                                                  '</div>' +
                                                  '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left setBudget lineItemActualsValues" style="float: right;" id="ActuallblP' + Title + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                                   FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                                     @*'<input placeholder="0" class="currency_dollarCost truncate" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="lineItemlblCCost' + _LineItemsData[line].id + '" value="' + _LineItemsData[line].LineItemCost + '">' + '</input>' +*@
                                     '</div>' +
                                 '</div>' +
                             '</div>';
             }
-
-            //var roiProjectedValue = 0;
-            //if (_costProjected != 0 && !isNaN(_costProjected)) {
-            //    var prevenue = parseFloat(_revenueProjected);
-            //    roiProjectedValue = (Math.round(prevenue / parseFloat(_costProjected) * 100) / 100);
-            //}
 
             $html += '<div class="body-toogle-actual">ROI' +
                                     '<div id="border-right" class="table-info-actual-left-wraper">' +
@@ -1265,8 +1125,6 @@
         }//addRowActual
         function maskWidht() {
             var widthHeader = $("#accordion2").width(),
-                //widthRigth = widthHeader - 652;
-
                 //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
                 widthRigth = widthHeader - 662;
 
@@ -1294,14 +1152,6 @@
                 $("#li" + id).removeClass("close-list");
                 removeByValue(tacArr, id);
             }
-            //if (tacArr.length == 0) {
-            //    $("#TacticTypeAllModule").css("display", "none");
-            //    $("#NoTTFound").show();
-            //}
-            //else {
-            //    $("#TacticTypeAllModule").css("display", "block");
-            //    $("#NoTTFound").hide();
-            //}
         }
         function removeByValue(arr, val) {
             for (var i = 0; i < arr.length; i++) {
@@ -1324,14 +1174,6 @@
                 $("#liGeography" + id).removeClass("close-list");
                 removeByValue(geoArr, id);
             }
-            //if (geoArr.length == 0) {
-            //    $("#GeographyAllModule").css("display", "none");
-            //    $("#NoGeographyFound").show();
-            //}
-            //else {
-            //    $("#GeographyAllModule").css("display", "block");
-            //    $("#NoGeographyFound").hide();
-            //}
         }
         function toggleOwner(obj) {
             var id = $(obj).attr('id');
@@ -1343,14 +1185,6 @@
                 $("#liOwner" + id).removeClass("close-list");
                 removeByValue(indArr, id);
             }
-            //if (indArr.length == 0) {
-            //    $("#ulOwnerAllModule").css("display", "none");
-            //    $("#NoOwnerFound").show();
-            //}
-            //else {
-            //    $("#ulOwnerAllModule").css("display", "block");
-            //    $("#NoOwnerFound").hide();
-            //}
         }
         function BulkOwnerOperation(selection) {
             indArr = [];
