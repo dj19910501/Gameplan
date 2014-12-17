@@ -17,10 +17,18 @@ IF EXISTS(SELECT * FROM sys.columns WHERE [name] = N'ActivityType' AND [object_i
 
 		IF NOT EXISTS (SELECT * FROM dbo.Application_Activity WHERE Code='CustomCampaignNameConvention')
 		BEGIN
+		IF EXISTS (SELECT * FROM dbo.Application WHERE IsDeleted=0 AND Code='MRP')
+		BEGIN
+        DECLARE @ApplicationId UNIQUEIDENTIFIER
+		DECLARE @count INT 
+		SELECT TOP(1) @ApplicationId=ApplicationId FROM dbo.Application WHERE IsDeleted=0 AND Code='MRP'
+		SELECT @count=MAX(ApplicationActivityId)  FROM dbo.Application_Activity
 		INSERT INTO [dbo].[Application_Activity]
            ([ApplicationActivityId],[ApplicationId],[ActivityTitle],[Code],[CreatedDate],[ActivityType])
         VALUES
-           ('22','1c10d4b9-7931-4a7c-99e9-a158ce158951','Generate custom campaign name','CustomCampaignNameConvention',GETDATE(),'Client')
+           (@count,@ApplicationId,'Generate custom campaign name','CustomCampaignNameConvention',GETDATE(),'Client')
+		   END
+
 		   END
 		END
 
