@@ -11237,3 +11237,15 @@ float:left;
 }
 
 /* End - Added by Pratik on 12/17/2014 for PL ticket #951 */
+
+/*Start Added by Mitesh Vaishnav for PL ticket #1003*/
+.Machine-Name {
+     color: #6d6d6d;
+      font-family: source_sans_prolight;
+      font-size: 14px;
+}
+.Machine-Name span{
+    font-weight: bold;
+	color:#333
+}
+/*End Added by Mitesh Vaishnav for PL ticket #1003*/
