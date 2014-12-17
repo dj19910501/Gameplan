@@ -563,8 +563,8 @@ function modalFullPosition() {
     $("#modal-container-186470").addClass("transition_y");
     $('.modal-backdrop').addClass('hide');
 
-    setTimeout(myfunction, 500);
-    function myfunction() {
+    setTimeout(addBodyOverflowClass, 500)
+    function addBodyOverflowClass() {
         $('body').addClass('bodyOverflow');
     }
 }

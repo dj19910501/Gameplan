@@ -10151,24 +10151,30 @@ li.close-list {
     left: 0;
     top: 0;
     transform: translateY(5%) translateX(5%);
+    /*padding-left:190px;
+    padding-right:190px;*/
     padding-top: 40px;
     width: calc(100% - 40px);
+    /*opacity: 1;*/
+    /*transform: translateY(0%);*/
+    /*transition:  opacity 1.5s ease 1s, transform 1.5s ease 1s;*/
+    /*visibility: visible;*/
 }
-
-/* Start - Added by Pratik on 12/17/2014 for PL ticket #951 */
 .in {
     opacity: 0.93 !important;
     transform: translateY(0)  translateX(0) !important ;
+    /*transition:  opacity 0.5s ease 0.1s, transform 0.9s ease 0.1s !important;
+  visibility: hidden;*/
+          
 }
-
 .transition_y {
  
 	opacity: 0.93 !important;
 	visibility: visible;
-	-webkit-transform: translateY(0%) !important;
+	-webkit-transform: translateY(0%);
 	transform: translateY(0%);
-	-webkit-transition: opacity 0.3s, -webkit-transform 0.3s !important;
-	transition: opacity 0.5s, transform 0.5s !important;
+	-webkit-transition: opacity 0.3s, -webkit-transform 0.3s;
+	transition: opacity 0.5s, transform 0.5s;
 }
 
 .transition-close {
@@ -10180,8 +10186,6 @@ li.close-list {
 	-webkit-transition: opacity 0.8s, -webkit-transform 0.8s;
 	transition: opacity 0.5s, transform 0.8s;
 }
-
-/* End - Added by Pratik on 12/17/2014 for PL ticket #951 */
 
 #divPartial {
     /*margin: 0 auto;*/
