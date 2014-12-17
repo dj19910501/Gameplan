@@ -757,7 +757,6 @@
     <Content Include="Views\Plan\NoModel.cshtml" />
     <Content Include="Views\Plan\PlanZero.cshtml" />
     <Content Include="Views\Home\Homezero.cshtml" />
-    <Content Include="Views\Shared\InspectPopup.cshtml" />
     <Content Include="Views\User\Notifications.cshtml" />
     <Content Include="Views\Home\AddActual.cshtml" />
     <Content Include="Views\Model\Audience.cshtml" />
@@ -860,7 +859,6 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <Content Include="Views\Home\_ResubmissionPopup.cshtml" />
     <Content Include="Views\User\_UpdateUserDetails.cshtml" />
     <Content Include="Views\Boost\_InspectPopupImprovementTacticType.cshtml" />
     <Content Include="Views\Shared\PageNotFound.cshtml" />
@@ -899,6 +897,7 @@
     <Content Include="Views\Inspect\_SetupTacticBudgetAllocation.cshtml" />
     <Content Include="Views\Inspect\_ShareCampaign.cshtml" />
     <Content Include="Views\Inspect\_ShareProgram.cshtml" />
+    <Content Include="Views\Inspect\_ResubmissionPopup.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
