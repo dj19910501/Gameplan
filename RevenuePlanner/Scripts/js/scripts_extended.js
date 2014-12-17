@@ -557,14 +557,16 @@ function modalPosition() {
 
 // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 function modalFullPosition() {
-    //$('#modal-container-186470.modal-full-view').css('top', ($('#header').height() + 4));
     var winW = $(window).width();
     var winH = $(window).height();
-    //$('#modal-container-186470.modal-full-view').css('width', winW - 23);
     $('#modal-container-186470.modal-full-view').css({ 'height': winH - 178, 'min-height': winH - 178 });
-    //$('#modal-container-186470.modal-full-view').css('left', ($('#modal-container-186470.modal-full-view').width() / 2));
-    $('body').addClass('bodyOverflow');
+    $("#modal-container-186470").addClass("transition_y");
     $('.modal-backdrop').addClass('hide');
+
+    setTimeout(myfunction, 500);
+    function myfunction() {
+        $('body').addClass('bodyOverflow');
+    }
 }
 
 //Added by Juned on 27 feb to show tool tip on larger labels

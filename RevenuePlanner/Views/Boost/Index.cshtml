@@ -56,7 +56,7 @@
         <div class="container-fluid">
             <div class="row-fluid ">
                 <div class="span12">
-                    <div id="modal-container-186470" class="modal-inspect-review hide modal-full-view modal-inspect-TacticType-height" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none;position:fixed;overflow: auto;">
+                    <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view modal-inspect-TacticType-height" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none;position:fixed;">
                      <div style="margin: 80px auto !important;padding-bottom: 30px;">
                         <div id="divPartial">
                         </div>
@@ -107,7 +107,6 @@
 
     $("#create_new_tactic").click(function () {
         $('#divPartial').empty();
-        $('body').css('overflow', 'hidden');
         $('body').removeClass('bodyOverflow');
         var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
         $('#divPartial').load(url + '?id=' + 0);
@@ -120,19 +119,28 @@
     $(document).on('click', '#table_boost tbody tr', function (e) {
         var id = $(this).attr("id");
         if (typeof id != "undefined") {
-            $('body').css('overflow', 'hidden');
             $('#divPartial').empty();
             var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
             $('#divPartial').load(url + '?id=' + id, AssignDefaultValue);
             $("#modal-container-186470").modal('show');
+            $('.modal-backdrop').attr("style", "display:none !important;");
         }
     });
 
     $("#modal-container-186470").on("show", function (e) {
+        $("#modal-container-186470").addClass("transition_y");
+        setTimeout(myfunction, 100);
         $("#modalMainContainer").show();
     });
+
+    function myfunction() {
+        $('body').addClass('bodyOverflow');
+    }
+
     function CloseIconClick() {
         $('.close-x-big-icon').click(function () {
+            $("#modal-container-186470").addClass("transition-close");
+            $("#modal-container-186470").removeClass("transition_y");
             $('body').removeClass('bodyOverflow');
         });
     }
