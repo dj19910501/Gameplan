@@ -285,7 +285,7 @@ namespace Integration.Helper
                     {
                         CustomFieldId = cf.CustomFieldId,
                         Type = cf.CustomField.CustomFieldType.Name,
-                        Abbreviation = string.Compare(cf.CustomField.CustomFieldType.Name, Enums.CustomFieldType.TextBox.ToString(), true) == 0 ? cf.Value : cf.CustomField.CustomFieldOptions.Where(cfo => cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault(),
+                        Abbreviation = string.Compare(cf.CustomField.CustomFieldType.Name, Enums.CustomFieldType.TextBox.ToString(), true) == 0 ? cf.Value : !string.IsNullOrEmpty(cf.CustomField.CustomFieldOptions.Where(cfo => cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault()) ? cf.CustomField.CustomFieldOptions.Where(cfo => cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault() : cf.CustomField.CustomFieldOptions.Where(cfo => cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Value).FirstOrDefault(),
                     });
 
                     foreach (CampaignNameConvention objCampaignNameConvention in SequencialOrderedTableList)
@@ -295,32 +295,32 @@ namespace Integration.Helper
                             var objCustomField = customFieldsForSequencialOrderedList.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId).FirstOrDefault();
                             if (objCustomField != null && !string.IsNullOrEmpty(objCustomField.Abbreviation))
                             {
-                                customTacticName.Append(Regex.Replace(objCustomField.Abbreviation, @"[^0-9a-zA-Z]+", "") + "_");
+                                customTacticName.Append(Regex.Replace(objCustomField.Abbreviation.Replace(" ","_"), @"[^0-9a-zA-Z_]+", "") + "_");
                             }
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Audience.ToString())
                         {
-                            string audienceTitle = Regex.Replace((objTactic.Audience.Abbreviation != null ? objTactic.Audience.Abbreviation : objTactic.Audience.Title), @"[^0-9a-zA-Z]+", "");
+                            string audienceTitle = Regex.Replace((objTactic.Audience.Abbreviation != null ? objTactic.Audience.Abbreviation : objTactic.Audience.Title), @"[^0-9a-zA-Z_]+", "");
                             customTacticName.Append(audienceTitle + "_");
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.BusinessUnit.ToString())
                         {
-                            string businessunitTitle = Regex.Replace((objTactic.BusinessUnit.Abbreviation != null ? objTactic.BusinessUnit.Abbreviation : objTactic.BusinessUnit.Title), @"[^0-9a-zA-Z]+", "");
+                            string businessunitTitle = Regex.Replace((objTactic.BusinessUnit.Abbreviation != null ? objTactic.BusinessUnit.Abbreviation : objTactic.BusinessUnit.Title), @"[^0-9a-zA-Z_]+", "");
                             customTacticName.Append(businessunitTitle + "_");
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Geography.ToString())
                         {
-                            string geographyTitle = Regex.Replace((objTactic.Geography.Abbreviation != null ? objTactic.Geography.Abbreviation : objTactic.Geography.Title), @"[^0-9a-zA-Z]+", "");
+                            string geographyTitle = Regex.Replace((objTactic.Geography.Abbreviation != null ? objTactic.Geography.Abbreviation : objTactic.Geography.Title), @"[^0-9a-zA-Z_]+", "");
                             customTacticName.Append(geographyTitle + "_");
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Vertical.ToString())
                         {
-                            string verticalTitle = Regex.Replace((objTactic.Vertical.Abbreviation != null ? objTactic.Vertical.Abbreviation : objTactic.Vertical.Title), @"[^0-9a-zA-Z]+", "");
+                            string verticalTitle = Regex.Replace((objTactic.Vertical.Abbreviation != null ? objTactic.Vertical.Abbreviation : objTactic.Vertical.Title), @"[^0-9a-zA-Z_]+", "");
                             customTacticName.Append(verticalTitle + "_");
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program_Tactic.ToString())
                         {
-                            customTacticName.Append(Regex.Replace((objTactic.Title.Replace(" ", "_")), @"[^0-9a-zA-Z]+", "") + "_");
+                            customTacticName.Append(Regex.Replace((objTactic.Title.Replace(" ", "_")), @"[^0-9a-zA-Z_]+", "") + "_");
                         }
                     }
                     if (customTacticName.ToString().Length > 0)
