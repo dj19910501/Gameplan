@@ -70,19 +70,21 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetIntegrationServiceListings()
         {
+            //// Get Integration Instance List.
             var IntegrationInstanceList = db.IntegrationInstances
                                             .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationType.IntegrationTypeId == ii.IntegrationTypeId)
                                             .Select(ii => ii).ToList();
 
-            var returnList = IntegrationInstanceList.Select(a => new
+            //// Return IntegrationInstance list with specific fields.
+            var returnList = IntegrationInstanceList.Select(intgrtn => new
             {
-                IntegrationInstanceId = a.IntegrationInstanceId,
-                IntegrationTypeId = a.IntegrationTypeId,
-                Instance = (a.Instance == null || a.Instance.ToString() == "null") ? "" : a.Instance.ToString(),
-                Provider = (a.IntegrationType.Title == null || a.IntegrationType.Title.ToString() == "null") ? "" : a.IntegrationType.Title.ToString(),
-                LastSyncStatus = string.IsNullOrWhiteSpace(a.LastSyncStatus) ? Common.TextForModelIntegrationInstanceTypeOrLastSyncNull : a.LastSyncStatus.ToString(),
-                LastSyncDate = (a.LastSyncDate.HasValue ? Convert.ToDateTime(a.LastSyncDate).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull),
-            }).OrderByDescending(a => a.Instance).ToList();
+                IntegrationInstanceId = intgrtn.IntegrationInstanceId,
+                IntegrationTypeId = intgrtn.IntegrationTypeId,
+                Instance = (intgrtn.Instance == null || intgrtn.Instance.ToString() == "null") ? "" : intgrtn.Instance.ToString(),
+                Provider = (intgrtn.IntegrationType.Title == null || intgrtn.IntegrationType.Title.ToString() == "null") ? "" : intgrtn.IntegrationType.Title.ToString(),
+                LastSyncStatus = string.IsNullOrWhiteSpace(intgrtn.LastSyncStatus) ? Common.TextForModelIntegrationInstanceTypeOrLastSyncNull : intgrtn.LastSyncStatus.ToString(),
+                LastSyncDate = (intgrtn.LastSyncDate.HasValue ? Convert.ToDateTime(intgrtn.LastSyncDate).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull),
+            }).OrderByDescending(intgrtn => intgrtn.Instance).ToList();
 
             return Json(returnList, JsonRequestBehavior.AllowGet);
         }
@@ -96,6 +98,7 @@ namespace RevenuePlanner.Controllers
             IList<SelectListItem> IntegrationList = new List<SelectListItem>();
             try
             {
+                //// Get IntegrationTypes list.
                 var dbList = db.IntegrationTypes.Where(it => it.IsDeleted.Equals(false)).Select(it => it).ToList();
                 IntegrationList = dbList.Select(it => new SelectListItem() { Text = it.Title, Value = it.IntegrationTypeId.ToString(), Selected = false })
                                 .OrderBy(it => it.Text).ToList();
@@ -134,7 +137,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IntegrationInstanceId = id;
                 ViewBag.IntegrationTypeId = TypeId;
 
-                var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == TypeId).FirstOrDefault();
+                IntegrationType integrationTypeObj = GetIntegrationTypeById(TypeId);
 
                 if (integrationTypeObj != null)
                 {
@@ -144,11 +147,11 @@ namespace RevenuePlanner.Controllers
                 Guid clientId = Sessions.User.ClientId;
 
                 ////Get published plan list year for logged in client.
-                var objPlan = (from p in db.Plans
-                               join m in db.Models on p.ModelId equals m.ModelId
-                               join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
-                               where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false && p.IsDeleted == false && p.Status == status
-                               select p).OrderBy(q => q.Year).ToList().Select(p => p.Year).Distinct().ToList();
+                var objPlan = (from _pln in db.Plans
+                               join _mdl in db.Models on _pln.ModelId equals _mdl.ModelId
+                               join bu in db.BusinessUnits on _mdl.BusinessUnitId equals bu.BusinessUnitId
+                               where bu.ClientId == clientId && bu.IsDeleted == false && _mdl.IsDeleted == false && _pln.IsDeleted == false && _pln.Status == status
+                               select _pln).OrderBy(_pln => _pln.Year).ToList().Select(_pln => _pln.Year).Distinct().ToList();
 
                 ViewBag.Year = objPlan;
             }
@@ -178,12 +181,12 @@ namespace RevenuePlanner.Controllers
 
                 List<string> lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
 
+                //// Get Custom Restriction model.
                 List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
                 lstUserCustomRestriction = Common.GetUserCustomRestriction();
-
                 int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
                 int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                lstUserCustomRestriction = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).ToList();
+                lstUserCustomRestriction = lstUserCustomRestriction.Where(_custmRestrctn => (_custmRestrctn.Permission == ViewOnlyPermission || _custmRestrctn.Permission == ViewEditPermission) && _custmRestrctn.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).ToList();
 
                 List<Guid> lstBUs = new List<Guid>();
                 foreach (UserCustomRestrictionModel o in lstUserCustomRestriction)
@@ -194,12 +197,12 @@ namespace RevenuePlanner.Controllers
                 // Get the list of plan, filtered by Business Unit , Year selected and published plan for logged in client.
                 if (Int_Year > 0)
                 {
-                    objIntegrationPlanList = (from p in db.Plans
-                                              join m in db.Models on p.ModelId equals m.ModelId
-                                              join bu in db.BusinessUnits on m.BusinessUnitId equals bu.BusinessUnitId
-                                              where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false &&
-                                              p.IsDeleted == false && p.Year == Year && p.Status == status && lstBUs.Contains(m.BusinessUnitId)
-                                              select new { p, m }).OrderByDescending(d => d.p.ModifiedDate ?? d.p.CreatedDate).ThenBy(d => d.p.Title).ToList().Select(d => new IntegrationPlanList { PlanId = d.p.PlanId, PlanTitle = d.p.Title, FolderPath = d.p.EloquaFolderPath, BUId = d.m.BusinessUnitId }).ToList();
+                    objIntegrationPlanList = (from _pln in db.Plans
+                                              join _mdl in db.Models on _pln.ModelId equals _mdl.ModelId
+                                              join bu in db.BusinessUnits on _mdl.BusinessUnitId equals bu.BusinessUnitId
+                                              where bu.ClientId == clientId && bu.IsDeleted == false && _mdl.IsDeleted == false &&
+                                              _pln.IsDeleted == false && _pln.Year == Year && _pln.Status == status && lstBUs.Contains(_mdl.BusinessUnitId)
+                                              select new { _pln, _mdl }).OrderByDescending(d => d._pln.ModifiedDate ?? d._pln.CreatedDate).ThenBy(d => d._pln.Title).ToList().Select(d => new IntegrationPlanList { PlanId = d._pln.PlanId, PlanTitle = d._pln.Title, FolderPath = d._pln.EloquaFolderPath, BUId = d._mdl.BusinessUnitId }).ToList();
 
                     //// Set permission for the plan on bases of BU permission
                     foreach (var item in objIntegrationPlanList)
@@ -241,7 +244,7 @@ namespace RevenuePlanner.Controllers
                             //// Iterate Integration model list and save it to database.
                             foreach (var item in IntegrationPlanList)
                             {
-                                Plan objPlan = db.Plans.Where(p => p.PlanId == item.PlanId).FirstOrDefault();
+                                Plan objPlan = db.Plans.Where(_pln => _pln.PlanId == item.PlanId).FirstOrDefault();
                                 objPlan.EloquaFolderPath = item.FolderPath;
                                 db.Entry(objPlan).State = EntityState.Modified;
                                 db.SaveChanges();
@@ -279,20 +282,15 @@ namespace RevenuePlanner.Controllers
             ViewBag.integrationTypeId = integrationTypeId;
             IntegrationModel objModelToView = new IntegrationModel();
 
-            objModelToView.IntegrationTypeAttributes = db.IntegrationTypeAttributes.Where(a => a.IsDeleted.Equals(false) && a.IntegrationType.IntegrationTypeId == integrationTypeId)
-                .Select(a => new IntegrationTypeAttributeModel
-                {
-                    Attribute = a.Attribute,
-                    AttributeType = a.AttributeType,
-                    IntegrationTypeAttributeId = a.IntegrationTypeAttributeId,
-                    Value = "",
-                })
-                .ToList();
+            //// Add IntegrationTypeAttributes to IntegrationModel.
+            objModelToView.IntegrationTypeAttributes = GetIntegrationTypeAttributesModelById(integrationTypeId);
 
+            //// Add IntegrationTypeModel data to Integration Model.
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == integrationTypeId);
-            objIntegrationTypeModel.Title = integrationTypeObj.Select(integrationtype => integrationtype.Title).FirstOrDefault();
-            objIntegrationTypeModel.Code = integrationTypeObj.Select(integrationtype => integrationtype.Code).FirstOrDefault();
+            IntegrationType integrationTypeObj = GetIntegrationTypeById(integrationTypeId);
+            objIntegrationTypeModel.Title = integrationTypeObj.Title;
+            objIntegrationTypeModel.Code = integrationTypeObj.Code;
+
             objModelToView.IntegrationType = objIntegrationTypeModel;
             objModelToView.IntegrationTypeId = integrationTypeId;
 
@@ -315,137 +313,140 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.integrationTypeId = form.IntegrationTypeId;
 
-            if (TestIntegrationCredentialsWithForm(form))
-            {
-                try
-                {
-                    using (var scope = new TransactionScope())
-                    {
-                        var isDuplicate = db.IntegrationInstances.Where(a => a.Instance == form.Instance && a.ClientId == Sessions.User.ClientId && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId).Any();
-
-                        if (!isDuplicate)
-                        {
-                            // Save data
-                            IntegrationInstance objIntegrationInstance = new IntegrationInstance();
-                            objIntegrationInstance.ClientId = Sessions.User.ClientId;
-                            objIntegrationInstance.CreatedBy = Sessions.User.UserId;
-                            objIntegrationInstance.CreatedDate = DateTime.Now;
-                            objIntegrationInstance.Instance = form.Instance;
-                            objIntegrationInstance.IsDeleted = false;
-                            objIntegrationInstance.IsImportActuals = form.IsImportActuals;
-                            objIntegrationInstance.IsActive = form.IsActive;
-                            objIntegrationInstance.Password = Common.Encrypt(form.Password);
-                            objIntegrationInstance.Username = form.Username;
-                            objIntegrationInstance.IntegrationTypeId = form.IntegrationTypeId;
-                            db.Entry(objIntegrationInstance).State = System.Data.EntityState.Added;
-                            db.IntegrationInstances.Add(objIntegrationInstance);
-                            int IntegrationInstancesCount = db.SaveChanges();
-
-                            SyncFrequency objSyncFrequency = new SyncFrequency();
-                            objSyncFrequency.IntegrationInstanceId = objIntegrationInstance.IntegrationInstanceId;
-                            objSyncFrequency.CreatedBy = Sessions.User.UserId;
-                            objSyncFrequency.CreatedDate = DateTime.Now;
-                            objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
-                            if (form.SyncFrequency.Frequency == "Weekly")
-                                objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
-                            else if (form.SyncFrequency.Frequency == "Monthly")
-                                objSyncFrequency.Day = form.SyncFrequency.Day;
-                            if (form.SyncFrequency.Frequency != "Hourly")
-                            {
-                                if (form.SyncFrequency.Time.Length == 8)
-                                {
-                                    int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                    if (form.SyncFrequency.Time.Substring(5, 2) == "PM" && hour != 12)
-                                        hour = hour + 12;
-                                    objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
-                                }
-                            }
-
-                            if (form.SyncFrequency.Frequency == "Hourly")
-                            {
-                                DateTime currentDateTime = DateTime.Now.AddHours(1);
-                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
-                            }
-                            else if (form.SyncFrequency.Frequency == "Daily")
-                            {
-                                DateTime currentDateTime = DateTime.Now.AddDays(1);
-                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
-                            }
-                            else if (form.SyncFrequency.Frequency == "Weekly")
-                            {
-                                DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
-                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
-                            }
-                            else if (form.SyncFrequency.Frequency == "Monthly")
-                            {
-                                DateTime currentDateTime = DateTime.Now;
-                                if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
-                                {
-                                    currentDateTime.AddMonths(1);
-                                }
-                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, Convert.ToInt32(objSyncFrequency.Day), time.Hours, time.Minutes, time.Seconds);
-                            }
-
-                            db.Entry(objSyncFrequency).State = System.Data.EntityState.Added;
-                            db.SyncFrequencies.Add(objSyncFrequency);
-                            int SyncFrequenciesCount = db.SaveChanges();
-
-                            if (form.IntegrationTypeAttributes != null)
-                            {
-                                foreach (var item in form.IntegrationTypeAttributes)
-                                {
-                                    IntegrationInstance_Attribute objIntegrationInstance_Attribute = new IntegrationInstance_Attribute();
-                                    objIntegrationInstance_Attribute.CreatedBy = Sessions.User.UserId;
-                                    objIntegrationInstance_Attribute.CreatedDate = DateTime.Now;
-                                    objIntegrationInstance_Attribute.IntegrationInstanceId = objIntegrationInstance.IntegrationInstanceId;
-                                    objIntegrationInstance_Attribute.IntegrationTypeAttributeId = item.IntegrationTypeAttributeId;
-                                    objIntegrationInstance_Attribute.Value = item.Value;
-                                    db.Entry(objIntegrationInstance_Attribute).State = System.Data.EntityState.Added;
-                                    db.IntegrationInstance_Attribute.Add(objIntegrationInstance_Attribute);
-                                    db.SaveChanges();
-                                }
-                            }
-
-                            if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0)
-                            {
-                                scope.Complete();
-                                TempData["SuccessMessage"] = Common.objCached.IntegrationAdded;
-                                return RedirectToAction("Index");
-                            }
-                            else
-                            {
-                                TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
-                                form = reCreateView(form);
-                                return View(form);
-                            }
-                        }
-                        else
-                        {
-                            TempData["ErrorMessage"] = Common.objCached.IntegrationDuplicate;
-                            form = reCreateView(form);
-                            return View(form);
-                        }
-                    }
-                }
-                catch
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
-                    form = reCreateView(form);
-                    return View(form);
-                }
-            }
-            else
+            //// Check Integration Credentials.
+            if (!TestIntegrationCredentialsWithForm(form))
             {
                 TempData["ErrorMessage"] = Common.objCached.TestIntegrationFail;
                 form = reCreateView(form);
                 return View(form);
             }
+            try
+            {
+                using (var scope = new TransactionScope())
+                {
+                    //// Handle Duplication.
+                    var isDuplicate = db.IntegrationInstances.Where(_intgrtn => _intgrtn.Instance == form.Instance && _intgrtn.ClientId == Sessions.User.ClientId && _intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId).Any();
+                    if (isDuplicate)
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.IntegrationDuplicate;
+                        form = reCreateView(form);
+                        return View(form);
+                    }
+
+                    // Save data
+                    IntegrationInstance objIntegrationInstance = new IntegrationInstance();
+                    objIntegrationInstance.ClientId = Sessions.User.ClientId;
+                    objIntegrationInstance.CreatedBy = Sessions.User.UserId;
+                    objIntegrationInstance.CreatedDate = DateTime.Now;
+                    objIntegrationInstance.Instance = form.Instance;
+                    objIntegrationInstance.IsDeleted = false;
+                    objIntegrationInstance.IsImportActuals = form.IsImportActuals;
+                    objIntegrationInstance.IsActive = form.IsActive;
+                    objIntegrationInstance.Password = Common.Encrypt(form.Password);
+                    objIntegrationInstance.Username = form.Username;
+                    objIntegrationInstance.IntegrationTypeId = form.IntegrationTypeId;
+                    db.Entry(objIntegrationInstance).State = System.Data.EntityState.Added;
+                    db.IntegrationInstances.Add(objIntegrationInstance);
+                    int IntegrationInstancesCount = db.SaveChanges();
+
+                    SyncFrequency objSyncFrequency = new SyncFrequency();
+                    objSyncFrequency.IntegrationInstanceId = objIntegrationInstance.IntegrationInstanceId;
+                    objSyncFrequency.CreatedBy = Sessions.User.UserId;
+                    objSyncFrequency.CreatedDate = DateTime.Now;
+                    objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
+                    if (form.SyncFrequency.Frequency == "Weekly")
+                        objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
+                    else if (form.SyncFrequency.Frequency == "Monthly")
+                        objSyncFrequency.Day = form.SyncFrequency.Day;
+                    if (form.SyncFrequency.Frequency != "Hourly")
+                    {
+                        if (form.SyncFrequency.Time.Length == 8)
+                        {
+                            int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
+                            if (form.SyncFrequency.Time.Substring(5, 2) == "PM" && hour != 12)
+                                hour = hour + 12;
+                            objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
+                        }
+                    }
+
+                    //// Set NextSyncDate to SyncFrequency list.
+                    if (form.SyncFrequency.Frequency == "Hourly")
+                    {
+                        DateTime currentDateTime = DateTime.Now.AddHours(1);
+                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
+                    }
+                    else if (form.SyncFrequency.Frequency == "Daily")
+                    {
+                        DateTime currentDateTime = DateTime.Now.AddDays(1);
+                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
+                    }
+                    else if (form.SyncFrequency.Frequency == "Weekly")
+                    {
+                        DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
+                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                        objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
+                    }
+                    else if (form.SyncFrequency.Frequency == "Monthly")
+                    {
+                        DateTime currentDateTime = DateTime.Now;
+                        if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
+                        {
+                            currentDateTime.AddMonths(1);
+                        }
+                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, Convert.ToInt32(objSyncFrequency.Day), time.Hours, time.Minutes, time.Seconds);
+                    }
+
+                    db.Entry(objSyncFrequency).State = System.Data.EntityState.Added;
+                    db.SyncFrequencies.Add(objSyncFrequency);
+                    int SyncFrequenciesCount = db.SaveChanges();
+
+                    //// Handle IntegrationTypeAttributes.
+                    if (form.IntegrationTypeAttributes != null)
+                    {
+                        foreach (var item in form.IntegrationTypeAttributes)
+                        {
+                            IntegrationInstance_Attribute objIntegrationInstance_Attribute = new IntegrationInstance_Attribute();
+                            objIntegrationInstance_Attribute.CreatedBy = Sessions.User.UserId;
+                            objIntegrationInstance_Attribute.CreatedDate = DateTime.Now;
+                            objIntegrationInstance_Attribute.IntegrationInstanceId = objIntegrationInstance.IntegrationInstanceId;
+                            objIntegrationInstance_Attribute.IntegrationTypeAttributeId = item.IntegrationTypeAttributeId;
+                            objIntegrationInstance_Attribute.Value = item.Value;
+                            db.Entry(objIntegrationInstance_Attribute).State = System.Data.EntityState.Added;
+                            db.IntegrationInstance_Attribute.Add(objIntegrationInstance_Attribute);
+                            db.SaveChanges();
+                        }
+                    }
+
+                    if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0)
+                    {
+                        scope.Complete();
+                        TempData["SuccessMessage"] = Common.objCached.IntegrationAdded;
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                        form = reCreateView(form);
+                        return View(form);
+                    }
+                }
+            }
+            catch
+            {
+                TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                form = reCreateView(form);
+                return View(form);
+            }
         }
 
-
+        /// <summary>
+        /// Action to Get Next date for Day.  
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="desiredDay"></param>
+        /// <returns></returns>
         public static DateTime GetNextDateForDay(DateTime startDate, DayOfWeek desiredDay)
         {
             // (There has to be a better way to do this, perhaps mathematically.)
@@ -467,6 +468,8 @@ namespace RevenuePlanner.Controllers
         public void populateSyncFreqData()
         {
             List<SelectListItem> lstSyncFreq = new List<SelectListItem>();
+
+            //// Add Static fields to Frequency List.
             SelectListItem objItem1 = new SelectListItem();
             objItem1.Text = "Hourly";
             objItem1.Value = "Hourly";
@@ -582,14 +585,12 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public IntegrationModel reCreateView(IntegrationModel form)
         {
-            form.IntegrationTypeAttributes = db.IntegrationTypeAttributes.Where(a => a.IsDeleted.Equals(false) && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId)
-                        .Select(a => new IntegrationTypeAttributeModel { Attribute = a.Attribute, AttributeType = a.AttributeType, IntegrationTypeAttributeId = a.IntegrationTypeAttributeId })
-                        .ToList();
+            form.IntegrationTypeAttributes = GetIntegrationTypeAttributesModelById(form.IntegrationTypeId);
 
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == form.IntegrationTypeId);
-            objIntegrationTypeModel.Title = integrationTypeObj.Select(integrationtype => integrationtype.Title).FirstOrDefault();
-            objIntegrationTypeModel.Code = integrationTypeObj.Select(integrationtype => integrationtype.Code).FirstOrDefault();
+            var integrationTypeObj = GetIntegrationTypeById(form.IntegrationTypeId); 
+            objIntegrationTypeModel.Title = integrationTypeObj.Title;
+            objIntegrationTypeModel.Code = integrationTypeObj.Code;
             form.IntegrationType = objIntegrationTypeModel;
 
             populateSyncFreqData();
@@ -605,6 +606,7 @@ namespace RevenuePlanner.Controllers
         /// Populate existing integration service.
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="TypeId"></param>
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult edit(int id = 0, int TypeId = 0)
@@ -617,18 +619,8 @@ namespace RevenuePlanner.Controllers
 
             if (id == 0)
             {
-                objView.IntegrationTypeAttributes = db.IntegrationTypeAttributes.Where(a => a.IsDeleted.Equals(false) && a.IntegrationType.IntegrationTypeId == TypeId)
-                  .Select(a => new IntegrationTypeAttributeModel
-                  {
-                      Attribute = a.Attribute,
-                      AttributeType = a.AttributeType,
-                      IntegrationTypeAttributeId = a.IntegrationTypeAttributeId,
-                      Value = "",
-                  })
-                  .ToList();
-
+                objView.IntegrationTypeAttributes = GetIntegrationTypeAttributesModelById(TypeId);
                 IntegrationTypeId = TypeId;
-
             }
             else
             {
@@ -646,8 +638,8 @@ namespace RevenuePlanner.Controllers
                 IntegrationTypeId = record.IntegrationTypeId;
 
                 var recordSync = db.SyncFrequencies
-                                        .Where(s => s.IntegrationInstanceId == id && s.IntegrationInstance.ClientId == Sessions.User.ClientId)
-                                        .Select(s => s).FirstOrDefault();
+                                        .Where(freq => freq.IntegrationInstanceId == id && freq.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                        .Select(freq => freq).FirstOrDefault();
 
                 SyncFrequencyModel objSync = new SyncFrequencyModel();
                 if (recordSync != null)
@@ -669,11 +661,11 @@ namespace RevenuePlanner.Controllers
                 objView.SyncFrequency = objSync;
 
                 var recordAttribute = db.IntegrationInstance_Attribute
-                                    .Where(a => a.IntegrationTypeAttributeId == a.IntegrationTypeAttribute.IntegrationTypeAttributeId && a.IntegrationInstanceId == id && a.IntegrationInstance.ClientId == Sessions.User.ClientId)
-                                    .Select(a => a).ToList();
+                                    .Where(attr => attr.IntegrationTypeAttributeId == attr.IntegrationTypeAttribute.IntegrationTypeAttributeId && attr.IntegrationInstanceId == id && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                    .Select(attr => attr).ToList();
 
+                //// Add IntegrationType Attributes data to List.
                 List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
-
                 foreach (var item in recordAttribute)
                 {
                     IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
@@ -688,10 +680,11 @@ namespace RevenuePlanner.Controllers
                 objView.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
             }
 
+            //// Add IntegrationType data to List.
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            var integrationTypeObj = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == IntegrationTypeId);
-            objIntegrationTypeModel.Title = integrationTypeObj.Select(integrationtype => integrationtype.Title).FirstOrDefault();
-            objIntegrationTypeModel.Code = integrationTypeObj.Select(integrationtype => integrationtype.Code).FirstOrDefault();
+            var integrationTypeObj = GetIntegrationTypeById(IntegrationTypeId);
+            objIntegrationTypeModel.Title = integrationTypeObj.Title;
+            objIntegrationTypeModel.Code = integrationTypeObj.Code;
             objView.IntegrationType = objIntegrationTypeModel;
 
             objView.IntegrationTypeId = IntegrationTypeId;
@@ -725,211 +718,208 @@ namespace RevenuePlanner.Controllers
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-
             ViewBag.integrationTypeId = form.IntegrationTypeId;
 
-            if (TestIntegrationCredentialsWithForm(form))
+            if (!TestIntegrationCredentialsWithForm(form))
             {
-                try
+                TempData["ErrorMessage"] = Common.objCached.TestIntegrationFail;
+                form = reCreateView(form);
+                return View(form);
+            }
+            try
+            {
+                var isDuplicate = db.IntegrationInstances.Where(_intgrt => _intgrt.Instance == form.Instance && _intgrt.ClientId == Sessions.User.ClientId && _intgrt.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
+                    && _intgrt.IntegrationInstanceId != form.IntegrationInstanceId).Any();
+
+                if (isDuplicate)
                 {
-                    var isDuplicate = db.IntegrationInstances.Where(a => a.Instance == form.Instance && a.ClientId == Sessions.User.ClientId && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
-                        && a.IntegrationInstanceId != form.IntegrationInstanceId).Any();
+                    TempData["ErrorMessage"] = Common.objCached.IntegrationDuplicate;
+                    form = reCreateView(form);
+                    return View(form);
+                }
 
-                    if (!isDuplicate)
+                bool IntegrationRemoved = true;
+                int SyncFrequenciesCount = 0, IntegrationInstancesCount = 0;
+
+                using (var scope = new TransactionScope())
+                {
+                    // update data
+                    IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(_intgrt => _intgrt.IntegrationInstanceId == form.IntegrationInstanceId && _intgrt.IsDeleted.Equals(false) &&
+                        _intgrt.ClientId == Sessions.User.ClientId).FirstOrDefault();
+
+                    if (objIntegrationInstance != null)
                     {
-                        bool IntegrationRemoved = true;
-                        int SyncFrequenciesCount = 0, IntegrationInstancesCount = 0;
-
-                        using (var scope = new TransactionScope())
+                        objIntegrationInstance.ClientId = Sessions.User.ClientId;
+                        objIntegrationInstance.ModifiedBy = Sessions.User.UserId;
+                        objIntegrationInstance.ModifiedDate = DateTime.Now;
+                        objIntegrationInstance.Instance = form.Instance;
+                        if (Convert.ToString(form.IsDeleted).ToLower() == "true")
                         {
-                            // update data
-                            IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IsDeleted.Equals(false) &&
-                                a.ClientId == Sessions.User.ClientId).FirstOrDefault();
-
-                            if (objIntegrationInstance != null)
-                            {
-                                objIntegrationInstance.ClientId = Sessions.User.ClientId;
-                                objIntegrationInstance.ModifiedBy = Sessions.User.UserId;
-                                objIntegrationInstance.ModifiedDate = DateTime.Now;
-                                objIntegrationInstance.Instance = form.Instance;
-                                if (Convert.ToString(form.IsDeleted).ToLower() == "true")
-                                {
-                                    objIntegrationInstance.IsDeleted = true;
-                                }
-                                else
-                                {
-                                    objIntegrationInstance.IsDeleted = false;
-                                }
-                                objIntegrationInstance.IsImportActuals = form.IsImportActuals;
-                                objIntegrationInstance.IsActive = form.IsActive;
-                                objIntegrationInstance.Password = Common.Encrypt(form.Password);
-                                objIntegrationInstance.Username = form.Username;
-                                db.Entry(objIntegrationInstance).State = System.Data.EntityState.Modified;
-                                IntegrationInstancesCount = db.SaveChanges();
-
-                                SyncFrequency objSyncFrequency = db.SyncFrequencies.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IntegrationInstance.IntegrationInstanceId == form.IntegrationInstanceId).FirstOrDefault();
-
-                                if (objSyncFrequency != null)
-                                {
-                                    objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
-                                    if (form.SyncFrequency.Frequency == "Hourly")
-                                    {
-                                        objSyncFrequency.Time = null;
-                                        objSyncFrequency.DayofWeek = null;
-                                        objSyncFrequency.Day = null;
-                                    }
-                                    else if (form.SyncFrequency.Frequency == "Daily")
-                                    {
-                                        if (form.SyncFrequency.Time.Length == 8)
-                                        {
-                                            int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                            if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
-                                                hour = hour + 12;
-                                            objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
-                                        }
-                                        objSyncFrequency.DayofWeek = null;
-                                        objSyncFrequency.Day = null;
-                                    }
-                                    else if (form.SyncFrequency.Frequency == "Weekly")
-                                    {
-                                        if (form.SyncFrequency.Time.Length == 8)
-                                        {
-                                            int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                            if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
-                                                hour = hour + 12;
-                                            objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
-                                        }
-                                        objSyncFrequency.Day = null;
-                                        objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
-                                    }
-                                    else if (form.SyncFrequency.Frequency == "Monthly")
-                                    {
-                                        if (form.SyncFrequency.Time.Length == 8)
-                                        {
-                                            int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                            if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
-                                                hour = hour + 12;
-                                            objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
-                                        }
-                                        objSyncFrequency.DayofWeek = null;
-                                        objSyncFrequency.Day = form.SyncFrequency.Day;
-                                    }
-
-                                    if (form.SyncFrequency.Frequency == "Hourly")
-                                    {
-                                        DateTime currentDateTime = DateTime.Now.AddHours(1);
-                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
-                                    }
-                                    else if (form.SyncFrequency.Frequency == "Daily")
-                                    {
-                                        DateTime currentDateTime = DateTime.Now.AddDays(1);
-                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
-                                    }
-                                    else if (form.SyncFrequency.Frequency == "Weekly")
-                                    {
-                                        DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
-                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                        objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
-                                    }
-                                    else if (form.SyncFrequency.Frequency == "Monthly")
-                                    {
-                                        DateTime currentDateTime = DateTime.Now;
-                                        if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
-                                        {
-                                            currentDateTime = currentDateTime.AddMonths(1);
-                                        }
-                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, Convert.ToInt32(objSyncFrequency.Day), time.Hours, time.Minutes, time.Seconds);
-                                    }
-
-                                    db.Entry(objSyncFrequency).State = System.Data.EntityState.Modified;
-                                    SyncFrequenciesCount = db.SaveChanges();
-                                }
-
-                                if (form.IntegrationTypeAttributes != null)
-                                {
-                                    foreach (var item in form.IntegrationTypeAttributes)
-                                    {
-                                        IntegrationInstance_Attribute objIntegrationInstance_Attribute = db.IntegrationInstance_Attribute.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId
-                                                && a.IntegrationTypeAttributeId == item.IntegrationTypeAttributeId && a.IntegrationInstance.IntegrationTypeId == form.IntegrationTypeId).FirstOrDefault();
-
-                                        if (objIntegrationInstance_Attribute != null)
-                                        {
-                                            objIntegrationInstance_Attribute.Value = item.Value;
-                                            db.Entry(objIntegrationInstance_Attribute).State = System.Data.EntityState.Modified;
-                                            db.SaveChanges();
-                                        }
-                                    }
-                                }
-                            }
-                            if (Convert.ToString(form.IsDeleted).ToLower() == "true")
-                            {
-                                IntegrationRemoved = Common.DeleteIntegrationInstance(form.IntegrationInstanceId, true);
-                            }
-
-                            // Status changed from Active to InActive, So remove all the integration dependency with Models.
-                            if (form.IsActiveStatuChanged == true && form.IsActive == false)
-                            {
-                                // Remove association of Integrartion from Plan
-
-                                var objModelList = db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceId == form.IntegrationInstanceId).ToList();
-
-                                if (objModelList != null)
-                                {
-                                    foreach (var item in objModelList)
-                                    {
-                                        item.IntegrationInstanceId = null;
-                                        item.ModifiedDate = DateTime.Now;
-                                        item.ModifiedBy = Sessions.User.UserId;
-                                        db.Entry(item).State = EntityState.Modified;
-                                        db.SaveChanges();
-                                    }
-                                }
-                            }
-                            scope.Complete();
-                        }
-
-                        if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0 && IntegrationRemoved != false)
-                        {
-                            if (Convert.ToString(form.IsDeleted).ToLower() == "true")
-                            {
-                                TempData["SuccessMessage"] = Common.objCached.IntegrationDeleted;
-                                TempData["ErrorMessage"] = "";
-                                return RedirectToAction("Index");
-                            }
-                            else
-                            {
-                                TempData["SuccessMessage"] = Common.objCached.IntegrationEdited;
-                                TempData["ErrorMessage"] = "";
-                                form = reCreateView(form);
-                                return View(form);
-                            }
+                            objIntegrationInstance.IsDeleted = true;
                         }
                         else
                         {
-                            TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
-                            form = reCreateView(form);
-                            return View(form);
+                            objIntegrationInstance.IsDeleted = false;
                         }
+                        objIntegrationInstance.IsImportActuals = form.IsImportActuals;
+                        objIntegrationInstance.IsActive = form.IsActive;
+                        objIntegrationInstance.Password = Common.Encrypt(form.Password);
+                        objIntegrationInstance.Username = form.Username;
+                        db.Entry(objIntegrationInstance).State = System.Data.EntityState.Modified;
+                        IntegrationInstancesCount = db.SaveChanges();
+
+                        //// Add SyncFrequency data to List.
+                        SyncFrequency objSyncFrequency = db.SyncFrequencies.Where(freq => freq.IntegrationInstanceId == form.IntegrationInstanceId && freq.IntegrationInstance.IntegrationInstanceId == form.IntegrationInstanceId).FirstOrDefault();
+                        if (objSyncFrequency != null)
+                        {
+                            //// Handle Time,DayofWeek,Day fields to Form based on Frequency.
+                            objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
+                            if (form.SyncFrequency.Frequency == "Hourly")
+                            {
+                                objSyncFrequency.Time = null;
+                                objSyncFrequency.DayofWeek = null;
+                                objSyncFrequency.Day = null;
+                            }
+                            else if (form.SyncFrequency.Frequency == "Daily")
+                            {
+                                if (form.SyncFrequency.Time.Length == 8)
+                                {
+                                    int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
+                                    if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                        hour = hour + 12;
+                                    objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
+                                }
+                                objSyncFrequency.DayofWeek = null;
+                                objSyncFrequency.Day = null;
+                            }
+                            else if (form.SyncFrequency.Frequency == "Weekly")
+                            {
+                                if (form.SyncFrequency.Time.Length == 8)
+                                {
+                                    int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
+                                    if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                        hour = hour + 12;
+                                    objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
+                                }
+                                objSyncFrequency.Day = null;
+                                objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
+                            }
+                            else if (form.SyncFrequency.Frequency == "Monthly")
+                            {
+                                if (form.SyncFrequency.Time.Length == 8)
+                                {
+                                    int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
+                                    if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                        hour = hour + 12;
+                                    objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
+                                }
+                                objSyncFrequency.DayofWeek = null;
+                                objSyncFrequency.Day = form.SyncFrequency.Day;
+                            }
+
+                            //// Handle NextSyncDate based on Frequency.
+                            if (form.SyncFrequency.Frequency == "Hourly")
+                            {
+                                DateTime currentDateTime = DateTime.Now.AddHours(1);
+                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
+                            }
+                            else if (form.SyncFrequency.Frequency == "Daily")
+                            {
+                                DateTime currentDateTime = DateTime.Now.AddDays(1);
+                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
+                            }
+                            else if (form.SyncFrequency.Frequency == "Weekly")
+                            {
+                                DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
+                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
+                            }
+                            else if (form.SyncFrequency.Frequency == "Monthly")
+                            {
+                                DateTime currentDateTime = DateTime.Now;
+                                if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
+                                {
+                                    currentDateTime = currentDateTime.AddMonths(1);
+                                }
+                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, Convert.ToInt32(objSyncFrequency.Day), time.Hours, time.Minutes, time.Seconds);
+                            }
+
+                            db.Entry(objSyncFrequency).State = System.Data.EntityState.Modified;
+                            SyncFrequenciesCount = db.SaveChanges();
+                        }
+
+                        //// Add Integration Type Attributes.
+                        if (form.IntegrationTypeAttributes != null)
+                        {
+                            foreach (var item in form.IntegrationTypeAttributes)
+                            {
+                                IntegrationInstance_Attribute objIntegrationInstance_Attribute = db.IntegrationInstance_Attribute.Where(_attr => _attr.IntegrationInstanceId == form.IntegrationInstanceId
+                                        && _attr.IntegrationTypeAttributeId == item.IntegrationTypeAttributeId && _attr.IntegrationInstance.IntegrationTypeId == form.IntegrationTypeId).FirstOrDefault();
+
+                                if (objIntegrationInstance_Attribute != null)
+                                {
+                                    objIntegrationInstance_Attribute.Value = item.Value;
+                                    db.Entry(objIntegrationInstance_Attribute).State = System.Data.EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
+                    }
+                    if (Convert.ToString(form.IsDeleted).ToLower() == "true")
+                    {
+                        IntegrationRemoved = Common.DeleteIntegrationInstance(form.IntegrationInstanceId, true);
+                    }
+
+                    // Status changed from Active to InActive, So remove all the integration dependency with Models.
+                    if (form.IsActiveStatuChanged == true && form.IsActive == false)
+                    {
+                        // Remove association of Integrartion from Plan
+
+                        var objModelList = db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceId == form.IntegrationInstanceId).ToList();
+
+                        if (objModelList != null)
+                        {
+                            foreach (var item in objModelList)
+                            {
+                                item.IntegrationInstanceId = null;
+                                item.ModifiedDate = DateTime.Now;
+                                item.ModifiedBy = Sessions.User.UserId;
+                                db.Entry(item).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    scope.Complete();
+                }
+
+                if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0 && IntegrationRemoved != false)
+                {
+                    if (Convert.ToString(form.IsDeleted).ToLower() == "true")
+                    {
+                        TempData["SuccessMessage"] = Common.objCached.IntegrationDeleted;
+                        TempData["ErrorMessage"] = "";
+                        return RedirectToAction("Index");
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = Common.objCached.IntegrationDuplicate;
+                        TempData["SuccessMessage"] = Common.objCached.IntegrationEdited;
+                        TempData["ErrorMessage"] = "";
                         form = reCreateView(form);
                         return View(form);
                     }
                 }
-                catch
+                else
                 {
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                     form = reCreateView(form);
                     return View(form);
                 }
             }
-            else
+            catch
             {
-                TempData["ErrorMessage"] = Common.objCached.TestIntegrationFail;
+                TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 form = reCreateView(form);
                 return View(form);
             }
@@ -945,6 +935,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns json result object with sync status flag and sync timestamp</returns>
         public JsonResult SyncNow(int id, string UserId = "")
         {
+            //// Check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -957,7 +948,9 @@ namespace RevenuePlanner.Controllers
             {
                 ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.User.UserId);
                 externalIntegration.Sync();
-                IntegrationInstance integrationInstance = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId.Equals(id));
+                IntegrationInstance integrationInstance = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(id));
+
+                //// Return Status and lastSync value in json format.
                 string status = integrationInstance.LastSyncStatus;
                 if (integrationInstance.LastSyncDate.HasValue)
                 {
@@ -993,6 +986,11 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        /// <summary>
+        /// Action to Test Integration Credentials of Form and return bool value.
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         public bool TestIntegrationCredentialsWithForm(IntegrationModel form)
         {
             bool isAuthenticated = false;
@@ -1001,11 +999,12 @@ namespace RevenuePlanner.Controllers
             {
                 if (form.IntegrationType.Code.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
                 {
+                    //// Check Credentials whether Authenticate or not for Eloqua Client.
                     IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient();
                     integrationEloquaClient._instance = form.Instance;// "TechnologyPartnerBulldog";
                     integrationEloquaClient._username = form.Username;// "Brij.Bhavsar";
                     integrationEloquaClient._password = form.Password;//"Brij1234";
-                    RevenuePlanner.Models.IntegrationType integrationType = db.IntegrationTypes.Single(intgtype => intgtype.IntegrationTypeId.Equals(form.IntegrationTypeId));
+                    RevenuePlanner.Models.IntegrationType integrationType = GetIntegrationTypeById(form.IntegrationTypeId);
                     integrationEloquaClient._apiURL = integrationType.APIURL;
                     integrationEloquaClient._apiVersion = integrationType.APIVersion;
                     integrationEloquaClient.Authenticate();
@@ -1013,6 +1012,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (form.IntegrationType.Code.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()) && form.IntegrationTypeAttributes != null)
                 {
+                    //// Check Credentials whether Authenticate or not for Salesforce Client.
                     if (form.IntegrationTypeAttributes.Count > 0)
                     {
                         List<int> attributeIds = form.IntegrationTypeAttributes.Select(attr => attr.IntegrationTypeAttributeId).ToList();
@@ -1021,19 +1021,20 @@ namespace RevenuePlanner.Controllers
                         string consumerSecret = string.Empty;
                         string securityToken = string.Empty;
 
+                        //// Get ConsumerKey based on Attributes.
                         foreach (IntegrationTypeAttribute integrationTypeAttribute in integrationTypeAttributes)
                         {
                             if (integrationTypeAttribute.Attribute.Equals("ConsumerKey"))
                             {
-                                consumerKey = form.IntegrationTypeAttributes.Single(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                                consumerKey = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
                             }
                             else if (integrationTypeAttribute.Attribute.Equals("ConsumerSecret"))
                             {
-                                consumerSecret = form.IntegrationTypeAttributes.Single(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                                consumerSecret = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
                             }
                             else if (integrationTypeAttribute.Attribute.Equals("SecurityToken"))
                             {
-                                securityToken = form.IntegrationTypeAttributes.Single(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                                securityToken = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
                             }
                         }
 
@@ -1045,7 +1046,7 @@ namespace RevenuePlanner.Controllers
                             integrationSalesforceClient._consumerKey = consumerKey;
                             integrationSalesforceClient._consumerSecret = consumerSecret;
                             integrationSalesforceClient._securityToken = securityToken;
-                            integrationSalesforceClient._apiURL = db.IntegrationTypes.Single(intgtype => intgtype.IntegrationTypeId.Equals(form.IntegrationTypeId)).APIURL;
+                            integrationSalesforceClient._apiURL = GetIntegrationTypeById(form.IntegrationTypeId).APIURL;
                             integrationSalesforceClient.Authenticate();
                             isAuthenticated = integrationSalesforceClient.IsAuthenticated;
                         }
@@ -1061,19 +1062,16 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Map External Service - Gameplan Data Types (Fields)
         /// </summary>
+        /// <param name="id"></param>
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult MapDataTypes(int id)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
-            //if (!Sessions.IsClientAdmin && !Sessions.IsSystemAdmin)
-            //{
-            //    return RedirectToAction("Index", "NoAccess");
-            //}
             try
             {
-                ExternalIntegration objEx = new ExternalIntegration(id,Sessions.ApplicationId);
+                ExternalIntegration objEx = new ExternalIntegration(id, Sessions.ApplicationId);
                 List<string> ExternalFields = objEx.GetTargetDataMember();
                 if (ExternalFields == null)
                 {
@@ -1081,57 +1079,65 @@ namespace RevenuePlanner.Controllers
                 }
                 ViewData["ExternalFieldList"] = ExternalFields;
                 ViewBag.IntegrationInstanceId = id;
-                string integrationTypeName = (from i in db.IntegrationInstances
-                                              join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
-                                              where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
-                                              select t.Title).SingleOrDefault();
-                if (string.IsNullOrEmpty(integrationTypeName)) ViewBag.IntegrationTypeName = ""; else ViewBag.IntegrationTypeName = integrationTypeName;
+
+                //// Get IntegrationTypeName based on IntegrationInstanceId
+                string integrationTypeName = (from intgrtn in db.IntegrationInstances
+                                              join intgrtnType in db.IntegrationTypes on intgrtn.IntegrationTypeId equals intgrtnType.IntegrationTypeId
+                                              where intgrtn.IsDeleted == false && intgrtnType.IsDeleted == false && intgrtn.IntegrationInstanceId == id
+                                              select intgrtnType.Title).FirstOrDefault();
+                
+                if (string.IsNullOrEmpty(integrationTypeName)) 
+                    ViewBag.IntegrationTypeName = ""; 
+                else 
+                    ViewBag.IntegrationTypeName = integrationTypeName;
 
                 //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
-                var lstStages = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.ClientId).Select(a => new { Code = a.Code, Title = a.Title }).ToList();
-                var listStageCode = lstStages.Select(s => s.Code).ToList();
+                var lstStages = db.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId).Select(stage => new { Code = stage.Code, Title = stage.Title }).ToList();
+                var listStageCode = lstStages.Select(stage => stage.Code).ToList();
 
+                //// Get GamePlanDataType Stage Zero data.
                 List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
-                listGameplanDataTypeStageZero = (from i in db.IntegrationInstances
-                                                 join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
-                                                 join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
-                                                 from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false
+                listGameplanDataTypeStageZero = (from intgrtn in db.IntegrationInstances
+                                                 join gmpln in db.GameplanDataTypes on intgrtn.IntegrationTypeId equals gmpln.IntegrationTypeId
+                                                 join intMap in db.IntegrationInstanceDataTypeMappings on gmpln.GameplanDataTypeId equals intMap.GameplanDataTypeId into mapping
+                                                 from _map in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                 where intgrtn.IntegrationInstanceId == id && gmpln.IsDeleted == false
                                                  select new GameplanDataTypeModel
                                                  {
-                                                     GameplanDataTypeId = d.GameplanDataTypeId,
-                                                     IntegrationTypeId = d.IntegrationTypeId,
-                                                     TableName = d.TableName,
-                                                     ActualFieldName = d.ActualFieldName,
-                                                     DisplayFieldName = d.DisplayFieldName,
-                                                     IsGet = d.IsGet,
-                                                     IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
-                                                     IntegrationInstanceId = i.IntegrationInstanceId,
-                                                     TargetDataType = m.TargetDataType
+                                                     GameplanDataTypeId = gmpln.GameplanDataTypeId,
+                                                     IntegrationTypeId = gmpln.IntegrationTypeId,
+                                                     TableName = gmpln.TableName,
+                                                     ActualFieldName = gmpln.ActualFieldName,
+                                                     DisplayFieldName = gmpln.DisplayFieldName,
+                                                     IsGet = gmpln.IsGet,
+                                                     IntegrationInstanceDataTypeMappingId = _map.IntegrationInstanceDataTypeMappingId,
+                                                     IntegrationInstanceId = intgrtn.IntegrationInstanceId,
+                                                     TargetDataType = _map.TargetDataType
                                                  }).ToList();
 
+                //// Get GamePlanDataType Stage One data.
                 List<GameplanDataTypeModel> listGameplanDataTypeStageOne = new List<GameplanDataTypeModel>();
-                listGameplanDataTypeStageOne = (from i in db.IntegrationInstances
-                                                join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
-                                                join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
-                                                from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                where i.IntegrationInstanceId == id && d.IsDeleted == false && listStageCode.Contains(d.ActualFieldName)
+                listGameplanDataTypeStageOne = (from intgrtn in db.IntegrationInstances
+                                                join gmpln in db.GameplanDataTypes on intgrtn.IntegrationTypeId equals gmpln.IntegrationTypeId
+                                                join intMap in db.IntegrationInstanceDataTypeMappings on gmpln.GameplanDataTypeId equals intMap.GameplanDataTypeId into mapping
+                                                from _map in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                where intgrtn.IntegrationInstanceId == id && gmpln.IsDeleted == false && listStageCode.Contains(gmpln.ActualFieldName)
                                                 select new GameplanDataTypeModel
                                                 {
-                                                    GameplanDataTypeId = d.GameplanDataTypeId,
-                                                    IntegrationTypeId = d.IntegrationTypeId,
-                                                    TableName = d.TableName,
-                                                    ActualFieldName = d.ActualFieldName,
-                                                    DisplayFieldName = d.DisplayFieldName,
-                                                    IsGet = d.IsGet,
-                                                    IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
-                                                    IntegrationInstanceId = i.IntegrationInstanceId,
-                                                    TargetDataType = m.TargetDataType
+                                                    GameplanDataTypeId = gmpln.GameplanDataTypeId,
+                                                    IntegrationTypeId = gmpln.IntegrationTypeId,
+                                                    TableName = gmpln.TableName,
+                                                    ActualFieldName = gmpln.ActualFieldName,
+                                                    DisplayFieldName = gmpln.DisplayFieldName,
+                                                    IsGet = gmpln.IsGet,
+                                                    IntegrationInstanceDataTypeMappingId = _map.IntegrationInstanceDataTypeMappingId,
+                                                    IntegrationInstanceId = intgrtn.IntegrationInstanceId,
+                                                    TargetDataType = _map.TargetDataType
                                                 }).ToList();
 
                 foreach (var item in listGameplanDataTypeStageOne)
                 {
-                    item.DisplayFieldName = item.DisplayFieldName + "[" + lstStages.Where(a => a.Code == item.ActualFieldName).Select(a => a.Title).FirstOrDefault() + "]";
+                    item.DisplayFieldName = item.DisplayFieldName + "[" + lstStages.Where(stage => stage.Code == item.ActualFieldName).Select(stage => stage.Title).FirstOrDefault() + "]";
                 }
 
                 listGameplanDataTypeStageZero.AddRange(listGameplanDataTypeStageOne);
@@ -1155,12 +1161,12 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
                 return RedirectToAction("Edit", new { id = id });
             }
-
         }
 
         /// <summary>
         /// Map External Service - Gameplan Data Types (Fields)
         /// </summary>
+        /// <param name="id"></param>
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
@@ -1176,20 +1182,22 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(m => m.IntegrationInstanceId == id).Select(m => m.IntegrationInstanceDataTypeMappingId).ToList();
+                        //// Delete data from IntegrationInstanceDataTypeMapping table based on List of Ids.
+                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(_map => _map.IntegrationInstanceId == id).Select(_map => _map.IntegrationInstanceDataTypeMappingId).ToList();
                         if (lstIds != null && lstIds.Count > 0)
                         {
                             foreach (int ids in lstIds)
                             {
-                                IntegrationInstanceDataTypeMapping obj = mrp.IntegrationInstanceDataTypeMappings.Where(m => m.IntegrationInstanceDataTypeMappingId == ids).SingleOrDefault();
+                                IntegrationInstanceDataTypeMapping obj = mrp.IntegrationInstanceDataTypeMappings.Where(_map => _map.IntegrationInstanceDataTypeMappingId == ids).FirstOrDefault();
                                 if (obj != null)
                                 {
                                     mrp.Entry(obj).State = EntityState.Deleted;
                                     mrp.SaveChanges();
                                 }
                             }
-
                         }
+
+                        //// Add Integration Instance DataTypeMapping data to IntegrationInstanceDataTypeMapping table.
                         foreach (GameplanDataTypeModel obj in form)
                         {
                             if (!string.IsNullOrEmpty(obj.TargetDataType))
@@ -1231,12 +1239,11 @@ namespace RevenuePlanner.Controllers
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-
             List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
 
             try
             {
-                ExternalIntegration objEx = new ExternalIntegration(id,Sessions.ApplicationId);
+                ExternalIntegration objEx = new ExternalIntegration(id, Sessions.ApplicationId);
                 List<string> ExternalFields = objEx.GetTargetDataMember();
                 if (ExternalFields == null)
                 {
@@ -1266,10 +1273,9 @@ namespace RevenuePlanner.Controllers
         public IList<GameplanDataTypePullModel> GetGameplanDataTypePullList(int id)
         {
             List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
-
             try
             {
-                ExternalIntegration objEx = new ExternalIntegration(id,Sessions.ApplicationId);
+                ExternalIntegration objEx = new ExternalIntegration(id, Sessions.ApplicationId);
                 List<string> ExternalFieldsCloseDeal = objEx.GetTargetDataMemberCloseDeal();
                 if (ExternalFieldsCloseDeal == null)
                 {
@@ -1302,7 +1308,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                ExternalIntegration objEx = new ExternalIntegration(id,Sessions.ApplicationId);
+                ExternalIntegration objEx = new ExternalIntegration(id, Sessions.ApplicationId);
                 List<string> ExternalFieldsCloseDeal = objEx.GetTargetDataMemberRevenue();
                 if (ExternalFieldsCloseDeal == null)
                 {
@@ -1334,10 +1340,10 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IntegrationInstanceId = id;
 
-                var integrationType = (from i in db.IntegrationInstances
-                                       join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
-                                       where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
-                                       select new { t.Title, t.IntegrationTypeId, t.Code }).SingleOrDefault();
+                var integrationType = (from intgrtn in db.IntegrationInstances
+                                       join _type in db.IntegrationTypes on intgrtn.IntegrationTypeId equals _type.IntegrationTypeId
+                                       where intgrtn.IsDeleted == false && _type.IsDeleted == false && intgrtn.IntegrationInstanceId == id
+                                       select new { _type.Title, _type.IntegrationTypeId, _type.Code }).FirstOrDefault();
 
                 string integrationTypeName = string.Empty;
                 string integrationTypeCode = string.Empty;
@@ -1350,64 +1356,66 @@ namespace RevenuePlanner.Controllers
                 }
 
                 if (string.IsNullOrEmpty(integrationTypeName))
-                {
                     ViewBag.IntegrationTypeName = "";
-                }
                 else
-                {
                     ViewBag.IntegrationTypeName = integrationTypeName;
-                }
 
                 TempData["TargetFieldInvalidMsg"] = Common.objCached.TargetFieldInvalidMsg;
 
                 //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
+                #region "Set Enum Variables"
                 string Eloqua = Enums.IntegrationType.Eloqua.ToString();
                 string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
                 string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
-                string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
+                string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString(); 
+                #endregion
 
+                //// Get GamePlan Stage Zero data.
                 List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
-                listGameplanDataTypeStageZero = (from i in db.IntegrationInstances
-                                                 join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
-                                                 join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
-                                                 from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false &&
-                                                 (integrationTypeCode == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic || d.TableName == Global) : 1 == 1)
+                listGameplanDataTypeStageZero = (from intgrtn in db.IntegrationInstances
+                                                 join gmpln in db.GameplanDataTypes on intgrtn.IntegrationTypeId equals gmpln.IntegrationTypeId
+                                                 join intMap in db.IntegrationInstanceDataTypeMappings on gmpln.GameplanDataTypeId equals intMap.GameplanDataTypeId into mapping
+                                                 from _map in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                 where intgrtn.IntegrationInstanceId == id && gmpln.IsDeleted == false &&
+                                                 (integrationTypeCode == Eloqua ? (gmpln.TableName == Plan_Campaign_Program_Tactic || gmpln.TableName == Plan_Improvement_Campaign_Program_Tactic || gmpln.TableName == Global) : 1 == 1)
                                                  select new GameplanDataTypeModel
                                                  {
-                                                     GameplanDataTypeId = d.GameplanDataTypeId,
-                                                     IntegrationTypeId = d.IntegrationTypeId,
-                                                     TableName = d.TableName,
-                                                     ActualFieldName = d.ActualFieldName,
-                                                     DisplayFieldName = d.DisplayFieldName,
-                                                     IsGet = d.IsGet,
-                                                     IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
-                                                     IntegrationInstanceId = i.IntegrationInstanceId,
-                                                     TargetDataType = m.TargetDataType
+                                                     GameplanDataTypeId = gmpln.GameplanDataTypeId,
+                                                     IntegrationTypeId = gmpln.IntegrationTypeId,
+                                                     TableName = gmpln.TableName,
+                                                     ActualFieldName = gmpln.ActualFieldName,
+                                                     DisplayFieldName = gmpln.DisplayFieldName,
+                                                     IsGet = gmpln.IsGet,
+                                                     IntegrationInstanceDataTypeMappingId = _map.IntegrationInstanceDataTypeMappingId,
+                                                     IntegrationInstanceId = intgrtn.IntegrationInstanceId,
+                                                     TargetDataType = _map.TargetDataType
                                                  }).ToList();
 
-                listGameplanDataTypeStageZero.ForEach(d => d.DisplayFieldName = d.DisplayFieldName.Replace("Audience", Common.CustomLabelFor(Enums.CustomLabelCode.Audience)));
+                listGameplanDataTypeStageZero.ForEach(stage => stage.DisplayFieldName = stage.DisplayFieldName.Replace("Audience", Common.CustomLabelFor(Enums.CustomLabelCode.Audience)));
 
+                #region "Declare Enum Variables"
                 //// Start - Added by :- Sohel Pathan on 03/12/2014 for PL #993
                 string Campaign_EntityType = Enums.EntityType.Campaign.ToString();
                 string Program_EntityType = Enums.EntityType.Program.ToString();
                 string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
                 string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
-                string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
+                string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString(); 
+                #endregion
 
+                //// Get GamePlan Custom Fields data.
                 List<GameplanDataTypeModel> listGameplanDataTypeCustomFields = new List<GameplanDataTypeModel>();
-                listGameplanDataTypeCustomFields = (from c in db.CustomFields
-                                                    join m1 in db.IntegrationInstanceDataTypeMappings on c.CustomFieldId equals m1.CustomFieldId into mapping
+                listGameplanDataTypeCustomFields = (from custm in db.CustomFields
+                                                    join m1 in db.IntegrationInstanceDataTypeMappings on custm.CustomFieldId equals m1.CustomFieldId into mapping
                                                     from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                    where c.IsDeleted == false &&
-                                                    (integrationTypeCode == Eloqua ? (c.EntityType == Tactic_EntityType) : 1 == 1)
+                                                    where custm.IsDeleted == false &&
+                                                    (integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : 1 == 1)
                                                     select new GameplanDataTypeModel
                                                     {
-                                                        GameplanDataTypeId = c.CustomFieldId,   // For Custom Fields CustomFieldId is GameplanDataType Id in Mapping
+                                                        GameplanDataTypeId = custm.CustomFieldId,   // For Custom Fields CustomFieldId is GameplanDataType Id in Mapping
                                                         IntegrationTypeId = IntegrationTypeId,
-                                                        TableName = c.EntityType == Campaign_EntityType ? Plan_Campaign : (c.EntityType == Program_EntityType ? Plan_Campaign_Program : (c.EntityType == Tactic_EntityType ? Plan_Campaign_Program_Tactic : string.Empty)),
-                                                        ActualFieldName = c.Name,
-                                                        DisplayFieldName = c.Name,
+                                                        TableName = custm.EntityType == Campaign_EntityType ? Plan_Campaign : (custm.EntityType == Program_EntityType ? Plan_Campaign_Program : (custm.EntityType == Tactic_EntityType ? Plan_Campaign_Program_Tactic : string.Empty)),
+                                                        ActualFieldName = custm.Name,
+                                                        DisplayFieldName = custm.Name,
                                                         IsGet = false,
                                                         IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
                                                         IntegrationInstanceId = id,
@@ -1451,6 +1459,7 @@ namespace RevenuePlanner.Controllers
         /// Added by Dharmraj on 8-8-2014, Ticket #658
         /// </summary>
         /// <param name="id">ID of Integration instance</param>
+        /// <param name="gameplanDatatypePullType"></param>
         /// <returns>Returns list of GameplanDataTypePullModel objects</returns>
         public List<GameplanDataTypePullModel> GetGameplanDataTypePullListFromDB(int id, Enums.GameplanDatatypePullType gameplanDatatypePullType)
         {
@@ -1466,15 +1475,12 @@ namespace RevenuePlanner.Controllers
                 string integrationTypeCode = integrationTypeObj.Select(integartionType => integartionType.Code).FirstOrDefault();
 
                 if (string.IsNullOrEmpty(integrationTypeName))
-                {
                     ViewBag.IntegrationTypeName = "";
-                }
                 else
-                {
                     ViewBag.IntegrationTypeName = integrationTypeName;
-                }
 
                 TempData["ClosedDealInvalidMsg"] = Common.objCached.CloseDealTargetFieldInvalidMsg;
+                
                 List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
                 //Get list of GameplanDatatypePull objects when integration instance type is Salesforce
                 if (integrationTypeCode == Enums.IntegrationType.Salesforce.ToString())
@@ -1531,6 +1537,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveDataMapping(IList<GameplanDataTypeModel> form, int IntegrationInstanceId, string UserId = "")
         {
+            //// Check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -1548,19 +1555,19 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(m => m.IntegrationInstanceId == IntegrationInstanceId).Select(m => m.IntegrationInstanceDataTypeMappingId).ToList();
+                        //// Delete record from IntegrationInstanceDataTypeMapping table.
+                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(_map => _map.IntegrationInstanceId == IntegrationInstanceId).Select(_map => _map.IntegrationInstanceDataTypeMappingId).ToList();
                         if (lstIds != null && lstIds.Count > 0)
                         {
                             foreach (int ids in lstIds)
                             {
-                                IntegrationInstanceDataTypeMapping obj = mrp.IntegrationInstanceDataTypeMappings.Where(m => m.IntegrationInstanceDataTypeMappingId == ids).SingleOrDefault();
+                                IntegrationInstanceDataTypeMapping obj = mrp.IntegrationInstanceDataTypeMappings.Where(_map => _map.IntegrationInstanceDataTypeMappingId == ids).FirstOrDefault();
                                 if (obj != null)
-                                {
                                     mrp.Entry(obj).State = EntityState.Deleted;
-                                }
                             }
                         }
 
+                        //// Add new record to IntegrationInstanceDataTypeMapping table.
                         foreach (GameplanDataTypeModel obj in form)
                         {
                             if (!string.IsNullOrEmpty(obj.TargetDataType))
@@ -1605,12 +1612,14 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Dharmraj</CreatedBy>
         /// <CreatedDate>08/08/2014</CreatedDate>
-        /// <param name="id">ID of integration instance</param>
+        /// <param name="IntegrationInstanceId">ID of integration instance</param>
         /// <param name="form">All values of form controls</param>
+        /// <param name="UserId"></param>
         /// <returns>Returns status = 1 and success message on success and status = 0 and failure message on error</returns>
         [HttpPost]
         public JsonResult SaveDataMappingPullCloseDeal(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "")
         {
+            //// Check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -1643,6 +1652,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveDataMappingPullRevenue(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "")
         {
+            //// Check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -1678,7 +1688,7 @@ namespace RevenuePlanner.Controllers
                 {
                     // Delete all old IntegrationInstanceDataTypeMappingPull entries by integrationInstanceId and GaneplanDatatypePull type
                     string GameplanDatatypePullType = form[0].Type;
-                    List<int> lstIds = mrp.IntegrationInstanceDataTypeMappingPulls.Where(m => m.IntegrationInstanceId == IntegrationInstanceId && m.GameplanDataTypePull.Type == GameplanDatatypePullType).Select(m => m.IntegrationInstanceDataTypeMappingPullId).ToList();
+                    List<int> lstIds = mrp.IntegrationInstanceDataTypeMappingPulls.Where(map => map.IntegrationInstanceId == IntegrationInstanceId && map.GameplanDataTypePull.Type == GameplanDatatypePullType).Select(map => map.IntegrationInstanceDataTypeMappingPullId).ToList();
                     if (lstIds != null && lstIds.Count > 0)
                     {
                         foreach (int ids in lstIds)
@@ -1746,19 +1756,25 @@ namespace RevenuePlanner.Controllers
             return Json(new { status = result, SuccessMessage = rtnMessage, Id = IntegrationID }, JsonRequestBehavior.AllowGet);
         }
 
-        // Delete the Integration Instance
-        // Added By : Kalpesh Sharma 08/08/2014
+        /// <summary>
+        /// Added By : Kalpesh Sharma 08/08/2014 to Delete the Integration Instance
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public int DeleteIntegrationSettings(IntegrationModel form, ref string message)
         {
             int Result = 0;
 
-            IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IsDeleted.Equals(false) &&
-                            a.ClientId == Sessions.User.ClientId).FirstOrDefault();
+            IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(intgrtn => intgrtn.IntegrationInstanceId == form.IntegrationInstanceId && intgrtn.IsDeleted.Equals(false) &&
+                            intgrtn.ClientId == Sessions.User.ClientId).FirstOrDefault();
 
             if (objIntegrationInstance != null)
             {
                 objIntegrationInstance.IsDeleted = true;
                 Common.DeleteIntegrationInstance(form.IntegrationInstanceId, true);
+                
+                //// Delete External Service Record based on IntegrationInstanceId.
                 DeleteExternalServer(form.IntegrationInstanceId);
                 db.SaveChanges();
                 message = Common.objCached.IntegrationDeleted;
@@ -1778,6 +1794,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <param name="message"></param>
+        /// <param name="ID"></param>
         /// <returns></returns>
         public int SaveIntegrationSettings(IntegrationModel form, ref string message, ref int ID)
         {
@@ -1802,13 +1819,13 @@ namespace RevenuePlanner.Controllers
 
                     if (IsAddOperation)
                     {
-                        isDuplicate = db.IntegrationInstances.Where(a => a.Instance == form.Instance && a.ClientId == Sessions.User.ClientId && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId &&
-                            a.IsDeleted == false).Any();
+                        isDuplicate = db.IntegrationInstances.Where(intgrtn => intgrtn.Instance == form.Instance && intgrtn.ClientId == Sessions.User.ClientId && intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId &&
+                            intgrtn.IsDeleted == false).Any();
                     }
                     else
                     {
-                        isDuplicate = db.IntegrationInstances.Where(a => a.Instance == form.Instance && a.ClientId == Sessions.User.ClientId && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
-                         && a.IntegrationInstanceId != form.IntegrationInstanceId).Any();
+                        isDuplicate = db.IntegrationInstances.Where(intgrtn => intgrtn.Instance == form.Instance && intgrtn.ClientId == Sessions.User.ClientId && intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
+                         && intgrtn.IntegrationInstanceId != form.IntegrationInstanceId).Any();
                     }
 
                     if ((!isDuplicate && form.IntegrationInstanceId == 0) || form.IntegrationInstanceId > 0)
@@ -1831,8 +1848,8 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                objIntegrationInstance = db.IntegrationInstances.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IsDeleted.Equals(false) &&
-                                a.ClientId == Sessions.User.ClientId).FirstOrDefault();
+                                objIntegrationInstance = db.IntegrationInstances.Where(intgrtn => intgrtn.IntegrationInstanceId == form.IntegrationInstanceId && intgrtn.IsDeleted.Equals(false) &&
+                                intgrtn.ClientId == Sessions.User.ClientId).FirstOrDefault();
                                 objIntegrationInstance.IsDeleted = (Convert.ToString(form.IsDeleted).ToLower() == "true" ? true : false);
                             }
 
@@ -1880,6 +1897,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
 
+                                //// Get NextSyncDate based on Frequency.
                                 if (form.SyncFrequency.Frequency == SyncFrequencys.Hourly)
                                 {
                                     DateTime currentDateTime = DateTime.Now.AddHours(1);
@@ -1911,7 +1929,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                objSyncFrequency = db.SyncFrequencies.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IntegrationInstance.IntegrationInstanceId == form.IntegrationInstanceId).FirstOrDefault();
+                                objSyncFrequency = db.SyncFrequencies.Where(freq => freq.IntegrationInstanceId == form.IntegrationInstanceId && freq.IntegrationInstance.IntegrationInstanceId == form.IntegrationInstanceId).FirstOrDefault();
 
                                 if (objSyncFrequency != null)
                                 {
@@ -1997,7 +2015,7 @@ namespace RevenuePlanner.Controllers
                             }
                             SyncFrequenciesCount = db.SaveChanges();
 
-
+                            //// Add Integration Type Attributes to IntegrationInstance_Attribute table.
                             if (form.IntegrationTypeAttributes != null)
                             {
                                 foreach (var item in form.IntegrationTypeAttributes)
@@ -2013,8 +2031,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-                                        objIntegrationInstance_Attribute = db.IntegrationInstance_Attribute.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId
-                                            && a.IntegrationTypeAttributeId == item.IntegrationTypeAttributeId && a.IntegrationInstance.IntegrationTypeId == form.IntegrationTypeId).FirstOrDefault();
+                                        objIntegrationInstance_Attribute = db.IntegrationInstance_Attribute.Where(attr => attr.IntegrationInstanceId == form.IntegrationInstanceId
+                                            && attr.IntegrationTypeAttributeId == item.IntegrationTypeAttributeId && attr.IntegrationInstance.IntegrationTypeId == form.IntegrationTypeId).FirstOrDefault();
                                     }
 
                                     objIntegrationInstance_Attribute.Value = item.Value;
@@ -2032,7 +2050,7 @@ namespace RevenuePlanner.Controllers
                             if (form.IsActiveStatuChanged == true && form.IsActive == false && !IsAddOperation)
                             {
                                 // Remove association of Integrartion from Plan
-                                db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceId == form.IntegrationInstanceId).ToList().ForEach(
+                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceId == form.IntegrationInstanceId).ToList().ForEach(
                                     ObjIntegrationInstance =>
                                     {
                                         ObjIntegrationInstance.IntegrationInstanceIdINQ = null;
@@ -2042,7 +2060,7 @@ namespace RevenuePlanner.Controllers
                                     });
 
                                 //Identify IntegrationInstanceId for INQ in Model Table and set reference null
-                                db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceIdINQ == form.IntegrationInstanceId).ToList().ForEach(
+                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdINQ == form.IntegrationInstanceId).ToList().ForEach(
                                     INQ =>
                                     {
                                         INQ.IntegrationInstanceIdINQ = null;
@@ -2052,7 +2070,7 @@ namespace RevenuePlanner.Controllers
                                     });
 
                                 //Identify IntegrationInstanceId for MQL in Model Table and set reference null
-                                db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceIdMQL == form.IntegrationInstanceId).ToList().ForEach(
+                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdMQL == form.IntegrationInstanceId).ToList().ForEach(
                                     MQL =>
                                     {
                                         MQL.IntegrationInstanceIdMQL = null;
@@ -2062,7 +2080,7 @@ namespace RevenuePlanner.Controllers
                                     });
 
                                 //Identify IntegrationInstanceId for CW in Model Table and set reference null
-                                db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceIdCW == form.IntegrationInstanceId).ToList().ForEach(
+                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdCW == form.IntegrationInstanceId).ToList().ForEach(
                                     CW =>
                                     {
                                         CW.IntegrationInstanceIdINQ = null;
@@ -2077,6 +2095,7 @@ namespace RevenuePlanner.Controllers
                             scope.Complete();
                         }
 
+                        //// Set Message and Status.
                         if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0)
                         {
                             if (IsAddOperation)
@@ -2156,11 +2175,11 @@ namespace RevenuePlanner.Controllers
             IntegrationInstanceExternalServer obj = new IntegrationInstanceExternalServer();
             if (IntegrationInstanceExternalServerId == 0)
             {
-                obj = db.IntegrationInstanceExternalServers.Where(i => i.IsDeleted == false && i.SFTPFileLocation.ToLower() == SFTPFileLocation.ToLower()).SingleOrDefault();
+                obj = db.IntegrationInstanceExternalServers.Where(ext => ext.IsDeleted == false && ext.SFTPFileLocation.ToLower() == SFTPFileLocation.ToLower()).FirstOrDefault();
             }
             else
             {
-                obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceExternalServerId != IntegrationInstanceExternalServerId && i.IsDeleted == false && i.SFTPFileLocation.ToLower() == SFTPFileLocation.ToLower()).SingleOrDefault();
+                obj = db.IntegrationInstanceExternalServers.Where(ext => ext.IntegrationInstanceExternalServerId != IntegrationInstanceExternalServerId && ext.IsDeleted == false && ext.SFTPFileLocation.ToLower() == SFTPFileLocation.ToLower()).FirstOrDefault();
             }
             if (obj == null)
                 return true;
@@ -2197,6 +2216,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         private int SaveExternalServer(IntegrationInstanceExternalServerModel frm)
         {
+            //// IntegrationInstanceExternalServerId is 0 then Insert new record else update record.
             if (frm.IntegrationInstanceExternalServerId == 0)
             {
                 IntegrationInstanceExternalServer obj = new IntegrationInstanceExternalServer();
@@ -2241,7 +2261,6 @@ namespace RevenuePlanner.Controllers
                     obj.ModifiedBy = Sessions.User.UserId;
                     obj.ModifiedDate = DateTime.Now;
                     db.Entry(obj).State = System.Data.EntityState.Modified;
-                    //db.IntegrationInstanceExternalServers.Add(obj);
                     db.SaveChanges();
                     return obj.IntegrationInstanceExternalServerId;
                 }
@@ -2252,11 +2271,11 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Delete the data
         /// </summary>
-        /// <param name="frm"></param>
+        /// <param name="IntegrationInstanceId"></param>
         /// <returns></returns>
         private int DeleteExternalServer(int IntegrationInstanceId)
         {
-            IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceId == IntegrationInstanceId).FirstOrDefault();
+            IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(ext => ext.IntegrationInstanceId == IntegrationInstanceId).FirstOrDefault();
             if (obj != null)
             {
                 obj.IsDeleted = true;
@@ -2269,15 +2288,15 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Add or Update the data
+        /// Get External server data.
         /// </summary>
-        /// <param name="frm"></param>
-        /// <returns></returns>
+        /// <param name="IntegrationInstanceId"></param>
+        /// <returns>Return IntegrationInstanceExternalServerModel data.</returns>
         private IntegrationInstanceExternalServerModel GetExternalServer(int IntegrationInstanceId)
         {
             IntegrationInstanceExternalServerModel model = new IntegrationInstanceExternalServerModel();
             model.IntegrationInstanceId = IntegrationInstanceId;
-            IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceId == IntegrationInstanceId && i.IsDeleted == false).FirstOrDefault();
+            IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(ext => ext.IntegrationInstanceId == IntegrationInstanceId && ext.IsDeleted == false).FirstOrDefault();
             if (obj != null)
             {
                 model = new IntegrationInstanceExternalServerModel();
@@ -2293,5 +2312,54 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
+
+        /// <summary>
+        /// /// Added By : Viral Kadiya to Get IntegrationType based on IntegrationTypeId.
+        /// </summary>
+        /// <param name="integrationTypeId"></param>
+        /// <returns>Return IntegrationType object.</returns>
+        public IntegrationType GetIntegrationTypeById(int integrationTypeId)
+        {
+            IntegrationType objIntegrationType = null;
+            try
+            {
+                objIntegrationType = db.IntegrationTypes.Where(integrationtype => integrationtype.IsDeleted.Equals(false) && integrationtype.IntegrationTypeId == integrationTypeId).FirstOrDefault();
+                if (objIntegrationType == null)
+                    objIntegrationType = new IntegrationType();
+            }
+            catch (Exception ex)
+            {   
+                throw ex;
+            }
+            return objIntegrationType;
+        }
+
+        /// <summary>
+        /// /// Added By : Viral Kadiya to Get List of IntegrationType Attributes Model based on IntegrationTypeId.
+        /// </summary>
+        /// <param name="integrationTypeId"></param>
+        /// <returns>Return IntegrationType object.</returns>
+        public List<IntegrationTypeAttributeModel> GetIntegrationTypeAttributesModelById(int integrationTypeId)
+        {
+            List<IntegrationTypeAttributeModel> objIntegrationTypeAttributes = null;
+            try
+            {
+                objIntegrationTypeAttributes = db.IntegrationTypeAttributes.Where(attr => attr.IsDeleted.Equals(false) && attr.IntegrationType.IntegrationTypeId == integrationTypeId)
+                .Select(attr => new IntegrationTypeAttributeModel
+                {
+                    Attribute = attr.Attribute,
+                    AttributeType = attr.AttributeType,
+                    IntegrationTypeAttributeId = attr.IntegrationTypeAttributeId,
+                    Value = "",
+                }).ToList();
+                if (objIntegrationTypeAttributes == null)
+                    objIntegrationTypeAttributes = new List<IntegrationTypeAttributeModel>();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return objIntegrationTypeAttributes;
+        }
     }
 }

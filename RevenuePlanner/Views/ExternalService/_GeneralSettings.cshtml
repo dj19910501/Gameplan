@@ -17,28 +17,23 @@
                 @Html.LabelFor(model => model.IntegrationType.Title)
 
                 @Html.TextBoxFor(model => model.IntegrationType.Title, new { style = "background:#F2F2F2;", @readonly = "true" })
-                @*<p style="margin-top: -10px;"><a href="#" class="font-black">Add Provider credentials to customize your integration.</a></p>*@
                 <p style="margin-top: -10px;"><span class="font-black">Add Provider credentials to customize your integration.</span></p>
-               @* @Html.ValidationMessageFor(model => model.IntegrationType.Title)*@
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Instance)
 
                 @Html.TextBoxFor(model => model.Instance, new { maxlength = "255", tabindex = "1" })
-                @*@Html.ValidationMessageFor(model => model.Instance, "", new { style = "padding-top: 6px; position: absolute;" })*@
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Username)
 
                 @Html.TextBoxFor(model => model.Username, new { maxlength = "255", tabindex = "2" })
                 <span class="field-validation-error" id="isUsernameExist"></span>
-                @*@Html.ValidationMessageFor(model => model.Username, "", new { style = "padding-top: 6px; position: absolute;" })*@
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Password)
 
                 @Html.TextBoxFor(model => model.Password, new { type = "password", maxlength = "255", tabindex = "3" })
-                @*@Html.ValidationMessageFor(model => model.Password, "", new { style = "padding-top: 6px; position: absolute;" })*@
             </div>
             
             
@@ -50,12 +45,10 @@
                 @if (Model.IntegrationTypeAttributes[i].AttributeType == "textbox")
                 { 
                     @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value, new { maxlength = "255", tabindex = "4" })
-                    @*@Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "", new { style = "padding-top: 6px; position: absolute;" })*@
                 }
                 else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
                 {
                     @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"), new { tabindex = "4" })
-                    @*@Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "", new { style = "padding-top: 6px; position: absolute;" })*@
                 }
             </div>
                                                                 }
@@ -163,7 +156,6 @@
         var testIntegrationValidation = true;
         $('#content #integrationForm :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                //if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
                 if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
                     var input = $(this).val();
                     if (input == '') {
@@ -197,7 +189,6 @@
                                 $("#cSuccessGeneralSettings").html('');
                                 $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
                                 $("#successMessageGeneralSettings").slideDown(1200);
-                                // $("#successMessage").slideUp(3000);
                                 $("#errorMessageGeneralSettings").slideUp(1);
 
                                 $('#integrationStatus').val("Active");
@@ -212,7 +203,6 @@
                                 $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
                                 $("#errorMessageGeneralSettings").slideDown(400);
                                 $("#successMessageGeneralSettings").slideUp(1);
-                                //$("html, body").animate({ scrollTop: 0 }, 1000);
                                 return true;
                             }
                         }
@@ -263,21 +253,6 @@
             }
         });
 
-        //Commented By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
-        //$('#btnCancel').click(function () {
-        //    $("#cSuccessGeneralSettings").html('');
-        //    $("#errorMessageGeneralSettings").slideUp(1);
-        //    $('#cErrorGeneralSettings').html('');
-        //    $("#successMessageGeneralSettings").slideUp(1);
-        //    $('#content #integrationForm :input').each(function () {
-        //        if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-        //            if (this.id != 'importActuals' && this.id != 'integrationStatus') {
-        //                    $(this).removeClass("error");
-        //            }
-        //        }
-        //    });
-        //});
-
         if (localStorage.Message != undefined) {
             $("#cSuccessGeneralSettings").html('');
             $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + localStorage.Message);
@@ -286,7 +261,6 @@
         }
 
         $("#integrationForm #t_status").click(function () {
-            //var index=parseInt($('#table_tactics tbody tr').attr("index"));
             /*change status checkmark according to JSON data*/
             if ($(this).hasClass("icon-check-blue")) {
                 $(this).val("Inactive");
@@ -366,27 +340,6 @@
                 }
             }
 
-            ////added By : Kalpesh Sharma
-            //$('#content #integrationForm :input').each(function () {
-            //    if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-            //        if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
-            //            var input = $(this).val();
-            //            if (input == '') {
-
-            //                $(this).addClass("error");
-            //                var ErrMsg = this.id + ' cannot be blank.';
-            //                $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
-            //                $("#cSuccessGeneralSettings").html('');
-            //                $("#successMessageGeneralSettings").slideUp(1);
-            //                $("#errorMessageGeneralSettings").slideDown(400);
-            //                return false;
-            //            } else {
-            //                $(this).removeClass("error");
-            //            }
-            //        }
-            //    }
-            //});
-
             if (isValidate == false) {
                 $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField');
                 $("#cSuccessGeneralSettings").html('');
@@ -402,16 +355,10 @@
                 $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + '@Common.objCached.ValidateIntegretionCredential');
                 $("#errorMessageGeneralSettings").slideDown(1200);
                 $("#successMessageGeneralSettings").slideUp(1);
-                @*alert("@Common.objCached.ValidateIntegretionCredential");*@
             return false;
         }
-              //CheckUserSession("#btnSave", true);
-              //if (reason == 'user') {
-              //    return false;
-            //}
             CheckActiveStatus();
             SaveGeneralSetting();
-
         });
 
         /// Added By : Kalpesh Sharma Save the value of General Settings in Integration #682
@@ -452,8 +399,6 @@
                             $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
                             $("#errorMessageGeneralSettings").slideDown(400);
                             $("#successMessageGeneralSettings").slideUp(1);
-                            //$("html, body").animate({ scrollTop: 0 }, 1000);
-                            
                             return true;
                         }
                     }
