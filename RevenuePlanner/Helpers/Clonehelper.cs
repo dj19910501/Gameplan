@@ -451,6 +451,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.Vertical = null;
                     objPlanCampaignProgramTactic.TacticType = null;
                     objPlanCampaignProgramTactic.Tactic_Share = null;
+                    objPlanCampaignProgramTactic.TacticCustomName = null;
                     objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.ToList().ForEach(
                         pcptl =>
                         {

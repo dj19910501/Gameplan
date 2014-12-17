@@ -1980,7 +1980,13 @@ namespace Integration.Salesforce
 
         private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
+            
             Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
+            if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                tactic.Remove(titleMappedValue);
+            }
             return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
         }
 

@@ -921,6 +921,11 @@ namespace Integration.Eloqua
         private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
             IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
+            if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                tactic.Remove(titleMappedValue);
+            }
             return UpdateEloquaCampaign(planTactic.IntegrationInstanceTacticId, tactic);
         }
 
