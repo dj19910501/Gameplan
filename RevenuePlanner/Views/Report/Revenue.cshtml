@@ -8,7 +8,7 @@
     <div id="DivSummaryButtonsRevenueSummary" class="summary-btns">
         <p>View By:</p>
      <span>
-             @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text"))
+             @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text", Common.RevenueAudience.ToString()))
          </span>
       <span class="margin-left20px">
              @Html.DropDownList("ddlChildRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"))
@@ -48,7 +48,7 @@
                 @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934*@
         <p>View By:</p>
             <span>
-             @Html.DropDownList("ddlParentRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueToPlan, "Value", "Text"))
+             @Html.DropDownList("ddlParentRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueToPlan, "Value", "Text", Common.RevenueAudience.ToString()))
          </span>
       <span class="margin-left20px">
              @Html.DropDownList("ddlChildRevenueToPlan",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"))
@@ -149,7 +149,7 @@
             @* Modified by Sohel Pathan on 12/11/2014 for PL ticket #934 *@
         <p>View By:</p>
             <span>
-             @Html.DropDownList("ddlParentRevenueContribution", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueContribution, "Value", "Text", Common.RevenueAudience.ToString()))
+             @Html.DropDownList("ddlParentRevenueContribution", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueContribution, "Value", "Text"))
          </span>
          
     </div>
