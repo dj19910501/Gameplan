@@ -1332,8 +1332,8 @@ namespace RevenuePlanner.Controllers
             pcpm.EndDate = pcp.EndDate;
             pcpm.CStartDate = pcp.Plan_Campaign.StartDate;
             pcpm.CEndDate = pcp.Plan_Campaign.EndDate;
-            var tsd = (from t in db.Plan_Campaign_Program_Tactic where t.PlanProgramId == id select t);
-            if (tsd.Count() > 0)
+            var tsd = (from tac in db.Plan_Campaign_Program_Tactic where tac.PlanProgramId == id && tac.IsDeleted.Equals(false) select tac);
+            if (tsd != null && tsd.Count() > 0)
             {
                 pcpm.TStartDate = (from otsd in tsd select otsd.StartDate).Min();
                 pcpm.TEndDate = (from otsd in tsd select otsd.EndDate).Max();
