@@ -560,6 +560,7 @@ function modalFullPosition() {
     var winW = $(window).width();
     var winH = $(window).height();
     $('#modal-container-186470.modal-full-view').css({ 'height': winH - 178, 'min-height': winH - 178 });
+    $(".modal-backdrop").css({ 'background-color': "transparent"});
     $("#modal-container-186470").addClass("transition_y");
     $('.modal-backdrop').addClass('hide');
 
