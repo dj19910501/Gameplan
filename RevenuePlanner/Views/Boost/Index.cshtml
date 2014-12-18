@@ -107,6 +107,7 @@
 
     $("#create_new_tactic").click(function () {
         $('#divPartial').empty();
+        removeDefaultModalPopupBackgroungColor();
         //$('body').css('overflow', 'hidden');
         $('body').removeClass('bodyOverflow');
         var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
@@ -120,7 +121,7 @@
     $(document).on('click', '#table_boost tbody tr', function (e) {
         var id = $(this).attr("id");
         if (typeof id != "undefined") {
-            modalFullPosition();
+            removeDefaultModalPopupBackgroungColor();
             //$('body').css('overflow', 'hidden');
             $('#divPartial').empty();
             var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
@@ -139,12 +140,13 @@
     });
 
     function addBodyOverflowClass() {
-        $('.modal-backdrop').attr("style", "display:none !important;");
+        //$('.modal-backdrop').attr("style", "display:none !important;");
         $('body').addClass('bodyOverflow');
     }
 
     function CloseIconClick() {
         $('.close-x-big-icon').click(function () {
+            addDefaultModalPopupBackgroungColor();
             $("#modal-container-186470").addClass("transition-close");
             $("#modal-container-186470").removeClass("transition_y");
             $('body').removeClass('bodyOverflow');

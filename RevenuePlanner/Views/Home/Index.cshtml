@@ -2604,6 +2604,7 @@
 
           //// Modified By Maninder Singh Wadhva PL Ticket#47
           function ShowModel(taskId, isShowInspect) {
+              removeDefaultModalPopupBackgroungColor();
               var task, planTacticId, planProgramId, planCampaignId, planId;
               var isImprovement = false;
               if (taskId != null) {
@@ -2688,7 +2689,7 @@
         $('.close-x-big-icon').click(function () {
             $("#modal-container-186470").addClass("transition-close");
             $("#modal-container-186470").removeClass("transition_y");
-            
+            addDefaultModalPopupBackgroungColor();
             if (isDataModified) {
                 window.location.reload();
             }

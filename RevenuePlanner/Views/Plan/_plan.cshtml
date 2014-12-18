@@ -256,7 +256,9 @@
             }
         }
     });
-function ShowModel(mode, section, id, ParentId, RequestedModule) {
+
+  function ShowModel(mode, section, id, ParentId, RequestedModule) {
+      removeDefaultModalPopupBackgroungColor();
     modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
     $('.modal-backdrop').addClass('modalFull-backdrop');
@@ -343,6 +345,7 @@ function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule
 
     function CloseIconClick() {
         $('.close-x-big-icon').click(function () {
+            addDefaultModalPopupBackgroungColor();
             $('body').removeClass('bodyOverflow');
 
             if ((($("#hdnBudgetingIsSave").val().toLowerCase().toString()) == "true") && ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == $("#hdnRequestedModule").val())) {

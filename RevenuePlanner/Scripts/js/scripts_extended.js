@@ -559,7 +559,14 @@ function modalPosition() {
 function modalFullPosition() {
     var winW = $(window).width();
     var winH = $(window).height();
-    $('#modal-container-186470.modal-full-view').css({ 'height': winH - 178, 'min-height': winH - 178 });
+    if ($.browser.msie) {
+        $('#modal-container-186470.modal-full-view').css({ 'height': winH - 170, 'min-height': winH - 170 });
+    }
+    else
+    {
+        $('#modal-container-186470.modal-full-view').css({ 'height': winH - 178, 'min-height': winH - 178 });
+    }
+
     $(".modal-backdrop").css({ 'background-color': "transparent"});
     $("#modal-container-186470").addClass("transition_y");
     $('.modal-backdrop').addClass('hide');
@@ -717,3 +724,17 @@ function bootstrapetitle(obj, titleText, titleTextColorClass) {
     });
 }
 //// End - Added by Pratik on 12/12/2014 for PL ticket #898 
+
+//// Start - Added By Pratik on 18/12/2014 for ticket #951
+
+//// Function to remove default black  background color of modal popup
+function removeDefaultModalPopupBackgroungColor() {
+    $('body').addClass("modal-transparent");
+}
+
+//// Function to add default black  background color of modal popup
+function addDefaultModalPopupBackgroungColor() {
+    setTimeout(function () { $('body').removeClass('modal-transparent'); }, 900)
+}
+
+//// End - Added By Pratik on 18/12/2014 for ticket #951
