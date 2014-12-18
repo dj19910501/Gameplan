@@ -1,0 +1,11 @@
+﻿<Project ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ExcludeFromPackageFiles Include="web.config">
+      <FromTarget>BDSService.wpp.targets</FromTarget>
+    </ExcludeFromPackageFiles>
+    <ExcludeFromPackageFiles Include="BDSService.wpp.targets">
+      <FromTarget>BDSService.wpp.targets</FromTarget>
+    </ExcludeFromPackageFiles>
+  </ItemGroup>
+</Project>

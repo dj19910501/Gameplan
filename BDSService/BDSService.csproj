@@ -33,6 +33,10 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PublishDatabaseSettings>
+      <Objects>
+      </Objects>
+    </PublishDatabaseSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -183,10 +187,12 @@
       <DependentUpon>BDSAuth.edmx</DependentUpon>
       <LastGenOutput>BDSAuth.cs</LastGenOutput>
     </Content>
+    <Content Include="BDSService.wpp.targets" />
     <None Include="Properties\PublishProfiles\BDSServiceDevLocal.pubxml" />
     <None Include="Properties\PublishProfiles\BulldogProduction.pubxml" />
     <None Include="Properties\PublishProfiles\BulldogStaging.pubxml" />
     <None Include="Properties\PublishProfiles\BDSServiceDev.pubxml" />
+    <None Include="Properties\PublishProfiles\IndusaStaging.pubxml" />
     <None Include="Web.BulldogProduction.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
