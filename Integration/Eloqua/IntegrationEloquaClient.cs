@@ -1222,7 +1222,7 @@ namespace Integration.Eloqua
                             {
                                 if (item.name.ToString() == folderPathArray.ElementAt(i))
                                 {
-                                    parentFolderId = respo.elements.Where(p => p.folderId == item.folderId).Select(p => p.id).FirstOrDefault();
+                                    parentFolderId = item.id;
                                 }
                             }
                         }
@@ -1320,7 +1320,7 @@ namespace Integration.Eloqua
                             {
                                 if (item.name.ToString() == folderPathArray.ElementAt(i))
                                 {
-                                    parentFolderId = respo.elements.Where(p => p.folderId == item.folderId).Select(p => p.id).FirstOrDefault();
+                                    parentFolderId = item.id;
                                 }
                             }
                         }
