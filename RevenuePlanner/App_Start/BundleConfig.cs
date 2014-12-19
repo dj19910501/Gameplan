@@ -77,7 +77,7 @@ namespace RevenuePlanner
                         "~/Scripts/jquery.selectbox-0.2.js",
                          "~/Scripts/summernote_min.js",
                         "~/Scripts/js/jquery-ui.js",
-                        "~/Scripts/js/jquery.multiselect.js",
+                        "~/Scripts/js/jquery.multiselect_v1.js",
                         "~/Scripts/js/jquery.multiselect.filter.js"
                         ));
 

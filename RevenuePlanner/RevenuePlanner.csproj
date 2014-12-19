@@ -612,7 +612,7 @@
     <Content Include="Scripts\js\jquery.js" />
     <Content Include="Scripts\js\jquery.mCustomScrollbar.concat.min.js" />
     <Content Include="Scripts\js\jquery.multiselect.filter.js" />
-    <Content Include="Scripts\js\jquery.multiselect.js" />
+    <Content Include="Scripts\js\jquery.multiselect_v1.js" />
     <Content Include="Scripts\js\jquery.slidepanel_min.js" />
     <Content Include="Scripts\js\jquery.slimscroll_min.js" />
     <Content Include="Scripts\js\ReportConversion.js" />
