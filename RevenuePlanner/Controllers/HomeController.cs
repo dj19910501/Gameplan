@@ -2618,6 +2618,11 @@ namespace RevenuePlanner.Controllers
         {
             //// Get planyear of the selected Plan
             string planYear = objDbMrpEntities.Plans.Single(plan => plan.PlanId.Equals(planid)).Year;
+
+            /// if strparam value null then set planYear as default value.
+            if (string.IsNullOrEmpty(strparam))
+                strparam = planYear;
+
             CalendarStartDate = DateTime.Now;
             CalendarEndDate = DateTime.Now;
             //// Set start and end date for calender

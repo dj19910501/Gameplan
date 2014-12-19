@@ -75,7 +75,7 @@
             GetCollaborators(CurrentPlanId);
             RefreshCalendar();
             GetHealderData(CurrentPlanId);
-            GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+            GetNumberOfActivityPerMonByPlanId(CurrentPlanId, Currenttime);
             arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable when plan change.
         });
     }
@@ -513,7 +513,7 @@
        //// Function to make ajax request.
        //// Modified By Maninder Singh Wadhva to Address PL#203
        function AjaxRequest() {
-           GetNumberOfActivityPerMonByPlanId(CurrentPlanId);
+         //  GetNumberOfActivityPerMonByPlanId(CurrentPlanId, Currenttime);
            var isPublished = false;
            $.ajax(
          {
@@ -1152,4 +1152,9 @@
         return false;
     }
 
+    function RefershPlanHeaderCalc() {
+        var _planId = $('#PlanId').val();
+        GetHealderData(_planId);
+        GetNumberOfActivityPerMonByPlanId(_planId, Currenttime);
+    }
 </script>

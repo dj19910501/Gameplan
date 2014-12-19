@@ -468,7 +468,15 @@
                             /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
-                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);//section parameter passed to open tactic popup
+                            var requestedModule = $("#hdnRequestedModule").val();
+                            var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();  
+                            var inspectMode='';
+                            if (IsEditable == 'View')
+                                inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                            else
+                                inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);//section parameter passed to open tactic popup
                         }
                         else {
                             $("#errorMessage").css("display", "block");
@@ -522,7 +530,14 @@
                             $("#successMessage").css("display", "block");
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
-                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);
+                            var inspectMode = '';
+                            var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();
+                            if (IsEditable == 'View')
+                                inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                            else
+                                inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                            var requestedModule = $("#hdnRequestedModule").val();
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
 
                             //Added By : Kalpesh Sharma Internal review points 18/11/2014
                             if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {

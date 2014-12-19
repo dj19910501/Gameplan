@@ -456,7 +456,14 @@
                               /*end*/
                               $("#spanMessageSuccess").empty();
                               $("#spanMessageSuccess").text(data.msg);
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue);
+                              var inspectMode = '';
+                              var IsEditable = $("#hdnCampaignOpt").val();
+                              if (IsEditable == 'View')
+                                  inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                            else
+                                inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                              var requestedModule = $("#hdnRedirectType").val();
+                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
                           }
                           else {
                               $("#errorMessage").css("display", "block");
@@ -518,7 +525,14 @@
 
                               $("#spanMessageSuccess").empty();
                               $("#spanMessageSuccess").text(data.msg);
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue);
+                              var inspectMode = '';
+                              var IsEditable = $("#hdnCampaignOpt").val();
+                              if (IsEditable == 'View')
+                                  inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                              else
+                                  inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                              var requestedModule = $("#hdnRedirectType").val();
+                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
 
                               //Added By : Kalpesh Sharma Internal review points 18/11/2014
                               if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
