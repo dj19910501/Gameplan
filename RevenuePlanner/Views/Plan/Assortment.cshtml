@@ -1440,13 +1440,18 @@ function loadscript() {
     $('.total .cf-arrow').click(function () {
         $('.grey-container-full').fadeOut();
         $('.first-columns').removeClass('active-column');
-        $(this).toggleClass('cf-arrow-blue');
+
+        if ($('#grayImprovementContainer').css("display") != "block") {
+            $(this).addClass('cf-arrow-blue');
+        }
+        
         $('.gray-add-container').slideDown(200);
         $("#btnSaveAndContinue").css("display", "block");
         $("#divSuggestionBox").css("padding-bottom", "150px");        
     });
 
     $('.first-columns').click(function () {
+        $('.total .cf-arrow').removeClass('cf-arrow-blue');
         $("#btnSaveAndContinue").css("display", "none");
         var dataId = $(this).attr('data-id');
         FillFullContainer(dataId);
