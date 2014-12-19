@@ -147,29 +147,63 @@
         }
         return $(this).width();
     }).get();
+
     $(document).ready(function () {
         SetHeader();
         AddTipsy();
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
-    });
-    $('.accordionClick').on('click', function () {
-        var accordionId = $(this).parent().attr('id');
-        $('table').find(".sub[data-parent='" + accordionId + "']").fadeToggle(100);
-        $(this).toggleClass('collapse');
 
-        if ($(".sub[data-parent='" + accordionId + "']").show()) {
-            $(".sub[data-parent='" + accordionId + "']").prev('#' + accordionId).toggleClass('open');
+        // Budget Table
+        var mainTableWidth = $('.budget-table').width();
+        var columnWidth1 = $('.column1').width();
+        var columnWidth3 = $('.column3').width();
+        $('.column2').width(mainTableWidth - columnWidth1 - columnWidth3 - 24);
+
+        $('.accordionClick').on('click', function () {
+            var accordionId = $(this).parent().attr('id');
+            $('table').find(".sub[data-parent='" + accordionId + "']").fadeToggle(100);
+            $(this).toggleClass('collapse');
+
+            if ($(".sub[data-parent='" + accordionId + "']").show()) {
+                $(".sub[data-parent='" + accordionId + "']").prev('#' + accordionId).toggleClass('open');
+            }
+
+            //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
+            var data = $(".column1").get(0);
+            $(".budget-table .column1 > tr").each(function () {
+                $(this).width(data.scrollWidth);
+            });
+        });
+
+
+        //in case of chrome browser it is creating design issue
+        $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
+        if ($.browser.chrome) {
+            var maxHeight = Math.max.apply(Math, heights);
+            var column1Width = $('.column1 div').css('width');
+            column1Width = column1Width.replace('px', '');
+            try {
+                if (parseInt(column1Width) < maxHeight) {
+                    $('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
+                    $('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
+                    if ($('.column1 .programLevel').length > 0)
+                        $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 15);
+                    if ($('.column1 .campaignLevel').length > 0)
+                        $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
+                    if ($('.column1 .program-lvl').length > 0)
+                        $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
+
+                }
+            } catch (e) {
+
+            }
         }
 
-        //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
-        var data = $(".column1").get(0);
-        $(".budget-table .column1 > tr").each(function () {
-            $(this).width(data.scrollWidth);
     });
 
-    });
+   
 
     function AddTipsy() {
         $("div[allocated]").each(function () {
