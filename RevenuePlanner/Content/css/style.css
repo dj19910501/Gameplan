@@ -11261,3 +11261,41 @@ float:left;
 .modal-transparent .modal-backdrop {
   background-color: transparent !important;
 }
+
+/* Start - Added by Pratik on 12/22/2014 for PL ticket #820*/
+.error-wrapper {
+    font-family: "source_sans_proregular",Arial,"sans-serif" !important;
+    margin: 164px auto 0;
+    text-align: center;
+    width: 444px;
+}
+.error-wrapper > img {
+    display: block;
+    height: 140px;
+    margin: 0 auto 34px;
+    width: 139px;
+}
+.back-link-btn{color:#fff; font-size:14px; margin-top:35px; background: rgb(62, 167, 242);
+background: -moz-linear-gradient(90deg, rgb(62, 167, 242) 30%, rgb(45, 120, 175) 82%);
+background: -webkit-linear-gradient(90deg, rgb(62, 167, 242) 30%, rgb(45, 120, 175) 82%);
+background: -o-linear-gradient(90deg, rgb(62, 167, 242) 30%, rgb(45, 120, 175) 82%);
+background: -ms-linear-gradient(90deg, rgb(62, 167, 242) 30%, rgb(45, 120, 175) 82%);
+background: linear-gradient(180deg, rgb(62, 167, 242) 30%, rgb(45, 120, 175) 82%);
+text-align:center; margin: 35px auto 0; border-radius: 5px; max-width: 150px; padding:8px 15px ; display:block; cursor:pointer; text-shadow: 0px -2px 0px rgba(36, 96, 140, 1);
+}
+.error_text {
+    color: #000000;
+    display: block;
+    font-size: 18px;
+}
+.error-wrapper a {
+    color: #808080;
+    font-size: 12px;
+	text-decoration:none;
+	display:block;
+}
+.contact-support{margin-top:52px;}
+.contact-support img{margin-bottom:3px;}
+
+/* End - Added by Pratik on 12/22/2014 for PL ticket #820*/
+

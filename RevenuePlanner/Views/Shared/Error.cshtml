@@ -4,9 +4,21 @@
     ViewBag.Title = "Error";
 }
 
-<hgroup class="title" style="margin: 20px;">
-    <h3 class="error">Error:</h3>
-    <h4 class="error">An unexpected error has occurred. Please contact the system administrator.</h4>
+<hgroup class="title" style="margin: 20px; width: 100% !important">
+   
+    <div class="span12">
+        <div class="error-wrapper">
+            <img src="../Content/images/error-image.png">
+            <span class="error_text">Sorry, an error has occurred.</span>
+            <span class="error_text">Please contact your system administration for assistance.</span>
+            <div class="icon-info-support conv_helveticaltstd-light">
+                <a id="Contact-Support" href="#">
+                    <div class="support-icon"></div>
+                    Contact Support
+                </a>
+            </div>
+        </div>
+    </div>
 
     @if (Model != null && HttpContext.Current.IsDebuggingEnabled)
     {
@@ -26,3 +38,16 @@
         </div>
     }
 </hgroup>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#sidebar").css("display", "none");
+        $("#content_wraper").css("width", "100%");
+    });
+
+    $('#Contact-Support').click(function () {
+        $("#div_contactSupport").empty();
+        var url = '@Url.Content("~/Common/LoadSupportPartial/")';
+            $("#div_contactSupport").load(url);
+        });
+
+</script>

@@ -36,12 +36,12 @@
                             @if (item.Permission == (int)Enums.CustomRestrictionPermission.ViewOnly)
                             {
 
-                                <input type="text" maxlength="4000" style="float: left;margin-bottom:0px;" value="@item.FolderPath" class="FolderPath" placeholder="Type in server path" readonly="true">
+                                <input type="text" maxlength="4000" style="float: left;margin-bottom:0px;" value="@item.FolderPath" class="FolderPath" placeholder="e.g folder 1/folder 2" readonly="true">
                             }
                             else
                             {
 
-                                <input type="text" maxlength="4000" style="float: left;margin-bottom:0px;" id="txt_@item.PlanId" value="@item.FolderPath" class="FolderPath" placeholder="Type in server path">
+                                <input type="text" maxlength="4000" style="float: left;margin-bottom:0px;" id="txt_@item.PlanId" value="@item.FolderPath" class="FolderPath" placeholder="e.g folder 1/folder 2">
                             }
 
                             <button style="float: left; margin-left: 5px;" class="ClassClear clear-button-grid" type="button">Clear</button>
@@ -50,7 +50,7 @@
                 }
             </tbody>
         </table>
-        <span>*Plans with a blank folder path will be pushed to the Uncategorized folder in Eloqua</span>
+        <span>*Folder names are case sensitive. Plans with a blank folder path or a wrong folder name will be pushed to root folder in Eloqua</span>
     </div>
 
     <div style="width: 100%; clear: both" class="wraper-btns cf">

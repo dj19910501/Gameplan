@@ -374,6 +374,7 @@
     <Content Include="Content\images\edit-icon-dark.png" />
     <Content Include="Content\images\edit-icon-white.png" />
     <Content Include="Content\images\edit-icon.png" />
+    <Content Include="Content\images\error-image.png" />
     <Content Include="Content\images\favicon.png" />
     <Content Include="Content\images\filter-icon-active.png" />
     <Content Include="Content\images\filter-icon-blue.png" />
