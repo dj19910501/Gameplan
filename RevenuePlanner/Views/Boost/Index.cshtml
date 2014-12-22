@@ -106,15 +106,15 @@
     }
 
     $("#create_new_tactic").click(function () {
-        $('#divPartial').empty();
         removeDefaultModalPopupBackgroungColor();
-        //$('body').css('overflow', 'hidden');
+        $('#divPartial').empty();
         $('body').removeClass('bodyOverflow');
         var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
-        $('#divPartial').load(url + '?id=' + 0);
-        $("#modal-container-186470").modal('show');
+        var id = 0;
+        $('#divPartial').load(url + '?id=' + id);
         $('.modal-backdrop').addClass('modalFull-backdrop');
         $('.modal-backdrop').attr("style", "display:none !important;");
+        $("#modal-container-186470").modal('show');
         
     });
 
@@ -122,7 +122,6 @@
         var id = $(this).attr("id");
         if (typeof id != "undefined") {
             removeDefaultModalPopupBackgroungColor();
-            //$('body').css('overflow', 'hidden');
             $('#divPartial').empty();
             var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
             $('#divPartial').load(url + '?id=' + id, AssignDefaultValue);
