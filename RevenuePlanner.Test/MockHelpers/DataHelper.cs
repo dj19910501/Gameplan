@@ -99,10 +99,10 @@ namespace RevenuePlanner.Test.MockHelpers
 
         public static Plan_Campaign_Program_Tactic GetPlanTactic(Guid clientId)
         {
-            var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.BusinessUnit.ClientId == clientId && a.IsDeleted == false).FirstOrDefault();
+            var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.BusinessUnit.ClientId == clientId && a.IsDeleted == false).OrderBy(a=> Guid.NewGuid()).FirstOrDefault();
             return objTactic;
         }
-
+        
         /// <summary>
         /// Get single published multiple plan id.
         /// </summary>

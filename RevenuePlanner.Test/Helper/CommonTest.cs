@@ -61,6 +61,38 @@ namespace RevenuePlanner.Test.Helper
             Assert.IsTrue(!string.IsNullOrEmpty(result));
             
         }
+
+        
         #endregion
+
+        [TestMethod]
+        public void GetAllCustomFields_With_Empty_TacticIds_List()
+        {
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            List<int> tacticIds = new List<int>();
+            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetAllCustomFields(tacticIds, Enums.EntityType.Tactic.ToString());
+            Assert.AreEqual(0, CustomFields.Count);
+        }
+
+        [TestMethod]
+        public void GetAllCustomFields_With_NULL_TacticIds_List()
+        {
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetAllCustomFields(null, Enums.EntityType.Tactic.ToString());
+            Assert.AreEqual(0, CustomFields.Count);
+        }
+
+        [TestMethod]
+        public void GetAllCustomFields_With_TacticIds_List()
+        {
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            Guid clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ClientId;
+            Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
+            objTactic = DataHelper.GetPlanTactic(clientId);
+            List<int> tacticIds = new List<int>();
+            tacticIds.Add(objTactic.PlanTacticId);
+            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetAllCustomFields(tacticIds, Enums.EntityType.Tactic.ToString());
+            Assert.IsNotNull(CustomFields.Count);
+        }
     }
 }
