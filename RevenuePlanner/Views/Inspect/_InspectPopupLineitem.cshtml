@@ -95,7 +95,7 @@
                     }
                 </span> 
             }
-            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(lineitemTitle), new { placeholder = "Line Item name goes here", require = "true", maxlength = "255", @class = "span12 input-small truncate light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = lineitemTitle, id = "txtTitle" })
+            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(lineitemTitle), new { placeholder = "Line Item name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = lineitemTitle, id = "txtTitle" })
             @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
         </h2>
     </div>
@@ -230,7 +230,6 @@
            $("#btnEditlineItem").css("display", "none");
            $('#txtTitle').css('display', 'block');
            $('#lblLineitemTitle').css('display', 'none');
-           $("#txtTitle").val($('#lblLineitemTitle').text());
            $("#txtTitle").prop('readonly', false);
            $("#AddForm").css("display", "none");
            $("#divDeleteProgram").css("display", "none");

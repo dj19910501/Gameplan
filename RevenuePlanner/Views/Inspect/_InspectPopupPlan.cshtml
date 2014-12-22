@@ -53,7 +53,7 @@
         <h2 class="title-simple source-sans-prolight">
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
             {
-                @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(planDetails.Title), new { placeholder = "Required", require = "true", maxlength = "255", @class="span12 input-small truncate font20 light-blue-background", style="width: 95%; height: 28px;", title = planDetails.Title })
+                @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(planDetails.Title), new { placeholder = "Required", require = "true", maxlength = "255", @class="span12 input-small font20 light-blue-background", style="width: 95%; height: 28px;", title = planDetails.Title })
                 @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle1" })
             }
             else
