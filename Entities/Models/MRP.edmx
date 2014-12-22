@@ -537,6 +537,7 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="IsDisplayForFilter" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CustomField_Entity">
           <Key>
@@ -4764,6 +4765,7 @@
           <NavigationProperty Name="CustomFieldOptions" Relationship="MRPModel.FK_CustomFieldOption_CustomField" FromRole="CustomField" ToRole="CustomFieldOption" />
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_CustomField_CustomFieldId" FromRole="CustomField" ToRole="IntegrationInstanceDataTypeMapping" />
           <NavigationProperty Name="CampaignNameConventions" Relationship="MRPModel.FK_CampaignNameConvention_CustomField" FromRole="CustomField" ToRole="CampaignNameConvention" />
+          <Property Type="Boolean" Name="IsDisplayForFilter" Nullable="false" />
         </EntityType>
         <EntityType Name="CustomField_Entity">
           <Key>
@@ -5989,6 +5991,7 @@
           <EntitySetMapping Name="CustomFields">
             <EntityTypeMapping TypeName="MRPModel.CustomField">
               <MappingFragment StoreEntitySet="CustomField">
+                <ScalarProperty Name="IsDisplayForFilter" ColumnName="IsDisplayForFilter" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />

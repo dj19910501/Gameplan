@@ -4231,7 +4231,7 @@ namespace RevenuePlanner.Helpers
                 CustomFields = (from customfield in objDbMrpEntities.CustomFields
                                 join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
                                 join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.Plan_Campaign_Program.PlanCampaignId
-                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId &&
+                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId && customfield.IsDisplayForFilter==true && //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
                                 planTacticIds.Contains(tactic.Plan_Campaign_Program.PlanCampaignId)
                                 select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
             }
@@ -4241,7 +4241,7 @@ namespace RevenuePlanner.Helpers
                 CustomFields = (from customfield in objDbMrpEntities.CustomFields
                                 join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
                                 join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.PlanProgramId
-                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId &&
+                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId && customfield.IsDisplayForFilter == true && //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
                                 planTacticIds.Contains(tactic.PlanProgramId)
                                 select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
             }
@@ -4250,7 +4250,7 @@ namespace RevenuePlanner.Helpers
                 CustomFields = (from customfield in objDbMrpEntities.CustomFields
                                 join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
                                 join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.PlanTacticId
-                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId &&
+                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId && customfield.IsDisplayForFilter == true && //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
                                 planTacticIds.Contains(tactic.PlanTacticId)
                                 select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
             }
@@ -4308,7 +4308,7 @@ namespace RevenuePlanner.Helpers
                 ProgramCustomText = Enums.EntityType.Program.ToString(),
                 TacticCustomText = Enums.EntityType.Tactic.ToString();
 
-            var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.IsDeleted == false).ToList();
+            var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.IsDeleted == false && customfield.IsDisplayForFilter == true).ToList(); //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
             var customfieldentity = (from customfield in customfieldlist
                                      join cfe in db.CustomField_Entity on customfield.CustomFieldId equals cfe.CustomFieldId
                                      select cfe).ToList();
