@@ -223,6 +223,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
                     objPlanCampaign.Vertical = null;
                     objPlanCampaign.Status = TacticStatus;
+                    objPlanCampaign.IntegrationInstanceCampaignId = null;
                     objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
                         {
@@ -345,6 +346,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignPrograms.Tactic_Share = null;
                     objPlanCampaignPrograms.Vertical = null;
                     objPlanCampaignPrograms.Status = TacticStatus;
+                    objPlanCampaignPrograms.IntegrationInstanceProgramId = null;
                     objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
@@ -452,6 +454,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.TacticType = null;
                     objPlanCampaignProgramTactic.Tactic_Share = null;
                     objPlanCampaignProgramTactic.TacticCustomName = null;
+                    objPlanCampaignProgramTactic.IntegrationInstanceTacticId = null;
                     objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.ToList().ForEach(
                         pcptl =>
                         {
