@@ -535,7 +535,7 @@ namespace RevenuePlanner.Controllers
                         isGoalValueZero = true;
                         objBudgetAllocationModel = Common.CalculateBudgetInputs(modelId, goalType, goalValue, ADS);
                     }
-                    
+
                     List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
 
                     //// Set Input & Message based on GoalType value.
@@ -617,7 +617,7 @@ namespace RevenuePlanner.Controllers
                                                    join pcp in db.Plan_Campaign_Program on pc.PlanCampaignId equals pcp.PlanCampaignId
                                                    join pcpt in db.Plan_Campaign_Program_Tactic on pcp.PlanProgramId equals pcpt.PlanProgramId
                                                    where pc.PlanId == planId && pcpt.IsDeleted == false
-                                                                select pcpt).ToList();
+                                                   select pcpt).ToList();
             if (lstPlan_Campaign_Program_Tactic == null || lstPlan_Campaign_Program_Tactic.Count() <= 0)
                 return;
 
@@ -630,26 +630,26 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> lstTactic = lstPlan_Campaign_Program_Tactic.Where(_tacType => lstTacticType.Contains(_tacType.TacticType.Title)).Select(_tacType => _tacType).ToList();
 
             //// Update TacticType.
-                foreach (var tactic in lstTactic)
+            foreach (var tactic in lstTactic)
+            {
+                if (tactic != null)
                 {
-                    if (tactic != null)
-                    {
                     int newTacticTypeId = db.TacticTypes.Where(tacType => tacType.ModelId == modelId && tacType.Title == tactic.TacticType.Title).Select(tacType => tacType.TacticTypeId).FirstOrDefault();
-                        if (newTacticTypeId > 0)
+                    if (newTacticTypeId > 0)
+                    {
+                        tactic.ModifiedBy = Sessions.User.UserId;
+                        tactic.ModifiedDate = DateTime.Now;
+                        tactic.TacticTypeId = newTacticTypeId; //Update TacticTypeId column in Plan_Campaign_Program_Tactic Table based on the new model selected
+                        if (businessUnitId != null)
                         {
-                            tactic.ModifiedBy = Sessions.User.UserId;
-                            tactic.ModifiedDate = DateTime.Now;
-                            tactic.TacticTypeId = newTacticTypeId; //Update TacticTypeId column in Plan_Campaign_Program_Tactic Table based on the new model selected
-                            if (businessUnitId != null)
-                            {
-                                tactic.BusinessUnitId = businessUnitId; //Update BussinessUnitID column in Plan_Campaign_Program_Tactic Table based on the new model selected
-                            }
-                            db.Entry(tactic).State = EntityState.Modified;
-                            db.SaveChanges();
+                            tactic.BusinessUnitId = businessUnitId; //Update BussinessUnitID column in Plan_Campaign_Program_Tactic Table based on the new model selected
                         }
+                        db.Entry(tactic).State = EntityState.Modified;
+                        db.SaveChanges();
                     }
                 }
             }
+        }
 
         #endregion
 
@@ -885,8 +885,10 @@ namespace RevenuePlanner.Controllers
                         IsPlanEditable = true;
                     }
                 }
-
                 ViewBag.IsPlanEditable = IsPlanEditable;
+
+                //// Set Editable list of Campaign, Program, Tactic & ImprvementTactic Ids to ViewBag by PlanId.
+                SetEditableListIdsByPlanId(Sessions.PlanId);
             }
             catch (Exception e)
             {
@@ -941,20 +943,20 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-            var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-            List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-            if (lstAllowedBusinessUnits.Count > 0)
+                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+                if (lstAllowedBusinessUnits.Count > 0)
                     lstAllowedBusinessUnits.ForEach(bu => lstAllowedBusinessUnitIds.Add(Guid.Parse(bu)));
                 if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)
-            {
-                //// Getting all business unit for client of director.
-                planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
-                //Added by Nirav for Custom Dropdown - 388
-                ViewBag.BusinessUnitIds = planModel.BusinessUnitIds; // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                ViewBag.showBid = true;
-            }
-            else
-            {
+                {
+                    //// Getting all business unit for client of director.
+                    planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
+                    //Added by Nirav for Custom Dropdown - 388
+                    ViewBag.BusinessUnitIds = planModel.BusinessUnitIds; // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    ViewBag.showBid = true;
+                }
+                else
+                {
 
                     // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                     if (lstAllowedBusinessUnitIds.Count > 0)
@@ -985,17 +987,17 @@ namespace RevenuePlanner.Controllers
 
                     ViewBag.showBid = true;
                 }
-                }
-                catch (Exception e)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
 
-                    //To handle unavailability of BDSService
-                    if (e is System.ServiceModel.EndpointNotFoundException)
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                        return RedirectToAction("Index", "Login");
-                    }
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
             }
             ViewBag.Msg = ismsg;
             ViewBag.isError = isError;
@@ -1615,7 +1617,7 @@ namespace RevenuePlanner.Controllers
 
                 if (isApproved)
                     Common.InsertChangeLog(Sessions.PlanId, 0, planProgram.PlanProgramId, planProgram.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                }
+            }
             else if (isPlanTactic)
             {
                 //// Getting plan tactic to be updated.
@@ -1625,9 +1627,9 @@ namespace RevenuePlanner.Controllers
 
                 try
                 {
-                //// Changing status of tactic to submitted.
-                bool isDirectorLevelUser = false;
-                // Added by dharmraj for Ticket #537
+                    //// Changing status of tactic to submitted.
+                    bool isDirectorLevelUser = false;
+                    // Added by dharmraj for Ticket #537
 
                     var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
                     var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList().Select(u => u.UserId).ToList();
@@ -1639,36 +1641,36 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                if (!isDirectorLevelUser)
-                {
-                    DateTime todaydate = DateTime.Now;
-                    DateTime startDateform = DateTime.Parse(startDate);
-                    DateTime endDateform = DateTime.Parse(startDate);
-                    endDateform = endDateform.AddDays(duration);
-                    /// Modified by:   Dharmraj
-                    /// Modified date: 2-Sep-2014
-                    /// Purpose:       #625 Changing the dates on an approved tactic needs to go through the approval process
-                    // To check whether status is Approved or not
-                    if (Common.CheckAfterApprovedStatus(planTactic.Status))
+                    if (!isDirectorLevelUser)
                     {
-                        if (planTactic.EndDate != endDateform || planTactic.StartDate != startDateform)
+                        DateTime todaydate = DateTime.Now;
+                        DateTime startDateform = DateTime.Parse(startDate);
+                        DateTime endDateform = DateTime.Parse(startDate);
+                        endDateform = endDateform.AddDays(duration);
+                        /// Modified by:   Dharmraj
+                        /// Modified date: 2-Sep-2014
+                        /// Purpose:       #625 Changing the dates on an approved tactic needs to go through the approval process
+                        // To check whether status is Approved or not
+                        if (Common.CheckAfterApprovedStatus(planTactic.Status))
                         {
-                            planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                            Common.mailSendForTactic(planTactic.PlanTacticId, planTactic.Status, planTactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
-                        }
-                        else
-                        {
-                            if (todaydate > startDateform && todaydate < endDateform)
+                            if (planTactic.EndDate != endDateform || planTactic.StartDate != startDateform)
                             {
-                                planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                Common.mailSendForTactic(planTactic.PlanTacticId, planTactic.Status, planTactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
                             }
-                            else if (todaydate > planTactic.EndDate)
+                            else
                             {
-                                planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                if (todaydate > startDateform && todaydate < endDateform)
+                                {
+                                    planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                }
+                                else if (todaydate > planTactic.EndDate)
+                                {
+                                    planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                }
                             }
                         }
                     }
-                }
                 }
                 catch (Exception e)
                 {
@@ -1709,7 +1711,7 @@ namespace RevenuePlanner.Controllers
 
                 if (isApproved)
                     Common.InsertChangeLog(Sessions.PlanId, 0, planTactic.PlanTacticId, planTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                }
+            }
 
             //// Checking whether operation was successfully or not.
             if (returnValue > 0)
@@ -2797,32 +2799,32 @@ namespace RevenuePlanner.Controllers
                 List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
                 if (objPlan != null && objPlan.Count > 0)
                 {
-            //Get all subordinates of current user upto n level
-            var lstOwnAndSubOrdinates = new List<Guid>();
+                    //Get all subordinates of current user upto n level
+                    var lstOwnAndSubOrdinates = new List<Guid>();
 
-            try
-            {
-                lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
-                }
-            }
+                    try
+                    {
+                        lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorSignal.FromCurrentContext().Raise(e);
+                        //// Flag to indicate unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        if (e is System.ServiceModel.EndpointNotFoundException)
+                        {
+                            //// Flag to indicate unavailability of web service.
+                            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                            //// Ticket: 942 Exception handeling in Gameplan.
+                            return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
 
-            // Get current user permission for edit own and subordinates plans.
-            bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-            // To get permission status for Plan Edit, By dharmraj PL #519
-            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                    // Get current user permission for edit own and subordinates plans.
+                    bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                    // To get permission status for Plan Edit, By dharmraj PL #519
+                    bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
 
                     var modelids = objPlan.Where(plan => plan.GoalType.ToLower() != Enums.PlanGoalType.MQL.ToString().ToLower()).Select(plan => plan.ModelId).ToList();
                     string marketing = Enums.Funnel.Marketing.ToString();
@@ -2925,45 +2927,45 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-            var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-            List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-            if (lstAllowedBusinessUnits.Count > 0)
+                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+                if (lstAllowedBusinessUnits.Count > 0)
                     lstAllowedBusinessUnits.ForEach(bu => lstAllowedBusinessUnitIds.Add(Guid.Parse(bu)));
-            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            {
-                var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 {
-                    id = b.BusinessUnitId,
-                    title = b.Title
+                    var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
+                    {
+                        id = b.BusinessUnitId,
+                        title = b.Title
                     }).Select(bu => bu).Distinct().OrderBy(bu => bu.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
 
-                return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
-            }
-            else
-            // Modified by Dharmraj, For #537
-            {
-                // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                if (lstAllowedBusinessUnitIds.Count > 0)
-                {
-                    var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
-                {
-                    id = b.BusinessUnitId,
-                    title = b.Title
-                }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
                     return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
                 }
                 else
+                // Modified by Dharmraj, For #537
                 {
-                    var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.BusinessUnitId.Equals(Sessions.User.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
+                    // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    if (lstAllowedBusinessUnitIds.Count > 0)
+                    {
+                        var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
                     {
                         id = b.BusinessUnitId,
                         title = b.Title
                     }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
-                    return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
+                        return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.BusinessUnitId.Equals(Sessions.User.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
+                        {
+                            id = b.BusinessUnitId,
+                            title = b.Title
+                        }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
+                        return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
+                    }
+                    // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
-                // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             }
-        }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
@@ -4983,9 +4985,9 @@ namespace RevenuePlanner.Controllers
                             Sessions.PublishedPlanId = Sessions.PlanId;
                         else
                             Sessions.PublishedPlanId = 0;
-                        }
                     }
                 }
+            }
             else
             {
                 /*changed by Nirav for plan consistency on 14 apr 2014*/
@@ -5970,6 +5972,140 @@ namespace RevenuePlanner.Controllers
                 throw ex;
             }
             return lstTacticType;
+        }
+
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Action to Set Editable list of Campaign,Program,Tactic,ImprovementTactic list to ViewBag by PlanId.
+        /// </summary>
+        /// <param name="PlanId">Plan Id</param>
+        /// <returns>Returns Editable list of Campaign,Program,Tactic Ids</returns>
+        public void SetEditableListIdsByPlanId(int PlanId)
+        {
+            #region "Declare Variables"
+            List<int> lstIds = new List<int>();
+            List<int> lst_CampaignIds = new List<int>();
+            List<Plan_Campaign> lst_AllCampaigns = new List<Plan_Campaign>();
+            List<int> lst_ProgramIds = new List<int>();
+            List<Plan_Campaign_Program> lst_AllPrograms = new List<Plan_Campaign_Program>();
+            List<int> lst_TacticIds = new List<int>();
+            List<Plan_Campaign_Program_Tactic> lst_Tactics = new List<Plan_Campaign_Program_Tactic>();
+            List<int> lst_ImprovementTacticIds = new List<int>();
+            List<Plan_Improvement_Campaign_Program_Tactic> lst_ImprvTactics = new List<Plan_Improvement_Campaign_Program_Tactic>();
+            bool IsBusinessUnitEditable = false;
+            string VerticalId = string.Empty;
+            string GeographyId = string.Empty;
+            Guid ModelBusinessUnitId;
+            #endregion
+
+            try
+            {
+                //// Get List of SubOrdinateIds based on Current LoginUserId.
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                List<Guid> lstSubordinatesIds = new List<Guid>();
+                if (IsPlanEditSubordinatesAuthorized)
+                    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+
+                //// Get BusinessUnitId from Model table based on PlanId to check IsEditableBusinessUnitId for Campaign & Program.
+                ModelBusinessUnitId = (from _mdl in db.Models
+                                       where _mdl.IsDeleted.Equals(false)
+                                       join _plan in db.Plans on _mdl.ModelId equals _plan.ModelId
+                                       where _plan.PlanId.Equals(PlanId) && _plan.IsDeleted.Equals(false)
+                                       select _mdl.BusinessUnitId).FirstOrDefault();
+
+                //// Get List of all campaigns based on PlanId.
+                lst_AllCampaigns = (from _campagn in db.Plan_Campaign
+                                    where _campagn.IsDeleted.Equals(false) && _campagn.PlanId.Equals(PlanId)
+                                    select _campagn).ToList();
+                
+                if (lst_AllCampaigns == null)
+                    lst_AllCampaigns = new List<Plan_Campaign>();
+
+                //// Get List of all Programs based on PlanCampaignIds.
+                lst_AllPrograms = (from _prgrm in db.Plan_Campaign_Program
+                                   where _prgrm.IsDeleted.Equals(false)
+                                   select _prgrm).ToList().Where(_prgrm => lst_AllCampaigns.Select(_campaign => _campaign.PlanCampaignId).Contains(_prgrm.PlanCampaignId)).ToList();
+                if (lst_AllPrograms == null)
+                    lst_AllPrograms = new List<Plan_Campaign_Program>();
+
+                //// Get list of Tactics those created by Current User or SubOrdinatesIds.
+                lst_Tactics = (from _tac in db.Plan_Campaign_Program_Tactic
+                               where _tac.IsDeleted.Equals(false) && _tac.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(_tac.CreatedBy)
+                               select _tac).ToList().Where(_tac => lst_AllPrograms.Select(_prgram => _prgram.PlanProgramId).Contains(_tac.PlanProgramId)).ToList();
+
+                //// Get Improvement Tactics those created by Current User.
+                lst_ImprvTactics = (from _imprvCampagn in db.Plan_Improvement_Campaign
+                                    where _imprvCampagn.ImprovePlanId == PlanId
+                                    join _imprvPrgrm in db.Plan_Improvement_Campaign_Program on _imprvCampagn.ImprovementPlanCampaignId equals _imprvPrgrm.ImprovementPlanCampaignId
+                                    join _imprvTactic in db.Plan_Improvement_Campaign_Program_Tactic on _imprvPrgrm.ImprovementPlanProgramId equals _imprvTactic.ImprovementPlanProgramId
+                                    where _imprvTactic.IsDeleted.Equals(false) && _imprvTactic.CreatedBy.Equals(Sessions.User.UserId)
+                                    select _imprvTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
+
+
+
+                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestriction => customRestriction.Permission == ViewEditPermission && customRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestriction => customRestriction.CustomFieldId).ToList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                {
+                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
+                    lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
+
+                    //// Check BusinessUnit Editable or not for Campaign & Program by ModalBusinessUnitId.
+                    IsBusinessUnitEditable = false;
+                    IsBusinessUnitEditable = lstViewEditBusinessUnits.Contains(ModelBusinessUnitId);
+                    if (IsBusinessUnitEditable)
+                    {
+                        lst_CampaignIds = lst_AllCampaigns.Where(_campagn => _campagn.CreatedBy.Equals(Sessions.User.UserId)).Select(_campagn => _campagn.PlanCampaignId).ToList();
+                        lst_ProgramIds = lst_AllPrograms.Where(_prgram => _prgram.CreatedBy.Equals(Sessions.User.UserId)).Select(_prgram => _prgram.PlanProgramId).ToList();
+                    }
+                    else
+                        lst_CampaignIds = lst_ProgramIds = new List<int>();
+
+                    //// Check BusinessUnit, Vertical & Geography permissions for Tactic.
+                    var lstAllowedVertical = lstUserCustomRestriction.Where(_custRestrctn => _custRestrctn.Permission == ViewEditPermission && _custRestrctn.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(_custRestrctn => _custRestrctn.CustomFieldId).ToList();
+                    var lstAllowedGeography = lstUserCustomRestriction.Where(_custRestrctn => _custRestrctn.Permission == ViewEditPermission && _custRestrctn.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(_custRestrctn => _custRestrctn.CustomFieldId.ToString().ToLower()).ToList();
+                    foreach (Plan_Campaign_Program_Tactic Tactic in lst_Tactics)
+                    {
+                        VerticalId = Tactic.VerticalId.ToString();
+                        GeographyId = Tactic.GeographyId.ToString();
+
+                        IsBusinessUnitEditable = false;
+                        IsBusinessUnitEditable = lstViewEditBusinessUnits.Contains(Tactic.BusinessUnitId);
+
+                        if (IsBusinessUnitEditable && lstAllowedGeography.Contains(GeographyId.ToLower()) && lstAllowedVertical.Contains(VerticalId))
+                            lst_TacticIds.Add(Tactic.PlanTacticId);
+                    }
+
+                    //// Check BusinessUnit Editable or not for ImprovementTactic.
+                    foreach (Plan_Improvement_Campaign_Program_Tactic ImprvmntTactic in lst_ImprvTactics)
+                    {
+                        IsBusinessUnitEditable = false;
+                        IsBusinessUnitEditable = lstViewEditBusinessUnits.Contains(ImprvmntTactic.BusinessUnitId);
+                        if (IsBusinessUnitEditable)
+                            lst_ImprovementTacticIds.Add(ImprvmntTactic.ImprovementPlanTacticId);
+                    }
+                }
+
+                //// Convert list of Ids to Comma separated string.
+                string strCampaignIds, strProgramIds, strTacticIds, strImprovementTacticIds;
+                strCampaignIds = strProgramIds = strTacticIds = strImprovementTacticIds = string.Empty;
+
+                lst_CampaignIds.ForEach(id => { strCampaignIds += id + ","; });
+                lst_ProgramIds.ForEach(id => { strProgramIds += id + ","; });
+                lst_TacticIds.ForEach(id => { strTacticIds += id + ","; });
+                lst_ImprovementTacticIds.ForEach(id => { strImprovementTacticIds += id + ","; });
+
+                //// Load comma separated string Ids to ViewBag.
+                ViewBag.EditablCampaignIds = strCampaignIds.TrimEnd(',');
+                ViewBag.EditablProgramIds = strProgramIds.TrimEnd(',');
+                ViewBag.EditablTacticIds = strTacticIds.TrimEnd(',');
+                ViewBag.EditablImprovementTacticIds = strImprovementTacticIds.TrimEnd(',');
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         #endregion
     }

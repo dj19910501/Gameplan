@@ -995,13 +995,14 @@
                    else {
                    // Set collaborator details
                    $('#divCollaborator').empty(); // Clear collaborators div content
-                   ////  set collaborator's image
-                   $.each(data.collaboratorsImage.Data, function () {
-                       SetCollaboratorImage(this, appendtag);//#416
-                   })
-
-                   $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
-                   $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
+                       ////  set collaborator's image
+                   if (data.collaboratorsImage != null && data.collaboratorsImage != 'undefined') {
+                       $.each(data.collaboratorsImage.Data, function () {
+                           SetCollaboratorImage(this, appendtag);//#416
+                       })
+                       $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
+                       $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
+                   }
                    //added by uday for #416
                    ProfileAttachToolTip();//function written in scripts.js
                }

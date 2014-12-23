@@ -9,10 +9,20 @@
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
     ViewBag.PageTitle = "ApplyToCallender";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
+    
+    // Added by Viral kadiya on 12/23/2014 for PL ticket #1046.
+    string strCampaignIds = ViewBag.EditablCampaignIds;
+    string strProgramIds = ViewBag.EditablProgramIds;
+    string strTacticIds = ViewBag.EditablTacticIds;
+    string strImprovementTacticIds = ViewBag.EditablImprovementTacticIds;
 }
 
 
 @Html.Hidden("IsPlanEditable", IsPlanEditable)
+@Html.Hidden("hdnCampaignIds", strCampaignIds)
+@Html.Hidden("hdnProgramIds", strProgramIds)
+@Html.Hidden("hdnTacticIds", strTacticIds)
+@Html.Hidden("hdnImprovementTacticIds", strImprovementTacticIds)
 <script src="~/Scripts/js/DHTMLX/danddcontrol.js"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
@@ -560,13 +570,14 @@
                     $('#divCollaborator').empty(); // Clear collaborators div content
 
 
-                    ////  set collaborator's image
-                    $.each(data.collaboratorsImage.Data, function () {
-                        SetCollaboratorImage(this, appendtag);//#416
-                    })
-
-                    $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
-                    $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
+                        ////  set collaborator's image
+                    if (data.collaboratorsImage != null && data.collaboratorsImage != 'undefined') {
+                        $.each(data.collaboratorsImage.Data, function () {
+                            SetCollaboratorImage(this, appendtag);//#416
+                        })
+                        $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
+                        $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
+                    }
                     //added by uday for #416
                     ProfileAttachToolTip();//function written in scripts.js
                     }
@@ -1001,12 +1012,14 @@
        gantt.config.drag_links = false;
        gantt.config.drag_progress = false;
 
+       //alert($('#IsPlanEditable').val());
        if ($('#IsPlanEditable').val() != 'True') {
            gantt.config.drag_resize = false;
        }
        else {
            gantt.config.drag_resize = true;
        }
+
    }
 
    //// Attaching function to after task drag event handler.
@@ -1021,6 +1034,31 @@
                return false;
            }
        }
+
+       //// Added by Viral Kadiya on 12/23/2014 to implement Drag/Move task based on Permission for PL ticket #1046.
+       var task = gantt.getTask(id);
+       var TaskId = '';
+       var strIds = '';
+       if (typeof task.isImprovement != 'undefined' && task.isImprovement == true && typeof task.ImprovementPlanTacticId != 'undefined') {
+           TaskId = task.ImprovementPlanTacticId;
+           strIds = $("#hdnImprovementTacticIds").val();
+       } else if (typeof task.PlanCampaignId != 'undefined') {
+           TaskId = task.PlanCampaignId;
+           strIds = $("#hdnCampaignIds").val();
+       } else if (typeof task.PlanProgramId != 'undefined') {
+           TaskId = task.PlanProgramId;
+           strIds = $("#hdnProgramIds").val();
+       } else if (typeof task.plantacticid != 'undefined') {
+           TaskId = task.plantacticid;
+           strIds = $("#hdnTacticIds").val();
+       }
+       var isEditable = false;
+       if (TaskId != '' && strIds != '')
+           isEditable = IsPlanDateEditable(TaskId, strIds);
+
+       if (!isEditable)
+           return false;
+
        return true;
    });
 
@@ -1148,7 +1186,6 @@
         if (requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
             RefreshCalendar();
         }
-
         return false;
     }
 
@@ -1156,5 +1193,20 @@
         var _planId = $('#PlanId').val();
         GetHealderData(_planId);
         GetNumberOfActivityPerMonByPlanId(_planId, Currenttime);
+    }
+
+    //// Added by Viral Kadiya on 12/23/2014.
+    //// Function to check whether TaskId exist or not in HiddenIds.
+    function IsPlanDateEditable(TaskId,strIds) {
+        var result = false;
+        if (strIds != null && strIds != 'undefined')
+        {
+            var arrIds = strIds.split(","); //// Split Comma separted Ids to array.
+            for (var i = 0; i < arrIds.length; i++) {
+                if (arrIds[i] == TaskId)
+                    return true;
+            }
+        }
+        return result;
     }
 </script>
