@@ -295,32 +295,37 @@ namespace Integration.Helper
                             var objCustomField = customFieldsForSequencialOrderedList.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId).FirstOrDefault();
                             if (objCustomField != null && !string.IsNullOrEmpty(objCustomField.Abbreviation))
                             {
-                                customTacticName.Append(Regex.Replace(objCustomField.Abbreviation.Replace(" ","_"), @"[^0-9a-zA-Z_]+", "") + "_");
+                                customTacticName.Append(RemoveSpaceAndUppercaseFirst(objCustomField.Abbreviation) + "_");
                             }
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Audience.ToString())
                         {
-                            string audienceTitle = Regex.Replace((!string.IsNullOrEmpty(objTactic.Audience.Abbreviation)  ? objTactic.Audience.Abbreviation.Replace(" ", "_") : objTactic.Audience.Title.Replace(" ", "_")), @"[^0-9a-zA-Z_]+", "");
+                            string audienceTitle = (!string.IsNullOrEmpty(objTactic.Audience.Abbreviation) ? objTactic.Audience.Abbreviation : objTactic.Audience.Title);
+                            audienceTitle = RemoveSpaceAndUppercaseFirst(audienceTitle);
                             customTacticName.Append(audienceTitle + "_");
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.BusinessUnit.ToString())
                         {
-                            string businessunitTitle = Regex.Replace((!string.IsNullOrEmpty(objTactic.BusinessUnit.Abbreviation) ? objTactic.BusinessUnit.Abbreviation.Replace(" ", "_") : objTactic.BusinessUnit.Title.Replace(" ", "_")), @"[^0-9a-zA-Z_]+", "");
+                            string businessunitTitle = (!string.IsNullOrEmpty(objTactic.BusinessUnit.Abbreviation) ? objTactic.BusinessUnit.Abbreviation : objTactic.BusinessUnit.Title);
+                            businessunitTitle = RemoveSpaceAndUppercaseFirst(businessunitTitle);
                             customTacticName.Append(businessunitTitle + "_");
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Geography.ToString())
                         {
-                            string geographyTitle = Regex.Replace((!string.IsNullOrEmpty(objTactic.Geography.Abbreviation) ? objTactic.Geography.Abbreviation.Replace(" ", "_") : objTactic.Geography.Title.Replace(" ", "_")), @"[^0-9a-zA-Z_]+", "");
+                            string geographyTitle = (!string.IsNullOrEmpty(objTactic.Geography.Abbreviation) ? objTactic.Geography.Abbreviation : objTactic.Geography.Title);
+                            geographyTitle = RemoveSpaceAndUppercaseFirst(geographyTitle);
                             customTacticName.Append(geographyTitle + "_");
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Vertical.ToString())
                         {
-                            string verticalTitle = Regex.Replace((!string.IsNullOrEmpty(objTactic.Vertical.Abbreviation) ? objTactic.Vertical.Abbreviation.Replace(" ", "_") : objTactic.Vertical.Title.Replace(" ", "_")), @"[^0-9a-zA-Z_]+", "");
+                            string verticalTitle = (!string.IsNullOrEmpty(objTactic.Vertical.Abbreviation) ? objTactic.Vertical.Abbreviation : objTactic.Vertical.Title);
+                            verticalTitle = RemoveSpaceAndUppercaseFirst(verticalTitle);
                             customTacticName.Append(verticalTitle + "_");
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program_Tactic.ToString())
                         {
-                            customTacticName.Append(Regex.Replace((System.Web.HttpUtility.HtmlDecode(objTactic.Title).Replace(" ", "_")), @"[^0-9a-zA-Z_]+", "") + "_");
+                            string tacticTitle = RemoveSpaceAndUppercaseFirst(System.Web.HttpUtility.HtmlDecode(objTactic.Title));
+                            customTacticName.Append(tacticTitle + "_");
                         }
                     }
                     if (customTacticName.ToString().Length > 0)
@@ -329,7 +334,7 @@ namespace Integration.Helper
                         if (index > 0)
                         {
                             customTacticName.Remove(index, 1);
-                            string replaceMultipleUnderscore= Regex.Replace(customTacticName.ToString(), "_+", "_");
+                            string replaceMultipleUnderscore = Regex.Replace(customTacticName.ToString(), "_+", "_");
                             customTacticName.Clear();
                             customTacticName.Append(replaceMultipleUnderscore);
                         }
@@ -337,11 +342,42 @@ namespace Integration.Helper
                 }
                 else
                 {
+                    objTactic.Title = RemoveSpaceAndUppercaseFirst(objTactic.Title);
                     customTacticName.Append(objTactic.Title);
                 }
             }
 
             return customTacticName.ToString();
+        }
+
+        /// <summary>
+        /// This function will remove the spaces from words (taactic name) and make the first character in upper case & remove the special characters
+        /// </summary>
+        /// <param name="title">space will be removed and make first uppercase for this string</param>
+        /// <returns></returns>
+        private static string RemoveSpaceAndUppercaseFirst(string title)
+        {
+            //if we want to replace the _ from the string it self then please un comment the following line
+            //if (!string.IsNullOrEmpty(s)) {  s = s.Replace("_"," "); }
+
+            string[] arrString = title.Split(' ');
+            string returnString = string.Empty;
+            if (arrString.Length > 0)
+            {
+                foreach (string tmpString in arrString)
+                {
+                    if (!string.IsNullOrEmpty(tmpString))
+                    {
+                        returnString += char.ToUpper(tmpString[0]) + tmpString.Substring(1);
+                    }
+                }
+            }
+            else
+            {
+                returnString = title;
+            }
+           returnString= Regex.Replace(returnString, @"[^0-9a-zA-Z_]+", "");
+            return returnString;
         }
 
         #endregion
