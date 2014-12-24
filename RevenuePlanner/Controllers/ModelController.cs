@@ -3244,12 +3244,13 @@ namespace RevenuePlanner.Controllers
             {
                 InstanceName = instance.Instance,
                 InstanceId = instance.IntegrationInstanceId,
-                Type = instance.IntegrationType.Title
+                Type = instance.IntegrationType.Title,
+                Code = instance.IntegrationType.Code
             });
 
             ViewData["IntegrationInstances"] = lstInstance;
             string insType = Enums.IntegrationInstanceType.Salesforce.ToString();
-            ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(instance => instance.Type == insType);
+            ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(instance => instance.Code == insType);
          
             return View(objBaselineModel);
         }

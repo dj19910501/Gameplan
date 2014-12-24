@@ -26,6 +26,7 @@
     var RequestedModule="";
     var BudgetingExpandId = 0;
     bool BudgetingIsSave = false;
+    bool IsCreate_Clone = false;
 }
 
 @Html.Hidden("hdnBudgetingBussinessUnitId", BudgetingBussinessUnitId)
@@ -34,6 +35,7 @@
 @Html.Hidden("hdnRequestedModule", RequestedModule)
 @Html.Hidden("hdnBudgetingExpandId", BudgetingExpandId)
 @Html.Hidden("hdnBudgetingIsSave", BudgetingIsSave)
+@Html.Hidden("hdnIsCreate_Clone",IsCreate_Clone)
 
 <div class="padding-content padding-bottom0 ">
     <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
@@ -362,6 +364,14 @@ function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule
             $(".datepicker.dropdown-menu").each(function () {
                 $(this).remove();
             });
+
+            ////
+            if (("@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()" == $("#hdnRequestedModule").val())) {
+                var isRefresh = $("#hdnIsCreate_Clone").val();
+                $("#hdnIsCreate_Clone").val(false);
+                if (isRefresh.toString().toLowerCase() == 'true')
+                    window.location.reload();//loadEditableIdsToHidden();  //// This method exist in ApplyToCalendar page.
+            }
         });
     }
     function modalBackdropDisplayNone() {
