@@ -6,19 +6,19 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string strConfirmationmessage = Common.objCached.PlanDeleteConfirmMessage;
-    string errorMsg=(string)TempData["ErrorMessage"];
+    string errorMsg = (string)TempData["ErrorMessage"];
 }
 
 @section Sidebar
 {
-    @Html.Hidden("Confirmationmessage", @strConfirmationmessage) 
+    @Html.Hidden("Confirmationmessage", @strConfirmationmessage)
     <div class="padding-content padding-bottom0">
         <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
         <div class="wraper-btns cf">
             <div class="span6">
                 @if (IsPlanCreateAuthorized)
                 {
-                <button id="NewPlan" class="btn btn-blue text-shadow-blue source-sans-proregular createbtn" type="button">New Plan</button>
+                    <button id="NewPlan" class="btn btn-blue text-shadow-blue source-sans-proregular createbtn" type="button">New Plan</button>
                 }
                 else
                 {
@@ -26,7 +26,8 @@
                 }
             </div>
             <div class="span6">
-                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Edit Plan</button> @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Change Add Activity to “Edit Plan” and make it as disabled. *@
+                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Edit Plan</button>
+                @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Change Add Activity to “Edit Plan” and make it as disabled. *@
             </div>
         </div>
     </div>
@@ -52,7 +53,7 @@
 <!--success/error message-->
 <div id="Div_NoModelArea"></div>
 <ul class="nav nav-tabs" id="YearTabs">
-    <li class="title-header source-sans-proregular" style="padding-top:8px;padding-bottom:8px;">
+    <li class="title-header source-sans-proregular" style="padding-top: 8px; padding-bottom: 8px;">
         <h2>Plan Selector</h2>
     </li>
 </ul>
@@ -83,7 +84,7 @@
         /*Added by Mitesh Vaishnav on 16/07/2014 for functional review point 64   */
         if ('@TempData["IsNoModel"]' == 'True') {
             $("#Div_NoModelArea").empty();
-            var url = '@Url.Content("~/Common/LoadNoModelPartial/")';   
+            var url = '@Url.Content("~/Common/LoadNoModelPartial/")';
             $("#Div_NoModelArea").load(url);
         }
         /*End: Added by Mitesh Vaishnav on 16/07/2014 for functional review point 64   */
@@ -222,29 +223,29 @@
             }
             else {
                 if ('@errorMsg' == '') {
-                $('#errorMessage').css("display", "block");
-                $('#cError').html('<strong>Error!</strong> @Common.objCached.NoPublishPlanAvailable');  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
+                    $('#errorMessage').css("display", "block");
+                    $('#cError').html('<strong>Error!</strong> @Common.objCached.NoPublishPlanAvailable');  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
                 $("#errorMessage").slideDown(1200); // Show the Alert
                 $('#successMessage').css("display", "none");
-                }
             }
         }
     }
+}
 
-    function RemoveActiveClass_YearsTab() {
-        $('#YearTabs').children().each(function () {
-            if ($(this).hasClass('active')) {
-                $(this).removeClass("active");
-            }
-        });
-    }
+function RemoveActiveClass_YearsTab() {
+    $('#YearTabs').children().each(function () {
+        if ($(this).hasClass('active')) {
+            $(this).removeClass("active");
+        }
+    });
+}
 
-    /***** Code to load Business Units Tab *****/
+/***** Code to load Business Units Tab *****/
 
-    function LoadBUData() {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/GetBUTab/")',
+function LoadBUData() {
+    $.ajax({
+        type: 'POST',
+        url: '@Url.Content("~/Plan/GetBUTab/")',
             success: function (r) {
                 if (r.serviceUnavailable != 'undefined' && r.serviceUnavailable == '#') {
                     //// Function to redirect to login page on unavailability of web service.
@@ -253,9 +254,9 @@
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
-                BindBUTabs(r);
-                TabClick();
-            }
+                    BindBUTabs(r);
+                    TabClick();
+                }
             }
         });
     }
@@ -319,13 +320,8 @@
                 '<td>' + _Status + '</td>' +
                 '<td>' + _LastUpdated + '</td>';
 
-        // Modified by Dharmraj for #712 Edit Own and Subordinate Plan
-            if (_IsPlanEditable) {
-                $html += '<td><span class="delete-temp-program width5"></span><span class="edit-temp-program width5"></span></td>';
-            }
-            else {
-                $html += '<td></td>';
-            }
+        // Modified by Mitesh for Internal review points related to "Edit All Plan" permission 
+        $html += '<td><span class="delete-temp-program width5"></span><span class="edit-temp-program width5"></span></td>';
 
         $html += '</tr>';
         $baselineTable.append($html);
@@ -342,39 +338,39 @@
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
-                baselinesModels = r;
-                //Added By : Kalpesh Sharma Functional Review Point 07/24/2014
-                if (baselinesModels.lstPlanSelector != "") {
-                    $('#table_baseline > tbody').html("");
-                    fillBaselineTable();
-                    TruncateTitle();
-                }
-                else {
-                    $('#table_baseline > tbody').html("");
-                    var $baselineTable = $('#table_baseline > tbody');
-                    var $html = "@Common.objCached.NoPlanFoundPlanSelector";
+                    baselinesModels = r;
+                    //Added By : Kalpesh Sharma Functional Review Point 07/24/2014
+                    if (baselinesModels.lstPlanSelector != "") {
+                        $('#table_baseline > tbody').html("");
+                        fillBaselineTable();
+                        TruncateTitle();
+                    }
+                    else {
+                        $('#table_baseline > tbody').html("");
+                        var $baselineTable = $('#table_baseline > tbody');
+                        var $html = "@Common.objCached.NoPlanFoundPlanSelector";
                     $baselineTable.append($html);
                 }
                 myApp.hidePleaseWait();
-                }
+            }
             }
         });
-    }
+}
 
-    /***** Code to fill Plan table according the filter *****/
-    function TabClick() {
-        var SelectedYear = $('#YearTabs > li.active a').text();
-        var SelectedBU = $('#BUTabs > li.active').attr("id");
-        if (SelectedBU === 'undefined') {
-            SelectedBU = "";
-        }
-        LoadPlanData(SelectedYear, SelectedBU);
+/***** Code to fill Plan table according the filter *****/
+function TabClick() {
+    var SelectedYear = $('#YearTabs > li.active a').text();
+    var SelectedBU = $('#BUTabs > li.active').attr("id");
+    if (SelectedBU === 'undefined') {
+        SelectedBU = "";
     }
+    LoadPlanData(SelectedYear, SelectedBU);
+}
 
-    function TruncateTitle() {
-        $("#table_baseline").find('.truncate').each(function () {
-            var title = $(this).text();
-            var mainText = title;
+function TruncateTitle() {
+    $("#table_baseline").find('.truncate').each(function () {
+        var title = $(this).text();
+        var mainText = title;
             @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to solve the issue "The plan name is greater than few characters the UI get distorted". *@
             if (title.length >= 32) {
                 title = title.substring(0, 32) + "...";

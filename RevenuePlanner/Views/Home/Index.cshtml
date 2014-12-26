@@ -2029,12 +2029,12 @@
 
                           switch ($('#ActiveMenu').val().toLowerCase()) {
                               case 'home':
-                                  $("#divPlanEditButtonHome").show();
+                                 // $("#divPlanEditButtonHome").show();
                                   if ($("#IsTacticActualsAddEditAuthorized").val().toLowerCase() == 'true')
                                       $("#divAddActuals").show();
                                   break;
                               case 'plan':
-                                  $("#divPlanEditButtonPlan").show();
+                                 // $("#divPlanEditButtonPlan").show();
                                   $("#divAddActuals").hide();
                                   break;
                           }
@@ -2043,11 +2043,11 @@
                       else {
                           switch ($('#ActiveMenu').val().toLowerCase()) {
                               case 'home':
-                                  $("#divPlanEditButtonHome").hide();
+                                  //$("#divPlanEditButtonHome").hide();
                                   $("#divAddActuals").hide();
                                   break;
                               case 'plan':
-                                  $("#divPlanEditButtonPlan").hide();
+                                  //$("#divPlanEditButtonPlan").hide();
                                   break;
                           }
                           $("#isViewOnly").val(false);
