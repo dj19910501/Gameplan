@@ -1633,9 +1633,10 @@ namespace RevenuePlanner.Controllers
         /// Action method to show Tactics view.
         /// </summary>
         /// <param name="id">model id</param>
+        /// <param name="showMessage">boolean flag that indicated to show error/success messages or not</param>
         /// <returns>returns Tactics view</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult Tactics(int id = 0)
+        public ActionResult Tactics(int id = 0, bool showMessage = true)
         {
             int Modelid = id;
             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == Modelid).Select(model => model).FirstOrDefault();
@@ -1706,6 +1707,12 @@ namespace RevenuePlanner.Controllers
                     return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
+            
+            if (showMessage == false)
+            {
+                TempData["SuccessMessage"] = string.Empty;
+            }
+
             //// End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             return View(objTacticTypeModel);
         }
@@ -3244,12 +3251,13 @@ namespace RevenuePlanner.Controllers
             {
                 InstanceName = instance.Instance,
                 InstanceId = instance.IntegrationInstanceId,
-                Type = instance.IntegrationType.Title
+                Type = instance.IntegrationType.Title,
+                Code = instance.IntegrationType.Code
             });
 
             ViewData["IntegrationInstances"] = lstInstance;
             string insType = Enums.IntegrationInstanceType.Salesforce.ToString();
-            ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(instance => instance.Type == insType);
+            ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(instance => instance.Code == insType);
          
             return View(objBaselineModel);
         }

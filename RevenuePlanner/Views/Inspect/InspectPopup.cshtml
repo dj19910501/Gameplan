@@ -456,6 +456,7 @@
                     $("#spanMessageSuccess").empty();
                     $("#spanMessageSuccess").text(data.msg);
                     $("#errorMessage").css("display", "none");
+                    $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
                         return;
                 }
                 else {

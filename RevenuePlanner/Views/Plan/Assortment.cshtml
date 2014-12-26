@@ -945,6 +945,8 @@
             var $html = '';
 
             if (campaign.length) {
+                //Start Added ny mitesh vaishnav for internal review point (Unnecessary error message display on save and continue. )
+                isApply = false;
                 for (i in campaign) {
                     mqlTotal = mqlTotal + parseFloat(campaign[i].mqls);
                     costTotal = costTotal + parseFloat(campaign[i].cost);
@@ -1492,7 +1494,7 @@ function addRowImprovementTactic(_index, _id, _title, _cost, _isOwner, _programI
     if (_isOwner == 0) {
         $html += '<span class="delete-Improvement width5" id="delimpTactic"></span>';
     }
-    $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">' + _title + '</span></span>' +
+    $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline" title="' + _title + '">' + GrapSubstring(_title, 40) + '</span></span>' +
                         '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
                         '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
                         '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities">$' + FormatCommas(_cost.toString(), false) + '</span>' +

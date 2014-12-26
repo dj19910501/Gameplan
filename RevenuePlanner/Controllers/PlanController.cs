@@ -85,27 +85,25 @@ namespace RevenuePlanner.Controllers
                     }
 
                     //// Set flag to check whether his Own Plan & Subordinate Plan editable or not.
-                    bool IsPlanEditable = false;
+                    bool isPlanDefinationDisable = true;
                     if (objplan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                     {
-                        IsPlanEditable = true;
+                        isPlanDefinationDisable = false;
                     }
                     else if (IsPlanEditAllAuthorized)
                     {
-                        IsPlanEditable = true;
+                        isPlanDefinationDisable = false;
                     }
                     else if (IsPlanEditSubordinatesAuthorized)
                     {
                         if (lstSubOrdinates.Contains(objplan.CreatedBy))
                         {
-                            IsPlanEditable = true;
+                            isPlanDefinationDisable = false;
                         }
                     }
-
-                    if (!IsPlanEditable)
-                    {
-                        return AuthorizeUserAttribute.RedirectToNoAccess();
-                    }
+                    //Modified by Mitesh Vaishnav for internal review point related to "Edit All Plan" permission
+                    ViewBag.IsPlanDefinationDisable = isPlanDefinationDisable;
+                   
                 }
             }
             catch (Exception e)
@@ -1801,10 +1799,6 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
-                if (!IsPlanEditable)
-                {
-                    return AuthorizeUserAttribute.RedirectToNoAccess();
-                }
             }
 
             ViewBag.PlanId = plan.PlanId;

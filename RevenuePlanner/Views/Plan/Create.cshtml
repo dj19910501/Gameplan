@@ -13,6 +13,11 @@
     {
         isBackFromAssortment = (bool)TempData["IsBackFromAssortment"];
     }
+    bool isPlanDefinationDisable = false;
+    if (ViewBag.IsPlanDefinationDisable!=null)
+    {
+        isPlanDefinationDisable = ViewBag.IsPlanDefinationDisable;
+    }
 }
 
 @section nlFormContent{
@@ -570,8 +575,7 @@
           @* End - Added by Sohel Pathan on 25/07/2014 for PL ticket #597 *@
 
           /* Added by Mitesh Vaishnav for PL ticket 619*/
-
-          if ('@isBackFromAssortment' == 'True') {
+          if ('@isBackFromAssortment.ToString().ToLower()' == 'true' || '@isPlanDefinationDisable.ToString().ToLower()'=='true') {
               $('#button-back').css('display', 'block');
               $('#button-save').hide();
               $('#divPlanBudgetAllocation').show();
@@ -583,6 +587,7 @@
               $('#divErrCampaignBudgetAllocation').hide();
               $('#divErrMoreAllocation').hide();
               var totalBudget = FormatCurrency($("#txtBudget").val(), false);
+              var budgetType = "";
               if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower()') {
                   $('#divDefaultBudget').show();
                   $('#spnTotalAllocatedBudget').html('---');
@@ -591,6 +596,7 @@
                   $('#spnUnallocatedBudget').html(totalBudget);
                   $('#spnUnallocatedBudget').removeClass('error-text');
                   $('#spnCampaignAllocatedBudget').html('---');
+                  budgetType = 'divDefaultBudget';
               }
               else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()') {
                   $('#divMonthQuarterAllocation').show();
@@ -599,6 +605,7 @@
                   $('#spnTotalBudget').html(totalBudget);
                   $('#divQuarterlyBudget').hide();
                   $('#spnUnallocatedBudget').html(totalBudget);
+                  budgetType = 'divMonthlyBudget';
               }
               else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
                   $('#divMonthQuarterAllocation').show();
@@ -608,22 +615,34 @@
                   $('#divQuarterlyBudget').show();
                   $('#spnThisQuarter').show();
                   $('#spnThisMonth').hide();
+                  budgetType = 'divQuarterlyBudget';
               }
           GetAllocatedBudgetForPlan('@strPlanId');
               // Added by dharmraj to focus first month/Quarter
               if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()') {
-                  var My1Val = $("$MY1").val() == '' ? '0' : $("$MY1").val();
+                  var My1Val = $("MY1").val() == '' ? '0' : $("MY1").val();
                   var cam1Val = $("hdnMY1").val() == '' ? '0' : $("hdnMY1").val();
                   if (parseInt(My1Val) < parseInt(cam1Val)) {
                       $("#spnCampaignAllocatedBudget").addClass('error-text');
                   }
               }
               else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
-                  var My1Val = $("$QY1").val() == '' ? '0' : $("$QY1").val();
+                  var My1Val = $("QY1").val() == '' ? '0' : $("QY1").val();
                   var cam1Val = $("hdnQY1").val() == '' ? '0' : $("hdnQY1").val();
                   if (parseInt(My1Val) < parseInt(cam1Val)) {
                       $("#spnCampaignAllocatedBudget").addClass('error-text');
                   }
+              }
+             
+              if ('@isPlanDefinationDisable.ToString().ToLower()' == 'true') {
+                  $('#' + budgetType).find('input').each(function () {
+                      $(this).attr('readonly',true);
+                      if (!$(this).hasClass('gray-input border000000')) {
+                          $(this).addClass('gray-input border000000');
+                      }
+                  });
+                  $('#button-back').hide();
+                  $('#button-saveContinue').hide();
               }
           }
 

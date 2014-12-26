@@ -141,7 +141,12 @@
                 url = '@Url.Content("~/Model/Tactics")';
             }
             if (url != '' && lastModelId != null && lastModelId != 0) {
-                window.location.href = url + '?id=' + lastModelId;
+                if ($(this).attr('id') == 'aTactics') {
+                    window.location.href = url + '?id=' + lastModelId + '&showMessage=false';
+                }
+                else {
+                    window.location.href = url + '?id=' + lastModelId;
+                }
             }
         });
     });

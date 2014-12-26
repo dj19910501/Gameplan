@@ -520,6 +520,12 @@
                             planCampaignId = data.CampaignID;
                         }
                         loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+
+                        //// if new record save then set Refresh flag to true.
+                        var _planCampaignId = $("#PlanCampaignId").val();
+                        if (_planCampaignId == '' || _planCampaignId == null || _planCampaignId == '0' || _planCampaignId == 'undefined')
+                            $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+
                         if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                             $("#hdnBudgetingExpandId").val("campaign" + planCampaignId);
                             $("#hdnBudgetingIsSave").val("true");
