@@ -1966,13 +1966,16 @@
                       $(".shadow-scroll-gantt").show();
                       $("#table_activities").show();
                       FillTacticTableForRequest(data);
-                  } else {
+                  }
+                  else {
                       $("#table_activities").hide();
                       $(".shadow-scroll-gantt").hide();
                   }
                   gantt.refreshData();
 
-                  //gantt.render();     ////Added by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+                  $(".gantt_container .gantt_tree_content").each(function (index, element) {
+                      $(element).attr("title", htmlDecode(element.innerHTML));
+                  });
               }
                 }
           });
@@ -2300,11 +2303,6 @@
               ////
               hoverRows();
               AttachEventToTactic();
-
-              // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
-              $(".gantt_container .gantt_tree_content").each(function (index, element) {
-                  $(element).attr("title", htmlDecode(element.innerHTML));
-              });
           }
 
           //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu

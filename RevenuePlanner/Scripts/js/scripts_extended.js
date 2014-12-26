@@ -738,3 +738,13 @@ function addDefaultModalPopupBackgroungColor() {
 }
 
 //// End - Added By Pratik on 18/12/2014 for ticket #951
+
+//// Start - Added by Sohel Pathan on 24/12/2014
+function GrapSubstring(originalText, maxSize) {
+    var lengthvalue = originalText.length;
+    if (lengthvalue > maxSize) {
+        return originalText.substring(0, maxSize) + "...";
+    }
+    return originalText;
+}
+//// End - Added by Sohel Pathan on 24/12/2014
