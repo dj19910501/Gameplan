@@ -830,6 +830,8 @@
             if (isApply) {
                 $('#cErrorDuplicatePlan').html(' @Common.objCached.ValidateAtleastOneCampaign');
                 $("#errorMessageDuplicatePlan").slideDown(3000);
+                $('#cSuccessDuplicatePlan').text('');
+                $("#successMessageDuplicatePlan").slideUp(10);
             }
             else {
                 // Added By Bhavesh
@@ -1479,10 +1481,12 @@ function Showmsg() {
         if (hdnisError == 'True') {
             $('#cErrorDuplicatePlan').text(ismsg);
             $("#errorMessageDuplicatePlan").slideDown(3000);
+            $("#successMessageDuplicatePlan").slideUp(10);
         }
         else {
             $('#cSuccessDuplicatePlan').text(ismsg);
             $("#successMessageDuplicatePlan").slideDown(3000);           
+            $("#errorMessageDuplicatePlan").slideUp(10);
         }
     }
 }
