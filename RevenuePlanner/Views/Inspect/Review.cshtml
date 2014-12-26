@@ -359,6 +359,7 @@
 <div id="DivPartialShareTactic">
 </div>
 <script type="text/javascript">
+    var strViewMode = 'View';
     $(document).ready(function () {
 
         /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
@@ -471,7 +472,7 @@
                             var requestedModule = $("#hdnRequestedModule").val();
                             var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();  
                             var inspectMode='';
-                            if (IsEditable == 'View')
+                            if (IsEditable == strViewMode.toString())
                                 inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                             else
                                 inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
@@ -532,7 +533,7 @@
                             $("#spanMessageSuccess").text(data.msg);
                             var inspectMode = '';
                             var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();
-                            if (IsEditable == 'View')
+                                if (IsEditable == strViewMode.toString())
                                 inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                             else
                                 inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
@@ -542,6 +543,11 @@
                             //Added By : Kalpesh Sharma Internal review points 18/11/2014
                             if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
                                 RefershPlanHeaderCalc();
+                                }
+                                else if (RedirectType == "@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()") {
+                                    var _planId = $('#PlanId').val();  //// Get PlanId value from ApplyToCalendar page.
+                                    GetHealderData(_planId);    //// Called HeaderData function exist in ApplyToCalendar Page.
+                                    GetNumberOfActivityPerMonByPlanId(_planId, ''); //// Called HeaderData function exist in ApplyToCalendar Page.
                             }
                         }
                         else {
