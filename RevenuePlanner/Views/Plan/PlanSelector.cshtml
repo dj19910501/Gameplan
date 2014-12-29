@@ -116,7 +116,7 @@
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
         // Function to attach event to li element of Years tab
-        $('#YearTabs').on('click', 'li', function (e) {
+        $('#YearTabs').on('click', ('li:not("#plan-title")'), function (e) {
             RemoveActiveClass_YearsTab();
             $(this).addClass("active");
             TabClick();
