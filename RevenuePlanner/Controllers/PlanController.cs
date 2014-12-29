@@ -920,6 +920,10 @@ namespace RevenuePlanner.Controllers
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
 
+            string strPreviousUrl = Request.UrlReferrer != null ? Request.UrlReferrer.ToString() : string.Empty;
+            if (strPreviousUrl.ToLower().Contains("applytocalendar"))
+            {
+
             //// Set Duplicate,Delete,Error Plan messages to TempData.
             if (TempData["SuccessMessageDuplicatePlan"] != null)
             {
@@ -938,7 +942,7 @@ namespace RevenuePlanner.Controllers
                     isError = true;
                 }
             }
-
+            }
             try
             {
                 var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();

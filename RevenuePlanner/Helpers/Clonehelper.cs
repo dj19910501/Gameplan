@@ -250,16 +250,16 @@ namespace RevenuePlanner.Helpers
                                 pcpt.TacticType = null;
                                 pcpt.Status = TacticStatus;
                                 pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
-                                pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
+                                pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                                 {
                                     pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                                 });
                             });
-                            t.Plan_Campaign_Program_Tactic = t.Plan_Campaign_Program_Tactic.ToList();
+                            t.Plan_Campaign_Program_Tactic = t.Plan_Campaign_Program_Tactic.Where(_tac => _tac.IsDeleted == false).ToList();
                         });
 
-                    objPlanCampaign.Plan_Campaign_Program = objPlanCampaign.Plan_Campaign_Program.ToList();
+                    objPlanCampaign.Plan_Campaign_Program = objPlanCampaign.Plan_Campaign_Program.Where(prgram => prgram.IsDeleted == false).ToList();
                     db.Plan_Campaign.Add(objPlanCampaign);
                     db.SaveChanges();
                     var PlanCampaignId = objPlanCampaign.PlanCampaignId;
@@ -365,13 +365,13 @@ namespace RevenuePlanner.Helpers
                             t.Vertical = null;
                             t.Status = TacticStatus;
                             t.Plan_Campaign_Program_Tactic_Cost = t.Plan_Campaign_Program_Tactic_Cost.ToList();
-                            t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.ToList();
+                            t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                             {
                                 pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                             });
                         });
-                    objPlanCampaignPrograms.Plan_Campaign_Program_Tactic = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.ToList();
+                    objPlanCampaignPrograms.Plan_Campaign_Program_Tactic = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(_tac => _tac.IsDeleted == false).ToList();
                     db.Plan_Campaign_Program.Add(objPlanCampaignPrograms);
                     db.SaveChanges();
 
@@ -455,13 +455,12 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.Tactic_Share = null;
                     objPlanCampaignProgramTactic.TacticCustomName = null;
                     objPlanCampaignProgramTactic.IntegrationInstanceTacticId = null;
-                    objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.ToList().ForEach(
+                    objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
                             pcptl.LineItemType = null;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
-                        }
-                             );
+                        });
                 }
                 objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                 db.Plan_Campaign_Program_Tactic.Add(objPlanCampaignProgramTactic);
