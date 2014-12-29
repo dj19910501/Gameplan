@@ -597,8 +597,12 @@
 
                             //// if new record save then set Refresh flag to true.
                             var _planTacticId = $("#hdnPlanTacticId").val();
-                            if (_planTacticId == '' || _planTacticId == null || _planTacticId == '0' || _planTacticId == 'undefined')
+                            if (_planTacticId == '' || _planTacticId == null || _planTacticId == '0' || _planTacticId == 'undefined') {
                                 $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                                if (requestedModule == '@Enums.InspectPopupRequestedModules.Index.ToString()' || requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
+                                    RefershPlanHeaderCalc();
+                                }
+                            }
                             return;
                         }
                     }

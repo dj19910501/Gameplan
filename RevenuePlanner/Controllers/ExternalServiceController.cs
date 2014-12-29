@@ -1746,7 +1746,7 @@ namespace RevenuePlanner.Controllers
                 TempData["ErrorMessageGeneralSetting"] = rtnMessage;
                 return Json(new { status = 0, ErrorMessage = rtnMessage, Id = IntegrationID }, JsonRequestBehavior.AllowGet);
             }
-
+            
             if (result == 3)
             {
                 TempData["SuccessMessage"] = rtnMessage;
@@ -1801,10 +1801,11 @@ namespace RevenuePlanner.Controllers
             int Status = 0;
             bool IsAddOperation = (form.IntegrationInstanceId == 0 ? true : false);
             int objIntegrationInstanceId = 0;
+            bool isUserNameChanged = false;     //// Added by Sohel Pathan on 29/12/2014 for an Internal Review Point
 
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
-            //Check the Form action is requested to deleted operation or not. 
+            //// Check the Form action is requested to deleted operation or not. 
             if (Convert.ToString(form.IsDeleted).ToLower() == "true" && !IsAddOperation)
             {
                 ID = form.IntegrationInstanceId;
@@ -1828,13 +1829,13 @@ namespace RevenuePlanner.Controllers
                          && intgrtn.IntegrationInstanceId != form.IntegrationInstanceId).Any();
                     }
 
-                    if ((!isDuplicate && form.IntegrationInstanceId == 0) || form.IntegrationInstanceId > 0)
+                    if (!isDuplicate && form.IntegrationInstanceId >= 0)
                     {
                         int SyncFrequenciesCount = 0, IntegrationInstancesCount = 0;
 
                         using (var scope = new TransactionScope())
                         {
-                            // update data
+                            //// update data
                             IntegrationInstance objIntegrationInstance;
 
                             if (IsAddOperation)
@@ -1843,30 +1844,40 @@ namespace RevenuePlanner.Controllers
                                 objIntegrationInstance.CreatedDate = DateTime.Now;
                                 objIntegrationInstance.IsDeleted = false;
                                 objIntegrationInstance.IntegrationTypeId = form.IntegrationTypeId;
-                                //Added By : Kalpesh Sharma #781 Synchronization with Scheduler
+                                //// Added By : Kalpesh Sharma #781 Synchronization with Scheduler
                                 objIntegrationInstance.CreatedBy = Sessions.User.UserId;
                             }
                             else
                             {
                                 objIntegrationInstance = db.IntegrationInstances.Where(intgrtn => intgrtn.IntegrationInstanceId == form.IntegrationInstanceId && intgrtn.IsDeleted.Equals(false) &&
-                                intgrtn.ClientId == Sessions.User.ClientId).FirstOrDefault();
+                                                        intgrtn.ClientId == Sessions.User.ClientId).FirstOrDefault();
                                 objIntegrationInstance.IsDeleted = (Convert.ToString(form.IsDeleted).ToLower() == "true" ? true : false);
+                                objIntegrationInstance.ModifiedBy = Sessions.User.UserId;
+                                objIntegrationInstance.ModifiedDate = DateTime.Now;
+
+                                //// Start - Added by Sohel Pathan on 29/12/2014 for an Internal Review Point
+                                if ((!(string.IsNullOrEmpty(objIntegrationInstance.Username))) && (!(string.IsNullOrEmpty(form.Username))) && (objIntegrationInstance.Username != form.Username))
+                                {
+                                    isUserNameChanged = true;
+                                }
+                                //// End - Added by Sohel Pathan on 29/12/2014 for an Internal Review Point
                             }
 
                             objIntegrationInstance.ClientId = Sessions.User.ClientId;
-                            objIntegrationInstance.ModifiedBy = Sessions.User.UserId;
-                            objIntegrationInstance.ModifiedDate = DateTime.Now;
                             objIntegrationInstance.Instance = form.Instance;
                             objIntegrationInstance.IsImportActuals = form.IsImportActuals;
                             objIntegrationInstance.IsActive = form.IsActive;
                             objIntegrationInstance.Password = Common.Encrypt(form.Password);
                             objIntegrationInstance.Username = form.Username;
 
-                            db.Entry(objIntegrationInstance).State = (IsAddOperation ? System.Data.EntityState.Added : System.Data.EntityState.Modified);
-
                             if (IsAddOperation)
                             {
+                                db.Entry(objIntegrationInstance).State = System.Data.EntityState.Added;
                                 db.IntegrationInstances.Add(objIntegrationInstance);
+                            }
+                            else
+                            {
+                                db.Entry(objIntegrationInstance).State = System.Data.EntityState.Modified;
                             }
 
                             IntegrationInstancesCount = db.SaveChanges();
@@ -2008,10 +2019,15 @@ namespace RevenuePlanner.Controllers
                             }
 
                             objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
-                            db.Entry(objSyncFrequency).State = (IsAddOperation ? System.Data.EntityState.Added : System.Data.EntityState.Modified);
+                            
                             if (IsAddOperation)
                             {
+                                db.Entry(objSyncFrequency).State = System.Data.EntityState.Added;
                                 db.SyncFrequencies.Add(objSyncFrequency);
+                            }
+                            else
+                            {
+                                db.Entry(objSyncFrequency).State = System.Data.EntityState.Modified;
                             }
                             SyncFrequenciesCount = db.SaveChanges();
 
@@ -2046,10 +2062,10 @@ namespace RevenuePlanner.Controllers
                                 db.SaveChanges();
                             }
 
-                            // Status changed from Active to InActive, So remove all the integration dependency with Models.
+                            //// Status changed from Active to InActive, So remove all the integration dependency with Models.
                             if (form.IsActiveStatuChanged == true && form.IsActive == false && !IsAddOperation)
                             {
-                                // Remove association of Integrartion from Plan
+                                //// Remove association of Integrartion from Plan
                                 db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceId == form.IntegrationInstanceId).ToList().ForEach(
                                     ObjIntegrationInstance =>
                                     {
@@ -2059,7 +2075,7 @@ namespace RevenuePlanner.Controllers
                                         db.Entry(ObjIntegrationInstance).State = EntityState.Modified;
                                     });
 
-                                //Identify IntegrationInstanceId for INQ in Model Table and set reference null
+                                //// Identify IntegrationInstanceId for INQ in Model Table and set reference null
                                 db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdINQ == form.IntegrationInstanceId).ToList().ForEach(
                                     INQ =>
                                     {
@@ -2069,7 +2085,7 @@ namespace RevenuePlanner.Controllers
                                         db.Entry(INQ).State = EntityState.Modified;
                                     });
 
-                                //Identify IntegrationInstanceId for MQL in Model Table and set reference null
+                                //// Identify IntegrationInstanceId for MQL in Model Table and set reference null
                                 db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdMQL == form.IntegrationInstanceId).ToList().ForEach(
                                     MQL =>
                                     {
@@ -2079,7 +2095,7 @@ namespace RevenuePlanner.Controllers
                                         db.Entry(MQL).State = EntityState.Modified;
                                     });
 
-                                //Identify IntegrationInstanceId for CW in Model Table and set reference null
+                                //// Identify IntegrationInstanceId for CW in Model Table and set reference null
                                 db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdCW == form.IntegrationInstanceId).ToList().ForEach(
                                     CW =>
                                     {
@@ -2103,6 +2119,15 @@ namespace RevenuePlanner.Controllers
                                 message = Common.objCached.IntegrationAdded;
                                 Status = 1;
                             }
+                            //// Start - Added by Sohel Pathan on 29/12/2014 for an Internal Review Point
+                            else if (isUserNameChanged)
+                            {
+                                //// If Username has been changed, means settings are saved for other user
+                                //// So, other tabs need to be refreshed to fill mapping data as per new user
+                                message = Common.objCached.IntegrationEdited;
+                                Status = 1;
+                            }
+                            //// Start - Added by Sohel Pathan on 29/12/2014 for an Internal Review Point
                             else
                             {
                                 message = Common.objCached.IntegrationEdited;

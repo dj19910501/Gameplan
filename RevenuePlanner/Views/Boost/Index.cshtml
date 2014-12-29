@@ -118,7 +118,7 @@
         
     });
 
-    $(document).on('click', '#table_boost tbody tr', function (e) {
+    $(document).on('dblclick', '#table_boost tbody tr', function (e) {
         var id = $(this).attr("id");
         if (typeof id != "undefined") {
             removeDefaultModalPopupBackgroungColor();

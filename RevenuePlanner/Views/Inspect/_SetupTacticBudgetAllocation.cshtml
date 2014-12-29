@@ -113,11 +113,11 @@
             $("#txtRemainingBudget").removeClass('error-text');
         }
     }
-
+    var strViewMode = 'View';
     $(document).ready(
     function () {
         var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();
-        if (IsEditable == 'View') {
+        if (IsEditable == strViewMode.toString()) {
             $('form').find(".sbSelector").each(function () {
                 $(this).unbind("click");
                 $(this).removeAttr("href");
@@ -214,7 +214,7 @@
                                 $("#" + r[i].periodTitle).addClass('error-text');
                             }
                             else {
-                                if (IsEditables == "View") {
+                                if (IsEditables == strViewMode.toString()) {
                                     $("#" + r[i].periodTitle).addClass('Tactic-Budget-Allocation');
                                 }
                             }
@@ -355,7 +355,7 @@
     }
 
     function CancelEvent() {
-        $("#hdnTacticBudgetAllocationOpt").val("View");
+        $("#hdnTacticBudgetAllocationOpt").val(strViewMode.toString());
         loadReview('@Model.PlanTacticId', "Budget");
         $("#EditForm").css("display", "block");
         $('#txtTacticTitle').css('display', 'none');
