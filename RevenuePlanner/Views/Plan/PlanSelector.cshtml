@@ -152,28 +152,33 @@
         $('#table_baseline').on('click', 'tbody tr td .delete-temp-program', function (e) {
             if (confirm($("#Confirmationmessage").val())) {
                 e.stopPropagation();
+                var uId = $(window).attr('name');
                 var PlanId = $(this).parent().parent().attr("id");
                 if (PlanId != null) {
                     $.ajax({
                         type: 'POST',
                         url: '@Url.Content("~/Plan/DeletePlan/")',
-                        data: { PlanId: PlanId },
+                        data: { PlanId: PlanId, UserId: uId },
                         dataType: "json",
                         success: function (data) {
-                            if (data.errorMsg != undefined) {
-                                $('#errorMessage').css("display", "block");
-                                $('#cError').html('<strong>Error!</strong> ' + data.errorMsg)
-                                $("#errorMessage").slideDown(1200); // Show the Alert
-                                $('#successMessage').css("display", "none");
+                            if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                                window.location = '@Url.Content("~/Login/Index")';
                             }
-                            else if (data.successmsg != undefined) {
-                                $('#successMessage').css("display", "block");
-                                $('#cSuccess').html('<strong>Success.</strong> ' + data.successmsg)
-                                $("#successMessage").slideDown(1200); // Show the Alert
-                                $('#errorMessage').css("display", "none");
+                            else {
+                                if (data.errorMsg != undefined) {
+                                    $('#errorMessage').css("display", "block");
+                                    $('#cError').html('<strong>Error!</strong> ' + data.errorMsg)
+                                    $("#errorMessage").slideDown(1200); // Show the Alert
+                                    $('#successMessage').css("display", "none");
+                                }
+                                else if (data.successmsg != undefined) {
+                                    $('#successMessage').css("display", "block");
+                                    $('#cSuccess').html('<strong>Success.</strong> ' + data.successmsg)
+                                    $("#successMessage").slideDown(1200); // Show the Alert
+                                    $('#errorMessage').css("display", "none");
+                                }
+                                TabClick();
                             }
-                            TabClick();
-                            //myApp.hidePleaseWait();
                         }
                     });
                 }

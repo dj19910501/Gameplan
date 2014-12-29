@@ -629,13 +629,12 @@
             displayconfirmForDeleteEvent(idTactic, 'impTactic');
             e.stopPropagation();
         });
+
         //Dharmraj Start 8July2014 Common function to handle tactic/program/campaign delete event
         function deleteCommonClick(id, type) {
+            var uId = $(window).attr('name');
             if (type == "lineitem") {
-              
-                var uId = $(window).attr('name');
                 if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
-                  
                     var idTactic = id;
                     $.ajax({
                         type: 'POST',
@@ -667,12 +666,8 @@
                     return false;
                 }
             }
-
-            if (type == "tactic") {
-               
-                var uId = $(window).attr('name');
+            else if (type == "tactic") {
                 if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
-                    
                     var idTactic = id;
                     $.ajax({
                         type: 'POST',
@@ -704,11 +699,8 @@
                     return false;
                 }
             }
-
-            if (type == "program") {
-                var uId = $(window).attr('name');
+            else if (type == "program") {
                 if (confirm('@Common.objCached.ConfirmationForDeleteProgram')) {
-                   
                     var idProgram = id;
                     $.ajax({
                         type: 'POST',
@@ -737,11 +729,8 @@
                     return false;
                 }
             }
-
-            if (type == "campaign") {
-                var uId = $(window).attr('name');
+            else if (type == "campaign") {
                 if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
-                    
                     var idCampaing = id;
                     $.ajax({
                         type: 'POST',
@@ -772,9 +761,7 @@
                     return false;
                 }
             }
-
-            if (type == "impTactic") {
-               
+            else if (type == "impTactic") {
                 var idTactic = id;
                 var AssortmentType = true;
                 $("#DivPartialViewForDeleteImpTactic").empty();
