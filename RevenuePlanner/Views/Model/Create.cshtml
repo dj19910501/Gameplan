@@ -465,7 +465,16 @@ $(document).ready(function () {
     });
     $('#dp_start .add-on').click(function () {
         $('#dp_start').datepicker('show');
-    })
+    });
+    $('#t_startdate').click(function () {
+        $('#dp_end').datepicker('hide');
+    });
+    $('.dp').datepicker({
+        format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+            autoclose: true,
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
     function benchmark() {
 
         $('#inputs-group').hide();
@@ -650,6 +659,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
  $("#cancel-button").click(function () {
      $('#DivBackgroundModel').css("display", "none");
      $('#DivPublishModelPopup').css("display", "none");
+     $("body").css("overflow-y", "scroll");
      return false;
  });
  $('#dp_start .add-on').click(function () {
@@ -737,6 +747,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                      $("#whichButton").val('publish');
                      $('#DivBackgroundModel').css("display", "block");
                      $('#DivPublishModelPopup').css("display", "block");
+                     $("body").css("overflow-y", "hidden");
                      var date = $("#EffectiveDate").val();
                      $("#t_startdate").val(date);
                      return false;
@@ -744,6 +755,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  else {
                      $('#DivBackgroundModel').css("display", "none");
                      $('#DivPublishModelPopup').css("display", "none");
+                     $("body").css("overflow-y", "scroll");
                      return false;
                  }
              }
@@ -751,6 +763,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  $("#whichButton").val('publish');
                  $('#DivBackgroundModel').css("display", "block");
                  $('#DivPublishModelPopup').css("display", "block");
+                 $("body").css("overflow-y", "hidden");
                  var date = $("#EffectiveDate").val();
                  $("#t_startdate").val(date);
                  return false;

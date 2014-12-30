@@ -133,6 +133,15 @@
         $('#dp_start .add-on').click(function () {
             $('#dp_start').datepicker('show');
         });
+        $('#t_startdate').click(function () {
+            $('#dp_end').datepicker('hide');
+        });
+        $('.dp').datepicker({
+            format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+            autoclose: true,
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
         if ($('#hdnModelId').val() == $("#latestModelId").val()) {
             if ($('#hdnStatus').val() == "Draft" && ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true')) {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 $("#publish").removeClass('btn-blue-disable');
@@ -283,6 +292,7 @@
                     if (confirm($("#PublishedMsg").val())) {
                         $('#DivBackgroundModel').css("display", "block");
                         $('#DivPublishModelPopup').css("display", "block");
+                        $("body").css("overflow-y", "hidden");
                         var date = $("#EffectiveDate").val();
                         $("#t_startdate").val(date);
                         return false;
@@ -290,12 +300,14 @@
                     else {
                         $('#DivBackgroundModel').css("display", "none");
                         $('#DivPublishModelPopup').css("display", "none");
+                        $("body").css("overflow-y", "scroll");
                         return false;
                     }
                 }
                 else {
                     $('#DivBackgroundModel').css("display", "block");
                     $('#DivPublishModelPopup').css("display", "block");
+                    $("body").css("overflow-y", "hidden");
                     var date = $("#EffectiveDate").val();
                     $("#t_startdate").val(date);
                     return false;
@@ -304,6 +316,7 @@
             else {
                 $('#DivBackgroundModel').css("display", "none");
                 $('#DivPublishModelPopup').css("display", "none");
+                $("body").css("overflow-y", "scroll");
                 return false;
             }
         });
@@ -311,6 +324,7 @@
         $("#cancel-button").click(function () {
             $('#DivBackgroundModel').css("display", "none");
             $('#DivPublishModelPopup').css("display", "none");
+            $("body").css("overflow-y", "scroll");
             return false;
         });
 
