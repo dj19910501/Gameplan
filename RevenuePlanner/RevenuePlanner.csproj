@@ -896,6 +896,7 @@
     <Content Include="Views\Inspect\_ShareCampaign.cshtml" />
     <Content Include="Views\Inspect\_ShareProgram.cshtml" />
     <Content Include="Views\Inspect\_ResubmissionPopup.cshtml" />
+    <Content Include="Views\Model\_publishmodel.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
