@@ -103,7 +103,7 @@ namespace RevenuePlanner.Controllers
                     }
                     //Modified by Mitesh Vaishnav for internal review point related to "Edit All Plan" permission
                     ViewBag.IsPlanDefinationDisable = isPlanDefinationDisable;
-                   
+
                 }
             }
             catch (Exception e)
@@ -920,25 +920,29 @@ namespace RevenuePlanner.Controllers
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
 
-            //// Set Duplicate,Delete,Error Plan messages to TempData.
-            if (TempData["SuccessMessageDuplicatePlan"] != null)
+            string strPreviousUrl = Request.UrlReferrer != null ? Request.UrlReferrer.ToString() : string.Empty;
+            if (strPreviousUrl.ToLower().Contains("applytocalendar"))
             {
-                if (TempData["SuccessMessageDuplicatePlan"].ToString() != string.Empty) ismsg = TempData["SuccessMessageDuplicatePlan"].ToString();
-            }                   /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
-                  changed by : Nirav Shah on 13 feb 2014*/
-            if (TempData["SuccessMessageDeletedPlan"] != null)
-            {
-                if (TempData["SuccessMessageDeletedPlan"].ToString() != string.Empty) ismsg = TempData["SuccessMessageDeletedPlan"].ToString();
-            }
-            if (TempData["ErrorMessageDuplicatePlan"] != null)
-            {
-                if (TempData["ErrorMessageDuplicatePlan"].ToString() != string.Empty)
+
+                //// Set Duplicate,Delete,Error Plan messages to TempData.
+                if (TempData["SuccessMessageDuplicatePlan"] != null)
                 {
-                    ismsg = TempData["ErrorMessageDuplicatePlan"].ToString();
-                    isError = true;
+                    if (TempData["SuccessMessageDuplicatePlan"].ToString() != string.Empty) ismsg = TempData["SuccessMessageDuplicatePlan"].ToString();
+                }                   /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
+                  changed by : Nirav Shah on 13 feb 2014*/
+                if (TempData["SuccessMessageDeletedPlan"] != null)
+                {
+                    if (TempData["SuccessMessageDeletedPlan"].ToString() != string.Empty) ismsg = TempData["SuccessMessageDeletedPlan"].ToString();
+                }
+                if (TempData["ErrorMessageDuplicatePlan"] != null)
+                {
+                    if (TempData["ErrorMessageDuplicatePlan"].ToString() != string.Empty)
+                    {
+                        ismsg = TempData["ErrorMessageDuplicatePlan"].ToString();
+                        isError = true;
+                    }
                 }
             }
-
             try
             {
                 var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
@@ -2979,61 +2983,39 @@ namespace RevenuePlanner.Controllers
 
 
         /// <summary>
-        /// Method to delete the plan
+        /// Json method to delete the plan
         /// </summary>
-        /// <param name="PlanId"></param>
-        /// <returns></returns>
-        public JsonResult DeletePlan(int PlanId = 0)
+        /// <param name="PlanId">Plan id</param>
+        /// <param name="UserId">User id of logged in user</param>
+        /// <returns>returns json result object</returns>
+        public JsonResult DeletePlan(int PlanId, string UserId = "")
         {
-            int returnValue = 0;
-            string PlanName = "";
-            using (var scope = new TransactionScope())
+            //// check whether UserId is currently loggined user or not.
+            if (!string.IsNullOrEmpty(UserId))
             {
-                if (PlanId > 0)
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
-
-                    ////Modified By Mitesh Vaishnav for PL ticket #718
-                    ////modification : delete custom field values of particular plan's campaign,program and tactic
-                    string entityTypeCampaign = Enums.EntityType.Campaign.ToString();
-                    string entityTypeProgram = Enums.EntityType.Program.ToString();
-                    string entityTypeTactic = Enums.EntityType.Tactic.ToString();
-                    List<CustomField_Entity> customFieldList = new List<CustomField_Entity>();
-                    PlanName = db.Plans.Where(_pln => _pln.PlanId == PlanId && _pln.IsDeleted == false).FirstOrDefault().Title;
-                    var tacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId && pcpt.IsDeleted == false).ToList();
-                    tacticList.ForEach(pcpt => pcpt.IsDeleted = true);
-                    var tacticIds = tacticList.Select(_tac => _tac.PlanTacticId).ToList();
-                    db.CustomField_Entity.Where(_cust => tacticIds.Contains(_cust.EntityId) && _cust.CustomField.EntityType == entityTypeTactic).ToList().ForEach(_cust => customFieldList.Add(_cust));
-
-                    var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
-                    programList.ForEach(pcp => pcp.IsDeleted = true);
-                    var programIds = programList.Select(_prgrm => _prgrm.PlanProgramId).ToList();
-                    db.CustomField_Entity.Where(cust => programIds.Contains(cust.EntityId) && cust.CustomField.EntityType == entityTypeProgram).ToList().ForEach(cust => customFieldList.Add(cust));
-
-                    var campaignList = db.Plan_Campaign.Where(pc => pc.PlanId == PlanId && pc.IsDeleted == false).ToList();
-                    campaignList.ForEach(pc => pc.IsDeleted = true);
-                    var campaignIds = campaignList.Select(_cmpgn => _cmpgn.PlanCampaignId).ToList();
-                    db.CustomField_Entity.Where(cust => campaignIds.Contains(cust.EntityId) && cust.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(cust => customFieldList.Add(cust));
-                    db.Plans.Where(_pln => _pln.PlanId == PlanId && _pln.IsDeleted == false).ToList().ForEach(_pln => _pln.IsDeleted = true);
-
-                    try
-                    {
-                        //// To increase performance we added this code. By Pratik Chauhan
-                        db.Configuration.AutoDetectChangesEnabled = false;
-                        customFieldList.ForEach(cust => db.Entry(cust).State = EntityState.Deleted);
-                    }
-                    finally
-                    {
-                        db.Configuration.AutoDetectChangesEnabled = true;
-                    }
-
-                    returnValue = db.SaveChanges();
-                    scope.Complete();
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
             }
+
+            int returnValue = 0;
+            if (PlanId > 0)
+            {
+                //// Delete Plan
+                returnValue = Common.PlanTaskDelete(Enums.Section.Plan.ToString(), PlanId);
+            }
             if (returnValue > 0)
-                return Json(new { successmsg = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]) }, JsonRequestBehavior.AllowGet);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
+            {
+                //// Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
+                return Json(new { successmsg = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]) }, JsonRequestBehavior.AllowGet);
+            }
             else
+            {
+                var PlanName = db.Plans.Where(p => p.PlanId == PlanId).ToList().Select(p => p.Title).FirstOrDefault();
                 return Json(new { errorMsg = string.Format(Common.objCached.PlanDeleteError, PlanName) }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         #endregion
@@ -6011,7 +5993,7 @@ namespace RevenuePlanner.Controllers
                 lst_AllCampaigns = (from _campagn in db.Plan_Campaign
                                     where _campagn.IsDeleted.Equals(false) && _campagn.PlanId.Equals(PlanId)
                                     select _campagn).ToList();
-                
+
                 if (lst_AllCampaigns == null)
                     lst_AllCampaigns = new List<Plan_Campaign>();
 
