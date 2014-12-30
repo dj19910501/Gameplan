@@ -3193,6 +3193,12 @@ namespace RevenuePlanner.Controllers
         private MemoryStream GeneratePDFReport(string htmlOfCurrentView, string reportType)
         {
             htmlOfCurrentView = AddCSSAndJS(htmlOfCurrentView, reportType);
+            //// Start - Added Sohel Pathan on 30/12/2014 for and Internal Review Point
+            if (reportType.Equals(Enums.ReportType.Summary.ToString()))
+            {
+                htmlOfCurrentView = htmlOfCurrentView.Replace("class=\"dollarFormat\"", "");
+            }
+            //// End - Added Sohel Pathan on 30/12/2014 for and Internal Review Point
             PdfConverter pdfConverter = new PdfConverter();
             pdfConverter.LicenseKey = System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"];
 
