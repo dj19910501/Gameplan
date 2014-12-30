@@ -514,6 +514,7 @@
         $("#cancel-button").click(function () {
             $('#DivBackgroundModel').css("display", "none");
             $('#DivPublishModelPopup').css("display", "none");
+            $("body").css("overflow-y", "scroll");
             return false;
         });
         $('#t_startdate').click(function () {
@@ -546,6 +547,7 @@
                     if (confirm($("#PublishedMsg").val())) {
                         $('#DivBackgroundModel').css("display", "block");
                         $('#DivPublishModelPopup').css("display", "block");
+                        $("body").css("overflow-y", "hidden");
                         var date = $("#EffectiveDate").val();
                         $("#t_startdate").val(date);
                         return false;
@@ -553,12 +555,14 @@
                     else {
                         $('#DivBackgroundModel').css("display", "none");
                         $('#DivPublishModelPopup').css("display", "none");
+                        $("body").css("overflow-y", "scroll");
                         return false;
                     }
                 }
                 else {
                     $('#DivBackgroundModel').css("display", "block");
                     $('#DivPublishModelPopup').css("display", "block");
+                    $("body").css("overflow-y", "hidden");
                     var date = $("#EffectiveDate").val();
                     $("#t_startdate").val(date);
                     return false;
@@ -567,6 +571,7 @@
             else {
                 $('#DivBackgroundModel').css("display", "none");
                 $('#DivPublishModelPopup').css("display", "none");
+                $("body").css("overflow-y", "scroll");
                 return false;
             }
         });

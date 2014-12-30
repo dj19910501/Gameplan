@@ -128,7 +128,15 @@
         $('#dp_start .add-on').click(function () {
             $('#dp_start').datepicker('show');
         });
-
+        $('#t_startdate').click(function () {
+            $('#dp_end').datepicker('hide');
+        });
+        $('.dp').datepicker({
+            format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+            autoclose: true,
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
         if ('@ModelStatus' == "Draft" && ('@IsViewEditBusinessUnit.ToString().ToLower()' == 'true' || '@IsOwner.ToString().ToLower()' == 'true')) {
             $("#publish").removeClass('btn-blue-disable');
             $("#publish").addClass('btn-blue');
@@ -140,6 +148,7 @@
                     if (confirm($("#PublishedMsg").val())) {
                         $('#DivBackgroundModel').css("display", "block");
                         $('#DivPublishModelPopup').css("display", "block");
+                        $("body").css("overflow-y", "hidden");
                         var date = $("#EffectiveDate").val();
                         $("#t_startdate").val(date);
                         return false;
@@ -147,12 +156,14 @@
                     else {
                         $('#DivBackgroundModel').css("display", "none");
                         $('#DivPublishModelPopup').css("display", "none");
+                        $("body").css("overflow-y", "scroll");
                         return false;
                     }
                 }
                 else {
                     $('#DivBackgroundModel').css("display", "block");
                     $('#DivPublishModelPopup').css("display", "block");
+                    $("body").css("overflow-y", "hidden");
                     var date = $("#EffectiveDate").val();
                     $("#t_startdate").val(date);
                     return false;
@@ -161,12 +172,14 @@
             else {
                 $('#DivBackgroundModel').css("display", "none");
                 $('#DivPublishModelPopup').css("display", "none");
+                $("body").css("overflow-y", "scroll");
                 return false;
             }
         });
         $("#cancel-button").click(function () {
             $('#DivBackgroundModel').css("display", "none");
             $('#DivPublishModelPopup').css("display", "none");
+            $("body").css("overflow-y", "scroll");
             return false;
         });
 

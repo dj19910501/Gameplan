@@ -148,7 +148,15 @@
         $('#dp_start .add-on').click(function () {
             $('#dp_start').datepicker('show');
         });
-
+        $('#t_startdate').click(function () {
+            $('#dp_end').datepicker('hide');
+        });
+        $('.dp').datepicker({
+            format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+            autoclose: true,
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
         $('#btnSubmit').click(function () {
             /*Modified by Mitesh vaishnav on 13/08/2014 for PL ticket #690*/
             /*Check for Integration instanse of pushing tactic data is changed than confirm process*/
@@ -210,6 +218,7 @@
                     if (confirm($("#PublishedMsg").val())) {
                         $('#DivBackgroundModel').css("display", "block");
                         $('#DivPublishModelPopup').css("display", "block");
+                        $("body").css("overflow-y", "hidden");
                         var date = $("#EffectiveDate").val();
                         $("#t_startdate").val(date);
                         return false;
@@ -217,6 +226,7 @@
                     else {
                         $('#DivBackgroundModel').css("display", "none");
                         $('#DivPublishModelPopup').css("display", "none");
+                        $("body").css("overflow-y", "scroll");
                         return false;
                     }
                 }
@@ -225,18 +235,21 @@
                     $('#DivPublishModelPopup').css("display", "block");
                     var date = $("#EffectiveDate").val();
                     $("#t_startdate").val(date);
+                    $("body").css("overflow-y", "hidden");
                     return false;
                 }
             }
             else {
                 $('#DivBackgroundModel').css("display", "none");
                 $('#DivPublishModelPopup').css("display", "none");
+                $("body").css("overflow-y", "scroll");
                 return false;
             }
         });
         $("#cancel-button").click(function () {
             $('#DivBackgroundModel').css("display", "none");
             $('#DivPublishModelPopup').css("display", "none");
+            $("body").css("overflow-y", "scroll");
             return false;
         });
 
