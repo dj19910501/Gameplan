@@ -526,11 +526,11 @@ namespace RevenuePlanner.Controllers
                 {
                     BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();
                     // Start - Modified by Sohel Pathan on 09/12/2014 for PL ticket #975
-                    bool isGoalValueZero = false;
+                    bool isGoalValueExists = false;
                     goalValue = goalValue.Replace(",", "");
                     if (goalValue != "" && Convert.ToInt64(goalValue) != 0)
                     {
-                        isGoalValueZero = true;
+                        isGoalValueExists = true;
                         objBudgetAllocationModel = Common.CalculateBudgetInputs(modelId, goalType, goalValue, ADS);
                     }
 
@@ -541,23 +541,23 @@ namespace RevenuePlanner.Controllers
                     {
                         msg1 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
                         msg2 = " in revenue";
-                        input1 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
-                        input2 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                        input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
 
                     }
                     else if (goalType.ToString().ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
                     {
                         msg1 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
                         msg2 = " in revenue";
-                        input1 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.INQValue.ToString();
-                        input2 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                        input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
                     }
                     else if (goalType.ToString().ToLower() == Enums.PlanGoalType.Revenue.ToString().ToLower())
                     {
                         msg1 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
                         msg2 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
-                        input1 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
-                        input2 = isGoalValueZero.Equals(true) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                        input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
                     }
                     // End - Modified by Sohel Pathan on 09/12/2014 for PL ticket #975
                 }
