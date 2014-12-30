@@ -326,7 +326,14 @@ function LoadBUData() {
                 '<td>' + _LastUpdated + '</td>';
 
         // Modified by Mitesh for Internal review points related to "Edit All Plan" permission 
-        $html += '<td><span class="delete-temp-program width5"></span><span class="edit-temp-program width5"></span></td>';
+        $html += '<td><span class="';
+        if (_IsPlanEditable) {
+            $html += 'delete-temp-program width5"></span>'
+        }
+        else {
+            $html += 'empty-delete-button width5">&nbsp;</span>'
+        }
+        $html += '<span class="edit-temp-program width5"></span></td>';
 
         $html += '</tr>';
         $baselineTable.append($html);
