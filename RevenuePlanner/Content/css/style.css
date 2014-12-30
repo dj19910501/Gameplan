@@ -6601,6 +6601,15 @@ span.left-arrow {
     visibility: hidden;
 }
 
+/*Added by Mitesh Vaishnav for internal review point - If delete button not shown on plan selector than alignment is not proper*/
+.empty-delete-button {
+    float: right;
+    width:15px;
+    margin-left: 7px;
+    visibility: hidden;
+}
+/*End - Added by Mitesh Vaishnav*/
+
 input.delete-icon + span:hover, span.delete-tactic:hover, .delete-temp-program:hover, .delete-program:hover, .delete-Improvement:hover {
     background-position: -15px 0;
 }
