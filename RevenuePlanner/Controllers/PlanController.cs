@@ -4540,7 +4540,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
             try
             {
-                ViewBag.IsPlanCreateAuthorized = true; // AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
                 // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId).Select(_pln => _pln.Model.BusinessUnitId).FirstOrDefault());
                 if (!IsBusinessUnitEditable)

@@ -73,7 +73,9 @@
                     <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
                         <ul style="margin: 0;">
                             <li id="NewCampaign" class="new-prog">New Campaign</li>
+                            @if(IsPlanCreateAuthorized){
                             <li id="ClonePlan" class="copy-camp">Copy Plan</li>
+                            }
                         </ul>
                     </div>
                 </div>
