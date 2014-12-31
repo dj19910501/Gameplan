@@ -520,10 +520,6 @@
             $('#dp_end').datepicker('hide');
         })
         $("#Save-publish").click(function () {
-            CheckUserSession("#Save-publish", true);
-            if (reason == 'user') {
-                return false;
-            }
             var date = $("#t_startdate").val();
             $("#EffectiveDate").val(date);
             SaveAllTactic(true);
@@ -573,10 +569,6 @@
 
 
         $("#continue").click(function () {
-            CheckUserSession("#continue", true);
-            if (reason == 'user') {
-                return false;
-            }
             SaveAllTactic(false);
         });
         
@@ -615,22 +607,30 @@
                     if (rejid[j] == ids[i]) rejid.splice(j, 1);
                 }
             }
+            //// Start - Modified by Sohel Pathan on 31/12/2014 for PL ticket #1063
+            var uId = $(window).attr('name');
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/saveAllTactic/")',
-                data: 'ids=' + ids + '&rejids=' + rejid + '&ModelId=' + ModelId + '&isModelPublished=' + isPublishToo + '&EffectiveDate=' + $("#EffectiveDate").val(),
+                data: 'ids=' + ids + '&rejids=' + rejid + '&ModelId=' + ModelId + '&isModelPublished=' + isPublishToo + '&EffectiveDate=' + $("#EffectiveDate").val() + '&UserId=' + uId,
                 success: function (data) {
-                    if (data.errorMessage != undefined) {
-                        url = '@Url.Content("~/Model/Tactics")';
-                        window.location.href = url + '?id=' + ModelId;
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                     }
                     else {
-                        url = '@Url.Content("~/Model/IntegrationSelection")';
-                        window.location.href = url + '?id=' + ModelId;
+                        if (data.errorMessage != undefined) {
+                            url = '@Url.Content("~/Model/Tactics")';
+                            window.location.href = url + '?id=' + ModelId;
+                        }
+                        else {
+                            url = '@Url.Content("~/Model/IntegrationSelection")';
+                            window.location.href = url + '?id=' + ModelId;
+                        }
                     }
                 }
             });
-    }
+            //// End - Modified by Sohel Pathan on 31/12/2014 for PL ticket #1063
+        }
     });
 
     //// Start - Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to clone a model.

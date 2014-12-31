@@ -2096,11 +2096,24 @@ namespace RevenuePlanner.Controllers
         /// <param name="ModelId">model if</param>
         /// <param name="isModelPublished">isModelPublished flag</param>
         /// <param name="EffectiveDate">effective date of model</param>
+        /// <param name="UserId">user id of logged in user</param>  Added by Sohel Pathan on 31/12/2014 for PL ticket #1063
         /// <returns>returns json object</returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult saveAllTactic(string ids, string rejids, int ModelId, bool isModelPublished, string EffectiveDate)
+        public ActionResult saveAllTactic(string ids, string rejids, int ModelId, bool isModelPublished, string EffectiveDate, string UserId = "")
         {
+            //// Start - Added by Sohel Pathan on 31/12/2014 for PL ticket #1063
+            //// Check cross user login
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            //// End - Added by Sohel Pathan on 31/12/2014 for PL ticket #1063
+
             string errorMessage = string.Empty, successMessage = string.Empty;
             try
             {
