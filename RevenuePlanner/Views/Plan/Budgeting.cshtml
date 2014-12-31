@@ -76,11 +76,11 @@
             <span class="selectBox" id="ddlBusinessUnitSelectBox" style="width: 158px;">
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
         {
-                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId), new { @class = "ddlStyleReport" })
+                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId), new { @class = "ddlStyleReport hide" })
         }
         else
         {
-                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"), new { @class = "ddlStyleReport" })
+                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"), new { @class = "ddlStyleReport hide" })
         }
     </span>
         </div>
@@ -88,7 +88,7 @@
         <div id="divViewBy" style="display: none;">
             @Html.Label("View By:", new { id = "lblViewBy",style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px;" })
             <span class="selectBox" id="ddlCampaignSelectBox" style="width: 158px;">
-                @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text" ,myView), new { @class = "ddlStyleReport" })
+                @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text" ,myView), new { @class = "ddlStyleReport hide" })
             </span>
         </div>
     }

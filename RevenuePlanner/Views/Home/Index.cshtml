@@ -301,7 +301,7 @@
     </script>
 
     <div id="PlanModulesSection">
-        <div class="padding-content padding-bottom0" id="DivButtonsHome">
+        <div class="padding-content padding-bottom0 hide" id="DivButtonsHome">
             <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
             <div class="wraper-btns cf">
                 @if (IsTacticActualsAddEditAuthorized)
@@ -337,7 +337,7 @@
             </div>
         </div>
 
-        <div class="padding-content padding-bottom0" id="DivButtonsPlanSummary">
+        <div class="padding-content padding-bottom0 hide" id="DivButtonsPlanSummary">
             <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
             <div class="wraper-btns cf">
                 @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
@@ -596,11 +596,11 @@
     <span class="selectBox cmbxplan_businessunit" id="dropdown-business-unit">
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
         {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId))
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId), new { @class = "hide" })
         }
         else
         {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"))
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"), new { @class = "hide" })
         }
     </span>
     }

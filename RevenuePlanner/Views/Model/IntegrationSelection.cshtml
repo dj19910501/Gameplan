@@ -83,7 +83,7 @@
                     <label>Push Tactic Data</label>
 
                     <div class="selectBox" id="ddlIntegrationInstance">
-                        @Html.DropDownListFor(model => model.IntegrationInstanceId, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstances"], "InstanceId", "InstanceName"), "None")
+                        @Html.DropDownListFor(model => model.IntegrationInstanceId, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstances"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
                 </div>
@@ -91,7 +91,7 @@
                     <label>Pull Responses</label>
 
                     <div class="selectBox" id="ddlIntegrationInstanceINQ">
-                        @Html.DropDownListFor(model => model.IntegrationInstanceIdINQ, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstances"], "InstanceId", "InstanceName"), "None")
+                        @Html.DropDownListFor(model => model.IntegrationInstanceIdINQ, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstances"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
                 </div>
@@ -99,7 +99,7 @@
                     <label>Pull Qualified Leads</label>
 
                     <div class="selectBox" id="ddlIntegrationInstanceMQL">
-                        @Html.DropDownListFor(model => model.IntegrationInstanceIdMQL, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None")
+                        @Html.DropDownListFor(model => model.IntegrationInstanceIdMQL, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
                 </div>
@@ -107,7 +107,7 @@
                     <label>Pull Closed Deals</label>
 
                     <div class="selectBox" id="ddlIntegrationInstanceCW">
-                        @Html.DropDownListFor(model => model.IntegrationInstanceIdCW, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None")
+                        @Html.DropDownListFor(model => model.IntegrationInstanceIdCW, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
                 </div>

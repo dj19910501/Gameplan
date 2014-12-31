@@ -15,7 +15,7 @@
         var strValidation = "^(?:|^[^<>~%^;/|]+)$";
             
     <div class="selectBox UserProfile" id="ddlSecurityQuestionSelectBox">
-        @Html.DropDownListFor(f => f.SecurityQuestionId, new SelectList(Model.SecurityQuestionList, "Value", "Text"),"Select Security Question")
+        @Html.DropDownListFor(f => f.SecurityQuestionId, new SelectList(Model.SecurityQuestionList, "Value", "Text"),"Select Security Question", new { @class = "hide" })
        
     </div>
     

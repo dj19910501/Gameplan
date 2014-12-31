@@ -56,7 +56,7 @@
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional" })
 
             <label>Target Stage</label>
-            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
 
             <label class="margin-top10">Status</label>
             @{

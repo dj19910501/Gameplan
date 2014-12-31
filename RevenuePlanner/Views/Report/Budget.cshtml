@@ -5,10 +5,10 @@
             <div style="float: right;">
                 @Html.Label("View By:", new { id = "lblViewBy",style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important" })
                
-                    @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.ReportTabType.Plan.ToString()), new { @class = "ddlStyleReport" })
+                    @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.ReportTabType.Plan.ToString()), new { @class = "ddlStyleReport hide" })
                
                 <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
-                    @Html.DropDownList("ddlAllocateViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport" })
+                    @Html.DropDownList("ddlAllocateViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport hide" })
                </span>
             </div>
             <h2>Budget Summary</h2>

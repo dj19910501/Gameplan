@@ -90,7 +90,7 @@
             <tr id="trNewService" index="-1">
                 <td>
                     <div id="nl-form" class="nl-form-plan-title without-margin">
-                        @Html.DropDownList("ddlIntegrationTypes", new SelectList((System.Collections.IEnumerable)TempData["ExternalFieldList"], "Value", "Text"), "Add New Integration", new { require = "true", Id = "lstIntegration" })
+                        @Html.DropDownList("ddlIntegrationTypes", new SelectList((System.Collections.IEnumerable)TempData["ExternalFieldList"], "Value", "Text"), "Add New Integration", new { require = "true", Id = "lstIntegration", @class="hide" })
                     <div class="nl-overlay"></div>
                     </div>
                     <script>

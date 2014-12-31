@@ -11,7 +11,7 @@
     <div id="DivSummaryButtonsConversionSummary" class="summary-btns">
         <p>View By:</p>
             <span>
-             @Html.DropDownList("ddlParentConversionSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text"))
+             @Html.DropDownList("ddlParentConversionSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text"), new { @class = "hide" })
          </span>
          
     </div>
@@ -49,10 +49,10 @@
                 @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934 *@
         <p>View By:</p>
            <span>
-             @Html.DropDownList("ddlParentConversionPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text", Common.RevenueAudience.ToString()))
+             @Html.DropDownList("ddlParentConversionPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text", Common.RevenueAudience.ToString()), new { @class = "hide" })
          </span>
           <span class="margin-left20px">
-             @Html.DropDownList("ddlChildConversionPlan",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"))
+             @Html.DropDownList("ddlChildConversionPlan",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"), new { @class = "hide" })
          </span>
     </div>
         </div>
@@ -84,7 +84,7 @@
                 @* Modified by Sohel Pathan on 12/11/2014 for PL ticket #934 *@
         <p>View By:</p>
             <span>
-             @Html.DropDownList("ddlParentConversionPerformance", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionPerformance, "Value", "Text", Common.Actuals.ToString()))
+             @Html.DropDownList("ddlParentConversionPerformance", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionPerformance, "Value", "Text", Common.Actuals.ToString()), new { @class = "hide" })
          </span>
         
     </div>

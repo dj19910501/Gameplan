@@ -61,7 +61,7 @@
                         @{
                         if (strPlanId == "" || strPlanId == "0")
                         {
-                            @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget", placeholder = @Model.ModelId })
+                            @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
                             <span id="ModelTitle" class="source-sans-proregular"></span>
                         }
                         else
@@ -75,7 +75,7 @@
                         @{
                         if(strPlanId == "" || strPlanId == "0"  || (bool)ViewBag.IsBusinessUnitEditable == true)
                         {
-                         @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue" })
+                         @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
                         }
                         else
                         {
@@ -87,7 +87,7 @@
                         @{
                         if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
                         {
-                            @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget", placeholder = @Model.GoalType})
+                            @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType})
                         }
                         else
                         {
@@ -103,7 +103,7 @@
                         @{
                         if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)    
                         {
-                            @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue", placeholder = @Model.AllocatedBy})
+                            @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue hide", placeholder = @Model.AllocatedBy})
                         }
                         else
                         {
@@ -146,8 +146,8 @@
                     </div>
                 </td>
                 <td class="width100px bg-content-blue">
-                    <input type="button" value="Next" id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" />
-                    <input type="button" value="Back" id="button-back" class="btn btn-gray text-shadow-blue source-sans-proregular padding-side20" />
+                    <input type="button" value="Next" id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20 hide" />
+                    <input type="button" value="Back" id="button-back" class="btn btn-gray text-shadow-blue source-sans-proregular padding-side20 hide" />
                 </td>
                 @Html.HiddenFor(model => model.ModelId)
                 @Html.HiddenFor(model => model.PlanId)
@@ -312,7 +312,7 @@
               $("#button-save").hide();
           }
           else {
-              $("#button-save").show();
+              $("#button-save").css('display', 'block');
           }
           // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
@@ -828,7 +828,7 @@
     });
 
     function buttonBackClick() {
-        $('#button-save').show();
+        $("#button-save").css('display', 'block');
         $('#button-back').hide();
         $('.budget-month .priceValue').each(function () {
             $(this).removeClass('border000000');

@@ -169,7 +169,7 @@
                                     </td>
                                     <td class="Inactive OtherUserList">
                                         <div class="selectBox" id="ddlAssignRole">
-                                            @Html.DropDownListFor(model => item.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
+                                            @Html.DropDownListFor(model => item.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select", new { @class = "hide" })
                                         </div>
                                     </td>
                                     <td class="Inactive" id="tdAssign ">

@@ -40,7 +40,7 @@
                             <div class="reassign-role">
                                 <label class="source-sans-prolight">Reassign a role to these users:</label>
                                 <span class="selectBox">
-                                    @Html.DropDownList("ddllist", new SelectList((System.Collections.IEnumerable)ViewData["roles"], "value", "text"), "Please Select")
+                                    @Html.DropDownList("ddllist", new SelectList((System.Collections.IEnumerable)ViewData["roles"], "value", "text"), "Please Select", new { @class = "hide" })
                                 </span>
                             </div>
                             <br />

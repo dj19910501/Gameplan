@@ -239,11 +239,11 @@
     <span class="selectBox" id="dropdown-business-unit" style="width: 158px;">
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
         {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", @RevenuePlanner.Helpers.Sessions.BusinessUnitId))
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", @RevenuePlanner.Helpers.Sessions.BusinessUnitId), new { @class = "hide" })
         }
         else
         {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"))
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"), new { @class = "hide" })
         }
     </span>
     }
@@ -282,7 +282,7 @@
                     {
                         using (Html.BeginForm("ApplyToCalendar", "Plan", FormMethod.Post, new { @id = "frmPublishPlan" }))
                         {
-                        <input id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20 pull-right margin-top20" type="submit" value="Publish Plan">
+                        <input id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20 pull-right margin-top20 hide" type="submit" value="Publish Plan">
                         <script type="text/javascript">
                             $('#BtnPublishPlan').click(function () {
                                 CheckUserSession("#BtnPublishPlan", true);

@@ -96,7 +96,7 @@
         <div class="span3" id="inspect-modal-left-column2">
             <p>Tactic Type <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox">
-                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
+                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
             <p class="margin-top-10">Tactic Planned Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
@@ -122,7 +122,7 @@
             @if (IsTackticAddEdit)
             {
                 <span style="min-width:100%; position:relative;">
-                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", Id = "ddlOwner", label = "Owner" })
+                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
             else
@@ -180,7 +180,7 @@
         <div class="span3 margin-top10" style="clear: both;">
             <p class="ellipsis-left" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p> <span class="required-asterisk">*</span>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", label = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience), require = "true" })
+                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", label = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience), require = "true" })
             </span>
         </div>
         <div class="span3 margin-top10 paddingleft25px">
@@ -190,13 +190,13 @@
         <div class="span3 margin-top10 paddingleft25px">
             <p>Vertical <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", label = "Vertical" })
+                @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", label = "Vertical" })
             </span>
         </div>
         <div class="span3 margin-top10 paddingleft25px">
             <p>Geography <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown", require = "true", label = "Geography" })
+                @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", label = "Geography" })
             </span>
         </div>
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 4, Enums.InspectPopupMode.Edit.ToString())

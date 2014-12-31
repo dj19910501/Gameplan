@@ -95,7 +95,7 @@
                     }
                     else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
                     {
-                        @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"), new { tabindex = "4" })
+                        @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"), new { tabindex = "4", @class="hide" })
                         @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "" ,new { style="padding-top: 6px; position: absolute;" })
                     }
                 </div>

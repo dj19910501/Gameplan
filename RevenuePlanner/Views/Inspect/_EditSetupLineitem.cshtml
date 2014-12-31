@@ -67,7 +67,7 @@
             @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticTitle })
               <p id="lblType">Type <span class="required-asterisk">*</span></p>
             <span class="verticalIdSelectBox" style="margin-left: -2px;" id="ddlTypeArea">
-                @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission", require = "true", label = "Type" })
+                @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission hide", require = "true", label = "Type" })
             </span>
 
 

@@ -141,11 +141,11 @@
                     <div class="selectBox UserProfile" id="ddlBusinessUnitIdSelectBox">
                         @if (ViewData["BusinessUnits"] != null)
                         {
-                            @Html.DropDownListFor(c => c.BusinessUnitId, new SelectList((System.Collections.IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Title"), "Please Select")
+                            @Html.DropDownListFor(c => c.BusinessUnitId, new SelectList((System.Collections.IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Title"), "Please Select", new { @class = "hide" })
                         }
                         else
                         {
-                            @Html.DropDownListFor(c => c.BusinessUnitId, Enumerable.Empty<SelectListItem>(), "Please Select")
+                            @Html.DropDownListFor(c => c.BusinessUnitId, Enumerable.Empty<SelectListItem>(), "Please Select", new { @class = "hide" })
                         }
                     </div>
                     @Html.ValidationMessageFor(model => model.BusinessUnitId)
@@ -157,7 +157,7 @@
                     @Html.LabelFor(model => model.RoleId)
                     @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
                     <div class="selectBox UserProfile secondlast-ddl" id="ddlRoleIdSelectBox">
-                        @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
+                        @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select", new { @class = "hide" })
                     </div>
                     @Html.ValidationMessageFor(model => model.RoleId)
                     @Html.Label("", Common.objCached.RoleRequired, new { @class="field-validation-error selectbox-validation-message", id="lblRoleIdRequired" })
@@ -170,11 +170,11 @@
                         <div class="selectBox UserProfile last-ddl" id="ddlManagerIdSelectBox">
                             @if (ViewData["ManagerList"] != null)
                             {
-                                @Html.DropDownListFor(c => c.ManagerId, new SelectList((System.Collections.IEnumerable)ViewData["ManagerList"], "ManagerId", "ManagerName"), "Please Select")
+                                @Html.DropDownListFor(c => c.ManagerId, new SelectList((System.Collections.IEnumerable)ViewData["ManagerList"], "ManagerId", "ManagerName"), "Please Select", new { @class = "hide" })
                             }
                             else
                             {
-                                @Html.DropDownListFor(c => c.ManagerId, Enumerable.Empty<SelectListItem>(), "Please Select")
+                                @Html.DropDownListFor(c => c.ManagerId, Enumerable.Empty<SelectListItem>(), "Please Select", new { @class = "hide" })
                             }
                         </div>
                         @Html.Label("", Common.objCached.ManagerRequired, new { @class="field-validation-error selectbox-validation-message", id="lblManagerIdRequired" })

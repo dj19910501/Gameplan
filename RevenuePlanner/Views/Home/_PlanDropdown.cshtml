@@ -21,18 +21,18 @@
         <h2 id="lblMarkringActivitiesTitle" style="font-size: 29.5px;display:none;">Marketing Activities</h2>
     </li>
     <li style="padding-top:5px;">
-        <div class="request-icons">
-		     <div class="request-icon-block"><a href="#" class="request">Requests</a><span class="counter"></span></div>
+        <div class="request-icons hide">
+		     <div class="request-icon-block"><a href="#" class="request">Requests</a><span class="counter hide"></span></div>
 	    </div>
     </li>
     
          <div style="float: right;margin-bottom: 10px; margin-right: -15px;">
                 @Html.Label("Time Frame:", new { id = "lblUpcoming_Activies" })    @* Modified by : Sohel Pathan on 29/10/2014 for PL ticket #899 *@
             <span class="selectBox" id="ddlUpComingActivitesSelectBox" style="width: 127px;">
-                @Html.DropDownList("ddlUpComingActivites", new SelectList((System.Collections.IEnumerable)ViewBag.ViewUpComingActivity, "Value", "Text",DateTime.Now.Year.ToString()))
+                @Html.DropDownList("ddlUpComingActivites", new SelectList((System.Collections.IEnumerable)ViewBag.ViewUpComingActivity, "Value", "Text",DateTime.Now.Year.ToString()), new { @class = "hide" })
             </span>
             @Html.Label("View By:", new { id = "lblViewBy" })
-            @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.PlanGanttTypes.Tactic.ToString()))
+            @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.PlanGanttTypes.Tactic.ToString()), new { @class = "hide" })
         </div>
 </ul>
 <script src="~/Scripts/js/scripts.js"></script>
@@ -65,6 +65,7 @@
             $("#nl-form2").hide();
             $("#lblMarkringActivitiesTitle").show();
         }
+        $('.request-icons').show();
         var SelectedPlans = filters.SelectedPlans.toString();
         GetHealderData(SelectedPlans);
         GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime);

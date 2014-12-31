@@ -27,7 +27,7 @@ else
         @Html.Raw("I'm creating a model called")
         @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datadefault = "Title", datasubline = "For example: <em>SMB Baseline</em>" })
         @Html.Raw("for")
-        @Html.DropDownListFor(m => m.BusinessUnitId, (SelectList)TempData["BusinessUnitList"]).
+        @Html.DropDownListFor(m => m.BusinessUnitId, (SelectList)TempData["BusinessUnitList"], new { @class = "hide" }).
         <div class="nl-overlay"></div>
     </div>
     @Html.Hidden("hdnmoelexist", ""); // hidden field added to check if model exist or not

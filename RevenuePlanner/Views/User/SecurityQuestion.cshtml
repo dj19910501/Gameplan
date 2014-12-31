@@ -52,7 +52,7 @@
                     @Html.LabelFor(model => model.SecurityQuestionList)
                     
                     <div class="selectBox UserProfile" id="ddlSecurityQuestionSelectBox1">
-                        @Html.DropDownListFor(f => f.SecurityQuestionId, new SelectList(Model.SecurityQuestionList, "Value", "Text", Model.SecurityQuestionId), "Select Security Question", new { pattern = strValidation, @required = "required" })
+                        @Html.DropDownListFor(f => f.SecurityQuestionId, new SelectList(Model.SecurityQuestionList, "Value", "Text", Model.SecurityQuestionId), "Select Security Question", new { pattern = strValidation, @required = "required", @class="hide" })
                     </div>
                 </div>
 
