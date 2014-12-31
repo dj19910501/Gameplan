@@ -1544,21 +1544,39 @@ namespace RevenuePlanner.Controllers
         /// Added By: Maninder Singh Wadhva.
         /// Date: 12/04/2013
         /// </summary>
+        /// <param name="UserId">used id of logged in user</param>  Added by Sohel Pathan on 31/12/2014 for PL ticket #1059
         /// <returns>Returns ApplyToCalendar action result.</returns>
         [HttpPost]
         [ActionName("ApplyToCalendar")]
-        public RedirectToRouteResult ApplyToCalendarPost()
+        public ActionResult ApplyToCalendarPost(string UserId = "")
         {
-            //// Update Plan status to Published.
-            var plan = db.Plans.FirstOrDefault(p => p.PlanId.Equals(Sessions.PlanId));
-            plan.Status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
-            plan.ModifiedBy = Sessions.User.UserId;
-            plan.ModifiedDate = DateTime.Now;
+            try
+            {
+                //// Check cross user login check
+                if (!string.IsNullOrEmpty(UserId))
+                {
+                    if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                        return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                    }
+                }
 
-            int returnValue = db.SaveChanges();
-            Common.InsertChangeLog(Sessions.PlanId, 0, Sessions.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.published);
-            ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
-            return RedirectToAction("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Sessions.PlanId });
+                //// Update Plan status to Published.
+                var plan = db.Plans.FirstOrDefault(p => p.PlanId.Equals(Sessions.PlanId));
+                plan.Status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
+                plan.ModifiedBy = Sessions.User.UserId;
+                plan.ModifiedDate = DateTime.Now;
+
+                int returnValue = db.SaveChanges();
+                Common.InsertChangeLog(Sessions.PlanId, 0, Sessions.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.published);
+                ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
+                return Json(new { activeMenu = Enums.ActiveMenu.Plan.ToString(), currentPlanId = Sessions.PlanId }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { errorMessage = Common.objCached.ErrorOccured.ToString() }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         /// <summary>

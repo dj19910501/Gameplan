@@ -280,18 +280,7 @@
                     <a id="lnkGoBack" style="cursor: pointer;">Back</a>
                     @if (IsPlanEditable)
                     {
-                        using (Html.BeginForm("ApplyToCalendar", "Plan", FormMethod.Post, new { @id = "frmPublishPlan" }))
-                        {
                         <input id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20 pull-right margin-top20 hide" type="submit" value="Publish Plan">
-                        <script type="text/javascript">
-                            $('#BtnPublishPlan').click(function () {
-                                CheckUserSession("#BtnPublishPlan", true);
-                                if (reason == 'user') {
-                                    return false;
-                                }
-                            });
-                        </script>
-                        }
                     }
                 </div>
             </div>
@@ -1209,4 +1198,35 @@
         }
         return result;
     }
+    
+    //// Start - Added by Sohel Patan on 31/12/2014 for PL ticket #1059
+    $('#BtnPublishPlan').click(function () {
+        publishPlan();
+    });
+
+    function publishPlan()
+    {
+        var uId = $(window).attr('name');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/ApplyToCalendar/")',
+            data: 'UserId=' + uId,
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if(data.errorMessage != undefined) {
+                        $('#cErrorDuplicatePlan').html('<strong>Error! </strong>' + data.errorMessage);
+                        $('#errorMessageDuplicatePlan').slideDown(3000);
+                    }
+                    else if (data.activeMenu != undefined && data.currentPlanId != undefined) {
+                        url = '@Url.Content("~/Home/Index?ActiveMenu=")';
+                        window.location.href = url + data.activeMenu + '&currentPlanId=' + data.currentPlanId;
+                    }
+                }
+            }
+        });
+    }
+    //// End - Added by Sohel Patan on 31/12/2014 for PL ticket #1059                    
 </script>
