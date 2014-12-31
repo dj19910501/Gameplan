@@ -1826,7 +1826,7 @@ namespace RevenuePlanner.Controllers
                     else
                     {
                         isDuplicate = db.IntegrationInstances.Where(intgrtn => intgrtn.Instance == form.Instance && intgrtn.ClientId == Sessions.User.ClientId && intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
-                         && intgrtn.IntegrationInstanceId != form.IntegrationInstanceId).Any();
+                                        && intgrtn.IsDeleted == false && intgrtn.IntegrationInstanceId != form.IntegrationInstanceId).Any();
                     }
 
                     if (!isDuplicate && form.IntegrationInstanceId >= 0)
