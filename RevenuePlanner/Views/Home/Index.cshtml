@@ -1624,7 +1624,8 @@
                 $("#successMessageDuplicatePlan").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
             }
             else {
-                $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+                $("#successMessageDuplicatePlan").removeClass("message-position");
+                $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
                 $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html())
                 $("#successMessageDuplicatePlan").slideDown(3000);
             }
