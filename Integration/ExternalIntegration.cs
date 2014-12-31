@@ -81,7 +81,7 @@ namespace Integration
             {TacticStatus.Complete.ToString(), "Complete"}
         };
 
-        public ExternalIntegration(int id,Guid applicationId, Guid UserId = new Guid(), EntityType entityType = EntityType.IntegrationInstance)
+        public ExternalIntegration(int id, Guid applicationId, Guid UserId = new Guid(), EntityType entityType = EntityType.IntegrationInstance)
         {
             _id = id;
             _userId = UserId;
@@ -214,7 +214,7 @@ namespace Integration
                 IntegrationInstanceLog instanceLogEnd = db.IntegrationInstanceLogs.SingleOrDefault(instance => instance.IntegrationInstanceLogId == integrationinstanceLogId);
                 if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
                 {
-                    IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId,_applicationId);
+                    IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationSalesforceClient.IsAuthenticated)
                     {
                         _isResultError = integrationSalesforceClient.SyncData();
@@ -227,7 +227,7 @@ namespace Integration
                 }
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
                 {
-                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId,_applicationId);
+                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationEloquaClient.IsAuthenticated)
                     {
                         _isResultError = integrationEloquaClient.SyncData();
@@ -270,7 +270,7 @@ namespace Integration
 
             if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
             {
-                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0,_applicationId);
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
                     return integrationSalesforceClient.GetTargetDataType("Campaign");
@@ -278,7 +278,7 @@ namespace Integration
             }
             else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
             {
-                IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0,_applicationId);
+                IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 if (integrationEloquaClient.IsAuthenticated)
                 {
                     return integrationEloquaClient.GetTargetDataType();
@@ -302,7 +302,7 @@ namespace Integration
 
             if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
             {
-                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0,_applicationId);
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
                     return integrationSalesforceClient.GetTargetDataType("Opportunity");
@@ -315,8 +315,8 @@ namespace Integration
         /// <summary>
         /// Added By Dharmraj on 13-8-2014, Ticket #680
         /// </summary>
-        /// <returns>Returns list of properties of salesforce CampaignMember object</returns>
-        public List<string> GetTargetDataMemberRevenue()
+        /// <returns>Returns list of properties of salesforce CampaignMember or Eloqua Contact object based in integration type</returns>
+        public List<string> GetTargetDataMemberPulling()
         {
             _integrationInstanceId = _id;
             if (_integrationInstanceId.HasValue)
@@ -326,12 +326,23 @@ namespace Integration
 
             if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
             {
-                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0,_applicationId);
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
                     return integrationSalesforceClient.GetTargetDataType("CampaignMember");
                 }
             }
+            //// Start - Added by Sohel Pathan on 23/12/2014 for PL ticket #
+            else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
+            {
+                IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
+                if (integrationEloquaClient.IsAuthenticated)
+                {
+                    var lstContactFields = integrationEloquaClient.GetContactFields();
+                    return lstContactFields.Select(contactField => contactField.Value).ToList();
+                }
+            }
+            //// End - Added by Sohel Pathan on 23/12/2014 for PL ticket #
 
             return null;
         }

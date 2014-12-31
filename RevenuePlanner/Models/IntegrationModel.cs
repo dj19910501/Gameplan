@@ -81,6 +81,10 @@ namespace RevenuePlanner.Models
         //Dharmraj Start PL#680 Integration - UI - Pull responses from Salesforce
         public IList<GameplanDataTypePullModel> GameplanDataTypePullRevenueModelList { get; set; }
         //Dharmraj End PL#680 Integration - UI - Pull responses from Salesforce
+
+        //// Start - Added by Sohel Pathan on 22/12/2014 - PL# Integration - UI - Pull MQL responses from Eloqua
+        public IList<GameplanDataTypePullModel> GameplanDataTypePullMQLModelList { get; set; }
+        //// End - Added by Sohel Pathan on 22/12/2014 - PL# Integration - UI - Pull MQL responses from Eloqua
     }
 
     //Added by Mitesh Vaishnav for PL ticket #659

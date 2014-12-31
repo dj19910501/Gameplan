@@ -63,6 +63,7 @@
                     if(Model.IntegrationType.Code==Enums.IntegrationType.Eloqua.ToString())
                     {
                         @Html.Partial("~/Views/ExternalService/_ExternalServer.cshtml", Model.ExternalServer)
+                        @Html.Partial("~/Views/ExternalService/_MQLResponses.cshtml", Model.GameplanDataTypePullMQLModelList)
                     }
                     else if(Model.IntegrationType.Code==Enums.IntegrationType.Salesforce.ToString())
                     {
@@ -83,6 +84,14 @@
                             <a class="accordion-toggle CreateMode" data-parent="#accordion" style="position:static;" >Pull Responses</a>
                         </div>
                     </div>
+                    if(Model.IntegrationType.Code==Enums.IntegrationType.Eloqua.ToString())
+                    {
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle CreateMode" data-parent="#accordion" >Pull MQL</a>
+                            </div>
+                        </div>
+                    }
                     <div class="accordion-group">
                         <div class="accordion-heading">
                             <a class="accordion-toggle CreateMode no-bottom-border" data-parent="#accordion" >Pull Closed Deals</a>
@@ -120,6 +129,9 @@
             }
             else if ($(expandedTab).attr('id') == 'collapseRevenue') {
                 $("#frmRevenueDataMapping #0").next().find('.sbSelector').focus();
+            }
+            else if ($(expandedTab).attr('id') == 'collapseMQL') {
+                $("#frmMQLDataMapping #0").next().find('.sbSelector').focus();
             }
             else if ($(expandedTab).attr('id') == 'collapseCloseDeal') {
                 $("#frmClosedDealDataMapping #0").next().find('.sbSelector').focus();
@@ -357,6 +369,10 @@
     $('#btnCancelCloseDealMappins').click(function () {
         checkForDataLose('accordion', url, ErrorMessage);
     });
+
+    $('#btnCancelMQLMappings').click(function () {
+        checkForDataLose('accordion', url, ErrorMessage);
+    });
     // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
 
     // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #863
@@ -391,6 +407,10 @@
         $("#frmClosedDealDataMapping").find('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
         $("#frmClosedDealDataMapping").find("#ClosedDealSuccessMessage").hide();
         
+        $("#frmMQLDataMapping").find('#MQLErrorMessage').find('#spanMessageError').html('');
+        $("#frmMQLDataMapping").find("#MQLErrorMessage").hide();
+        $("#frmMQLDataMapping").find('#MQLSuccessMessage').find('#spanMessageSuccess').html('');
+        $("#frmMQLDataMapping").find("#MQLSuccessMessage").hide();
     }
     // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #863
 </script>

@@ -11309,4 +11309,23 @@ float:left;
 .hide {
     display: none;
 }
-/* End - Added by Sohel Pathan on 30/12/2014 for an Internal Point #5 */ 
+/* End - Added by Sohel Pathan on 30/12/2014 for an Internal Point #5 */
+
+/* Start - Added by :- Sohel Pathan on 23/12/2014 for PL # */
+#frmMQLDataMapping .messages {
+    float: left;
+    margin: 10px 0;
+    width: 82%;
+}
+
+.width94 {
+    width:94% !important;
+}
+
+.integrationAccordion #accordion #frmMQLDataMapping {
+    border-bottom: 1px solid #cccccc;
+}
+.integrationAccordion .accordion-group .accordion-toggle {
+    position:static;
+}
+/* End - Added by :- Sohel Pathan on 23/12/2014 for PL # */ 

@@ -2328,6 +2328,28 @@ private string _CannotAllocateMorethanRemainingBudgeted;
         }
         // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
 
+        //// Start - Added by :- Sohel Pathan on 23/12/2014 for PL # 
+        private string _PullingTargetFieldInvalidMsg;
+        public string PullingTargetFieldInvalidMsg
+        {
+            get
+            {
+                return _PullingTargetFieldInvalidMsg;
+            }
+            set
+            {
+                _PullingTargetFieldInvalidMsg = value;
+            }
+        }
+
+        private string _DataTypeMappingPullMQLSaveSuccess;
+        public string DataTypeMappingPullMQLSaveSuccess
+        {
+            get { return _DataTypeMappingPullMQLSaveSuccess; }
+            set { _DataTypeMappingPullMQLSaveSuccess = value; }
+        }
+        //// End - Added by :- Sohel Pathan on 23/12/2014 for PL #
+
         #endregion
 
         #region  Functions
@@ -3055,6 +3077,14 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _InvalidURLForInspectPopup = strMsgValue;
                                             break;
                                         // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
+                                        //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
+                                        case "PullingTargetFieldInvalidMsg":
+                                            _PullingTargetFieldInvalidMsg = strMsgValue;
+                                            break;
+                                        case "DataTypeMappingPullMQLSaveSuccess":
+                                            _DataTypeMappingPullMQLSaveSuccess = strMsgValue;
+                                            break;
+                                        //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
                                     }
                                 }
                                 i = i + 1;

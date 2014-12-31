@@ -588,7 +588,7 @@ namespace RevenuePlanner.Controllers
             form.IntegrationTypeAttributes = GetIntegrationTypeAttributesModelById(form.IntegrationTypeId);
 
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            var integrationTypeObj = GetIntegrationTypeById(form.IntegrationTypeId); 
+            var integrationTypeObj = GetIntegrationTypeById(form.IntegrationTypeId);
             objIntegrationTypeModel.Title = integrationTypeObj.Title;
             objIntegrationTypeModel.Code = integrationTypeObj.Code;
             form.IntegrationType = objIntegrationTypeModel;
@@ -697,14 +697,23 @@ namespace RevenuePlanner.Controllers
                 objView.ExternalServer = GetExternalServer(id);
 
                 // Dharmraj Start : #658: Integration - UI - Pulling Revenue - Salesforce.com
-                objView.GameplanDataTypePullModelList = GetGameplanDataTypePullList(id);
+                objView.GameplanDataTypePullModelList = GetGameplanDataTypePullListClosedDeal(id);
                 // Dharmraj End : #658: Integration - UI - Pulling Revenue - Salesforce.com
                 // Dharmraj Start : #680: Integration - UI - Pull responses from Salesforce
-                objView.GameplanDataTypePullRevenueModelList = GetGameplanDataTypePullRevenueList(id);
+                if (objIntegrationTypeModel.Code.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    objView.GameplanDataTypePullRevenueModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Salesforce.ToString());
+                }
                 // Dharmraj End : #680: Integration - UI - Pull responses from Salesforce
+                //// Start - Added by Sohel Pathan on 22/12/2014
+                else if (objIntegrationTypeModel.Code.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    objView.GameplanDataTypePullMQLModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Eloqua.ToString());
+                }
+                //// End - Added by Sohel Pathan on 22/12/2014
             }
 
-            return View(objView);
+            return View("edit", objView);
         }
 
         /// <summary>
@@ -946,7 +955,7 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
-                ExternalIntegration externalIntegration = new ExternalIntegration(id,Sessions.ApplicationId, Sessions.User.UserId);
+                ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId);
                 externalIntegration.Sync();
                 IntegrationInstance integrationInstance = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(id));
 
@@ -1085,10 +1094,10 @@ namespace RevenuePlanner.Controllers
                                               join intgrtnType in db.IntegrationTypes on intgrtn.IntegrationTypeId equals intgrtnType.IntegrationTypeId
                                               where intgrtn.IsDeleted == false && intgrtnType.IsDeleted == false && intgrtn.IntegrationInstanceId == id
                                               select intgrtnType.Title).FirstOrDefault();
-                
-                if (string.IsNullOrEmpty(integrationTypeName)) 
-                    ViewBag.IntegrationTypeName = ""; 
-                else 
+
+                if (string.IsNullOrEmpty(integrationTypeName))
+                    ViewBag.IntegrationTypeName = "";
+                else
                     ViewBag.IntegrationTypeName = integrationTypeName;
 
                 //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
@@ -1270,7 +1279,7 @@ namespace RevenuePlanner.Controllers
         /// Added by Dharmraj on 8-8-2014, Ticket #658
         /// <param name="id"></param>
         /// <returns>Returns GameplanDataTypePullModel List</returns>
-        public IList<GameplanDataTypePullModel> GetGameplanDataTypePullList(int id)
+        public IList<GameplanDataTypePullModel> GetGameplanDataTypePullListClosedDeal(int id)
         {
             List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
             try
@@ -1295,36 +1304,45 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region Get Gampeplan DataType Pull Revenue List
+        #region Get Gampeplan DataType Pull Revenue/MQL List
         /// <summary>
-        /// Get list of gameplan DataType Pull Revenue Mapping list
+        /// Get list of gameplan DataType Pull Revenue/MQL Mapping list
         /// </summary>
         /// Added by Dharmraj on 13-8-2014, Ticket #680
+        /// Modified by Sohel Pathan on 23/12/2014, Ticket #
         /// <param name="id">Integration Instance Id</param>
+        /// <param name="integrationType">integration type code</param>
         /// <returns>Returns GameplanDataTypePullModel List</returns>
-        public IList<GameplanDataTypePullModel> GetGameplanDataTypePullRevenueList(int id)
+        public IList<GameplanDataTypePullModel> GetGameplanDataTypePullingList(int id, string integrationType)
         {
-            List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
+            List<GameplanDataTypePullModel> listGameplanDataTypePulling = new List<GameplanDataTypePullModel>();
 
             try
             {
                 ExternalIntegration objEx = new ExternalIntegration(id, Sessions.ApplicationId);
-                List<string> ExternalFieldsCloseDeal = objEx.GetTargetDataMemberRevenue();
-                if (ExternalFieldsCloseDeal == null)
+                List<string> lstExternalFieldsPulling = objEx.GetTargetDataMemberPulling();
+                if (lstExternalFieldsPulling == null)
                 {
-                    ExternalFieldsCloseDeal = new List<string>();
+                    lstExternalFieldsPulling = new List<string>();
                 }
-                ViewData["ExternalFieldListPullRevenue"] = ExternalFieldsCloseDeal;
+                ViewData["ExternalFieldListPulling"] = lstExternalFieldsPulling;
             }
             catch
             {
-                ViewData["ExternalFieldListPullRevenue"] = new List<string>();
+                ViewData["ExternalFieldListPulling"] = new List<string>();
             }
             finally
             {
-                listGameplanDataTypePullZero = GetGameplanDataTypePullListFromDB(id, Enums.GameplanDatatypePullType.INQ);
+                if (integrationType.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    listGameplanDataTypePulling = GetGameplanDataTypePullListFromDB(id, Enums.GameplanDatatypePullType.INQ);
+                }
+                else if (integrationType.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    listGameplanDataTypePulling = GetGameplanDataTypePullListFromDB(id, Enums.GameplanDatatypePullType.MQL);
+                }
             }
-            return listGameplanDataTypePullZero;
+            return listGameplanDataTypePulling;
         }
         #endregion
 
@@ -1367,7 +1385,7 @@ namespace RevenuePlanner.Controllers
                 string Eloqua = Enums.IntegrationType.Eloqua.ToString();
                 string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
                 string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
-                string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString(); 
+                string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
                 #endregion
 
                 //// Get GamePlan Stage Zero data.
@@ -1399,7 +1417,7 @@ namespace RevenuePlanner.Controllers
                 string Program_EntityType = Enums.EntityType.Program.ToString();
                 string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
                 string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
-                string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString(); 
+                string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
                 #endregion
 
                 //// Get GamePlan Custom Fields data.
@@ -1466,7 +1484,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.IntegrationInstanceId = id;
-                // Get Integration instance Title
+                //// Get Integration instance Title
                 var integrationTypeObj = (from integrationInstance in db.IntegrationInstances
                                           join integartionType in db.IntegrationTypes on integrationInstance.IntegrationTypeId equals integartionType.IntegrationTypeId
                                           where integrationInstance.IsDeleted == false && integartionType.IsDeleted == false && integrationInstance.IntegrationInstanceId == id
@@ -1480,12 +1498,13 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IntegrationTypeName = integrationTypeName;
 
                 TempData["ClosedDealInvalidMsg"] = Common.objCached.CloseDealTargetFieldInvalidMsg;
-                
+
                 List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
-                //Get list of GameplanDatatypePull objects when integration instance type is Salesforce
-                if (integrationTypeCode == Enums.IntegrationType.Salesforce.ToString())
+                //// Get list of GameplanDatatypePull objects when integration instance type is Salesforce
+                //// Modified by Sohel Pathan on 22/12/2014 for PL #, OR condition has been added for Eloqua
+                if (integrationTypeCode.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase) || integrationTypeCode.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    // Get list of All GameplanDataTypePullModel from DB by IntegrationInstance ID
+                    //// Get list of All GameplanDataTypePullModel from DB by IntegrationInstance ID
                     string strGameplanDatatypePullType = gameplanDatatypePullType.ToString();
                     listGameplanDataTypePullZero = (from II in db.IntegrationInstances
                                                     join GDP in db.GameplanDataTypePulls on II.IntegrationTypeId equals GDP.IntegrationTypeId
@@ -1507,6 +1526,7 @@ namespace RevenuePlanner.Controllers
 
                 if (listGameplanDataTypePullZero != null && listGameplanDataTypePullZero.Count > 0)
                 {
+                    TempData["PullingTargetFieldInvalidMsg"] = Common.objCached.PullingTargetFieldInvalidMsg.ToString();
                     return listGameplanDataTypePullZero.ToList();
                 }
                 else
@@ -1646,11 +1666,13 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Dharmraj</CreatedBy>
         /// <CreatedDate>14/08/2014</CreatedDate>
-        /// <param name="id">ID of integration instance</param>
+        /// <param name="IntegrationInstanceId">ID of integration instance</param>
         /// <param name="form">All values of form controls</param>
+        /// <param name="IntegrationType">integration type code</param>
+        /// <param name="UserId">user id of logged in user</param>
         /// <returns>Returns status = 1 and success message on success and status = 0 and failure message on error</returns>
         [HttpPost]
-        public JsonResult SaveDataMappingPullRevenue(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "")
+        public JsonResult SaveDataMappingPulling(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string IntegrationType = "", string UserId = "")
         {
             //// Check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -1662,14 +1684,24 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            try
+            if (form != null)
             {
-                SaveDataMappingPull(form, IntegrationInstanceId);
-                return Json(new { status = 1, Message = Common.objCached.DataTypeMappingPullSaveSuccess }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
+                try
+                {
+                    SaveDataMappingPull(form, IntegrationInstanceId);
+                    if (IntegrationType.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        return Json(new { status = 1, Message = Common.objCached.DataTypeMappingPullMQLSaveSuccess }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new { status = 1, Message = Common.objCached.DataTypeMappingPullSaveSuccess }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                }
             }
             return Json(new { status = 0, Message = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
         }
@@ -1686,7 +1718,7 @@ namespace RevenuePlanner.Controllers
             {
                 using (var scope = new TransactionScope())
                 {
-                    // Delete all old IntegrationInstanceDataTypeMappingPull entries by integrationInstanceId and GaneplanDatatypePull type
+                    //// Delete all old IntegrationInstanceDataTypeMappingPull entries by integrationInstanceId and GaneplanDatatypePull type
                     string GameplanDatatypePullType = form[0].Type;
                     List<int> lstIds = mrp.IntegrationInstanceDataTypeMappingPulls.Where(map => map.IntegrationInstanceId == IntegrationInstanceId && map.GameplanDataTypePull.Type == GameplanDatatypePullType).Select(map => map.IntegrationInstanceDataTypeMappingPullId).ToList();
                     if (lstIds != null && lstIds.Count > 0)
@@ -1703,7 +1735,7 @@ namespace RevenuePlanner.Controllers
 
                     }
 
-                    // Add new IntegrationInstanceDataTypeMappingPull entry for new GameplanDataTypeMappingPull
+                    //// Add new IntegrationInstanceDataTypeMappingPull entry for new GameplanDataTypeMappingPull
                     foreach (GameplanDataTypePullModel obj in form)
                     {
                         if (!string.IsNullOrEmpty(obj.TargetDataType))
@@ -1746,7 +1778,7 @@ namespace RevenuePlanner.Controllers
                 TempData["ErrorMessageGeneralSetting"] = rtnMessage;
                 return Json(new { status = 0, ErrorMessage = rtnMessage, Id = IntegrationID }, JsonRequestBehavior.AllowGet);
             }
-            
+
             if (result == 3)
             {
                 TempData["SuccessMessage"] = rtnMessage;
@@ -1773,7 +1805,7 @@ namespace RevenuePlanner.Controllers
             {
                 objIntegrationInstance.IsDeleted = true;
                 Common.DeleteIntegrationInstance(form.IntegrationInstanceId, true);
-                
+
                 //// Delete External Service Record based on IntegrationInstanceId.
                 DeleteExternalServer(form.IntegrationInstanceId);
                 db.SaveChanges();
@@ -2019,7 +2051,7 @@ namespace RevenuePlanner.Controllers
                             }
 
                             objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
-                            
+
                             if (IsAddOperation)
                             {
                                 db.Entry(objSyncFrequency).State = System.Data.EntityState.Added;
@@ -2353,7 +2385,7 @@ namespace RevenuePlanner.Controllers
                     objIntegrationType = new IntegrationType();
             }
             catch (Exception ex)
-            {   
+            {
                 throw ex;
             }
             return objIntegrationType;

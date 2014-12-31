@@ -205,6 +205,35 @@ namespace Integration.Eloqua
         }
 
         /// <summary>
+        /// Added By: Sohel Pathan
+        /// Added Date: 22/12/2014
+        /// Function to get contact fields list for Eloqua.
+        /// </summary>
+        /// <returns>Returns list of contact fields.</returns>
+        public Dictionary<string, string> GetContactFields()
+        {
+            Dictionary<string, string> contactFields = new Dictionary<string, string>();
+            RestRequest request = new RestRequest(Method.GET)
+            {
+                RequestFormat = DataFormat.Json,
+                Resource = string.Format("/assets/contact/fields")
+            };
+
+            IRestResponse response = _client.Execute(request);
+
+            JObject data = JObject.Parse(response.Content);
+            foreach (var result in data["elements"])
+            {
+                if (result != null)
+                {
+                    contactFields.Add((string)result["id"], (string)result["name"]);
+                }
+            }
+
+            return contactFields;
+        }
+
+        /// <summary>
         /// Function to get target data type of eloqua instance.
         /// </summary>
         /// <returns>Returns list of target data type of eloqua instance.</returns>
