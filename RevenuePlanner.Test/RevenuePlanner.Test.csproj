@@ -42,6 +42,9 @@
     <Reference Include="Microsoft.CSharp">
       <Private>True</Private>
     </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\..\..\CloneDec2014\Gameplan\Integration\DLL\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data.Entity" />
