@@ -99,7 +99,7 @@
                     <label>Pull Qualified Leads</label>
 
                     <div class="selectBox" id="ddlIntegrationInstanceMQL">
-                        @Html.DropDownListFor(model => model.IntegrationInstanceIdMQL, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
+                        @Html.DropDownListFor(model => model.IntegrationInstanceIdMQL, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstances"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
                 </div>
