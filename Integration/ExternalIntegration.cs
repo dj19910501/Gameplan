@@ -332,7 +332,7 @@ namespace Integration
                     return integrationSalesforceClient.GetTargetDataType("CampaignMember");
                 }
             }
-            //// Start - Added by Sohel Pathan on 23/12/2014 for PL ticket #
+            //// Start - Added by Sohel Pathan on 23/12/2014 for PL ticket #1061
             else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
             {
                 IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
@@ -342,7 +342,7 @@ namespace Integration
                     return lstContactFields.Select(contactField => contactField.Value).ToList();
                 }
             }
-            //// End - Added by Sohel Pathan on 23/12/2014 for PL ticket #
+            //// End - Added by Sohel Pathan on 23/12/2014 for PL ticket #1061
 
             return null;
         }
