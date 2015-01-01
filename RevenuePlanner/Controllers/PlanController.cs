@@ -914,8 +914,6 @@ namespace RevenuePlanner.Controllers
             planModel.LastUpdatedDate = GetLastUpdatedDate(plan);
 
             /*changed by nirav Shah on 9 Jan 2014*/
-            List<SelectListItem> UpcomingActivityList = Common.GetUpcomingActivity().Select(act => new SelectListItem() { Text = act.Text, Value = act.Value.ToString() }).ToList();
-            planModel.objplanhomemodelheader.UpcomingActivity = UpcomingActivityList;
 
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];

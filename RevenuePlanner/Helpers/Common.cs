@@ -4290,11 +4290,8 @@ namespace RevenuePlanner.Helpers
         public static List<SelectListItem> GetUpcomingActivity()
         {
             List<SelectListItem> items = new List<SelectListItem>();
-            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.planYear.ToString()].ToString(), Value = Enums.UpcomingActivities.planYear.ToString(), Selected = false });
-            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisyear.ToString()].ToString(), Value = Enums.UpcomingActivities.thisyear.ToString(), Selected = true });
             items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString(), Selected = false });
             items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thismonth.ToString()].ToString(), Value = Enums.UpcomingActivities.thismonth.ToString(), Selected = false });
-            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.nextyear.ToString()].ToString(), Value = Enums.UpcomingActivities.nextyear.ToString(), Selected = false });
             return items;
         }
 

@@ -589,15 +589,9 @@ namespace RevenuePlanner.Controllers
 
             //// Start Maninder Singh Wadhva : 11/15/2013 - Getting list of tactic for view control for plan version id.
             //// Selecting campaign(s) of plan whose IsDelete=false.
-            //var lstCampaign1 = objDbMrpEntities.Plan_Campaign.Where(campaign => filteredPlanIds.Contains(campaign.PlanId) && campaign.IsDeleted.Equals(false))
-            //                               .Select(campaign => campaign).ToList()
-            //                               .Where(campaign => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate, CalendarEndDate, campaign.StartDate, campaign.EndDate).Equals(false));
-
+           
             var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(campaign => filteredPlanIds.Contains(campaign.PlanId) && campaign.IsDeleted.Equals(false) && (!(campaign.EndDate < CalendarStartDate) || !(campaign.StartDate > CalendarEndDate)))
                                            .Select(campaign => campaign).ToList();
-                                           //.Where(campaign => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate, CalendarEndDate, campaign.StartDate, campaign.EndDate).Equals(false));
-
-
 
             //// Selecting campaignIds.
             List<int> lstCampaignId = lstCampaign.Select(campaign => campaign.PlanCampaignId).ToList();
@@ -606,10 +600,6 @@ namespace RevenuePlanner.Controllers
             var lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(program => lstCampaignId.Contains(program.PlanCampaignId) && program.IsDeleted.Equals(false) && (!(program.EndDate < CalendarStartDate) || !(program.StartDate > CalendarEndDate)))
                                                   .Select(program => program)
                                                   .ToList();
-                                                 // .Where(program => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
-                                                //                                                            CalendarEndDate,
-                                               ////                                                             program.StartDate,
-                                               //                                                             program.EndDate).Equals(false));
 
             //// Selecting programIds.
             List<int> lstProgramId = lstProgram.Select(program => program.PlanProgramId).ToList();
@@ -644,10 +634,7 @@ namespace RevenuePlanner.Controllers
                                                                        objPlanTacticCampaignPlan = tactic.Plan_Campaign_Program.Plan_Campaign.Plan,
                                                                        TacticType = tactic.TacticType
                                                                        }).ToList();
-            //.Where(tactic =>
-                                                                           //// Checking start and end date
-              //                                                          Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate, CalendarEndDate, tactic.StartDate, tactic.EndDate).Equals(false));
-
+          
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             //// Get list of Improvement tactics based on selected plan ids
             List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => filteredPlanIds.Contains(improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) &&
@@ -3910,27 +3897,25 @@ namespace RevenuePlanner.Controllers
 
             //// Get the Current year and Pre define Upcoming Activites.
             string currentYear = DateTime.Now.Year.ToString();
-            List<SelectListItem> UpcomingActivityList = Common.GetUpcomingActivity().Select(activity => new SelectListItem() { Text = activity.Text, Value = activity.Value.ToString(), Selected = activity.Selected }).ToList();
-            UpcomingActivityList.RemoveAll(activity => activity.Value == Enums.UpcomingActivities.thisyear.ToString() || activity.Value == Enums.UpcomingActivities.planYear.ToString() || activity.Value == Enums.UpcomingActivities.nextyear.ToString());
+            List<SelectListItem> UpcomingActivityList = new List<SelectListItem>();
+
+            //// Fetch the pervious year and future year list and insert into the list object
+            var yearlistPrevious = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) < DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
+            yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
 
             //// If active plan dosen't have any current plan at that time we have to remove this month and thisquater option
             if (activePlan.Count > 0)
             {
-                if (activePlan.Where(plan => plan.Year == currentYear).Count() == 0)
-                {
-                    UpcomingActivityList.RemoveAll(activity => activity.Value == Enums.UpcomingActivities.thismonth.ToString() || activity.Value == Enums.UpcomingActivities.thisquarter.ToString());
-                }
-                else
+                if (activePlan.Where(plan => plan.Year == currentYear).Count() != 0)
                 {
                     //// Add current year into the list
+                    UpcomingActivityList.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString(), Selected = false });
+                    UpcomingActivityList.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thismonth.ToString()].ToString(), Value = Enums.UpcomingActivities.thismonth.ToString(), Selected = false });
                     UpcomingActivityList.Add(new SelectListItem { Text = DateTime.Now.Year.ToString(), Value = DateTime.Now.Year.ToString(), Selected = true });
                 }
             }
 
-            //// Fetch the pervious year and future year list and insert into the list object
-            var yearlistPrevious = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && plan.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(plan.Year) < DateTime.Now.AddYears(-1).Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
-            yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
-            var yearlistAfter = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && plan.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
+            var yearlistAfter = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
             yearlistAfter.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
             return UpcomingActivityList;
         }
