@@ -34,7 +34,7 @@
                                             @Html.DisplayFor(x => x[i].DisplayFieldName)
                                         </td>
                                         <td class="width60">
-                                            <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPullRevenue"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide", id = i.ToString(), tabindex=((int)(300 + i)).ToString()  })</span>
+                                            <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPulling"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide", id = i.ToString(), tabindex=((int)(300 + i)).ToString()  })</span>
                                         </td>
                                     </tr>
                                 }
