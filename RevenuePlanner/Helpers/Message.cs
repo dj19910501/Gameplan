@@ -2328,7 +2328,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
         }
         // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
 
-        //// Start - Added by :- Sohel Pathan on 23/12/2014 for PL # 
+        //// Start - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 
         private string _PullingTargetFieldInvalidMsg;
         public string PullingTargetFieldInvalidMsg
         {
@@ -2348,7 +2348,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _DataTypeMappingPullMQLSaveSuccess; }
             set { _DataTypeMappingPullMQLSaveSuccess = value; }
         }
-        //// End - Added by :- Sohel Pathan on 23/12/2014 for PL #
+        //// End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061
 
         #endregion
 
@@ -3077,14 +3077,14 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _InvalidURLForInspectPopup = strMsgValue;
                                             break;
                                         // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
-                                        //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
+                                        //// Start - Added by :- Sohel Pathan on 23/12/2014 for PL #1061
                                         case "PullingTargetFieldInvalidMsg":
                                             _PullingTargetFieldInvalidMsg = strMsgValue;
                                             break;
                                         case "DataTypeMappingPullMQLSaveSuccess":
                                             _DataTypeMappingPullMQLSaveSuccess = strMsgValue;
                                             break;
-                                        //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
+                                        //// End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061
                                     }
                                 }
                                 i = i + 1;

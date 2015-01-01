@@ -887,7 +887,7 @@
 		<value>Activity you are trying to view does not exist.</value>
 	</Field>
 	<!--End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 -->
-	<!--Start - Added by :- Sohel Pathan on 23/12/2014 for PL # -->
+	<!--Start - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 -->
 	<Field>
 		<Name>PullingTargetFieldInvalidMsg</Name>
 		<value>Please ensure that a target field is not mapped to more than one Gameplan pull data type.</value>
@@ -896,5 +896,5 @@
 		<Name>DataTypeMappingPullMQLSaveSuccess</Name>
 		<value>Pull MQL mapping Information have been saved successfully.</value>
 	</Field>
-	<!--End - Added by :- Sohel Pathan on 23/12/2014 for PL # -->
+	<!--End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 -->
 </Messages>

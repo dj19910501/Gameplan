@@ -705,12 +705,12 @@ namespace RevenuePlanner.Controllers
                     objView.GameplanDataTypePullRevenueModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Salesforce.ToString());
                 }
                 // Dharmraj End : #680: Integration - UI - Pull responses from Salesforce
-                //// Start - Added by Sohel Pathan on 22/12/2014
+                //// Start - Added by Sohel Pathan on 22/12/2014 for PL ticket #1061
                 else if (objIntegrationTypeModel.Code.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     objView.GameplanDataTypePullMQLModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Eloqua.ToString());
                 }
-                //// End - Added by Sohel Pathan on 22/12/2014
+                //// End - Added by Sohel Pathan on 22/12/2014 for PL ticket #1061
             }
 
             return View("edit", objView);
@@ -1501,7 +1501,7 @@ namespace RevenuePlanner.Controllers
 
                 List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
                 //// Get list of GameplanDatatypePull objects when integration instance type is Salesforce
-                //// Modified by Sohel Pathan on 22/12/2014 for PL #, OR condition has been added for Eloqua
+                //// Modified by Sohel Pathan on 22/12/2014 for PL #1061, OR condition has been added for Eloqua
                 if (integrationTypeCode.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase) || integrationTypeCode.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     //// Get list of All GameplanDataTypePullModel from DB by IntegrationInstance ID

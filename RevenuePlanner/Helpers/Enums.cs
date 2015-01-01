@@ -892,6 +892,19 @@ namespace RevenuePlanner.Helpers
         };
 
         #endregion
+
+        /// <summary>
+        /// Pull responses MQL for Eloqua, Actual field names
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>22/12/2014</CreatedDate>
+        public enum PullResponsesMQLFields
+        {
+            MQLDate,
+            CampaignId,
+            ViewId,
+            ListId
+        }
     }
 
     #region Authorization
