@@ -68,7 +68,7 @@
                 <div class="span6" id="inspect-modal-left-column1">
                     <h3 id="ImprovHeaderTitle" class="modal-popup-innertitle source-sans-proregular">Details</h3>
                     <div class="DivLeftSection">
-                        <p>@Html.Raw("Improvement Tactic Type")</p>
+                        <p>@Html.Raw("Improvement Tactic Type") <span class="required-asterisk">*</span></p>
                         @Html.TextBox("hdntitle", HttpUtility.HtmlDecode(Model.Title), new { @class = "span12 input-small truncate", title = Model.Title, placeholder = "Required", require = "true", maxlength = "100" })
                     </div>
                     <div class="DivLeftSection-withPadding">
@@ -101,10 +101,10 @@
                                 <tr>
                                     <th></th>
                                     <th style="width: 24px;"></th>
-                                    <th title="Conversion" style="font-weight: normal;">Conversion Weight
+                                    <th title="Conversion" style="font-weight: normal;">Conversion Weight <span class="required-asterisk">*</span>
                                     </th>
                                     <th style="width: 15px;"></th>
-                                    <th title="Velocity" style="font-weight: normal;">Velocity Weight</th>
+                                    <th title="Velocity" style="font-weight: normal;">Velocity Weight <span class="required-asterisk">*</span></th>
                                 </tr>
                             </thead>
                             <tbody>
