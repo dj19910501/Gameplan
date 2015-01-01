@@ -128,6 +128,19 @@ namespace RevenuePlanner.Test.MockHelpers
             return IntegrationInstanceId;
         }
 
+        /// <summary>
+        /// Get a integrationTypeId for the given IntegrationType
+        /// </summary>
+        /// <param name="integrationType">name of Integration type</param>
+        /// <returns>returns an integration type id for given integration type</returns>
+        public static int GetIntegrationTypeId(string integrationType)
+        {
+            var IntegrationTypeId = (from integType in db.IntegrationTypes
+                                     where integType.IsDeleted == false && integType.Code == integrationType
+                                     select integType.IntegrationTypeId).FirstOrDefault();
+            return IntegrationTypeId;
+        }
+
         #region Integration
 
         public static Plan_Campaign_Program_Tactic Get_Plan_Campaign_Program_Tactic(int tacticId)
