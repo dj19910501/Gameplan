@@ -21,6 +21,9 @@ namespace Integration.Helper
         public static string StageRevenue = "Revenue";
         public static string StageCost = "Cost";
         
+        public static string StageMQL = "MQL";
+        public static string MQLStageValue = "MQL";
+
         public static string UnableToUpdate = "Unable to update";
         public static string UnableToDelete = "Unable to delete";
         public static string TacticSyncedComment = "Tactic synced with ";

@@ -1,18 +1,22 @@
-﻿using System;
+﻿//// File Used to PUT/GET response(s).
+
+#region Using
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tamir.SharpSsh;
 using Tamir.SharpSsh.jsch;
 using System.Configuration;
 using System.Collections;
 using System.IO;
-using System.Web;
 using System.Data;
 using RevenuePlanner.Models;
-using Excel;
 using Integration.Helper;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+#endregion
 
 namespace Integration.Eloqua
 {
@@ -28,6 +32,8 @@ namespace Integration.Eloqua
         private MRPEntities db = new MRPEntities();
 
         #endregion
+
+        #region Functions
 
         /// <summary>
         /// Added By Dharmraj, 5-8-2014
@@ -49,6 +55,294 @@ namespace Integration.Eloqua
             catch (Exception ex)
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Function to manipulate tactic actual data.
+        /// </summary>
+        /// <param name="IntegrationInstanceId">Integration instance id.</param>
+        /// <param name="_userId">Logged in User Id</param>
+        /// <param name="IntegrationInstanceLogId">Integration Instance Log Id.</param>
+        /// <param name="_applicationId">Application Id.</param>
+        /// <param name="_entityType">Entity Type.</param>
+        public void SetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType)
+        {
+            // Insert log into IntegrationInstanceSection
+            int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
+
+            // PlanIDs which has configured for "Pull response" from Eloqua instances
+            List<int> planIds = db.Plans.Where(objplan => objplan.Model.IntegrationInstanceIdMQL == IntegrationInstanceId && objplan.Model.Status.Equals("Published")).Select(objplan => objplan.PlanId).ToList();
+
+            if (planIds.Count > 0)
+            {
+                try
+                {
+                    #region Get Eloqua respopnse
+
+                    ////local variables declaration
+                    string CampaignIdValue = string.Empty, MQLDateValue = string.Empty, ViewIdValue = string.Empty, ListIdValue = string.Empty;
+                    int CampaignId = 0, MQLDateId = 0, ViewId = 0, ListId = 0;
+
+                    //// Get Eloqua integration type Id.
+                    var eloquaIntegrationTypeId = db.IntegrationTypes.Where(type => type.Code == "Eloqua" && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
+                    int integrationTypeId = Convert.ToInt32(eloquaIntegrationTypeId);
+
+                    //// Get pull data type from table for specific integration id and MQL
+                    var listPullDataType = db.GameplanDataTypePulls.Where(objGameplanDataTypepull => objGameplanDataTypepull.IntegrationTypeId == integrationTypeId && objGameplanDataTypepull.Type == "MQL").ToList();
+
+                    //// Get data type pull id into local variables for MQL data type
+                    foreach (var item in listPullDataType)
+                    {
+                        if (item.ActualFieldName == Enums.CustomeFieldNameMQL.CampaignId.ToString())
+                        {
+                            CampaignId = item.GameplanDataTypePullId;
+                        }
+                        else if (item.ActualFieldName == Enums.CustomeFieldNameMQL.MQLDate.ToString())
+                        {
+                            MQLDateId = item.GameplanDataTypePullId;
+                        }
+                        else if (item.ActualFieldName == Enums.CustomeFieldNameMQL.ViewId.ToString())
+                        {
+                            ViewId = item.GameplanDataTypePullId;
+                        }
+                        else if (item.ActualFieldName == Enums.CustomeFieldNameMQL.ListId.ToString())
+                        {
+                            ListId = item.GameplanDataTypePullId;
+                        }
+                    }
+
+                    //// Get pull mapping data from database for integration id.
+                    var listPullMapping = db.IntegrationInstanceDataTypeMappingPulls.Where(pullMapping => pullMapping.IntegrationInstanceId == IntegrationInstanceId).ToList();
+
+                    //// Get data type mapping pull target data type into local variables for integration instance id.
+                    foreach (var item in listPullMapping)
+                    {
+                        if (item.GameplanDataTypePullId == CampaignId)
+                        {
+                            CampaignIdValue = item.TargetDataType;
+                        }
+                        else if (item.GameplanDataTypePullId == MQLDateId)
+                        {
+                            MQLDateValue = item.TargetDataType;
+                        }
+                        else if (item.GameplanDataTypePullId == ViewId)
+                        {
+                            ViewIdValue = item.TargetDataType;
+                        }
+                        else if (item.GameplanDataTypePullId == ListId)
+                        {
+                            ListIdValue = item.TargetDataType;
+                        }
+                    }
+
+                    //// Initialize eloqua integration instance
+                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(IntegrationInstanceId), 0, _entityType, _userId, IntegrationInstanceLogId, _applicationId);
+
+                    //// define models for data manipulation from Eloqua response
+                    ContactListDetailModel contactListDetails = new ContactListDetailModel();
+                    List<elements> element = new List<elements>();
+
+                    //// allowed to enter only authenticated user.
+                    if (integrationEloquaClient.IsAuthenticated)
+                    {
+                        //// Get list detail from eloqua for particular list id.
+                        var lstcontactDetails = integrationEloquaClient.GetEloquaContactListDetails(ListIdValue.ToString());
+
+                        //// Deserialize Object and store response into ContactListDetail Model
+                        contactListDetails = JsonConvert.DeserializeObject<ContactListDetailModel>(lstcontactDetails.Content);
+
+                        //// Get contact list for particular ViewId and List Id.
+                        var lstcontacts = integrationEloquaClient.GetEloquaContactList(ListIdValue.ToString(), ViewIdValue.ToString());
+
+                        //// Manipulation of contact list response and store into model
+                        string TacticResult = lstcontacts.Content.ToString();
+                        JObject joResponse = JObject.Parse(TacticResult);
+                        JArray elementsArray = (JArray)joResponse["elements"];
+
+                        for (int i = 0; i < elementsArray.Count(); i++)
+                        {
+                            elements elementsInner = new elements();
+                            if (elementsArray[i][CampaignIdValue] != null)
+                            {
+                                elementsInner.CampaignId = elementsArray[i][CampaignIdValue].ToString();
+                            }
+
+                            if (elementsArray[i][MQLDateValue] != null)
+                            {
+                                if (elementsArray[i][MQLDateValue].ToString() != string.Empty && elementsArray[i][MQLDateValue] != null)
+                                {
+                                    elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
+                                }
+                            }
+
+                            elementsInner.contactId = elementsArray[i]["contactId"].ToString();
+                            elementsInner.type = elementsArray[i]["type"].ToString();
+                            element.Add(elementsInner);
+                        }
+                    }
+
+                    //// get distinct campaign id for filter.
+                    var campaignIds = element.Select(objelement => objelement.CampaignId).Distinct().ToList();
+
+                    #endregion
+
+                    #region Get Tactic List
+
+                    //// Get tactic status list
+                    List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
+
+                    //// Get MQL Level
+                    var MQLLevel = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                                                                                                                   tactic.IsDeployedToIntegration == true &&
+                                                                                                                   lstApproveStatus.Contains(tactic.Status) &&
+                                                                                                                   tactic.IsDeleted == false &&
+                                                                                                                   tactic.Stage.Code == Common.StageMQL).Select(tactic => tactic.Stage.Level).FirstOrDefault();
+
+                    //// Get tactic list
+                    List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                                                                                                                   campaignIds.Contains(tactic.IntegrationInstanceTacticId) &&
+                                                                                                                   tactic.IsDeployedToIntegration == true &&
+                                                                                                                   lstApproveStatus.Contains(tactic.Status) &&
+                                                                                                                   tactic.IsDeleted == false &&
+                                                                                                                   tactic.Stage.Level <= MQLLevel).ToList();
+
+                    #endregion
+
+                    #region Manipulate with Tactic Actual Data
+
+                    string contactIds = string.Empty;
+
+                    // Insert or Update tactic actual.
+                    foreach (var objTactic in lstTactic)
+                    {
+                        DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, objTactic.StartDate.Month, 1);
+                        DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, objTactic.EndDate.Month, 1);
+
+                        //// filter list based on period for tactic start and end date.
+                        List<elements> lstTacticResponse = element.Where(Objelement => Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
+
+                        foreach (var item in lstTacticResponse)
+                        {
+                            string tmpPeriod = "Y" + item.peroid.Month.ToString();
+
+                            //// check tactic is of MQL or other type for plan tactic id.
+                            var ObjMQL = db.Plan_Campaign_Program_Tactic.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Stage.Code == "MQL");
+
+                            if (ObjMQL == null)
+                            {
+                                var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == tmpPeriod && tacticActual.StageTitle == Common.MQLStageValue);
+
+                                if (objTacticActual != null)
+                                {
+                                    objTacticActual.Actualvalue = objTacticActual.Actualvalue + 1;
+                                    objTacticActual.ModifiedDate = DateTime.Now;
+                                    objTacticActual.ModifiedBy = _userId;
+                                    db.Entry(objTacticActual).State = EntityState.Modified;
+                                }
+                                else
+                                {
+                                    Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                    actualTactic.Actualvalue = 1;
+                                    actualTactic.PlanTacticId = objTactic.PlanTacticId;
+                                    actualTactic.Period = "Y" + item.peroid.Month;
+                                    actualTactic.StageTitle = Common.StageProjectedStageValue;
+                                    actualTactic.CreatedDate = DateTime.Now;
+                                    actualTactic.CreatedBy = _userId;
+                                    db.Entry(actualTactic).State = EntityState.Added;
+                                }
+                            }
+                            else
+                            {
+                                //// MQL type data so update/create projected stage value and MQL value in actual table
+                                var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == tmpPeriod).ToList();
+
+                                if (objTacticActual != null)
+                                {
+                                    foreach (var itemActual in objTacticActual)
+                                    {
+                                        itemActual.Actualvalue = itemActual.Actualvalue + 1;
+                                        itemActual.ModifiedDate = DateTime.Now;
+                                        itemActual.ModifiedBy = _userId;
+                                        db.Entry(itemActual).State = EntityState.Modified;
+                                    }
+                                }
+                                else
+                                {
+                                    Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                    actualTactic.Actualvalue = 1;
+                                    actualTactic.PlanTacticId = objTactic.PlanTacticId;
+                                    actualTactic.Period = "Y" + item.peroid.Month;
+                                    actualTactic.StageTitle = Common.MQLStageValue;
+                                    actualTactic.CreatedDate = DateTime.Now;
+                                    actualTactic.CreatedBy = _userId;
+                                    db.Entry(actualTactic).State = EntityState.Added;
+
+                                    actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                    actualTactic.Actualvalue = 1;
+                                    actualTactic.PlanTacticId = objTactic.PlanTacticId;
+                                    actualTactic.Period = "Y" + item.peroid.Month;
+                                    actualTactic.StageTitle = Common.StageProjectedStageValue;
+                                    actualTactic.CreatedDate = DateTime.Now;
+                                    actualTactic.CreatedBy = _userId;
+                                    db.Entry(actualTactic).State = EntityState.Added;
+                                }
+                            }
+
+                            contactIds = contactIds + "," + item.contactId;
+                        }
+
+                        objTactic.LastSyncDate = DateTime.Now;
+                        objTactic.ModifiedDate = DateTime.Now;
+                        objTactic.ModifiedBy = _userId;
+
+                        // Insert Log
+                        IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                        instanceTactic.IntegrationInstanceId = IntegrationInstanceId;
+                        instanceTactic.EntityId = objTactic.PlanTacticId;
+                        instanceTactic.EntityType = _entityType.ToString();
+                        instanceTactic.Status = StatusResult.Success.ToString();
+                        instanceTactic.Operation = Operation.Import_Actuals.ToString();
+                        instanceTactic.SyncTimeStamp = DateTime.Now;
+                        instanceTactic.CreatedDate = DateTime.Now;
+                        instanceTactic.CreatedBy = _userId;
+                        instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                        db.Entry(instanceTactic).State = EntityState.Added;
+                    }
+
+                    db.SaveChanges();
+
+                    #endregion
+
+                    #region Update Eloqua Contact List
+
+                    ////  get distinct contact id(s) and set property value of membership Deletions 
+                    if (contactIds != string.Empty)
+                    {
+                        contactIds = contactIds.Remove(0, 1);
+                        string[] contactIdsArray = contactIds.Split(',');
+                        contactIdsArray = contactIdsArray.Distinct().ToArray();
+                        contactIds = string.Join(",", contactIdsArray);
+                        contactListDetails.membershipDeletions = contactIds;
+                        contactListDetails.permissions = null;
+                    }
+
+                    //// update contact id in eloqua for updated tactic contact(s) 
+                    integrationEloquaClient.PutEloquaContactListDetails(contactListDetails, ListIdValue.ToString());
+
+                    #endregion
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                    // Update IntegrationInstanceSection log with Error status
+                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
+                }
+            }
+            else
+            {
+                // Update IntegrationInstanceSection log with Success status,
+                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
             }
         }
 
@@ -302,7 +596,6 @@ namespace Integration.Eloqua
             }
         }
 
-        #region Functions
         public List<string> setarrExcelColumn(DataTable dt)
         {
             int columnCount = dt.Columns.Count;
@@ -315,6 +608,7 @@ namespace Integration.Eloqua
             }
             return ExcelColumns;
         }
+
         #endregion
     }
 }

@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using RestSharp;
 
 #endregion
 
@@ -23,6 +24,25 @@ namespace RevenuePlanner.Test.Integration
     [TestClass]
     public class IntegrationEloquaClientTest
     {
+        #region Variables
+
+        private static int _integrationInstanceId = 87;
+        private static EntityType _entityType = EntityType.IntegrationInstance;
+        private static Guid _userId = Guid.Parse("14D7D588-CF4D-46BE-B4ED-A74063B67D66");
+        private static Guid _applicationId = Guid.Parse("1C10D4B9-7931-4A7C-99E9-A158CE158951");
+        private static int _integrationInstanceLogId = 0;
+
+        #endregion
+
+        #region Constructor
+
+        public IntegrationEloquaClientTest()
+        {
+            _integrationInstanceLogId = DataHelper.GetIntegrationInstanceLogId(_userId, _integrationInstanceId);
+        }
+
+        #endregion
+
         //#region PL#999 - Eloqua folders: Integration of tactics to Folders
 
         //#region Get Eloqua Folder Id
@@ -58,7 +78,7 @@ namespace RevenuePlanner.Test.Integration
 
         //    Assert.Equals(0, result);
         //}
-        
+
         ///// <summary>
         ///// Get Eloqua Folder Id when specified Folder Path of plan having one folder exist in eloqua.
         ///// </summary>
@@ -90,7 +110,7 @@ namespace RevenuePlanner.Test.Integration
 
         //    Assert.AreNotEqual(0, result);
         //}
-        
+
         //#endregion
 
         //#region Search Folder In Eloqua
@@ -130,7 +150,180 @@ namespace RevenuePlanner.Test.Integration
         //}
 
         //#endregion
-        
+
         //#endregion
+
+        #region PL#1060 - MQL count from Eloqua
+
+        #region Contact List Manipulation
+
+        /// <summary>
+        /// Get contact list for correct Ids.
+        /// </summary>
+        [TestMethod]
+        public void Get_Eloqua_Contact_List_for_Correct_Ids()
+        {
+            IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+
+            //// Enter view id and contact list id.
+            string elouqaContactListId = "58", eloquaViewId = "10007";
+
+            var result = controller.GetEloquaContactList(elouqaContactListId, eloquaViewId);
+
+            Assert.AreNotEqual(null, result);
+        }
+
+        /// <summary>
+        /// Get contact list for correct Ids.
+        /// </summary>
+        [TestMethod]
+        public void Get_Eloqua_Contact_List_for_InCorrect_Ids()
+        {
+            IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+
+            //// Enter view id and contact list id.
+            string elouqaContactListId = "58", eloquaViewId = "10007";
+
+            var result = controller.GetEloquaContactList(elouqaContactListId, eloquaViewId);
+
+            Assert.AreNotEqual(null, result);
+        }
+
+        /// <summary>
+        /// Get contact list detail for correct Id.
+        /// </summary>
+        [TestMethod]
+        public void Get_Eloqua_Contact_List_Details_for_Correct_Id()
+        {
+            IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+
+            //// Enter contact list id.
+            string elouqaContactListId = "58";
+
+            var result = controller.GetEloquaContactListDetails(elouqaContactListId);
+
+            Assert.AreNotEqual(null, result);
+        }
+
+        /// <summary>
+        /// Get contact list detail for correct Ids.
+        /// </summary>
+        [TestMethod]
+        public void Get_Eloqua_Contact_List_Details_for_InCorrect_Id()
+        {
+            IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+
+            //// Enter contact list id.
+            string elouqaContactListId = "A58";
+
+            var result = controller.GetEloquaContactListDetails(elouqaContactListId);
+
+            Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        /// <summary>
+        /// Put contact list detail for correct Ids.
+        /// </summary>
+        [TestMethod]
+        public void Put_Eloqua_Contact_List_Details_with_Correct_Id()
+        {
+            IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+
+            //// Enter contact list id.
+            string elouqaContactListId = "58";
+
+            ContactListDetailModel contactListDetailModel = new ContactListDetailModel
+            {
+                type = "ContactList",
+                id = elouqaContactListId,
+                createdAt = "1416978000",
+                createdBy = "15",
+                depth = "complete",
+                folderId = "260",
+                name = "GameplanMQL",
+                updatedAt = "1419331552",
+                count = "4",
+                dataLookupId = "54d066ee-ff21-4aa4-950a-0c50e5d955fb",
+                scope = "global",
+                membershipDeletions = ""
+            };
+
+            controller.PutEloquaContactListDetails(contactListDetailModel, elouqaContactListId);
+
+            //Assert.Equals(null, result);
+        }
+
+        /// <summary>
+        /// Put contact list detail for in correct Ids.
+        /// </summary>
+        [TestMethod]
+        public void Put_Eloqua_Contact_List_Details_with_InCorrect_Id()
+        {
+            IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+
+            //// Enter contact list id.
+            string elouqaContactListId = "0";
+
+            ContactListDetailModel contactListDetailModel = new ContactListDetailModel
+            {
+                type = "ContactList",
+                id = elouqaContactListId,
+                createdAt = "1416978000",
+                createdBy = "15",
+                depth = "complete",
+                folderId = "260",
+                name = "GameplanMQL",
+                updatedAt = "1419331552",
+                count = "4",
+                dataLookupId = "54d066ee-ff21-4aa4-950a-0c50e5d955fb",
+                scope = "global",
+                membershipDeletions = ""
+            };
+
+            controller.PutEloquaContactListDetails(contactListDetailModel, elouqaContactListId);
+
+            //Assert.Equals(null, result);
+        }
+
+        #endregion
+
+        #region Common
+
+        /// <summary>
+        /// Convert Time stamp to DateTime.
+        /// </summary>
+        [TestMethod]
+        public void Convert_Timestamp_To_DateTime()
+        {
+            IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+
+            //// Enter date time time stamp.
+            string dateTimeTimestamp = "1416978000";
+
+            DateTime dateTime = controller.ConvertTimestampToDateTime(dateTimeTimestamp);
+
+            Assert.AreNotEqual(null, dateTime);
+        }
+
+        #endregion
+
+        #region Eloqua Response
+
+        /// <summary>
+        /// Function to manipulate tactic actual data.
+        /// </summary>
+        [TestMethod]
+        public void Set_Tactic_Response()
+        {
+            EloquaResponse controller = new EloquaResponse();
+
+            controller.SetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType);
+
+            // Assert.Equals(null, result);
+        }
+
+        #endregion
+
+        #endregion
     }
 }

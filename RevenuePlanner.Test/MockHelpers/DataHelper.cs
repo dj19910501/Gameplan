@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Data;
 
 namespace RevenuePlanner.Test.MockHelpers
 {
@@ -99,10 +100,10 @@ namespace RevenuePlanner.Test.MockHelpers
 
         public static Plan_Campaign_Program_Tactic GetPlanTactic(Guid clientId)
         {
-            var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.BusinessUnit.ClientId == clientId && a.IsDeleted == false).OrderBy(a=> Guid.NewGuid()).FirstOrDefault();
+            var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.BusinessUnit.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             return objTactic;
         }
-        
+
         /// <summary>
         /// Get single published multiple plan id.
         /// </summary>
@@ -138,6 +139,24 @@ namespace RevenuePlanner.Test.MockHelpers
             objPlan_Campaign_Program_Tactic = obj;
 
             return objPlan_Campaign_Program_Tactic;
+        }
+
+        /// <summary>
+        /// Get Integration Instance Log Id 
+        /// </summary>
+        /// <param name="_userId">User Id.</param>
+        /// <param name="_integrationInstanceId"> Integration Instance Id.</param>
+        /// <returns>return Integration Instance Log Id.</returns>
+        public static int GetIntegrationInstanceLogId(Guid _userId, int _integrationInstanceId)
+        {
+            IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
+            instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_integrationInstanceId);
+            instanceLogStart.SyncStart = DateTime.Now;
+            instanceLogStart.CreatedBy = _userId;
+            instanceLogStart.CreatedDate = DateTime.Now;
+            db.Entry(instanceLogStart).State = EntityState.Added;
+            int result = db.SaveChanges();
+            return instanceLogStart.IntegrationInstanceLogId;
         }
 
         #endregion

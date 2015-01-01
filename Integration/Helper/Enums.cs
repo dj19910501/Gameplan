@@ -79,6 +79,20 @@ namespace Integration.Helper
             TextBox,
             DropDownList
         }
+
+		/// <summary>
+        /// Added By: Pratik
+        /// Date: 30/12/2014
+        /// Enum for custom field MQL
+        /// </summary>
+        public enum CustomeFieldNameMQL
+        {
+            MQLDate,
+            CampaignId,
+            ViewId,
+            ListId
+        }
+
         #region Custom Naming Structure
 
         /// <summary>

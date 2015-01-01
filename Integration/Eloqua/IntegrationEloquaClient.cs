@@ -17,11 +17,6 @@ using System.Reflection;
 using System.Transactions;
 
 #endregion
-/*
- *  Author: 
- *  Created Date: 
- *  Purpose: Integration with Eloqua  
-  */
 
 namespace Integration.Eloqua
 {
@@ -82,6 +77,8 @@ namespace Integration.Eloqua
         }
 
         #endregion
+
+        #region Initialization
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva
@@ -154,29 +151,6 @@ namespace Integration.Eloqua
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva
-        /// Function to authenticate credentials of eloqua instance.
-        /// </summary>
-        public void Authenticate()
-        {
-            try
-            {
-                _apiURL = GetInstanceURL();
-                if (!string.IsNullOrWhiteSpace(_apiURL))
-                {
-                    _client = this.AuthenticateBase();
-                    _isAuthenticated = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                _isResultError = true;
-                _ErrorMessage = GetErrorMessage(ex);
-                _isAuthenticated = false;
-            }
-        }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva
         /// Function to get custom fields list.
         /// </summary>
         /// <returns>Returns list of custom fields.</returns>
@@ -204,34 +178,7 @@ namespace Integration.Eloqua
             return customFields;
         }
 
-        /// <summary>
-        /// Added By: Sohel Pathan
-        /// Added Date: 22/12/2014
-        /// Function to get contact fields list for Eloqua.
-        /// </summary>
-        /// <returns>Returns list of contact fields.</returns>
-        public Dictionary<string, string> GetContactFields()
-        {
-            Dictionary<string, string> contactFields = new Dictionary<string, string>();
-            RestRequest request = new RestRequest(Method.GET)
-            {
-                RequestFormat = DataFormat.Json,
-                Resource = string.Format("/assets/contact/fields")
-            };
-
-            IRestResponse response = _client.Execute(request);
-
-            JObject data = JObject.Parse(response.Content);
-            foreach (var result in data["elements"])
-            {
-                if (result != null)
-                {
-                    contactFields.Add((string)result["id"], (string)result["name"]);
-                }
-            }
-
-            return contactFields;
-        }
+        #endregion
 
         /// <summary>
         /// Function to get target data type of eloqua instance.
@@ -304,7 +251,7 @@ namespace Integration.Eloqua
                     //PullingActualCost();  // Commented by Sohel Pathan on 11/09/2014 for PL ticket #773
                     //// Pull responses from Eloqua
                     GetDataForTacticandUpdate();
-
+                    GetDataPullEloqua();
                 }
             }
 
@@ -532,7 +479,7 @@ namespace Integration.Eloqua
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
-           
+
             var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
             var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
             var clientApplicationActivityList = (from c in clientActivityList
@@ -605,7 +552,6 @@ namespace Integration.Eloqua
                 _isResultError = true;
             }
         }
-
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva
@@ -1151,7 +1097,7 @@ namespace Integration.Eloqua
                     tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, planTactic.BusinessUnit.ClientId);
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                 }
-            }  
+            }
             return CreateEloquaCampaign(tactic);
         }
 
@@ -1636,46 +1582,26 @@ namespace Integration.Eloqua
             }
         }
 
-        #endregion
-
         /// <summary>
-        /// Added By: Maninder Singh Wadhva
-        /// Function to get instance url.
+        /// Convert timestamp to Date.
         /// </summary>
-        /// <returns>Returns standard url.</returns>
-        private string GetInstanceURL()
+        /// <param name="MQLDate"> Time stamp date.</param>
+        /// <returns>return Date.</returns>
+        public DateTime ConvertTimestampToDateTime(string MQLDate)
         {
-            RestClient baseClient = AuthenticateBase();
-            RestRequest request = new RestRequest(Method.GET)
-            {
-                Resource = "/id",
-                RequestFormat = DataFormat.Json
-            };
+            _unixEpochTime = new DateTime(1970, 1, 1, 0, 0, 0);
 
-            string url = string.Empty;
-            IRestResponse<InstanceURL> instanceURL = baseClient.Execute<InstanceURL>(request);
-            if (instanceURL.ResponseStatus == ResponseStatus.Completed && instanceURL.StatusCode == HttpStatusCode.OK)
-            {
-                url = instanceURL.Data.urls.apis.rest.standard.Replace("{version}", _apiVersion);
-            }
-            else
-            {
-                throw new Exception(instanceURL.Content);
-            }
+            // This is an example of a UNIX timestamp for the date/time 11-04-2005 09:25.
+            double timestamp = Convert.ToDouble(MQLDate);
 
-            return url;
-        }
+            // Add the number of seconds in UNIX timestamp to be converted.
+            _unixEpochTime = _unixEpochTime.AddSeconds(timestamp);
 
-        /// <summary>
-        /// Function to authenticate eloqua instance credentials.
-        /// </summary>
-        /// <returns>Returns client object.</returns>
-        private RestClient AuthenticateBase()
-        {
-            return new RestClient(_apiURL)
-            {
-                Authenticator = new HttpBasicAuthenticator(_instance + "\\" + _username, _password)
-            };
+            // The dateTime now contains the right date/time so to format the string,
+            // use the standard formatting methods of the DateTime object.
+            string date = _unixEpochTime.ToShortDateString() + " " + _unixEpochTime.ToShortTimeString();
+
+            return Convert.ToDateTime(date);
         }
 
         /// <summary>
@@ -1726,6 +1652,76 @@ namespace Integration.Eloqua
                 }
             }
         }
+
+        #endregion
+
+        #region Authentication
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva
+        /// Function to authenticate credentials of eloqua instance.
+        /// </summary>
+        public void Authenticate()
+        {
+            try
+            {
+                _apiURL = GetInstanceURL();
+                if (!string.IsNullOrWhiteSpace(_apiURL))
+                {
+                    _client = this.AuthenticateBase();
+                    _isAuthenticated = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _isResultError = true;
+                _ErrorMessage = GetErrorMessage(ex);
+                _isAuthenticated = false;
+            }
+        }
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva
+        /// Function to get instance url.
+        /// </summary>
+        /// <returns>Returns standard url.</returns>
+        private string GetInstanceURL()
+        {
+            RestClient baseClient = AuthenticateBase();
+            RestRequest request = new RestRequest(Method.GET)
+            {
+                Resource = "/id",
+                RequestFormat = DataFormat.Json
+            };
+
+            string url = string.Empty;
+            IRestResponse<InstanceURL> instanceURL = baseClient.Execute<InstanceURL>(request);
+            if (instanceURL.ResponseStatus == ResponseStatus.Completed && instanceURL.StatusCode == HttpStatusCode.OK)
+            {
+                url = instanceURL.Data.urls.apis.rest.standard.Replace("{version}", _apiVersion);
+            }
+            else
+            {
+                throw new Exception(instanceURL.Content);
+            }
+
+            return url;
+        }
+
+        /// <summary>
+        /// Function to authenticate eloqua instance credentials.
+        /// </summary>
+        /// <returns>Returns client object.</returns>
+        private RestClient AuthenticateBase()
+        {
+            return new RestClient(_apiURL)
+            {
+                Authenticator = new HttpBasicAuthenticator(_instance + "\\" + _username, _password)
+            };
+        }
+
+        #endregion
+
         public string TestGenerateCustomName(Plan_Campaign_Program_Tactic planTactic, Guid clientId)
         {
             string customName = "";
@@ -1735,5 +1731,109 @@ namespace Integration.Eloqua
             }
             return customName;
         }
+
+        #region Contact List Manipulation
+        
+        /// <summary>
+        /// Function to sync from Eloqua to Gameplan.
+        /// </summary>
+        public void GetDataPullEloqua()
+        {
+            try
+            {
+                EloquaResponse objEloquaResponse = new EloquaResponse();
+                objEloquaResponse.SetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType);
+            }
+            catch (Exception ex)
+            {
+                _ErrorMessage = GetErrorMessage(ex);
+                _isResultError = true;
+            }
+        }
+        
+        /// <summary>
+        /// Function to get Eloqua Contact List.
+        /// Added By: Pratik
+        /// Added Date: 12/30/2014
+        /// Ticket #1060  -  
+        /// </summary>
+        /// <param name="elouqaContactListId">Eloqua contact list Id.</param>
+        /// <param name="eloquaViewId"> Eloqua view Id.</param>
+        /// <returns>Returns eloqua campaign object.</returns>
+        public IRestResponse GetEloquaContactList(string elouqaContactListId, string eloquaViewId)
+        {
+            RestRequest request = new RestRequest(Method.GET)
+            {
+                Resource = string.Format("/data/contact/view/{2}/contacts/list/{3}?count={1}&page={0}&depth=complete", 1, 100, eloquaViewId, elouqaContactListId),
+                RequestFormat = DataFormat.Json
+            };
+
+            IRestResponse response = _client.Execute(request);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Function to get Eloqua Contact List Detail.
+        /// Added By: Pratik
+        /// Added Date: 12/30/2014
+        /// Ticket #1060  -  
+        /// </summary>
+        /// <param name="elouqaContactListId">Eloqua contact list Id.</param>
+        /// <param name="eloquaViewId"> Eloqua view Id.</param>
+        /// <returns>Returns eloqua campaign object.</returns>
+        public IRestResponse GetEloquaContactListDetails(string elouqaContactListId)
+        {
+            try
+            {
+                RestRequest request = new RestRequest(Method.GET)
+                {
+                    Resource = string.Format("/assets/contact/list/{0}", elouqaContactListId),
+                    RequestFormat = DataFormat.Json
+                };
+
+                IRestResponse response = _client.Execute(request);
+
+                return response;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Function to put Eloqua Contact List Detail.
+        /// Added By: Pratik
+        /// Added Date: 12/30/2014
+        /// Ticket #1060  -  
+        /// </summary>
+        /// <param name="elouqaContactListId">Eloqua contact list Id.</param>
+        /// <param name="eloquaViewId"> Eloqua view Id.</param>
+        /// <returns>Returns eloqua campaign object.</returns>
+        public void PutEloquaContactListDetails(ContactListDetailModel contactListDetails, string elouqaContactListId)
+        {
+            try
+            {
+                RestRequest request = new RestRequest(Method.PUT)
+                {
+                    Resource = string.Format("/assets/contact/list/{0}", elouqaContactListId),
+                    RequestFormat = DataFormat.Json
+                };
+
+                request.AddBody(contactListDetails);
+
+                IRestResponse response = _client.Execute(request);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        #endregion
     }
 }

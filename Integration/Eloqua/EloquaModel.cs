@@ -57,4 +57,40 @@ namespace Integration.Eloqua
         public DateTime peroid { get; set; }
         public int responseCount { get; set; }
     }
+
+    public class ContactListDetailModel
+    {
+        public string type { get; set; }
+        public string id { get; set; }
+        public string createdAt { get; set; }
+        public string createdBy { get; set; }
+        public string depth { get; set; }
+        public string description { get; set; }
+        public string folderId { get; set; }
+        public string name { get; set; }
+        public string permissions { get; set; }
+        public string updatedAt { get; set; }
+        public string count { get; set; }
+        public string dataLookupId { get; set; }
+        public string scope { get; set; }
+        public string membershipDeletions { get; set; }
+        public string membershipAdditions { get; set; }
+    }
+
+    public class ContactListContactModel
+    {
+        public List<elements> elements { get; set; }
+        public string page { get; set; }
+        public string pageSize { get; set; }
+        public string total { get; set; }
+    }
+
+    public class elements
+    {
+        public string type { get; set; }
+        public string contactId { get; set; }
+        public string CampaignId { get; set; }
+        public string MQLDate { get; set; }
+        public DateTime peroid { get; set; }
+    }
 }
