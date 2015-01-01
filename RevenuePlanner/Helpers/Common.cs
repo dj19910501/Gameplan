@@ -1635,9 +1635,9 @@ namespace RevenuePlanner.Helpers
             var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true).Select(m => m).ToList();
             if (planList != null && planList.Count > 0)
             {
-                List<Plan_Campaign_Program_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
+                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId  }).ToList();
                 var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => planIds.Contains(imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && imp.IsDeleted == false).ToList();
-                var tacticids = planTacticsList.Select(t => t.PlanTacticId).ToList();
+                var tacticids = planTacticsList.Select(t => t.objPlanTactic.PlanTacticId).ToList();
                 List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticids.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
                 Double MQLs = 0;
                 List<Plan_Campaign_Program_Tactic> planTacticIds = new List<Plan_Campaign_Program_Tactic>();
@@ -1656,7 +1656,7 @@ namespace RevenuePlanner.Helpers
                 {
                     //HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
 
-                    planTacticIds = planTacticsList.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == plan.PlanId).ToList();
+                    planTacticIds = planTacticsList.Where(t => t.PlanId == plan.PlanId).Select(tactic => tactic.objPlanTactic).ToList();
 
                     int? ModelId = plan.ModelId;
                     List<ModelDateList> modelDateList = new List<ModelDateList>();
@@ -4171,7 +4171,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="lstTactic">list of plan tactics</param>
         /// <returns>List of ViewByModel</returns>
-        public static List<ViewByModel> GetDefaultGanttTypes(List<Plan_Campaign_Program_Tactic> lstTactic = null)
+        public static List<ViewByModel> GetDefaultGanttTypes(List<Plan_Tactic> lstTactic = null)
         {
             //// Initialize the default Plan Gantt Types
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
@@ -4188,81 +4188,17 @@ namespace RevenuePlanner.Helpers
             {
                 if (lstTactic.Count > 0)
                 {
-                    var lstCampaignCustomFields = GetAllCustomFields(lstTactic.Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList(), Enums.EntityType.Campaign.ToString());
-                    var lstProgramCustomFields = GetAllCustomFields(lstTactic.Select(tactic => tactic.PlanProgramId).ToList(), Enums.EntityType.Program.ToString());
-                    var lstCustomFields = GetAllCustomFields(lstTactic.Select(tactic => tactic.PlanTacticId).ToList(), Enums.EntityType.Tactic.ToString());
-
-                    lstCampaignCustomFields = lstCampaignCustomFields.Where(CampaignCustomField => !string.IsNullOrEmpty(CampaignCustomField.Text)).OrderBy(CampaignCustomField => CampaignCustomField.Text, new AlphaNumericComparer()).ToList();
-                    lstProgramCustomFields = lstProgramCustomFields.Where(ProgramCustomField => !string.IsNullOrEmpty(ProgramCustomField.Text)).OrderBy(ProgramCustomField => ProgramCustomField.Text, new AlphaNumericComparer()).ToList();
-                    lstCustomFields = lstCustomFields.Where(tacticCustomField => !string.IsNullOrEmpty(tacticCustomField.Text)).OrderBy(tacticCustomField => tacticCustomField.Text, new AlphaNumericComparer()).ToList();
+                    var campaignId = lstTactic.Select(tactic => tactic.PlanCampaignId).ToList();
+                    var programId = lstTactic.Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList();
+                    var lstcustomfields = GetCustomFields(lstTactic.Select(tactic => tactic.objPlanTactic.PlanTacticId).ToList(),programId,campaignId);
 
                     //// Concat the Default list with newly fetched custom fields. 
-                    lstViewByTab = lstViewByTab.Concat(lstCampaignCustomFields).Concat(lstProgramCustomFields).Concat(lstCustomFields).ToList();
+                    lstViewByTab = lstViewByTab.Concat(lstcustomfields).ToList();
                 }
             }
 
             return lstViewByTab;
         }
-
-        /// <summary>
-        /// Function to fetch the Custom fields based on PlanTactic id
-        /// </summary>
-        /// <param name="planTacticIds">List of Plan Tactic id</param>
-        /// <param name="Section">section name(campaign/program/tactic)</param>
-        /// <returns>List of ViewbyModel</returns>
-        public static List<ViewByModel> GetAllCustomFields(List<int> planTacticIds, string Section)
-        {
-            MRPEntities objDbMrpEntities = new MRPEntities();
-            List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
-            bool isCampaign = (Section == Enums.EntityType.Campaign.ToString() ? true : false);
-            bool isProgram = (Section == Enums.EntityType.Program.ToString() ? true : false);
-            bool isTactic = (Section == Enums.EntityType.Tactic.ToString() ? true : false);
-            string customTitles = Common.TacticCustomTitle;
-            var CustomFields = (dynamic)null;
-
-            if (planTacticIds == null)
-            {
-                planTacticIds = new List<int>();
-            }
-
-            if (isCampaign)
-            {
-                customTitles = Common.CampaignCustomTitle;
-                CustomFields = (from customfield in objDbMrpEntities.CustomFields
-                                join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
-                                join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.Plan_Campaign_Program.PlanCampaignId
-                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId && customfield.IsDisplayForFilter==true && //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
-                                planTacticIds.Contains(tactic.Plan_Campaign_Program.PlanCampaignId)
-                                select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
-            }
-            else if (isProgram)
-            {
-                customTitles = Common.ProgramCustomTitle;
-                CustomFields = (from customfield in objDbMrpEntities.CustomFields
-                                join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
-                                join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.PlanProgramId
-                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId && customfield.IsDisplayForFilter == true && //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
-                                planTacticIds.Contains(tactic.PlanProgramId)
-                                select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
-            }
-            else
-            {
-                CustomFields = (from customfield in objDbMrpEntities.CustomFields
-                                join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
-                                join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.PlanTacticId
-                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId && customfield.IsDisplayForFilter == true && //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
-                                planTacticIds.Contains(tactic.PlanTacticId)
-                                select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
-            }
-
-            //// Iterate the custom fields and insert into return list
-            foreach (var item in CustomFields)
-            {
-                lstCustomFieldsViewByTab.Add(new ViewByModel { Text = item.Name.ToString(), Value = string.Format("{0}{1}", customTitles, item.CustomFieldId.ToString()) });
-            }
-            return lstCustomFieldsViewByTab;
-        }
-
 
         /// <summary>
         /// Fetch the Custom fields based upon it's PlanTactic id

@@ -70,7 +70,7 @@ namespace RevenuePlanner.Test.Helper
         {
             HttpContext.Current = DataHelper.SetUserAndPermission();
             List<int> tacticIds = new List<int>();
-            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetAllCustomFields(tacticIds, Enums.EntityType.Tactic.ToString());
+            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(tacticIds, tacticIds, tacticIds);
             Assert.AreEqual(0, CustomFields.Count);
         }
 
@@ -78,7 +78,7 @@ namespace RevenuePlanner.Test.Helper
         public void GetAllCustomFields_With_NULL_TacticIds_List()
         {
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetAllCustomFields(null, Enums.EntityType.Tactic.ToString());
+            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(null, null, null);
             Assert.AreEqual(0, CustomFields.Count);
         }
 
@@ -91,7 +91,11 @@ namespace RevenuePlanner.Test.Helper
             objTactic = DataHelper.GetPlanTactic(clientId);
             List<int> tacticIds = new List<int>();
             tacticIds.Add(objTactic.PlanTacticId);
-            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetAllCustomFields(tacticIds, Enums.EntityType.Tactic.ToString());
+            List<int> programIds = new List<int>();
+            tacticIds.Add(objTactic.PlanProgramId);
+            List<int> campaignIds = new List<int>();
+            tacticIds.Add(objTactic.Plan_Campaign_Program.PlanCampaignId);
+            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(tacticIds, programIds, campaignIds);
             Assert.IsNotNull(CustomFields.Count);
         }
     }

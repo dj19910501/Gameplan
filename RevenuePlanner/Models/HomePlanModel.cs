@@ -250,4 +250,15 @@ namespace RevenuePlanner.Models
         public double ProgramProgress { get; set; }
         public List<int> lstCustomEntityId { get; set; }
     }
+
+    public class Plan_Tactic
+    {
+        public Plan_Campaign_Program_Tactic objPlanTactic { get; set; }
+        public int PlanCampaignId { get; set; }
+        public int PlanId { get; set; }
+        public TacticType TacticType { get; set; }
+        public Plan_Campaign_Program objPlanTacticProgram { get; set; }
+        public Plan_Campaign objPlanTacticCampaign { get; set; }
+        public Plan objPlanTacticCampaignPlan { get; set; }
+    }
 }
