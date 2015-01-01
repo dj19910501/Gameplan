@@ -5,9 +5,9 @@
     <div class="padding-right70">
         <ul class="nav nav-pills nav-stacked width216">
 
-            <li id="liSelection"><a href="@Url.Action("IntegrationSelection", "Model",new { id=modelId})">Integration Selection</a></li>
+            <li id="liSelection"><a href="#">Integration Selection</a></li>
 
-            <li id="liOverview"><a href="@Url.Action("IntegrationOverview", "Model", new { id=modelId})">Integration Overview</a></li>
+            <li id="liOverview"><a href="#">Integration Overview</a></li>
         </ul>
     </div>
 
@@ -30,6 +30,25 @@
             }
         }
     });
-
+    $('#liSelection').click(function () {
+       var url = '@Url.Content("~/Model/IntegrationSelection")';
+        var queryStringArr = [];
+        queryStringArr.push(
+            {
+                key: 'id',
+                Value: '@modelId'
+            });
+        formSubmitEvent(url, queryStringArr);
+    });
+    $('#liOverview').click(function () {
+        var url = '@Url.Content("~/Model/IntegrationOverview")';
+         var queryStringArr = [];
+         queryStringArr.push(
+             {
+                 key: 'id',
+                 Value: '@modelId'
+            });
+         formSubmitEvent(url, queryStringArr);
+     });
 
 </script>

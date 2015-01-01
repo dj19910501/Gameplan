@@ -177,7 +177,15 @@
                 url: '@Url.Content("~/Model/SaveIntegration")',
                 data: ajaxData,
                 success: function (data) {
-                    window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;
+                    var queryStringArr = [];
+                    var url = '@Url.Content("~/Model/IntegrationSelection")';
+                    queryStringArr.push(
+                        {
+                            key: 'id',
+                            Value: data.Id
+                        });
+                    formSubmitEvent(url, queryStringArr);
+                   @* window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;*@
                 }
             });
             }
@@ -271,7 +279,7 @@
                 });
             }
             else {
-                var url = '@Url.Content("~/Model/Create")';
+                var url = '@Url.Content("~/Model/CreateModel")';
                 window.location.href = url;
             }
         });
@@ -330,7 +338,14 @@
                 success: function (data) {
                     if (data.errorMessage != undefined) {
                         url = '@Url.Content("~/Model/IntegrationSelection")';
-                    window.location.href = url + '?id=' + ModelId;
+                        var queryStringArr = [];
+                        queryStringArr.push(
+                            {
+                                key: 'id',
+                                Value: ModelId
+                            });
+                        formSubmitEvent(url, queryStringArr);
+                        //window.location.href = url + '?id=' + ModelId;
                 }
                 else {
                     url = '@Url.Content("~/Model/ModelZero")';

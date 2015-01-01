@@ -48,7 +48,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">model id</param>
         /// <returns>returns strongly typed(BaselineModel object) Create view</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult Create(int id = 0)
+        public ActionResult CreateModel(int id = 0)
         {
             //// Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
@@ -134,7 +134,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             //// End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            return View(objBaselineModel);
+            return View("Create",objBaselineModel);
         }
 
         /// <summary>

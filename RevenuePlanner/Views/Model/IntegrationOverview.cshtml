@@ -205,7 +205,7 @@
                 });
             }
             else {
-                var url = '@Url.Content("~/Model/Create")';
+                var url = '@Url.Content("~/Model/CreateModel")';
                 window.location.href = url;
             }
         });
@@ -263,7 +263,14 @@
             success: function (data) {
                 if (data.errorMessage != undefined) {
                     url = '@Url.Content("~/Model/IntegrationOverview")';
-                          window.location.href = url + '?id=' + ModelId;
+                    var queryStringArr = [];
+                    queryStringArr.push(
+                        {
+                            key: 'id',
+                            Value: ModelId
+                        });
+                    formSubmitEvent(url, queryStringArr);
+                    //window.location.href = url + '?id=' + ModelId;
                       }
                       else {
                           url = '@Url.Content("~/Model/ModelZero")';

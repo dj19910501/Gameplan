@@ -748,3 +748,19 @@ function GrapSubstring(originalText, maxSize) {
     return originalText;
 }
 //// End - Added by Sohel Pathan on 24/12/2014
+
+/*Added By Mitesh Vaishnav for PL ticket #1026 - Exceptions due to client code errors
+ Pass queryStrin array with Key/Value pair and url
+ Purpose - removing query string at necessary*/
+function formSubmitEvent(url, queryStringArr) {
+    var formHtml = '<form action="' + url + '" method="Post">';
+    for (var i = 0; i < queryStringArr.length; i++) {
+        formHtml += '<input type="text" name="' + queryStringArr[i].key + '" value="' + queryStringArr[i].Value + '" />';
+    }
+
+    formHtml += '</form>';
+    var form = $(formHtml);
+    $('body').append(form);
+    form.submit();
+}
+/*End - Added by Mitesh Vaishnav*/

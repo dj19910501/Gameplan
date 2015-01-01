@@ -130,9 +130,10 @@
                    }
                }
         $(".leftnav").click(function () {
+            var queryStringArr = [];
             var url = '';
             if ($(this).attr('id') == 'aInput') {
-                url = '@Url.Content("~/Model/Create")';
+                url = '@Url.Content("~/Model/CreateModel")';
             }
             else if ($(this).attr('id') == 'aIntegration') {
                 url = '@Url.Content("~/Model/IntegrationSelection")';
@@ -142,10 +143,26 @@
             }
             if (url != '' && lastModelId != null && lastModelId != 0) {
                 if ($(this).attr('id') == 'aTactics') {
-                    window.location.href = url + '?id=' + lastModelId + '&showMessage=false';
+                    queryStringArr.push(
+                        {
+                            key: 'id',
+                            Value: lastModelId
+                        },
+                        {
+                            key: 'showMessage',
+                            Value: false
+                        });
+                    formSubmitEvent(url, queryStringArr);
+                    //window.location.href = url + '?id=' + lastModelId + '&showMessage=false';
                 }
                 else {
-                    window.location.href = url + '?id=' + lastModelId;
+                    queryStringArr.push(
+                        {
+                            key: 'id',
+                            Value: lastModelId
+                        });
+                    formSubmitEvent(url, queryStringArr);
+                    //window.location.href = url + '?id=' + lastModelId;
                 }
             }
         });

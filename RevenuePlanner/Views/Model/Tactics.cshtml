@@ -618,14 +618,21 @@
                         window.location = '@Url.Content("~/Login/Index")';
                     }
                     else {
+                        var queryStringArr = [];
                         if (data.errorMessage != undefined) {
                             url = '@Url.Content("~/Model/Tactics")';
-                            window.location.href = url + '?id=' + ModelId;
+                           // window.location.href = url + '?id=' + ModelId;
                         }
                         else {
                             url = '@Url.Content("~/Model/IntegrationSelection")';
-                            window.location.href = url + '?id=' + ModelId;
+                            //window.location.href = url + '?id=' + ModelId;
                         }
+                        queryStringArr.push(
+                        {
+                            key: 'id',
+                            Value: ModelId
+                        });
+                        formSubmitEvent(url, queryStringArr);
                     }
                 }
             });
@@ -664,7 +671,7 @@
             });
         }
         else {
-            var url = '@Url.Content("~/Model/Create")';
+            var url = '@Url.Content("~/Model/CreateModel")';
             window.location.href = url;
         }
     });
