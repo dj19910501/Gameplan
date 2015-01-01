@@ -259,5 +259,83 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #endregion
+
+        #region PL#1061 Pull MQL For Eloqua
+
+        #region Create Eloqua Integration Instance
+        /// <summary>
+        /// To check that it returns a proper view for the selected integration instance or not
+        /// <author>Sohel Pathan</author>
+        /// <createddate>23Dec2014</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Create_Integration_Instance_View()
+        {
+            ExternalServiceController controller = new ExternalServiceController();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Set Parameter IntegrationTypeId for Eloqua
+            int IntegrationTypeId = DataHelper.GetIntegrationTypeId(Enums.IntegrationType.Eloqua.ToString());
+            var result = controller.edit(0, IntegrationTypeId) as ViewResult;
+            Assert.AreEqual("edit", result.ViewName, true);
+
+            //// Check for the integrationTypeId view bag, if it is null then view can give an error
+            Assert.IsNotNull(result.ViewBag.integrationTypeId);
+        }
+        #endregion
+
+        #region Save Pull MQL data type mapping with null form data
+        /// <summary>
+        /// To check that SaveDataMappingPulling method save data with null form data
+        /// <author>Sohel Pathan</author>
+        /// <createddate>23Dec2014</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Save_Pull_MQL_Repsones_With_Null_Form_Data()
+        {
+            ExternalServiceController controller = new ExternalServiceController();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            IList<GameplanDataTypePullModel> lstGameplanDataTypePullModel = null;
+            
+            //// Set Parameter IntegrationTypeId for Eloqua
+            int IntegrationTypeId = DataHelper.GetIntegrationTypeId(Enums.IntegrationType.Eloqua.ToString());
+            //// Set Parameter IntegrationInstanceId for Eloqua
+            int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Eloqua.ToString());
+            var result = controller.SaveDataMappingPulling(lstGameplanDataTypePullModel, IntegrationInstanceId, Enums.IntegrationType.Eloqua.ToString());
+            Assert.IsNotNull(result.Data);
+        }
+        #endregion
+
+        #region Save Pull MQL data type mapping with selected form data (selected data mapping)
+        /// <summary>
+        /// To check that SaveDataMappingPulling method save data with form data
+        /// <author>Sohel Pathan</author>
+        /// <createddate>23Dec2014</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Save_Pull_MQL_Repsones_With_Form_Data()
+        {
+            ExternalServiceController controller = new ExternalServiceController();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Set form data parameter for save method
+            GameplanDataTypePullModel objGameplanDataTypePullModel = new GameplanDataTypePullModel();
+            IList<GameplanDataTypePullModel> lstGameplanDataTypePullModel = new List<GameplanDataTypePullModel>();
+            lstGameplanDataTypePullModel.Add(objGameplanDataTypePullModel);
+
+            //// Set Parameter IntegrationTypeId for Eloqua
+            int IntegrationTypeId = DataHelper.GetIntegrationTypeId(Enums.IntegrationType.Eloqua.ToString());
+            //// Set Parameter IntegrationInstanceId for Eloqua
+            int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Eloqua.ToString());
+            var result = controller.SaveDataMappingPulling(lstGameplanDataTypePullModel, IntegrationInstanceId, Enums.IntegrationType.Eloqua.ToString());
+
+            Assert.IsNotNull(result.Data);
+
+            Assert.IsNotNull(result.GetValue("status").ToString(), "1");
+        }
+        #endregion
+
+        #endregion
     }
 }
