@@ -161,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DLL\EntityFramework.dll" />
+    <Content Include="DLL\RestSharp.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
