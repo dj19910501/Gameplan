@@ -41,7 +41,7 @@
                         <input id="select2Email" type="hidden" name="select2Email" class="input-block-level" style="margin-bottom: 10px;" />
                         <textarea rows="3" placeholder="Add Optional Message" id="TxtOptionalMessage" maxlength="255"></textarea>
                         <span class="attach-icon"></span>
-                        <label id="shareTactic" class="tipsyclassTitle ConcatTextlength">@tacticTitle</label>
+                        <label id="shareTactic" class="ConcatTextlength" style="width: 88%;" title="@tacticTitle" >@tacticTitle</label>
                         <button class="form-inspect-share-button btn btn-large" type="submit" value="Submit">Share</button>
                         <button id="cancel-share-tactic-button" class="btn-link" type="button">Cancel</button>
                     </form>
@@ -84,7 +84,7 @@
         //// Added By: Maninder Singh Wadhva on 11/24/2014.
         //// Ticket: 942 Exception handeling in Gameplan.
         redirectOnServiceUnavailibility();
-        NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
+        /*NumberFormatterTipsyTitle(".tipsyclassTitle", 55);*/ // Commented by Arpita Soni on 02/01/2015 for ticket #1082
         var emails = @Html.Raw(Json.Encode(@ViewBag.EmailIds));
         if (emails != null) {
             $.each(emails, function (index, email) {

@@ -21,13 +21,13 @@
         <div style="float: left; width: 48%; border-right: 1px solid #b2afaf">
             <div class="source-sans-prosemibold">Parent Campaign</div>
             <div>
-                <div id="campaign-title1" class="tipsyclassTitle sub-head">@Html.Raw(tacticReview.CampaignTitle)</div>
+                <div id="campaign-title1" class="sub-head" title="@Html.Raw(tacticReview.CampaignTitle)">@Html.Raw(tacticReview.CampaignTitle)</div>
             </div>
         </div>
         <div style="float: right; width: 47%;">
             <div class="source-sans-prosemibold">Parent Program</div>
             <div>
-                <div id="program-title1" class="tipsyclassTitle sub-head">@Html.Raw(tacticReview.ProgramTitle)</div>
+                <div id="program-title1" class="sub-head" title="@Html.Raw(tacticReview.ProgramTitle)">@Html.Raw(tacticReview.ProgramTitle)</div>
             </div>
         </div>
     </div>
@@ -364,7 +364,7 @@
 
         /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
         ImageTipsy('#diffrentStageIcon');
-        NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
+        /*NumberFormatterTipsyTitle(".tipsyclassTitle", 55);*/ //Commented by Arpita Soni on 02/01/15 for ticket #1082 
         //Added By : Pratik, Code review point changes 
         $('.addFormatterActualNumber').each(function () {
             SetPriceValue($(this));
