@@ -96,7 +96,7 @@ body {
     min-height: 100%;
     height: auto !important;
     -webkit-box-shadow: -3px 0px 11px 0px #999;
-    box-shadow: -3px 0px 11px 0px #999;
+    box-shadow: -3px -9px 11px 0px #999; /* Modified by Arpita Soni on 02/01/2015 for ticket #1052*/
     width: calc(100% - 280px); /*position: absolute;*/
     /*left: 280px;*/ /* removed by kapil - #139 - to resolve popup issue */
     min-width: 1000px !important;
@@ -9311,7 +9311,7 @@ footer {
     bottom: 0;
     width: 100%;
     /*width: 83%;*/
-    /*z-index: 10001;*/
+    z-index: -1; /* Added by Arpita Soni on 02/01/2015 for ticket #1052*/
     /*margin-left: 280px;*/
     /*End #832*/
 }
