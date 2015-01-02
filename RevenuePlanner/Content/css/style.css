@@ -11342,3 +11342,13 @@ float:left;
     position:static;
 }
 /* End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 */ 
+
+.tipsy-innerWhite
+{
+    color: #FFF; 
+}
+
+.tipsy-innerRed
+{
+    color: #FF0000; 
+}

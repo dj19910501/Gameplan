@@ -276,7 +276,6 @@
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\summernote.css" />
-    <Content Include="Content\css\tipsy.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
     <Content Include="Content\fonts\NaturalLanguageForm\codropsicons\codropsicons.svg" />
@@ -650,7 +649,6 @@
     <Content Include="Scripts\js\jquery.slimscroll.js" />
     <Content Include="Scripts\js\jquery.slimscroll.min.js" />
     <Content Include="Scripts\js\jquery.slimscroll_min.js" />
-    <Content Include="Scripts\js\jquery.tipsy.js" />
     <Content Include="Scripts\js\NaturalLanguageForm\modernizr.custom.js" />
     <Content Include="Scripts\js\NaturalLanguageForm\nlform.js" />
     <Content Include="Scripts\js\ReportConversion.js" />
