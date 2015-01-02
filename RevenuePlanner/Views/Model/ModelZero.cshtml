@@ -12,7 +12,7 @@
         <h4 class="text-shadow-black source-sans-prolight">Model Summary</h4>
         <div class="wraper-btns cf">
             <div class="span6">
-                <button class="btn btn-blue text-shadow-blue source-sans-proregular createbtn" type="button" href="@Url.Content("~/Model/CreateModel")">New Model</button>
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular createbtn" id="btnNewModel" type="button" href="@Url.Content("~/Model/CreateModel")">New Model</button>
             </div>
             <div class="span6">
                 <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Publish</button>
@@ -128,6 +128,11 @@ else
                 @*//window.location.href = "@Url.Content("~/model/create?id=")" + id;*@
             }
         });
+        $('#btnNewModel').click(function () {
+            var url = '@Url.Content("~/Model/createModel")';
+            formSubmitEvent(url);
+    });
+
     });
     @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
     $(document).on('click', '.delete-temp-program', function (e) {
@@ -400,4 +405,5 @@ $('#copymodelbtn').click(function () {
     });
 
     @*End By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
+    
 </script>

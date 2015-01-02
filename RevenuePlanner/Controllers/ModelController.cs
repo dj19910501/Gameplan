@@ -48,6 +48,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">model id</param>
         /// <returns>returns strongly typed(BaselineModel object) Create view</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
+        [HttpPost]
         public ActionResult CreateModel(int id = 0)
         {
             //// Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
@@ -567,7 +568,8 @@ namespace RevenuePlanner.Controllers
             }
             else if (redirectModelZero == "Tactics")
             {
-                return RedirectToAction("Tactics", new { id = intModelid });
+                TempData["modelIdForTactics"] = intModelid;
+                 return RedirectToAction("Tactics", "Model");
             }
             ViewBag.ModelId = currentModelId;
             ViewBag.BusinessUnitId = Convert.ToString(modelBusinessUnitId);
@@ -1638,6 +1640,11 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Tactics(int id = 0, bool showMessage = true)
         {
+            if (TempData["modelIdForTactics"] != null)
+            {
+                id = (int)TempData["modelIdForTactics"];
+                TempData["modelIdForTactics"] = id;
+            }
             int Modelid = id;
             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == Modelid).Select(model => model).FirstOrDefault();
             //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
@@ -1712,9 +1719,8 @@ namespace RevenuePlanner.Controllers
             {
                 TempData["SuccessMessage"] = string.Empty;
             }
-
             //// End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            return View(objTacticTypeModel);
+            return View("Tactics",objTacticTypeModel);
         }
 
         /// <summary>
@@ -3042,6 +3048,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">model id</param>
         /// <returns>returns IntegrationOverview with list of Integration instances</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]
+        [HttpPost]
         public ActionResult IntegrationOverview(int id = 0)
         {
             ViewBag.ModelId = id;
@@ -3187,6 +3194,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">model id</param>
         /// <returns>returns IntegrationSelection view</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]
+        [HttpPost]
         public ActionResult IntegrationSelection(int id = 0)
         {
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);

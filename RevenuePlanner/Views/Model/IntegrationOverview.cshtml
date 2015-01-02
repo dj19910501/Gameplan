@@ -206,7 +206,9 @@
             }
             else {
                 var url = '@Url.Content("~/Model/CreateModel")';
-                window.location.href = url;
+                var queryString = []
+                formSubmitEvent(url, queryString);
+                //window.location.href = url;
             }
         });
         $('#copymodelbtn').click(function () {

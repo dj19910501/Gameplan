@@ -751,8 +751,10 @@ function GrapSubstring(originalText, maxSize) {
  Purpose - removing query string at necessary*/
 function formSubmitEvent(url, queryStringArr) {
     var formHtml = '<form action="' + url + '" method="Post">';
+    if (typeof queryStringArr != 'undefined') {
     for (var i = 0; i < queryStringArr.length; i++) {
         formHtml += '<input type="text" name="' + queryStringArr[i].key + '" value="' + queryStringArr[i].Value + '" />';
+        }
     }
 
     formHtml += '</form>';
