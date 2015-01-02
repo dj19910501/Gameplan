@@ -84,9 +84,9 @@
             });
         }
 
-        function setLabel(data) {
-            setLabelToolTip("#mqlProjected", data.ProjectedMQLValue, 5, false);
-            setLabelToolTip("#mqlActual", data.ActualMQLValue, 5, false);
+        function setLabel(data) {            
+            setBootstrapTooltip("#mqlProjected", data.ProjectedMQLValue, 5, false);
+            setBootstrapTooltip("#mqlActual", data.ActualMQLValue, 5, false);
             var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
             if (parseFloat(data.ProjectedMQLValue) > 0) {
                 mqlActualPercentage = (((parseFloat(data.ActualMQLValue) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);

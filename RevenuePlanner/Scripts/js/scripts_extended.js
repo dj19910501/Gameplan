@@ -168,7 +168,7 @@ function ReplaceCC(text) {
 function SetBudget(idName, maxsize) {
     var budgetValue = $(idName).html();
     if (typeof(maxsize) === 'undefined') maxsize = 5;
-    setLabelToolTip(idName, budgetValue, maxsize, true);
+    setBootstrapTooltip(idName, budgetValue, maxsize, true);
 }
 
 //// Modified By: Viral Kadiya
@@ -230,7 +230,7 @@ function SetLabelFormaterWithTitle(idName) {
 //// Remove extra code from this function cause it work same as setLabelToolTip function.
 function SetPriceValue(idName) {
     var pricevalue = $(idName).html();
-    setLabelToolTip(idName, pricevalue, 5, false);
+    setBootstrapTooltip(idName, pricevalue, 5, false);
 }
 
 function getblurvalue(sender) {
@@ -468,7 +468,6 @@ function setBootstrapTooltip(lableId, value, maxSize, iscurrency) {
             $(lableId).text(number_format(roundValue, 0, '.', ','));
         }
     }
-  //  bootstrapetitle($(this), 'Allocated : $' + $(this).attr('allocated'), "tipsy-innerWhite");
 }
 
 
@@ -527,10 +526,8 @@ function ImageTipsy(lableId) {
     $(lableId).each(function () {
         var txtvalue = $(this).attr('title');
         var lengthvalue = txtvalue.length;
-        $(this).attr('title', txtvalue);
-        $(this).addClass('north');
-        $('.north').tipsy({ gravity: 's' });
-
+        
+        bootstrapetitle($(this), txtvalue, "tipsy-innerWhite")
     });
 }
 

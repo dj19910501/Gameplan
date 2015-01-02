@@ -533,18 +533,21 @@ else
     
 }
 <style type="text/css">
-    .tipsy-arrow {
-    display: none;
-}
+    .popover.top > .arrow, .popover.top > .arrow:after {
+        display: none;
+    }
 
-.tipsy-inner {
-    background: none repeat scroll 0 0 #3EA9F5;
-    font-family: 'source_sans_proregular',Arial,"sans-serif" !important;
-    font-size: 14px;
-    max-width: 196px;
-    padding: 12px;
-    text-align: left;
-}
+    .popover {
+        background: none repeat scroll 0 0 #3EA9F5;
+        font-family: 'source_sans_proregular',Arial,"sans-serif" !important;
+        font-size: 14px;
+        max-width: 221px;
+        padding: 1px;
+        text-align: left;
+        border-color:none;
+        box-shadow:none;
+    }
+
 </style>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/check.js")"></script>
 <script type="text/javascript">
@@ -570,7 +573,11 @@ else
             $('.tipsy').removeClass('blue-tipsy');
         };
 
-        $('.help').tipsy({ gravity: 's', opacity: 1, onShow: addShowText, onHide: addHideText });
+       
+        $('.help').each(function () {
+            bootstrapetitle($(this), $(this).attr("title"), "tipsy-innerWhite")
+        });        
+       
     });
     $('#backbtn').click(function () {
         var url = '';

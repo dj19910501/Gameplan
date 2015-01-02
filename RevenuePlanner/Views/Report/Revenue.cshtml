@@ -336,8 +336,8 @@
         }
 
         function setLabel(data) {
-            setLabelToolTip("#revenueProjected", data.ProjectedRevenueValue, 5, true);
-            setLabelToolTip("#revenueActual", data.ActualRevenueValue, 5, true);
+            setBootstrapTooltip("#revenueProjected", data.ProjectedRevenueValue, 5, true);
+            setBootstrapTooltip("#revenueActual", data.ActualRevenueValue, 5, true);
             var revenuePercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
             if (parseFloat(data.ProjectedRevenueValue) > 0) {
                 revenuePercentage = (((parseFloat(data.ActualRevenueValue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);

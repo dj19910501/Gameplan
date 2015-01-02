@@ -36,13 +36,15 @@
 
 }
 <style type="text/css">
-    .tipsy {
-        font-size: 12px;
-    }
-
-    .tipsy-inner {
+    .popover {
+        font-size: 11px;
         max-width: 140px;
         line-height: 15px;
+        text-align: center;
+    }
+
+    .popover-content {
+        padding: 6px 8px 6px 8px !important;
     }
 </style>
 @section Sidebar
@@ -436,12 +438,11 @@ $(document).ready(function () {
             return false;
         }
     });
-    SetTipsyText($(".info-icon-grey"), $(".info-icon-grey").attr('title'));
-    function SetTipsyText(obj, objVal) {
-        if (obj != null || obj != 'undefined') {
-            obj.tipsy({ gravity: 's' });
-        }
-    }
+
+    $(".info-icon-grey").each(function () {
+        bootstrapetitle($(this), $(this).attr("title"), "tipsy-innerWhite");
+    });
+
     //// Added By Maninder Singh 
     //// Date 1/28/2014
     //// Added Set tooltip

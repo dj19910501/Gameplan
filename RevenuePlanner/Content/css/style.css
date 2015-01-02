@@ -11239,11 +11239,24 @@ float:left;
 
     .popover {
         background-color: black;
+        z-index:999999 !important;
     }
 
     .popover-title {
         display: none;
     }
+
+.popover.top .arrow {
+    bottom:-7px;
+}
+
+.popover.top {
+    margin-top:-5px;
+}
+
+.popover .arrow, .popover .arrow:after {
+    margin-left:-9px !important;
+}
 
  /* End - Added by Pratik on 12/12/2014 for PL ticket #898 */
 
