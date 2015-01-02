@@ -383,17 +383,25 @@
                 success: function (data) {
                     if (data.returnURL == '#') {
                         $.ajax({
-                            type: 'POST',
+                            type: 'Post',
                             url: '@Url.Content("~/Model/SaveTactic/")',
                             data: 'Title=' + escape(Title) + '&Description=' + escape(Description) + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue
                             + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
                            + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
                             + '&isDeployedToModel=' + isDeployedToModel,
                             success: function (data) {
+                               
                                 if (data.redirect) {
+                                    
                                     $("#slidepanel").css("display", "none");
                                     $("#slidepanel-container").empty();
-                                    window.location.reload(true);
+                                    var queryStringArr = [];
+                                    queryStringArr.push(
+                                        {
+                                            key: 'id',
+                                            Value: modelID
+                                        });
+                                    formSubmitEvent('@Url.Content("~/Model/Tactics")', queryStringArr);
                                     return;
                                 }
                                 if (data.errormsg) {
