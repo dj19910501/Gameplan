@@ -113,7 +113,7 @@
         var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/ExternalService/SaveDataMappingPullRevenue")',
+            url: '@Url.Content("~/ExternalService/SaveDataMappingPulling")',
             data: formData + '&IntegrationInstanceId=' + parseInt(IntegrationInstanceId) + '&UserId=' + uId,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
