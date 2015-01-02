@@ -39,7 +39,6 @@ namespace RevenuePlanner
                 //  "~/Content/css/style.css",
                      "~/Content/css/datepicker.css",
                 //  "~/Content/css/style_extended.css",
-                     "~/Content/css/tipsy.css",
                      "~/Content/css/dhtmlxgantt.css",
                      "~/Content/css/summernote.css",
                      "~/Content/css/jquery.multiselect.css"
@@ -73,7 +72,6 @@ namespace RevenuePlanner
                          "~/Scripts/js/bootstrap-datepicker.js",
                         "~/Scripts/js/jquery.price_format.1.8.js",
                         "~/Scripts/js/slimScrollHorizontal.js",
-                         "~/Scripts/js/jquery.tipsy.js",
                         "~/Scripts/jquery.selectbox-0.2.js",
                          "~/Scripts/summernote_min.js",
                         "~/Scripts/js/jquery-ui.js",
