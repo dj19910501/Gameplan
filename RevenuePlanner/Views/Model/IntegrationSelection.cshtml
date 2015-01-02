@@ -142,7 +142,15 @@
             $("#successMessage").slideDown(600);
         }
         $("#btnCancel").click(function () {
-            window.location.reload(true);   // Modified by Viral Kadiya on 11/19/2014 to implement cancel event.
+            // window.location.reload(true);   // Modified by Viral Kadiya on 11/19/2014 to implement cancel event.
+            var url = '@Url.Content("~/Model/IntegrationSelection")';
+            var queryStringArr = [];
+            queryStringArr.push(
+                    {
+                        key: 'id',
+                        Value: lastModelId
+                    });
+            formSubmitEvent(url, queryStringArr);
         });
 
         $('#dp_start .add-on').click(function () {
