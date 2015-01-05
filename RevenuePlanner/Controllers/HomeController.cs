@@ -3893,27 +3893,34 @@ namespace RevenuePlanner.Controllers
 
             //// Get the Current year and Pre define Upcoming Activites.
             string currentYear = DateTime.Now.Year.ToString();
-            List<SelectListItem> UpcomingActivityList = Common.GetUpcomingActivity().Select(activity => new SelectListItem() { Text = activity.Text, Value = activity.Value.ToString(), Selected = activity.Selected }).ToList();
-            UpcomingActivityList.RemoveAll(activity => activity.Value == Enums.UpcomingActivities.thisyear.ToString() || activity.Value == Enums.UpcomingActivities.planYear.ToString() || activity.Value == Enums.UpcomingActivities.nextyear.ToString());
-
+            //List<SelectListItem> UpcomingActivityList = Common.GetUpcomingActivity().Select(activity => new SelectListItem() { Text = activity.Text, Value = activity.Value.ToString(), Selected = activity.Selected }).ToList();
+            //UpcomingActivityList.RemoveAll(activity => activity.Value == Enums.UpcomingActivities.thisyear.ToString() || activity.Value == Enums.UpcomingActivities.planYear.ToString() || activity.Value == Enums.UpcomingActivities.nextyear.ToString());
+            List<SelectListItem> UpcomingActivityList = new List<SelectListItem>();
+            //// Fetch the pervious year and future year list and insert into the list object 
+            var yearlistPrevious = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) < DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
+            yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false })); 
             //// If active plan dosen't have any current plan at that time we have to remove this month and thisquater option
             if (activePlan.Count > 0)
             {
-                if (activePlan.Where(plan => plan.Year == currentYear).Count() == 0)
-                {
-                    UpcomingActivityList.RemoveAll(activity => activity.Value == Enums.UpcomingActivities.thismonth.ToString() || activity.Value == Enums.UpcomingActivities.thisquarter.ToString());
-                }
-                else
+                //if (activePlan.Where(plan => plan.Year == currentYear).Count() == 0)
+                //{
+                //    UpcomingActivityList.RemoveAll(activity => activity.Value == Enums.UpcomingActivities.thismonth.ToString() || activity.Value == Enums.UpcomingActivities.thisquarter.ToString());
+                //}
+                //else
+                if (activePlan.Where(plan => plan.Year == currentYear).Count() != 0) 
                 {
                     //// Add current year into the list
+                    UpcomingActivityList.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString(), Selected = false });
+                    UpcomingActivityList.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thismonth.ToString()].ToString(), Value = Enums.UpcomingActivities.thismonth.ToString(), Selected = false }); 
                     UpcomingActivityList.Add(new SelectListItem { Text = DateTime.Now.Year.ToString(), Value = DateTime.Now.Year.ToString(), Selected = true });
                 }
             }
 
             //// Fetch the pervious year and future year list and insert into the list object
-            var yearlistPrevious = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && plan.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(plan.Year) < DateTime.Now.AddYears(-1).Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
-            yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
-            var yearlistAfter = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && plan.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
+            //var yearlistPrevious = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) < DateTime.Now.AddYears(-1).Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
+            //yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
+            //var yearlistAfter = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && plan.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
+            var yearlistAfter = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList(); 
             yearlistAfter.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
             return UpcomingActivityList;
         }
