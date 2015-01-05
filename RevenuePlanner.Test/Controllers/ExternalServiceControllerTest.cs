@@ -276,7 +276,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Set Parameter IntegrationTypeId for Eloqua
             int IntegrationTypeId = DataHelper.GetIntegrationTypeId(Enums.IntegrationType.Eloqua.ToString());
-            var result = controller.edit(0, IntegrationTypeId) as ViewResult;
+            var result = controller.editIntegration(0, IntegrationTypeId) as ViewResult;
             Assert.AreEqual("edit", result.ViewName, true);
 
             //// Check for the integrationTypeId view bag, if it is null then view can give an error

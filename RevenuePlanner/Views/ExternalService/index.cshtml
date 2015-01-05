@@ -20,10 +20,10 @@
         font-weight: normal;
     }
 
-    #content_wraper .small-content a:hover, a:focus {
-        color: #005580 !important;
-        text-decoration: underline !important;
-    }
+        #content_wraper .small-content a:hover, a:focus {
+            color: #005580 !important;
+            text-decoration: underline !important;
+        }
 
     #content_wraper a:hover, a:active {
         outline: 0 none !important;
@@ -66,13 +66,13 @@
 </p>
 <style type="text/css">
     .contact-support-message-position-popup {
-    bottom: 0;
-    left: 0;
-    margin: -85px 0 50px !important;
-    position: fixed;
-    width: 97% !important;
-    z-index: 3000;
-}
+        bottom: 0;
+        left: 0;
+        margin: -85px 0 50px !important;
+        position: fixed;
+        width: 97% !important;
+        z-index: 3000;
+    }
 </style>
 <div id="div_ContactSupportLink"></div>
 <div class="padding-content padding-top0 cf source-sans-proregular">
@@ -90,8 +90,8 @@
             <tr id="trNewService" index="-1">
                 <td>
                     <div id="nl-form" class="nl-form-plan-title without-margin">
-                        @Html.DropDownList("ddlIntegrationTypes", new SelectList((System.Collections.IEnumerable)TempData["ExternalFieldList"], "Value", "Text"), "Add New Integration", new { require = "true", Id = "lstIntegration", @class="hide" })
-                    <div class="nl-overlay"></div>
+                        @Html.DropDownList("ddlIntegrationTypes", new SelectList((System.Collections.IEnumerable)TempData["ExternalFieldList"], "Value", "Text"), "Add New Integration", new { require = "true", Id = "lstIntegration", @class = "hide" })
+                        <div class="nl-overlay"></div>
                     </div>
                     <script>
                         var nlform = new NLForm(document.getElementById('nl-form'));
@@ -118,7 +118,7 @@
         else {
             $("#successMessage").slideDown(1200);
             //$("#successMessage").slideUp(3000);
-        } 
+        }
         if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
             $("#errorMessage").slideUp(400);
         }
@@ -134,27 +134,39 @@
             var index = $(this).attr("index");
             if (id != null) {
                 //alert(id);
-                if (id == 'trNewService')
-                {
-                    if (selectedIntegrationTypeId == null)
-                    {
+                var queryStringArr = [];
+                var URL = "@Url.Content("~/ExternalService/editIntegration/")";
+                if (id == 'trNewService') {
+                    if (selectedIntegrationTypeId == null) {
                         return false;
                     }
 
                     // New Mode
                     //window.location.href = '@Url.Action("create", "ExternalService")' + '?integrationTypeId=' + selectedIntegrationTypeId;
-                    var URL = "@Url.Content("~/ExternalService/edit/")";
-                        URL = URL + "?id=0&TypeId=" + selectedIntegrationTypeId;
-                        window.location.href = URL;
+                    queryStringArr.push(
+                       {
+                         key: 'TypeId',
+                         Value: selectedIntegrationTypeId
+                       });
+                    formSubmitEvent(URL, queryStringArr);
+                    //window.location.href = URL;
                 }
-                else
-                {
+                else {
                     if (selectedIntegrationTypeId == null) {
                         selectedIntegrationTypeId = 0;
                     }
-
+                    queryStringArr.push(
+                      {
+                         key: 'TypeId',
+                         Value: selectedIntegrationTypeId
+                      },
+                      {
+                          key: 'id',
+                          Value: index
+                      });
+                    formSubmitEvent(URL, queryStringArr);
                     // Edit Mode
-                    window.location.href = "@Url.Content("~/ExternalService/edit?id=")" + index + '&TypeId=' + selectedIntegrationTypeId;
+                    //window.location.href = "@Url.Content("~/ExternalService/editIntegration?id=")" + index + '&TypeId=' + selectedIntegrationTypeId;
                 }
             }
 
@@ -174,7 +186,7 @@
                 type: 'GET',
                 cache: false,
                 url: '@Url.Content("~/ExternalService/SyncNow/")',
-                asyn:true,
+                asyn: true,
                 data: { id: id, UserId: uId },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -198,17 +210,15 @@
             myApp.hidePleaseWait();
             return false;
         });
-        
+
         $(document).on('click', '.non_clickable', function (e) {
             return false;
         });
 
         $('#nl-form > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             selectedIntegrationTypeId = $(this).attr('value');
-            if (selectedIntegrationTypeId != null)
-            {
-                if (selectedIntegrationTypeId.toString() == "0" || selectedIntegrationTypeId == 0)
-                {
+            if (selectedIntegrationTypeId != null) {
+                if (selectedIntegrationTypeId.toString() == "0" || selectedIntegrationTypeId == 0) {
                     e.preventDefault();
                     return false;
                 }
@@ -219,10 +229,9 @@
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
     });
 
- 
 
-    function fillIntegrationServiceList()
-    {
+
+    function fillIntegrationServiceList() {
         $.ajax({
             type: 'GET',
             url: '@Url.Content("~/ExternalService/GetIntegrationServiceListings/")',
@@ -242,7 +251,7 @@
             if (baselinesModels.length) {
                 data = baselinesModels;
                 //$('#table_baseline tr').not(function () { if ($(this).has('th').length || $(this).has('#trNewService').length) { return true } }).remove(); //clear table
-                for(i in baselinesModels){
+                for (i in baselinesModels) {
                     addRowIntegration(i, baselinesModels[i].IntegrationInstanceId, baselinesModels[i].IntegrationTypeId, baselinesModels[i].Instance, baselinesModels[i].Provider, baselinesModels[i].LastSyncStatus, baselinesModels[i].LastSyncDate);
                 }
             }
@@ -254,17 +263,15 @@
         var $html = "";
         $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + htmlEncode(_instance) + '</span><span class="search-icon"></span></td>' +
             '<td>' + _provider + '</td>'
-        
-        if (_lastSyncStatus.toString().toLowerCase() == "error")
-        {
+
+        if (_lastSyncStatus.toString().toLowerCase() == "error") {
             $html += '<td id="lastSyncStatus' + _integrationInstanceId + '"><span style="color:red;">' + _lastSyncStatus + '</span></td>'
         }
-        else
-        {
-            $html +=      '<td id="lastSyncStatus' + _integrationInstanceId + '">' + _lastSyncStatus + '</td>'
-        }  
+        else {
+            $html += '<td id="lastSyncStatus' + _integrationInstanceId + '">' + _lastSyncStatus + '</td>'
+        }
 
-        $html +=   '<td id="lastSyncDate' + _integrationInstanceId + '">' + _lastSyncData + '</td>' +
+        $html += '<td id="lastSyncDate' + _integrationInstanceId + '">' + _lastSyncData + '</td>' +
             '<td><a id="syncnow_' + _integrationInstanceId + '" href="#" class="sync_service">Sync Now</a><span style="display:none;">Syncing...</span></td>' +
         '</tr>';
         //$baselineTable.append($html);
@@ -277,7 +284,7 @@
         $("#div_ContactSupportLink").empty();
         var url = '@Url.Content("~/Common/LoadSupportPartial/")';   //// Modified by Sohel Pathan on 23/05/2014 for internal review points.
         $("#div_ContactSupportLink").load(url);
-     });
+    });
 
     function TruncateTitle() {
         $("#table_baseline").find('.truncate').each(function () {
@@ -293,5 +300,4 @@
     }
 
 
-   
 </script>

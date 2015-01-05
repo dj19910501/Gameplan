@@ -127,6 +127,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="TypeId">Integration type id.</param>        
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]
+        [HttpPost]
         public ActionResult GetIntegrationFolder(int TypeId, int id = 0)
         {
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
@@ -609,7 +610,8 @@ namespace RevenuePlanner.Controllers
         /// <param name="TypeId"></param>
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult edit(int id = 0, int TypeId = 0)
+        [HttpPost]
+        public ActionResult editIntegration(int id = 0, int TypeId = 0)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);

@@ -1,5 +1,16 @@
 ﻿@using RevenuePlanner.Helpers
-
+@{
+    string integrationInstanceId = "0";
+    string integrationTypeId = "0";
+    if (ViewBag.IntegrationInstanceId!=null)
+    {
+        integrationInstanceId = ViewBag.IntegrationInstanceId.ToString();
+    }
+    if (ViewBag.IntegrationTypeId!=null)
+    {
+        integrationTypeId = ViewBag.IntegrationTypeId.ToString();
+    }
+}
 <!DOCTYPE html>
 
 <div class="span2">
@@ -9,12 +20,12 @@
                 @if (ViewBag.PageTitle == "MapDataType")
                 {
                     /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
-                    <a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Settings</a>
+                    <a id="lnkIntegrationSetting" href="#">Integration Settings</a>
                 }
                 else
                 {
                     /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
-                    <a href="@Url.Content("~/ExternalService/Edit?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Settings</a>
+                    <a id="lnkIntegrationSetting" href="#">Integration Settings</a>
                         
                 }
             </li>
@@ -24,7 +35,7 @@
                     if (ViewBag.IntegrationTypeCode == Enums.IntegrationType.Eloqua.ToString())
                     {
 
-                    <a href="@Url.Content("~/ExternalService/GetIntegrationFolder?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Folders (Eloqua only)</a>
+                    <a id="lnkIntegrationFolder" href="#">Integration Folders (Eloqua only)</a>
                     }
                     else
                     {
@@ -36,7 +47,7 @@
                     if (ViewBag.IntegrationTypeCode == Enums.IntegrationType.Eloqua.ToString())
                     {
 
-                    <a href="@Url.Content("~/ExternalService/GetIntegrationFolder?id= " + ViewBag.IntegrationInstanceId.ToString() + "&TypeId=" + ViewBag.IntegrationTypeId + "")">Integration Folders (Eloqua only)</a>
+                    <a id="lnkIntegrationFolder" href="#">Integration Folders (Eloqua only)</a>
                     }
                 }
             </li>
@@ -95,6 +106,32 @@
                 $('#IntegrationFolder').removeClass('active');
                 $('#Icredential').addClass('active');
             });
+            $('#lnkIntegrationFolder').on("click", function () {
+                var url = '@Url.Content("~/ExternalService/GetIntegrationFolder")';
+                var queryStringArr = [];
+                queryStringArr.push({
+                    key: 'id',
+                    Value: '@integrationInstanceId'
+                },
+                 {
+                     key: 'TypeId',
+                     Value: '@integrationTypeId'
+                 });
+                formSubmitEvent(url, queryStringArr);
+            });
+            $('#lnkIntegrationSetting').on("click", function () {
+                var url = 'Url.Content("~/ExternalService/editIntegration/")';
+                 var queryStringArr = [];
+                 queryStringArr.push({
+                     key: 'id',
+                     Value: '@integrationInstanceId'
+                },
+                 {
+                     key: 'TypeId',
+                     Value: '@integrationTypeId'
+                 });
+                formSubmitEvent(url, queryStringArr);
+             });
 
         }
             );

@@ -12,7 +12,7 @@
         <h4 class="text-shadow-black source-sans-prolight">Model Summary</h4>
         <div class="wraper-btns cf">
             <div class="span6">
-                <button class="btn btn-blue text-shadow-blue source-sans-proregular createbtn" id="btnNewModel" type="button" href="@Url.Content("~/Model/CreateModel")">New Model</button>
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular createbtn" id="btnNewModel" type="button">New Model</button>
             </div>
             <div class="span6">
                 <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Publish</button>
@@ -86,7 +86,7 @@ else
     </ul>
     <div class="padding-content cf source-sans-proregular">
         <p>No saved model version to display.</p>
-        <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular createbtn" type="button" href="@Url.Content("~/Model/CreateModel")" >Create Baseline Model</button>
+        <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular createbtn" type="button" id="btnZeroModel")" >Create Baseline Model</button>
     </div>
 }
 
@@ -132,7 +132,10 @@ else
             var url = '@Url.Content("~/Model/createModel")';
             formSubmitEvent(url);
     });
-
+        $('#btnZeroModel').click(function () {
+            var url = '@Url.Content("~/Model/createModel")';
+              formSubmitEvent(url);
+          });
     });
     @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
     $(document).on('click', '.delete-temp-program', function (e) {
