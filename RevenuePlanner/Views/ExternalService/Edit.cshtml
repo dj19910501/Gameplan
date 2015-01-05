@@ -63,7 +63,7 @@
                     if(Model.IntegrationType.Code==Enums.IntegrationType.Eloqua.ToString())
                     {
                         @Html.Partial("~/Views/ExternalService/_ExternalServer.cshtml", Model.ExternalServer)
-                        @Html.Partial("~/Views/ExternalService/_MQLResponses.cshtml", Model.GameplanDataTypePullMQLModelList)
+                        @Html.Partial("~/Views/ExternalService/_PullEloquaMQL.cshtml", Model.GameplanDataTypePullMQLModelList)
                     }
                     else if(Model.IntegrationType.Code==Enums.IntegrationType.Salesforce.ToString())
                     {

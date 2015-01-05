@@ -858,7 +858,7 @@
     <Content Include="Views\Inspect\_ShareCampaign.cshtml" />
     <Content Include="Views\Inspect\_ShareProgram.cshtml" />
     <Content Include="Views\Inspect\_ResubmissionPopup.cshtml" />
-    <Content Include="Views\ExternalService\_MQLResponses.cshtml" />
+    <Content Include="Views\ExternalService\_PullEloquaMQL.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

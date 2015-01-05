@@ -190,7 +190,7 @@ namespace Integration.Eloqua
             RestRequest request = new RestRequest(Method.GET)
             {
                 RequestFormat = DataFormat.Json,
-                Resource = string.Format("/assets/contact/fields")
+                Resource = string.Format("/assets/contact/fields?search={0}&page={1}&count={2}&depth=complete", "*", 1, 100)
             };
 
             IRestResponse response = _client.Execute(request);
@@ -200,7 +200,7 @@ namespace Integration.Eloqua
             {
                 if (result != null)
                 {
-                    contactFields.Add((string)result["id"], (string)result["name"]);
+                    contactFields.Add((string)result["internalName"], (string)result["name"]);
                 }
             }
 

@@ -1322,12 +1322,18 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ExternalIntegration objEx = new ExternalIntegration(id, Sessions.ApplicationId);
-                List<string> lstExternalFieldsPulling = objEx.GetTargetDataMemberPulling();
-                if (lstExternalFieldsPulling == null)
+                if (integrationType.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    lstExternalFieldsPulling = new List<string>();
+                    List<string> lstExternalFieldsPulling = new List<string>();
+                    lstExternalFieldsPulling = objEx.GetTargetDataMemberPulling();
+                    ViewData["ExternalFieldListPulling"] = lstExternalFieldsPulling;
                 }
-                ViewData["ExternalFieldListPulling"] = lstExternalFieldsPulling;
+                else if (integrationType.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    List<SelectListItem> lstExternalFieldsPulling = new List<SelectListItem>();
+                    lstExternalFieldsPulling = Common.GetEloquaContactTargetDataMemberSelectList(id);
+                    ViewData["ExternalFieldListPulling"] = lstExternalFieldsPulling;
+                }
             }
             catch
             {
@@ -1725,16 +1731,9 @@ namespace RevenuePlanner.Controllers
                     List<int> lstIds = mrp.IntegrationInstanceDataTypeMappingPulls.Where(map => map.IntegrationInstanceId == IntegrationInstanceId && map.GameplanDataTypePull.Type == GameplanDatatypePullType).Select(map => map.IntegrationInstanceDataTypeMappingPullId).ToList();
                     if (lstIds != null && lstIds.Count > 0)
                     {
-                        foreach (int ids in lstIds)
-                        {
-                            IntegrationInstanceDataTypeMappingPull obj = mrp.IntegrationInstanceDataTypeMappingPulls.Where(m => m.IntegrationInstanceDataTypeMappingPullId == ids).SingleOrDefault();
-                            if (obj != null)
-                            {
-                                mrp.Entry(obj).State = EntityState.Deleted;
-                            }
-                        }
+                        List<IntegrationInstanceDataTypeMappingPull> lstDataMappingPull = mrp.IntegrationInstanceDataTypeMappingPulls.Where(m => lstIds.Contains(m.IntegrationInstanceDataTypeMappingPullId)).Select(mapping => mapping).ToList();
+                        lstDataMappingPull.ForEach(mapping => mrp.Entry(mapping).State = EntityState.Deleted);
                         mrp.SaveChanges();
-
                     }
 
                     //// Add new IntegrationInstanceDataTypeMappingPull entry for new GameplanDataTypeMappingPull

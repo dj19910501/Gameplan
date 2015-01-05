@@ -23,6 +23,7 @@ using System.Web.Mvc;
 using System.Transactions;
 using System.Data;
 using System.Text.RegularExpressions;
+using Integration;
 
 namespace RevenuePlanner.Helpers
 {
@@ -4890,6 +4891,37 @@ namespace RevenuePlanner.Helpers
                 }
                 return isValidUser;
             }
+        }
+        #endregion
+
+        #region Prepare select list of contact target mapping fields of eloqua
+        /// <summary>
+        /// Function to prepare select list of contacts of eloqua to be shown in dropdown
+        /// </summary>
+        /// <param name="integrationInstanceId">integration instance id</param>
+        /// <returns>list of selectItem object</returns>
+        public static List<SelectListItem> GetEloquaContactTargetDataMemberSelectList(int integrationInstanceId)
+        {
+            List<SelectListItem> lstExternalFieldsPulling = new List<SelectListItem>();
+            Dictionary<string, string> lstEloquaContactFields = new Dictionary<string, string>();
+
+            //// Get contact object list form Eloqua
+            ExternalIntegration objEx = new ExternalIntegration(integrationInstanceId, Sessions.ApplicationId);
+            lstEloquaContactFields = objEx.GetEloquaContactTargetDataMemberList();
+
+            if (lstEloquaContactFields != null)
+            {
+                //// Prepare select list for contact list 
+                foreach (var contact in lstEloquaContactFields)
+                {
+                    SelectListItem objSelectListItem = new SelectListItem();
+                    objSelectListItem.Text = contact.Value;
+                    objSelectListItem.Value = contact.Key;
+                    lstExternalFieldsPulling.Add(objSelectListItem);
+                }
+            }
+
+            return lstExternalFieldsPulling;
         }
         #endregion
     }

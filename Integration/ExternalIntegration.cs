@@ -346,5 +346,21 @@ namespace Integration
 
             return null;
         }
+
+        /// <summary>
+        /// Function to get Eloqua contact target data member list
+        /// </summary>
+        /// <returns>returns contact contact data member dictionary</returns>
+        public Dictionary<string, string> GetEloquaContactTargetDataMemberList()
+        {
+            _integrationInstanceId = _id;
+            IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
+            if (integrationEloquaClient.IsAuthenticated)
+            {
+                var lstContactFields = integrationEloquaClient.GetContactFields();
+                return lstContactFields;
+            }
+            return null;
+        }
     }
 }
