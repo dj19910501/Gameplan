@@ -39,8 +39,12 @@ namespace Integration.Eloqua
         /// Modified Date: 08/20/2014
         /// Ticket #717 Pulling from Eloqua - Actual Cost 
         public double actualCost { get; set; }
-
         public int folderId { get; set; }
+        
+        /// Added By: Viral Kadiya
+        /// Date: 01/05/2015
+        /// Ticket #1072 Integration: Multiple integration within same tactic
+        public string crmId { get; set; }
     }
 
     public class FieldValue
@@ -92,5 +96,11 @@ namespace Integration.Eloqua
         public string CampaignId { get; set; }
         public string MQLDate { get; set; }
         public DateTime peroid { get; set; }
+    }
+
+    public class CRM_EloquaMapping
+    {
+        public string CRMId { get; set; }
+        public string EloquaId { get; set; }
     }
 }

@@ -71,10 +71,26 @@ namespace Integration.Eloqua
             // Insert log into IntegrationInstanceSection
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
 
-            // PlanIDs which has configured for "Pull response" from Eloqua instances
-            List<int> planIds = db.Plans.Where(objplan => objplan.Model.IntegrationInstanceIdMQL == IntegrationInstanceId && objplan.Model.Status.Equals("Published")).Select(objplan => objplan.PlanId).ToList();
+            // PlanIDs which has configured for "Pull MQL" from Eloqua instances
+            List<Plan> lstPlans = db.Plans.Where(objplan => objplan.Model.IntegrationInstanceIdMQL == IntegrationInstanceId && objplan.Model.Status.Equals("Published")).ToList();
+            Guid _ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == IntegrationInstanceId).ClientId;
 
-            if (planIds.Count > 0)
+            //// Get SalesForce integration type Id.
+            var salesforceIntegrationType = db.IntegrationTypes.Where(type => type.Code == "Salesforce" && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
+            int SalesForceintegrationTypeId = Convert.ToInt32(salesforceIntegrationType);
+
+            //// Get All SalesForceIntegrationTypeIds to retrieve  SalesForcePlanIds.
+            List<int> lstSalesForceIntegrationTypeIds = db.IntegrationInstances.Where(instance => instance.IntegrationTypeId.Equals(SalesForceintegrationTypeId) && instance.IsDeleted.Equals(false) && instance.ClientId.Equals(_ClientId)).Select(s => s.IntegrationInstanceId).ToList();
+
+            //// Get all PlanIds whose Tactic data PUSH on SalesForce.
+            List<int> lstSalesForcePlanIds = lstPlans.Where(objplan => lstSalesForceIntegrationTypeIds.Contains(objplan.Model.IntegrationInstanceId.Value)).Select(objplan => objplan.PlanId).ToList();
+
+            //// Get All PlanIds.
+            List<int> AllplanIds = lstPlans.Select(objplan => objplan.PlanId).ToList();
+
+            //// Get Eloqua PlanIds.
+            List<int> lstEloquaplanIds = lstPlans.Where(objplan => !lstSalesForcePlanIds.Contains(objplan.PlanId)).Select(plan => plan.PlanId).ToList();
+            if (AllplanIds.Count > 0)
             {
                 try
                 {
@@ -192,20 +208,48 @@ namespace Integration.Eloqua
                     //// Get tactic status list
                     List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
 
-                    //// Get MQL Level
-                    var MQLLevel = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                    //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
+                    List<Plan_Campaign_Program_Tactic> lstAllTactics = db.Plan_Campaign_Program_Tactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                                    tactic.IsDeployedToIntegration == true &&
                                                                                                                    lstApproveStatus.Contains(tactic.Status) &&
-                                                                                                                   tactic.IsDeleted == false &&
-                                                                                                                   tactic.Stage.Code == Common.StageMQL).Select(tactic => tactic.Stage.Level).FirstOrDefault();
+                                                                                                                   tactic.IsDeleted == false).ToList();
 
-                    //// Get tactic list
-                    List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                    //// Get MQL Level
+                    var MQLLevel = lstAllTactics.Where(tactic => tactic.Stage.Code == Common.StageMQL).Select(tactic => tactic.Stage.Level).FirstOrDefault();
+
+                    //// Get list of SalesForceIntegrationInstanceTacticID(CRMId).
+                    List<string> lstSalesForceIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => lstSalesForcePlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IntegrationInstanceTacticId != null).Select(_tac => _tac.IntegrationInstanceTacticId).ToList();
+
+                    if (lstSalesForceIntegrationInstanceTacticIds == null)
+                        lstSalesForceIntegrationInstanceTacticIds = new List<string>();
+
+                    //// Get Mapping List of EloquaIntegrationInstanceTactic Ids based on SalesForceIntegrationInstanceTacticID(CRMId).
+                    List<CRM_EloquaMapping> lstEloquaIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
+                    foreach (string _SalTac in lstSalesForceIntegrationInstanceTacticIds)
+                    {
+                        if (!string.IsNullOrEmpty(_SalTac))
+                        {
+                            lstEloquaIntegrationInstanceTacticIds.Add(
+                                                                      new CRM_EloquaMapping
+                                                                      {
+                                                                          CRMId = _SalTac,
+                                                                          EloquaId = integrationEloquaClient.GetEloquaCampaignIdByCRMId(_SalTac)
+                                                                      });
+                        }
+                    }
+
+                    //// Get Eloqua tactic list
+                    List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => lstEloquaplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                                    campaignIds.Contains(tactic.IntegrationInstanceTacticId) &&
-                                                                                                                   tactic.IsDeployedToIntegration == true &&
-                                                                                                                   lstApproveStatus.Contains(tactic.Status) &&
-                                                                                                                   tactic.IsDeleted == false &&
                                                                                                                    tactic.Stage.Level <= MQLLevel).ToList();
+
+                    //// Get SalesForce tactic list
+                    List<Plan_Campaign_Program_Tactic> lstSalesForceTactic = lstAllTactics.Where(tactic => lstSalesForcePlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                                                                                                                   campaignIds.Contains(lstEloquaIntegrationInstanceTacticIds.Where(_instance => _instance.CRMId == tactic.IntegrationInstanceTacticId).Select(d => d.EloquaId).FirstOrDefault()) &&
+                                                                                                                   tactic.Stage.Level <= MQLLevel).ToList();
+                    //// Merge list of Eloqua & SalesForce Tactics.
+                    List<Plan_Campaign_Program_Tactic> lstTactic = lstEloquaTactic;
+                    lstSalesForceTactic.ForEach(_salesTac => lstTactic.Add(_salesTac));
 
                     #endregion
 

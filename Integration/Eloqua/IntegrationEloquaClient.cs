@@ -632,6 +632,7 @@ namespace Integration.Eloqua
             return response.Data;
         }
 
+
         /// <summary>
         /// Added By: Maninder Singh Wadhva
         /// Function to update eloqua campaign.
@@ -1377,6 +1378,33 @@ namespace Integration.Eloqua
             return response;
         }
 
+        /// <summary>
+        /// Function to get Eloqua CampaignId by CRMId(SalesforceId).
+        /// Added By: Viral Kadiya
+        /// Added Date: 01/02/2015
+        /// </summary>
+        /// <param name="eloquaCampaignId">Eloqua campaign Id.</param>
+        /// <returns>Returns eloqua campaign object.</returns>
+        public string GetEloquaCampaignIdByCRMId(string crmId)
+        {
+            int page = 1;   // Set default page value.
+            int pageSize = 1; // Set default pagesize value.
+            string strSearchTerm = "crmId='" + crmId.ToString() + "'";  // Get Campaign data using Search query based on CRMId.
+            string _EloquaCampaignId = string.Empty;
+            RestRequest request = new RestRequest(Method.GET)
+            {
+                Resource = string.Format("/assets/campaigns?search={0}&page={1}&count={2}&depth=complete",
+                                  strSearchTerm, page, pageSize),
+                RequestFormat = DataFormat.Json
+            };
+
+            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
+            if (response.Data != null)
+            {
+                _EloquaCampaignId = response.Data.id;
+            }
+            return _EloquaCampaignId;
+        }
         #endregion
 
         #region Common

@@ -385,4 +385,10 @@ namespace Integration.Helper
 
         #endregion
     }
+
+    public class CRM_EloquaMapping
+    {
+        public string CRMId { get; set; }
+        public string EloquaId { get; set; }
+    }
 }
