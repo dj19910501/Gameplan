@@ -176,10 +176,10 @@ namespace RevenuePlanner.Controllers
                     {
                         for (int i = planYear; i < yr; i++)
                         {
-                            Listyear.Add(new SelectListItem { Text = (yr + i).ToString(), Value = (yr + i).ToString(), Selected = false });//Modified by Mitesh Vaishnav for PL ticket #622
+                            Listyear.Add(new SelectListItem { Text = (i).ToString(), Value = (i).ToString(), Selected = false });//Modified by Pratik for PL ticket #1089
                         }
 
-                        year = Listyear;
+                        year = Listyear.OrderBy(objyear => objyear.Value).ToList();//Modified by Pratik for PL ticket #1089
                         TempData["selectYearList"] = new SelectList(year, "Value", "Text");//Modified by Mitesh Vaishnav for PL ticket #622
                     }
                     #endregion
