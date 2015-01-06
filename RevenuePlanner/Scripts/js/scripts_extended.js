@@ -167,7 +167,8 @@ function ReplaceCC(text) {
 //// Remove extra code from this function cause it work same as setLabelToolTip function.
 function SetBudget(idName, maxsize) {
     var budgetValue = $(idName).html();
-    if (typeof(maxsize) === 'undefined') maxsize = 5;
+    if (typeof (maxsize) === 'undefined') maxsize = 5;
+    $(idName).popover('destroy');
     setBootstrapTooltip(idName, budgetValue, maxsize, true);
 }
 
@@ -177,6 +178,7 @@ function SetBudget(idName, maxsize) {
 function SetBudgetForPlanListing(idName, maxsize) {
     var budgetValue = $(idName).html();
     if (typeof (maxsize) === 'undefined') maxsize = 5;
+    $(idName).popover('destroy');
     setBootstrapTooltip(idName, budgetValue, maxsize, true);
 
 }
@@ -230,6 +232,7 @@ function SetLabelFormaterWithTitle(idName) {
 //// Remove extra code from this function cause it work same as setLabelToolTip function.
 function SetPriceValue(idName) {
     var pricevalue = $(idName).html();
+    $(idName).popover('destroy');
     setBootstrapTooltip(idName, pricevalue, 5, false);
 }
 
@@ -526,7 +529,7 @@ function ImageTipsy(lableId) {
     $(lableId).each(function () {
         var txtvalue = $(this).attr('title');
         var lengthvalue = txtvalue.length;
-        
+        $(lableId).popover('destroy');
         bootstrapetitle($(this), txtvalue, "tipsy-innerWhite")
     });
 }
