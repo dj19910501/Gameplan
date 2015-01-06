@@ -225,7 +225,7 @@ namespace RevenuePlanner.Controllers
                     Plan currentPlan = new Plan();
                     Plan latestPlan = new Plan();
                     latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
-                    if(activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).Count() > 0)
+                    if (activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).Count() > 0)
                     {
                         latestPlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
                     }
@@ -469,7 +469,7 @@ namespace RevenuePlanner.Controllers
                 }
 
             }
-            
+
             //// Set Plan dropdown values
             if (planList != null)
                 planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
@@ -516,7 +516,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "View Control & GANTT Chart (Prepare GANTT Chart data)"
-        
+
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
         /// Modified By Maninder Singh Wadhva PL Ticket#47
@@ -556,7 +556,7 @@ namespace RevenuePlanner.Controllers
             catch (Exception objException)
             {
                 ErrorSignal.FromCurrentContext().Raise(objException);
-                
+
                 if (objException is System.ServiceModel.EndpointNotFoundException)
                 {
                     //// Flag to indicate unavailability of web service.
@@ -740,7 +740,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) || viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    
+
                     return PrepareTacticAndRequestTabResult(viewBy, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult);
                 }
                 else
@@ -1691,7 +1691,7 @@ namespace RevenuePlanner.Controllers
         {
             string tacticStatusSubmitted = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
-            
+
             //// Added BY Bhavesh, Calculate MQL at runtime #376
             List<TacticStageValue> tacticStageRelationList = new List<TacticStageValue>();
             List<Stage> stageList = new List<Stage>();
@@ -1961,10 +1961,10 @@ namespace RevenuePlanner.Controllers
                 DateTime minDate = lstImprovementTactic.Where(improvementTactic => improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == PlanId).Select(improvementTactic => improvementTactic.EffectiveDate).Min();
 
                 //// Start Date of tactic
-                DateTime tacticStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgramTactic.StartDate)); 
+                DateTime tacticStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgramTactic.StartDate));
 
                 //// If any tactic affected by at least one improvement tactic.
-                if (tacticStartDate >= minDate) 
+                if (tacticStartDate >= minDate)
                 {
                     return 1;
                 }
@@ -2738,47 +2738,13 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (strparam.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        if (startDate.Month == DateTime.Now.Month || endDate.Month == DateTime.Now.Month)
+                        differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+
+                        foreach (string objDifference in differenceItems)
                         {
-                            if (startDate.Month == endDate.Month)
+                            int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                            if (monthNo == DateTime.Now.Month)
                             {
-                                endDate = new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month));
-                            }
-                            else
-                            {
-                                if (startDate.Month == 2)
-                                {
-                                    if (startDate.Year % 4 == 0)
-                                    {
-                                        endDate = new DateTime(startDate.Year, startDate.Month, 29);
-                                    }
-                                    else
-                                    {
-                                        endDate = new DateTime(startDate.Year, startDate.Month, 28);
-                                    }
-                                }
-                                else if (endDate.Month == 2)
-                                {
-                                    startDate = new DateTime(endDate.Year, endDate.Month, 01);
-                                }
-                                else
-                                {
-                                    if (endDate.Month == DateTime.Now.Month && startDate.Month != DateTime.Now.Month)
-                                    {
-                                        startDate = new DateTime(endDate.Year, endDate.Month, 01);
-                                    }
-                                    else
-                                    {
-                                        endDate = new DateTime(startDate.Year, startDate.Month, new DateTime(startDate.Year, startDate.AddMonths(1).Month, 01).AddDays(-1).Day);
-                                    }
-                                }
-                            }
-
-                            differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
-
-                            foreach (string objDifference in differenceItems)
-                            {
-                                int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                                 if (monthNo == 1)
                                 {
                                     monthArray[0] = monthArray[0] + 1;
@@ -2858,7 +2824,7 @@ namespace RevenuePlanner.Controllers
                 {
                     objActivityChart.NoOfActivity = monthArray[month].ToString();
                 }
-                
+
                 objActivityChart.Color = "#c633c9";
                 lstActivityChart.Add(objActivityChart);
             }
@@ -2926,7 +2892,7 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
                                                                                                                                     lstProgramId.Contains(tactic.PlanProgramId)).ToList()
                                                                                                                                 .Where(tactic =>
-                                                                                                                                        //// Checking start and end date
+                                                                                                                                    //// Checking start and end date
                                                                                                                                         Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                                         CalendarEndDate,
                                                                                                                                         tactic.StartDate,
@@ -2946,7 +2912,7 @@ namespace RevenuePlanner.Controllers
                         year = Planyear;
                     }
                 }
-                
+
                 int currentMonth = DateTime.Now.Month;
 
                 foreach (Plan_Campaign_Program_Tactic tactic in objPlan_Campaign_Program_Tactic)
@@ -3006,48 +2972,13 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (strparam.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        if (startDate.Month == DateTime.Now.Month || endDate.Month == DateTime.Now.Month)
+                        differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+
+                        foreach (string objDifference in differenceItems)
                         {
-                            if (startDate.Month == endDate.Month)
+                            int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                            if (monthNo == DateTime.Now.Month)
                             {
-                                endDate = new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month));
-                            }
-                            else
-                            {
-                                if (startDate.Month == 2)
-                                {
-                                    if (startDate.Year % 4 == 0)
-                                    {
-                                        endDate = new DateTime(startDate.Year, startDate.Month, 29);
-                                    }
-                                    else
-                                    {
-                                        endDate = new DateTime(startDate.Year, startDate.Month, 28);
-                                    }
-                                }
-                                else if (endDate.Month == 2)
-                                {
-                                    startDate = new DateTime(endDate.Year, endDate.Month, 01);
-
-                                }
-                                else
-                                {
-                                    if (endDate.Month == DateTime.Now.Month && startDate.Month != DateTime.Now.Month)
-                                    {
-                                        startDate = new DateTime(endDate.Year, endDate.Month, 01);
-                                    }
-                                    else
-                                    {
-                                        endDate = new DateTime(startDate.Year, startDate.Month, new DateTime(startDate.Year, startDate.AddMonths(1).Month, 01).AddDays(-1).Day);
-                                    }
-                                }
-                            }
-
-                            differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
-
-                            foreach (string objDifference in differenceItems)
-                            {
-                                int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                                 if (monthNo == 1)
                                 {
                                     monthArray[0] = monthArray[0] + 1;
@@ -3130,7 +3061,7 @@ namespace RevenuePlanner.Controllers
                 objActivityChart.Color = "#c633c9";
                 lstActivityChart.Add(objActivityChart);
             }
-            
+
             //// return Activity Chart list as Json Result object
             return Json(new { lstchart = lstActivityChart.ToList() }, JsonRequestBehavior.AllowGet);
         }
@@ -3180,54 +3111,14 @@ namespace RevenuePlanner.Controllers
             }
 
             //// Prepare array of months for seelcted quarter
-            if (startDateParam.Month == month1 || startDateParam.Month == month2 || startDateParam.Month == month3)
+            if (startDateParam.Month == month1 || startDateParam.Month == month2 || startDateParam.Month == month3 || endDateParam.Month == month1 || endDateParam.Month == month2 || endDateParam.Month == month3)
             {
-                if (startDateParam.Month == endDateParam.Month)
-                {
-                    endDateParam = new DateTime(endDateParam.Year, endDateParam.Month, DateTime.DaysInMonth(endDateParam.Year, endDateParam.Month));
-                }
-                else if (startDateParam.Month == 2)
-                {
-                    if (startDateParam.Year % 4 == 0)
-                    {
-                        endDateParam = new DateTime(startDateParam.Year, startDateParam.Month, 29);
-                    }
-                    else
-                    {
-                        endDateParam = new DateTime(startDateParam.Year, startDateParam.Month, 28);
-                    }
-                }
-                else
-                {
-                    endDateParam = new DateTime(startDateParam.Year, startDateParam.Month, new DateTime(startDateParam.Year, startDateParam.AddMonths(1).Month, 01).AddDays(-1).Day);
-                }
-
                 differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDateParam.AddMonths(element)).TakeWhile(element => element <= endDateParam).Select(element => element.ToString("MM"));
                 foreach (string d in differenceItems)
                 {
                     int monthNo = Convert.ToInt32(d.TrimStart('0'));
-                    if (monthNo == 1)
+                    if (monthNo == month1 || monthNo == month2 || monthNo == month3)
                     {
-                        monthArray[0] = monthArray[0] + 1;
-                    }
-                    else
-                    {
-                        monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
-                    }
-                }
-
-                endDateParam = endDate;
-            }
-            if (endDateParam.Month == month1 || endDateParam.Month == month2 || endDateParam.Month == month3)
-            {
-                if (startDateParam.Month != endDateParam.Month)
-                {
-                    startDateParam = new DateTime(endDateParam.Year, endDateParam.Month, 01);
-                    differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDateParam.AddMonths(element)).TakeWhile(element => element <= endDateParam).Select(element => element.ToString("MM"));
-
-                    foreach (string objDifference in differenceItems)
-                    {
-                        int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                         if (monthNo == 1)
                         {
                             monthArray[0] = monthArray[0] + 1;
@@ -3238,6 +3129,8 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
+
+                endDateParam = endDate;
             }
 
             return monthArray;
@@ -3246,7 +3139,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "Add Actual"
-        
+
         /// <summary>
         /// Action method to return AddActual view
         /// </summary>
@@ -3261,20 +3154,20 @@ namespace RevenuePlanner.Controllers
                 var lstUserCustomRestriction = Common.GetUserCustomRestriction();
                 int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
                 int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                
+
                 //// Prepare a list of geography and apply custom restictions
                 List<string> lstAllowedGeography = lstUserCustomRestriction.Where(CustomRestriction => (CustomRestriction.Permission == ViewOnlyPermission || CustomRestriction.Permission == ViewEditPermission) && CustomRestriction.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId).ToList();
                 List<Guid> lstAllowedGeographyId = new List<Guid>();
                 lstAllowedGeography.ForEach(geography => lstAllowedGeographyId.Add(Guid.Parse(geography)));
                 planmodel.objGeography = objDbMrpEntities.Geographies.Where(geography => geography.IsDeleted.Equals(false) && geography.ClientId == Sessions.User.ClientId && lstAllowedGeographyId.Contains(geography.GeographyId)).Select(geography => geography).OrderBy(geography => geography.Title).ToList();
-                
+
                 List<string> tacticStatus = Common.GetStatusListAfterApproved();
 
                 //// Tthis is inititalized as 0 bcoz to get the status for tactics.
                 string planGanttType = PlanGanttTypes.Tactic.ToString();
                 List<User> lstIndividuals = GetIndividualsByPlanId(Sessions.PlanId.ToString(), planGanttType, Enums.ActiveMenu.Home.ToString());
                 ////Start - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
-                
+
                 //// Fetch individual's records distinct
                 planmodel.objIndividuals = lstIndividuals.Select(user => new
                 {
@@ -3293,8 +3186,8 @@ namespace RevenuePlanner.Controllers
 
                 //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
                 objTacticType = (from tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic
-                                where tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false
-                                select tactic.TacticType).Distinct().OrderBy(tactic => tactic.Title).ToList();
+                                 where tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false
+                                 select tactic.TacticType).Distinct().OrderBy(tactic => tactic.Title).ToList();
 
                 ViewBag.TacticTypeList = objTacticType;
 
@@ -3324,7 +3217,7 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 var objPlan = objDbMrpEntities.Plans.FirstOrDefault(plan => plan.PlanId == Sessions.PlanId);
                 //// Added by Dharmraj for #712 Edit Own and Subordinate Plan
-                if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) 
+                if (objPlan.CreatedBy.Equals(Sessions.User.UserId))
                 {
                     IsPlanEditable = true;
                 }
@@ -3374,7 +3267,7 @@ namespace RevenuePlanner.Controllers
             {
                 //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
                 TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(planTactic => planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
-                                                                                tacticStatus.Contains(planTactic.Status) && planTactic.IsDeleted.Equals(false) && 
+                                                                                tacticStatus.Contains(planTactic.Status) && planTactic.IsDeleted.Equals(false) &&
                                                                                 planTactic.CostActual == null && !planTactic.Plan_Campaign_Program_Tactic_Actual.Any()).ToList();
             }
             else
@@ -3413,8 +3306,8 @@ namespace RevenuePlanner.Controllers
 
             List<int> TacticIds = TacticList.Select(tactic => tactic.PlanTacticId).ToList();
             var lstPlanTacticActual = (from tacticActual in objDbMrpEntities.Plan_Campaign_Program_Tactic_Actual
-                                    where TacticIds.Contains(tacticActual.PlanTacticId)
-                                    select new { tacticActual.PlanTacticId, tacticActual.CreatedBy, tacticActual.CreatedDate }).GroupBy(tacticActual => tacticActual.PlanTacticId).Select(tacticActual => tacticActual.FirstOrDefault());
+                                       where TacticIds.Contains(tacticActual.PlanTacticId)
+                                       select new { tacticActual.PlanTacticId, tacticActual.CreatedBy, tacticActual.CreatedDate }).GroupBy(tacticActual => tacticActual.PlanTacticId).Select(tacticActual => tacticActual.FirstOrDefault());
 
             List<Guid> userListId = new List<Guid>();
             userListId = (from tacticActual in lstPlanTacticActual select tacticActual.CreatedBy).ToList<Guid>();
@@ -3428,7 +3321,7 @@ namespace RevenuePlanner.Controllers
             {
                 userListId.Add(new Guid(tactic.ModifiedBy.ToString()));
             }
-            
+
             string userList = string.Join(",", userListId.Select(user => user.ToString()).ToArray());
             List<User> userName = new List<User>();
 
@@ -3613,7 +3506,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Get Owners by planID Method
-       
+
         /// <summary>
         /// Added By :- Sohel Pathan
         /// Date :- 14/04/2014
@@ -3683,7 +3576,7 @@ namespace RevenuePlanner.Controllers
             var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && PlanIds.Contains(campaign.PlanId)).Select(campaign => campaign.PlanCampaignId).ToList();
             var programList = objDbMrpEntities.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && campaignList.Contains(program.PlanCampaignId)).Select(program => program.PlanProgramId).ToList();
             var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic);
-            
+
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
 
             //// Added by :- Sohel Pathan on 21/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
@@ -3708,7 +3601,7 @@ namespace RevenuePlanner.Controllers
             {
                 //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
                 var TacticUserList = tacticList.Where(tactic => status.Contains(tactic.Status)).Select(tactic => tactic).Distinct().ToList();
-                
+
                 //// Custom Restrictions applied
                 TacticUserList = TacticUserList.Where(tactic => lstAllowedVertical.Contains(tactic.VerticalId.ToString()) && lstAllowedGeography.Contains(tactic.GeographyId.ToString().ToLower())).ToList();
 
@@ -3838,7 +3731,7 @@ namespace RevenuePlanner.Controllers
                     audience.Title
                 }).OrderBy(audience => audience.Title).ToList();
                 allowedAudience = allowedAudience.Where(audience => !string.IsNullOrEmpty(audience.Title)).OrderBy(audience => audience.Title, new AlphaNumericComparer()).ToList();
-                
+
                 //// return all custom attribures in json object format
                 return Json(new { isSuccess = true, AllowedGeography = allowedGeography, AllowedVerticals = allowedVerticals, AllowedAudience = allowedAudience }, JsonRequestBehavior.AllowGet);
             }
@@ -3849,7 +3742,7 @@ namespace RevenuePlanner.Controllers
 
             return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
         }
-        
+
         #endregion
 
         #region Upcoming Activity Methods
@@ -3904,7 +3797,7 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> UpcomingActivityList = new List<SelectListItem>();
             //// Fetch the pervious year and future year list and insert into the list object 
             var yearlistPrevious = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) < DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
-            yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false })); 
+            yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
             //// If active plan dosen't have any current plan at that time we have to remove this month and thisquater option
             if (activePlan.Count > 0)
             {
@@ -3913,11 +3806,11 @@ namespace RevenuePlanner.Controllers
                 //    UpcomingActivityList.RemoveAll(activity => activity.Value == Enums.UpcomingActivities.thismonth.ToString() || activity.Value == Enums.UpcomingActivities.thisquarter.ToString());
                 //}
                 //else
-                if (activePlan.Where(plan => plan.Year == currentYear).Count() != 0) 
+                if (activePlan.Where(plan => plan.Year == currentYear).Count() != 0)
                 {
                     //// Add current year into the list
                     UpcomingActivityList.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString(), Selected = false });
-                    UpcomingActivityList.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thismonth.ToString()].ToString(), Value = Enums.UpcomingActivities.thismonth.ToString(), Selected = false }); 
+                    UpcomingActivityList.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thismonth.ToString()].ToString(), Value = Enums.UpcomingActivities.thismonth.ToString(), Selected = false });
                     UpcomingActivityList.Add(new SelectListItem { Text = DateTime.Now.Year.ToString(), Value = DateTime.Now.Year.ToString(), Selected = true });
                 }
             }
@@ -3926,11 +3819,11 @@ namespace RevenuePlanner.Controllers
             //var yearlistPrevious = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) < DateTime.Now.AddYears(-1).Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
             //yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
             //var yearlistAfter = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && plan.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
-            var yearlistAfter = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList(); 
+            var yearlistAfter = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
             yearlistAfter.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
             return UpcomingActivityList;
         }
-        
+
         #endregion
 
         #region SetSessionPlan
