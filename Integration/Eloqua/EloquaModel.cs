@@ -40,7 +40,7 @@ namespace Integration.Eloqua
         /// Ticket #717 Pulling from Eloqua - Actual Cost 
         public double actualCost { get; set; }
         public int folderId { get; set; }
-        
+
         /// Added By: Viral Kadiya
         /// Date: 01/05/2015
         /// Ticket #1072 Integration: Multiple integration within same tactic
@@ -72,7 +72,7 @@ namespace Integration.Eloqua
         public string description { get; set; }
         public string folderId { get; set; }
         public string name { get; set; }
-        public string permissions { get; set; }
+        //public string permissions { get; set; }
         public string updatedAt { get; set; }
         public string count { get; set; }
         public string dataLookupId { get; set; }

@@ -20,7 +20,7 @@ namespace Integration.Helper
         public static string StageCW = "CW";
         public static string StageRevenue = "Revenue";
         public static string StageCost = "Cost";
-        
+
         public static string StageMQL = "MQL";
         public static string MQLStageValue = "MQL";
 
@@ -39,6 +39,7 @@ namespace Integration.Helper
         public static string msgMappingFieldsNotFound = "Mapping fields not found";
         public static string msgMappingNotFoundForSalesforcePullResponse = "Error: Mapping does not found for CampaignId or FirstRespondedDate or Status";
         public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping does not found for CampaignId or CloseDate or Amount or StageName";
+        public static string msgMappingNotFoundForEloquaPullMQL = "Error: Mapping does not found for CampaignId or MQLDateId or ViewId or ListId";
 
         public static bool IsAutoSync = false;
         /// <summary>
@@ -178,7 +179,7 @@ namespace Integration.Helper
         /// <returns>IntegrationInstanceSectionId</returns>
         public static int CreateIntegrationInstanceSection(int IntegartionInstanceLogId, int IntegartionInstanceId, string SectionName, DateTime SyncStart, Guid CreateBy)
         {
-            using (MRPEntities db=new MRPEntities())
+            using (MRPEntities db = new MRPEntities())
             {
                 IntegrationInstanceSection objIntegrationInstanceSection = new IntegrationInstanceSection();
                 objIntegrationInstanceSection.IntegrationInstanceLogId = IntegartionInstanceLogId;
@@ -379,7 +380,7 @@ namespace Integration.Helper
             {
                 returnString = title;
             }
-           returnString= Regex.Replace(returnString, @"[^0-9a-zA-Z_]+", "");
+            returnString = Regex.Replace(returnString, @"[^0-9a-zA-Z_]+", "");
             return returnString;
         }
 

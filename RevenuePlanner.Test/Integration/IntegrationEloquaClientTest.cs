@@ -317,7 +317,7 @@ namespace RevenuePlanner.Test.Integration
         {
             EloquaResponse controller = new EloquaResponse();
 
-            controller.SetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType);
+            controller.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType);
 
             // Assert.Equals(null, result);
         }

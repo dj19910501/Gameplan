@@ -38,7 +38,8 @@ namespace Integration.Helper
             PullResponses,
             PullQualifiedLeads,
             PullClosedDeals,
-            ImportActual
+            ImportActual,
+            PullMQL
         }
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace Integration.Helper
             DropDownList
         }
 
-		/// <summary>
+        /// <summary>
         /// Added By: Pratik
         /// Date: 30/12/2014
         /// Enum for custom field MQL

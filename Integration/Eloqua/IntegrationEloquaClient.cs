@@ -1790,7 +1790,7 @@ namespace Integration.Eloqua
         }
 
         #region Contact List Manipulation
-        
+
         /// <summary>
         /// Function to sync from Eloqua to Gameplan.
         /// </summary>
@@ -1799,7 +1799,7 @@ namespace Integration.Eloqua
             try
             {
                 EloquaResponse objEloquaResponse = new EloquaResponse();
-                objEloquaResponse.SetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType);
+                objEloquaResponse.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType);
             }
             catch (Exception ex)
             {
@@ -1807,7 +1807,7 @@ namespace Integration.Eloqua
                 _isResultError = true;
             }
         }
-        
+
         /// <summary>
         /// Function to get Eloqua Contact List.
         /// Added By: Pratik
