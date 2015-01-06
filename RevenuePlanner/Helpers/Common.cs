@@ -1195,7 +1195,7 @@ namespace RevenuePlanner.Helpers
         /// <returns>Returns start date as per calendar.</returns>
         public static string GetStartDateAsPerCalendar(DateTime calendarStartDate, DateTime startDate)
         {
-            return startDate < calendarStartDate ? string.Format("{0}", calendarStartDate.ToShortDateString()) : string.Format("{0}", startDate.ToShortDateString());
+            return startDate < calendarStartDate ? string.Format("{0}", calendarStartDate.ToString("MM/dd/yyyy",CultureInfo.InvariantCulture)) : string.Format("{0}", startDate.ToString("MM/dd/yyyy",CultureInfo.InvariantCulture));
         }
 
         /// <summary>
