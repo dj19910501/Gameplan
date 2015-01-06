@@ -590,14 +590,14 @@ namespace RevenuePlanner.Controllers
             //// Start Maninder Singh Wadhva : 11/15/2013 - Getting list of tactic for view control for plan version id.
             //// Selecting campaign(s) of plan whose IsDelete=false.
            
-            var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(campaign => filteredPlanIds.Contains(campaign.PlanId) && campaign.IsDeleted.Equals(false) && (!(campaign.EndDate < CalendarStartDate) || !(campaign.StartDate > CalendarEndDate)))
+            var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(campaign => filteredPlanIds.Contains(campaign.PlanId) && campaign.IsDeleted.Equals(false) && (!((campaign.EndDate < CalendarStartDate) || (campaign.StartDate > CalendarEndDate))))
                                            .Select(campaign => campaign).ToList();
 
             //// Selecting campaignIds.
             List<int> lstCampaignId = lstCampaign.Select(campaign => campaign.PlanCampaignId).ToList();
 
             //// Selecting program(s) of campaignIds whose IsDelete=false.
-            var lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(program => lstCampaignId.Contains(program.PlanCampaignId) && program.IsDeleted.Equals(false) && (!(program.EndDate < CalendarStartDate) || !(program.StartDate > CalendarEndDate)))
+            var lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(program => lstCampaignId.Contains(program.PlanCampaignId) && program.IsDeleted.Equals(false) && (!((program.EndDate < CalendarStartDate) || (program.StartDate > CalendarEndDate))))
                                                   .Select(program => program)
                                                   .ToList();
 
@@ -623,7 +623,7 @@ namespace RevenuePlanner.Controllers
                                                                        (filteredVertical.Count.Equals(0) || filteredVertical.Contains(tactic.VerticalId)) &&
                                                                        (filteredAudience.Count.Equals(0) || filteredAudience.Contains(tactic.AudienceId)) &&
                                                                        (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))
-                                                                        && (!(tactic.EndDate < CalendarStartDate) || !(tactic.StartDate > CalendarEndDate))
+                                                                        && (!((tactic.EndDate < CalendarStartDate) || (tactic.StartDate > CalendarEndDate)))
                                                                        )
                                                                        .ToList().Select(tactic => new Plan_Tactic { 
                                                                         objPlanTactic = tactic,
