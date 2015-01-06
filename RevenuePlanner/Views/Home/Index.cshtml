@@ -2945,7 +2945,8 @@ function ApproveTactic(e, task) {
             url: newUrl,
             data: {
                 planid: selectedPlanIds,
-                activeMenu: activeMenu
+                activeMenu: activeMenu,
+                year:isQuater
             },
             dataType: "json",
             success: function (data) {
