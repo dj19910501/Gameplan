@@ -390,5 +390,13 @@ namespace Integration.Helper
     {
         public string CRMId { get; set; }
         public string EloquaId { get; set; }
+        public int PlanTacticId { get; set; }
+        public DateTime? StartDate { get; set; }
+    }
+
+    public class EloquaIntegrationInstanceTactic_Model_Mapping
+    {
+        public string EloquaIntegrationInstanceTacticId { get; set; }
+        public int ModelIntegrationInstanceId { get; set; }
     }
 }

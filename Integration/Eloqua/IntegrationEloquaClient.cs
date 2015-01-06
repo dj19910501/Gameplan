@@ -620,7 +620,7 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="eloquaCampaignId">Eloqua campaign Id.</param>
         /// <returns>Returns eloqua campaign object.</returns>
-        private EloquaCampaign GetEloquaCampaign(string elouqaCampaignId)
+        public EloquaCampaign GetEloquaCampaign(string elouqaCampaignId)
         {
             RestRequest request = new RestRequest(Method.GET)
             {

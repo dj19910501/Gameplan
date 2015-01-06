@@ -31,7 +31,7 @@ namespace Integration.Eloqua
         public string standard { get; set; }
     }
 
-    class EloquaCampaign
+    public class EloquaCampaign
     {
         public string id { get; set; }
 
@@ -96,11 +96,5 @@ namespace Integration.Eloqua
         public string CampaignId { get; set; }
         public string MQLDate { get; set; }
         public DateTime peroid { get; set; }
-    }
-
-    public class CRM_EloquaMapping
-    {
-        public string CRMId { get; set; }
-        public string EloquaId { get; set; }
     }
 }
