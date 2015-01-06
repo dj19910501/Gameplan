@@ -223,6 +223,12 @@ namespace RevenuePlanner.Controllers
                 try
                 {
                     Plan currentPlan = new Plan();
+                    Plan latestPlan = new Plan();
+                    latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                    if(activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).Count() > 0)
+                    {
+                        latestPlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                    }
                     if (currentPlanId != 0)
                     {
                         currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).FirstOrDefault();
@@ -235,7 +241,7 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             //// Based on currentPlanId, if currentPlan not found then pick first plan from list of activeplans
-                            currentPlan = activePlan.Select(plan => plan).FirstOrDefault();
+                            currentPlan = latestPlan;
                             ViewBag.BusinessUnitTitle = planmodel.BusinessUnitIds.Where(businessUnit => businessUnit.Value.ToLower() == currentPlan.Model.BusinessUnitId.ToString().ToLower()).Select(businessUnit => businessUnit.Text).FirstOrDefault();
                             currentPlanId = currentPlan.PlanId;
                         }
@@ -252,7 +258,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                currentPlan = activePlan.Select(plan => plan).OrderBy(plan => plan.Title).FirstOrDefault();
+                                currentPlan = latestPlan;
                             }
                         }
                         else
@@ -261,7 +267,7 @@ namespace RevenuePlanner.Controllers
                             //// when old published plan id (session) is from different business unit then it retune null
                             if (currentPlan == null)
                             {
-                                currentPlan = activePlan.OrderBy(plan => plan.Title).FirstOrDefault();
+                                currentPlan = latestPlan;
                             }
                         }
                     }
@@ -277,7 +283,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                currentPlan = activePlan.OrderBy(plan => plan.Title).FirstOrDefault();
+                                currentPlan = latestPlan;
                             }
                         }
                         else
@@ -286,7 +292,7 @@ namespace RevenuePlanner.Controllers
                             currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PlanId)).FirstOrDefault();
                             if (currentPlan == null)
                             {
-                                currentPlan = activePlan.OrderBy(plan => plan.Title).FirstOrDefault();
+                                currentPlan = latestPlan;
                             }
                         }
                     }

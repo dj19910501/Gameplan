@@ -936,6 +936,7 @@
             if (campaign.length) {
                 //Start Added ny mitesh vaishnav for internal review point (Unnecessary error message display on save and continue. )
                 isApply = false;
+                mqlTotal = costTotal = programTotal = 0;
                 for (i in campaign) {
                     mqlTotal = mqlTotal + parseFloat(campaign[i].mqls);
                     costTotal = costTotal + parseFloat(campaign[i].cost);
