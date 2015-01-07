@@ -817,7 +817,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="strPlanIds">Comma separated list of plan ids</param>
         /// <param name="activeMenu">Get Active Menu</param>
         /// <returns>returns Json object with values required to show in plan/home header</returns>
-        public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu,string year)
+        public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu, string year)
         {
             planid = System.Web.HttpUtility.UrlDecode(planid);
             List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
@@ -826,7 +826,7 @@ namespace RevenuePlanner.Controllers
             {
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlans(planIds, activeMenu,year),
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlans(planIds, activeMenu, year),
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
@@ -4344,7 +4344,7 @@ namespace RevenuePlanner.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
-            return Json(new { id = retVal, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) }, JsonRequestBehavior.AllowGet);
+            return Json(new { id = retVal, redirect = Url.Action("Assortment"), ismsg = "Plan Saved Successfully." }, JsonRequestBehavior.AllowGet);
         }
 
         #endregion

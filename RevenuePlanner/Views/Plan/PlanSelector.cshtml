@@ -133,8 +133,21 @@
         $('#table_baseline').on('click', 'tbody tr', function (e) {
             var PlanId = $(this).attr("id");
             if (PlanId != null) {
-                var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + "Plan" + '&currentPlanId=' + PlanId;
-                window.location.href = url;
+                var queryStringArr = [];
+
+                queryStringArr.push(
+                    {
+                        key: 'currentPlanId',
+                        Value: PlanId
+                    });
+
+                queryStringArr.push(
+                   {
+                       key: 'ActiveMenu',
+                       Value: "Plan"
+                   });
+
+                formSubmitEvent('@Url.Content("~/Home/Index")', queryStringArr);
             }
         });
 
@@ -143,9 +156,26 @@
             e.stopPropagation();
             var PlanId = $(this).parent().parent().attr("id");
             if (PlanId != null) {
-                var url = '@Url.Content("~/Plan/Create/")' + PlanId;
-                window.location.href = url;
+
+                var queryStringArr = [];
+
+                queryStringArr.push(
+                    {
+                        key: 'id',
+                        Value: PlanId
+                    });
+
+                formSubmitEvent('@Url.Content("~/Plan/Create")', queryStringArr);
             }
+        });
+
+        // Code to Create new Plan
+        $("#NewPlan").click(function () {
+            var url = '@Url.Content("~/Plan/Create")';
+            //window.location.href = url;
+            var queryStringArr = [];
+
+            formSubmitEvent(url, queryStringArr);
         });
 
         // Function to delete the selected Plan
@@ -190,12 +220,6 @@
                 return false;
             }
         });
-
-        // Code to Create new Plan
-        $("#NewPlan").click(function () {
-            var url = '@Url.Content("~/Plan/Create/0")';
-            window.location.href = url;
-        });
     });
 
     /***** Code to load Years Tab *****/
@@ -230,40 +254,40 @@
                 if ('@errorMsg' == '') {
                     $('#errorMessage').css("display", "block");
                     $('#cError').html('<strong>Error!</strong> @Common.objCached.NoPublishPlanAvailable');  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
-                $("#errorMessage").slideDown(1200); // Show the Alert
-                $('#successMessage').css("display", "none");
+                    $("#errorMessage").slideDown(1200); // Show the Alert
+                    $('#successMessage').css("display", "none");
+                }
             }
         }
     }
-}
 
-function RemoveActiveClass_YearsTab() {
-    $('#YearTabs').children().each(function () {
-        if ($(this).hasClass('active')) {
-            $(this).removeClass("active");
-        }
-    });
-}
+    function RemoveActiveClass_YearsTab() {
+        $('#YearTabs').children().each(function () {
+            if ($(this).hasClass('active')) {
+                $(this).removeClass("active");
+            }
+        });
+    }
 
-/***** Code to load Business Units Tab *****/
+    /***** Code to load Business Units Tab *****/
 
-function LoadBUData() {
-    $.ajax({
-        type: 'POST',
-        url: '@Url.Content("~/Plan/GetBUTab/")',
-            success: function (r) {
-                if (r.serviceUnavailable != 'undefined' && r.serviceUnavailable == '#') {
-                    //// Function to redirect to login page on unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+    function LoadBUData() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetBUTab/")',
+        success: function (r) {
+            if (r.serviceUnavailable != 'undefined' && r.serviceUnavailable == '#') {
+                //// Function to redirect to login page on unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
                     BindBUTabs(r);
                     TabClick();
                 }
             }
-        });
+    });
     }
 
     function BindBUTabs(BU) {
@@ -361,34 +385,34 @@ function LoadBUData() {
                         $('#table_baseline > tbody').html("");
                         var $baselineTable = $('#table_baseline > tbody');
                         var $html = "@Common.objCached.NoPlanFoundPlanSelector";
-                    $baselineTable.append($html);
+                        $baselineTable.append($html);
+                    }
+                    myApp.hidePleaseWait();
                 }
-                myApp.hidePleaseWait();
-            }
             }
         });
-}
-
-/***** Code to fill Plan table according the filter *****/
-function TabClick() {
-    var SelectedYear = $('#YearTabs > li.active a').text();
-    var SelectedBU = $('#BUTabs > li.active').attr("id");
-    if (SelectedBU === 'undefined') {
-        SelectedBU = "";
     }
-    LoadPlanData(SelectedYear, SelectedBU);
-}
 
-function TruncateTitle() {
-    $("#table_baseline").find('.truncate').each(function () {
-        var title = $(this).text();
-        var mainText = title;
+    /***** Code to fill Plan table according the filter *****/
+    function TabClick() {
+        var SelectedYear = $('#YearTabs > li.active a').text();
+        var SelectedBU = $('#BUTabs > li.active').attr("id");
+        if (SelectedBU === 'undefined') {
+            SelectedBU = "";
+        }
+        LoadPlanData(SelectedYear, SelectedBU);
+    }
+
+    function TruncateTitle() {
+        $("#table_baseline").find('.truncate').each(function () {
+            var title = $(this).text();
+            var mainText = title;
             @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to solve the issue "The plan name is greater than few characters the UI get distorted". *@
-            if (title.length >= 32) {
-                title = title.substring(0, 32) + "...";
-                $(this).prop('title', mainText);
-            }
-            $(this).text(title);
-        });
-    }
+        if (title.length >= 32) {
+            title = title.substring(0, 32) + "...";
+            $(this).prop('title', mainText);
+        }
+        $(this).text(title);
+    });
+}
 </script>

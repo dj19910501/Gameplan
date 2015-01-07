@@ -21,15 +21,15 @@
 <!--success message-->
 <div id="successMessageDuplicatePlan" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
-     <strong>Success. </strong>
-   <div id="cSuccessDuplicatePlan" style="display:inline-block;"></div>
+    <strong>Success. </strong>
+    <div id="cSuccessDuplicatePlan" style="display: inline-block;"></div>
 </div>
 <!--success message-->
 <!--error message-->
 <div id="errorMessageDuplicatePlan" class="alert hide alert-error message-position-small">
     <a class="close">×</a>
     <strong>Error! </strong>
-     <div id="cErrorDuplicatePlan" style="display:inline-block;"></div>
+    <div id="cErrorDuplicatePlan" style="display: inline-block;"></div>
 </div>
 @Html.Hidden("hdnYear", pm.Year, new { id = "hdnYear" })
 @Html.Hidden("hdnModelId", pm.ModelId, new { id = "hdnModelId" })   @* Added by Sohel Pathan on 15/07/2014 for PL ticket #566*@
@@ -208,9 +208,25 @@
     /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
     function EditPlan() {
         var pid = parseInt('@Planid');
-        var url = '@Url.Content("~/Plan/Create?isBackFromAssortment=true&id=")';
+        var url = '@Url.Content("~/Plan/Create")';
 
-        window.location.href = url.replace('amp;', '') + pid;
+        var queryStringArr = [];
+
+        queryStringArr.push(
+            {
+                key: 'id',
+                Value: pid
+            });
+
+        queryStringArr.push(
+           {
+               key: 'isBackFromAssortment',
+               Value: "true"
+           });
+
+        formSubmitEvent(url, queryStringArr);
+
+        //window.location.href = url.replace('amp;', '') + pid;
     }
     /*End : Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
     //Added By : Kalpesh Sharma
@@ -377,9 +393,9 @@
 
         $('#BtnGroup').click(function (e) {
             if ($(this).html().toLowerCase() == "duplicate") {
-                
+
             }
-            else {                
+            else {
                 displayconfirm('@Url.Content("~/Plan/Create/0")');
 
             }
@@ -422,7 +438,7 @@
                 $(".shadow-scroll").css('visibility', 'hidden');
             }
         });
-       
+
         /*change color on input title tactic when input has a value*/
         $('#t_title').change(function () {
             if ($(this).val() == "") {
@@ -436,18 +452,18 @@
 
 
         $(document).on("click", ".blue-bg-text", function (e) {
-            
+
             e.stopPropagation();
-             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
-             if ($(this).text() == "Add Campaign") {
-                 ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0","0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
+            if ($(this).text() == "Add Campaign") {
+                ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0", "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
              }
              else {
                  var idCampaing = $(this).parent().attr('id');
                  ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", idCampaing, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
              }
         });
-        
+
         //Manoj Start 28Jan2014 : Bug-12 (User can lose data via navigation in application)
         function AssignDefaultValue() {
             $('#slidepanel').find("input[type=text],textarea,select").each(function () {
@@ -467,25 +483,58 @@
             });
             return changed;
         }
+
         $(document).on("click", "#confirmClose, .confirmClose", function (e) {
             $("#errorMessageDuplicatePlan").slideUp(400);   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
         });
+
         $(document).on("click", "#aApplyToCalender", function (e) {
-            displayconfirm('@Url.Action("ApplyToCalendar", "Plan")');
+            window.location.href = '@Url.Action("ApplyToCalendar", "Plan")';
         });
+
         $(document).on("click", "#LeftNavInput", function (e) {
-            displayconfirm('@Url.Action("Create", "Plan", new { id = Planid })');
+            var queryStringArr = [];
+
+            queryStringArr.push(
+             {
+                 key: 'id',
+                 Value: '@Planid'
+             });
+
+            displayconfirm('@Url.Content("~/Plan/Create")', queryStringArr);
+
+            //displayconfirm('@Url.Action("Create", "Plan", new { id = Planid })');
         });
+
         $(document).on("click", "#LeftNavAddActivity", function (e) {
             //displayconfirm('@Url.Action("Assortment", "Plan")');
-            displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + '@Planid' + "");
+            var queryStringArr = [];
+
+            queryStringArr.push(
+             {
+                 key: 'ActiveMenu',
+                 Value: "Plan"
+             });
+
+            queryStringArr.push(
+             {
+                 key: 'currentPlanId',
+                 Value: '@Planid'
+             });
+
+            displayconfirm('@Url.Content("~/Home/Index")', queryStringArr);
+            //displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + '@Planid' + "");
         });
+
         $(document).on("click", "#aBudgeting", function (e) {
-            displayconfirm('@Url.Action("Budgeting", "Plan")');
+            var queryStringArr = [];
+            displayconfirm('@Url.Action("Budgeting", "Plan")', queryStringArr);
+            //displayconfirm('@Url.Action("Budgeting", "Plan")');
         });
+
         //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $("#header a").not("#ContactSupport").click(function () {
-            
+
             if (isDataChanged()) {
                 displayconfirm($(this).attr('href'));
                 return false;
@@ -496,8 +545,9 @@
         });
         //Dharmraj End 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
 
-        function displayconfirm(strURL) {
-            window.location.href = strURL;
+        function displayconfirm(strURL, queryStringArr) {
+            formSubmitEvent(strURL, queryStringArr);
+            //window.location.href = strURL;
         }
         //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
 
@@ -520,7 +570,7 @@
         //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $(document).on("click", ".gray-bg-text", function (e) {
             e.stopPropagation();
-            
+
             if ($(this).text() == "Add Program") {
                 var idCampaign = $(this).parent().parent().attr('data-id-campaing');
                 ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaign, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
@@ -529,11 +579,11 @@
                 var idProgram = $(this).parent().parent().attr('id');
                 ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", idProgram, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
             }
-        });        
-        
+        });
+
         $(document).on("click", ".add-icon.program", function (e) {
             var idCampaing = $(this).parent().parent().attr('data-id-campaing');
-        
+
             ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaing, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
         });
 
@@ -565,17 +615,17 @@
         }
         /*Added by Mitesh Vaishnav */
         $(document).on("click", "#divlineitem", function (e) {
-            
+
             var idLineItem = $(this).attr("index");
             ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", idLineItem, "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
             return false;
-           
+
         });
-        
+
         $(document).on("click", "#createlineitem", function (e) {
             var idtactic = $(this).parent().attr('data-id-tactic');
-        
-            ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "0",idtactic, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+
+            ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "0", idtactic, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
         });
         $(document).on('click', '#delLineItem', function (e) {
 
@@ -600,7 +650,7 @@
 
         // Change by Dharmraj to handle Warning of data loss during program deletion, #547
         $(document).on('click', '#delprogram', function (e) {
-           
+
             e.stopPropagation();
             var idProgram = $(this).parent().attr('id');
             displayconfirmForDeleteEvent(idProgram, 'program');
@@ -623,7 +673,7 @@
         // Added By Bhavesh for Delete Improvement Tactic: Date 13-March-2014
         // Change by Dharmraj to handle Warning of data loss during imp tactic deletion, #547
         $(document).on('click', '#divimpTactic #delimpTactic', function (e) {
-            
+
             e.stopPropagation();
             var idTactic = $(this).parent().attr('index');
             displayconfirmForDeleteEvent(idTactic, 'impTactic');
@@ -769,7 +819,7 @@
                 var url = '@Url.Content("~/Plan/ShowDeleteImprovementTactic/")';
                 $("#DivPartialViewForDeleteImpTactic").load(url + '?id=' + idTactic + '&AssortmentType=' + AssortmentType + '&RedirectType=' + false);
             }
-        }
+}
 
         //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign deletion)
         function displayconfirmForDeleteEvent(id, type) {
@@ -778,7 +828,7 @@
                 $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
 
                 $("#btnConfirmOK").click(function () {
-                   
+
                     $('#cErrorDuplicatePlan').html("");
                     $("#errorMessageDuplicatePlan").hide();
                     $("#slidepanel").css("display", "none");
@@ -802,7 +852,7 @@
                 $('#cErrorDuplicatePlan').html("You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
                 $("#btnConfirmOK").click(function () {
-                   
+
                     $('#cErrorDuplicatePlan').html("");
                     $("#errorMessageDuplicatePlan").hide();
                     saveAndContinueClick();
@@ -876,28 +926,28 @@
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var idTactic = $(this).parent().attr("index");
-          
+
             if (idTactic == 0) {
                 $("a#divimpTactic").removeClass('1');
                 $(this).parent().addClass('1');
             }
-          
-            displayConfirmCommon('impTacticCommonClick(' + idTactic + ');');          
+
+            displayConfirmCommon('impTacticCommonClick(' + idTactic + ');');
         });
 
         //Dharmraj Start 8July2014 Common function to handle tactic click event
         function impTacticCommonClick(id) {
-           
+
             if (id == 0) {
-                var idProgram = $("a#divimpTactic.1").attr('data-id-program');                
+                var idProgram = $("a#divimpTactic.1").attr('data-id-program');
                 ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
                 return false;
             }
             else {
                 ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
-                return false;              
-            }           
-        }  
+                return false;
+            }
+        }
     });
 
     /////////////////////////// Document Ready End ////////////////////////////////////////////////
@@ -925,8 +975,8 @@
     }
     @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
 
-    $(document).on("click", ".add-icon.campaign", function (e) {        
-        ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0","0",'@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+    $(document).on("click", ".add-icon.campaign", function (e) {
+        ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0", "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
     });
     //fill campaign table with data from json
     function fillCampaignsTable() {
@@ -1064,7 +1114,7 @@
                     if (typeof _programs[i].tactics != 'undefined') {
                         if (_programs[i].tactics.length > 0) {
                             isMarketingTacticExits = true;
-                            for (k in _programs[i].tactics) {                                
+                            for (k in _programs[i].tactics) {
                                 $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-header">';
                                 if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
                                     if (_programs[i].tactics[k].lineitems.length > 0) {
@@ -1110,59 +1160,59 @@
                                             $html += '<div id="lineitem_' + _programs[i].tactics[k].lineitems[z].id + '" class="accordion-body collapse in lineitem">' +
                                               '<div id="divlineitem" class="accordion-inner cursor-pointer" index="' + _programs[i].tactics[k].lineitems[z].id + '">';
                                             if (_programs[i].tactics[k].lineitems[z].title != '@Common.DefaultLineItemTitle') {
-                                                    $html += '<span class="delete-program width5 " id="delLineItem"></span>';
-                                                }
-                                                $html += '<span class="LineItem-widthAuto"> <span id="tacticTitle" class="underline tipsyclassTitle ">' + _programs[i].tactics[k].lineitems[z].title + '</span>';
-                                                if (_programs[i].tactics[k].lineitems[z].title != "Other") {
-                                                    $html += '<span id="' + _programs[i].tactics[k].lineitems[z].id + '" class="duplicate-icon-LineItemCopy" titles="' + _programs[i].tactics[k].lineitems[z].title + '" ></span>';
-                                                }
-                                                $html += '</span><span class="pull-right width50px text-right font-black">&nbsp;</span>' +
-                                                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                                            '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].lineitems[z].cost.toString(), false) + '</span>' +
-                                                          '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                                  '</div>' +
-                                            '</div>';
+                                                $html += '<span class="delete-program width5 " id="delLineItem"></span>';
                                             }
-
-                                        }
-                                        else {
-                                           
+                                            $html += '<span class="LineItem-widthAuto"> <span id="tacticTitle" class="underline tipsyclassTitle ">' + _programs[i].tactics[k].lineitems[z].title + '</span>';
+                                            if (_programs[i].tactics[k].lineitems[z].title != "Other") {
+                                                $html += '<span id="' + _programs[i].tactics[k].lineitems[z].id + '" class="duplicate-icon-LineItemCopy" titles="' + _programs[i].tactics[k].lineitems[z].title + '" ></span>';
+                                            }
+                                            $html += '</span><span class="pull-right width50px text-right font-black">&nbsp;</span>' +
+                                                        '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                                                        '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].lineitems[z].cost.toString(), false) + '</span>' +
+                                                      '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                                              '</div>' +
+                                        '</div>';
                                         }
 
                                     }
+                                    else {
 
-                                    $html += '</div>' +
-                             '</div>' +
-                     '</div>';
+                                    }
 
                                 }
+
+                                $html += '</div>' +
+                         '</div>' +
+                 '</div>';
+
                             }
-                            $html += '<div class="accordion-body collapse in" data-id-program="' + pid + '" index="0" >' +
-                                        '<div id="divTactic" class="accordion-inner CursorHand tactictitle" index="0">' +
-                                            '<span class="underline" style="padding-left:70px !important ;">Add Tactic</span>' +
-                                        '</div>' +
-                                    '</div>';
-
                         }
+                        $html += '<div class="accordion-body collapse in" data-id-program="' + pid + '" index="0" >' +
+                                    '<div id="divTactic" class="accordion-inner CursorHand tactictitle" index="0">' +
+                                        '<span class="underline" style="padding-left:70px !important ;">Add Tactic</span>' +
+                                    '</div>' +
+                                '</div>';
 
-                        $html += '</div>' +
-                                '</div>' +
-                            '</div>';
                     }
-                } else {
 
-                    $html += '<div class="accordion-header">' +
-                                '<a id="0" class="accordion-toggle" data-id-campaing="' + _id + '" font-black" data-toggle="collapse">' +
-                                    '<span class="pull-left width40"><span class="gray-bg-text campaign-name underline">Add Program</span></span>' +
-                                    '<span class="pull-right width100px"><div class="add-icon program" ></div></span>' +
-                                '</a>' +
-                            '</div>';
-                }
-                $html += '</div>' +
+                    $html += '</div>' +
                             '</div>' +
                         '</div>';
+                }
+            } else {
+
+                $html += '<div class="accordion-header">' +
+                            '<a id="0" class="accordion-toggle" data-id-campaing="' + _id + '" font-black" data-toggle="collapse">' +
+                                '<span class="pull-left width40"><span class="gray-bg-text campaign-name underline">Add Program</span></span>' +
+                                '<span class="pull-right width100px"><div class="add-icon program" ></div></span>' +
+                            '</a>' +
+                        '</div>';
             }
-            $tableCampaigns.append($html);
+            $html += '</div>' +
+                        '</div>' +
+                    '</div>';
+        }
+        $tableCampaigns.append($html);
 
     }
     function displayTacticMQL(MQL) {
@@ -1245,7 +1295,7 @@
                                 '<div class="pull-left first-columns font_size16 border-cf-right" data-id="3"><span class="cf-arrow"><span class="cf-icon velocity-icon"></span><span id="spanSuggestedCW">+0</span> CWs</span><span class="border-bottom"></span></div>' +
                                 '<div class="pull-left first-columns font_size16" data-id="4"><span class="cf-arrow"><span class="cf-icon conversion-icon"></span><span id="spanSuggestedVelocity">-0</span> DAYS</span><span class="border-bottom"></span></div>' +
                                 '<div class="pull-right-assortment width50px total"><span class="cf-arrow cf-arrow-blue pull-right"></span></div>' +
-                            
+
                             '<div class="total improvementTotal pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
                             '<div class="total improvementTotal pull-right width150px text-right tipsyclass Cost_Improvement_Activities">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
                             '<div class="total improvementTotal pull-right width100px text-right border-cf-left" id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
@@ -1383,7 +1433,7 @@
                     //Added By : Kalpesh Sharma
                     //PL #508 Set format for label in tool tip
                     //Start PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
-                   
+
                     SetLabelFormaterWithTitle($("#spanRevenuecostValue"));
                     SetLabelFormaterWithTitle($("#spanRevenueImpact"));
                     //End PL #891 UI Hangs on the campaigns tab Manoj 20Oct2014
@@ -1397,33 +1447,33 @@
     function LoadClickEvents() {
         if ('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0) {
 
-                $('.tactictitle').each(function () {
-                    if ($(this).parent().attr('index') == '@ViewBag.TacticId') {
-                    $(this).click();
-                    return false;
-                }
-            });
-            return false;
-        }
-        else if ('@ViewBag.EditOjbect' == "Program" && '@ViewBag.ProgramId' != 0) {
-                //alert("Hi");
-                $('.gray-bg-text').each(function () {
-                    if ($(this).parent().parent().attr('id') == '@ViewBag.ProgramId') {
-                    $(this).click();
-                    return false;
-                }
-            });
-        }
-        else if ('@ViewBag.EditOjbect' == "Campaign" && '@ViewBag.CampaignId' != 0) {
-                $('.blue-bg-text').each(function () {
-                    if ($(this).parent().attr('id') == '@ViewBag.CampaignId') {
+            $('.tactictitle').each(function () {
+                if ($(this).parent().attr('index') == '@ViewBag.TacticId') {
+                        $(this).click();
+                        return false;
+                    }
+                });
+                return false;
+            }
+            else if ('@ViewBag.EditOjbect' == "Program" && '@ViewBag.ProgramId' != 0) {
+            //alert("Hi");
+            $('.gray-bg-text').each(function () {
+                if ($(this).parent().parent().attr('id') == '@ViewBag.ProgramId') {
+                        $(this).click();
+                        return false;
+                    }
+                });
+            }
+            else if ('@ViewBag.EditOjbect' == "Campaign" && '@ViewBag.CampaignId' != 0) {
+            $('.blue-bg-text').each(function () {
+                if ($(this).parent().attr('id') == '@ViewBag.CampaignId') {
                         $(this).click();
                         return false;
                     }
                 });
             }
             else if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
-                $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").find("#divPanelImp").click();
+            $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").find("#divPanelImp").click();
                 return false;
             }
 }
@@ -1437,10 +1487,10 @@ function loadscript() {
         if ($('#grayImprovementContainer').css("display") != "block") {
             $(this).addClass('cf-arrow-blue');
         }
-        
+
         $('.gray-add-container').slideDown(200);
         $("#btnSaveAndContinue").css("display", "block");
-        $("#divSuggestionBox").css("padding-bottom", "150px");        
+        $("#divSuggestionBox").css("padding-bottom", "150px");
     });
 
     $('.first-columns').click(function () {
@@ -1454,13 +1504,13 @@ function loadscript() {
             $(this).removeClass('active-column');
         });
         $(this).addClass('active-column');
-        
+
         $('.grey-container-full').slideDown(200);
         $(this).find('.border-bottom').css('display', 'block');
 
         var dataId = $(this).attr('data-id');
         $('.grey-container-content > div').fadeOut(50);
-        $('.grey-container-content > div').fadeIn(200);                
+        $('.grey-container-content > div').fadeIn(200);
     });
 }
 
@@ -1473,7 +1523,7 @@ function Showmsg() {
         }
         else {
             $('#cSuccessDuplicatePlan').text(ismsg);
-            $("#successMessageDuplicatePlan").slideDown(3000);           
+            $("#successMessageDuplicatePlan").slideDown(3000);
             $("#errorMessageDuplicatePlan").slideUp(10);
         }
     }
@@ -1513,177 +1563,177 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
                 window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
             else {
-            var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
-            $tableCampaigns.html('');
-            var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
-            $tableImprovementCampaigns.html('');
-            CampaignID = planCampaignId;
-            ProgramID = planProgramId;
-            TacticID = planTacticId;
-            campaign = r;
-            fillCampaignsTable();
-            // call load improvement tactic beacuase it execute after campaign activity process over.
-            LoadImprovementTactic();
-            NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
-            Showmsg();
+                var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
+                $tableCampaigns.html('');
+                var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
+                $tableImprovementCampaigns.html('');
+                CampaignID = planCampaignId;
+                ProgramID = planProgramId;
+                TacticID = planTacticId;
+                campaign = r;
+                fillCampaignsTable();
+                // call load improvement tactic beacuase it execute after campaign activity process over.
+                LoadImprovementTactic();
+                NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
+                Showmsg();
             }
         }
     });
 }
 
-    function RefreshCurrentTab(RequestedModule, planCampaignId, planProgramId, planTacticId) {
+function RefreshCurrentTab(RequestedModule, planCampaignId, planProgramId, planTacticId) {
     var planCampaignId = typeof planCampaignId != 'undefined' ? planCampaignId : '0';
     var planProgramId = typeof planProgramId != 'undefined' ? planProgramId : '0';
     var planTacticId = typeof planTacticId != 'undefined' ? planTacticId : '0';
 
     if ('@Enums.InspectPopupRequestedModules.Assortment.ToString()' == RequestedModule) {
         getCampaign(planCampaignId, planProgramId, planTacticId);
-        }
+    }
+}
+
+function FillGrayImprovementContainerEmpty() {
+    var $html = '<p class="text1">Adding improvement tactics can boost your planned efforts.</p>' +
+                                    '<p class="text2">Add your marketing activities first, then add</br> improvement tactics.' +
+                                    'The impact of improvement tactics across Average Deal Size,' +
+                                    'Stage Velocity and Funnel Conversion can be seen here.</p>';
+    var $ContainerImprovement = $('#grayImprovementContainer');
+
+    $ContainerImprovement.append($html);
+}
+
+function CallForRedirectToApplyToCalender() {
+    //add css class to disable hover on left navigation link when no data found
+    //Start : date : 01/21/2014
+    $("#aApplyToCalender").parent().parent().addClass("navdisable");
+    $("#aApplyToCalender").css('cssText', 'cursor: default !important');
+    //End : date : 01/21/2014
+    $("#aApplyToCalender").removeAttr("onclick");
+    isApply = true;
+}
+
+function FillFullContainer(dataid) {
+    var $html = '';
+    if (dataid == 1) {
+        $html += '<div class="grey-container-content">' +
+                                       '<div id="suggested-tactics">' +
+                                           '<h2 class="source-sans-probold">Suggested Improvement Activities</h2>' +
+                                           '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">' +
+                                           '<thead>' +
+                                               '<tr>' +
+                                                   '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
+                                                   '<th data-column="2" class="noRightBorder tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
+                                                   '<th data-column="3" class="noRightBorder" width="15%">Projected Revenue Without Tactic</th>' +
+                                                   '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected Revenue With Tactic<!--<span class="tacticTable-arrow-icon arrow-bottom"></span> --></th>' +
+                                                   '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
+                                                   '<th data-column="6" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="RevenueToCostRatio">Revenue to Cost Ratio</th>' +
+                                                   '<th data-column="7" class="text-center noRightBorder" width="7%">Add to Plan</th>' +
+                                               '</tr>' +
+                                               '</thead>' +
+                                               '<tbody>' +
+                                               '</tbody>' +
+                                           '</table>' +
+                                       '</div></div>';
+    }
+    else if (dataid == 2) {
+        $html += '<div class="grey-container-content">' +
+                                     '<div id="ads">' +
+                                         '<h2 class="source-sans-probold">Average Dollor Sale Improvement</h2>' +
+                                         '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">' +
+                                         '<thead>' +
+                                             '<tr>' +
+                                                 '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
+                                                 '<th data-column="2" class="tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
+                                                 '<th data-column="3" class="noRightBorder" width="15%">Projected ADS Without Tactic</th>' +
+                                                 '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected ADS With Tactic</th>' +
+                                                 '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
+                                                 '<th data-column="6" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="RevenueToCostRatio">Revenue to Cost Ratio</th>' +
+                                                 '<th data-column="7" class="text-center noRightBorder" width="7%">Add to Plan</th>' +
+                                             '</tr>' +
+                                             '</thead>' +
+                                             '<tbody>' +
+                                             '</tbody>' +
+                                         '</table>' +
+                                     '</div></div>';
+    }
+    else if (dataid == 3) {
+        $html += '<div class="grey-container-content">' +
+                                    '<div id="conversion">' +
+                                    '</div></div>';
+    }
+    else if (dataid == 4) {
+        $html += '<div class="grey-container-content">' +
+                                    '<div id="conversion">' +
+                                    '</div></div>';
     }
 
-    function FillGrayImprovementContainerEmpty() {
-        var $html = '<p class="text1">Adding improvement tactics can boost your planned efforts.</p>' +
-                                        '<p class="text2">Add your marketing activities first, then add</br> improvement tactics.' +
-                                        'The impact of improvement tactics across Average Deal Size,' +
-                                        'Stage Velocity and Funnel Conversion can be seen here.</p>';
-        var $ContainerImprovement = $('#grayImprovementContainer');
-
-        $ContainerImprovement.append($html);
-    }
-
-    function CallForRedirectToApplyToCalender() {
-        //add css class to disable hover on left navigation link when no data found
-        //Start : date : 01/21/2014
-        $("#aApplyToCalender").parent().parent().addClass("navdisable");
-        $("#aApplyToCalender").css('cssText', 'cursor: default !important');
-        //End : date : 01/21/2014
-        $("#aApplyToCalender").removeAttr("onclick");
-        isApply = true;
-    }
-
-    function FillFullContainer(dataid) {      
-        var $html = '';
-        if (dataid == 1) {
-            $html += '<div class="grey-container-content">' +
-                                           '<div id="suggested-tactics">' +
-                                               '<h2 class="source-sans-probold">Suggested Improvement Activities</h2>' +
-                                               '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">' +
-                                               '<thead>' +
-                                                   '<tr>' +
-                                                       '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
-                                                       '<th data-column="2" class="noRightBorder tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
-                                                       '<th data-column="3" class="noRightBorder" width="15%">Projected Revenue Without Tactic</th>' +
-                                                       '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected Revenue With Tactic<!--<span class="tacticTable-arrow-icon arrow-bottom"></span> --></th>' +
-                                                       '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
-                                                       '<th data-column="6" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="RevenueToCostRatio">Revenue to Cost Ratio</th>' +
-                                                       '<th data-column="7" class="text-center noRightBorder" width="7%">Add to Plan</th>' +
-                                                   '</tr>' +
-                                                   '</thead>' +
-                                                   '<tbody>' +
-                                                   '</tbody>' +
-                                               '</table>' +
-                                           '</div></div>';
+    var $ContainerGreyFullImprovement = $('#grayFullContainer');
+    $ContainerGreyFullImprovement.empty();
+    $ContainerGreyFullImprovement.append($html);
+    isADS = false;
+    isLoadSuggestion = false;
+    globledataid = dataid;
+    if (dataid == 1) {
+        if (!isMarketingTacticExits) {
+            $("#suggested-tactics").empty();
+            $("#suggested-tactics").html('<h2 class="source-sans-probold">No marketing activities exist.</h2>');
         }
-        else if (dataid == 2) {
-            $html += '<div class="grey-container-content">' +
-                                         '<div id="ads">' +
-                                             '<h2 class="source-sans-probold">Average Dollor Sale Improvement</h2>' +
-                                             '<table class="source-sans-proregular grayContent-tacticTable text-right" id="tableImprovementTypeSuggested">' +
-                                             '<thead>' +
-                                                 '<tr>' +
-                                                     '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
-                                                     '<th data-column="2" class="tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
-                                                     '<th data-column="3" class="noRightBorder" width="15%">Projected ADS Without Tactic</th>' +
-                                                     '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected ADS With Tactic</th>' +
-                                                     '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
-                                                     '<th data-column="6" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="RevenueToCostRatio">Revenue to Cost Ratio</th>' +
-                                                     '<th data-column="7" class="text-center noRightBorder" width="7%">Add to Plan</th>' +
-                                                 '</tr>' +
-                                                 '</thead>' +
-                                                 '<tbody>' +
-                                                 '</tbody>' +
-                                             '</table>' +
-                                         '</div></div>';
-        }
-        else if (dataid == 3) {
-            $html += '<div class="grey-container-content">' +
-                                        '<div id="conversion">' +
-                                        '</div></div>';
-        }
-        else if (dataid == 4) {
-            $html += '<div class="grey-container-content">' +
-                                        '<div id="conversion">' +
-                                        '</div></div>';
-        }
-
-        var $ContainerGreyFullImprovement = $('#grayFullContainer');
-        $ContainerGreyFullImprovement.empty();
-        $ContainerGreyFullImprovement.append($html);
-        isADS = false;
-        isLoadSuggestion = false;
-        globledataid = dataid;
-        if (dataid == 1) {
-            if (!isMarketingTacticExits) {
-                $("#suggested-tactics").empty();
-                $("#suggested-tactics").html('<h2 class="source-sans-probold">No marketing activities exist.</h2>');
-            }
-            else {
-                LoadRecommendedGrid();
-            }
-        }
-        else if (dataid == 2) {
-            if (!isImprovementTacticExits) {
-                $("#ads").empty();
-                $("#ads").html('<h2 class="source-sans-probold">No improvement tactic(s) exist.</h2>');
-            }
-            else {
-                isADS = true;
-                LoadADSGrid();
-            }
-        }
-        else if (dataid == 3) {
-            if (!isImprovementTacticExits) {
-                $("#conversion").empty();
-                $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exist.</h2>');
-            }
-            else {
-                isConversion = true;
-                LoadConversionGrid();
-            }
-        }
-        else if (dataid == 4) {
-            if (!isImprovementTacticExits) {
-                $("#conversion").empty();
-                $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exist.</h2>');
-            }
-            else {
-                isConversion = false;
-                LoadConversionGrid();
-            }
+        else {
+            LoadRecommendedGrid();
         }
     }
+    else if (dataid == 2) {
+        if (!isImprovementTacticExits) {
+            $("#ads").empty();
+            $("#ads").html('<h2 class="source-sans-probold">No improvement tactic(s) exist.</h2>');
+        }
+        else {
+            isADS = true;
+            LoadADSGrid();
+        }
+    }
+    else if (dataid == 3) {
+        if (!isImprovementTacticExits) {
+            $("#conversion").empty();
+            $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exist.</h2>');
+        }
+        else {
+            isConversion = true;
+            LoadConversionGrid();
+        }
+    }
+    else if (dataid == 4) {
+        if (!isImprovementTacticExits) {
+            $("#conversion").empty();
+            $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exist.</h2>');
+        }
+        else {
+            isConversion = false;
+            LoadConversionGrid();
+        }
+    }
+}
 
-    // Added By Bhavesh
-    // PL Ticket 289,377,378
-    function LoadRecommendedGrid() {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/GetRecommendedImprovementTacticType/")',
-                data: {
-                },
-                success: function (data) {
-                    RecommendedImprovementTacticType = data;
-                    fillRecommendedImprovementTacticType(false);
-                    if (!isLoadSuggestion) {
-                        LoadScriptForSuggestion();
-                    }
-                    var divsuggstedheight = $(".grey-container-content").outerHeight();
-                    var finalheight = 50 + parseFloat(divsuggstedheight);
-                    $("#divSuggestionBox").css("padding-bottom", finalheight);
-                   
+// Added By Bhavesh
+// PL Ticket 289,377,378
+function LoadRecommendedGrid() {
+    $.ajax({
+        type: 'POST',
+        url: '@Url.Content("~/Plan/GetRecommendedImprovementTacticType/")',
+            data: {
+            },
+            success: function (data) {
+                RecommendedImprovementTacticType = data;
+                fillRecommendedImprovementTacticType(false);
+                if (!isLoadSuggestion) {
+                    LoadScriptForSuggestion();
                 }
-            });
-        }
+                var divsuggstedheight = $(".grey-container-content").outerHeight();
+                var finalheight = 50 + parseFloat(divsuggstedheight);
+                $("#divSuggestionBox").css("padding-bottom", finalheight);
+
+            }
+        });
+    }
 
     // Added By Bhavesh
     // PL Ticket 289,377,378
@@ -1773,23 +1823,23 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
     // Added By Bhavesh
     // PL Ticket 289,377,378
     function LoadADSGrid() {
-        
+
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/GetADSImprovementTacticType/")',
-                data: {
-                    SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
-                },
-                success: function (data) {
-                    RecommendedImprovementTacticType = data;
-                    fillRecommendedImprovementTacticType();
-                    if (!isLoadSuggestion) {
-                        LoadScriptForSuggestion();
-                    }
+            data: {
+                SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
+            },
+            success: function (data) {
+                RecommendedImprovementTacticType = data;
+                fillRecommendedImprovementTacticType();
+                if (!isLoadSuggestion) {
+                    LoadScriptForSuggestion();
+                }
 
-                    $.ajax({
-                        type: 'POST',
-                        url: '@Url.Content("~/Plan/GetHeaderValueForSuggestedImprovement/")',
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/GetHeaderValueForSuggestedImprovement/")',
                         data: {
                             SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
                         },
@@ -1829,7 +1879,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
                     var finalheight = 50 + parseFloat(divsuggstedheight);
                     $("#divSuggestionBox").css("padding-bottom", finalheight);
                 }
-            });
+        });
         }
 
         // Added By Bhavesh
@@ -2054,7 +2104,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
                     var impTacticId = $(this).attr('IMPTacticTypeId');
                     SuggestionIMPTacticIdList.push(parseFloat(impTacticId));
                 }
-               
+
                 if (tabvalue == 1) {
                     LoadADSGrid();
                 }
@@ -2078,7 +2128,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
                     AddImprovementTactic(impTacticId);
                 }
                 else {
-                    
+
                     var impTacticId = $(this).attr('IMPTacticTypeId');
                     var idTactic = impTacticId;
                     $("#DivPartialViewForDeleteImpTactic").empty();
@@ -2087,7 +2137,7 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
                     var url = '@Url.Content("~/Plan/ShowDeleteImprovementTactic/")';
                     $("#DivPartialViewForDeleteImpTactic").load(url + '?id=' + idTactic + '&AssortmentType=' + AssortmentType + '&RedirectType=' + false);
                 }
-                
+
             });
 
         }

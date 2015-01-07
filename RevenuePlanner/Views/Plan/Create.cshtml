@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     string strPlanId = Convert.ToString(Model.PlanId);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
-    bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;    
+    bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;
     ViewBag.strplanid = strPlanId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
     ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
     bool isBackFromAssortment = false;//Added by Mitesh vaishnav on 25/07/2014 for PL ticket 619
@@ -14,14 +14,14 @@
         isBackFromAssortment = (bool)TempData["IsBackFromAssortment"];
     }
     bool isPlanDefinationDisable = false;
-    if (ViewBag.IsPlanDefinationDisable!=null)
+    if (ViewBag.IsPlanDefinationDisable != null)
     {
         isPlanDefinationDisable = ViewBag.IsPlanDefinationDisable;
     }
 }
 
 @section nlFormContent{
-   <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
 }
@@ -57,67 +57,67 @@
                     <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment">
                         <div class="bold font_size16">1. Plan definition</div>
                         <div id="divPlanDefinationEnabled">
-                        I'm using the 
+                            I'm using the 
                         @{
-                        if (strPlanId == "" || strPlanId == "0")
-                        {
+    if (strPlanId == "" || strPlanId == "0")
+    {
                             @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
                             <span id="ModelTitle" class="source-sans-proregular"></span>
-                        }
-                        else
-                        {      
+    }
+    else
+    {      
                             <span id="ModelTitle" class="source-sans-proregular">@Model.ModelTitle</span>
+    }
                         }
-                        }
-                        model to create a plan called						
+                            model to create a plan called						
 						@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })
-                        in
+                            in
                         @{
-                        if(strPlanId == "" || strPlanId == "0"  || (bool)ViewBag.IsBusinessUnitEditable == true)
-                        {
-                         @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
-                        }
-                        else
-                        {
+    if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
+    {
+                            @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
+    }
+    else
+    {
                             <span id="spandef">@Model.Year</span>
+    }
                         }
-                        }
-                        @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
-                        with a
+                            @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+                            with a
                         @{
-                        if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
-                        {
-                            @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType})
-                        }
-                        else
-                        {
+    if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
+    {
+                            @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType })
+    }
+    else
+    {
                             <span id="spandef">@Model.GoalType</span>
+    }
                         }
-                        }
-                        goal of
-                        <span id="revenueSign"> $ </span>
-                        @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })    
-                        and a budget of
+                            goal of
+                        <span id="revenueSign">$ </span>
+                            @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })
+                            and a budget of
                         @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat" })
-                        allocated by
+                            allocated by
                         @{
-                        if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)    
-                        {
-                            @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue hide", placeholder = @Model.AllocatedBy})
-                        }
-                        else
-                        {
+    if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
+    {
+                            @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue hide", placeholder = @Model.AllocatedBy })
+    }
+    else
+    {
                             <span id="spanAllocatedBy">@Model.AllocatedBy</span>
-                        }
+    }
                         }.
                         <div class="nl-overlay"></div>
                         </div>
                         <div id="divPlanDefinationDisabled">
                             I'm using the 
-                            <span id="disabledModelTitle" class="source-sans-proregular"></span> 
+                            <span id="disabledModelTitle" class="source-sans-proregular"></span>
                             model to create a plan called 
-                            <span id="disabledPlanTitle" class="source-sans-proregular"></span> in 
-                            <span id="disabledPlanYear" class="source-sans-proregular"></span> 
+                            <span id="disabledPlanTitle" class="source-sans-proregular"></span>in 
+                            <span id="disabledPlanYear" class="source-sans-proregular"></span>
                             with a
                             <span id="disabledGoalType" class="source-sans-proregular"></span>
                             goal of
@@ -159,114 +159,115 @@
 
 }
 
-<div style="display:none;" id="divPlanBudgetAllocation" class="light-blue-background margin5 padding15 padding-bottom0">
-	<div class="gray-title-steps source-sans-probold cf">
-		<span class="pull-left width60">2. Allocate Plan Budget</span>		
-		<div class="budget-section">
-            <div class="white-bg" style="max-height:150px;height:auto;">
+<div style="display: none;" id="divPlanBudgetAllocation" class="light-blue-background margin5 padding15 padding-bottom0">
+    <div class="gray-title-steps source-sans-probold cf">
+        <span class="pull-left width60">2. Allocate Plan Budget</span>
+        <div class="budget-section">
+            <div class="white-bg" style="max-height: 150px; height: auto;">
                 <div id="divMonthQuarterAllocation">
                     <div id="divMonthlyBudget">
                         <div class="budget-month">
                             <span class="month">Jan</span>
-                            <input id="MY1" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY1" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY1" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Feb</span>
-                            <input id="MY2" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY2" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY2" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Mar</span>
-                            <input id="MY3" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY3" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY3" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Apr</span>
-                            <input id="MY4" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY4" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY4" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">May</span>
-                            <input id="MY5" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY5" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY5" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Jun</span>
-                            <input id="MY6" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY6" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY6" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Jul</span>
-                            <input id="MY7" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY7" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY7" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Aug</span>
-                            <input id="MY8" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY8" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY8" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Sep</span>
-                            <input id="MY9" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY9" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY9" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Oct</span>
-                            <input id="MY10" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY10" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY10" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Nov</span>
-                            <input id="MY11" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY11" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY11" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Dec</span>
-                            <input id="MY12" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="MY12" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnMY12" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">@Common.UnallocatedBudgetLabelText</span>
-                            <input id="unallocatedBudget" placeholder="---" maxlength="12" readonly="true" class="backgroundC6EBF3 text-align-right width75px input-table priceValue gray-input"/>
+                            <input id="unallocatedBudget" placeholder="---" maxlength="12" readonly="true" class="backgroundC6EBF3 text-align-right width75px input-table priceValue gray-input" />
+                        </div>
                     </div>
-                    </div>
-                    <div id="divQuarterlyBudget" style="left: 0px;padding-bottom:10px;" class="mCSB_container mCS_no_scrollbar">
+                    <div id="divQuarterlyBudget" style="left: 0px; padding-bottom: 10px;" class="mCSB_container mCS_no_scrollbar">
                         <div class="budget-quarters">
                             <span class="month">Q1</span>
-                            <input id="QY1" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="QY1" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnQY1" value="0" />
                         </div>
                         <div class="budget-quarters">
                             <span class="month">Q2</span>
-                            <input id="QY4" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="QY4" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnQY4" value="0" />
                         </div>
                         <div class="budget-quarters">
                             <span class="month">Q3</span>
-                            <input id="QY7" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="QY7" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnQY7" value="0" />
                         </div>
                         <div class="budget-quarters">
                             <span class="month">Q4</span>
-                            <input id="QY10" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
+                            <input id="QY10" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue" />
                             <input type="hidden" id="hdnQY10" value="0" />
                         </div>
                         <div class="budget-quarters">
                             <span class="month">@Common.UnallocatedBudgetLabelText</span>
-                            <input id="unallocatedBudget" placeholder="---" maxlength="12" readonly="true" class="backgroundC6EBF3 text-align-right width75px input-table priceValue gray-input"/>
-                    </div>
+                            <input id="unallocatedBudget" placeholder="---" maxlength="12" readonly="true" class="backgroundC6EBF3 text-align-right width75px input-table priceValue gray-input" />
+                        </div>
                     </div>
                 </div>
                 <div class="font30 alignCenter" id="divDefaultBudget">
                     @Common.objCached.DefaultPlanAllocationMessage
-				</div>					
+                </div>
             </div>
             <div class="budget-result source-sans-prolight">
                 <p>
                     <span id="spnThisMonth">Allocated Campaigns Budget (this month):</span>
                     <span id="spnThisQuarter">Allocated Campaigns Budget (this quarter):</span>
-                    <span id="spnCampaignAllocatedBudget" class="source-sans-proregular">$0</span></p>
+                    <span id="spnCampaignAllocatedBudget" class="source-sans-proregular">$0</span>
+                </p>
                 <p>Total Allocated:<span id="spnTotalAllocatedBudget" class="source-sans-proregular">$0</span></p>
                 <p>Total Budgeted:<span id="spnTotalBudget" class="source-sans-proregular"></span></p>
             </div>
@@ -279,14 +280,14 @@
                 <p class="source-sans-probold">@Common.objCached.ErrMsgLessCampaignBudget</p>
             </div>
         </div>
-	</div>
+    </div>
 </div>
-<div class="padding-content" style="padding-bottom:155px;padding-top:15px;">
-    <input type="button" value="Save &amp; Continue" id="button-saveContinue" style="display:none;" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" />
+<div class="padding-content" style="padding-bottom: 155px; padding-top: 15px;">
+    <input type="button" value="Save &amp; Continue" id="button-saveContinue" style="display: none;" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" />
 </div>
 
 <script type="text/javascript">
-    
+
     $(document).ready(
       function () {
           var hdnPlanId = $("#hdnPlanId").val();
@@ -299,7 +300,7 @@
                       //// Added By: Maninder Singh Wadhva on 11/24/2014.
                       //// Ticket: 942 Exception handeling in Gameplan.
                       window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-            }
+                  }
               });
           }
           // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
@@ -325,7 +326,7 @@
 
           $('#BtnGroup').click(function (e) {
               //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
-             
+
               //#599 Added By Kalpesh Sharma : Plan: Unable to Duplicate Plan 
               if ($(this).html().toLowerCase() == "duplicate") {
                   CheckUserSession("#BtnGroup", true);
@@ -335,9 +336,11 @@
                   DuplicatePlan();
               }
               else {
-                  var url = '@Url.Content("~/Plan/Create/0")';
-                    window.location.href = url;
-                }
+                  var url = '@Url.Content("~/Plan/Create")';
+                  var queryStringArr = [];
+
+                  formSubmitEvent(url, queryStringArr);
+              }
 
           });
 
@@ -346,20 +349,20 @@
               $.ajax({
                   type: 'POST',
                   url: '@Url.Content("~/Plan/DuplicatePlan/")',
-            dataType: "json",
-            success: function (data) {
-                if (data.isSuccess == true) {
-                    var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
+                  dataType: "json",
+                  success: function (data) {
+                      if (data.isSuccess == true) {
+                          var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
                     window.location.href = url;
                 }
                 else {
                     alert('Error');
                 }
             }
-        });
+              });
     }
 
- $("#button-save").click(function () {
+          $("#button-save").click(function () {
 
               var isError = false;
               $('.nl-field').each(function () {
@@ -385,65 +388,64 @@
                       }
                   }
                   else if ($(this).next().attr('datadefault') == "SelectModel") {
-                          var tValue = $(this).children('a').text();
-                          if (tValue == 'select') {
-                              $(this).children('a').addClass("error-form");
-                              isError = true;
+                      var tValue = $(this).children('a').text();
+                      if (tValue == 'select') {
+                          $(this).children('a').addClass("error-form");
+                          isError = true;
 
-                          }
-                          else {
-                              $(this).children('a').removeClass("error-form");
-                          }
+                      }
+                      else {
+                          $(this).children('a').removeClass("error-form");
+                      }
                   }
                   @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                   else if ($(this).next().attr('datadefault') == "SelectGoalType") {
-                          var tValue = $(this).children('a').text();
-                          if (tValue == 'select') {
-                              $(this).children('a').addClass("error-form");
-                              isError = true;
+                      var tValue = $(this).children('a').text();
+                      if (tValue == 'select') {
+                          $(this).children('a').addClass("error-form");
+                          isError = true;
 
-                          }
-                          else {
-                              $(this).children('a').removeClass("error-form");
-                          }
+                      }
+                      else {
+                          $(this).children('a').removeClass("error-form");
+                      }
                   }
                   else if ($(this).next().attr('datadefault') == "SelectAllocatedBy") {
-                          var tValue = $(this).children('a').text();
-                          if (tValue == 'select') {
-                              $(this).children('a').addClass("error-form");
-                              isError = true;
+                      var tValue = $(this).children('a').text();
+                      if (tValue == 'select') {
+                          $(this).children('a').addClass("error-form");
+                          isError = true;
 
-                          }
-                          else {
-                              $(this).children('a').removeClass("error-form");
-                          }
+                      }
+                      else {
+                          $(this).children('a').removeClass("error-form");
+                      }
                   }
                   @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
               });
 
-              if (isError) {
-                  $("#errorMessage").css("display", "block");
-                  $("#spanMessageError").empty();
-                  $("#spanMessageError").text("@Common.objCached.ValidateForEmptyField");
+     if (isError) {
+         $("#errorMessage").css("display", "block");
+         $("#spanMessageError").empty();
+         $("#spanMessageError").text("@Common.objCached.ValidateForEmptyField");
                   return false;
               }
               else {
                   $("#errorMessage").css("display", "none");
               }
 
-              var TotalAllocatedCampaignBudget = $('#TotalAllocatedCampaignBudget').val();
-              var totalBudget = parseInt(ReplaceCC($("#txtBudget").val()));
-              if(TotalAllocatedCampaignBudget > totalBudget)
-              {
-                  $('#divErrLessBudget').css("display", "block");
-                  isError = true;
-              }
-              else{
-                  $("#divErrLessBudget").css("display", "none");
-              }
-     
-              if (!isError) {
-                  $("#GoalValue").val(ReplaceCC($("#GoalValue").val()));    @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+     var TotalAllocatedCampaignBudget = $('#TotalAllocatedCampaignBudget').val();
+     var totalBudget = parseInt(ReplaceCC($("#txtBudget").val()));
+     if (TotalAllocatedCampaignBudget > totalBudget) {
+         $('#divErrLessBudget').css("display", "block");
+         isError = true;
+     }
+     else {
+         $("#divErrLessBudget").css("display", "none");
+     }
+
+     if (!isError) {
+         $("#GoalValue").val(ReplaceCC($("#GoalValue").val()));    @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                   $("#txtBudget").val(ReplaceCC($("#txtBudget").val()));
                   var uId = $(window).attr('name');     // Added by Sohel Pathan on 07/08/2014 for PL ticket #672
                   $.ajax({
@@ -510,29 +512,29 @@
                                           $('#spnThisQuarter').show();
                                           $('#spnThisMonth').hide();
                                       }
-                                      GetAllocatedBudgetForPlan(hdnPlanId);
-                                  }
-                                  else {
-                                      $("#errorMessage").css("display", "block");
-                                      $("#spanMessageError").empty();
-                                      $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                                  GetAllocatedBudgetForPlan(hdnPlanId);
+                              }
+                              else {
+                                  $("#errorMessage").css("display", "block");
+                                  $("#spanMessageError").empty();
+                                  $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                                       $('#divPlanBudgetAllocation').hide();
                                       $('#button-back').hide();
                                       $('#button-saveContinue').hide();
                                       $("#divErrLessBudget").css("display", "none");
                                       return false;
                                   }
-                              }
-                        } 
+                          }
+                      }
                       },
                       error: function () {
-                          GoToLogin(); 
+                          GoToLogin();
                           return false;
                       }
                   });
           }
-              return isError;
-          });
+     return isError;
+ });
 
           @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
           if (hdnPlanId != 0) {
@@ -575,7 +577,7 @@
           @* End - Added by Sohel Pathan on 25/07/2014 for PL ticket #597 *@
 
           /* Added by Mitesh Vaishnav for PL ticket 619*/
-          if ('@isBackFromAssortment.ToString().ToLower()' == 'true' || '@isPlanDefinationDisable.ToString().ToLower()'=='true') {
+          if ('@isBackFromAssortment.ToString().ToLower()' == 'true' || '@isPlanDefinationDisable.ToString().ToLower()' == 'true') {
               $('#button-back').css('display', 'block');
               $('#button-save').hide();
               $('#divPlanBudgetAllocation').show();
@@ -633,10 +635,10 @@
                       $("#spnCampaignAllocatedBudget").addClass('error-text');
                   }
               }
-             
+
               if ('@isPlanDefinationDisable.ToString().ToLower()' == 'true') {
                   $('#' + budgetType).find('input').each(function () {
-                      $(this).attr('readonly',true);
+                      $(this).attr('readonly', true);
                       if (!$(this).hasClass('gray-input border000000')) {
                           $(this).addClass('gray-input border000000');
                       }
@@ -685,13 +687,12 @@
         }
     });
 
-    function calculateBudget(_modelId, _goalType, _goalValue)
-    {
+    function calculateBudget(_modelId, _goalType, _goalValue) {
         $.ajax({
             type: 'GET',
             url: '@Url.Content("~/Plan/CalculateBudget/")',
             dataType: "json",
-            data:{ modelId : _modelId, goalType : _goalType, goalValue : _goalValue },
+            data: { modelId: _modelId, goalType: _goalType, goalValue: _goalValue },
             success: function (data) {
                 $('#msg1').html(data.msg1);
                 $('#msg2').html(data.msg2);
@@ -706,7 +707,7 @@
             }
         });
     }
-    
+
     $('#GoalValue').parent().find('.priceValue').blur(function () {
         if (!$(this).parent().hasClass('budget-month') && !$(this).parent().hasClass('budget-quarters')) {
             var modelId = 0;
@@ -771,16 +772,39 @@
     $(document).on("click", "#LeftNavAddActivity", function (e) {
         var hdnPlanId = $("#hdnPlanId").val();
         if (hdnPlanId == 0) {
-            displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan");
+            var queryStringArr = [];
+
+            queryStringArr.push(
+             {
+                 key: 'ActiveMenu',
+                 Value: "Plan"
+             });
+
+            formSubmitEvent('@Url.Content("~/Home/Index")', queryStringArr);
         }
         else {
-            displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + hdnPlanId + "");
+            var queryStringArr = [];
+
+            queryStringArr.push(
+             {
+                 key: 'ActiveMenu',
+                 Value: "Plan"
+             });
+
+            queryStringArr.push(
+             {
+                 key: 'currentPlanId',
+                 Value: hdnPlanId
+             });
+
+            formSubmitEvent('@Url.Content("~/Home/Index")', queryStringArr);
         }
-        //  
-      });
+    });
+
     $(document).on("click", "#aBudgeting", function (e) {
         displayconfirm('@Url.Action("Budgeting", "Plan")');
     });
+
     function displayconfirm(strURL) {
         if (isDataChanged()) {
             $('#errorMessage').html("<strong>Error! </strong> <span id='spanMessageError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a></span><a id='aclose' class='close confirmClose'>×</a>");
@@ -812,7 +836,7 @@
 
     //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
     $("#header a").not("#ContactSupport").click(function () {
-       
+
         if (isDataChanged()) {
             displayconfirm($(this).attr('href'));
             return false;
@@ -849,11 +873,11 @@
         $('.budget-month .priceValue').each(function () {
             $(this).removeClass('border000000');
         });
-        
+
         $(this).addClass('border000000');
 
         if (this.id.toString() != 'unallocatedBudget') {
-        checkCampaignBudget(this);
+            checkCampaignBudget(this);
         }
     });
 
@@ -866,28 +890,27 @@
         $(this).addClass('border000000');
 
         if (this.id.toString() != 'unallocatedBudget') {
-        checkCampaignBudget(this);
+            checkCampaignBudget(this);
         }
     });
-    
+
     $('.budget-month .priceValue').keyup(function () {
         if (this.id.toString() != 'unallocatedBudget') {
-        var allocatedBudget = calculateAllocatedBudgetMonthly();
-        checkBudgetDifference(allocatedBudget, $('#divMonthlyBudget'));
-        checkCampaignBudget(this);
+            var allocatedBudget = calculateAllocatedBudgetMonthly();
+            checkBudgetDifference(allocatedBudget, $('#divMonthlyBudget'));
+            checkCampaignBudget(this);
         }
     });
 
     $('.budget-quarters .priceValue').keyup(function () {
         if (this.id.toString() != 'unallocatedBudget') {
-        var allocatedBudget = calculateAllocatedBudgetQuarterly();
-        checkBudgetDifference(allocatedBudget, $('#divQuarterlyBudget'));
-        checkCampaignBudget(this);
+            var allocatedBudget = calculateAllocatedBudgetQuarterly();
+            checkBudgetDifference(allocatedBudget, $('#divQuarterlyBudget'));
+            checkCampaignBudget(this);
         }
     });
 
-    function checkCampaignBudget(input)
-    {
+    function checkCampaignBudget(input) {
         var inputHdn = $(input).next();
         var campaignBudget = inputHdn.val() == '' ? 0 : parseInt(inputHdn.val());
         $('#spnCampaignAllocatedBudget').html(FormatCurrency(campaignBudget.toString(), false));
@@ -908,12 +931,11 @@
             $(input).val('');
         }
         else {
-        $(input).val(FormatCommas(selectedMonthBudget.toString(), false));
-    }
+            $(input).val(FormatCommas(selectedMonthBudget.toString(), false));
+        }
     }
 
-    function calculateAllocatedBudgetMonthly()
-    {
+    function calculateAllocatedBudgetMonthly() {
         var allocatedBudget = 0;
         $('.budget-month .priceValue').each(function () {
             if ($(this).val().trim() != '' && this.id.toString() != 'unallocatedBudget') {
@@ -926,8 +948,7 @@
         return allocatedBudget;
     }
 
-    function calculateAllocatedBudgetQuarterly()
-    {
+    function calculateAllocatedBudgetQuarterly() {
         var allocatedBudget = 0;
         $('.budget-quarters .priceValue').each(function () {
             if ($(this).val().trim() != '' && this.id.toString() != 'unallocatedBudget') {
@@ -940,16 +961,15 @@
         return allocatedBudget;
     }
 
-    function checkBudgetDifference(allocatedBudget, allocatedBy)
-    {
+    function checkBudgetDifference(allocatedBudget, allocatedBy) {
         var totalBudget = parseInt(ReplaceCC($("#txtBudget").val()));
         $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
         var unAllocatedBudget = totalBudget - allocatedBudget;
 
         if (totalBudget != 0) {
-            
+
             $(allocatedBy).find('#unallocatedBudget').val(FormatCommas(unAllocatedBudget.toString(), false));
-            
+
             if (allocatedBudget > totalBudget) {
                 $('#spnTotalAllocatedBudget').addClass('error-text');
                 $(allocatedBy).find('#unallocatedBudget').addClass('error-text');
@@ -974,9 +994,8 @@
             var isError = false;
             var inputsType;
             var AllocatedBy = $('#AllocatedBy').val().toLowerCase();
-            if (AllocatedBy == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()')
-            {
-                if (isErrorShown) {                   
+            if (AllocatedBy == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()') {
+                if (isErrorShown) {
 
                     var lstAllocInputs = $(".budget-month .priceValue.campaignBudgetError").not('#unallocatedBudget');
                     if (lstAllocInputs.length > 0) {
@@ -1015,10 +1034,9 @@
                 }
                 inputsType = '.budget-month .priceValue';
             }
-            else if (AllocatedBy == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()')
-            {
+            else if (AllocatedBy == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
                 if (isErrorShown) {
-                   
+
                     var lstAllocInputs = $(".budget-quarters .priceValue.campaignBudgetError").not('#unallocatedBudget');
                     if (lstAllocInputs.length > 0) {
                         var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.ErrMsgLessCampaignBudget ";
@@ -1057,110 +1075,113 @@
                 }
                 inputsType = '.budget-quarters .priceValue';
             }
-            if (!isError) {
-                saveBudgetAllocation(inputsType);
-            }
-        }
-    });
-
-    function saveBudgetAllocation(inputsType)
-    {
-        var _planId = $('#PlanId').val();
-        var _inputs = [];
-        if (inputsType != '') {
-            $(inputsType).each(function () {
-                if (this.id.toString() != 'unallocatedBudget') {
-                    _inputs.push(ReplaceCC($(this).val()));
-                }
-            });
-            if (_planId != "" || _planId != "0") {
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Content("~/Plan/SaveBudgetAllocation/")',
-                    dataType: "json",
-                    data: { planId: _planId, inputs: _inputs.toString() },
-                    success: function (data) {
-                        if (data != 'undefined') {
-                            if (data.id == -1) {
-                                $("#errorMessage").css("display", "block");
-                                $("#spanMessageError").empty();
-                                $("#spanMessageError").text(data.imsg);
-                                $("#divErrLessBudget").css("display", "none");
-                                return false;
-                            }
-                            else if (data.id != 0) {
-                                window.location.href = data.redirect;
-                                return;
-                            }
-                            else {
-                                $("#errorMessage").css("display", "block");
-                                $("#spanMessageError").empty();
-                                $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                                $("#divErrLessBudget").css("display", "none");
-                                return false;
-                            }
-                        }
-                    },
-                    error: function () {
-                        GoToLogin();
-                        $("#errorMessage").css("display", "block");
-                        $("#spanMessageError").empty();
-                        $("#divErrLessBudget").css("display", "none");
-                        return false;
-                    }
-                });
-            }
+        if (!isError) {
+            saveBudgetAllocation(inputsType);
         }
     }
+    });
 
-    function GetAllocatedBudgetForPlan(planId)
-    {
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Content("~/Plan/GetAllocatedBudgetForPlan/")',
+function saveBudgetAllocation(inputsType) {
+    var _planId = $('#PlanId').val();
+    var _inputs = [];
+    if (inputsType != '') {
+        $(inputsType).each(function () {
+            if (this.id.toString() != 'unallocatedBudget') {
+                _inputs.push(ReplaceCC($(this).val()));
+            }
+        });
+        if (_planId != "" || _planId != "0") {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Content("~/Plan/SaveBudgetAllocation/")',
                 dataType: "json",
-                data: { planId: planId, allocatedBy: $('#AllocatedBy').val() },
+                data: { planId: _planId, inputs: _inputs.toString() },
                 success: function (data) {
-                    if (data.status == 1) {
-                        if (typeof data.planBudgetAllocationList != 'undefined')    // Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
-                        {
-                            if (data.planBudgetAllocationList.length > 0)
-                            {
-                                emptyAllBudgetFields();
-
-                                if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()')
+                    if (data != 'undefined') {
+                        if (data.id == -1) {
+                            $("#errorMessage").css("display", "block");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text(data.imsg);
+                            $("#divErrLessBudget").css("display", "none");
+                            return false;
+                        }
+                        else if (data.id != 0) {
+                            var url = data.redirect;
+                            var queryStringArr = [];
+                            queryStringArr.push(
                                 {
+                                    key: 'ismsg',
+                                    Value: data.ismsg
+                                });
+
+                            formSubmitEvent(url, queryStringArr);
+                            return;
+                        }
+                        else {
+                            $("#errorMessage").css("display", "block");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                            $("#divErrLessBudget").css("display", "none");
+                            return false;
+                        }
+                }
+                },
+                error: function () {
+                    GoToLogin();
+                    $("#errorMessage").css("display", "block");
+                    $("#spanMessageError").empty();
+                    $("#divErrLessBudget").css("display", "none");
+                    return false;
+                }
+            });
+    }
+}
+}
+
+function GetAllocatedBudgetForPlan(planId) {
+    $.ajax({
+        type: 'GET',
+        url: '@Url.Content("~/Plan/GetAllocatedBudgetForPlan/")',
+            dataType: "json",
+            data: { planId: planId, allocatedBy: $('#AllocatedBy').val() },
+            success: function (data) {
+                if (data.status == 1) {
+                    if (typeof data.planBudgetAllocationList != 'undefined')    // Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
+                    {
+                        if (data.planBudgetAllocationList.length > 0) {
+                            emptyAllBudgetFields();
+
+                            if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()') {
                                     var i;
-                                    for (i = 1; i <= 12; i++)
-                                    {
+                                    for (i = 1; i <= 12; i++) {
                                         // Start - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
                                         var allocatedAmount = data.planBudgetAllocationList[i - 1].budgetValue.toString();
                                         // Modified by Dharmraj to handle case were user update empty or zero allocation value.
                                         //if (parseInt(allocatedAmount) > 0) {
                                         $('#M' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).val(FormatCommas(allocatedAmount, false));
                                         $('#M' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
-                                                var campaignAllocatedAmount = data.planBudgetAllocationList[i - 1].campaignMonthlyBudget.toString();
-                                                if (parseInt(campaignAllocatedAmount) > 0) {
-                                                    $('#hdnM' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).val(campaignAllocatedAmount);
-                                                }
-                                                if (i == 1) {
-                                                    $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnMY' + i).val(), false));
+                                        var campaignAllocatedAmount = data.planBudgetAllocationList[i - 1].campaignMonthlyBudget.toString();
+                                        if (parseInt(campaignAllocatedAmount) > 0) {
+                                            $('#hdnM' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).val(campaignAllocatedAmount);
+                                        }
+                                        if (i == 1) {
+                                            $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnMY' + i).val(), false));
 
-                                                    if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
-                                                        $("#spnCampaignAllocatedBudget").addClass('error-text');
-                                                    }
-                                                    else {
-                                                        $("#spnCampaignAllocatedBudget").removeClass('error-text');
-                                                    }
+                                            if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
+                                                $("#spnCampaignAllocatedBudget").addClass('error-text');
+                                            }
+                                            else {
+                                                $("#spnCampaignAllocatedBudget").removeClass('error-text');
+                                            }
 
-                                                    $('#MY' + i).addClass('border000000');
-                                                }
-                                                if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
-                                                    $('#MY' + i).addClass('campaignBudgetError');
-                                                }
-                                                else {
-                                                    $('#MY' + i).removeClass('campaignBudgetError');
-                                                }
+                                            $('#MY' + i).addClass('border000000');
+                                        }
+                                        if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
+                                            $('#MY' + i).addClass('campaignBudgetError');
+                                        }
+                                        else {
+                                            $('#MY' + i).removeClass('campaignBudgetError');
+                                        }
                                         // End - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
                                         $('#MY' + i).addClass('myValue-budget');
                                     }
@@ -1177,63 +1198,59 @@
                                         // Modified by Dharmraj to handle case were user update empty or zero allocation value.
                                         $('#Q' + r[i].periodTitle.toString()).val(FormatCommas(allocatedAmount, false));
                                         $('#Q' + r[i].periodTitle.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
-                                                var campaignAllocatedAmount = r[i].campaignMonthlyBudget.toString();
-                                                if (parseInt(campaignAllocatedAmount) > 0) {
-                                                    $('#hdnQ' + r[i].periodTitle.toString()).val(campaignAllocatedAmount);
-                                                }
-                                                if (r[i].periodTitle.toString() == "Y1") {
-                                                    $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnQY1').val(), false));
+                                        var campaignAllocatedAmount = r[i].campaignMonthlyBudget.toString();
+                                        if (parseInt(campaignAllocatedAmount) > 0) {
+                                            $('#hdnQ' + r[i].periodTitle.toString()).val(campaignAllocatedAmount);
+                                        }
+                                        if (r[i].periodTitle.toString() == "Y1") {
+                                            $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnQY1').val(), false));
 
-                                                    if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
-                                                        $("#spnCampaignAllocatedBudget").addClass('error-text');
-                                                    }
-                                                    else {
-                                                        $("#spnCampaignAllocatedBudget").removeClass('error-text');
-                                                    }
-                                                    $('#QY1').addClass('border000000');
-                                                }
-                                                if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
-                                                    $('#Q' + r[i].periodTitle.toString()).addClass('campaignBudgetError');
-                                                }
-                                                else {
-                                                    $('#Q' + r[i].periodTitle.toString()).removeClass('campaignBudgetError');
-                                                }
+                                            if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
+                                                $("#spnCampaignAllocatedBudget").addClass('error-text');
+                                            }
+                                            else {
+                                                $("#spnCampaignAllocatedBudget").removeClass('error-text');
+                                            }
+                                            $('#QY1').addClass('border000000');
+                                        }
+                                        if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
+                                            $('#Q' + r[i].periodTitle.toString()).addClass('campaignBudgetError');
+                                        }
+                                        else {
+                                            $('#Q' + r[i].periodTitle.toString()).removeClass('campaignBudgetError');
+                                        }
                                         $('#Q' + r[i].periodTitle.toString()).addClass('myValue-budget');
                                         // End - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
                                     }
-                                    
+
                                     var allocatedBudget = calculateAllocatedBudgetQuarterly();
                                     $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
                                     checkBudgetDifference(allocatedBudget, $('#divQuarterlyBudget'));
                                 }
-                                else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower()')
-                                {
+                                else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower()') {
                                     checkBudgetDifference(0, $('#divMonthlyBudget'));
                                 }
-                            }
-                            else
-                            {
-                                emptyAllBudgetFields();
-                            }
                         }
-                        else
-                        {
+                        else {
                             emptyAllBudgetFields();
                         }
                     }
+                    else {
+                        emptyAllBudgetFields();
+                    }
+                }
                 },
-             error: function () {
-                 GoToLogin();
-                 $("#errorMessage").css("display", "block");
-                 $("#spanMessageError").empty();
-                 $("#divErrLessBudget").css("display", "none");
-                 return false;
-             }
-         });
+            error: function () {
+                GoToLogin();
+                $("#errorMessage").css("display", "block");
+                $("#spanMessageError").empty();
+                $("#divErrLessBudget").css("display", "none");
+                return false;
+            }
+        });
     }
-    
-    function emptyAllBudgetFields()
-    {
+
+    function emptyAllBudgetFields() {
         $('.budget-month .priceValue').each(function () {
             if (this.id.toString() != 'unallocatedBudget') {
                 $(this).val('');
@@ -1250,18 +1267,17 @@
                 $(this).removeClass('myValue-budget');
                 $(this).next().val('');
             }
-        });            
+        });
     }
 
-    function renderDisablePlanDefinationSection()
-    {
+    function renderDisablePlanDefinationSection() {
         $('table').addClass('element-disable');
         $('#disabledModelTitle').html($('#ModelTitle').html());
         $('#disabledPlanTitle').html($('#Title').prev().find('.nl-field-toggle').html());
         $('#disabledPlanYear').html($('#Year').val());
         $('#disabledGoalType').html($('#GoalType').prev().find('.nl-field-toggle').html());
         if ($('#GoalType').val().toLowerCase() == "revenue") {
-            $('#disabledGoalValue').html("$"+ $('#GoalValue').prev().find('.nl-field-toggle').html());
+            $('#disabledGoalValue').html("$" + $('#GoalValue').prev().find('.nl-field-toggle').html());
         }
         else {
             $('#disabledGoalValue').html($('#GoalValue').prev().find('.nl-field-toggle').html());

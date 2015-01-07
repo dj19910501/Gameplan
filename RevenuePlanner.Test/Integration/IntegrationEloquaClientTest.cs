@@ -245,7 +245,7 @@ namespace RevenuePlanner.Test.Integration
                 count = "4",
                 dataLookupId = "54d066ee-ff21-4aa4-950a-0c50e5d955fb",
                 scope = "global",
-                membershipDeletions = ""
+                membershipDeletions = new List<string> { }
             };
 
             controller.PutEloquaContactListDetails(contactListDetailModel, elouqaContactListId);
@@ -277,7 +277,7 @@ namespace RevenuePlanner.Test.Integration
                 count = "4",
                 dataLookupId = "54d066ee-ff21-4aa4-950a-0c50e5d955fb",
                 scope = "global",
-                membershipDeletions = ""
+                membershipDeletions = new List<string> { }
             };
 
             controller.PutEloquaContactListDetails(contactListDetailModel, elouqaContactListId);

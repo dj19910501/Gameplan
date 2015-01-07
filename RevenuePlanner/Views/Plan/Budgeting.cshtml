@@ -359,29 +359,58 @@ function LoadPlanBuBusinessUnit(Bid) {
         });
     }
 
-    $(document).on("click", "#LeftNavInput", function (e) {
-        //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs
-        displayconfirm('@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "");
-    });
-    $(document).on("click", "#LeftNavAddActivity", function (e) {
-        displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + CurrentPlanId + "");
+$(document).on("click", "#LeftNavInput", function (e) {
+    //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs
+    var queryStringArr = [];
+
+    queryStringArr.push(
+     {
+         key: 'id',
+         Value: CurrentPlanId
      });
 
+    displayconfirm('@Url.Content("~/Plan/Create")', queryStringArr);
+});
+
+$(document).on("click", "#LeftNavAddActivity", function (e) {
+    var queryStringArr = [];
+
+    queryStringArr.push(
+     {
+         key: 'ActiveMenu',
+         Value: "Plan"
+     });
+
+    queryStringArr.push(
+     {
+         key: 'currentPlanId',
+         Value: CurrentPlanId
+     });
+
+    displayconfirm('@Url.Content("~/Home/Index")', queryStringArr);
+});
+
 $(document).on("click", "#LeftNavCampaigns", function (e) {
-    displayconfirm('@Url.Action("Assortment", "Plan")');
-});
-$(document).on("click", "#aApplyToCalender", function (e) {
-    displayconfirm('@Url.Action("ApplyToCalendar", "Plan")');
-});
-function displayconfirm(strURL) {
-    HideMessages();
-    window.location.href = strURL;
-}
-$(document).on("click", "#confirmClose", function (e) {
-    $("#errorMessageDuplicatePlan").slideUp(400);   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
-});
-function isDataChanged() {
-    var changed = false;
+    var queryStringArr = [];
+    displayconfirm('@Url.Action("Assortment", "Plan")', queryStringArr);
+    });
+
+    $(document).on("click", "#aApplyToCalender", function (e) {
+        window.location.href = '@Url.Action("ApplyToCalendar", "Plan")';
+    });
+
+    function displayconfirm(strURL, queryStringArr) {
+        HideMessages();
+        // window.location.href = strURL;
+        formSubmitEvent(strURL, queryStringArr);
+    }
+
+    $(document).on("click", "#confirmClose", function (e) {
+        $("#errorMessageDuplicatePlan").slideUp(400);   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
+    });
+
+    function isDataChanged() {
+        var changed = false;
 
     $('#slidepanel-container').find("input[type=text],textarea,select, .priceValue").each(function () {     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
         if ($(this).is('[readonly]') == false) {

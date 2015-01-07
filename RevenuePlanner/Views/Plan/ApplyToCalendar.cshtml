@@ -9,7 +9,7 @@
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
     ViewBag.PageTitle = "ApplyToCallender";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
-    
+
     // Added by Viral kadiya on 12/23/2014 for PL ticket #1046.
     string strCampaignIds = ViewBag.EditablCampaignIds;
     string strProgramIds = ViewBag.EditablProgramIds;
@@ -28,13 +28,11 @@
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
 
 <style type="text/css">
-    .pull-right > span
-    {
+    .pull-right > span {
         margin-right: -15px !important;
     }
 
-    .dhx_chart
-    {
+    .dhx_chart {
         color: #000000;
         font-family: 'source_sans_prolight',Arial,"sans-serif";
         font-size: 9px;
@@ -343,25 +341,47 @@
         });
     }
 
-    $(document).on("click", "#lnkCampaigns", function (e) {
-        displayconfirm('@Url.Action("Assortment", "Plan")');
+    $(document).on("click", "#lnkCampaigns,#lnkGoBack,#LeftNavCampaigns", function (e) {
+        window.location.href = '@Url.Action("Assortment", "Plan")';
     });
-    $(document).on("click", "#lnkGoBack", function (e) {
-        displayconfirm('@Url.Action("Assortment", "Plan")');
-    });
-    $(document).on("click", "#LeftNavCampaigns", function (e) {
-        displayconfirm('@Url.Action("Assortment", "Plan")');
-    });
+
     $(document).on("click", "#LeftNavInput", function (e) {
         //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs
-        displayconfirm('@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "");
+        var queryStringArr = [];
+
+        queryStringArr.push(
+         {
+             key: 'id',
+             Value: CurrentPlanId
+         });
+
+        displayconfirm('@Url.Content("~/Plan/Create")', queryStringArr);
+        //displayconfirm('@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "");
     });
 
     $(document).on("click", "#LeftNavAddActivity", function (e) {
-        displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + CurrentPlanId + "");
+        var queryStringArr = [];
+
+        queryStringArr.push(
+         {
+             key: 'ActiveMenu',
+             Value: "Plan"
+         });
+
+        queryStringArr.push(
+         {
+             key: 'currentPlanId',
+             Value: CurrentPlanId
+         });
+
+        displayconfirm('@Url.Content("~/Home/Index")', queryStringArr);
+        //displayconfirm('@Url.Content("~/Home/Index")' + "?ActiveMenu=Plan&currentPlanId=" + CurrentPlanId + "");
     });
+
     $(document).on("click", "#aBudgeting", function (e) {
-        displayconfirm('@Url.Action("Budgeting", "Plan")');
+        var queryStringArr = [];
+        displayconfirm('@Url.Action("Budgeting", "Plan")', queryStringArr);
+        //displayconfirm('@Url.Action("Budgeting", "Plan")');
     });
     //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
     $("#header a").not("#ContactSupport").click(function () {
@@ -374,6 +394,11 @@
         }
     });
     //Dharmraj End 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+
+    function displayconfirm(strURL, queryStringArr) {
+        //window.location.href = strURL;
+        formSubmitEvent(strURL, queryStringArr);
+    }
 
     //function to check myValue attribute values and input values that any changes made?
     function isDataChanged() {
@@ -403,9 +428,7 @@
         });
         return changed;
     }
-    function displayconfirm(strURL) {
-        window.location.href = strURL;
-    }
+
     $(document).on("click", "#confirmClose", function (e) {
         $("#errorMessageDuplicatePlan").slideUp(400);       // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
     });
@@ -512,7 +535,7 @@
        //// Function to make ajax request.
        //// Modified By Maninder Singh Wadhva to Address PL#203
        function AjaxRequest() {
-         //  GetNumberOfActivityPerMonByPlanId(CurrentPlanId, Currenttime);
+           //  GetNumberOfActivityPerMonByPlanId(CurrentPlanId, Currenttime);
            var isPublished = false;
            $.ajax(
          {
@@ -525,16 +548,16 @@
                  if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                      window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                  } else {
-                 planYear = parseInt(data.planYear);
-                 isPublished = data.isPublished;
-                 renderGantt(data.taskData);
-                 if (isPublished) {
-                     $("#BtnPublishPlan").hide();
+                     planYear = parseInt(data.planYear);
+                     isPublished = data.isPublished;
+                     renderGantt(data.taskData);
+                     if (isPublished) {
+                         $("#BtnPublishPlan").hide();
+                     }
+                     else {
+                         $("#BtnPublishPlan").show();
+                     }
                  }
-                 else {
-                     $("#BtnPublishPlan").show();
-                 }
-             }
              }
          });
      }
@@ -555,20 +578,20 @@
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                     else {
-                    // Set collaborator details
-                    $('#divCollaborator').empty(); // Clear collaborators div content
+                        // Set collaborator details
+                        $('#divCollaborator').empty(); // Clear collaborators div content
 
 
                         ////  set collaborator's image
-                    if (data.collaboratorsImage != null && data.collaboratorsImage != 'undefined') {
-                        $.each(data.collaboratorsImage.Data, function () {
-                            SetCollaboratorImage(this, appendtag);//#416
-                        })
-                        $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
-                        $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
-                    }
-                    //added by uday for #416
-                    ProfileAttachToolTip();//function written in scripts.js
+                        if (data.collaboratorsImage != null && data.collaboratorsImage != 'undefined') {
+                            $.each(data.collaboratorsImage.Data, function () {
+                                SetCollaboratorImage(this, appendtag);//#416
+                            })
+                            $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
+                            $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
+                        }
+                        //added by uday for #416
+                        ProfileAttachToolTip();//function written in scripts.js
                     }
                 }
             });
@@ -712,268 +735,268 @@
     // Variable to maintein closed task in calendar.
     var arrClosedTask = [];
     var AllClosedTask = '@TempData["ClosedTask"]';
-   if (AllClosedTask != "") {
-       arrClosedTask = AllClosedTask.split(',');
-   }
+    if (AllClosedTask != "") {
+        arrClosedTask = AllClosedTask.split(',');
+    }
 
-   //// Function to render gantt i.e. for this year or this quarter.
-   function renderGantt(taskData) {
-       var tasks = {
-           data: taskData
-       };
+    //// Function to render gantt i.e. for this year or this quarter.
+    function renderGantt(taskData) {
+        var tasks = {
+            data: taskData
+        };
 
-       $.each(tasks.data, function (index, objData) {
-           objData.start_date = new Date(objData.start_date);
-       });
+        $.each(tasks.data, function (index, objData) {
+            objData.start_date = new Date(objData.start_date);
+        });
 
-       gantt.eachTask(function (task) {
-           gantt.deleteTask(task.id)
-       })
+        gantt.eachTask(function (task) {
+            gantt.deleteTask(task.id)
+        })
 
-       //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
-       gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-       gantt.config.scale_height = 60;
-       gantt.config.round_dnd_dates = false;
-       gantt.config.scale_unit = "month";
-       gantt.config.date_scale = " %M";
-       gantt.config.subscales = [{ unit: "year", step: 1, date: "%Y" }];
-       ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-       gantt.templates.task_class = function (start, end, task) { return getCSSForTask(task) };
+        //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+        gantt.config.scale_height = 60;
+        gantt.config.round_dnd_dates = false;
+        gantt.config.scale_unit = "month";
+        gantt.config.date_scale = " %M";
+        gantt.config.subscales = [{ unit: "year", step: 1, date: "%Y" }];
+        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+        gantt.templates.task_class = function (start, end, task) { return getCSSForTask(task) };
 
-       if (isQuater == "thisquarter") {
-           //// Getting quarter
-           var startDate = getQarterStartDate();
-           var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
-           gantt.config.start_date = startDate;
-           gantt.config.end_date = endDate;
-           //// filtering quater data
-           var filteredData = $.grep(tasks.data,
+        if (isQuater == "thisquarter") {
+            //// Getting quarter
+            var startDate = getQarterStartDate();
+            var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+            gantt.config.start_date = startDate;
+            gantt.config.end_date = endDate;
+            //// filtering quater data
+            var filteredData = $.grep(tasks.data,
+                                       function (value) {
+                                           return (value.start_date >= startDate && value.start_date <= endDate)
+                                       }
+                                     );
+            var filteredTasks = { data: filteredData };
+
+            gantt.init("gantt_here");
+
+            var json_length = filteredTasks.data.length;
+            var gantt_div = document.getElementById("gantt_here");
+            ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+            if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+                gantt_div.style.height = ((json_length * 35) + 94) + "px";
+            }
+            else {
+                gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+            }
+            ////
+            gantt.parse(filteredTasks);
+        } else if (isQuater == "thisyear") {
+            var date = new Date();
+            gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
+            gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
+            gantt.init("gantt_here");
+
+            var json_length = tasks.data.length;
+            var gantt_div = document.getElementById("gantt_here");
+            ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+            if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+                gantt_div.style.height = ((json_length * 35) + 94) + "px";
+            }
+            else {
+                gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+            }
+            ////
+            gantt.parse(tasks);
+        }
+        else if (isQuater == "thismonth") {
+            var date = new Date(), m = date.getMonth();
+            gantt.config.start_date = new Date(date.getFullYear(), m, 01);
+            gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
+            gantt.init("gantt_here");
+            /*Added by Mitesh Vaishnav for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)*/
+            var startDate = new Date(date.getFullYear(), m, 01);
+            var endDate = new Date(date.getFullYear(), m + 1, 01);
+            var filteredData = $.grep(tasks.data,
                                       function (value) {
                                           return (value.start_date >= startDate && value.start_date <= endDate)
                                       }
                                     );
-           var filteredTasks = { data: filteredData };
+            var filteredTasks = { data: filteredData };
+            /*End :Added by Mitesh Vaishnav for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)*/
+            var json_length = tasks.data.length;
+            var gantt_div = document.getElementById("gantt_here");
+            ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+            if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+                gantt_div.style.height = ((json_length * 35) + 94) + "px";
+            }
+            else {
+                gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+            }
+            gantt.parse(filteredTasks);//Modified by Mitesh Vaishnav on 04/08/2014 for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)
+        }
+        else if (isQuater == "nextyear") {
+            var date = new Date();
+            gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
+            gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
+            gantt.init("gantt_here");
 
-           gantt.init("gantt_here");
+            var json_length = tasks.data.length;
+            var gantt_div = document.getElementById("gantt_here");
+            ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+            if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+                gantt_div.style.height = ((json_length * 35) + 94) + "px";
+            }
+            else {
+                gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+            }
+            ////
+            gantt.parse(tasks);
+        } else if (isQuater == "planYear") {
+            // Edited to add PlanYear option.
+            gantt.config.start_date = new Date(planYear, 00, 01);
+            gantt.config.end_date = new Date(planYear + 1, 00, 01);
+            gantt.init("gantt_here");
 
-           var json_length = filteredTasks.data.length;
-           var gantt_div = document.getElementById("gantt_here");
-           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-               gantt_div.style.height = ((json_length * 35) + 94) + "px";
-           }
-           else {
-               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-           }
-           ////
-           gantt.parse(filteredTasks);
-       } else if (isQuater == "thisyear") {
-           var date = new Date();
-           gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
-           gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
-           gantt.init("gantt_here");
+            var json_length = tasks.data.length;
+            var gantt_div = document.getElementById("gantt_here");
+            ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+            if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+                gantt_div.style.height = ((json_length * 35) + 94) + "px";
+            }
+            else {
+                gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+            }
+            ////
+            gantt.parse(tasks);
+        }
 
-           var json_length = tasks.data.length;
-           var gantt_div = document.getElementById("gantt_here");
-           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-               gantt_div.style.height = ((json_length * 35) + 94) + "px";
-           }
-           else {
-               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-           }
-           ////
-           gantt.parse(tasks);
-       }
-       else if (isQuater == "thismonth") {
-           var date = new Date(), m = date.getMonth();
-           gantt.config.start_date = new Date(date.getFullYear(), m, 01);
-           gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
-           gantt.init("gantt_here");
-           /*Added by Mitesh Vaishnav for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)*/
-           var startDate = new Date(date.getFullYear(), m, 01);
-           var endDate = new Date(date.getFullYear(), m + 1, 01);
-           var filteredData = $.grep(tasks.data,
-                                     function (value) {
-                                         return (value.start_date >= startDate && value.start_date <= endDate)
-                                     }
-                                   );
-           var filteredTasks = { data: filteredData };
-           /*End :Added by Mitesh Vaishnav for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)*/
-           var json_length = tasks.data.length;
-           var gantt_div = document.getElementById("gantt_here");
-           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-               gantt_div.style.height = ((json_length * 35) + 94) + "px";
-           }
-           else {
-               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-           }
-           gantt.parse(filteredTasks);//Modified by Mitesh Vaishnav on 04/08/2014 for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)
-       }
-       else if (isQuater == "nextyear") {
-           var date = new Date();
-           gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
-           gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
-           gantt.init("gantt_here");
+        gantt.eachTask(function (task) {
 
-           var json_length = tasks.data.length;
-           var gantt_div = document.getElementById("gantt_here");
-           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-               gantt_div.style.height = ((json_length * 35) + 94) + "px";
-           }
-           else {
-               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-           }
-           ////
-           gantt.parse(tasks);
-       } else if (isQuater == "planYear") {
-           // Edited to add PlanYear option.
-           gantt.config.start_date = new Date(planYear, 00, 01);
-           gantt.config.end_date = new Date(planYear + 1, 00, 01);
-           gantt.init("gantt_here");
+            // Added by dharmraj for #485 Planning Window doesnt remember previous view
+            if (arrClosedTask.indexOf(task.id) > -1) {
+                gantt.getTask(task.id).$open = false;
+            }
+            else {
+                gantt.getTask(task.id).$open = true;
+            }
+        });
 
-           var json_length = tasks.data.length;
-           var gantt_div = document.getElementById("gantt_here");
-           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-               gantt_div.style.height = ((json_length * 35) + 94) + "px";
-           }
-           else {
-               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-           }
-           ////
-           gantt.parse(tasks);
-       }
+        gantt.refreshData();
 
-       gantt.eachTask(function (task) {
+        AttachEventToTactic();
+        HideDragHandleOfTask();
 
-           // Added by dharmraj for #485 Planning Window doesnt remember previous view
-           if (arrClosedTask.indexOf(task.id) > -1) {
-               gantt.getTask(task.id).$open = false;
-           }
-           else {
-               gantt.getTask(task.id).$open = true;
-           }
-       });
+        // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
+        $(".gantt_container .gantt_tree_content").each(function (index, element) {
+            $(element).attr("title", htmlDecode(element.innerHTML));
+        });
+    }
 
-       gantt.refreshData();
+    /// Modified By Maninder Singh Wadhva PL Ticket#47
+    //// Function to hide drag handle.
+    function HideDragHandleOfTask() {
+        gantt.eachTask(function (task) {
 
-       AttachEventToTactic();
-       HideDragHandleOfTask();
+            if ((task.IsHideDragHandleLeft || task.IsHideDragHandleRight) && typeof task.isImprovement == 'undefined') {
+                HideDragHandleLeft(task);
+                HideDragHandleRight(task);
+            }
+            else if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+                HideDragHandleRight(task);
+                if (task.IsHideDragHandleLeft == true) {
+                    HideDragHandleLeft(task);
+                }
+            }
+        })
+    }
 
-       // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
-       $(".gantt_container .gantt_tree_content").each(function (index, element) {
-           $(element).attr("title", htmlDecode(element.innerHTML));
-       });
-   }
+    /// Modified By Maninder Singh Wadhva PL Ticket#47
+    //// Function to hide left drag handle.
+    function HideDragHandleLeft(task) {
+        $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_left"]').remove();
+    }
 
-   /// Modified By Maninder Singh Wadhva PL Ticket#47
-   //// Function to hide drag handle.
-   function HideDragHandleOfTask() {
-       gantt.eachTask(function (task) {
+    //// Function to hide right drag handle.
+    function HideDragHandleRight(task) {
+        $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_right"]').remove();
+    }
 
-           if ((task.IsHideDragHandleLeft || task.IsHideDragHandleRight) && typeof task.isImprovement == 'undefined') {
-               HideDragHandleLeft(task);
-               HideDragHandleRight(task);
-           }
-           else if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
-               HideDragHandleRight(task);
-               if (task.IsHideDragHandleLeft == true) {
-                   HideDragHandleLeft(task);
-               }
-           }
-       })
-   }
+    gantt.attachEvent("onTaskSelected", function (id, item) {
+        HideDragHandleOfTask();
 
-   /// Modified By Maninder Singh Wadhva PL Ticket#47
-   //// Function to hide left drag handle.
-   function HideDragHandleLeft(task) {
-       $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_left"]').remove();
-   }
+        // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
+        $(".gantt_container .gantt_tree_content").each(function (index, element) {
+            $(element).attr("title", element.innerHTML);
+        });
 
-   //// Function to hide right drag handle.
-   function HideDragHandleRight(task) {
-       $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_right"]').remove();
-   }
+    });
 
-   gantt.attachEvent("onTaskSelected", function (id, item) {
-       HideDragHandleOfTask();
+    gantt.attachEvent("onTaskOpened", function (id) {
+        HideDragHandleOfTask();
 
-       // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
-       $(".gantt_container .gantt_tree_content").each(function (index, element) {
-           $(element).attr("title", element.innerHTML);
-       });
+        arrClosedTask = jQuery.grep(arrClosedTask, function (value) {
+            return value != id;
+        });
 
-   });
+        // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
+        $(".gantt_container .gantt_tree_content").each(function (index, element) {
+            $(element).attr("title", element.innerHTML);
+        });
 
-   gantt.attachEvent("onTaskOpened", function (id) {
-       HideDragHandleOfTask();
+    });
 
-       arrClosedTask = jQuery.grep(arrClosedTask, function (value) {
-           return value != id;
-       });
+    gantt.attachEvent("onTaskClosed", function (id) {
+        HideDragHandleOfTask();
 
-       // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
-       $(".gantt_container .gantt_tree_content").each(function (index, element) {
-           $(element).attr("title", element.innerHTML);
-       });
+        if (arrClosedTask.indexOf(id) == -1) {
+            arrClosedTask.push(id);
+        }
 
-   });
+        // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
+        $(".gantt_container .gantt_tree_content").each(function (index, element) {
+            $(element).attr("title", element.innerHTML);
+        });
 
-   gantt.attachEvent("onTaskClosed", function (id) {
-       HideDragHandleOfTask();
+    });
 
-       if (arrClosedTask.indexOf(id) == -1) {
-           arrClosedTask.push(id);
-       }
+    //// Variable to hold double click event.
+    var eventTaskDoubleClick;
+    //// Function to attach event to show inspect model.
+    function AttachEventToTactic() {
+        //// Detaching double click event.
+        if (eventTaskDoubleClick != undefined) {
+            gantt.detachEvent(eventTaskDoubleClick);
+        }
 
-       // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
-       $(".gantt_container .gantt_tree_content").each(function (index, element) {
-           $(element).attr("title", element.innerHTML);
-       });
+        //// Attaching double click event
+        eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowSidePanel(taskId, e) });
+    }
 
-   });
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
+    function ShowSidePanel(taskId, e) {
+        var task = gantt.getTask(taskId);
 
-   //// Variable to hold double click event.
-   var eventTaskDoubleClick;
-   //// Function to attach event to show inspect model.
-   function AttachEventToTactic() {
-       //// Detaching double click event.
-       if (eventTaskDoubleClick != undefined) {
-           gantt.detachEvent(eventTaskDoubleClick);
-       }
+        //// Checking whether current task is tactic or not.
+        if (typeof task.ImprovementPlanTacticId != 'undefined' && typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+            ShowImprovementTactic(task.ImprovementPlanTacticId)
+        }
+            //// Checking whether current task is tactic or not.
+        else if (typeof task.plantacticid !== 'undefined') {
+            //// Getting plan tactic id.
+            ShowTactic(task.plantacticid)
+        }
+        else if (typeof task.PlanProgramId !== 'undefined') {
+            //// Getting plan program id.
+            ShowProgram(task.PlanProgramId)
+        }
+        else if (typeof task.PlanCampaignId !== 'undefined') {
+            ShowCampaign(task.PlanCampaignId)
+        }
+    }
 
-       //// Attaching double click event
-       eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowSidePanel(taskId, e) });
-   }
-
-   //// Modified By Maninder Singh Wadhva PL Ticket#47
-   function ShowSidePanel(taskId, e) {
-       var task = gantt.getTask(taskId);
-
-       //// Checking whether current task is tactic or not.
-       if (typeof task.ImprovementPlanTacticId != 'undefined' && typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
-           ShowImprovementTactic(task.ImprovementPlanTacticId)
-       }
-           //// Checking whether current task is tactic or not.
-       else if (typeof task.plantacticid !== 'undefined') {
-           //// Getting plan tactic id.
-           ShowTactic(task.plantacticid)
-       }
-       else if (typeof task.PlanProgramId !== 'undefined') {
-           //// Getting plan program id.
-           ShowProgram(task.PlanProgramId)
-       }
-       else if (typeof task.PlanCampaignId !== 'undefined') {
-           ShowCampaign(task.PlanCampaignId)
-       }
-   }
-
-   function ShowCampaign(id) {
-       var mode = "Edit";
-       ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
+    function ShowCampaign(id) {
+        var mode = "Edit";
+        ShowModel(mode, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()');
    }
 
    function ShowProgram(id) {
@@ -1130,24 +1153,24 @@
        $.ajax({
            type: 'POST',
            url: '@Url.Action("UpdateStartEndDate", "Plan")',
-            data: { id: id, startDate: updatedStartDate, duration: updatedDuration, isPlanCampaign: isPlanCampaign, isPlanProgram: isPlanProgram, isPlanTactic: isPlanTactic },
-            dataType: 'json',
-            success: function (data) {
-                if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
-                    //// Function to redirect to login page on unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+           data: { id: id, startDate: updatedStartDate, duration: updatedDuration, isPlanCampaign: isPlanCampaign, isPlanProgram: isPlanProgram, isPlanTactic: isPlanTactic },
+           dataType: 'json',
+           success: function (data) {
+               if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                   //// Function to redirect to login page on unavailability of web service.
+                   //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                   //// Ticket: 942 Exception handeling in Gameplan.
+                   window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
                     return data;
                 }
             },
-            error: function () {
-                GoToLogin();
-                GetTactics();
-            }
-        });
+           error: function () {
+               GoToLogin();
+               GetTactics();
+           }
+       });
     }
 
     //// Function to update start or end date.
@@ -1186,10 +1209,9 @@
 
     //// Added by Viral Kadiya on 12/23/2014.
     //// Function to check whether TaskId exist or not in HiddenIds.
-    function IsPlanDateEditable(TaskId,strIds) {
+    function IsPlanDateEditable(TaskId, strIds) {
         var result = false;
-        if (strIds != null && strIds != 'undefined')
-        {
+        if (strIds != null && strIds != 'undefined') {
             var arrIds = strIds.split(","); //// Split Comma separted Ids to array.
             for (var i = 0; i < arrIds.length; i++) {
                 if (arrIds[i] == TaskId)
@@ -1198,14 +1220,13 @@
         }
         return result;
     }
-    
+
     //// Start - Added by Sohel Patan on 31/12/2014 for PL ticket #1059
     $('#BtnPublishPlan').click(function () {
         publishPlan();
     });
 
-    function publishPlan()
-    {
+    function publishPlan() {
         var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
@@ -1216,14 +1237,14 @@
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                    if(data.errorMessage != undefined) {
+                    if (data.errorMessage != undefined) {
                         $('#cErrorDuplicatePlan').html('<strong>Error! </strong>' + data.errorMessage);
                         $('#errorMessageDuplicatePlan').slideDown(3000);
                     }
                     else if (data.activeMenu != undefined && data.currentPlanId != undefined) {
                         url = '@Url.Content("~/Home/Index?ActiveMenu=")';
-                        window.location.href = url + data.activeMenu + '&currentPlanId=' + data.currentPlanId;
-                    }
+                            window.location.href = url + data.activeMenu + '&currentPlanId=' + data.currentPlanId;
+                        }
                 }
             }
         });
