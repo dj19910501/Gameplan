@@ -1628,6 +1628,11 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             List<string> tacticStatus = GetStatusListAfterApproved();
 
+            int Year;
+            if (!int.TryParse(year, out Year))
+            {
+                year = DateTime.Now.Year.ToString();
+            }
             double TotalMQLs = 0, TotalBudget = 0;
             double? TotalPercentageMQLImproved = 0;
             int TotalTacticCount = 0;
