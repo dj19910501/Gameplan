@@ -909,7 +909,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>59750</DevelopmentServerPort>
+          <DevelopmentServerPort>56910</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
