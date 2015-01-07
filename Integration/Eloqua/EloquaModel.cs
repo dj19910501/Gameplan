@@ -72,13 +72,12 @@ namespace Integration.Eloqua
         public string description { get; set; }
         public string folderId { get; set; }
         public string name { get; set; }
-        //public string permissions { get; set; }
+        //public string permissions { get; set; } //Commented because if we change Eloqua API version then it create problem.
         public string updatedAt { get; set; }
         public string count { get; set; }
         public string dataLookupId { get; set; }
         public string scope { get; set; }
-        public string membershipDeletions { get; set; }
-        public string membershipAdditions { get; set; }
+        public List<string> membershipDeletions { get; set; }
     }
 
     public class ContactListContactModel

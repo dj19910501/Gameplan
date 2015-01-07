@@ -68,10 +68,10 @@ namespace Integration.Eloqua
         /// <param name="_entityType">Entity Type.</param>
         public void SetTacticMQLs(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType)
         {
-            // Insert log into IntegrationInstanceSection
+            //// Insert log into IntegrationInstanceSection
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), DateTime.Now, _userId);
 
-            // PlanIDs which has configured for "Pull MQL" from Eloqua instances
+            //// PlanIDs which has configured for "Pull MQL" from Eloqua instances
             List<Plan> lstPlans = db.Plans.Where(objplan => objplan.Model.IntegrationInstanceIdMQL == IntegrationInstanceId && objplan.Model.Status.Equals("Published")).ToList();
             Guid _ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == IntegrationInstanceId).ClientId;
 
@@ -338,10 +338,9 @@ namespace Integration.Eloqua
                         if (contactIds != string.Empty)
                         {
                             contactIds = contactIds.Remove(0, 1);
-                            string[] contactIdsArray = contactIds.Split(',');
-                            contactIdsArray = contactIdsArray.Distinct().ToArray();
-                            contactIds = string.Join(",", contactIdsArray);
-                            contactListDetails.membershipDeletions = contactIds;
+                            List<string> contactIdslist = contactIds.Split(',').ToList();
+                            contactIdslist = contactIdslist.Distinct().ToList();
+                            contactListDetails.membershipDeletions = contactIdslist;
                         }
 
                         //// update contact id in eloqua for updated tactic contact(s) 
