@@ -156,19 +156,19 @@ namespace Integration.Eloqua
                                 if (elementsArray[i][CampaignIdValue] != null)
                                 {
                                     elementsInner.CampaignId = elementsArray[i][CampaignIdValue].ToString();
-                                }
 
-                                if (elementsArray[i][MQLDateValue] != null)
-                                {
-                                    if (elementsArray[i][MQLDateValue].ToString() != string.Empty && elementsArray[i][MQLDateValue] != null)
+                                    if (elementsArray[i][MQLDateValue] != null)
                                     {
-                                        elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
+                                        if (elementsArray[i][MQLDateValue].ToString() != string.Empty && elementsArray[i][MQLDateValue] != null)
+                                        {
+                                            elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
+                                        }
                                     }
-                                }
 
-                                elementsInner.contactId = elementsArray[i]["contactId"].ToString();
-                                elementsInner.type = elementsArray[i]["type"].ToString();
-                                element.Add(elementsInner);
+                                    elementsInner.contactId = elementsArray[i]["contactId"].ToString();
+                                    elementsInner.type = elementsArray[i]["type"].ToString();
+                                    element.Add(elementsInner);
+                                }
                             }
                         }
 
@@ -237,8 +237,15 @@ namespace Integration.Eloqua
                             DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, objTactic.StartDate.Month, 1);
                             DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, objTactic.EndDate.Month, 1);
 
+                            //// if IntegrationTacticID is SalesforceID(CRMID) then retrieve EloquaID based on CRMID from lstEloquaIntegrationInstanceTacticIds list.
+                            string objIntegrationInstanceTacticId = string.Empty;
+                            if (lstEloquaIntegrationInstanceTacticIds.Any(_instance => _instance.CRMId == objTactic.IntegrationInstanceTacticId))
+                                objIntegrationInstanceTacticId = lstEloquaIntegrationInstanceTacticIds.Where(_instance => _instance.CRMId == objTactic.IntegrationInstanceTacticId).Select(_instance => _instance.EloquaId).FirstOrDefault();
+                            else
+                                objIntegrationInstanceTacticId = objTactic.IntegrationInstanceTacticId;
+
                             //// filter list based on period for tactic start and end date.
-                            List<elements> lstTacticResponse = element.Where(Objelement => Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
+                            List<elements> lstTacticResponse = element.Where(Objelement => Objelement.CampaignId.Contains(objIntegrationInstanceTacticId) && Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
 
                             foreach (var item in lstTacticResponse)
                             {
