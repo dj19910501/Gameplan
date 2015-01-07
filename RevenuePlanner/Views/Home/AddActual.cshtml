@@ -606,7 +606,7 @@
                                     var lineItemTotal = 0;
                                     var LineClassName = costlbl+'Line-' + arr[2];
                                     $('.' + LineClassName).each(function () {
-                                        var lineItemvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                                        var lineItemvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', '').replace(/!/g,"_"));
                                         if (!isNaN(lineItemvalue)) {
                                             lineItemTotal = lineItemvalue + parseFloat(lineItemTotal);
                                         }
@@ -963,7 +963,7 @@
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
                 for (var p = 0; p < _LineItemsData.length; p = p + 1) {
-                    var Title = _LineItemsData[p].Title.replace(/ /g, "_");
+                    var Title = _LineItemsData[p].Title.replace(/ /g, "_").replace(/!/g,"_");
                     var idtr = "tr" + _LineItemsData[p].id + Title;
                 $html += '<tr id=' + idtr + ' TacticId='+_id +'>';
                 for (var j = 1; j <= 12; j = j + 1) {
@@ -1062,7 +1062,7 @@
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
             for (line in _LineItemsData) {
-                var Title = _LineItemsData[line].Title.replace(/ /g, "_");
+                var Title = _LineItemsData[line].Title.replace(/ /g, "_").replace(/!/g,"_");
                 $html += '<div class="body-toogle-actual"><span class="inner-lineItem truncate" style="width:28% !important;display:block;" title="' + _LineItemsData[line].Title + '">' + _LineItemsData[line].Title +
                                              '</span><div id="border-right" class="table-info-actual-left-wraper">' +
                                                  '<div class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
