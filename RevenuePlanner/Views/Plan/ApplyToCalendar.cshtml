@@ -1242,8 +1242,23 @@
                         $('#errorMessageDuplicatePlan').slideDown(3000);
                     }
                     else if (data.activeMenu != undefined && data.currentPlanId != undefined) {
-                        url = '@Url.Content("~/Home/Index?ActiveMenu=")';
-                            window.location.href = url + data.activeMenu + '&currentPlanId=' + data.currentPlanId;
+                        var url = '@Url.Content("~/Home/Index")';
+
+                        var queryStringArr = [];
+
+                        queryStringArr.push(
+                         {
+                             key: 'ActiveMenu',
+                             Value: data.activeMenu
+                         });
+
+                        queryStringArr.push(
+                         {
+                             key: 'currentPlanId',
+                             Value: data.currentPlanId
+                         });
+
+                        displayconfirm(url, queryStringArr);
                         }
                 }
             }
