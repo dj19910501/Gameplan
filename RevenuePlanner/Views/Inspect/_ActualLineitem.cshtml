@@ -158,21 +158,23 @@
             $("#divActualInner").append(ActualTab());
             $("#lblLineitemTitle").show();
             $("#txtTitle").hide();
-            $("#btnEditlineItem").unbind('click');
-            $("#btnEditlineItem").on("click", function (e) {
-                $("#errorMessage").css("display", "none");
-                $("#successMessage").css("display", "none");
-                $("#hdnLineitemOpt").val("Edit");
-                loadReview(planLineItemId, "Setup");
-                $("#btnEditlineItem").css("display", "none");
-                $('#txtTitle').css('display', 'block');
-                $('#lblLineitemTitle').css('display', 'none');
-                $("#txtTitle").val($('#lblLineitemTitle').text());
-                $("#txtTitle").prop('readonly', false);
-                $("#AddForm").css("display", "none");
-                $("#divDeleteProgram").css("display", "none");
-                $("#txtTitle").removeClass('error');
-            });
+            //// Commented By: Arpita Soni on 1/7/2015.
+            //// Ticket: 1067 
+            //$("#btnEditlineItem").unbind('click');
+            //$("#btnEditlineItem").on("click", function (e) {
+            //    $("#errorMessage").css("display", "none");
+            //    $("#successMessage").css("display", "none");
+            //    $("#hdnLineitemOpt").val("Edit");
+            //    loadReview(planLineItemId, "Setup");
+            //    $("#btnEditlineItem").css("display", "none");
+            //    $('#txtTitle').css('display', 'block');
+            //    $('#lblLineitemTitle').css('display', 'none');
+            //    $("#txtTitle").val($('#lblLineitemTitle').text());
+            //    $("#txtTitle").prop('readonly', false);
+            //    $("#AddForm").css("display", "none");
+            //    $("#divDeleteProgram").css("display", "none");
+            //    $("#txtTitle").removeClass('error');
+            //});
         }
         else {
             $.ajax({

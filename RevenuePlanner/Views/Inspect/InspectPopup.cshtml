@@ -234,6 +234,18 @@
               if (activeTab == TabReview) {
                   activeTab = TabSetup;
               }
+              if (activeTab == TabActual) {
+                  //// Modified By: Arpita Soni on 1/7/2015.
+                  //// Ticket: 1067 
+                  var hdnTacticStatus = $("#hdnTacticStatus").val();
+                  var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                  var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                  var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                  if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
+                      activeTab = TabSetup;
+
+                  }
+              }
               $('#popupnewTactic').css('display', 'none');
               $("#hdnTacticBudgetAllocationOpt").val("Edit");
               $('#txtTacticTitle').css('display', 'block');

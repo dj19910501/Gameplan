@@ -9,6 +9,14 @@
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
+    
+    //// Added By: Arpita Soni on 1/7/2015.
+    //// Ticket: 1067 
+    string TacticStatus = string.Empty;
+    if (ViewBag.ParentTacticStatus != null)
+    {
+        TacticStatus = ViewBag.ParentTacticStatus;
+    }
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
@@ -43,6 +51,8 @@
 @Html.Hidden("hdnPlanLineItemID", planLineItemId, new { id = "hdnPlanLineItemID" })
 @Html.Hidden("hdnLineitemOpt", "View", new { id = "hdnLineitemOpt" })
 @Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
+
+@Html.Hidden("hdnParentTacticStatus", TacticStatus, new { id = "hdnParentTacticStatus" })
 <style type="text/css">
     #successMessageViewCampaign, #errorMessageEditCampaign {
         margin-bottom: 15px !important;
@@ -217,15 +227,23 @@
 			              window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
 			      });
+              }
+              else if (tabtext == "Budget") {
+                  url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
+			      $("#divTab").empty();
+			      $("#divTab").load(url + '?id=' + PlanLineItemId);
 			  }
-			  else if (tabtext == "Budget") {
-			      url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
-                      $("#divTab").empty();
-                      $("#divTab").load(url + '?id=' + PlanLineItemId);
+              else if (tabtext == "Actuals") {
+                  //// Modified By: Arpita Soni on 1/7/2015.
+                  //// Ticket: 1067 
+                  var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+                  var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                  var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                  var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                  if ((hdnTacticStatus == null || hdnTacticStatus == '') || (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus)) {
+                      loadReview(PlanLineItemId, TabSetup);
                   }
-                  else if (tabtext == "Actuals") {
-                      loadReview(PlanLineItemId, tabtext);
-                  }
+			  }
 
            $("#btnEditlineItem").css("display", "none");
            $('#txtTitle').css('display', 'block');

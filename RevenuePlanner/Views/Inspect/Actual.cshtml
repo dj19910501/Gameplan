@@ -303,9 +303,11 @@
             $("#divActualInner").append(ActualTab());
             $("#lblTacticTitle").show();
             $("#txtTacticTitle").hide();
-            $("#EditForm").on("click", function (e) {
-                loadReview(planTacticId, "Setup");
-            });
+            //// Commented By: Arpita Soni on 1/7/2015.
+            //// Ticket: 1067 
+            //$("#EditForm").on("click", function (e) { // Commented by Arpita Soni for ticket #1067
+            //    loadReview(planTacticId, "Setup");
+            //});
         }
         else {
             $.ajax({
