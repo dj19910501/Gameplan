@@ -227,17 +227,17 @@ namespace Integration.Eloqua
                                         elementsInner.type = elementsArray[i]["type"].ToString();
                                         element.Add(elementsInner);
                                     }
+                                }
 
-                                    if (elementsArray.Count > 0 && listPullMapping.Count > 0)
+                                if (elementsArray.Count > 0 && listPullMapping.Count > 0)
+                                {
+                                    if (!isAllCampaignIdExists)
                                     {
-                                        if (!isAllCampaignIdExists)
-                                        {
-                                            _errorMailBody.Append(DateTime.Now.ToString() + " - " + CampaignIdValue + " for one or many record(s) does not exists." + "<br>");
-                                        }
-                                        if (!isAllMQLDateExists)
-                                        {
-                                            _errorMailBody.Append(DateTime.Now.ToString() + " - " + MQLDateValue + " for one or many record(s) does not exists." + "<br>");
-                                        }
+                                        _errorMailBody.Append(DateTime.Now.ToString() + " - " + CampaignIdValue + " for one or many record(s) does not exists." + "<br>");
+                                    }
+                                    if (!isAllMQLDateExists)
+                                    {
+                                        _errorMailBody.Append(DateTime.Now.ToString() + " - " + MQLDateValue + " for one or many record(s) does not exists." + "<br>");
                                     }
                                 }
                             }
