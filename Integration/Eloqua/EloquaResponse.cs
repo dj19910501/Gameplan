@@ -324,65 +324,49 @@ namespace Integration.Eloqua
                                 objIntegrationInstanceTacticId = objTactic.IntegrationInstanceTacticId;
 
                             //// filter list based on period for tactic start and end date.
-                            List<elements> lstTacticResponse = element.Where(Objelement => Objelement.CampaignId.Contains(objIntegrationInstanceTacticId) && Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
+                            List<elements> lstTacticResponse = element.Where(Objelement => Objelement.CampaignId == objIntegrationInstanceTacticId && Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
 
                             foreach (var item in lstTacticResponse)
                             {
                                 string tmpPeriod = "Y" + item.peroid.Month.ToString();
 
-                                //// check tactic is of MQL or other type for plan tactic id.
-                                var ObjMQL = db.Plan_Campaign_Program_Tactic.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Stage.Code == Common.StageMQL);
+                                var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == tmpPeriod && tacticActual.StageTitle == Common.MQLStageValue);
 
-                                if (ObjMQL == null)
+                                if (objTacticActual != null)
                                 {
-                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == tmpPeriod && tacticActual.StageTitle == Common.MQLStageValue);
-
-                                    if (objTacticActual != null)
-                                    {
-                                        objTacticActual.Actualvalue = objTacticActual.Actualvalue + 1;
-                                        objTacticActual.ModifiedDate = DateTime.Now;
-                                        objTacticActual.ModifiedBy = _userId;
-                                        db.Entry(objTacticActual).State = EntityState.Modified;
-                                    }
-                                    else
-                                    {
-                                        Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                        actualTactic.Actualvalue = 1;
-                                        actualTactic.PlanTacticId = objTactic.PlanTacticId;
-                                        actualTactic.Period = "Y" + item.peroid.Month;
-                                        actualTactic.StageTitle = Common.StageProjectedStageValue;
-                                        actualTactic.CreatedDate = DateTime.Now;
-                                        actualTactic.CreatedBy = _userId;
-                                        db.Entry(actualTactic).State = EntityState.Added;
-                                    }
+                                    objTacticActual.Actualvalue = objTacticActual.Actualvalue + 1;
+                                    objTacticActual.ModifiedDate = DateTime.Now;
+                                    objTacticActual.ModifiedBy = _userId;
+                                    db.Entry(objTacticActual).State = EntityState.Modified;
                                 }
                                 else
                                 {
-                                    //// MQL type data so update/create projected stage value and MQL value in actual table
-                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == tmpPeriod).ToList();
+                                    Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                    actualTactic.Actualvalue = 1;
+                                    actualTactic.PlanTacticId = objTactic.PlanTacticId;
+                                    actualTactic.Period = "Y" + item.peroid.Month;
+                                    actualTactic.StageTitle = Common.MQLStageValue;
+                                    actualTactic.CreatedDate = DateTime.Now;
+                                    actualTactic.CreatedBy = _userId;
+                                    db.Entry(actualTactic).State = EntityState.Added;
+                                }
 
-                                    if (objTacticActual.Count() > 0)
+                                //// check tactic is of MQL or other type for plan tactic id.
+                                if (objTactic.Stage.Code.ToLower() == Common.StageMQL.ToLower())
+                                {
+                                    //// MQL type data so update/create projected stage value and MQL value in actual table
+                                    var innerTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == tmpPeriod && tacticActual.StageTitle == Common.StageProjectedStageValue);
+
+                                    if (innerTacticActual != null)
                                     {
-                                        foreach (var itemActual in objTacticActual)
-                                        {
-                                            itemActual.Actualvalue = itemActual.Actualvalue + 1;
-                                            itemActual.ModifiedDate = DateTime.Now;
-                                            itemActual.ModifiedBy = _userId;
-                                            db.Entry(itemActual).State = EntityState.Modified;
-                                        }
+                                        innerTacticActual.Actualvalue = innerTacticActual.Actualvalue + 1;
+                                        innerTacticActual.ModifiedDate = DateTime.Now;
+                                        innerTacticActual.ModifiedBy = _userId;
+                                        db.Entry(innerTacticActual).State = EntityState.Modified;
                                     }
                                     else
                                     {
                                         Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                        actualTactic.Actualvalue = 1;
-                                        actualTactic.PlanTacticId = objTactic.PlanTacticId;
-                                        actualTactic.Period = "Y" + item.peroid.Month;
-                                        actualTactic.StageTitle = Common.MQLStageValue;
-                                        actualTactic.CreatedDate = DateTime.Now;
-                                        actualTactic.CreatedBy = _userId;
-                                        db.Entry(actualTactic).State = EntityState.Added;
-
-                                        actualTactic = new Plan_Campaign_Program_Tactic_Actual();
                                         actualTactic.Actualvalue = 1;
                                         actualTactic.PlanTacticId = objTactic.PlanTacticId;
                                         actualTactic.Period = "Y" + item.peroid.Month;
