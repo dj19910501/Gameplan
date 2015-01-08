@@ -1855,7 +1855,7 @@ namespace Integration.Eloqua
             {
                 EloquaResponse objEloquaResponse = new EloquaResponse();
                 StringBuilder errorMailBodyEloquaResponse = new StringBuilder(string.Empty);
-                objEloquaResponse.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType, out errorMailBodyEloquaResponse);
+                objEloquaResponse.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, EntityType.Tactic, out errorMailBodyEloquaResponse);
                 _errorMailBody.Append(errorMailBodyEloquaResponse);
             }
             catch (Exception ex)

@@ -268,7 +268,7 @@ namespace Integration.Eloqua
                                                                                                                        tactic.IsDeleted == false).ToList();
 
                         //// Get MQL Level
-                        var MQLLevel = lstAllTactics.Where(tactic => tactic.Stage.Code == Common.StageMQL).Select(tactic => tactic.Stage.Level).FirstOrDefault();
+                        var MQLLevel = db.Stages.Where(ObjStage => ObjStage.Code == Common.StageMQL && ObjStage.ClientId == _ClientId).Select(ObjStage => ObjStage.Level).FirstOrDefault();
 
                         //// Get list of SalesForceIntegrationInstanceTacticID(CRMId).
                         List<string> lstSalesForceIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => lstSalesForcePlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IntegrationInstanceTacticId != null).Select(_tac => _tac.IntegrationInstanceTacticId).ToList();
@@ -361,7 +361,7 @@ namespace Integration.Eloqua
                                     //// MQL type data so update/create projected stage value and MQL value in actual table
                                     var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == tmpPeriod).ToList();
 
-                                    if (objTacticActual != null)
+                                    if (objTacticActual.Count() > 0)
                                     {
                                         foreach (var itemActual in objTacticActual)
                                         {
