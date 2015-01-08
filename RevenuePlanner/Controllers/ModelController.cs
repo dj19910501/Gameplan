@@ -415,6 +415,13 @@ namespace RevenuePlanner.Controllers
                         }
 
                         Model_Funnel objModelFunnel = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == objModel_Funnel.ModelId && modelFunnel.FunnelId == objModel_Funnel.FunnelId).FirstOrDefault();
+                        Model_Funnel objEditModelFunnel = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == objModel_Funnel.ModelId && modelFunnel.FunnelId == objModel_Funnel.FunnelId && modelFunnel.AverageDealSize == objModel_Funnel.AverageDealSize).FirstOrDefault();
+                        ViewBag.EditFlag = false;
+                        if (objEditModelFunnel == null)
+                        {
+                            ViewBag.IsViewEditBusinessUnit = "true";
+                            ViewBag.EditFlag = true;
+                        }    
                         if (objModelFunnel == null)
                         {
                             objModel_Funnel.CreatedBy = Sessions.User.UserId;
@@ -485,7 +492,7 @@ namespace RevenuePlanner.Controllers
                                     Common.InsertChangeLog(Sessions.ModelId, 0, objModel.ModelId, "Inputs", Enums.ChangeLog_ComponentType.updatedto, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.benchmarked);
                                 }
                             }
-                            else
+                            else if (ViewBag.IsViewEditBusinessUnit == "true")
                             {
                                 Common.InsertChangeLog(intModelid, currentModelId, intModelid, "Inputs", Enums.ChangeLog_ComponentType.empty, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.updated, "");
                             }
@@ -644,6 +651,16 @@ namespace RevenuePlanner.Controllers
                     objModel_Funnel_Stage.Value = doubleValue;
                     objModel_Funnel_Stage.AllowedTargetStage = boolValue;
                     Model_Funnel_Stage existingModelFunnelStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType).FirstOrDefault();
+                    Model_Funnel_Stage checkEditModelFunnelStage= objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType && modelFunnelStage.Value == objModel_Funnel_Stage.Value && modelFunnelStage.AllowedTargetStage == objModel_Funnel_Stage.AllowedTargetStage).FirstOrDefault();
+                    if (checkEditModelFunnelStage == null && ViewBag.EditFlag == false)
+                    {
+                        ViewBag.IsViewEditBusinessUnit = "true";
+                        ViewBag.EditFlag = true;
+                    }
+                    else if (ViewBag.EditFlag == false)
+                    {
+                        ViewBag.IsViewEditBusinessUnit = "false";
+                    }
                     if (existingModelFunnelStage == null)
                     {
                         objModel_Funnel_Stage.CreatedDate = DateTime.Now;
