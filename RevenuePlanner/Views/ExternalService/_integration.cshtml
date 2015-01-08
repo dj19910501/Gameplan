@@ -120,7 +120,7 @@
                 formSubmitEvent(url, queryStringArr);
             });
             $('#lnkIntegrationSetting').on("click", function () {
-                var url = 'Url.Content("~/ExternalService/editIntegration/")';
+                var url = '@Url.Content("~/ExternalService/editIntegration/")';
                  var queryStringArr = [];
                  queryStringArr.push({
                      key: 'id',
