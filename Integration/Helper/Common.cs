@@ -452,10 +452,6 @@ namespace Integration.Helper
         {
             SmtpSection smtpSection = new SmtpSection();
             smtpSection = (SmtpSection)ConfigurationManager.GetSection("mailSettings/smtp_other");
-            if (smtpSection == null)
-            {
-                smtpSection = (SmtpSection)ConfigurationManager.GetSection("system.net/mailSettings/smtp");
-            }
             return smtpSection;
         }
         
