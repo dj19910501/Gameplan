@@ -15,6 +15,7 @@ using RevenuePlanner.Models;
 using Integration.Helper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Text;
 
 #endregion
 
@@ -66,8 +67,9 @@ namespace Integration.Eloqua
         /// <param name="IntegrationInstanceLogId">Integration Instance Log Id.</param>
         /// <param name="_applicationId">Application Id.</param>
         /// <param name="_entityType">Entity Type.</param>
-        public void SetTacticMQLs(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType)
+        public void SetTacticMQLs(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType, out StringBuilder _errorMailBody)
         {
+            _errorMailBody = new StringBuilder(string.Empty);
             //// Insert log into IntegrationInstanceSection
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), DateTime.Now, _userId);
 
@@ -98,6 +100,7 @@ namespace Integration.Eloqua
                     ////local variables declaration
                     string CampaignIdValue = string.Empty, MQLDateValue = string.Empty, ViewIdValue = string.Empty, ListIdValue = string.Empty;
                     int CampaignId = 0, MQLDateId = 0, ViewId = 0, ListId = 0;
+                    string CampaignIdDisplpayFieldName = string.Empty, MQlDateDisplpayFieldName = string.Empty;
 
                     //// Get Eloqua integration type Id.
                     string eloquaCode = Enums.IntegrationType.Eloqua.ToString();
@@ -106,6 +109,19 @@ namespace Integration.Eloqua
 
                     //// Get pull data type from table for specific integration id and MQL
                     var listPullDataType = db.GameplanDataTypePulls.Where(objGameplanDataTypepull => objGameplanDataTypepull.IntegrationTypeId == integrationTypeId && objGameplanDataTypepull.Type == Common.StageMQL).ToList();
+
+                    //// Start - Added by Sohel Pathan on 02/01/2015 for PL ticket #1068
+                    if (listPullDataType.Count == 0)
+                    {
+                        _errorMailBody.Append(DateTime.Now.ToString() + " - Data types for pull responses is not defined in DB.<br>");
+
+                    }
+                    else
+                    {
+                        CampaignIdDisplpayFieldName = listPullDataType.FirstOrDefault(pullDataType => pullDataType.ActualFieldName == Enums.CustomeFieldNameMQL.CampaignId.ToString()).DisplayFieldName;
+                        MQlDateDisplpayFieldName = listPullDataType.FirstOrDefault(pullDataType => pullDataType.ActualFieldName == Enums.CustomeFieldNameMQL.MQLDate.ToString()).DisplayFieldName;
+                    }
+                    //// End - Added by Sohel Pathan on 02/01/2015 for PL ticket #1068
 
                     //// Get data type pull id into local variables for MQL data type
                     CampaignId = listPullDataType.SingleOrDefault(pullDataType => pullDataType.ActualFieldName == Enums.CustomeFieldNameMQL.CampaignId.ToString()).GameplanDataTypePullId;
@@ -121,6 +137,28 @@ namespace Integration.Eloqua
                     MQLDateValue = listPullMapping.Where(pullMapping => pullMapping.GameplanDataTypePullId == MQLDateId).Select(pullMapping => pullMapping.TargetDataType).SingleOrDefault();
                     ViewIdValue = listPullMapping.Where(pullMapping => pullMapping.GameplanDataTypePullId == ViewId).Select(pullMapping => pullMapping.TargetDataType).SingleOrDefault();
                     ListIdValue = listPullMapping.Where(pullMapping => pullMapping.GameplanDataTypePullId == ListId).Select(pullMapping => pullMapping.TargetDataType).SingleOrDefault();
+
+                    //// Start - Added by Sohel Pathan on 02/01/2015 for PL ticket #1068
+                    if (listPullMapping.Count > 0)
+                    {
+                        if (CampaignIdValue.Equals(string.Empty))
+                        {
+                            _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + CampaignIdDisplpayFieldName + " not found<br>");
+                        }
+                        if (MQLDateValue.Equals(string.Empty))
+                        {
+                            _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + MQlDateDisplpayFieldName + " not found<br>");
+                        }
+                        if (ViewIdValue.Equals(string.Empty))
+                        {
+                            _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + listPullDataType.Where(dataType => dataType.ActualFieldName == Enums.CustomeFieldNameMQL.ViewId.ToString()).Select(dataType => dataType.DisplayFieldName).FirstOrDefault() + " not found<br>");
+                        }
+                        if (ListIdValue.Equals(string.Empty))
+                        {
+                            _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + listPullDataType.Where(dataType => dataType.ActualFieldName == Enums.CustomeFieldNameMQL.ListId.ToString()).Select(dataType => dataType.DisplayFieldName).FirstOrDefault() + " not found<br>");
+                        }
+                    }
+                    //// End - Added by Sohel Pathan on 02/01/2015 for PL ticket #1068
 
                     if (CampaignIdValue != null && MQLDateValue != null && ViewIdValue != null && ListIdValue != null)
                     {
@@ -147,29 +185,70 @@ namespace Integration.Eloqua
 
                             //// Manipulation of contact list response and store into model
                             string TacticResult = lstcontacts.Content.ToString();
-                            JObject joResponse = JObject.Parse(TacticResult);
-                            JArray elementsArray = (JArray)joResponse["elements"];
-
-                            for (int i = 0; i < elementsArray.Count(); i++)
+                            if (!string.IsNullOrEmpty(TacticResult))
                             {
-                                elements elementsInner = new elements();
-                                if (elementsArray[i][CampaignIdValue] != null)
-                                {
-                                    elementsInner.CampaignId = elementsArray[i][CampaignIdValue].ToString();
+                                JObject joResponse = JObject.Parse(TacticResult);
+                                JArray elementsArray = (JArray)joResponse["elements"];
 
-                                    if (elementsArray[i][MQLDateValue] != null)
+                                bool isAllCampaignIdExists = true;
+                                bool isAllMQLDateExists = true;
+
+                                for (int i = 0; i < elementsArray.Count(); i++)
+                                {
+                                    elements elementsInner = new elements();
+                                    if (elementsArray[i][CampaignIdValue] != null)
                                     {
-                                        if (elementsArray[i][MQLDateValue].ToString() != string.Empty && elementsArray[i][MQLDateValue] != null)
+                                        if (!string.IsNullOrEmpty(elementsArray[i][CampaignIdValue].ToString()))
                                         {
-                                            elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
+                                            elementsInner.CampaignId = elementsArray[i][CampaignIdValue].ToString();
                                         }
+                                        else
+                                        {
+                                            isAllCampaignIdExists = false;
+                                        }
+
+                                        if (elementsArray[i][MQLDateValue] != null)
+                                        {
+                                            if (elementsArray[i][MQLDateValue].ToString() != string.Empty && elementsArray[i][MQLDateValue] != null)
+                                            {
+                                                elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
+                                            }
+                                            else
+                                            {
+                                                isAllMQLDateExists = false;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            isAllMQLDateExists = false;
+                                        }
+
+                                        elementsInner.contactId = elementsArray[i]["contactId"].ToString();
+                                        elementsInner.type = elementsArray[i]["type"].ToString();
+                                        element.Add(elementsInner);
                                     }
 
-                                    elementsInner.contactId = elementsArray[i]["contactId"].ToString();
-                                    elementsInner.type = elementsArray[i]["type"].ToString();
-                                    element.Add(elementsInner);
+                                    if (elementsArray.Count > 0 && listPullMapping.Count > 0)
+                                    {
+                                        if (!isAllCampaignIdExists)
+                                        {
+                                            _errorMailBody.Append(DateTime.Now.ToString() + " - " + CampaignIdValue + " for one or many record(s) does not exists." + "<br>");
+                                        }
+                                        if (!isAllMQLDateExists)
+                                        {
+                                            _errorMailBody.Append(DateTime.Now.ToString() + " - " + MQLDateValue + " for one or many record(s) does not exists." + "<br>");
+                                        }
+                                    }
                                 }
                             }
+                            else
+                            {
+                                _errorMailBody.Append(DateTime.Now.ToString() + " - No contact data found in Eloqua contact object.<br>");
+                            }
+                        }
+                        else
+                        {
+                            _errorMailBody.Append(DateTime.Now.ToString() + " - Authorization for " + Enums.IntegrationType.Eloqua.ToString() + " has been failed." + "<br>");
                         }
 
                         //// get distinct campaign id for filter.
@@ -360,11 +439,13 @@ namespace Integration.Eloqua
                     }
                     else
                     {
+                        _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for pull mql is not found.<br>");
                         Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgMappingNotFoundForEloquaPullMQL);
                     }
                 }
                 catch (Exception e)
                 {
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - System error occured while pulling response from Eloqua.<br>");
                     string msg = e.Message;
                     // Update IntegrationInstanceSection log with Error status
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
@@ -383,8 +464,10 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="IntegrationInstanceId"></param>
         /// <returns></returns>
-        public void GetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId)
+        public void GetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, out StringBuilder _errorMailBody)
         {
+            _errorMailBody = new StringBuilder(string.Empty);
+
             // Insert log into IntegrationInstanceSection, Dharmraj PL#684
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
 
@@ -395,6 +478,7 @@ namespace Integration.Eloqua
                 var objIntegrationInstanceExternalServer = db.IntegrationInstanceExternalServers.FirstOrDefault(i => i.IntegrationInstanceId == IntegrationInstanceId);
                 if (objIntegrationInstanceExternalServer == null)
                 {
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - External server settings has not been configured.<br>");
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgExternalServerNotConfigured);
                     throw new Exception(Common.msgExternalServerNotConfigured);
@@ -431,6 +515,7 @@ namespace Integration.Eloqua
                 }
                 else
                 {
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - Eloqua response folder path does not exists.<br>");
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Format(Common.msgDirectoryNotFound, localDestpath));
                     throw new Exception(string.Format(Common.msgDirectoryNotFound, localDestpath));
@@ -450,6 +535,7 @@ namespace Integration.Eloqua
                     }
                     catch (Exception ex)
                     {
+                        _errorMailBody.Append(DateTime.Now.ToString() + " - An error occured while connecting to external server via SFTP.<br>");
                         throw new Exception(Common.msgNotConnectToExternalServer, ex.InnerException);
                     }
 
@@ -565,6 +651,7 @@ namespace Integration.Eloqua
                                     }
                                     else
                                     {
+                                        _errorMailBody.Append(DateTime.Now.ToString() + " - Required column(s) does not exist in eloqua response.<br>");
                                         throw new Exception(Common.msgRequiredColumnNotExistEloquaPullResponse);
                                     }
                                 }
@@ -589,7 +676,7 @@ namespace Integration.Eloqua
                                     }
                                     catch (Exception ex)
                                     {
-
+                                        _errorMailBody.Append(DateTime.Now.ToString() + " - An error occured while creating directory at external server.<br>");
                                     }
 
                                     // Upload processed local file to external server archived folder
@@ -615,6 +702,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception ex)
                 {
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - System error occured while processing tactic response from Eloqua.<br>");
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
                     throw ex;

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Data;
 using Integration.Eloqua;
 using Integration.Helper;
+using System.Text;
+using System.Threading;
 
 namespace Integration
 {
@@ -65,6 +67,7 @@ namespace Integration
         string _integrationType { get; set; }
         bool _isResultError { get; set; }
         Guid _applicationId { get; set; }
+        private StringBuilder _errorMailBody = new StringBuilder(string.Empty);
         MRPEntities db = new MRPEntities();
         /// <summary>
         /// Data Dictionary to hold tactic status values.
@@ -114,6 +117,8 @@ namespace Integration
             {
                 SyncInstance();
             }
+
+            SendSyncErrorEmail();
         }
 
         /// <summary>
@@ -223,6 +228,9 @@ namespace Integration
                     {
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
                         _isResultError = true;
+                        //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                        _errorMailBody.Append(DateTime.Now.ToString() + " - Authentication Failed :" + integrationSalesforceClient._ErrorMessage + "<br>");
+                        //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     }
                 }
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
@@ -230,12 +238,19 @@ namespace Integration
                     IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationEloquaClient.IsAuthenticated)
                     {
-                        _isResultError = integrationEloquaClient.SyncData();
+                        //// Start - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                        StringBuilder errorMailBodyEloquaClient = new StringBuilder(string.Empty);
+                        _isResultError = integrationEloquaClient.SyncData(out errorMailBodyEloquaClient);
+                        _errorMailBody.Append(errorMailBodyEloquaClient);
+                        //// End - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     }
                     else
                     {
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
                         _isResultError = true;
+                        //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                        _errorMailBody.Append(DateTime.Now.ToString() + " - Authentication Failed :" + integrationEloquaClient._ErrorMessage + "<br>");
+                        //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     }
                 }
 
@@ -257,6 +272,75 @@ namespace Integration
                 db.Entry(instanceLogStart).State = EntityState.Modified;
                 db.Entry(integrationInstance).State = EntityState.Modified;
                 db.SaveChanges();
+            }
+        }
+        
+        /// <summary>
+        /// Function to send an error email while IntegrationInstance sync of Eloqua
+        /// </summary>
+        private void SendSyncErrorEmail()
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(_errorMailBody.ToString()))
+                {
+                    //// Retrieve mail template from db.
+                    MRPEntities db = new MRPEntities();
+                    string SyncIntegrationError = Enums.Custom_Notification.SyncIntegrationError.ToString();
+                    Notification objNotification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(SyncIntegrationError));
+
+                    if (objNotification != null)
+                    {
+                        //// get userdetails of the logged in user
+                        List<BDSService.User> UsersDetails = new List<BDSService.User>();
+                        try
+                        {
+                            BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                            UsersDetails = objBDSUserRepository.GetMultipleTeamMemberName(_userId.ToString());
+                        }
+                        catch
+                        {
+                            //// Service related exception
+                            return;
+                        }
+                        
+                        //// Replace mail template tags with corresponding data
+                        string emailBody = string.Empty;
+                        emailBody = objNotification.EmailContent;
+                        if (UsersDetails.Count > 0)
+                        {
+                            string UserName = UsersDetails.Select(user => user.FirstName + " " + user.LastName).FirstOrDefault();
+                            emailBody = emailBody.Replace("[NameToBeReplaced]", UserName);
+                        }
+                        emailBody = emailBody.Replace("[ErrorBody]", _errorMailBody.ToString().TrimEnd("<br>".ToCharArray()));
+
+                        emailBody = "This is a test email. Please ignore it.<br><br>" + emailBody;
+
+                        //// Get list email ids to whom email to be sent
+                        string errorMailTo = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationErrorMailTo");
+                        if (!string.IsNullOrEmpty(errorMailTo))
+                        {
+                            string fromMail = System.Configuration.ConfigurationManager.AppSettings.Get("FromMail");
+                            if (!string.IsNullOrEmpty(fromMail))
+                            {
+                                //// Send mail to multiple users
+                                string[] lstEmailTo = errorMailTo.Split(';');
+                                for (int emailId = 0; emailId < lstEmailTo.Length; emailId++)
+                                {
+                                    string toEmail = lstEmailTo.ElementAt(emailId);
+                                    ThreadStart threadStart = delegate() { Common.SendMail(toEmail.Trim(), fromMail, emailBody, objNotification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
+                                    Thread thread = new Thread(threadStart);
+                                    thread.Start();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                //// Mail sending exception
+                return;
             }
         }
 

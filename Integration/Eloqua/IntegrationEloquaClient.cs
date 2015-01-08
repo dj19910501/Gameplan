@@ -14,6 +14,7 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Transactions;
 
 #endregion
@@ -59,6 +60,7 @@ namespace Integration.Eloqua
         private bool _CustomNamingPermissionForInstance = false;
         private bool IsClientAllowedForCustomNaming = false;
         private Guid _applicationId = Guid.Empty;
+        private StringBuilder _errorMailBody = new StringBuilder(string.Empty);
         //private List<BDSService.ClientApplicationActivity> _clientActivityList { get; set; }
         //End - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
 
@@ -225,8 +227,10 @@ namespace Integration.Eloqua
         /// Function to sync data from gameplan to eloqua.
         /// </summary>
         /// <returns>returns flag for sync status</returns>
-        public bool SyncData()
+        public bool SyncData(out StringBuilder errorMailBody)
         {
+            errorMailBody = new StringBuilder(string.Empty);    //// Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+
             // Insert log into IntegrationInstanceSection, Dharmraj PL#684
             _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
             _isResultError = false;
@@ -284,6 +288,8 @@ namespace Integration.Eloqua
                 }
             }
 
+            errorMailBody.Append(_errorMailBody);
+            
             return _isResultError;
         }
 
@@ -563,6 +569,7 @@ namespace Integration.Eloqua
             }
             catch (Exception e)
             {
+                _errorMailBody.Append(DateTime.Now.ToString() + " - System error occured while syncing data with Eloqua.<br>");
                 _ErrorMessage = GetErrorMessage(e);
             }
         }
@@ -573,10 +580,13 @@ namespace Integration.Eloqua
             try
             {
                 EloquaResponse objEloquaResponse = new EloquaResponse();
-                objEloquaResponse.GetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId);
+                StringBuilder errorMailBodyEloquaResponse = new StringBuilder(string.Empty);
+                objEloquaResponse.GetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId, out errorMailBodyEloquaResponse);
+                _errorMailBody.Append(errorMailBodyEloquaResponse);
             }
             catch (Exception ex)
             {
+                _errorMailBody.Append(DateTime.Now.ToString() + " - System error occured while pulling response from Eloqua.<br>");
                 _ErrorMessage = GetErrorMessage(ex);
                 _isResultError = true;
             }
@@ -606,6 +616,9 @@ namespace Integration.Eloqua
             }
             else
             {
+                //// Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
+                _errorMailBody.Append(DateTime.Now.ToString() + " - Eloqua exception occured while creating campaign at Eloqua for tactic : \"" + tactic["Title"] + "\".<br>");
+                //// End - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
                 throw new Exception(response.StatusCode.ToString(), response.ErrorException);
             }
 
@@ -658,6 +671,9 @@ namespace Integration.Eloqua
             }
             else
             {
+                //// Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
+                _errorMailBody.Append(DateTime.Now.ToString() + " - Eloqua exception occured while updating campaign at Eloqua for tactic : \"" + tactic["Title"] + "\".<br>");
+                //// End - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
                 throw new Exception(string.Format("[{0}] [{1}]", response.StatusCode.ToString(), response.StatusDescription), response.ErrorException);
             }
         }
@@ -692,6 +708,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - Eloqua Exception occured while syncing improvement tactic \"" + planIMPTactic.Title + "\".<br>");
                     if (e.Message.Contains(NotFound))
                     {
                         planIMPTactic.IntegrationInstanceTacticId = null;
@@ -739,6 +756,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - Eloqua Exception occured while syncing improvement tactic \"" + planIMPTactic.Title + "\".<br>");
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                     instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                 }
@@ -774,6 +792,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - Eloqua Exception occured while syncing improvement tactic \"" + planIMPTactic.Title + "\".<br>");
                     if (e.Message.Contains(NotFound))// || e.Message.Contains(InternalServerError))
                     {
                         planIMPTactic.IntegrationInstanceTacticId = null;
@@ -818,6 +837,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - Eloqua Exception occured while syncing improvement tactic \"" + planIMPTactic.Title + "\".<br>");
                     if (e.Message.Contains(NotFound))
                     {
                         planIMPTactic.IntegrationInstanceTacticId = null;
@@ -962,6 +982,9 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - Systerm error occured while syncing tactic \"" + planTactic.Title + "\".<br>");
+                    //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     if (e.Message.Contains(NotFound))
                     {
                         planTactic.IntegrationInstanceTacticId = null;
@@ -1009,6 +1032,9 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - System error occured while syncing tactic \"" + planTactic.Title + "\".<br>");
+                    //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                     instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                 }
@@ -1043,6 +1069,9 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - Systerm error occured while syncing tactic \"" + planTactic.Title + "\".<br>");
+                    //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     if (e.Message.Contains(NotFound))
                     {
                         planTactic.IntegrationInstanceTacticId = null;
@@ -1087,6 +1116,9 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                    _errorMailBody.Append(DateTime.Now.ToString() + " - System error occured while syncing tactic \"" + planTactic.Title + "\".<br>");
+                    //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     if (e.Message.Contains(NotFound))
                     {
                         planTactic.IntegrationInstanceTacticId = null;
@@ -1241,6 +1273,9 @@ namespace Integration.Eloqua
                         }
                         else
                         {
+                            //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                            _errorMailBody.Append(DateTime.Now.ToString() + " - " + parentFolderId + " folder does not exists for tactic: " + planTactic.Title + "<br>");
+                            //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                             return folderId = 0;
                         }
                     }
@@ -1253,10 +1288,20 @@ namespace Integration.Eloqua
                     }
                     else
                     {
+                        //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                        _errorMailBody.Append(DateTime.Now.ToString() + " - Folder path has been not specified for tactic : " + planTactic.Title + "<br>");
+                        //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+
                         //// default value return.
                         return 0;
                     }
                 }
+            }
+            else
+            {
+                //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                _errorMailBody.Append(DateTime.Now.ToString() + " - Folder path has been not specified for tactic : " + planTactic.Title + "<br>");
+                //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
             }
 
             return folderId;
@@ -1339,6 +1384,7 @@ namespace Integration.Eloqua
                         }
                         else
                         {
+                            _errorMailBody.Append(DateTime.Now.ToString() + " - " + parentFolderId + " folder does not exists for improvement tactic: " + planIMPTactic.Title + "<br>");
                             return folderId = 0;
                         }
                     }
@@ -1351,10 +1397,15 @@ namespace Integration.Eloqua
                     }
                     else
                     {
+                        _errorMailBody.Append(DateTime.Now.ToString() + " - Folder path has been not specified for improvement tactic : " + planIMPTactic.Title + "<br>");
                         //// default value return.
                         return 0;
                     }
                 }
+            }
+            else
+            {
+                _errorMailBody.Append(DateTime.Now.ToString() + " - Folder path has been not specified for improvement tactic : " + planIMPTactic.Title + "<br>");
             }
 
             return folderId;
@@ -1461,6 +1512,9 @@ namespace Integration.Eloqua
             }
             else
             {
+                //// Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
+                _errorMailBody.Append(DateTime.Now.ToString() + " - Eloqua exception occured while deleting campaign at Eloqua for tactic Id : \"" + id + "\".<br>");
+                //// End - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
                 throw new Exception(string.Format("[{0}] [{1}]", response.StatusCode.ToString(), response.StatusDescription), response.ErrorException);
             }
         }
@@ -1731,6 +1785,7 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
+                _errorMailBody.Append(DateTime.Now.ToString() + " - An error ocured while authenticating with Eloqua.<br>");
                 _isResultError = true;
                 _ErrorMessage = GetErrorMessage(ex);
                 _isAuthenticated = false;
@@ -1799,10 +1854,13 @@ namespace Integration.Eloqua
             try
             {
                 EloquaResponse objEloquaResponse = new EloquaResponse();
-                objEloquaResponse.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType);
+                StringBuilder errorMailBodyEloquaResponse = new StringBuilder(string.Empty);
+                objEloquaResponse.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType, out errorMailBodyEloquaResponse);
+                _errorMailBody.Append(errorMailBodyEloquaResponse);
             }
             catch (Exception ex)
             {
+                _errorMailBody.Append(DateTime.Now.ToString() + " - System error occured while pulling response from Eloqua.<br>");
                 _ErrorMessage = GetErrorMessage(ex);
                 _isResultError = true;
             }
@@ -1856,7 +1914,7 @@ namespace Integration.Eloqua
             }
             catch (Exception)
             {
-
+                _errorMailBody.Append(DateTime.Now.ToString() + " - An error occured while getting contact list from Eloqua.<br>");
                 throw;
             }
         }
@@ -1886,7 +1944,7 @@ namespace Integration.Eloqua
             }
             catch (Exception)
             {
-
+                _errorMailBody.Append(DateTime.Now.ToString() + " - An error occured while updating contact at Eloqua.<br>");
                 throw;
             }
         }

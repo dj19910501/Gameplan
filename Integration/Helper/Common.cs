@@ -8,6 +8,11 @@ using System.Security.Cryptography;
 using System.Text;
 using RevenuePlanner.Models;
 using System.Text.RegularExpressions;
+using System.Net.Mail;
+using System.Web;
+using System.Net.Configuration;
+using System.Configuration;
+using System.Net;
 
 namespace Integration.Helper
 {
@@ -384,6 +389,76 @@ namespace Integration.Helper
             return returnString;
         }
 
+        #endregion
+
+        #region Send Email
+
+        /// <summary>
+        /// Function to send email
+        /// </summary>
+        /// <param name="emailid">email id of receiver</param>
+        /// <param name="fromemailid">email id of sender</param>
+        /// <param name="strMsg">email content</param>
+        /// <param name="Subject">email subject</param>
+        /// <param name="Priority">email priority to be sent</param>
+        /// <param name="CustomAlias">alias name of sender</param>
+        /// <param name="isSupportMail">flag to specify support mail</param>
+        public static void SendMail(string emailidlist, string fromemailid, string strMsg, string Subject, string Priority)
+        {
+            MailMessage objEmail = new MailMessage();
+            try
+            {
+                string FromAlias = System.Configuration.ConfigurationManager.AppSettings.Get("FromAlias");
+                objEmail.From = new MailAddress(fromemailid);
+                //// Add alias
+                if (!string.IsNullOrEmpty(FromAlias))
+                {
+                    objEmail.From = new MailAddress(fromemailid, FromAlias);
+                }
+
+                objEmail.To.Add(new MailAddress(emailidlist));
+                objEmail.Subject = HttpUtility.HtmlDecode(Subject);
+                objEmail.Body = strMsg;
+                objEmail.IsBodyHtml = true;
+                objEmail.Priority = MailPriority.Normal;
+
+                //// Get appropriate SmtpSection for mail sending
+                SmtpSection smtpSection = GetSmtpSection();
+                if (smtpSection != null)
+                {
+                    SmtpClient smtpClient = new SmtpClient(smtpSection.Network.Host, smtpSection.Network.Port);
+                    smtpClient.Credentials = new NetworkCredential(smtpSection.Network.UserName, smtpSection.Network.Password);
+                    smtpClient.EnableSsl = smtpSection.Network.EnableSsl;
+                    smtpClient.Send(objEmail);
+                }
+            }
+            catch
+            {
+                //// Error log when exception occurs in email sending
+                return;
+            }
+            finally
+            {
+                objEmail.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// To get appropriate SmtpSection for mail sending
+        /// </summary>
+        /// <param name="isSupportMail"></param>
+        /// <returns>SmtpSection</returns>
+        public static SmtpSection GetSmtpSection()
+        {
+            SmtpSection smtpSection = new SmtpSection();
+            smtpSection = (SmtpSection)ConfigurationManager.GetSection("mailSettings/smtp_other");
+            if (smtpSection == null)
+            {
+                smtpSection = (SmtpSection)ConfigurationManager.GetSection("system.net/mailSettings/smtp");
+            }
+            return smtpSection;
+        }
+        
         #endregion
     }
 
