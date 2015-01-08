@@ -141,19 +141,19 @@ namespace Integration.Eloqua
                     //// Start - Added by Sohel Pathan on 02/01/2015 for PL ticket #1068
                     if (listPullMapping.Count > 0)
                     {
-                        if (CampaignIdValue.Equals(string.Empty))
+                        if (string.IsNullOrEmpty(CampaignIdValue))
                         {
                             _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + CampaignIdDisplpayFieldName + " not found<br>");
                         }
-                        if (MQLDateValue.Equals(string.Empty))
+                        if (string.IsNullOrEmpty(MQLDateValue))
                         {
                             _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + MQlDateDisplpayFieldName + " not found<br>");
                         }
-                        if (ViewIdValue.Equals(string.Empty))
+                        if (string.IsNullOrEmpty(ViewIdValue))
                         {
                             _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + listPullDataType.Where(dataType => dataType.ActualFieldName == Enums.CustomeFieldNameMQL.ViewId.ToString()).Select(dataType => dataType.DisplayFieldName).FirstOrDefault() + " not found<br>");
                         }
-                        if (ListIdValue.Equals(string.Empty))
+                        if (string.IsNullOrEmpty(ListIdValue))
                         {
                             _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + listPullDataType.Where(dataType => dataType.ActualFieldName == Enums.CustomeFieldNameMQL.ListId.ToString()).Select(dataType => dataType.DisplayFieldName).FirstOrDefault() + " not found<br>");
                         }
