@@ -313,9 +313,7 @@ namespace Integration
                             emailBody = emailBody.Replace("[NameToBeReplaced]", UserName);
                         }
                         emailBody = emailBody.Replace("[ErrorBody]", _errorMailBody.ToString().TrimEnd("<br>".ToCharArray()));
-
-                        emailBody = "This is a test email. Please ignore it.<br><br>" + emailBody;
-
+                                                
                         //// Get list email ids to whom email to be sent
                         string errorMailTo = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationErrorMailTo");
                         if (!string.IsNullOrEmpty(errorMailTo))
