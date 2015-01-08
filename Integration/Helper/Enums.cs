@@ -117,5 +117,15 @@ namespace Integration.Helper
             CustomCampaignNameConvention
         }
         #endregion
+
+        /// <summary>
+        /// Added By: Sohel Pathan
+        /// Date: 02/01/2015
+        /// Enum for custom notification.
+        /// </summary>
+        public enum Custom_Notification
+        {
+            SyncIntegrationError
+        }
     }
 }

@@ -16,6 +16,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using RestSharp;
+using System.Text;
 
 #endregion
 
@@ -316,8 +317,8 @@ namespace RevenuePlanner.Test.Integration
         public void Set_Tactic_Response()
         {
             EloquaResponse controller = new EloquaResponse();
-
-            controller.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType);
+            StringBuilder strOutParam = new StringBuilder(string.Empty);
+            controller.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType, out strOutParam);
 
             // Assert.Equals(null, result);
         }
