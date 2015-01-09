@@ -464,6 +464,7 @@ namespace Integration.Helper
         public string EloquaId { get; set; }
         public int PlanTacticId { get; set; }
         public DateTime? StartDate { get; set; }
+        public string ShortCRMId { get; set; }
     }
 
     public class EloquaIntegrationInstanceTactic_Model_Mapping

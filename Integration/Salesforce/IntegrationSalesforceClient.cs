@@ -365,7 +365,12 @@ namespace Integration.Salesforce
                                 int _PlanTacticId = 0;
                                 try
                                 {
-                                    objCampaign.CampaignId = Convert.ToString(jobj[CampaignId]);
+                                    string campaignid = Convert.ToString(jobj[CampaignId]);
+                                    if (!AllIntegrationTacticIds.Contains(campaignid))
+                                    {
+                                        campaignid = campaignid.Substring(0, 15);
+                                    }
+                                    objCampaign.CampaignId = campaignid;
                                     objCampaign.FirstRespondedDate = Convert.ToDateTime(jobj[FirstRespondedDate]);
                                 }
                                 catch (SalesforceException e)
@@ -633,7 +638,12 @@ namespace Integration.Salesforce
 
                                 try
                                 {
-                                    objOpp.CampaignId = Convert.ToString(jobj[CampaignId]);
+                                    string campaignid = Convert.ToString(jobj[CampaignId]);
+                                    if (!AllIntegrationTacticIds.Contains(campaignid))
+                                    {
+                                        campaignid = campaignid.Substring(0, 15);
+                                    }
+                                    objOpp.CampaignId = campaignid;
                                     objOpp.CloseDate = Convert.ToDateTime(jobj[CloseDate]);
                                     objOpp.Amount = Convert.ToDouble(jobj[Amount]);
                                 }
