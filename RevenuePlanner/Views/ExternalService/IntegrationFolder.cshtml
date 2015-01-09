@@ -52,7 +52,7 @@
                 @if (ViewBag.Year.Count > 0)
                 {
                 <div style="margin-bottom: 10px;">
-                    @Html.Label("Fiscal Year:", new { id = "lblUpcoming_Activies", style = "font-size:14px;" })
+                    @Html.Label("Time Frame:", new { id = "lblUpcoming_Activies", style = "font-size:14px;" })
                     <span class="selectBox" id="ddlUpComingActivitesSelectBox" style="width: 70px;font-size:14px;">
                         @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.Year, DateTime.Now.Year.ToString()), new { @class = "hide" })
                     </span>
