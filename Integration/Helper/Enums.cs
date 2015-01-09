@@ -127,5 +127,15 @@ namespace Integration.Helper
         {
             SyncIntegrationError
         }
+
+        /// <summary>
+        /// PermissionCode MQL for Client_Integration_Permission table
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>09/01/2015</CreatedDate>
+        public enum ClientIntegrationPermissionCode
+        {
+            MQL
+        }
     }
 }

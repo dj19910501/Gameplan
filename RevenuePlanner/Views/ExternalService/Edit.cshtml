@@ -10,6 +10,7 @@
 @Html.Hidden("InActiveConfirmationMsg", TempData["InActiveConfirmationMsg"])
 
 @{
+    bool IsMQLShow = false;
     ViewBag.Title = "Edit External Service Integrations";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -18,6 +19,7 @@
     ViewBag.IntegrationInstanceId = Model.IntegrationInstanceId;
     ViewBag.IntegrationTypeId = Model.IntegrationTypeId;
     ViewBag.IntegrationTypeCode = Model.IntegrationType.Code.ToString();
+    IsMQLShow = ViewBag.IsMQLShow != null ? ViewBag.IsMQLShow : false;
 }
 
 @section Sidebar {
@@ -42,7 +44,7 @@
 @* End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716. *@
 <ul class="nav nav-tabs margin-bottom0">
     <li class="source-sans-proregular">
-        <h2 class="title-header"> @( Model.IntegrationInstanceId == 0 ? "Create" : "Edit") External Service Integrations</h2>
+        <h2 class="title-header">@( Model.IntegrationInstanceId == 0 ? "Create" : "Edit") External Service Integrations</h2>
     </li>
 </ul>
 
@@ -59,42 +61,45 @@
                 @if (Model.IntegrationInstanceId > 0)
                 { 
                     @Html.Partial("~/Views/ExternalService/_DataMapping.cshtml", Model.GameplanDataTypeModelList)
-                    @* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
-                    if(Model.IntegrationType.Code==Enums.IntegrationType.Eloqua.ToString())
+@* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
+                    if (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString())
                     {
-                        @Html.Partial("~/Views/ExternalService/_ExternalServer.cshtml", Model.ExternalServer)
-                        @Html.Partial("~/Views/ExternalService/_PullEloquaMQL.cshtml", Model.GameplanDataTypePullMQLModelList)
-                    }
-                    else if(Model.IntegrationType.Code==Enums.IntegrationType.Salesforce.ToString())
+                    @Html.Partial("~/Views/ExternalService/_ExternalServer.cshtml", Model.ExternalServer)
+                    if (IsMQLShow)
                     {
-                        @Html.Partial("~/Views/ExternalService/_Responses.cshtml", Model.GameplanDataTypePullRevenueModelList)
+                     @Html.Partial("~/Views/ExternalService/_PullEloquaMQL.cshtml", Model.GameplanDataTypePullMQLModelList)
                     }
-                    @* Added by Dharmraj on 06/08/2014 for PL ticket #658*@
+                    }
+                    else if (Model.IntegrationType.Code == Enums.IntegrationType.Salesforce.ToString())
+                    {
+                    @Html.Partial("~/Views/ExternalService/_Responses.cshtml", Model.GameplanDataTypePullRevenueModelList)
+                    }
+@* Added by Dharmraj on 06/08/2014 for PL ticket #658*@
                     @Html.Partial("~/Views/ExternalService/_ClosedDeals.cshtml", Model.GameplanDataTypePullModelList)
                 }
                 else
                 {
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <div class="accordion-toggle CreateMode" >Push Tactic Data</div>
+                            <div class="accordion-toggle CreateMode">Push Tactic Data</div>
                         </div>
                     </div>
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle CreateMode" data-parent="#accordion" style="position:static;" >Pull Responses</a>
+                            <a class="accordion-toggle CreateMode" data-parent="#accordion" style="position: static;">Pull Responses</a>
                         </div>
                     </div>
-                    if(Model.IntegrationType.Code==Enums.IntegrationType.Eloqua.ToString())
+                    if (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString())
                     {
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle CreateMode" data-parent="#accordion" >Pull MQL</a>
-                            </div>
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle CreateMode" data-parent="#accordion">Pull MQL</a>
                         </div>
+                    </div>
                     }
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle CreateMode no-bottom-border" data-parent="#accordion" >Pull Closed Deals</a>
+                            <a class="accordion-toggle CreateMode no-bottom-border" data-parent="#accordion">Pull Closed Deals</a>
                         </div>
                     </div>
                 }
@@ -380,23 +385,22 @@
         clearAllMessages();
     });
 
-    function clearAllMessages()
-    {
+    function clearAllMessages() {
         $('#integrationForm').find("#cSuccessGeneralSettings").html('');
         $('#integrationForm').find("#successMessageGeneralSettings").hide();
         $('#integrationForm').find('#cErrorGeneralSettings').html('');
         $('#integrationForm').find("#errorMessageGeneralSettings").hide();
-        
+
         $("#frmDataMapping").find('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
         $("#frmDataMapping").find("#DataMappingSuccessMessage").hide();
         $("#frmDataMapping").find('#DataMappingErrorMessage').find('#spanMessageError').html('');
         $("#frmDataMapping").find("#DataMappingErrorMessage").hide();
-        
+
         $('#extServer').find("#sucExtSrv").hide();
         $('#extServer').find('#cSucExtSrv').html('');
         $('#extServer').find("#errExtSrv").hide();
         $('#extServer').find('#cErrExtSrv').html('');
-        
+
         $("#frmRevenueDataMapping").find('#RevenueSuccessMessage').find('#spanMessageSuccess').html('');
         $("#frmRevenueDataMapping").find("#RevenueSuccessMessage").hide();
         $("#frmRevenueDataMapping").find('#RevenueErrorMessage').find('#spanMessageError').html('');
@@ -406,7 +410,7 @@
         $("#frmClosedDealDataMapping").find("#ClosedDealErrorMessage").hide();
         $("#frmClosedDealDataMapping").find('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
         $("#frmClosedDealDataMapping").find("#ClosedDealSuccessMessage").hide();
-        
+
         $("#frmMQLDataMapping").find('#MQLErrorMessage').find('#spanMessageError').html('');
         $("#frmMQLDataMapping").find("#MQLErrorMessage").hide();
         $("#frmMQLDataMapping").find('#MQLSuccessMessage').find('#spanMessageSuccess').html('');

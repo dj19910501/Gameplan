@@ -280,10 +280,14 @@ namespace Integration.Eloqua
                 //// Check isimport flag.
                 if (isImport)
                 {
+                    string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
+                    int IntegrationTypeId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IntegrationTypeId;
                     //// Pulling actual cost.
                     //PullingActualCost();  // Commented by Sohel Pathan on 11/09/2014 for PL ticket #773
                     //// Pull responses from Eloqua
                     GetDataForTacticandUpdate();
+
+                    if (db.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(_clientId)) && (intPermission.IntegrationTypeId.Equals(IntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
                     GetDataPullEloqua();
                 }
             }

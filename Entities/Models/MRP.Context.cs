@@ -92,5 +92,6 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
         public DbSet<CampaignNameConvention> CampaignNameConventions { get; set; }
         public DbSet<Client_Activity> Client_Activity { get; set; }
+        public DbSet<Client_Integration_Permission> Client_Integration_Permission { get; set; }
     }
 }

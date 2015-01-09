@@ -12,6 +12,7 @@
           <EntitySet Name="CampaignNameConvention" EntityType="MRPModel.Store.CampaignNameConvention" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ChangeLog" EntityType="MRPModel.Store.ChangeLog" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Client_Activity" EntityType="MRPModel.Store.Client_Activity" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Client_Integration_Permission" EntityType="MRPModel.Store.Client_Integration_Permission" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ClientTacticType" EntityType="MRPModel.Store.ClientTacticType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomField" EntityType="MRPModel.Store.CustomField" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomField_Entity" EntityType="MRPModel.Store.CustomField_Entity" store:Type="Tables" Schema="dbo" />
@@ -96,6 +97,10 @@
           <AssociationSet Name="FK_CampaignNameConvention_CustomField" Association="MRPModel.Store.FK_CampaignNameConvention_CustomField">
             <End Role="CustomField" EntitySet="CustomField" />
             <End Role="CampaignNameConvention" EntitySet="CampaignNameConvention" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Client_Integration_Permission_IntegrationType" Association="MRPModel.Store.FK_Client_Integration_Permission_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationType" />
+            <End Role="Client_Integration_Permission" EntitySet="Client_Integration_Permission" />
           </AssociationSet>
           <AssociationSet Name="FK_CustomField_CustomFieldType" Association="MRPModel.Store.FK_CustomField_CustomFieldType">
             <End Role="CustomFieldType" EntitySet="CustomFieldType" />
@@ -505,6 +510,17 @@
           <Property Name="ApplicationActivityId" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Client_Integration_Permission">
+          <Key>
+            <PropertyRef Name="ClientIntegrationPermissionId" />
+          </Key>
+          <Property Name="ClientIntegrationPermissionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IntegrationTypeId" Type="int" Nullable="false" />
+          <Property Name="PermissionCode" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="CreatedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="ClientTacticType">
           <Key>
@@ -1487,6 +1503,18 @@
             </Principal>
             <Dependent Role="CampaignNameConvention">
               <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Client_Integration_Permission_IntegrationType">
+          <End Role="IntegrationType" Type="MRPModel.Store.IntegrationType" Multiplicity="1" />
+          <End Role="Client_Integration_Permission" Type="MRPModel.Store.Client_Integration_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="Client_Integration_Permission">
+              <PropertyRef Name="IntegrationTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2866,6 +2894,11 @@
             <End Role="CampaignNameConvention" EntitySet="CampaignNameConventions" />
           </AssociationSet>
           <EntitySet Name="Client_Activity" EntityType="MRPModel.Client_Activity" />
+          <EntitySet Name="Client_Integration_Permission" EntityType="MRPModel.Client_Integration_Permission" />
+          <AssociationSet Name="FK_Client_Integration_Permission_IntegrationType" Association="MRPModel.FK_Client_Integration_Permission_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
+            <End Role="Client_Integration_Permission" EntitySet="Client_Integration_Permission" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -4851,6 +4884,7 @@
           <NavigationProperty Name="IntegrationInstances" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationType" ToRole="IntegrationInstance" />
           <NavigationProperty Name="IntegrationTypeAttributes" Relationship="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" FromRole="IntegrationType" ToRole="IntegrationTypeAttribute" />
           <NavigationProperty Name="GameplanDataTypes" Relationship="MRPModel.FK_GameplanDataType_IntegrationType" FromRole="IntegrationType" ToRole="GameplanDataType" />
+          <NavigationProperty Name="Client_Integration_Permission" Relationship="MRPModel.FK_Client_Integration_Permission_IntegrationType" FromRole="IntegrationType" ToRole="Client_Integration_Permission" />
         </EntityType>
         <Association Name="FK_GameplanDataTypePull_IntegrationType">
           <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
@@ -5071,6 +5105,30 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
         </EntityType>
+        <EntityType Name="Client_Integration_Permission">
+          <Key>
+            <PropertyRef Name="ClientIntegrationPermissionId" />
+          </Key>
+          <Property Type="Int32" Name="ClientIntegrationPermissionId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="ClientId" Nullable="false" />
+          <Property Type="Int32" Name="IntegrationTypeId" Nullable="false" />
+          <Property Type="String" Name="PermissionCode" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="Guid" Name="CreatedBy" />
+          <Property Type="DateTime" Name="CreatedDate" Precision="3" />
+          <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_Client_Integration_Permission_IntegrationType" FromRole="Client_Integration_Permission" ToRole="IntegrationType" />
+        </EntityType>
+        <Association Name="FK_Client_Integration_Permission_IntegrationType">
+          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
+          <End Type="MRPModel.Client_Integration_Permission" Role="Client_Integration_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="Client_Integration_Permission">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6133,6 +6191,18 @@
                 <ScalarProperty Name="ApplicationActivityId" ColumnName="ApplicationActivityId" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="ClientActivityId" ColumnName="ClientActivityId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Client_Integration_Permission">
+            <EntityTypeMapping TypeName="MRPModel.Client_Integration_Permission">
+              <MappingFragment StoreEntitySet="Client_Integration_Permission">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="PermissionCode" ColumnName="PermissionCode" />
+                <ScalarProperty Name="IntegrationTypeId" ColumnName="IntegrationTypeId" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="ClientIntegrationPermissionId" ColumnName="ClientIntegrationPermissionId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

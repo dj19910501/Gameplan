@@ -618,7 +618,9 @@ namespace RevenuePlanner.Controllers
             int IntegrationTypeId = 0;
             var record = (dynamic)null;
             IntegrationModel objView = new IntegrationModel();
-
+            Guid clientId = Sessions.User.ClientId;
+            string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
+            bool IsMQLShow = false;
             if (id == 0)
             {
                 objView.IntegrationTypeAttributes = GetIntegrationTypeAttributesModelById(TypeId);
@@ -682,6 +684,10 @@ namespace RevenuePlanner.Controllers
                 objView.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
             }
 
+            //// Check  whether MQL permission exist or not for this clientID. If record exist then Display MQL tab or not.
+            if (db.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(IntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
+                IsMQLShow = true;
+
             //// Add IntegrationType data to List.
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
             var integrationTypeObj = GetIntegrationTypeById(IntegrationTypeId);
@@ -691,6 +697,9 @@ namespace RevenuePlanner.Controllers
 
             objView.IntegrationTypeId = IntegrationTypeId;
             ViewBag.integrationTypeId = IntegrationTypeId;
+
+            //// Flag to check whether MQL field show or not at Edit or View mode based on clientID.
+            ViewBag.IsMQLShow = IsMQLShow;              
 
             populateSyncFreqData();
             if (id > 0)
