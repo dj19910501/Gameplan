@@ -327,17 +327,27 @@ namespace Integration.Eloqua
                                 objIntegrationInstanceTacticId = objTactic.IntegrationInstanceTacticId;
 
                             //// filter list based on period for tactic start and end date.
-                            List<elements> lstTacticResponse = element.Where(Objelement => Objelement.CampaignId == objIntegrationInstanceTacticId && Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
+                            List<elements> lstTacticContacts = element.Where(Objelement => Objelement.CampaignId == objIntegrationInstanceTacticId && Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
 
-                            foreach (var item in lstTacticResponse)
+                            contactIds = contactIds + "," + string.Join(",", lstTacticContacts.Select(t => t.contactId).Distinct().ToList());
+
+                            Dictionary<string, int> tempYearMonthDictionary = new Dictionary<string, int>();
+
+                            var lstYearMonth = lstTacticContacts.Select(t => t.peroid.Month).Distinct().ToList();
+
+                            foreach (var item in lstYearMonth)
                             {
-                                string tmpPeriod = "Y" + item.peroid.Month.ToString();
+                                string tmpPeriod = "Y" + item;
+                                tempYearMonthDictionary.Add(tmpPeriod, lstTacticContacts.Where(t => t.peroid.Month == item).ToList().Count());
+                            }
 
-                                var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == tmpPeriod && tacticActual.StageTitle == Common.MQLStageValue);
+                            foreach (var item in tempYearMonthDictionary)
+                            {
+                                var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.MQLStageValue);
 
                                 if (objTacticActual != null)
                                 {
-                                    objTacticActual.Actualvalue = objTacticActual.Actualvalue + 1;
+                                    objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.Value;
                                     objTacticActual.ModifiedDate = DateTime.Now;
                                     objTacticActual.ModifiedBy = _userId;
                                     db.Entry(objTacticActual).State = EntityState.Modified;
@@ -345,9 +355,9 @@ namespace Integration.Eloqua
                                 else
                                 {
                                     Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                    actualTactic.Actualvalue = 1;
+                                    actualTactic.Actualvalue = item.Value;
                                     actualTactic.PlanTacticId = objTactic.PlanTacticId;
-                                    actualTactic.Period = "Y" + item.peroid.Month;
+                                    actualTactic.Period = item.Key;
                                     actualTactic.StageTitle = Common.MQLStageValue;
                                     actualTactic.CreatedDate = DateTime.Now;
                                     actualTactic.CreatedBy = _userId;
@@ -358,11 +368,11 @@ namespace Integration.Eloqua
                                 if (objTactic.Stage.Code.ToLower() == Common.StageMQL.ToLower())
                                 {
                                     //// MQL type data so update/create projected stage value and MQL value in actual table
-                                    var innerTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == tmpPeriod && tacticActual.StageTitle == Common.StageProjectedStageValue);
+                                    var innerTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.StageProjectedStageValue);
 
                                     if (innerTacticActual != null)
                                     {
-                                        innerTacticActual.Actualvalue = innerTacticActual.Actualvalue + 1;
+                                        innerTacticActual.Actualvalue = innerTacticActual.Actualvalue + item.Value;
                                         innerTacticActual.ModifiedDate = DateTime.Now;
                                         innerTacticActual.ModifiedBy = _userId;
                                         db.Entry(innerTacticActual).State = EntityState.Modified;
@@ -370,18 +380,16 @@ namespace Integration.Eloqua
                                     else
                                     {
                                         Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                        actualTactic.Actualvalue = 1;
+                                        actualTactic.Actualvalue = item.Value;
                                         actualTactic.PlanTacticId = objTactic.PlanTacticId;
-                                        actualTactic.Period = "Y" + item.peroid.Month;
+                                        actualTactic.Period = item.Key;
                                         actualTactic.StageTitle = Common.StageProjectedStageValue;
                                         actualTactic.CreatedDate = DateTime.Now;
                                         actualTactic.CreatedBy = _userId;
                                         db.Entry(actualTactic).State = EntityState.Added;
                                     }
                                 }
-
-                                contactIds = contactIds + "," + item.contactId;
-                            }
+                            }                            
 
                             objTactic.LastSyncDate = DateTime.Now;
                             objTactic.ModifiedDate = DateTime.Now;
