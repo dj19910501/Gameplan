@@ -3295,8 +3295,21 @@ namespace RevenuePlanner.Controllers
 
             ViewData["IntegrationInstances"] = lstInstance;
             string insType = Enums.IntegrationInstanceType.Salesforce.ToString();
+            string elqType = Enums.IntegrationInstanceType.Eloqua.ToString();
             ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(instance => instance.Code == insType);
-         
+
+            #region "Filtered MQL Eloqua Integration Instances based on Client Integration Permisssion"
+            Guid clientId = Sessions.User.ClientId;
+            string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
+            var eloquaIntegrationType = objDbMrpEntities.IntegrationTypes.Where(type => type.Code == "Eloqua" && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
+            int eloquaIntegrationTypeId = Convert.ToInt32(eloquaIntegrationType);
+
+            if (objDbMrpEntities.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(eloquaIntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
+                ViewData["MQLFilteredEloquaIntegrationInstances"] = lstInstance.Where(instance => instance.Code == elqType);
+            else
+                ViewData["MQLFilteredEloquaIntegrationInstances"] = Enumerable.Empty<entIntegrationInstance>(); 
+            #endregion
+            
             return View(objBaselineModel);
         }
 
@@ -3304,4 +3317,11 @@ namespace RevenuePlanner.Controllers
 
     }
 
+}
+
+public class entIntegrationInstance {
+    public string InstanceName { get; set; }
+    public int InstanceId { get; set; }
+    public string Type { get; set; }
+    public string Code { get; set; }
 }
