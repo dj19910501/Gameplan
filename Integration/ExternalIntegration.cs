@@ -67,7 +67,7 @@ namespace Integration
         string _integrationType { get; set; }
         bool _isResultError { get; set; }
         Guid _applicationId { get; set; }
-        private StringBuilder _errorMailBody = new StringBuilder(string.Empty);
+        private List<SyncError> _lstAllSyncError = new List<SyncError>();
         MRPEntities db = new MRPEntities();
         /// <summary>
         /// Data Dictionary to hold tactic status values.
@@ -213,6 +213,8 @@ namespace Integration
             db.Entry(instanceLogStart).State = EntityState.Added;
             int resulValue = db.SaveChanges();
 
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Start Time", instanceLogStart.SyncStart.ToString()), Enums.SyncStatus.Info, DateTime.Now));
+
             if (resulValue > 0)
             {
                 int integrationinstanceLogId = instanceLogStart.IntegrationInstanceLogId;
@@ -228,9 +230,6 @@ namespace Integration
                     {
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
                         _isResultError = true;
-                        //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                        _errorMailBody.Append(DateTime.Now.ToString() + " - Authentication Failed :" + integrationSalesforceClient._ErrorMessage + "<br>");
-                        //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     }
                 }
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
@@ -239,9 +238,9 @@ namespace Integration
                     if (integrationEloquaClient.IsAuthenticated)
                     {
                         //// Start - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                        StringBuilder errorMailBodyEloquaClient = new StringBuilder(string.Empty);
-                        _isResultError = integrationEloquaClient.SyncData(out errorMailBodyEloquaClient);
-                        _errorMailBody.Append(errorMailBodyEloquaClient);
+                        List<SyncError> lstSyncError = new List<SyncError>();
+                        _isResultError = integrationEloquaClient.SyncData(out lstSyncError);
+                        _lstAllSyncError.AddRange(lstSyncError);
                         //// End - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     }
                     else
@@ -249,7 +248,7 @@ namespace Integration
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
                         _isResultError = true;
                         //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                        _errorMailBody.Append(DateTime.Now.ToString() + " - Authentication Failed :" + integrationEloquaClient._ErrorMessage + "<br>");
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Authentication Failed :" + integrationEloquaClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
                         //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     }
                 }
@@ -272,6 +271,17 @@ namespace Integration
                 db.Entry(instanceLogStart).State = EntityState.Modified;
                 db.Entry(integrationInstance).State = EntityState.Modified;
                 db.SaveChanges();
+                //// Start - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("End Time", instanceLogStart.SyncEnd.ToString()), Enums.SyncStatus.Info, DateTime.Now));
+                TimeSpan ElapsedTicks = instanceLogStart.SyncEnd.Value.Subtract(instanceLogStart.SyncStart);
+                DateTime ElapsedTime = new DateTime(ElapsedTicks.Ticks);
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Elapsed Time", ElapsedTime.ToString("HH:mm:ss")), Enums.SyncStatus.Info, DateTime.Now));
+                if (_integrationInstanceId.HasValue)
+                {
+                    string InstanceName = Common.GetInstanceName(_integrationInstanceId.Value);
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Instance Name used for synching", InstanceName), Enums.SyncStatus.Info, DateTime.Now));
+                }
+                //// End - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
             }
         }
         
@@ -282,7 +292,7 @@ namespace Integration
         {
             try
             {
-                if (!string.IsNullOrEmpty(_errorMailBody.ToString()))
+                if (_lstAllSyncError.Count > 0)
                 {
                     //// Retrieve mail template from db.
                     MRPEntities db = new MRPEntities();
@@ -292,11 +302,12 @@ namespace Integration
                     if (objNotification != null)
                     {
                         //// get userdetails of the logged in user
-                        List<BDSService.User> UsersDetails = new List<BDSService.User>();
+                        string ClientName = string.Empty;
                         try
                         {
                             BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                            UsersDetails = objBDSUserRepository.GetMultipleTeamMemberName(_userId.ToString());
+                            ClientName = objBDSUserRepository.GetClientName(_userId);
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Info, DateTime.Now));
                         }
                         catch
                         {
@@ -304,15 +315,21 @@ namespace Integration
                             return;
                         }
                         
+                        ///// Set info row data for no of tactic processed with count
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities liable for synching", Common.tacticSyncTotal.ToString()), Enums.SyncStatus.Info, DateTime.Now));
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities successfully synched", Common.tacticSyncSuccess.ToString()), Enums.SyncStatus.Info, DateTime.Now));
+                        int tacticSyncFailed = Common.tacticSyncTotal - Common.tacticSyncSuccess;
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities failed due to some reason", tacticSyncFailed.ToString()), Enums.SyncStatus.Info, DateTime.Now));
+                        /////
+
                         //// Replace mail template tags with corresponding data
                         string emailBody = string.Empty;
                         emailBody = objNotification.EmailContent;
-                        if (UsersDetails.Count > 0)
-                        {
-                            string UserName = UsersDetails.Select(user => user.FirstName + " " + user.LastName).FirstOrDefault();
-                            emailBody = emailBody.Replace("[NameToBeReplaced]", UserName);
-                        }
-                        emailBody = emailBody.Replace("[ErrorBody]", _errorMailBody.ToString().TrimEnd("<br>".ToCharArray()));
+                        emailBody = emailBody.Replace("[NameToBeReplaced]", string.Empty);
+                        emailBody = emailBody.Replace("Dear ,", "Hi,"); 
+                        
+                        string _errorMailBody = Common.PrepareSyncErroEmailBody(_lstAllSyncError);
+                        emailBody = emailBody.Replace("[ErrorBody]", _errorMailBody);
                                                 
                         //// Get list email ids to whom email to be sent
                         string errorMailTo = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationErrorMailTo");

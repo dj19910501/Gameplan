@@ -137,5 +137,16 @@ namespace Integration.Helper
         {
             MQL
         }
+
+        /// <summary>
+        /// sync status enum for error email
+        /// </summary>
+        public enum SyncStatus 
+        {
+            Success,
+            Error,
+            Warning,
+            Info
+        }
     }
 }

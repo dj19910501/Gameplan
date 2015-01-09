@@ -45,7 +45,9 @@ namespace Integration.Helper
         public static string msgMappingNotFoundForSalesforcePullResponse = "Error: Mapping does not found for CampaignId or FirstRespondedDate or Status";
         public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping does not found for CampaignId or CloseDate or Amount or StageName";
         public static string msgMappingNotFoundForEloquaPullMQL = "Error: Mapping does not found for CampaignId or MQLDateId or ViewId or ListId";
-
+        public static int tacticSyncTotal { get; set; }
+        public static int tacticSyncSuccess { get; set; }
+        
         public static bool IsAutoSync = false;
         /// <summary>
         /// Decrypt string
@@ -456,6 +458,104 @@ namespace Integration.Helper
         }
         
         #endregion
+
+        /// <summary>
+        /// Function to get instance name using integation instance id
+        /// </summary>
+        /// <param name="integrationInstanceId">integration instance id</param>
+        /// <returns></returns>
+        public static string GetInstanceName(int integrationInstanceId)
+        {
+            MRPEntities db = new MRPEntities();
+            return db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == integrationInstanceId).Instance;
+        }
+
+        #region Eloqua sync error email
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="EntityId">entity id</param>
+        /// <param name="EntityType">entity type</param>
+        /// <param name="Message">error/info message</param>
+        /// <param name="SyncStatus">error status flag</param>
+        /// <param name="TimeStamp">timestamp</param>
+        /// <returns>returns SyncError object</returns>
+        public static SyncError PrepareSyncErrorList(int? EntityId, Enums.EntityType EntityType, string Message, Enums.SyncStatus SyncStatus, DateTime TimeStamp)
+        {
+            SyncError objSyncError = new SyncError();
+
+            objSyncError.EntityId = EntityId;
+            objSyncError.EntityType = EntityType;
+            objSyncError.Message = Message;
+            objSyncError.SyncStatus = SyncStatus;
+            objSyncError.TimeStamp = TimeStamp;
+
+            return objSyncError;
+        }
+
+        /// <summary>
+        /// Function to prepare Error email body header row
+        /// </summary>
+        /// <param name="InfoHeader"></param>
+        /// <param name="InfoValue"></param>
+        /// <returns></returns>
+        public static string PrepareInfoRow(string InfoHeader, string InfoValue)
+        {
+            string row = string.Format("<tr><td width='40%'><b>{0}:</b></td><td width='60%'>{1}</td></tr>", InfoHeader, InfoValue);
+            return row;
+        }
+
+        /// <summary>
+        /// Function to prepare error email body
+        /// </summary>
+        /// <param name="lstSyncError"></param>
+        /// <returns></returns>
+        public static string PrepareSyncErroEmailBody(List<SyncError> lstSyncError)
+        {
+            if (lstSyncError.Count > 0)
+            {
+                StringBuilder sbErroBody = new StringBuilder(string.Empty);
+                List<string> lstInfo = lstSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Info).Select(syncError => syncError.Message).ToList();
+                if (lstInfo.Count > 0)
+                {
+                    sbErroBody.Append("<table width='100%' border='1' color='#908d88' cellspacing='0' cellpadding='0'>");
+                    lstInfo.ForEach(info => sbErroBody.Append(info));
+                    sbErroBody.Append("</table>");
+                }
+                
+
+                sbErroBody.Append("<br>");
+                sbErroBody.Append("<table width='100%' border='1' color='#908d88' cellspacing='0' cellpadding='0'>");
+                sbErroBody.Append("<tr>");
+                sbErroBody.Append("<th width='65%'>Description</th>");
+                sbErroBody.Append("<th width='10%'>Status</th>");
+                sbErroBody.Append("<th width='25%'>Timestamp</th>");
+                sbErroBody.Append("</tr>");
+
+                var lstError = lstSyncError.Where(syncError => syncError.SyncStatus != Enums.SyncStatus.Info)
+                                            .GroupBy(item => new { EntityId = item.EntityId, Message = item.Message })
+                                            .Select(groupItem => new
+                                            {
+                                                EntityId = groupItem.Key.EntityId,
+                                                TimeStamp = groupItem.Select(item => item.TimeStamp).FirstOrDefault(),
+                                                SyncStatus = groupItem.Select(item => item.SyncStatus).FirstOrDefault(),
+                                                Message = groupItem.Select(item => item.Message).FirstOrDefault(),
+                                            }).Distinct().ToList();
+                
+                foreach (var item in lstError)
+                {
+                    sbErroBody.Append(string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", item.Message, item.SyncStatus.ToString(), item.TimeStamp, item.EntityId > 0 ? item.EntityId.ToString() : string.Empty));
+                }
+                
+                sbErroBody.Append("</table>");
+                return sbErroBody.ToString();
+            }
+            
+            return string.Empty;
+        }
+
+        #endregion
     }
 
     public class CRM_EloquaMapping
@@ -472,4 +572,15 @@ namespace Integration.Helper
         public string EloquaIntegrationInstanceTacticId { get; set; }
         public int ModelIntegrationInstanceId { get; set; }
     }
+
+    public class SyncError
+    {
+        public int? EntityId { get; set; }
+        public Enums.EntityType EntityType { get; set; }
+        public string Message { get; set; }
+        public Enums.SyncStatus SyncStatus { get; set; }
+        public DateTime TimeStamp { get; set; }
+    }
+
+     
 }

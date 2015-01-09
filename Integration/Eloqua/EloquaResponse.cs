@@ -67,9 +67,10 @@ namespace Integration.Eloqua
         /// <param name="IntegrationInstanceLogId">Integration Instance Log Id.</param>
         /// <param name="_applicationId">Application Id.</param>
         /// <param name="_entityType">Entity Type.</param>
-        public void SetTacticMQLs(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType, out StringBuilder _errorMailBody)
+        public void SetTacticMQLs(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType, out List<SyncError> _lstSyncError)
         {
-            _errorMailBody = new StringBuilder(string.Empty);
+            _lstSyncError = new List<SyncError>();
+
             //// Insert log into IntegrationInstanceSection
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), DateTime.Now, _userId);
 
@@ -113,8 +114,7 @@ namespace Integration.Eloqua
                     //// Start - Added by Sohel Pathan on 02/01/2015 for PL ticket #1068
                     if (listPullDataType.Count == 0)
                     {
-                        _errorMailBody.Append(DateTime.Now.ToString() + " - Data types for pull responses is not defined in DB.<br>");
-
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Data types for pull responses is not defined in DB.", Enums.SyncStatus.Error, DateTime.Now));
                     }
                     else
                     {
@@ -143,19 +143,19 @@ namespace Integration.Eloqua
                     {
                         if (string.IsNullOrEmpty(CampaignIdValue))
                         {
-                            _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + CampaignIdDisplpayFieldName + " not found<br>");
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Data type mapping for : " + CampaignIdDisplpayFieldName + " not found.", Enums.SyncStatus.Error, DateTime.Now));
                         }
                         if (string.IsNullOrEmpty(MQLDateValue))
                         {
-                            _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + MQlDateDisplpayFieldName + " not found<br>");
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Data type mapping for : " + MQlDateDisplpayFieldName + " not found.", Enums.SyncStatus.Error, DateTime.Now));
                         }
                         if (string.IsNullOrEmpty(ViewIdValue))
                         {
-                            _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + listPullDataType.Where(dataType => dataType.ActualFieldName == Enums.CustomeFieldNameMQL.ViewId.ToString()).Select(dataType => dataType.DisplayFieldName).FirstOrDefault() + " not found<br>");
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Data type mapping for : " + listPullDataType.Where(dataType => dataType.ActualFieldName == Enums.CustomeFieldNameMQL.ViewId.ToString()).Select(dataType => dataType.DisplayFieldName).FirstOrDefault() + " not found.", Enums.SyncStatus.Error, DateTime.Now));
                         }
                         if (string.IsNullOrEmpty(ListIdValue))
                         {
-                            _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for : " + listPullDataType.Where(dataType => dataType.ActualFieldName == Enums.CustomeFieldNameMQL.ListId.ToString()).Select(dataType => dataType.DisplayFieldName).FirstOrDefault() + " not found<br>");
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Data type mapping for : " + listPullDataType.Where(dataType => dataType.ActualFieldName == Enums.CustomeFieldNameMQL.ListId.ToString()).Select(dataType => dataType.DisplayFieldName).FirstOrDefault() + " not found.", Enums.SyncStatus.Error, DateTime.Now));
                         }
                     }
                     //// End - Added by Sohel Pathan on 02/01/2015 for PL ticket #1068
@@ -233,22 +233,22 @@ namespace Integration.Eloqua
                                 {
                                     if (!isAllCampaignIdExists)
                                     {
-                                        _errorMailBody.Append(DateTime.Now.ToString() + " - " + CampaignIdValue + " for one or many record(s) does not exists." + "<br>");
+                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, CampaignIdValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
                                     }
                                     if (!isAllMQLDateExists)
                                     {
-                                        _errorMailBody.Append(DateTime.Now.ToString() + " - " + MQLDateValue + " for one or many record(s) does not exists." + "<br>");
+                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, MQLDateValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
                                     }
                                 }
                             }
                             else
                             {
-                                _errorMailBody.Append(DateTime.Now.ToString() + " - No contact data found in Eloqua contact object.<br>");
+                                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "No contact data found in Eloqua contact object.", Enums.SyncStatus.Error, DateTime.Now));
                             }
                         }
                         else
                         {
-                            _errorMailBody.Append(DateTime.Now.ToString() + " - Authorization for " + Enums.IntegrationType.Eloqua.ToString() + " has been failed." + "<br>");
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Authorization for " + Enums.IntegrationType.Eloqua.ToString() + " has been failed.", Enums.SyncStatus.Error, DateTime.Now));
                         }
 
                         //// get distinct campaign id for filter.
@@ -434,13 +434,13 @@ namespace Integration.Eloqua
                     }
                     else
                     {
-                        _errorMailBody.Append(DateTime.Now.ToString() + " - Data type mapping for pull mql is not found.<br>");
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Data type mapping for pull mql is not found.", Enums.SyncStatus.Error, DateTime.Now));
                         Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgMappingNotFoundForEloquaPullMQL);
                     }
                 }
                 catch (Exception e)
                 {
-                    _errorMailBody.Append(DateTime.Now.ToString() + " - System error occured while pulling response from Eloqua.<br>");
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "System error occured while pulling response from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
                     string msg = e.Message;
                     // Update IntegrationInstanceSection log with Error status
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
@@ -459,9 +459,9 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="IntegrationInstanceId"></param>
         /// <returns></returns>
-        public void GetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, out StringBuilder _errorMailBody)
+        public void GetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, out List<SyncError> lstSyncError)
         {
-            _errorMailBody = new StringBuilder(string.Empty);
+            lstSyncError = new List<SyncError>();
 
             // Insert log into IntegrationInstanceSection, Dharmraj PL#684
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
@@ -473,7 +473,7 @@ namespace Integration.Eloqua
                 var objIntegrationInstanceExternalServer = db.IntegrationInstanceExternalServers.FirstOrDefault(i => i.IntegrationInstanceId == IntegrationInstanceId);
                 if (objIntegrationInstanceExternalServer == null)
                 {
-                    _errorMailBody.Append(DateTime.Now.ToString() + " - External server settings has not been configured.<br>");
+                    lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "External server settings has not been configured.", Enums.SyncStatus.Error, DateTime.Now));
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgExternalServerNotConfigured);
                     throw new Exception(Common.msgExternalServerNotConfigured);
@@ -510,7 +510,7 @@ namespace Integration.Eloqua
                 }
                 else
                 {
-                    _errorMailBody.Append(DateTime.Now.ToString() + " - Eloqua response folder path does not exists.<br>");
+                    lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Eloqua response folder path does not exists.", Enums.SyncStatus.Error, DateTime.Now));
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Format(Common.msgDirectoryNotFound, localDestpath));
                     throw new Exception(string.Format(Common.msgDirectoryNotFound, localDestpath));
@@ -530,7 +530,7 @@ namespace Integration.Eloqua
                     }
                     catch (Exception ex)
                     {
-                        _errorMailBody.Append(DateTime.Now.ToString() + " - An error occured while connecting to external server via SFTP.<br>");
+                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "An error occured while connecting to external server via SFTP.", Enums.SyncStatus.Error, DateTime.Now));
                         throw new Exception(Common.msgNotConnectToExternalServer, ex.InnerException);
                     }
 
@@ -647,7 +647,7 @@ namespace Integration.Eloqua
                                     }
                                     else
                                     {
-                                        _errorMailBody.Append(DateTime.Now.ToString() + " - Required column(s) does not exist in eloqua response.<br>");
+                                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Required column(s) does not exist in eloqua response.", Enums.SyncStatus.Error, DateTime.Now));
                                         throw new Exception(Common.msgRequiredColumnNotExistEloquaPullResponse);
                                     }
                                 }
@@ -672,7 +672,7 @@ namespace Integration.Eloqua
                                     }
                                     catch (Exception ex)
                                     {
-                                        _errorMailBody.Append(DateTime.Now.ToString() + " - An error occured while creating directory at external server.<br>");
+                                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "An error occured while creating directory at external server.", Enums.SyncStatus.Error, DateTime.Now));
                                     }
 
                                     // Upload processed local file to external server archived folder
@@ -698,7 +698,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception ex)
                 {
-                    _errorMailBody.Append(DateTime.Now.ToString() + " - System error occured while processing tactic response from Eloqua.<br>");
+                    lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "System error occured while processing tactic response from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
                     throw ex;

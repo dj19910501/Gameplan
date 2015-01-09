@@ -4,6 +4,7 @@
 
 using Integration;
 using Integration.Eloqua;
+using Integration.Helper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RevenuePlanner.BDSService;
 using RevenuePlanner.Controllers;
@@ -317,8 +318,8 @@ namespace RevenuePlanner.Test.Integration
         public void Set_Tactic_Response()
         {
             EloquaResponse controller = new EloquaResponse();
-            StringBuilder strOutParam = new StringBuilder(string.Empty);
-            controller.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType, out strOutParam);
+            List<SyncError> lstSyncError = new List<SyncError>();
+            controller.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType, out lstSyncError);
 
             // Assert.Equals(null, result);
         }
