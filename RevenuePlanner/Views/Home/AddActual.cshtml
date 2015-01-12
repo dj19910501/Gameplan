@@ -963,11 +963,12 @@
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
                 for (var p = 0; p < _LineItemsData.length; p = p + 1) {
-                    var Title = _LineItemsData[p].Title.replace(/ /g, "_").replace(/!/g,"_");
-                    var idtr = "tr" + _LineItemsData[p].id + Title;
+                    //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
+                    var TacticId = _id;
+                    var idtr = "tr" + _LineItemsData[p].id + TacticId;
                 $html += '<tr id=' + idtr + ' TacticId='+_id +'>';
                 for (var j = 1; j <= 12; j = j + 1) {
-                    var tdId = _LineItemsData[p].id + "-" + Title + "-Y" + j;
+                    var tdId = _LineItemsData[p].id + "-" + TacticId + "-Y" + j;
                     var ClassName = "currency_dollar" + " "+_id+"Line-Y" + j;
                     $html += '<td><input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     $html += ' class="' + ClassName + '"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
@@ -1062,13 +1063,14 @@
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
             for (line in _LineItemsData) {
-                var Title = _LineItemsData[line].Title.replace(/ /g, "_").replace(/!/g,"_");
+                //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
+                var TacticId = _id;
                 $html += '<div class="body-toogle-actual"><span class="inner-lineItem truncate" style="width:28% !important;display:block;" title="' + _LineItemsData[line].Title + '">' + _LineItemsData[line].Title +
                                              '</span><div id="border-right" class="table-info-actual-left-wraper">' +
                                                  '<div class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                                      FormatCurrency(_LineItemsData[line].LineItemCost, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                                  '</div>' +
-                                                 '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left setBudget lineItemActualsValues" style="float: right;" id="ActuallblP' + Title + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                                 '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left setBudget lineItemActualsValues" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
                                                   FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                     '</div>' +
                                 '</div>' +
