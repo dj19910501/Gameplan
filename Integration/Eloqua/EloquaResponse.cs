@@ -212,6 +212,7 @@ namespace Integration.Eloqua
                                             if (elementsArray[i][MQLDateValue].ToString() != string.Empty && elementsArray[i][MQLDateValue] != null)
                                             {
                                                 elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
+                                                elementsInner.peroid = new DateTime(elementsInner.peroid.Year, elementsInner.peroid.Month, 1);
                                             }
                                             else
                                             {

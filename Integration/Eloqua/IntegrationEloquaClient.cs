@@ -1738,12 +1738,15 @@ namespace Integration.Eloqua
             // This is an example of a UNIX timestamp for the date/time 11-04-2005 09:25.
             double timestamp = Convert.ToDouble(MQLDate);
 
+            // Get short time from date
+            string shortTimeString = _unixEpochTime.ToShortTimeString();
+
             // Add the number of seconds in UNIX timestamp to be converted.
             _unixEpochTime = _unixEpochTime.AddSeconds(timestamp);
 
             // The dateTime now contains the right date/time so to format the string,
             // use the standard formatting methods of the DateTime object.
-            string date = _unixEpochTime.ToShortDateString() + " " + _unixEpochTime.ToShortTimeString();
+            string date = _unixEpochTime.ToShortDateString() + " " + shortTimeString;
 
             return Convert.ToDateTime(date);
         }
