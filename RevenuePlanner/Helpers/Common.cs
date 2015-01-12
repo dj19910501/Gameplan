@@ -1195,7 +1195,7 @@ namespace RevenuePlanner.Helpers
         /// <returns>Returns start date as per calendar.</returns>
         public static string GetStartDateAsPerCalendar(DateTime calendarStartDate, DateTime startDate)
         {
-            return startDate < calendarStartDate ? string.Format("{0}", calendarStartDate.ToString("MM/dd/yyyy",CultureInfo.InvariantCulture)) : string.Format("{0}", startDate.ToString("MM/dd/yyyy",CultureInfo.InvariantCulture));
+            return startDate < calendarStartDate ? string.Format("{0}", calendarStartDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)) : string.Format("{0}", startDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -1622,7 +1622,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planIds">list plan ids</param>
         /// <returns></returns>
-        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds, string activeMenu,string year)
+        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds, string activeMenu, string year)
         {
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities db = new MRPEntities();
@@ -1640,7 +1640,7 @@ namespace RevenuePlanner.Helpers
             var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true).Select(m => m).ToList();
             if (planList != null && planList.Count > 0)
             {
-                List<Plan_Campaign_Program_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.Plan_Campaign_Program.Plan_Campaign.Plan.Year==year).ToList();
+                List<Plan_Campaign_Program_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.Plan_Campaign_Program.Plan_Campaign.Plan.Year == year).ToList();
                 var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => planIds.Contains(imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && imp.IsDeleted == false).ToList();
                 var tacticids = planTacticsList.Select(t => t.PlanTacticId).ToList();
                 List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticids.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
@@ -4236,7 +4236,7 @@ namespace RevenuePlanner.Helpers
                 CustomFields = (from customfield in objDbMrpEntities.CustomFields
                                 join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
                                 join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals tactic.Plan_Campaign_Program.PlanCampaignId
-                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId && customfield.IsDisplayForFilter==true && //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
+                                where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == Section && customfield.ClientId == Sessions.User.ClientId && customfield.IsDisplayForFilter == true && //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
                                 planTacticIds.Contains(tactic.Plan_Campaign_Program.PlanCampaignId)
                                 select customfield).ToList().Distinct().ToList().OrderBy(customfield => customfield.Name).ToList();
             }
@@ -4961,6 +4961,66 @@ namespace RevenuePlanner.Helpers
                     ErrorSignal.FromCurrentContext().Raise(ex);
                 }
                 return isValidUser;
+            }
+        }
+        #endregion
+
+        #region Update plan year value
+        /// <summary>
+        /// Function to update planyear of child activities of a plan
+        /// </summary>
+        /// <param name="PlanId">plan id of a plan</param>
+        /// <param name="PlanYear">new plan year value</param>
+        /// <returns>returns the status flag</returns>
+        public static int UpdatePlanYearOfActivities(int PlanId, int PlanYear)
+        {
+            int returnFlag = 0;
+            if (PlanId == 0)
+            {
+                return returnFlag;
+            }
+
+            List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
+            MRPEntities db = new MRPEntities();
+
+            try
+            {
+                Plan proj = db.Plans.FirstOrDefault(p => p.PlanId == PlanId && p.IsDeleted == false);
+                if (proj != null)
+                {
+                    proj.Plan_Campaign.Where(s => s.IsDeleted == false).ToList().ForEach(
+                        t =>
+                        {
+                            t.StartDate = t.StartDate.AddYears(PlanYear - t.StartDate.Year);
+                            t.EndDate = t.EndDate.AddYears(PlanYear - t.EndDate.Year);
+                            t.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(pcp =>
+                            {
+                                pcp.StartDate = pcp.StartDate.AddYears(PlanYear - pcp.StartDate.Year);
+                                pcp.EndDate = pcp.EndDate.AddYears(PlanYear - pcp.EndDate.Year);
+                                pcp.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
+                                {
+                                    pcpt.StartDate = pcpt.StartDate.AddYears(PlanYear - pcpt.StartDate.Year);
+                                    pcpt.EndDate = pcpt.EndDate.AddYears(PlanYear - pcpt.EndDate.Year);
+                                    pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
+                                    pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
+                                    {
+                                        pcptl.StartDate = pcptl.StartDate.HasValue ? pcptl.StartDate.Value.AddYears(PlanYear - pcptl.StartDate.Value.Year) : pcptl.StartDate;
+                                        pcptl.EndDate = pcptl.EndDate.HasValue ? pcptl.EndDate.Value.AddYears(PlanYear - pcptl.EndDate.Value.Year) : pcptl.EndDate;
+                                    });
+                                });
+                            });
+                        });
+
+                    proj.Plan_Campaign = proj.Plan_Campaign.ToList();
+                    db.Entry(proj).State = EntityState.Modified;
+                    returnFlag = db.SaveChanges();
+                    return returnFlag;
+                }
+                return returnFlag;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
         #endregion

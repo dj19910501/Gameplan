@@ -179,7 +179,7 @@ namespace RevenuePlanner.Controllers
                             Listyear.Add(new SelectListItem { Text = (i).ToString(), Value = (i).ToString(), Selected = false });//Modified by Mitesh Vaishnav for PL ticket #622
                         }
 
-                        year = Listyear.OrderBy(p=>p.Value).ToList();
+                        year = Listyear.OrderBy(p => p.Value).ToList();
                         TempData["selectYearList"] = new SelectList(year, "Value", "Text");//Modified by Mitesh Vaishnav for PL ticket #622
                     }
                     #endregion
@@ -322,7 +322,11 @@ namespace RevenuePlanner.Controllers
                         plan.Description = objPlanModel.Description;    /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
                         plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
                         plan.ModelId = objPlanModel.ModelId;
-                        plan.Year = objPlanModel.Year;
+                        if (plan.Year != objPlanModel.Year) //// Added by Sohel Pathan on 12/01/2015 for PL ticket #1102
+                        {
+                            plan.Year = objPlanModel.Year;
+                            Common.UpdatePlanYearOfActivities(objPlanModel.PlanId, Convert.ToInt32(objPlanModel.Year)); //// Added by Sohel Pathan on 12/01/2015 for PL ticket #1102
+                        }
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
                         db.Entry(plan).State = EntityState.Modified;
@@ -817,7 +821,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="strPlanIds">Comma separated list of plan ids</param>
         /// <param name="activeMenu">Get Active Menu</param>
         /// <returns>returns Json object with values required to show in plan/home header</returns>
-        public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu,string year)
+        public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu, string year)
         {
             planid = System.Web.HttpUtility.UrlDecode(planid);
             List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
@@ -826,7 +830,7 @@ namespace RevenuePlanner.Controllers
             {
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlans(planIds, activeMenu,year),
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlans(planIds, activeMenu, year),
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
