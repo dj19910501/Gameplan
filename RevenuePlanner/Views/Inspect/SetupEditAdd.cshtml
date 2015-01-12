@@ -799,13 +799,16 @@
         }
 
     /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
-    $('#VerticalId').change(function () {
-        fillOwnerList();
-    });
-        
-    $('#GeographyId').change(function () {
-        fillOwnerList();
-    });
+    var tacticId = $('#hdnPlanTacticId').val();
+    if (tacticId != '' && parseInt(tacticId) > 0) {
+        $('#VerticalId').change(function () {
+            fillOwnerList();
+        });
+
+        $('#GeographyId').change(function () {
+            fillOwnerList();
+        });
+    }
 
     function fillOwnerList()
     {
