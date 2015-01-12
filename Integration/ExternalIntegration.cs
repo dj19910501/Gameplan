@@ -294,58 +294,63 @@ namespace Integration
             {
                 if (_lstAllSyncError.Count > 0)
                 {
-                    //// Retrieve mail template from db.
-                    MRPEntities db = new MRPEntities();
-                    string SyncIntegrationError = Enums.Custom_Notification.SyncIntegrationError.ToString();
-                    Notification objNotification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(SyncIntegrationError));
-
-                    if (objNotification != null)
+                    //// In sucess case there is no need of sending error email.
+                    bool isMailSendRequired = _lstAllSyncError.Where(syncError => syncError.SyncStatus != Enums.SyncStatus.Header && syncError.SyncStatus != Enums.SyncStatus.Success).Any();
+                    if (isMailSendRequired)
                     {
-                        //// get userdetails of the logged in user
-                        string ClientName = string.Empty;
-                        try
-                        {
-                            BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                            ClientName = objBDSUserRepository.GetClientName(_userId);
-                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Header, DateTime.Now));
-                        }
-                        catch
-                        {
-                            //// Service related exception
-                            return;
-                        }
-                        
-                        ///// Set info row data for no of tactic processed with count
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities liable for synching", Common.tacticSyncTotal.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities successfully synched", Common.tacticSyncSuccess.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-                        int tacticSyncFailed = Common.tacticSyncTotal - Common.tacticSyncSuccess;
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities failed due to some reason", tacticSyncFailed.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-                        /////
+                        //// Retrieve mail template from db.
+                        MRPEntities db = new MRPEntities();
+                        string SyncIntegrationError = Enums.Custom_Notification.SyncIntegrationError.ToString();
+                        Notification objNotification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(SyncIntegrationError));
 
-                        //// Replace mail template tags with corresponding data
-                        string emailBody = string.Empty;
-                        emailBody = objNotification.EmailContent;
-                        emailBody = emailBody.Replace("[NameToBeReplaced]", string.Empty);
-                        emailBody = emailBody.Replace("Dear ,", "Hi,"); 
-                        
-                        string _errorMailBody = Common.PrepareSyncErroEmailBody(_lstAllSyncError);
-                        emailBody = emailBody.Replace("[ErrorBody]", _errorMailBody);
-                                                
-                        //// Get list email ids to whom email to be sent
-                        string errorMailTo = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationErrorMailTo");
-                        if (!string.IsNullOrEmpty(errorMailTo))
+                        if (objNotification != null)
                         {
-                            string fromMail = System.Configuration.ConfigurationManager.AppSettings.Get("FromMail");
-                            if (!string.IsNullOrEmpty(fromMail))
+                            //// get userdetails of the logged in user
+                            string ClientName = string.Empty;
+                            try
                             {
-                                //// Send mail to multiple users
-                                string[] lstEmailTo = errorMailTo.Split(';');
-                                for (int emailId = 0; emailId < lstEmailTo.Length; emailId++)
+                                BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                                ClientName = objBDSUserRepository.GetClientName(_userId);
+                                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Header, DateTime.Now));
+                            }
+                            catch
+                            {
+                                //// Service related exception
+                                return;
+                            }
+
+                            ///// Set info row data for no of tactic processed with count
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities liable for synching", Common.tacticSyncTotal.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities successfully synched", Common.tacticSyncSuccess.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+                            int tacticSyncFailed = Common.tacticSyncTotal - Common.tacticSyncSuccess;
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities failed due to some reason", tacticSyncFailed.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+                            /////
+
+                            //// Replace mail template tags with corresponding data
+                            string emailBody = string.Empty;
+                            emailBody = objNotification.EmailContent;
+                            emailBody = emailBody.Replace("[NameToBeReplaced]", string.Empty);
+                            emailBody = emailBody.Replace("Dear ,", "Hi,");
+
+                            string _errorMailBody = Common.PrepareSyncErroEmailBody(_lstAllSyncError);
+                            emailBody = emailBody.Replace("[ErrorBody]", _errorMailBody);
+
+                            //// Get list email ids to whom email to be sent
+                            string errorMailTo = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationErrorMailTo");
+                            if (!string.IsNullOrEmpty(errorMailTo))
+                            {
+                                string fromMail = System.Configuration.ConfigurationManager.AppSettings.Get("FromMail");
+                                if (!string.IsNullOrEmpty(fromMail))
                                 {
-                                    string toEmail = lstEmailTo.ElementAt(emailId);
-                                    ThreadStart threadStart = delegate() { Common.SendMail(toEmail.Trim(), fromMail, emailBody, objNotification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
-                                    Thread thread = new Thread(threadStart);
-                                    thread.Start();
+                                    //// Send mail to multiple users
+                                    string[] lstEmailTo = errorMailTo.Split(';');
+                                    for (int emailId = 0; emailId < lstEmailTo.Length; emailId++)
+                                    {
+                                        string toEmail = lstEmailTo.ElementAt(emailId);
+                                        ThreadStart threadStart = delegate() { Common.SendMail(toEmail.Trim(), fromMail, emailBody, objNotification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
+                                        Thread thread = new Thread(threadStart);
+                                        thread.Start();
+                                    }
                                 }
                             }
                         }
