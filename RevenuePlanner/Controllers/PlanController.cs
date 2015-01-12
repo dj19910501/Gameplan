@@ -322,7 +322,11 @@ namespace RevenuePlanner.Controllers
                         plan.Description = objPlanModel.Description;    /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
                         plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
                         plan.ModelId = objPlanModel.ModelId;
-                        plan.Year = objPlanModel.Year;
+                        if (plan.Year != objPlanModel.Year) //// Added by Sohel Pathan on 12/01/2015 for PL ticket #1102
+                        {
+                            plan.Year = objPlanModel.Year;
+                            Common.UpdatePlanYearOfActivities(objPlanModel.PlanId, Convert.ToInt32(objPlanModel.Year)); //// Added by Sohel Pathan on 12/01/2015 for PL ticket #1102
+                        }
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
                         db.Entry(plan).State = EntityState.Modified;

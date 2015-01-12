@@ -1303,7 +1303,7 @@ namespace Integration.Eloqua
                         else
                         {
                             //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                            _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, parentFolderId + " folder does not exists for tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, parentFolderId + " folder does not exists for tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
                             //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                             return folderId = 0;
                         }
@@ -1318,7 +1318,7 @@ namespace Integration.Eloqua
                     else
                     {
                         //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                        _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, "Folder path has been not specified for tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, "Folder path has been not specified for tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
                         //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
 
                         //// default value return.
@@ -1329,7 +1329,7 @@ namespace Integration.Eloqua
             else
             {
                 //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, "Folder path has been not specified for tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, "Folder path has been not specified for tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
                 //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
             }
 
@@ -1413,7 +1413,7 @@ namespace Integration.Eloqua
                         }
                         else
                         {
-                            _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, parentFolderId + " folder does not exists for improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, parentFolderId + " folder does not exists for improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
                             return folderId = 0;
                         }
                     }
@@ -1426,7 +1426,7 @@ namespace Integration.Eloqua
                     }
                     else
                     {
-                        _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, "Folder path has been not specified for improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, "Folder path has been not specified for improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
                         //// default value return.
                         return 0;
                     }
@@ -1434,7 +1434,7 @@ namespace Integration.Eloqua
             }
             else
             {
-                _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, "Folder path has been not specified for improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, "Folder path has been not specified for improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
             }
 
             return folderId;

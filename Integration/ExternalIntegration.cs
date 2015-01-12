@@ -213,7 +213,7 @@ namespace Integration
             db.Entry(instanceLogStart).State = EntityState.Added;
             int resulValue = db.SaveChanges();
 
-            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Start Time", instanceLogStart.SyncStart.ToString()), Enums.SyncStatus.Info, DateTime.Now));
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Start Time", instanceLogStart.SyncStart.ToString()), Enums.SyncStatus.Header, DateTime.Now));
 
             if (resulValue > 0)
             {
@@ -272,14 +272,14 @@ namespace Integration
                 db.Entry(integrationInstance).State = EntityState.Modified;
                 db.SaveChanges();
                 //// Start - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
-                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("End Time", instanceLogStart.SyncEnd.ToString()), Enums.SyncStatus.Info, DateTime.Now));
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("End Time", instanceLogStart.SyncEnd.ToString()), Enums.SyncStatus.Header, DateTime.Now));
                 TimeSpan ElapsedTicks = instanceLogStart.SyncEnd.Value.Subtract(instanceLogStart.SyncStart);
                 DateTime ElapsedTime = new DateTime(ElapsedTicks.Ticks);
-                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Elapsed Time", ElapsedTime.ToString("HH:mm:ss")), Enums.SyncStatus.Info, DateTime.Now));
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Elapsed Time", ElapsedTime.ToString("HH:mm:ss")), Enums.SyncStatus.Header, DateTime.Now));
                 if (_integrationInstanceId.HasValue)
                 {
                     string InstanceName = Common.GetInstanceName(_integrationInstanceId.Value);
-                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Instance Name used for synching", InstanceName), Enums.SyncStatus.Info, DateTime.Now));
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Instance Name used for synching", InstanceName), Enums.SyncStatus.Header, DateTime.Now));
                 }
                 //// End - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
             }
@@ -307,7 +307,7 @@ namespace Integration
                         {
                             BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
                             ClientName = objBDSUserRepository.GetClientName(_userId);
-                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Info, DateTime.Now));
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Header, DateTime.Now));
                         }
                         catch
                         {
@@ -316,10 +316,10 @@ namespace Integration
                         }
                         
                         ///// Set info row data for no of tactic processed with count
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities liable for synching", Common.tacticSyncTotal.ToString()), Enums.SyncStatus.Info, DateTime.Now));
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities successfully synched", Common.tacticSyncSuccess.ToString()), Enums.SyncStatus.Info, DateTime.Now));
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities liable for synching", Common.tacticSyncTotal.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities successfully synched", Common.tacticSyncSuccess.ToString()), Enums.SyncStatus.Header, DateTime.Now));
                         int tacticSyncFailed = Common.tacticSyncTotal - Common.tacticSyncSuccess;
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities failed due to some reason", tacticSyncFailed.ToString()), Enums.SyncStatus.Info, DateTime.Now));
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities failed due to some reason", tacticSyncFailed.ToString()), Enums.SyncStatus.Header, DateTime.Now));
                         /////
 
                         //// Replace mail template tags with corresponding data

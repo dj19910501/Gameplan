@@ -143,6 +143,7 @@ namespace Integration.Helper
         /// </summary>
         public enum SyncStatus 
         {
+            Header,
             Success,
             Error,
             Warning,

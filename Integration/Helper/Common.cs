@@ -516,24 +516,15 @@ namespace Integration.Helper
             if (lstSyncError.Count > 0)
             {
                 StringBuilder sbErroBody = new StringBuilder(string.Empty);
-                List<string> lstInfo = lstSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Info).Select(syncError => syncError.Message).ToList();
+                List<string> lstInfo = lstSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Header).Select(syncError => syncError.Message).ToList();
                 if (lstInfo.Count > 0)
                 {
                     sbErroBody.Append("<table width='100%' border='1' color='#908d88' cellspacing='0' cellpadding='0'>");
                     lstInfo.ForEach(info => sbErroBody.Append(info));
                     sbErroBody.Append("</table>");
                 }
-                
 
-                sbErroBody.Append("<br>");
-                sbErroBody.Append("<table width='100%' border='1' color='#908d88' cellspacing='0' cellpadding='0'>");
-                sbErroBody.Append("<tr>");
-                sbErroBody.Append("<th width='65%'>Description</th>");
-                sbErroBody.Append("<th width='10%'>Status</th>");
-                sbErroBody.Append("<th width='25%'>Timestamp</th>");
-                sbErroBody.Append("</tr>");
-
-                var lstError = lstSyncError.Where(syncError => syncError.SyncStatus != Enums.SyncStatus.Info)
+                var lstError = lstSyncError.Where(syncError => syncError.SyncStatus != Enums.SyncStatus.Header)
                                             .GroupBy(item => new { EntityId = item.EntityId, Message = item.Message })
                                             .Select(groupItem => new
                                             {
@@ -542,13 +533,25 @@ namespace Integration.Helper
                                                 SyncStatus = groupItem.Select(item => item.SyncStatus).FirstOrDefault(),
                                                 Message = groupItem.Select(item => item.Message).FirstOrDefault(),
                                             }).Distinct().ToList();
-                
-                foreach (var item in lstError)
+
+                if (lstError.Count > 0)
                 {
-                    sbErroBody.Append(string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", item.Message, item.SyncStatus.ToString(), item.TimeStamp, item.EntityId > 0 ? item.EntityId.ToString() : string.Empty));
+                    sbErroBody.Append("<br>");
+                    sbErroBody.Append("<table width='100%' border='1' color='#908d88' cellspacing='0' cellpadding='0'>");
+                    sbErroBody.Append("<tr>");
+                    sbErroBody.Append("<th width='65%'>Description</th>");
+                    sbErroBody.Append("<th width='10%'>Status</th>");
+                    sbErroBody.Append("<th width='25%'>Timestamp</th>");
+                    sbErroBody.Append("</tr>");
+
+                    foreach (var item in lstError)
+                    {
+                        sbErroBody.Append(string.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", item.Message, item.SyncStatus.ToString(), item.TimeStamp, item.EntityId > 0 ? item.EntityId.ToString() : string.Empty));
+                    }
+
+                    sbErroBody.Append("</table>");
                 }
-                
-                sbErroBody.Append("</table>");
+
                 return sbErroBody.ToString();
             }
             

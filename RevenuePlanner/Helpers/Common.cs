@@ -24,6 +24,7 @@ using System.Transactions;
 using System.Data;
 using System.Text.RegularExpressions;
 using Integration;
+using System.Reflection;
 
 namespace RevenuePlanner.Helpers
 {
@@ -4926,6 +4927,66 @@ namespace RevenuePlanner.Helpers
             }
 
             return lstExternalFieldsPulling;
+        }
+        #endregion
+
+        #region Update plan year value
+        /// <summary>
+        /// Function to update planyear of child activities of a plan
+        /// </summary>
+        /// <param name="PlanId">plan id of a plan</param>
+        /// <param name="PlanYear">new plan year value</param>
+        /// <returns>returns the status flag</returns>
+        public static int UpdatePlanYearOfActivities(int PlanId, int PlanYear)
+        {
+            int returnFlag = 0;
+            if (PlanId == 0)
+            {
+                return returnFlag;
+            }
+            
+            List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
+            MRPEntities db = new MRPEntities();
+
+            try
+            {
+                Plan proj = db.Plans.FirstOrDefault(p => p.PlanId == PlanId && p.IsDeleted == false);
+                if (proj != null)
+                {
+                    proj.Plan_Campaign.Where(s => s.IsDeleted == false).ToList().ForEach(
+                        t =>
+                        {
+                            t.StartDate = t.StartDate.AddYears(PlanYear - t.StartDate.Year);
+                            t.EndDate = t.EndDate.AddYears(PlanYear - t.EndDate.Year);
+                            t.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(pcp =>
+                            {
+                                pcp.StartDate = pcp.StartDate.AddYears(PlanYear - pcp.StartDate.Year);
+                                pcp.EndDate = pcp.EndDate.AddYears(PlanYear - pcp.EndDate.Year);
+                                pcp.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
+                                {
+                                    pcpt.StartDate = pcpt.StartDate.AddYears(PlanYear - pcpt.StartDate.Year);
+                                    pcpt.EndDate = pcpt.EndDate.AddYears(PlanYear - pcpt.EndDate.Year);
+                                    pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
+                                    pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
+                                    {
+                                        pcptl.StartDate = pcptl.StartDate.HasValue ? pcptl.StartDate.Value.AddYears(PlanYear - pcptl.StartDate.Value.Year) : pcptl.StartDate;
+                                        pcptl.EndDate = pcptl.EndDate.HasValue ? pcptl.EndDate.Value.AddYears(PlanYear - pcptl.EndDate.Value.Year) : pcptl.EndDate;
+                                    });
+                                });
+                            });
+                        });
+
+                    proj.Plan_Campaign = proj.Plan_Campaign.ToList();
+                    db.Entry(proj).State = EntityState.Modified;
+                    returnFlag = db.SaveChanges();
+                    return returnFlag;
+                }
+                return returnFlag;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         #endregion
     }
