@@ -70,7 +70,7 @@ namespace RevenuePlanner
                       //  "~/Scripts/js/scripts_extended.js",
                         "~/Scripts/jquery.form.js",
                          "~/Scripts/js/bootstrap-datepicker.js",
-                        "~/Scripts/js/jquery.price_format.1.8.js",
+                        "~/Scripts/js/jquery.price_format.1.8_v1.js",
                         "~/Scripts/js/slimScrollHorizontal.js",
                         "~/Scripts/jquery.selectbox-0.2.js",
                          "~/Scripts/summernote_min.js",
