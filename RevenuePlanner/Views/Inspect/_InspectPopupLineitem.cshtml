@@ -52,7 +52,7 @@
 @Html.Hidden("hdnLineitemOpt", "View", new { id = "hdnLineitemOpt" })
 @Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
 
-@Html.Hidden("hdnParentTacticStatus", TacticStatus, new { id = "hdnParentTacticStatus" })
+@Html.Hidden("hdnTacticStatus", TacticStatus, new { id = "hdnTacticStatus" })
 <style type="text/css">
     #successMessageViewCampaign, #errorMessageEditCampaign {
         margin-bottom: 15px !important;
@@ -236,7 +236,7 @@
               else if (tabtext == "Actuals") {
                   //// Modified By: Arpita Soni on 1/7/2015.
                   //// Ticket: 1067 
-                  var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+                  var hdnTacticStatus = $("#hdnTacticStatus").val();
                   var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
                   var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
                   var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
