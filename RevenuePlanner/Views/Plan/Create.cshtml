@@ -893,8 +893,8 @@
             checkCampaignBudget(this);
         }
     });
-
-    $('.budget-month .priceValue').keyup(function () {
+    
+    $('.budget-month .priceValue').blur(function () {   // Modified by Arpita Soni on 01/12/2015 for ticket #1071
         if (this.id.toString() != 'unallocatedBudget') {
             var allocatedBudget = calculateAllocatedBudgetMonthly();
             checkBudgetDifference(allocatedBudget, $('#divMonthlyBudget'));
@@ -902,7 +902,7 @@
         }
     });
 
-    $('.budget-quarters .priceValue').keyup(function () {
+    $('.budget-quarters .priceValue').blur(function () {   // Modified by Arpita Soni on 01/12/2015 for ticket #1071
         if (this.id.toString() != 'unallocatedBudget') {
             var allocatedBudget = calculateAllocatedBudgetQuarterly();
             checkBudgetDifference(allocatedBudget, $('#divQuarterlyBudget'));

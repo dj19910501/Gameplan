@@ -197,6 +197,7 @@
 			// filter what user type (only numbers and functional keys)
 			function key_check (e)
 			{
+			    var obj = $(this);          // Added by Arpita Soni on 01/12/2015 for ticket #1071
 			    var code = (e.keyCode ? e.keyCode : e.which);
 			    var typed = String.fromCharCode(code);
 				var functional = false;
@@ -275,7 +276,7 @@
 
 			// bind the actions
 			$(this).bind('keydown.price_format', key_check);
-			$(this).bind('keyup.price_format', price_it);
+			//$(this).bind('keyup.price_format', price_it); // Commented by Arpita Soni on 01/12/2015 for ticket #1071
 			$(this).bind('focusout.price_format', price_it);
 
 			// Clear Prefix and Add Prefix
