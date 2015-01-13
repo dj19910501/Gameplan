@@ -94,7 +94,8 @@ namespace Integration.Helper
             Plan_Campaign,
             Plan_Campaign_Program,
             Plan_Campaign_Program_Tactic,
-            Vertical
+            Vertical,
+            TacticType
         }
 
         public enum clientAcivity

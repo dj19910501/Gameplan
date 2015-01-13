@@ -354,6 +354,7 @@ namespace RevenuePlanner.Controllers
                                             objTacticType.IsDeployedToModel = false;
                                             objTacticType.ModelId = intModelid;
                                             objTacticType.Title = clientTacticType.Title;
+                                            objTacticType.Abbreviation = clientTacticType.Abbreviation;
                                             objDbMrpEntities.TacticTypes.Add(objTacticType);
                                         }
 
