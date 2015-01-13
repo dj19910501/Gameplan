@@ -340,6 +340,11 @@ namespace Integration.Helper
                             string tacticTitle = RemoveSpaceAndUppercaseFirst(System.Web.HttpUtility.HtmlDecode(objTactic.Title));
                             customTacticName.Append(tacticTitle + "_");
                         }
+                        else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.TacticType.ToString())
+                        {
+                            string tacticTypeTitle = RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Abbreviation);
+                            customTacticName.Append(tacticTypeTitle + "_");
+                        }
                     }
                     if (customTacticName.ToString().Length > 0)
                     {

@@ -2233,7 +2233,7 @@ namespace Integration.Salesforce
             if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
             {
                 string titleMappedValue = _mappingTactic["Title"].ToString();
-                tactic.Remove(titleMappedValue);
+                tactic[titleMappedValue] = planTactic.TacticCustomName;
             }
             return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
         }
