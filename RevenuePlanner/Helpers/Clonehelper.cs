@@ -178,12 +178,13 @@ namespace RevenuePlanner.Helpers
                             foreach (var tactic in tacticList)
                             {
                                 var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
-                                int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
-                                tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                                if (clonedProgram.Plan_Campaign_Program_Tactic.Count > 0)
+                                {
+                                    int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
+                                    tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                                }
                             }
-
                         }
-
                     }
                     db.SaveChanges();
                     ////End Added by Mitesh Vaishnav for PL ticket #718
