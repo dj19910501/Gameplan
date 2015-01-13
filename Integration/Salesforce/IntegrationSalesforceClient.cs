@@ -288,7 +288,8 @@ namespace Integration.Salesforce
             {
                 if (!string.IsNullOrEmpty(_EloquaTac.EloquaIntegrationInstanceTacticId))
                 {
-
+                    try
+                    {
                     Integration.Eloqua.EloquaCampaign objEloqua = new Integration.Eloqua.EloquaCampaign();
                     
                     //// Initialize eloqua integration instance
@@ -298,7 +299,7 @@ namespace Integration.Salesforce
                     objEloqua = integrationEloquaClient.GetEloquaCampaign(_EloquaTac.EloquaIntegrationInstanceTacticId);
                     if (objEloqua != null)
                     {
-                        var _Tactic = lstAllTactics.Where(s => s.IntegrationInstanceTacticId.Equals(_EloquaTac.EloquaIntegrationInstanceTacticId)).Select(_tac => _tac).FirstOrDefault();
+                            var _Tactic = lstAllTactics.Where(s => s.IntegrationInstanceTacticId == _EloquaTac.EloquaIntegrationInstanceTacticId).Select(_tac => _tac).FirstOrDefault();
                         lstSalesForceIntegrationInstanceTacticIds.Add(
                                                                   new CRM_EloquaMapping
                                                                   {
@@ -307,6 +308,11 @@ namespace Integration.Salesforce
                                                                       PlanTacticId = _Tactic != null ?_Tactic.PlanTacticId:0,
                                                                       StartDate = _Tactic != null ?_Tactic.StartDate:(new DateTime()),
                                                                   });
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        continue;
                     }
                 }
             }
