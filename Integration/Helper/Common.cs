@@ -47,6 +47,7 @@ namespace Integration.Helper
         public static string msgMappingNotFoundForEloquaPullMQL = "Error: Mapping does not found for CampaignId or MQLDateId or ViewId or ListId";
         public static int tacticSyncTotal { get; set; }
         public static int tacticSyncSuccess { get; set; }
+        public static int tacticSyncNotProccessed { get; set; }
         
         public static bool IsAutoSync = false;
         /// <summary>
@@ -110,6 +111,7 @@ namespace Integration.Helper
             }
             else
             {
+                Common.tacticSyncNotProccessed = Common.tacticSyncNotProccessed + 1;
                 return Enums.Mode.None;
             }
         }
@@ -338,6 +340,11 @@ namespace Integration.Helper
                             string tacticTitle = RemoveSpaceAndUppercaseFirst(System.Web.HttpUtility.HtmlDecode(objTactic.Title));
                             customTacticName.Append(tacticTitle + "_");
                         }
+                        else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.TacticType.ToString())
+                        {
+                            string tacticTypeTitle = RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Abbreviation);
+                            customTacticName.Append(tacticTypeTitle + "_");
+                        }
                     }
                     if (customTacticName.ToString().Length > 0)
                     {
@@ -525,7 +532,7 @@ namespace Integration.Helper
                 }
 
                 var lstError = lstSyncError.Where(syncError => syncError.SyncStatus != Enums.SyncStatus.Header)
-                                            .GroupBy(item => new { EntityId = item.EntityId, Message = item.Message })
+                                            .GroupBy(item => new { EntityId = item.SyncStatus, Message = item.Message })
                                             .Select(groupItem => new
                                             {
                                                 EntityId = groupItem.Key.EntityId,

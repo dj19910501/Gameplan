@@ -536,6 +536,7 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="CustomField">
           <Key>
@@ -865,6 +866,7 @@
           <Property Name="Description" Type="nvarchar" />
           <Property Name="ColorCode" Type="nvarchar" Nullable="false" MaxLength="10" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Model">
           <Key>
@@ -1396,6 +1398,7 @@
           <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
           <Property Name="ProjectedStageValue" Type="float" />
           <Property Name="IsDeployedToModel" Type="bit" Nullable="false" />
+          <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -2985,6 +2988,7 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
+          <Property Type="String" Name="Abbreviation" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Field">
           <Key>
@@ -3260,6 +3264,7 @@
           <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ColorCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="String" Name="Abbreviation" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Model">
           <Key>
@@ -3846,6 +3851,7 @@
           <NavigationProperty Name="Model" Relationship="MRPModel.fk_TacticType_Model" FromRole="TacticType" ToRole="Model" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.fk_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
+          <Property Type="String" Name="Abbreviation" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -5206,6 +5212,7 @@
           <EntitySetMapping Name="ClientTacticTypes">
             <EntityTypeMapping TypeName="MRPModel.ClientTacticType">
               <MappingFragment StoreEntitySet="ClientTacticType">
+                <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
@@ -5456,6 +5463,7 @@
           <EntitySetMapping Name="MasterTacticTypes">
             <EntityTypeMapping TypeName="MRPModel.MasterTacticType">
               <MappingFragment StoreEntitySet="MasterTacticType">
+                <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
@@ -5963,6 +5971,7 @@
           <EntitySetMapping Name="TacticTypes">
             <EntityTypeMapping TypeName="MRPModel.TacticType">
               <MappingFragment StoreEntitySet="TacticType">
+                <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
                 <ScalarProperty Name="IsDeployedToModel" ColumnName="IsDeployedToModel" />
                 <ScalarProperty Name="ProjectedStageValue" ColumnName="ProjectedStageValue" />
                 <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />

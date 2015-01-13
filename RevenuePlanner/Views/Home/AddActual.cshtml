@@ -140,6 +140,8 @@
                             else{
                             <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
                         }
+                            @*Added by Arpita Soni on 01/13/2015 for ticket #1090*@
+                            <div id="NoOwnerFound1" class="NoDataFoundFilter" style="display:none">No Owner Found</div>
                     </div>
                     </div>
                 </div>
@@ -232,6 +234,7 @@
 
         function liOpenTabClick() {
             Status = 0;
+            ShowOwnerList(); //Added by Arpita Soni on 01/13/2015 for ticket #1090
             $("#liOpen").addClass('active');
             $("#liAll").removeClass('active');
             $("#errorMessage").css("display", "none");
@@ -243,6 +246,7 @@
 
         function liAllTabClick() {
             Status = 1;
+            ShowOwnerList(); //Added by Arpita Soni on 01/13/2015 for ticket #1090
             $("#liOpen").removeClass('active');
             $("#liAll").addClass('active');//#585
             $("#errorMessage").css("display", "none");
@@ -250,6 +254,14 @@
             $("#div-user-Note").show();
             CallAjax();
         }
+
+        //Added by Arpita Soni on 01/13/2015 for ticket #1090
+        function ShowOwnerList() {
+            $('#ulSelectedOwner li').show();
+            $('#ulOwnerAllModule ').show();
+            $('#NoOwnerFound1').hide();
+        }
+        //Ended by Arpita Soni on 01/13/2015 for ticket #1090
 
         var IsShowOnlyMyTactic = false
         $("#AShowOnlyMyTactic").click(function () {
@@ -845,9 +857,19 @@
                 } else {
                     if (Status == 0) {
                         $html += '@RevenuePlanner.Helpers.Common.objCached.NoOpenTacticExists';
+                        //Added by Arpita Soni on 01/13/2015 for ticket #1090
+                        $('#ulSelectedOwner li').hide();
+                        $('#ulOwnerAllModule ').hide();
+                        $('#NoOwnerFound1').show();
+                        //Ended by Arpita Soni on 01/13/2015 for ticket #1090
                     }
                     else {
                         $html += '@RevenuePlanner.Helpers.Common.objCached.NoTacticExistPlan';
+                        //Added by Arpita Soni on 01/13/2015 for ticket #1090
+                        $('#ulSelectedOwner li').hide();
+                        $('#ulOwnerAllModule ').hide();
+                        $('#NoOwnerFound1').show();
+                        //Ended by Arpita Soni on 01/13/2015 for ticket #1090
                     }
                     var $tableActuals = $('.accordion-actuals');
 

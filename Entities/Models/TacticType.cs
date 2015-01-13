@@ -35,6 +35,7 @@ namespace RevenuePlanner.Models
         public bool IsDeployedToIntegration { get; set; }
         public Nullable<double> ProjectedStageValue { get; set; }
         public bool IsDeployedToModel { get; set; }
+        public string Abbreviation { get; set; }
     
         public virtual Model Model { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
