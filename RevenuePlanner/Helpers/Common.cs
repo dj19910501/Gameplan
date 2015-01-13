@@ -4976,7 +4976,21 @@ namespace RevenuePlanner.Helpers
                         });
 
                     proj.Plan_Campaign = proj.Plan_Campaign.ToList();
+
+                    proj.Plan_Improvement_Campaign.Where(improvementCampaign => improvementCampaign.ImprovePlanId.Equals(PlanId)).ToList().ForEach(improvementCampaign =>
+                    {
+                        improvementCampaign.Plan_Improvement_Campaign_Program.ToList().ForEach(improvementProgram =>
+                            {
+                                improvementProgram.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => improvementTactic.IsDeleted.Equals(false)).ToList().ForEach(improvementTactic =>
+                                {
+                                    improvementTactic.EffectiveDate = improvementTactic.EffectiveDate.AddYears(PlanYear - improvementTactic.EffectiveDate.Year);
+                                });
+                            });
+                    });
+                    proj.Plan_Improvement_Campaign = proj.Plan_Improvement_Campaign.ToList();
+
                     db.Entry(proj).State = EntityState.Modified;
+
                     returnFlag = db.SaveChanges();
                     return returnFlag;
                 }
