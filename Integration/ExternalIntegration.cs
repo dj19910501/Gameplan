@@ -122,6 +122,16 @@ namespace Integration
         }
 
         /// <summary>
+        /// Function to reset common counting variables
+        /// </summary>
+        private void ResetCommonCounters()
+        {
+            Common.tacticSyncNotProccessed = 0;
+            Common.tacticSyncSuccess = 0;
+            Common.tacticSyncTotal = 0;
+        }
+
+        /// <summary>
         /// ImprovementTactic synchronization
         /// </summary>
         private void SyncImprovementTactic()//new code added for #532 by uday
@@ -234,6 +244,7 @@ namespace Integration
                 }
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
                 {
+                    ResetCommonCounters();
                     IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationEloquaClient.IsAuthenticated)
                     {
@@ -320,9 +331,17 @@ namespace Integration
                             }
 
                             ///// Set info row data for no of tactic processed with count
+                            if (Common.tacticSyncTotal >= Common.tacticSyncNotProccessed)
+                            {
+                                Common.tacticSyncTotal = Common.tacticSyncTotal - Common.tacticSyncNotProccessed;
+                            }
+                            int tacticSyncFailed = 0;
+                            if (Common.tacticSyncTotal >= Common.tacticSyncSuccess)
+                            {
+                                tacticSyncFailed =  Common.tacticSyncTotal - Common.tacticSyncSuccess;
+                            }
                             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities liable for synching", Common.tacticSyncTotal.ToString()), Enums.SyncStatus.Header, DateTime.Now));
                             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities successfully synched", Common.tacticSyncSuccess.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-                            int tacticSyncFailed = Common.tacticSyncTotal - Common.tacticSyncSuccess;
                             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities failed due to some reason", tacticSyncFailed.ToString()), Enums.SyncStatus.Header, DateTime.Now));
                             /////
 
@@ -355,6 +374,7 @@ namespace Integration
                             }
                         }
                     }
+                    ResetCommonCounters();
                 }
             }
             catch

@@ -441,7 +441,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "System error occured while pulling response from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "System error occurred while pulling response from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
                     string msg = e.Message;
                     // Update IntegrationInstanceSection log with Error status
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
@@ -531,7 +531,7 @@ namespace Integration.Eloqua
                     }
                     catch (Exception ex)
                     {
-                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "An error occured while connecting to external server via SFTP.", Enums.SyncStatus.Error, DateTime.Now));
+                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "An error occurred while connecting to external server via SFTP.", Enums.SyncStatus.Error, DateTime.Now));
                         throw new Exception(Common.msgNotConnectToExternalServer, ex.InnerException);
                     }
 
@@ -673,7 +673,7 @@ namespace Integration.Eloqua
                                     }
                                     catch (Exception ex)
                                     {
-                                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "An error occured while creating directory at external server.", Enums.SyncStatus.Error, DateTime.Now));
+                                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "An error occurred while creating directory at external server.", Enums.SyncStatus.Error, DateTime.Now));
                                     }
 
                                     // Upload processed local file to external server archived folder
@@ -699,7 +699,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception ex)
                 {
-                    lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "System error occured while processing tactic response from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
+                    lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "System error occurred while processing tactic response from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
                     throw ex;
