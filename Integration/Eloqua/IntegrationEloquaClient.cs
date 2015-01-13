@@ -1591,6 +1591,7 @@ namespace Integration.Eloqua
         {
             try
             {
+                _unixEpochTime = new DateTime(1970, 1, 1, 0, 0, 0);
                 TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                 DateTime _unixEpochTimeOtherTimeZone = TimeZoneInfo.ConvertTimeFromUtc(_unixEpochTime, timeZone);
                 DateTime dateOtherTimeZone = TimeZoneInfo.ConvertTimeFromUtc(date, timeZone);

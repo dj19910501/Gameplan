@@ -85,6 +85,10 @@ namespace RevenuePlanner.Helpers
                     proj.Plan_Improvement_Campaign = null;
                     proj.Plan_Budget = proj.Plan_Budget.ToList();
                     proj.Plan_Team = null;
+                    //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1127
+                    proj.ModifiedDate = null;
+                    proj.ModifiedBy = null;
+                    //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1127
                     //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                     proj.Year = DateTime.Now.Year.ToString();
                     //// End - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
