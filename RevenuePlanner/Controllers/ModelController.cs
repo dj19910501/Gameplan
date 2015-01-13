@@ -2080,8 +2080,12 @@ namespace RevenuePlanner.Controllers
                     //// Change : add new condition t.ModelId == null
                     if (existingTacticTypes.Count == 0)
                     {
-                        var getPreviousTacticTypeId = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.TacticTypeId == TacticTypeId).Select(tacticType => tacticType.PreviousTacticTypeId).FirstOrDefault();
-                        objtactic.PreviousTacticTypeId = getPreviousTacticTypeId;
+                        var objTacticType = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.TacticTypeId == TacticTypeId).FirstOrDefault();
+                        if (objTacticType != null)
+                        {
+                            objtactic.Abbreviation = objTacticType.Abbreviation;
+                            objtactic.PreviousTacticTypeId = objTacticType.PreviousTacticTypeId;
+                        }
                         objtactic.TacticTypeId = TacticTypeId;
                         objtactic.IsDeleted = false;
 
@@ -2211,6 +2215,7 @@ namespace RevenuePlanner.Controllers
                                 //// changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                                 objtactic.ProjectedStageValue = obj.ProjectedStageValue;
                                 objtactic.ProjectedRevenue = obj.ProjectedRevenue;
+                                objtactic.Abbreviation = obj.Abbreviation;
                                 string StageType = Enums.StageType.CR.ToString();
                                 Model_Funnel_Stage objStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().FirstOrDefault();
                                 if (objStage != null)
