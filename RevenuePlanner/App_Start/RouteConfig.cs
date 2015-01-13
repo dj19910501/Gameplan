@@ -12,6 +12,7 @@ namespace RevenuePlanner
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.Ignore("Model/Tactics/{id}");
+            routes.Ignore("Plan/Create/{id}");
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.MapRoute(
                 name: "Default",
