@@ -87,6 +87,7 @@ namespace RevenuePlanner.Helpers
                     proj.Plan_Team = null;
                     //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1127
                     proj.ModifiedDate = null;
+                    proj.ModifiedBy = null;
                     //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1127
                     //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                     proj.Year = DateTime.Now.Year.ToString();
@@ -101,6 +102,10 @@ namespace RevenuePlanner.Helpers
                             t.Vertical = null;
                             t.Audience = null;
                             t.Geography = null;
+                            //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
+                            t.ModifiedDate = null;
+                            t.ModifiedBy = null;
+                            //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                             //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                             t.StartDate = t.StartDate.AddYears(DateTime.Now.Year - t.StartDate.Year);
                             t.EndDate = t.EndDate.AddYears(DateTime.Now.Year - t.EndDate.Year);
@@ -114,6 +119,11 @@ namespace RevenuePlanner.Helpers
                                 pcp.Geography = null;
                                 pcp.Vertical = null;
                                 pcp.Status = TacticStatus;
+                                //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
+                                pcp.CreatedDate = DateTime.Now;
+                                pcp.ModifiedDate = null;
+                                pcp.ModifiedBy = null;
+                                //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                 //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                 pcp.StartDate = pcp.StartDate.AddYears(DateTime.Now.Year - pcp.StartDate.Year);
                                 pcp.EndDate = pcp.EndDate.AddYears(DateTime.Now.Year - pcp.EndDate.Year);
@@ -133,6 +143,12 @@ namespace RevenuePlanner.Helpers
                                     pcpt.Stage = null;
                                     pcpt.TacticType = null;
                                     pcpt.Status = TacticStatus;
+                                    //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
+                                    pcpt.CreatedDate = DateTime.Now;
+                                    pcpt.ModifiedDate = null;
+                                    pcpt.ModifiedBy = null;
+                                    pcpt.TacticCustomName = null;
+                                    //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                     //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                     pcpt.StartDate = pcpt.StartDate.AddYears(DateTime.Now.Year - pcpt.StartDate.Year);
                                     pcpt.EndDate = pcpt.EndDate.AddYears(DateTime.Now.Year - pcpt.EndDate.Year);
@@ -141,6 +157,11 @@ namespace RevenuePlanner.Helpers
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                                     {
+                                        //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
+                                        pcptl.CreatedDate = DateTime.Now;
+                                        pcptl.ModifiedDate = null;
+                                        pcptl.ModifiedBy = null;
+                                        //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                         //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                         pcptl.StartDate = pcptl.StartDate.HasValue ? pcptl.StartDate.Value.AddYears(DateTime.Now.Year - pcptl.StartDate.Value.Year) : pcptl.StartDate;
                                         pcptl.EndDate = pcptl.EndDate.HasValue ? pcptl.EndDate.Value.AddYears(DateTime.Now.Year - pcptl.EndDate.Value.Year) : pcptl.EndDate;
