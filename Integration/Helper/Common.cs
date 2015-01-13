@@ -329,7 +329,7 @@ namespace Integration.Helper
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.TacticType.ToString())
                         {
-                            string tacticTypeTitle = RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Abbreviation);
+                            string tacticTypeTitle = !string.IsNullOrEmpty(objTactic.TacticType.Abbreviation) ? RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Abbreviation) : RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Title);
                             customTacticName.Append(tacticTypeTitle + "_");
                         }
                     }
