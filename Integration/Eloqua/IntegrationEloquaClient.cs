@@ -244,14 +244,11 @@ namespace Integration.Eloqua
                 CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                 // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
                 
-                Common.tacticSyncTotal = 1;
-                
                 planTactic = SyncTacticData(planTactic);
                 db.SaveChanges();
             }
             else if (EntityType.ImprovementTactic.Equals(_entityType))
             {
-                Common.tacticSyncTotal = 1;
                 Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id).SingleOrDefault();
                 planImprovementTactic = SyncImprovementData(planImprovementTactic);
                 db.SaveChanges();
@@ -555,7 +552,7 @@ namespace Integration.Eloqua
                     List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
                     CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                     // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
-                    Common.tacticSyncTotal = tacticList.Count;
+                    
                     for (int index = 0; index < tacticList.Count; index++)
                     {
                         tacticList[index] = SyncTacticData(tacticList[index]);
@@ -568,15 +565,6 @@ namespace Integration.Eloqua
                 {
                     List<Plan_Improvement_Campaign_Program_Tactic> tacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).ToList();
                     
-                    if (Common.tacticSyncTotal >= 0)
-                    {
-                        Common.tacticSyncTotal = Common.tacticSyncTotal + tacticList.Count;
-                    }
-                    else
-                    {
-                        Common.tacticSyncTotal = tacticList.Count;
-                    }
-
                     for (int index = 0; index < tacticList.Count; index++)
                     {
                         tacticList[index] = SyncImprovementData(tacticList[index]);
@@ -632,18 +620,18 @@ namespace Integration.Eloqua
             if (response != null && response.ResponseStatus == ResponseStatus.Completed && response.StatusCode == HttpStatusCode.Created)
             {
                 tactidId = response.Data.id;
-                Common.tacticSyncSuccess = Common.tacticSyncSuccess + 1;
+                _lstSyncError.Add(Common.PrepareSyncErrorList(Convert.ToInt32(response.Data.id), Enums.EntityType.Tactic, Enums.Mode.Create.ToString(), Enums.SyncStatus.Success, DateTime.Now));
             }
             else
             {
                 //// Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
                 if (tactic.ContainsKey("Title"))
                 {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Eloqua exception occurred while creating campaign at Eloqua for tactic : \"" + tactic["Title"] + "\"", Enums.SyncStatus.Error, DateTime.Now));
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(int.Parse(tactic["id"].ToString()), Enums.EntityType.Tactic, "Eloqua exception occurred while creating campaign at Eloqua for tactic : \"" + tactic["Title"] + "\"", Enums.SyncStatus.Error, DateTime.Now));
                 }
                 else
                 {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Eloqua exception occurred while creating campaign at Eloqua for a tactic.", Enums.SyncStatus.Error, DateTime.Now));
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(int.Parse(tactic["id"].ToString()), Enums.EntityType.Tactic, "Eloqua exception occurred while creating campaign at Eloqua for a tactic.", Enums.SyncStatus.Error, DateTime.Now));
                 }
                 //// End - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
                 throw new Exception(response.StatusCode.ToString(), response.ErrorException);
@@ -694,7 +682,7 @@ namespace Integration.Eloqua
 
             if (response.Data != null)
             {
-                Common.tacticSyncSuccess = Common.tacticSyncSuccess + 1;
+                _lstSyncError.Add(Common.PrepareSyncErrorList(Convert.ToInt32(id), Enums.EntityType.Tactic, Enums.Mode.Update.ToString(), Enums.SyncStatus.Success, DateTime.Now));
                 return response.Data.id.Equals(id);
             }
             else
@@ -702,11 +690,11 @@ namespace Integration.Eloqua
                 //// Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
                 if (tactic.ContainsKey("Title"))
                 {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Eloqua exception occurred while updating campaign at Eloqua for tactic: \"" + tactic["Title"] + "\"", Enums.SyncStatus.Error, DateTime.Now));
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(int.Parse(tactic["id"].ToString()), Enums.EntityType.Tactic, "Eloqua exception occurred while updating campaign at Eloqua for tactic: \"" + tactic["Title"] + "\"", Enums.SyncStatus.Error, DateTime.Now));
                 }
                 else
                 {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Eloqua exception occurred while updating campaign at Eloqua for a tactic.", Enums.SyncStatus.Error, DateTime.Now));
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(int.Parse(tactic["id"].ToString()), Enums.EntityType.Tactic, "Eloqua exception occurred while updating campaign at Eloqua for a tactic.", Enums.SyncStatus.Error, DateTime.Now));
                 }
                 //// End - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
                 throw new Exception(string.Format("[{0}] [{1}]", response.StatusCode.ToString(), response.StatusDescription), response.ErrorException);
@@ -1544,7 +1532,7 @@ namespace Integration.Eloqua
                 if ((response.ResponseStatus == ResponseStatus.Error && response.StatusCode == HttpStatusCode.NotFound) ||
                     (HttpStatusCode.OK == response.StatusCode && response.ResponseStatus == ResponseStatus.Completed))
                 {
-                    Common.tacticSyncSuccess = Common.tacticSyncSuccess + 1;
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(Convert.ToInt32(id), Enums.EntityType.Tactic, Enums.Mode.Delete.ToString(), Enums.SyncStatus.Success, DateTime.Now));
                     return true;
                 }
 

@@ -122,16 +122,6 @@ namespace Integration
         }
 
         /// <summary>
-        /// Function to reset common counting variables
-        /// </summary>
-        private void ResetCommonCounters()
-        {
-            Common.tacticSyncNotProccessed = 0;
-            Common.tacticSyncSuccess = 0;
-            Common.tacticSyncTotal = 0;
-        }
-
-        /// <summary>
         /// ImprovementTactic synchronization
         /// </summary>
         private void SyncImprovementTactic()//new code added for #532 by uday
@@ -244,7 +234,6 @@ namespace Integration
                 }
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
                 {
-                    ResetCommonCounters();
                     IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationEloquaClient.IsAuthenticated)
                     {
@@ -282,6 +271,7 @@ namespace Integration
                 db.Entry(instanceLogStart).State = EntityState.Modified;
                 db.Entry(integrationInstance).State = EntityState.Modified;
                 db.SaveChanges();
+
                 //// Start - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
                 _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("End Time", instanceLogStart.SyncEnd.ToString()), Enums.SyncStatus.Header, DateTime.Now));
                 TimeSpan ElapsedTicks = instanceLogStart.SyncEnd.Value.Subtract(instanceLogStart.SyncStart);
@@ -295,7 +285,46 @@ namespace Integration
                 //// End - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
             }
         }
-        
+
+        /// <summary>
+        /// Function to prepare sync error email header data
+        /// </summary>
+        private void PrepareSyncErroMailHeader()
+        {
+            //// get userdetails of the logged in user
+            string ClientName = string.Empty;
+            try
+            {
+                BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                ClientName = objBDSUserRepository.GetClientName(_userId);
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Header, DateTime.Now));
+            }
+            catch
+            {
+                //// Service related exception
+                return;
+            }
+
+            //// Set info row data for no of tactic processed with count
+            Int32 SuccessTacticCount = 0;
+            SuccessTacticCount = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Success && syncError.EntityId > 0)
+                                                    .GroupBy(item => new { EntityId = item.EntityId })
+                                                    .Select(groupItem => groupItem).Count();
+
+            Int32 FailedTacticCount = 0;
+            FailedTacticCount = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.EntityId > 0)
+                                                    .GroupBy(item => new { EntityId = item.EntityId })
+                                                    .Select(groupItem => groupItem).Count();
+
+            Int32 TotalTacticCount = 0;
+            TotalTacticCount = SuccessTacticCount + FailedTacticCount;
+
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities liable for synching", TotalTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities successfully synched", SuccessTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities failed due to some reason", FailedTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+            /////
+        }
+
         /// <summary>
         /// Function to send an error email while IntegrationInstance sync of Eloqua
         /// </summary>
@@ -316,34 +345,7 @@ namespace Integration
 
                         if (objNotification != null)
                         {
-                            //// get userdetails of the logged in user
-                            string ClientName = string.Empty;
-                            try
-                            {
-                                BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                                ClientName = objBDSUserRepository.GetClientName(_userId);
-                                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Header, DateTime.Now));
-                            }
-                            catch
-                            {
-                                //// Service related exception
-                                return;
-                            }
-
-                            ///// Set info row data for no of tactic processed with count
-                            if (Common.tacticSyncTotal >= Common.tacticSyncNotProccessed)
-                            {
-                                Common.tacticSyncTotal = Common.tacticSyncTotal - Common.tacticSyncNotProccessed;
-                            }
-                            int tacticSyncFailed = 0;
-                            if (Common.tacticSyncTotal >= Common.tacticSyncSuccess)
-                            {
-                                tacticSyncFailed =  Common.tacticSyncTotal - Common.tacticSyncSuccess;
-                            }
-                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities liable for synching", Common.tacticSyncTotal.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities successfully synched", Common.tacticSyncSuccess.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities failed due to some reason", tacticSyncFailed.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-                            /////
+                            PrepareSyncErroMailHeader();
 
                             //// Replace mail template tags with corresponding data
                             string emailBody = string.Empty;
@@ -374,7 +376,6 @@ namespace Integration
                             }
                         }
                     }
-                    ResetCommonCounters();
                 }
             }
             catch
