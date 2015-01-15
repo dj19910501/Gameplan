@@ -924,7 +924,7 @@ namespace Integration.Eloqua
             if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
             {
                 string titleMappedValue = _mappingTactic["Title"].ToString();
-                tactic.Remove(titleMappedValue);
+                tactic[titleMappedValue] = planTactic.TacticCustomName;
             }
             return UpdateEloquaCampaign(planTactic.IntegrationInstanceTacticId, tactic);
         }
@@ -1591,6 +1591,7 @@ namespace Integration.Eloqua
         {
             try
             {
+                _unixEpochTime = new DateTime(1970, 1, 1, 0, 0, 0);
                 TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                 DateTime _unixEpochTimeOtherTimeZone = TimeZoneInfo.ConvertTimeFromUtc(_unixEpochTime, timeZone);
                 DateTime dateOtherTimeZone = TimeZoneInfo.ConvertTimeFromUtc(date, timeZone);

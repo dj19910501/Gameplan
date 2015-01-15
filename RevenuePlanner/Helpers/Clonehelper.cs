@@ -85,6 +85,13 @@ namespace RevenuePlanner.Helpers
                     proj.Plan_Improvement_Campaign = null;
                     proj.Plan_Budget = proj.Plan_Budget.ToList();
                     proj.Plan_Team = null;
+                    //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1127
+                    proj.ModifiedDate = null;
+                    proj.ModifiedBy = null;
+                    //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1127
+                    //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
+                    proj.Year = DateTime.Now.Year.ToString();
+                    //// End - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                     proj.Plan_Campaign.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
                         {
@@ -95,6 +102,10 @@ namespace RevenuePlanner.Helpers
                             t.Vertical = null;
                             t.Audience = null;
                             t.Geography = null;
+                            //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
+                            t.StartDate = t.StartDate.AddYears(DateTime.Now.Year - t.StartDate.Year);
+                            t.EndDate = t.EndDate.AddYears(DateTime.Now.Year - t.EndDate.Year);
+                            //// End - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                             t.Plan_Campaign_Budget = t.Plan_Campaign_Budget.ToList();
                             t.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(pcp =>
                             {
@@ -104,6 +115,10 @@ namespace RevenuePlanner.Helpers
                                 pcp.Geography = null;
                                 pcp.Vertical = null;
                                 pcp.Status = TacticStatus;
+                                //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
+                                pcp.StartDate = pcp.StartDate.AddYears(DateTime.Now.Year - pcp.StartDate.Year);
+                                pcp.EndDate = pcp.EndDate.AddYears(DateTime.Now.Year - pcp.EndDate.Year);
+                                //// End - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                 pcp.Plan_Campaign_Program_Budget = pcp.Plan_Campaign_Program_Budget.ToList();
                                 pcp.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
                                 {
@@ -119,10 +134,18 @@ namespace RevenuePlanner.Helpers
                                     pcpt.Stage = null;
                                     pcpt.TacticType = null;
                                     pcpt.Status = TacticStatus;
+                                    //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
+                                    pcpt.StartDate = pcpt.StartDate.AddYears(DateTime.Now.Year - pcpt.StartDate.Year);
+                                    pcpt.EndDate = pcpt.EndDate.AddYears(DateTime.Now.Year - pcpt.EndDate.Year);
+                                    //// End - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                     pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                                     {
+                                        //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
+                                        pcptl.StartDate = pcptl.StartDate.HasValue ? pcptl.StartDate.Value.AddYears(DateTime.Now.Year - pcptl.StartDate.Value.Year) : pcptl.StartDate;
+                                        pcptl.EndDate = pcptl.EndDate.HasValue ? pcptl.EndDate.Value.AddYears(DateTime.Now.Year - pcptl.EndDate.Value.Year) : pcptl.EndDate;
+                                        //// End - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                         pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                                     });
                                 });
@@ -159,12 +182,13 @@ namespace RevenuePlanner.Helpers
                             foreach (var tactic in tacticList)
                             {
                                 var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
-                                int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
-                                tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                                if (clonedProgram.Plan_Campaign_Program_Tactic.Count > 0)
+                                {
+                                    int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
+                                    tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                                }
                             }
-
                         }
-
                     }
                     db.SaveChanges();
                     ////End Added by Mitesh Vaishnav for PL ticket #718

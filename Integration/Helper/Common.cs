@@ -327,6 +327,11 @@ namespace Integration.Helper
                             string tacticTitle = RemoveSpaceAndUppercaseFirst(System.Web.HttpUtility.HtmlDecode(objTactic.Title));
                             customTacticName.Append(tacticTitle + "_");
                         }
+                        else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.TacticType.ToString())
+                        {
+                            string tacticTypeTitle = !string.IsNullOrEmpty(objTactic.TacticType.Abbreviation) ? RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Abbreviation) : RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Title);
+                            customTacticName.Append(tacticTypeTitle + "_");
+                        }
                     }
                     if (customTacticName.ToString().Length > 0)
                     {
