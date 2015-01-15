@@ -9,11 +9,7 @@
     var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
     bool isIndex = (bool)(!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
-    var goalType = planDetails.GoalType;
-    var modelId = planDetails.ModelId;
-    var goalValue = planDetails.GoalValue;
-
-
+    
     if (planDetails != null)
     {
         TempData["PlanModel"] = planDetails;
@@ -22,7 +18,6 @@
     
 }
 
-@Html.Hidden("hdnGoalType", goalType, new { id = "hdnGoalType" })
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Hidden("hdnPlanId", planDetails.PlanId, new { id = "hdnPlanId" })
 @Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
@@ -96,30 +91,6 @@
     </div>
 </form>
 
-@if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
-{
-    <div class="modal-popup-summary">
-        <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
-        <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
-            I'm running a plan called 
-            <span id="plan-name" class="source-sans-prosemibold color5693B3">@HttpUtility.HtmlDecode(planDetails.Title)</span>
-            based on the 
-            <span id="model-name" class="source-sans-prosemibold color5693B3">@planDetails.ModelTitle</span>
-            model with a
-            <span id="inq-label" class="source-sans-prosemibold color5693B3">@planDetails.GoalType</span>
-            goal of 
-        <span id="revenueSign" class="source-sans-prosemibold color5693B3">$ </span>
-            <span id="inq-value" class="source-sans-prosemibold color5693B3">@planDetails.GoalValue</span>
-            which will require 
-            <span id="input1" class="source-sans-prosemibold color5693B3"></span>
-            <span id="msg1" class="source-sans-prosemibold color5693B3"></span>
-            <span id="conjuntionWord">and </span>
-            <span id="input2" class="source-sans-prosemibold color5693B3"></span>
-            <span id="msg2" class="source-sans-prosemibold color5693B3"></span>.
-        </div>
-    </div>
-}
-
 <div>
     <ul class="nav nav-tabs new-margin" id="InspectTab">
         <li class="active pull-left" id="liSetup">
@@ -151,51 +122,12 @@
         // Call Remove Tabclass
         RemoveTabClass();
 
-        if ($("#hdnGoalType").val().toLowerCase() == "revenue") {
-            $('#revenueSign').show();
-            $('#conjuntionWord').html('and ');
-        }
-        else {
-            $('#revenueSign').hide();
-            $('#conjuntionWord').html('to deliver ');
-        }
-
-        $("#inq-label").text('@Common.GetGoalTypeFromGoalCode(Sessions.User.ClientId,goalType)');
-
         $("#li" + InspectValue).removeClass("pull-left");
         $("#li" + InspectValue).addClass("active pull-left");
         var tabtext = ($("#li" + InspectValue).children('a').text());
         $('#div' + tabtext).css({ display: "block" });
-
-        $("#inq-value").text(number_format($("#inq-value").text().toString(), 0, 0, ','));
-
-        if (!('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()')) {
-            calculateBudget('@modelId', '@goalType', '@goalValue');
-        }
-
         loadInnerTabs(planId, tabtext);
     });
-
-    function calculateBudget(_modelId, _goalType, _goalValue) {
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Content("~/Plan/CalculateBudget/")',
-            dataType: "json",
-            data: { modelId: _modelId, goalType: _goalType, goalValue: _goalValue },
-            success: function (data) {
-                $('#msg1').html(data.msg1);
-                $('#msg2').html(data.msg2);
-                $('#input1').html(number_format(data.input1.toString(), 0, '.', ','));
-                if (_goalType.toLowerCase() != "revenue") {
-                    $('#input2').html('$' + number_format(data.input2.toString(), 0, '.', ','));
-                }
-                else {
-                    $('#input2').html(number_format(data.input2.toString(), 0, '.', ','));
-                }
-                $('#averageDealSize').html(FormatCurrency(data.ADS, false));
-            }
-        });
-    }
 
     function RemoveTabClass() {
         $('#InspectTab').children().each(function () {

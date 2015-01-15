@@ -100,20 +100,10 @@
 </form>
 @if (campaignMaster != null)
 {
-
     <div class="modal-popup-summary" id="campaignSummary">
-        <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
         <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
-            I'm running a campaign called 
-            <span id="tactic-name" class="source-sans-prosemibold color5693B3">@HttpUtility.HtmlDecode(campaignMaster.CampaignTitle)</span>
-            from
-            <span id="start-date" class="source-sans-prosemibold color5693B3">@campaignMaster.StartDate.ToString(Common.DateFormateForInspectPopupDescription)</span>
-            to
-            <span id="end-date" class="source-sans-prosemibold color5693B3">@campaignMaster.EndDate.ToString(Common.DateFormateForInspectPopupDescription)</span>.
-        
         <p class="modal-status">
             Status: 
-
             @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
             {
                 <span id="status" class="source-sans-prosemibold statussubmitted">@campaignMaster.Status</span>
@@ -135,7 +125,6 @@
         </p>
         </div>
     </div>
-
 }
 <div>
     <ul class="nav nav-tabs new-margin" id="InspectTab">

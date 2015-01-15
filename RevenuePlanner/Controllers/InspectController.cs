@@ -6587,9 +6587,8 @@ namespace RevenuePlanner.Controllers
                 if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
                     double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => tacCost.PlanTacticId == id).ToList().Sum(tacCost => tacCost.Value);
-                    imodel = (from pcpt in db.Plan_Campaign_Program_Tactic
-                              where pcpt.PlanTacticId == id && pcpt.IsDeleted == false
-                              select new InspectModel
+                    Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
+                    imodel = new InspectModel()
                               {
                                   PlanTacticId = pcpt.PlanTacticId,
                                   TacticTitle = pcpt.Title,
@@ -6626,15 +6625,14 @@ namespace RevenuePlanner.Controllers
                                   ProjectedStageValue = pcpt.ProjectedStageValue,
                                   GeographyTitle = pcpt.Geography.Title,
                                   TacticCustomName=pcpt.TacticCustomName
+                              };
 
-                              }).FirstOrDefault();
 
-                    Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
-                    TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
+                    TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(pcpt, false);
                     //// Set MQL
                     string stageMQL = Enums.Stage.MQL.ToString();
                     int levelMQL = db.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL)).Level.Value;
-                    int tacticStageLevel = Convert.ToInt32(objTactic.Stage.Level);
+                    int tacticStageLevel = Convert.ToInt32(pcpt.Stage.Level);
                     if (tacticStageLevel < levelMQL)
                     {
                         imodel.MQLs = varTacticStageValue.MQLValue;
@@ -6652,7 +6650,7 @@ namespace RevenuePlanner.Controllers
                     // Set Revenue
                     imodel.Revenues = Math.Round(varTacticStageValue.RevenueValue, 2);
 
-                    imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(db.Plan_Campaign_Program_Tactic.FirstOrDefault(varT => varT.PlanTacticId == id).TacticType.Model);
+                    imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(pcpt.TacticType.Model);
                 }
                 else if (section == Convert.ToString(Enums.Section.Program).ToLower())  //// Get Inspect Model for Program InspectPopup.
                 {
