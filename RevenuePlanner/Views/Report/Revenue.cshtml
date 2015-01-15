@@ -1841,10 +1841,12 @@
             }
             perTotalCost = (Math.round(perTotalCost * 100) / 100)
             if (perTotalCost < 0) {
-                htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perTotalCost), true) + '</span></td>';
+                //Modified by Arpita Soni on 01/15/2015 for PL Ticket #1058
+                htmlLastRow += '<td class="total-row border-r red-value"><span  class="red-value">+</span><span>' + FormatNumber(Math.abs(perTotalCost), true) + '</span></td>';
             }
             else if (perTotalCost > 0) {
-                htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perTotalCost, true) + '</span></td>';
+                //Modified by Arpita Soni on 01/15/2015 for PL Ticket #1058
+                htmlLastRow += '<td class="total-row border-r green-value"><span  class="green-value">-</span><span>' + FormatNumber(perTotalCost, true) + '</span></td>';
             }
             else {
                 htmlLastRow += '<td class="total-row border-r"><span>' + FormatNumber(perTotalCost, true) + '</span></td>';
@@ -1922,10 +1924,12 @@
             }
             perCost = (Math.round(perCost * 100) / 100)
             if (perCost < 0) {
-                htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perCost), true) + '</span></td>';
+                //Modified by Arpita Soni on 01/15/2015 for PL Ticket #1058
+                htmlCon += '<td class="border-r red-value"><span  class="red-value">+</span><span>' + FormatNumber(Math.abs(perCost), true) + '</span></td>';
             }
             else if (perCost > 0) {
-                htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perCost, true) + '</span></td>';
+                //Modified by Arpita Soni on 01/15/2015 for PL Ticket #1058
+                htmlCon += '<td class="border-r green-value"><span  class="green-value">-</span><span>' + FormatNumber(perCost, true) + '</span></td>';
             }
             else {
                 htmlCon += '<td class="border-r"><span>' + FormatNumber(perCost, true) + '</span></td>';
