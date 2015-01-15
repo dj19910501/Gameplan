@@ -2800,7 +2800,8 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
 
 function displayTacticMQL(MQL) {
     if (MQL != 'N/A' && MQL != '---') {
-        return FormatCommas(MQL, false);
+        //Modified by Arpita Soni on 01/15/2015 for PL Ticket #1084
+        return Math.round(MQL);
     }
     else {
         return MQL;
