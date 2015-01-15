@@ -264,6 +264,10 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.Plan = null;
                     objPlanCampaign.Audience = null;
                     objPlanCampaign.Geography = null;
+                    //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                    objPlanCampaign.ModifiedDate = null;
+                    objPlanCampaign.ModifiedBy = null;
+                    //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
                     objPlanCampaign.Vertical = null;
                     objPlanCampaign.Status = TacticStatus;
@@ -278,6 +282,10 @@ namespace RevenuePlanner.Helpers
                             t.Vertical = null;
                             t.Audience = null;
                             t.Geography = null;
+                            //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                            t.ModifiedDate = null;
+                            t.ModifiedBy = null;
+                            //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             t.Plan_Campaign_Program_Budget = t.Plan_Campaign_Program_Budget;
                             t.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
                             {
@@ -292,6 +300,12 @@ namespace RevenuePlanner.Helpers
                                 pcpt.Plan_Campaign_Program_Tactic2 = null;
                                 pcpt.Stage = null;
                                 pcpt.TacticType = null;
+                                //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                                pcpt.CreatedDate = DateTime.Now;
+                                pcpt.ModifiedDate = null;
+                                pcpt.ModifiedBy = null;
+                                pcpt.TacticCustomName = null;
+                                //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                                 pcpt.Status = TacticStatus;
                                 pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
@@ -391,6 +405,10 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignPrograms.Vertical = null;
                     objPlanCampaignPrograms.Status = TacticStatus;
                     objPlanCampaignPrograms.IntegrationInstanceProgramId = null;
+                    //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                    objPlanCampaignPrograms.ModifiedDate = null;
+                    objPlanCampaignPrograms.ModifiedBy = null;
+                    //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
@@ -408,6 +426,11 @@ namespace RevenuePlanner.Helpers
                             t.TacticType = null;
                             t.Vertical = null;
                             t.Status = TacticStatus;
+                            //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                            t.ModifiedDate = null;
+                            t.ModifiedBy = null;
+                            t.TacticCustomName = null;
+                            //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             t.Plan_Campaign_Program_Tactic_Cost = t.Plan_Campaign_Program_Tactic_Cost.ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
@@ -499,6 +522,10 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.Tactic_Share = null;
                     objPlanCampaignProgramTactic.TacticCustomName = null;
                     objPlanCampaignProgramTactic.IntegrationInstanceTacticId = null;
+                    //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                    objPlanCampaignProgramTactic.ModifiedDate = null;
+                    objPlanCampaignProgramTactic.ModifiedBy = null;
+                    //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
@@ -564,6 +591,10 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTacticLineItem.Title = (objPlanCampaignProgramTacticLineItem.Title + Suffix);
                     objPlanCampaignProgramTacticLineItem.LineItemType = null;
                     objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic = null;
+                    //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                    objPlanCampaignProgramTacticLineItem.ModifiedDate = null;
+                    objPlanCampaignProgramTacticLineItem.ModifiedBy = null;
+                    //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                     db.Plan_Campaign_Program_Tactic_LineItem.Add(objPlanCampaignProgramTacticLineItem);
                     db.SaveChanges();
