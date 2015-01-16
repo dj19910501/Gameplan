@@ -2768,8 +2768,8 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
         if (isImprovement) {
             $html += '<span class="bullhorn-icon"></span>'
         }
-
-        $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
+        //Modified by Arpita Soni on 01/16/2015 for ticket #1084
+        $html += '<span class="title-baseline-model ConcatTextlength" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
                     '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
                     '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
                     '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
@@ -2784,8 +2784,8 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
         if (isImprovement) {
             $html += '<span class="bullhorn-icon"></span>'
         }
-
-        $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
+        //Modified by Arpita Soni on 01/16/2015 for ticket #1084
+        $html += '<span class="title-baseline-model ConcatTextlength" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
                     '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
                     '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
                     '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
@@ -2800,8 +2800,9 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
 
 function displayTacticMQL(MQL) {
     if (MQL != 'N/A' && MQL != '---') {
-        //Modified by Arpita Soni on 01/15/2015 for PL Ticket #1084
-        return Math.round(MQL);
+        //Modified by Arpita Soni on 01/16/2015 for Ticket #1084
+        return number_format(MQL, 0, '.', ',');
+
     }
     else {
         return MQL;
