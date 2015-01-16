@@ -318,7 +318,7 @@ namespace Integration.Eloqua
                         foreach (var objTactic in lstTactic)
                         {
                             DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
-                            DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 1);
+                            DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
 
                             //// if IntegrationTacticID is SalesforceID(CRMID) then retrieve EloquaID based on CRMID from lstEloquaIntegrationInstanceTacticIds list.
                             string objIntegrationInstanceTacticId = string.Empty;
