@@ -289,7 +289,7 @@ namespace Integration.Eloqua
                                                                           new CRM_EloquaMapping
                                                                           {
                                                                               CRMId = _SalTac,
-                                                                              ShortCRMId =shortSalIntegInstanceTacticId,
+                                                                              ShortCRMId = shortSalIntegInstanceTacticId,
                                                                               EloquaId = integrationEloquaClient.GetEloquaCampaignIdByCRMId(shortSalIntegInstanceTacticId)
                                                                           });
                             }
@@ -317,8 +317,8 @@ namespace Integration.Eloqua
                         // Insert or Update tactic actual.
                         foreach (var objTactic in lstTactic)
                         {
-                            DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, objTactic.StartDate.Month, 1);
-                            DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, objTactic.EndDate.Month, 1);
+                            DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
+                            DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 1);
 
                             //// if IntegrationTacticID is SalesforceID(CRMID) then retrieve EloquaID based on CRMID from lstEloquaIntegrationInstanceTacticIds list.
                             string objIntegrationInstanceTacticId = string.Empty;
@@ -390,7 +390,7 @@ namespace Integration.Eloqua
                                         db.Entry(actualTactic).State = EntityState.Added;
                                     }
                                 }
-                            }                            
+                            }
 
                             objTactic.LastSyncDate = DateTime.Now;
                             objTactic.ModifiedDate = DateTime.Now;
@@ -597,8 +597,8 @@ namespace Integration.Eloqua
                                             // Insert or Update tactic actuals.
                                             foreach (var objTactic in lstTactic)
                                             {
-                                                DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, objTactic.StartDate.Month, 1);
-                                                DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, objTactic.EndDate.Month, 1);
+                                                DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
+                                                DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 1);
                                                 var lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceTacticId || r.externalTacticId == objTactic.IntegrationInstanceTacticId) &&
                                                                                                 r.peroid >= tacticStartDate && r.peroid <= tacticEndDate);
                                                 foreach (var item in lstTacticResponse)
