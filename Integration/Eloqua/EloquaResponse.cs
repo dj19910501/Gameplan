@@ -598,7 +598,7 @@ namespace Integration.Eloqua
                                             foreach (var objTactic in lstTactic)
                                             {
                                                 DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
-                                                DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 1);
+                                                DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
                                                 var lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceTacticId || r.externalTacticId == objTactic.IntegrationInstanceTacticId) &&
                                                                                                 r.peroid >= tacticStartDate && r.peroid <= tacticEndDate);
                                                 foreach (var item in lstTacticResponse)
