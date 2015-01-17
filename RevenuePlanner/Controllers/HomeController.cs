@@ -3170,6 +3170,7 @@ namespace RevenuePlanner.Controllers
 
                 //// Tthis is inititalized as 0 bcoz to get the status for tactics.
                 string planGanttType = PlanGanttTypes.Tactic.ToString();
+                ViewBag.AddActualFlag = true;     // Added by Arpita Soni on 01/17/2015 for Ticket #1090 
                 List<User> lstIndividuals = GetIndividualsByPlanId(Sessions.PlanId.ToString(), planGanttType, Enums.ActiveMenu.Home.ToString());
                 ////Start - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
 
@@ -3567,8 +3568,14 @@ namespace RevenuePlanner.Controllers
             //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, ActiveMenu.ToLower());
             List<string> status = Common.GetStatusListAfterApproved();
-            status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            ////
+            
+            // Start - Added by Arpita Soni on 01/17/2015 for Ticket #1090 
+            // To remove owner of submitted tactics from filter list
+            if (ViewBag.AddActualFlag==null)
+            {
+                status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            }
+            // End - Added by Arpita Soni on 01/17/2015 for Ticket #1090
 
             //// Custom Restrictions
             var lstUserCustomRestriction = Common.GetUserCustomRestriction();
