@@ -225,7 +225,7 @@
 			      $("#divTab").load(url + '?id=' + PlanLineItemId);
 			  }
               else if (tabtext == "Actuals") {
-                  //// Modified By: Arpita Soni on 1/7/2015.
+                  //// Modified By: Arpita Soni on 1/17/2015.
                   //// Ticket: 1067 
                   var hdnTacticStatus = $("#hdnParentTacticStatus").val();
                   var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
@@ -233,6 +233,9 @@
                   var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
                   if ((hdnTacticStatus == null || hdnTacticStatus == '') || (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus)) {
                       loadReview(PlanLineItemId, TabSetup);
+                  }
+                  else {
+                      loadReview(PlanLineItemId, TabActual);
                   }
 			  }
 
