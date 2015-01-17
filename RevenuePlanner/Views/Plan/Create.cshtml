@@ -291,6 +291,9 @@
     $(document).ready(
       function () {
           var hdnPlanId = $("#hdnPlanId").val();
+          // Start - Added by Arpita Soni on 01/17/2015 for Ticket #1071
+          $(".priceValue").priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          // End - Added by Arpita Soni on 01/17/2015 for Ticket #1071
           if (hdnPlanId != 0) {
               $('.changes').html('');
               var url = '@Url.Content("~/Home/LoadChangeLog")';
