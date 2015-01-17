@@ -642,7 +642,7 @@
     <Content Include="Scripts\js\jquery.min.js" />
     <Content Include="Scripts\js\jquery.multiselect.filter.js" />
     <Content Include="Scripts\js\jquery.multiselect_v1.js" />
-    <Content Include="Scripts\js\jquery.price_format.1.8_v1.js" />
+    <Content Include="Scripts\js\jquery.price_format.1.8_v2.js" />
     <Content Include="Scripts\js\jquery.price_format.1.8.min.js" />
     <Content Include="Scripts\js\jquery.slidepanel.js" />
     <Content Include="Scripts\js\jquery.slidepanel_min.js" />
