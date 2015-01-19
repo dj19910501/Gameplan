@@ -4980,6 +4980,35 @@ namespace RevenuePlanner.Helpers
             }
         }
         #endregion
+
+        #region Custom Restriction Settings
+
+        #region Get Custom Restriction List
+        /// <summary>
+        /// Function to retrieve the list of Custom Restriction of a user.
+        /// </summary>
+        /// <param name="userId">user id of a user for which custom restriction list to be retrieved</param>
+        /// <returns>returns list of CustomRestriction objects</returns>
+        public static List<Models.CustomRestriction> GetUserCustomRestrictionsList(Guid userId)
+        {
+            List<Models.CustomRestriction> lstCustomRestriction = new List<Models.CustomRestriction>();
+            try
+            {
+                using (MRPEntities objDB = new MRPEntities())
+                {
+                    lstCustomRestriction = objDB.CustomRestrictions.Where(customRestriction => customRestriction.UserId == userId).Select(customRestriction => customRestriction).ToList();
+                }
+            }
+            catch(Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return lstCustomRestriction;
+        }
+        #endregion
+
+        #endregion
     }
 
     /// <summary>

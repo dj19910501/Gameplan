@@ -74,6 +74,7 @@
     <Compile Include="Controllers\ExternalServiceControllerTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controllers\OrganizationControllerTest.cs" />
     <Compile Include="Controllers\PlanControllerTest.cs" />
     <Compile Include="Helper\CommonTest.cs" />
     <Compile Include="Integration\IntegrationEloquaClientTest.cs" />

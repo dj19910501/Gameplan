@@ -173,5 +173,29 @@ namespace RevenuePlanner.Test.MockHelpers
         }
 
         #endregion
+
+        #region Custom Restrictions
+        /// <summary>
+        /// Function to get all the Custom Restriction of the user in View/Edit format
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>returns comma separated string of custom restrictions</returns>
+        public static string GetCustomRestrictionInViewEditForm(Guid userId)
+        {
+            StringBuilder sbCustomRestrictions = new StringBuilder(string.Empty);
+            
+            using (MRPEntities objDB = new MRPEntities())
+            {
+                var lstCustomRestriction = objDB.CustomRestrictions.Where(customRestriction => customRestriction.UserId == userId).Select(customRestriction => customRestriction).ToList();
+                if (lstCustomRestriction.Count > 0)
+                {
+                    lstCustomRestriction.ForEach(customRestriction => sbCustomRestrictions.Append(2 + "_" + customRestriction.CustomFieldId + "_" + customRestriction.CustomFieldOptionId + ","));
+                    return sbCustomRestrictions.ToString().TrimEnd(",".ToCharArray());                
+                }
+            }
+            
+            return sbCustomRestrictions.ToString();
+        }
+        #endregion
     }
 }

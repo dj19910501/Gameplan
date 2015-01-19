@@ -6,6 +6,8 @@ using RevenuePlanner.Models;
 using RevenuePlanner.BDSService;
 using Elmah;
 using RevenuePlanner.Helpers;
+using System.Data;
+using System.Transactions;
 
 namespace RevenuePlanner.Controllers
 {
@@ -42,9 +44,9 @@ namespace RevenuePlanner.Controllers
             try
             {
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
-                
+
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                var memberlist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
+                var memberlist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId);
 
                 // Added by dharmraj to remove above foreach loop, 10-7-2014
                 //// Get Members Role details.
@@ -85,17 +87,17 @@ namespace RevenuePlanner.Controllers
                 return Json(false);
 
             //// Add New Role description to Tempdata.
-                BDSService.Role objrole = new BDSService.Role();
-                objrole.Description =roledesc;////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                objrole.Title =roledesc;////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                TempData["objrole"] = objrole;
+            BDSService.Role objrole = new BDSService.Role();
+            objrole.Description = roledesc;////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            objrole.Title = roledesc;////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            TempData["objrole"] = objrole;
 
-                try
-                {
+            try
+            {
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
 
                 //// Check Role duplication.
-                int retval = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId,Sessions.User.ClientId);
+                int retval = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId, Sessions.User.ClientId);
 
                 //// if duplicate role then return false otherwise true.
                 if (retval == 1)
@@ -103,18 +105,18 @@ namespace RevenuePlanner.Controllers
                 else
                     return Json(false);
             }
-                catch (Exception e)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(e);
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
 
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    if (e is System.ServiceModel.EndpointNotFoundException)
-                    {
-                        return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
-                    }
+                //// Flag to indicate unavailability of web service.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
                 }
+            }
             return Json(false);
         }
 
@@ -135,7 +137,7 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
 
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                var rolelist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
+                var rolelist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId);
                 if (roleId == Guid.Empty)//changed by uday for functional review point...3-7-2014;
                 {
                     var prevrole = (Role)TempData["objrole"];//changed by uday for functional review point...3-7-2014;
@@ -157,7 +159,7 @@ namespace RevenuePlanner.Controllers
                 IList<SelectListItem> RoleList = new List<SelectListItem>();
                 RoleList = rolelist.Select(role => new SelectListItem() { Text = role.Title, Value = role.RoleId.ToString(), Selected = false })
                                 .OrderBy(it => it.Text).ToList();
-                
+
                 //// Get Application Activity.
                 var activitylist = bdsuserrepository.GetUserApplicationactivitylist(Sessions.ApplicationId);
 
@@ -203,13 +205,13 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-            ViewData["users"] = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
-            //changed by uday for functional review point...3-7-2014;
+                ViewData["users"] = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
+                //changed by uday for functional review point...3-7-2014;
 
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
-                
+
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                var rolelistData = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId , Sessions.User.ClientId).Where(rolelist => rolelist.RoleId != roleid).ToList().Select(role => new SelectListItem()
+                var rolelistData = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId).Where(rolelist => rolelist.RoleId != roleid).ToList().Select(role => new SelectListItem()
                 {
                     Text = role.Title,
                     Value = Convert.ToString(role.RoleId),
@@ -248,21 +250,21 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-            List<User> user_list = new List<User>();
+                List<User> user_list = new List<User>();
 
                 //// Get User Role mapping list by ApplicationId and RoleId.
-            var user_role_mapping = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
+                var user_role_mapping = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
 
                 //// Get Application Activity List.
-            var activitylist = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);
-            List<int> idsList = new List<int>();
-            foreach (string id in permission.Split(','))
-            {
-                idsList.Add(Convert.ToInt32(id));
-            }
+                var activitylist = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);
+                List<int> idsList = new List<int>();
+                foreach (string id in permission.Split(','))
+                {
+                    idsList.Add(Convert.ToInt32(id));
+                }
 
                 //// filter Activity list.
-            var activity_CodeList = activitylist.Where(activity => idsList.Contains(activity.ApplicationActivityId)).ToList();
+                var activity_CodeList = activitylist.Where(activity => idsList.Contains(activity.ApplicationActivityId)).ToList();
 
                 //// Get list of Users using User_Role mapping list.
                 foreach (var user_role_map in user_role_mapping)
@@ -321,21 +323,21 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-            //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
 
                 //// Delete role and reassign new role value.
-            int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId, Sessions.User.UserId, Sessions.User.ClientId);
-            
-            if (retval == 1)
-            {
-                TempData["SuccessMessage"] = Common.objCached.RoleDeleteSuccess;
-                return Json(new { status = true }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId, Sessions.User.UserId, Sessions.User.ClientId);
+
+                if (retval == 1)
+                {
+                    TempData["SuccessMessage"] = Common.objCached.RoleDeleteSuccess;
+                    return Json(new { status = true }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                }
+                else
+                {
+                    return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                }
             }
-            else
-            {
-                return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-            }
-        }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
@@ -369,32 +371,32 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-            // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-            if (!string.IsNullOrEmpty(LoginId))
-            {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
+                // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                if (!string.IsNullOrEmpty(LoginId))
                 {
-                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                    if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                        return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                    }
                 }
-            }
-            // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
-            string permissionID = checkbox.ToString();
+                string permissionID = checkbox.ToString();
 
-            //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
 
                 //// Create new Role with Details.
-            int retval = objBDSServiceClient.CreateRole(roledesc, permissionID, colorcode, Sessions.ApplicationId, Sessions.User.UserId, roleid, delpermission,Sessions.User.ClientId);
-            if (retval == 1)
-            {
-                return Json(new { status = true }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                int retval = objBDSServiceClient.CreateRole(roledesc, permissionID, colorcode, Sessions.ApplicationId, Sessions.User.UserId, roleid, delpermission, Sessions.User.ClientId);
+                if (retval == 1)
+                {
+                    return Json(new { status = true }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                }
+                else
+                {
+                    return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                }
             }
-            else
-            {
-                return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-            }
-        }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
@@ -442,29 +444,29 @@ namespace RevenuePlanner.Controllers
                 Session["session"] = objrole;
                 try
                 {
-                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                int retvalcheck = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId,Sessions.User.ClientId);
+                    //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                    int retvalcheck = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId, Sessions.User.ClientId);
 
                     //// Not Duplicate Role.
-                if (retvalcheck == 1)
-                {
-                        //// Copy Role.
-                    int retval = objBDSServiceClient.CopyRole(copyroledesc.Trim(), originalroleid, Sessions.ApplicationId, Sessions.User.UserId,Sessions.User.ClientId);
-                    if (retval == 1)
+                    if (retvalcheck == 1)
                     {
-                        TempData["SuccessMessage"] = Common.objCached.RoleCopySuccess;
-                        return Json(new { status = true }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                        //// Copy Role.
+                        int retval = objBDSServiceClient.CopyRole(copyroledesc.Trim(), originalroleid, Sessions.ApplicationId, Sessions.User.UserId, Sessions.User.ClientId);
+                        if (retval == 1)
+                        {
+                            TempData["SuccessMessage"] = Common.objCached.RoleCopySuccess;
+                            return Json(new { status = true }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                        }
+                        else
+                        {
+                            return Json(new { status = false }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                        }
                     }
                     else
                     {
                         return Json(new { status = false }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                     }
                 }
-                else
-                {
-                    return Json(new { status = false }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-                }
-            }
                 catch (Exception e)
                 {
                     ErrorSignal.FromCurrentContext().Raise(e);
@@ -567,10 +569,10 @@ namespace RevenuePlanner.Controllers
               .Select(r => CreateUserHierarchy(lstUserHierarchy, r))
               .ToList();
             // Modified by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-            return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers }; 
+            return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers };
         }
         #endregion
-        
+
         #region "Permission related Methods"
         /// <summary>
         /// Added By: Mitesh Vaishnav for PL ticket #521
@@ -583,160 +585,131 @@ namespace RevenuePlanner.Controllers
             List<UserActivityPermissionModel> userActivityPermissionList = new List<UserActivityPermissionModel>();
             try
             {
-                // Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
+                //// Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
                 ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
                 ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
                 //// Check User permissions.
                 if ((bool)ViewBag.IsUserAdminAuthorized == false && Mode.ToLower() != Enums.UserPermissionMode.View.ToString().ToLower() && Mode.ToLower() != Enums.UserPermissionMode.MyPermission.ToString().ToLower())
                     return RedirectToAction("Index", "NoAccess");
-                
-                // End - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
+
+                //// End - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
 
                 ViewBag.PermissionMode = Mode;
                 Guid UserId = Guid.Parse(Id);
-                ViewBag.userId = UserId;
-                var userDetails = objBDSServiceClient.GetTeamMemberDetails(UserId, Sessions.ApplicationId);
-                
-                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                var roleColorCode = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId).Where(rol => rol.RoleId == userDetails.RoleId).FirstOrDefault().ColorCode;
-                
-                ViewBag.RoleColorCode = roleColorCode;
-                ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
-                ViewBag.RoleName = userDetails.RoleTitle;
-                ViewBag.userBusinessUnit = userDetails.BusinessUnitId.ToString();
-                //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-                
-                //// Get Verticals list by ClientId.
-                var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId && ver.IsDeleted==false).ToList();
-                //// Get Geographies list by ClientId.
-                var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId && geo.IsDeleted==false).ToList();
-                //// Get BusinessUnit list by ClientId.
-                var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId && bu.IsDeleted==false).ToList();
-
-                //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-                var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(UserId, Sessions.ApplicationId);
-                var allActivity = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);
-                var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
-
-
-                foreach (var item in allActivity)
+                if (UserId != Guid.Empty)
                 {
-                    //// Set data to User_Activity_Permission model.
-                    UserActivityPermissionModel uapobj = new UserActivityPermissionModel();
-                    uapobj.ApplicationActivityId = item.ApplicationActivityId;
-                    uapobj.ApplicationId = item.ApplicationId;
-                    uapobj.CreatedDate = item.CreatedDate;
-                    uapobj.ParentId = item.ParentId;
-                    uapobj.Title = item.ActivityTitle;
-                    uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
-                    if (userActivity != null)
-                    {
-                        if (userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).ToList().Count > 0)
-                        {
-                            uapobj.Permission = Enums.UserActivityPermissionType.Yes.ToString();
-                            uapobj.UserCreatedBy = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedBy;
-                            uapobj.UserCreatedDate = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedDate;
-                            uapobj.UserId = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().UserId;
-                        }
-                        else
-                        {
-                            uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
-                        }
-                    }
-                    userActivityPermissionList.Add(uapobj);
-                }
-                List<CustomRestrictionModel> customRestrictionList = new List<CustomRestrictionModel>();
-                //// Set data to Custom_Restriction model for Verticals.
-                foreach (var item in clientVerticals)
-                {
-                    
-                    CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
-                    cRestrictionobj.Title = item.Title;
-                    cRestrictionobj.CustomField = Enums.CustomRestrictionType.Verticals.ToString();
-                    cRestrictionobj.CustomFieldId = item.VerticalId.ToString();
-                    var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.VerticalId.ToString().ToLower() && ucr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).FirstOrDefault() : null;
-                    if (IsUserRestrictionExist != null)
-                    {
-                        string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
-                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(permission)).Value;
-                        cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
-                    }
-                    else
-                    {
-                        string none = Enums.CustomRestrictionPermission.None.ToString();
-                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(none)).Value;
-                        cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
-                    }
-                    customRestrictionList.Add(cRestrictionobj);
-                }
+                    ViewBag.userId = UserId;
+                    var userDetails = objBDSServiceClient.GetTeamMemberDetails(UserId, Sessions.ApplicationId);
 
-                //// Set data to Custom_Restriction model for Geography.
-                foreach (var item in clientGeography)
-                {
-                    CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
-                    cRestrictionobj.Title = item.Title;
-                    cRestrictionobj.CustomField = Enums.CustomRestrictionType.Geography.ToString();
-                    cRestrictionobj.CustomFieldId = item.GeographyId.ToString();
-                    // Start - Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-                    
-                        var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.GeographyId.ToString().ToLower() && ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()).FirstOrDefault() : null;
-                        if (IsUserRestrictionExist != null)
-                        {
-                            string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
-                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(permission)).Value;
-                            cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
-                        }
-                        else
-                        {
-                            string none = Enums.CustomRestrictionPermission.None.ToString();
-                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(none)).Value;
-                            cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
-                        }
-                    
-                    // End - Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-                    customRestrictionList.Add(cRestrictionobj);
-                }
+                    //// Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                    var roleColorCode = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId).Where(rol => rol.RoleId == userDetails.RoleId).FirstOrDefault().ColorCode;
 
-                //// Set data to Custom_Restriction model for BusinessUnit.
-                foreach (var item in clientBusinessUnit)
-                {
-                    CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
-                    cRestrictionobj.Title = item.Title;
-                    cRestrictionobj.CustomField = Enums.CustomRestrictionType.BusinessUnit.ToString();
-                    cRestrictionobj.CustomFieldId = item.BusinessUnitId.ToString();
-                    if (userDetails.BusinessUnitId != item.BusinessUnitId)
+                    ViewBag.RoleColorCode = roleColorCode;
+                    ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
+                    ViewBag.RoleName = userDetails.RoleTitle;
+                    ViewBag.userBusinessUnit = userDetails.BusinessUnitId.ToString();
+
+                    var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
+                    var allActivity = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);
+                    var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
+
+                    foreach (var item in allActivity)
                     {
-                        var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.BusinessUnitId.ToString().ToLower() && ucr.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).FirstOrDefault() : null;
-                        if (IsUserRestrictionExist != null)
+                        //// Set data to User_Activity_Permission model.
+                        UserActivityPermissionModel uapobj = new UserActivityPermissionModel();
+                        uapobj.ApplicationActivityId = item.ApplicationActivityId;
+                        uapobj.ApplicationId = item.ApplicationId;
+                        uapobj.CreatedDate = item.CreatedDate;
+                        uapobj.ParentId = item.ParentId;
+                        uapobj.Title = item.ActivityTitle;
+                        uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
+                        if (userActivity != null)
                         {
-                            string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
-                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(permission)).Value;
-                            cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
+                            if (userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).ToList().Count > 0)
+                            {
+                                uapobj.Permission = Enums.UserActivityPermissionType.Yes.ToString();
+                                uapobj.UserCreatedBy = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedBy;
+                                uapobj.UserCreatedDate = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedDate;
+                                uapobj.UserId = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().UserId;
+                            }
+                            else
+                            {
+                                uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
+                            }
                         }
-                        else
+                        userActivityPermissionList.Add(uapobj);
+                    }
+
+                    //// Start - Added by Sohel Pathan on 15/01/2015 for PL ticket #1139
+                    //// Get list of custom fields
+                    string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+                    string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+                    List<CustomField> lstCustomField = new List<CustomField>();
+                    lstCustomField = db.CustomFields.Where(customField => customField.ClientId == Sessions.User.ClientId && customField.IsDeleted.Equals(false) &&
+                                                                                customField.EntityType.Equals(EntityTypeTactic) && customField.CustomFieldType.Name.Equals(DropDownList) &&
+                                                                                customField.IsRequired.Equals(true)).Select(customField => customField).ToList();
+
+                    List<int> lstCustomFieldId = new List<int>();
+                    List<CustomFieldOption> lstCustomFieldOption = new List<CustomFieldOption>();
+
+                    if (lstCustomField.Count > 0)
+                    {
+                        //// Sort custom fields by name
+                        lstCustomField = lstCustomField.OrderBy(customField => customField.Name).ToList();
+
+                        //// Get list of Custom Field Ids
+                        lstCustomFieldId = lstCustomField.Select(customField => customField.CustomFieldId).Distinct().ToList();
+
+                        //// Get list of custom field options
+                        lstCustomFieldOption = db.CustomFieldOptions.Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId))
+                                                                    .Select(customFieldOption => customFieldOption).ToList();
+                    }
+
+                    //// Set viewbag of Custom field list, to be used in view
+                    ViewData["CustomFieldList"] = lstCustomField;
+
+                    //// Set data to Custom_Restriction model for Custom Fields.
+                    List<CustomRestrictionModel> customRestrictionList = new List<CustomRestrictionModel>();
+                    if (lstCustomFieldOption.Count > 0)
+                    {
+                        //// Sort custom field option list by custom field id and value
+                        lstCustomFieldOption = lstCustomFieldOption.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
+
+                        foreach (var item in lstCustomFieldOption)
                         {
-                            string none = Enums.CustomRestrictionPermission.None.ToString();
-                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(none)).Value;
-                            cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
+                            CustomRestrictionModel objCustomRestrictionModel = new CustomRestrictionModel();
+                            objCustomRestrictionModel.Title = item.Value;
+                            objCustomRestrictionModel.CustomField = item.CustomFieldId.ToString();
+                            objCustomRestrictionModel.CustomFieldId = item.CustomFieldOptionId.ToString();
+                            var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == item.CustomFieldId && customRestriction.CustomFieldOptionId == item.CustomFieldOptionId).FirstOrDefault() : null;
+                            if (IsUserRestrictionExist != null)
+                            {
+                                string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
+                                objCustomRestrictionModel.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                                objCustomRestrictionModel.Permission = IsUserRestrictionExist.Permission;
+                            }
+                            else
+                            {
+                                string none = Enums.CustomRestrictionPermission.None.ToString();
+                                objCustomRestrictionModel.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(none)).Value;
+                                objCustomRestrictionModel.Permission = (int)Enums.CustomRestrictionPermission.None;
+                            }
+                            customRestrictionList.Add(objCustomRestrictionModel);
                         }
                     }
-                    else
-                    {
-                        string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
-                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
-                        cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                    }
-                    customRestrictionList.Add(cRestrictionobj);
+                    //// End - Added by Sohel Pathan on 15/01/2015 for PL ticket #1139
+
+                    //// Set custom restriction list in viewbag, to be used in view
+                    ViewData["CustomRestriction"] = customRestrictionList;
                 }
-                ViewData["CustomRestriction"] = customRestrictionList;
             }
-            catch (Exception e)
+            catch (Exception objException)
             {
-                ErrorSignal.FromCurrentContext().Raise(e);
+                ErrorSignal.FromCurrentContext().Raise(objException);
 
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
                 {
                     return RedirectToAction("ServiceUnavailable", "Login");
                 }
@@ -745,7 +718,7 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
-            return View(userActivityPermissionList);
+            return View("ViewEditPermission", userActivityPermissionList);
         }
 
         /// <summary>
@@ -759,7 +732,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveUserPermission(string permissionIds, string userId, string LoginId = "")
         {
-            // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            //// Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             if (!string.IsNullOrEmpty(LoginId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
@@ -768,7 +741,7 @@ namespace RevenuePlanner.Controllers
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
             }
-            // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            //// End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
 
             try
             {
@@ -776,19 +749,46 @@ namespace RevenuePlanner.Controllers
                 Guid UserId = Guid.Parse(userId);
                 Guid CurrentUserID = Sessions.User.UserId;
 
-                //// Save User Activity Permissions.
-                int result = objBDSServiceClient.AddUserActivityPermissions(UserId, CurrentUserID, arrPermissionId.ToList(), Sessions.ApplicationId);
-                if (result >= 1)
+                //// Start - Added/Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
+                //// Save User Activity Permissions
+                if (UserId != Guid.Empty)
                 {
-                    return Json(new { status = true }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
+                    List<string> activityPermissions = arrPermissionId.Where(permission => (permission.ToLower().Contains("yes") || permission.ToLower().Contains("no"))).ToList();
+                    int activityPermissionsResult = 0;
+                    if (activityPermissions.Count > 0)
+                    {
+                        activityPermissionsResult = objBDSServiceClient.AddUserActivityPermissions(UserId, CurrentUserID, activityPermissions, Sessions.ApplicationId);
+                    }
+                    else
+                    {
+                        activityPermissionsResult = 1;
+                    }
 
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
+                    //// Save user custom restrictions
+                    List<string> customRestrictionPermissions = arrPermissionId.Where(permission => !(permission.ToLower().Contains("yes") || permission.ToLower().Contains("no"))).ToList();
+                    int customRestrictionResult = 0;
+                    if (customRestrictionPermissions.Count > 0)
+                    {
+                        customRestrictionResult = AddUserCustomRestrictions(UserId, customRestrictionPermissions);
+                    }
+                    else
+                    {
+                        customRestrictionResult = 1;
+                    }
+
+                    if (activityPermissionsResult >= 1 && customRestrictionResult >= 1)
+                    {
+                        return Json(new { status = true }, JsonRequestBehavior.AllowGet);   //// Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                    }
+                }
+                //// End - Added/Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
                 {
                     return Json(new { serviceUnavailable = Url.Content("#") }, JsonRequestBehavior.AllowGet);
                 }
@@ -797,7 +797,7 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
-            return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            return Json(new { status = false }, JsonRequestBehavior.AllowGet);  //// Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
         #endregion
 
@@ -852,6 +852,74 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
+        #endregion
+
+        #region User defined functions
+
+        #region Add user custom restriction.
+        /// <summary>
+        /// Function to Add user custom restrictions
+        /// Previous data will be deleted, if any exists, prior to adding new data
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <param name="customFieldPermissions">string list of custom field permissions</param>
+        /// <returns>Return 1 if success otherwise 0</returns>
+        public int AddUserCustomRestrictions(Guid userId, List<string> customFieldPermissions)
+        {
+            int returnValue = 0;
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                try
+                {
+                    //// Retrieve previous custom restrictions and delete it.
+                    List<Models.CustomRestriction> userCustomrestrictionList = db.CustomRestrictions.Where(usr => usr.UserId == userId).ToList();
+                    if (userCustomrestrictionList.Count > 0)
+                    {
+                        foreach (var customRestriction in userCustomrestrictionList)
+                        {
+                            db.Entry(customRestriction).State = EntityState.Deleted;
+                            db.CustomRestrictions.Remove(customRestriction);
+                        }
+                    }
+                    else
+                    {
+                        returnValue = 1;
+                    }
+
+                    foreach (var permission in customFieldPermissions)
+                    {
+                        string[] splitpermissions = permission.Split('_');
+                        Models.CustomRestriction objCustomRestriction = new Models.CustomRestriction();
+                        objCustomRestriction.UserId = userId;
+                        objCustomRestriction.Permission = Convert.ToInt16(splitpermissions[0]);
+                        objCustomRestriction.CustomFieldId = Convert.ToInt32(splitpermissions[1]);
+                        objCustomRestriction.CustomFieldOptionId = Convert.ToInt32(splitpermissions[2]);
+                        objCustomRestriction.CreatedDate = System.DateTime.Now;
+                        objCustomRestriction.CreatedBy = Sessions.User.UserId;
+                        db.Entry(objCustomRestriction).State = EntityState.Added;
+                        db.CustomRestrictions.Add(objCustomRestriction);
+                    }
+
+                    int result = db.SaveChanges();
+                    if (result > 0)
+                    {
+                        returnValue = 1;
+                    }
+
+                    scope.Complete();
+                }
+                catch (Exception ex)
+                {
+                    returnValue = 0;
+                    ErrorSignal.FromCurrentContext().Raise(ex);
+                }
+            }
+
+            return returnValue;
+        }
+        #endregion
+
         #endregion
     }
 }

@@ -6,7 +6,10 @@
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
     var headers = Model.Where(uact => uact.ParentId == null || uact.ParentId == 0);
-    var cRestrictionList = ViewData["CustomRestriction"] as List<RevenuePlanner.Models.CustomRestrictionModel>;
+    var cRestrictionList = ViewData["CustomRestriction"] != null ? ViewData["CustomRestriction"] as List<RevenuePlanner.Models.CustomRestrictionModel> : new List<RevenuePlanner.Models.CustomRestrictionModel>();
+    //// Start - Added by Sohel Pathan on 15/01/2015 for PL ticket #1139
+    var customFieldList = ViewData["CustomFieldList"] != null ? ViewData["CustomFieldList"] as List<RevenuePlanner.Models.CustomField> : new List<RevenuePlanner.Models.CustomField>();
+    //// End - Added by Sohel Pathan on 15/01/2015 for PL ticket #1139
     string varUrl = Url.Action("vieweditpermission", "Organization");
     string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission"; 
     //Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
@@ -59,88 +62,42 @@
             <div id="internalLink" class="span2 myaccount-colum">
                  @Html.Partial("~/Views/Organization/_organization.cshtml")
             </div>
-
             <div class="span9">
-
                 <div class="user-permissions">
                     <h4>View Permissions - @ViewBag.Name <span class="job-role director">@ViewBag.RoleName</span></h4>
-
                     @foreach (var headerItem in headers)
                     {
-
                         <dl>
                             <dt>@headerItem.Title</dt>
                             <dd>
                                 @foreach (var item in Model.Where(act => act.ParentId == headerItem.ApplicationActivityId))
                                 {
-                                    
-
-
                                     <div class="dd-row">
                                         <label>@Html.Raw(item.Title)</label>
                                         <span>@item.Permission</span>
                                     </div>
-                                  
                                 }
                             </dd>
                         </dl>
                     }
 
-
                     <h4 class="extra-space">*Custom Restrictions</h4>
-                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Count()>0)
+                    @foreach (var customField in customFieldList)
                     {
-                    <dl>
-                        <dt>Verticals</dt>
-                        <dd>
-                            @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Verticals.ToString()))
-                            {
-
-                                <div class="dd-row">
-                                    <label>@item.Title</label>
-                                    <span>@item.permissiontext</span>
-                                </div>
-                           
-                            }
-                        </dd>
-                    </dl>
-                    }
-
-                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Count()>0)
-                    {
-                    <dl>
-                        <dt>Geography</dt>
-                        <dd>
-                            @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Geography.ToString()))
-                            {
-
-                                <div class="dd-row">
-                                    <label>@item.Title</label>
-                                    <span>@item.permissiontext</span>
-                                </div>
-                           
-                            }
-                        </dd>
-                    </dl>
+                        <dl>
+                            <dt>@customField.Name</dt>
+                            <dd>
+                                @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == customField.CustomFieldId.ToString()))
+                                {
+                                    <div class="dd-row">
+                                        <label>@item.Title</label>
+                                        <span>@item.permissiontext</span>
+                                    </div>
+                                }
+                            </dd>
+                        </dl>
                     }
                     
-                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Count()>0)
-                    {
-                    <dl>
-                        <dt>Business Units</dt>
-                        <dd>
-                            @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()))
-                            {
-
-                                <div class="dd-row">
-                                    <label>@item.Title</label>
-                                    <span>@item.permissiontext</span>
-                                </div>
-                           
-                            }
-                        </dd>
-                    </dl>
-                    }
                     <div class="bottom-btns">
                         @if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString())
                         {
@@ -149,13 +106,10 @@
                         </span>
                         }
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>
-   
 }
 else
 {
@@ -165,320 +119,112 @@ else
         </li>
     </ul>
 
-
-
     <div class="padding-content cf source-sans-proregular">
         <div class="row">
             <div id="internalLink" class="span2 myaccount-colum">
                  @Html.Partial("~/Views/Organization/_organization.cshtml")
                 
             </div>
-
             <div class="span9">
-
                 <div class="user-permissions">
                     <h4>Edit Permissions - @ViewBag.Name <span class="job-role director">@ViewBag.RoleName</span></h4>
-
-
                     @foreach (var headerItem in headers)
                     {
-
                         <dl>
                             <dt>@headerItem.Title</dt>
                             <dd>
                                 @foreach (var item in Model.Where(act => act.ParentId == headerItem.ApplicationActivityId))
                                 {
-                                
-
-
                                     <div class="dd-row">
                                         <label>@Html.Raw(item.Title)</label>
                                         @if (item.Permission == "Yes")
                                         {
-
                                             <span class="radioGrp">
                                                 <span class="check_signup">
                                                     <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
                                                     Yes
-                                                    </span>
+                                                </span>
                                                 <span class="check_signup">
                                                     <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
                                                     No
-                                                    </span>
+                                                </span>
                                             </span>
                                         }
                                         else
                                         {
-
                                             <span class="radioGrp">
                                                 <span class="check_signup">
                                                     <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
                                                     Yes
-                                                    </span>
+                                                </span>
                                                 <span class="check_signup">
                                                     <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
                                                     No
-                                                    </span>
+                                                </span>
                                             </span>
                                         }
                                     </div>
-
                                 }
                             </dd>
                         </dl>
                     }
 
                     <h4 class="extra-space">*Custom Restrictions</h4>
-                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Count()>0)
+                    @foreach (var customField in customFieldList)
                     {
-                    <dl>
-                        <dt>Verticals</dt>
-                        <dd>
-                            @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Verticals.ToString()))
-                            {
-
-                                <div class="dd-row">
-                                    <label>@item.Title</label>
-
-                                    @if (@item.Permission == 0)
-                                    {
-
+                        <dl>
+                            <dt>@customField.Name</dt>
+                            <dd>
+                                @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == customField.CustomFieldId.ToString()))
+                                {
+                                    <div class="dd-row">
+                                        <label>@item.Title</label>
                                         <span class="radioGrp">
                                             <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId"  checked="checked" autocomplete="off"  />
-                                                None
-                                                </span>
-                                           
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId" autocomplete="off"  />
-                                                View Only
-                                                </span>
-                                             <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId" autocomplete="off"  />
-                                                View/Edit
-                                        </span>
-                                        </span>
-                                    }
-                                    else if (@item.Permission == 1)
-                                    {
-
-                                        <span class="radioGrp">
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId" autocomplete="off" />
-                                                None
-                                                </span>
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId" checked="checked"  autocomplete="off" />
-                                                View Only
-                                                </span>
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId"  autocomplete="off"  />
-                                                View/Edit
-                                        </span>  
-                                           
-                                        </span>  
-                                    }
-                                    else if (@item.Permission == 2)
-                                    {
-
-                                        <span class="radioGrp">
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId" autocomplete="off" />
-                                                None
-                                                </span>
-                                           
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId"  autocomplete="off" />
-                                                View Only
-                                                </span>
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId" autocomplete="off" checked="checked" />
-                                                View/Edit
-                                                </span>
-                                                </span>
-                                    }
-
-                                </div>
-                            }
-                        </dd>
-                    </dl>
-                    }
-
-                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Count()>0)
-                    {
-                    <dl>
-                        <dt>Geography</dt>
-                        <dd>
-                            @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Geography.ToString()))
-                            {
-
-                                <div class="dd-row">
-                                    <label>@item.Title</label>
-                                        @* Commented By Sohel Pathan on 18/07/2014 for PL ticket #594 *@
                                             @if (@item.Permission == 0)
                                             {
-                                        <span class="radioGrp">
+                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_@item.CustomField.ToString()_@item.CustomFieldId"  checked="checked" autocomplete="off"  />
+                                            }
+                                            else
+                                            {
+                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off" />
+                                            }
+                                            None
+                                            </span>      
                                             <span class="check_signup">
-                                                <input type="radio" name="radio_geography_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" checked="checked" />
-                                                None
-                                                </span>
-                                           
+                                            @if (@item.Permission == 1)
+                                            {
+                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_@item.CustomField.ToString()_@item.CustomFieldId" checked="checked"  autocomplete="off" />
+                                            }
+                                            else
+                                            {
+                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off"  />
+                                            }
+                                            View Only
+                                            </span>
                                             <span class="check_signup">
-                                                <input type="radio" name="radio_geography_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" />
-                                                View Only
-                                                </span>
-                                             <span class="check_signup">
-                                                <input type="radio" name="radio_geography_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" />
-                                                View/Edit
+                                            @if (@item.Permission == 2)
+                                            {
+                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off" checked="checked" />
+                                            }
+                                            else
+                                            {
+                                            <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off"  />
+                                            }
+                                            View/Edit
+                                            </span>
                                         </span>
-                                        </span>
-                                    }
-                                    else if (@item.Permission == 1)
-                                    {
-
-                                        <span class="radioGrp">
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_geography_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio"  />
-                                                None
-                                                </span>
-                                            
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_geography_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" checked="checked" />
-                                                View Only
-                                                </span>
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_geography_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio"  />
-                                                View/Edit
-                                        </span> 
-                                        </span> 
-                                    }
-                                    else if (@item.Permission == 2)
-                                    {
-
-                                        <span class="radioGrp">
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_geography_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio"  />
-                                                None
-                                                </span>
-                                           
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_geography_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio"  />
-                                                View Only
-                                                </span>
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_geography_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" checked="checked" />
-                                                View/Edit
-                                                </span>
-                                                </span>
-                                    }
-                                </div>
-                            }
-
-                        </dd>
-                    </dl>
+                                    </div>
+                                }
+                            </dd>
+                        </dl>
                     }
 
-                      @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Count() > 0)
-                      {   
-                    <dl>
-                        <dt>Business Units</dt>
-                        <dd>
-                            @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()))
-                            {
-
-                                <div class="dd-row">
-                                    <label>@item.Title</label>
-                                      @if (ViewBag.userBusinessUnit != item.CustomFieldId)
-                                      {
-                                          if (@item.Permission == 0)
-                                          {
-
-                                        <span class="radioGrp">
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId"  checked="checked" autocomplete="off"  />
-                                                None
-                                                </span>
-                                           
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" autocomplete="off"  />
-                                                View Only
-                                                </span>
-                                             <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" autocomplete="off"  />
-                                                View/Edit
-                                                </span>
-                                        </span>
-                                          }
-                                          else if (@item.Permission == 1)
-                                          {
-
-                                        <span class="radioGrp">
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" autocomplete="off" />
-                                                None
-                                                </span>
-                                          
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" checked="checked"  autocomplete="off" />
-                                                View Only
-                                                </span>
-                                              <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId"  autocomplete="off"  />
-                                                View/Edit
-                                                </span>
-                                        </span>  
-                                          }
-                                          else if (@item.Permission == 2)
-                                          {
-
-                                        <span class="radioGrp">
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" autocomplete="off" />
-                                                None
-                                                </span>
-                                            
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId"  autocomplete="off" />
-                                                View Only
-                                                </span>
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" autocomplete="off" checked="checked" />
-                                                View/Edit
-                                                </span>
-                                        </span>
-                                          }
-                                      }
-                                      else
-                                      {
-                                         <span class="radioGrp">
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" autocomplete="off" disabled="disabled" />
-                                                None
-                                                </span>
-                                            
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId"  autocomplete="off" disabled="disabled" />
-                                                View Only
-                                                </span>
-                                            <span class="check_signup">
-                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" autocomplete="off" checked="checked" disabled="disabled" />
-                                                View/Edit
-                                                </span>
-                                        </span>  
-                                      }
-
-                                </div>
-                            }
-                        </dd>
-                    </dl>
-                      }
                     <div id="divpartialsharetactic" class="hide">
                         <div id="divsharetacticpopupmain" class="all-height DivResetDefaults">
                             <div class="calc-height">
                                 <div class="span12">
-
                                     <div style="display: block; z-index: 10500; height: auto; width: 320px;" aria-hidden="true" aria-labelledby="mymodallabel" role="dialog" class="form-inspect-share hide fade in height-auto" id="divsharetacticpopup">
-
                                         <div class="login-wrapper" style="padding-bottom: 20px;">
                                             <h2 class="primary-title source-sans-proregular without-text-shadow">Reset to Defaults?</h2>
                                             <p>This user's permissions will be reset to the role default permissions. Do you want to proceed?</p>
@@ -495,13 +241,9 @@ else
                         <div id="divsharetacticpopupmain1" class="all-height DivResetDefaults">
                             <div class="calc-height">
                                 <div class="span12">
-
                                     <div style="display: block; z-index: 10500; height: auto; width: 320px;" aria-hidden="true" aria-labelledby="mymodallabel" role="dialog" class="form-inspect-share hide fade in height-auto" id="divsharetacticpopup1">
-
                                         <div class="login-wrapper" style="padding-bottom: 20px;">
                                             <h2 class="primary-title source-sans-proregular without-text-shadow">Permissions Saved</h2>
-
-
                                             <button type="button" class="form-inspect-share-button btn btn-large default-btn" style="float: none;" id="btn-close">Close</button>
                                         </div>
                                     </div>
@@ -524,15 +266,14 @@ else
                                 <img src="../Content/images/help-icon.png" alt=""></a>
                         </span>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>
-    
 }
+
 <style type="text/css">
+    
     .popover.top > .arrow, .popover.top > .arrow:after {
         display: none;
     }
@@ -549,6 +290,7 @@ else
     }
 
 </style>
+
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/check.js")"></script>
 <script type="text/javascript">
     $(document).ready(function () {

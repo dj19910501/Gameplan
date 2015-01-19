@@ -2246,58 +2246,6 @@ namespace BDSService
                                 db.Entry(obj).State = EntityState.Added;
                                 db.User_Activity_Permission.Add(obj);
                             }
-                            else if (item.ToLower().Contains(CommonFile.CustomRestrictionType.Verticals.ToString().ToLower()))
-                            {
-                                string[] splitpermissions = item.Split('_');
-                                CustomRestriction obj = new CustomRestriction();
-                                obj.UserId = userId;
-                                obj.CustomFieldId = splitpermissions[2];
-                                obj.CustomField = splitpermissions[1];
-                                obj.Permission = Convert.ToInt16(splitpermissions[0]);
-                                obj.CreatedDate = System.DateTime.Now;
-                                obj.CreatedBy = CreatorId;
-                                // Modified By : Kalpesh Sharma
-                                // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
-                                obj.ApplicationId = applicationId;
-                                //Modification end
-                                db.Entry(obj).State = EntityState.Added;
-                                db.CustomRestrictions.Add(obj);
-                            }
-                            else if (item.ToLower().Contains(CommonFile.CustomRestrictionType.Geography.ToString().ToLower()))
-                            {
-                                string[] splitpermissions = item.Split('_');
-                                CustomRestriction obj = new CustomRestriction();
-                                obj.UserId = userId;
-                                obj.CustomFieldId = splitpermissions[2];
-                                obj.CustomField = splitpermissions[1];
-                                obj.Permission = Convert.ToInt16(splitpermissions[0]);
-                                obj.CreatedDate = System.DateTime.Now;
-                                obj.CreatedBy = CreatorId;
-                                // Modified By : Kalpesh Sharma
-                                // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
-                                obj.ApplicationId = applicationId;
-                                //Modification end
-                                db.Entry(obj).State = EntityState.Added;
-                                db.CustomRestrictions.Add(obj);
-                            }
-                            else if (item.ToLower().Contains(CommonFile.CustomRestrictionType.BusinessUnit.ToString().ToLower()))
-                            {
-                                string[] splitpermissions = item.Split('_');
-                                CustomRestriction obj = new CustomRestriction();
-                                obj.UserId = userId;
-                                obj.CustomFieldId = splitpermissions[2];
-                                obj.CustomField = splitpermissions[1];
-                                obj.Permission = Convert.ToInt16(splitpermissions[0]);
-                                obj.CreatedDate = System.DateTime.Now;
-                                obj.CreatedBy = CreatorId;
-                                // Modified By : Kalpesh Sharma
-                                // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
-                                obj.ApplicationId = applicationId;
-                                //Modification end
-                                db.Entry(obj).State = EntityState.Added;
-                                db.CustomRestrictions.Add(obj);
-
-                            }
                         }
                         int res = db.SaveChanges();
                         if (res > 0)
