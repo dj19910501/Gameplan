@@ -12,22 +12,15 @@ namespace RevenuePlanner.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class CustomField_Entity
+    public partial class CustomField_Entity_StageWeight
     {
-        public CustomField_Entity()
-        {
-            this.CustomField_Entity_StageWeight = new HashSet<CustomField_Entity_StageWeight>();
-        }
-    
+        public long StageWeightId { get; set; }
         public int CustomFieldEntityId { get; set; }
-        public int EntityId { get; set; }
-        public int CustomFieldId { get; set; }
-        public string Value { get; set; }
+        public string StageTitle { get; set; }
+        public byte Weightage { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
-        public Nullable<byte> Weightage { get; set; }
     
-        public virtual CustomField CustomField { get; set; }
-        public virtual ICollection<CustomField_Entity_StageWeight> CustomField_Entity_StageWeight { get; set; }
+        public virtual CustomField_Entity CustomField_Entity { get; set; }
     }
 }

@@ -678,7 +678,6 @@ namespace RevenuePlanner.Controllers
             pc.EndDate = GetCurrentDateBasedOnPlan(true);
             pc.CampaignBudget = 0;
             pc.AllocatedBy = objPlan.AllocatedBy;
-            pc.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Campaign.ToString());// Added by Mitesh Vaishnav for PL ticket #718
 
             #region "Calculate Plan remaining budget by plan Id"
             var lstAllCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanId == planId && campaign.IsDeleted == false).ToList();
@@ -781,7 +780,6 @@ namespace RevenuePlanner.Controllers
             pcm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); //  Update by Bhavesh to Display Revenue
             // End Added By Dharmraj #567 : Budget allocation for campaign
 
-            pcm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Campaign.ToString());//Added by Mitesh Vaishnav for PL ticket #718
             if (Sessions.User.UserId == pc.CreatedBy)
             {
                 ViewBag.IsOwner = true;
@@ -1354,7 +1352,6 @@ namespace RevenuePlanner.Controllers
 
             pcpm.IsDeployedToIntegration = pcp.IsDeployedToIntegration;
 
-            pcpm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Program.ToString());//Added by Mitesh Vaishnav for PL ticket #719 
             #endregion
 
             if (Sessions.User.UserId == pcp.CreatedBy)
@@ -2098,7 +2095,6 @@ namespace RevenuePlanner.Controllers
             pcpm.CEndDate = pcp.EndDate;
             pcpm.ProgramBudget = 0;
             pcpm.AllocatedBy = objPlan.AllocatedBy;
-            pcpm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Program.ToString());//Added by Mitesh Vaishnav for PL ticket #719
             #endregion
 
             ViewBag.IsOwner = true;
@@ -2982,6 +2978,43 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pcpt.TacticType.Model);
             #endregion
+            /* Added by Mitesh Vaishnav for PL ticket #1073
+             Add number of stages for advance/Basic attributes waightage related to tacticType*/
+            string mqlCode = Enums.Stage.MQL.ToString();
+            var mqlForClient = db.Stages.Where(stage => stage.ClientId == pcpt.TacticType.Stage.ClientId && stage.Code == mqlCode).FirstOrDefault();
+            int mqlLevel = mqlForClient != null ? (int)mqlForClient.Level : 0;
+            string advanceStageTitles = pcpt.TacticType.Stage.Title, advanceStagecodes = pcpt.TacticType.Stage.Code;
+            if (mqlLevel > pcpt.TacticType.Stage.Level)
+            {
+                advanceStageTitles += "," + mqlForClient.Title;
+                advanceStagecodes += "," + mqlForClient.Code;
+            }
+            ViewBag.AdvanceStageTitles = advanceStageTitles;
+            ViewBag.AdvanceStageCodes = advanceStagecodes;
+            string entityType=Enums.Section.Tactic.ToString();
+            /*Get existing value of Advance/Basic waightage of tactic's attributes*/
+            var customFeilds = db.CustomField_Entity_StageWeight.Where(cfs => cfs.CustomField_Entity.EntityId == pcpt.PlanTacticId && cfs.CustomField_Entity.CustomField.EntityType == entityType).Select(cfs => new
+            {
+                optionId=cfs.CustomField_Entity.Value,
+                stageType=cfs.StageTitle,
+                Weight=cfs.Weightage
+            }).ToList();
+            var customFeildsWeightage = db.CustomField_Entity.Where(cfs => cfs.EntityId == pcpt.PlanTacticId && cfs.CustomField.EntityType == entityType && cfs.Weightage != null).Select(cfs => new
+            {
+                optionId = cfs.Value,
+                stageType = "weight",
+                Weight = cfs.Weightage
+            }).ToList();
+            if (customFeilds.Count > 0)
+            {
+                customFeilds.Concat<object>(customFeildsWeightage).ToList();
+                ViewBag.customFieldWeightage = JsonConvert.SerializeObject(customFeilds);
+            }
+            else
+            {
+                ViewBag.customFieldWeightage = JsonConvert.SerializeObject(customFeildsWeightage);
+            }
+            /*End : Added by Mitesh Vaishnav for PL ticket #1073*/
 
             Inspect_Popup_Plan_Campaign_Program_TacticModel ippctm = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
             ippctm.PlanProgramId = pcpt.PlanProgramId;
@@ -3100,7 +3133,6 @@ namespace RevenuePlanner.Controllers
             ippctm.TacticCost = pcpt.Cost;
             ippctm.AllocatedBy = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
 
-            ippctm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Tactic.ToString());//Added by Mitesh Vaishnav for PL ticket #720
 
             #region "Calculate Plan remaining budget"
             var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpt.PlanProgramId).ToList().Sum(c => c.Cost);
@@ -3179,7 +3211,7 @@ namespace RevenuePlanner.Controllers
             {
                 int cid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == form.PlanProgramId).Select(program => program.PlanCampaignId).FirstOrDefault();
                 int pid = form.PlanProgramId;
-                var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
+                var customFields = JsonConvert.DeserializeObject<List<CustomFieldStageWeight>>(customFieldInputs);
 
                 //// if PlanTacticId is null then Insert New record.
                 if (form.PlanTacticId == 0)
@@ -3270,14 +3302,28 @@ namespace RevenuePlanner.Controllers
                                 //// Save custom fields value for particular Tactic
                                 if (customFields.Count != 0)
                                 {
-                                    foreach (var item in customFields)
+                                    var customFieldEntities = customFields.Select(cf => new
+                                    {
+                                        customFieldId=cf.CustomFieldId,
+                                        Value=cf.Value,
+                                        Weight=cf.Weight
+                                    }).Distinct().ToList();
+                                    foreach (var item in customFieldEntities)
                                     {
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        List<CustomField_Entity_StageWeight> objstageWeight=new List<CustomField_Entity_StageWeight> ();
+                                        objstageWeight=customFields.Where(cf=>cf.CustomFieldId==item.customFieldId && cf.Value==item.Value).Select(cf=>new CustomField_Entity_StageWeight(){
+                                        StageTitle=cf.StageCode,
+                                        Weightage=(byte)cf.StageWeight,
+                                        CreatedDate=DateTime.Now,
+                                        CreatedBy=Sessions.User.UserId
+                                        }).ToList();
                                         objcustomFieldEntity.EntityId = tacticId;
-                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.CustomFieldId = item.customFieldId;
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        objcustomFieldEntity.CustomField_Entity_StageWeight.Concat(objstageWeight);
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
                                     }
                                 }
@@ -3554,27 +3600,53 @@ namespace RevenuePlanner.Controllers
                                 }
                                 // End Added by dharmraj for ticket #644
 
-                                ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
+                                ////Start modified by Mitesh Vaishnav for PL ticket #1073 multiselect attributes
                                 //// delete previous custom field values and save modified custom fields value for particular Tactic
                                 string entityTypeTactic = Enums.EntityType.Tactic.ToString();
                                 var prevCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == pcpobj.PlanTacticId && custField.CustomField.EntityType == entityTypeTactic).ToList();
+                                var lstCustomfieldEntityIds=prevCustomFieldList.Select(cf => cf.CustomFieldEntityId).ToList();
+                                if (lstCustomfieldEntityIds.Count > 0)
+                                {
+                                    var prevCustomfieldStageWeight = db.CustomField_Entity_StageWeight.Where(cfs => lstCustomfieldEntityIds.Contains(cfs.CustomFieldEntityId)).ToList();
+                                    prevCustomfieldStageWeight.ForEach(custFieldWeight => db.Entry(custFieldWeight).State = EntityState.Deleted);
+                                }
                                 prevCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
 
                                 if (customFields.Count != 0)
                                 {
-                                    foreach (var item in customFields)
+                                    var customFieldEntities = customFields.Select(cf => new
+                                    {
+                                        customFieldId = cf.CustomFieldId,
+                                        Value = cf.Value,
+                                        Weight = cf.Weight
+                                    }).Distinct().ToList();
+                                    foreach (var item in customFieldEntities)
                                     {
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        List<CustomField_Entity_StageWeight> objstageWeight = new List<CustomField_Entity_StageWeight>();
+                                        objstageWeight = customFields.Where(cf => cf.CustomFieldId == item.customFieldId && cf.Value == item.Value).Select(cf => new CustomField_Entity_StageWeight()
+                                        {
+                                            StageTitle = cf.StageCode,
+                                            Weightage = cf.StageWeight.HasValue ? (byte)cf.StageWeight : (byte)0,
+                                            CreatedDate = DateTime.Now,
+                                            CreatedBy = Sessions.User.UserId
+                                        }).ToList();
                                         objcustomFieldEntity.EntityId = pcpobj.PlanTacticId;
-                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.CustomFieldId = item.customFieldId;
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
-
+                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                        //objcustomFieldEntity.CustomField_Entity_StageWeight.Concat(objstageWeight);
+                                        if (!objstageWeight.Where(sw => sw.StageTitle == null).Any())
+                                        {
+                                            objcustomFieldEntity.CustomField_Entity_StageWeight = objstageWeight.ToList();
+                                        }
+                                        //db.Entry(objcustomFieldEntity).State = EntityState.Added;
+                                        db.CustomField_Entity.Add(objcustomFieldEntity);
                                     }
                                 }
-                                ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
+                                ////End modified by Mitesh Vaishnav for PL ticket #1073 multiselect attributes
 
                                 db.SaveChanges();
 
@@ -3705,7 +3777,6 @@ namespace RevenuePlanner.Controllers
             pcptm.TacticCost = 0;
             pcptm.AllocatedBy = objPlan.AllocatedBy;
 
-            pcptm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Tactic.ToString());
 
             User userName = new User();
             try

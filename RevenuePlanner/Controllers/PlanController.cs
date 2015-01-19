@@ -2388,13 +2388,27 @@ namespace RevenuePlanner.Controllers
         public JsonResult LoadTacticTypeValue(int tacticTypeId)
         {
             TacticType tt = db.TacticTypes.Where(tacType => tacType.TacticTypeId == tacticTypeId).FirstOrDefault();
+            /*Start modified by Mitesh Vaishnav for PL ticket #1074
+             Provide stageTitle/Code perameter when tactic type changed*/
+            string mqlCode=Enums.Stage.MQL.ToString();
+            var mqlForClient=db.Stages.Where(stage => stage.ClientId == tt.Stage.ClientId && stage.Code == mqlCode).FirstOrDefault();
+            int mqlLevel =mqlForClient!=null? (int)mqlForClient.Level:0;
+            string advanceStageTitles = tt.Stage.Title, advanceStagecodes = tt.Stage.Code;
+            if (mqlLevel > tt.Stage.Level)
+            {
+                advanceStageTitles += "," + mqlForClient.Title;
+                advanceStagecodes += "," + mqlForClient.Code;
+            }
+            /*End modified by Mitesh Vaishnav for PL ticket #1074*/
             return Json(new
             {
                 revenue = tt.ProjectedRevenue == null ? 0 : tt.ProjectedRevenue,
                 IsDeployedToIntegration = tt.IsDeployedToIntegration,
                 stageId = tt.StageId,
                 stageTitle = tt.Stage.Title,
-                projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue
+               projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue,
+               AdvanceStageTitles=advanceStageTitles,
+               AdvanceStageCode=advanceStagecodes
             }, JsonRequestBehavior.AllowGet);
         }
 

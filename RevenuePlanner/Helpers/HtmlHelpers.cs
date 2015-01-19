@@ -3653,71 +3653,71 @@ namespace RevenuePlanner.Helpers
         /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
         /// <param name="section">Parameter contains value from enum EntityType like Campaign or Program or Tactic.</param>
         /// <returns>If Plan Tactic or Plan Campaign or Plan Program contains custom fields than returns html string else empty string</returns>
-        public static MvcHtmlString GenerateCustomFields(int id, string section)
-        {
-            //list of custom fields for particular campaign or Program or Tactic
-            List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
-            string sb = string.Empty;
-            if (customFieldList.Count != 0)
-            {
-                //count variable for defining alternate raw
-                int count = 0;
-                foreach (var item in customFieldList)
-                {
-                    string classname = "content-row";
-                    if (count % 2 != 0)
-                    {
-                        classname += " alternate";
-                    }
-                    //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
-                    if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
-                    {
-                        sb += "<div class=\""+classname+" \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
-                        //When item value contains double quots then it would be replaced 
-                        string customFieldEntityValue = item.value != null ? item.value.Replace("\"", "&quot;") : string.Empty;
-                        sb += "<input id=\"cf_" + item.customFieldId + "\" type=\"text\" value=\"" + customFieldEntityValue + "\" cf_id=\"" + item.customFieldId + "\" maxlength=\"255\"";
-                        //If custom field is required than add attribute require
-                        if (item.isRequired)
-                        {
-                            sb += " require=\"true\"";
-                        }
-                        sb += "></div>";
-                    }
-                    else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString())
-                    {
-                        classname += " margin-bottom10";
-                        sb += "<div class=\"" + classname + " \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
-                        sb += "<span class=\"verticalIdSelectBox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"";
-                        //If custom field is required than add attribute require
-                        if (item.isRequired)
-                        {
-                            sb += " require=\"true\"";
-                        }
-                        sb += "><option value=\"\">Please Select</option>";
-                        //set dropdown option values
-                        if (item.option.Count != 0)
-                        {
-                            foreach (var objOption in item.option)
-                            {
-                                //check - if custom field's value inserted before from dropdownlist then set it as selected
-                                if (item.value != objOption.customFieldOptionId.ToString())
-                                {
-                                    sb += "<option value=\"" + objOption.customFieldOptionId + "\">" + objOption.value + "</option>";
-                                }
-                                else
-                                {
-                                    sb += "<option value=\"" + objOption.customFieldOptionId + "\" selected=true>" + objOption.value + "</option>";
-                                }
-                            }
-                        }
-                        sb += "</select></span></div>";
+        //public static MvcHtmlString GenerateCustomFields(int id, string section)
+        //{
+        //    //list of custom fields for particular campaign or Program or Tactic
+        //    List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
+        //    string sb = string.Empty;
+        //    if (customFieldList.Count != 0)
+        //    {
+        //        //count variable for defining alternate raw
+        //        int count = 0;
+        //        foreach (var item in customFieldList)
+        //        {
+        //            string classname = "content-row";
+        //            if (count % 2 != 0)
+        //            {
+        //                classname += " alternate";
+        //            }
+        //            //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
+        //            if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
+        //            {
+        //                sb += "<div class=\""+classname+" \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
+        //                //When item value contains double quots then it would be replaced 
+        //                string customFieldEntityValue = item.value != null ? item.value.Replace("\"", "&quot;") : string.Empty;
+        //                sb += "<input id=\"cf_" + item.customFieldId + "\" type=\"text\" value=\"" + customFieldEntityValue + "\" cf_id=\"" + item.customFieldId + "\" maxlength=\"255\"";
+        //                //If custom field is required than add attribute require
+        //                if (item.isRequired)
+        //                {
+        //                    sb += " require=\"true\"";
+        //                }
+        //                sb += "></div>";
+        //            }
+        //            else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+        //            {
+        //                classname += " margin-bottom10";
+        //                sb += "<div class=\"" + classname + " \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
+        //                sb += "<span class=\"verticalIdSelectBox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"";
+        //                //If custom field is required than add attribute require
+        //                if (item.isRequired)
+        //                {
+        //                    sb += " require=\"true\"";
+        //                }
+        //                sb += "><option value=\"\">Please Select</option>";
+        //                //set dropdown option values
+        //                if (item.option.Count != 0)
+        //                {
+        //                    foreach (var objOption in item.option)
+        //                    {
+        //                        //check - if custom field's value inserted before from dropdownlist then set it as selected
+        //                        if (item.value != objOption.customFieldOptionId.ToString())
+        //                        {
+        //                            sb += "<option value=\"" + objOption.customFieldOptionId + "\">" + objOption.value + "</option>";
+        //                        }
+        //                        else
+        //                        {
+        //                            sb += "<option value=\"" + objOption.customFieldOptionId + "\" selected=true>" + objOption.value + "</option>";
+        //                        }
+        //                    }
+        //                }
+        //                sb += "</select></span></div>";
 
-                    }
-                    count = count + 1;
-                }
-            }
-            return new MvcHtmlString(sb.ToString());
-        }
+        //            }
+        //            count = count + 1;
+        //        }
+        //    }
+        //    return new MvcHtmlString(sb.ToString());
+        //}
 
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #844
@@ -3755,7 +3755,7 @@ namespace RevenuePlanner.Helpers
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
                         //When item value contains double quots then it would be replaced 
-                        string customFieldEntityValue = item.value != null ? item.value.Replace("\"", "&quot;") : string.Empty;
+                        string customFieldEntityValue = item.value.Count > 0 ? item.value.First().Replace("\"", "&quot;") : string.Empty;
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
                             sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");    
@@ -3776,29 +3776,33 @@ namespace RevenuePlanner.Helpers
                     {
                         if (mode == Enums.InspectPopupMode.Edit.ToString())
                         {
-                            sb.Append("<span class=\"selectBox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"");
-                            if (item.isRequired)
+                            string DropDownStyle = "";
+                            if (fieldCounter % 4 == 3)
                             {
-                                sb.Append(" require=\"true\"");
+                                DropDownStyle = "style=\"float:right;margin-left:-10px;\"";
                             }
-                            sb.Append("><option value=\"\">Please Select</option>");
-                            //set dropdown option values
-                            if (item.option.Count != 0)
-                            {
+                            string name = "";
+                            sb.Append("#HEADER_OF_DROPDOWN#");
+                            sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"dropdow_table_header\"><tr><td scope=\"col\" class=\"value_header\"><span>Value</span></td><td scope=\"col\" class=\"weight_header\"><span> Weight(%)</sapn></td><td scope=\"col\" class=\"sus_header\" >Stage(%)</td><td scope=\"col\" class=\"cw_header\">CW(%)</td><td scope=\"col\" class=\"revenue_header\">Revenue(%)</td><td scope=\"col\" class=\"cost_header\" >Cost(%)</td></tr></thead>");
                                 foreach (var objOption in item.option)
                                 {
-                                    //check - if custom field's value inserted before from dropdownlist then set it as selected
-                                    if (item.value != objOption.customFieldOptionId.ToString())
-                                    {
-                                        sb.Append("<option value=\"" + objOption.customFieldOptionId + "\">" + objOption.value + "</option>");
-                                    }
-                                    else
-                                    {
-                                        sb.Append("<option value=\"" + objOption.customFieldOptionId + "\" selected=true>" + objOption.value + "</option>");
-                                    }
+                               string enableCheck = string.Empty;
+                                if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
+                                {
+                                    name += objOption.value + ",";
+                                    enableCheck = "checked=\"checked\"";
                                 }
+                                
+                                //if ()
+                                sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" "+enableCheck+" ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_show weight\"><input id=\"" + objOption.customFieldOptionId + "_weight\" type=\"text\" name=\"textfield16\" value=\"\" class=\"firstshow_width text_blk_active \"></td> <td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_stage\" type=\"text\" name=\"textfield4\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_CW\" type=\"text\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_Revenue\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_Cost\" type=\"text\" name=\"textfield13\"></td></tr>");
                             }
-                            sb.Append("</select></span></div>");
+                            sb.Append(" <tfoot><tr><td colspan=\"7\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">advance attribution ></span></a></td></tr></tfoot></table></div></div>");
+                            if (name.Length > 0)
+                            {
+                               name= name.Remove(name.Length - 1, 1);
+                            }
+                            sb.Replace("#HEADER_OF_DROPDOWN#", "<a class=\"dropdown_new_btn\"><p class=\"text_ellipsis\">"+name+"</p></a>");
+                            sb.Append("</div>");
                         }
                         else
                         {
@@ -3808,10 +3812,14 @@ namespace RevenuePlanner.Helpers
                                 foreach (var objOption in item.option)
                                 {
                                     //check - if custom field's value inserted before from dropdownlist then set it as selected
-                                    if (item.value == objOption.customFieldOptionId.ToString())
+                                    if (item.value!=null && item.value.Contains(objOption.customFieldOptionId.ToString()))
                                     {
-                                        customFieldEntityValue = item.value != null ? objOption.value.Replace("\"", "&quot;") : string.Empty;
+                                        customFieldEntityValue += item.value != null ? objOption.value.Replace("\"", "&quot;")+"," : string.Empty;
                                     }
+                                }
+                                if (customFieldEntityValue.Length > 0)
+                                {
+                                   customFieldEntityValue= customFieldEntityValue.Remove(customFieldEntityValue.Length - 1, 1);
                                 }
                             }
 

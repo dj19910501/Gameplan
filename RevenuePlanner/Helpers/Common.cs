@@ -4117,7 +4117,7 @@ namespace RevenuePlanner.Helpers
                 description = a.Description,
                 isRequired = a.IsRequired,
                 entityType = a.EntityType,
-                value = a.CustomField_Entity.Where(ct => ct.EntityId == id).FirstOrDefault() != null ? a.CustomField_Entity.Where(ct => ct.EntityId == id).FirstOrDefault().Value : null,
+                value = a.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Count > 0 ? a.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList() : null,
                 option = a.CustomFieldOptions.ToList().Select(o => new CustomFieldOptionModel
                 {
                     customFieldOptionId = o.CustomFieldOptionId,

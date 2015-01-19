@@ -160,6 +160,11 @@
         <EntityTypeShape EntityType="MRPModel.Client_Activity" Width="1.5" PointX="0.60942292800611952" PointY="1.4232362813424488" />
         <EntityTypeShape EntityType="MRPModel.Client_Integration_Permission" Width="1.5" PointX="6.1569488934040768" PointY="8.2120969482753878" />
         <AssociationConnector Association="MRPModel.FK_Client_Integration_Permission_IntegrationType" />
+        <EntityTypeShape EntityType="MRPModel.CustomField_Entity_StageWeight" Width="1.5" PointX="11.904482994184122" PointY="5.4582707758332933" />
+        <EntityTypeShape EntityType="MRPModel.CustomRestriction" Width="1.5" PointX="4.7656963582922218" PointY="5.9484805641455951" />
+        <AssociationConnector Association="MRPModel.FK_CustomRestriction_CustomField" />
+        <AssociationConnector Association="MRPModel.FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1" />
+        <AssociationConnector Association="MRPModel.FK_CustomRestriction_CustomFieldOption" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

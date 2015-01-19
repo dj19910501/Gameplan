@@ -76,7 +76,8 @@ namespace RevenuePlanner
                          "~/Scripts/summernote_min.js",
                         "~/Scripts/js/jquery-ui.js",
                         "~/Scripts/js/jquery.multiselect_v1.js",
-                        "~/Scripts/js/jquery.multiselect.filter.js"
+                        "~/Scripts/js/jquery.multiselect.filter.js",
+                        "~/Scripts/MultiselectWeight.js"
                         ));
 
             BundleTable.EnableOptimizations = true;

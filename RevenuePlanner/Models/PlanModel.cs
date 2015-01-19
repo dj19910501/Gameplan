@@ -105,8 +105,6 @@ namespace RevenuePlanner.Models
         public double ProgramBudget { get; set; }
         public string AllocatedBy { get; set; }
         public double Revenue { get; set; }
-        //Added by Mitesh Vaishnav for PL ticket #719
-        public MvcHtmlString CustomFieldHtmlContent { get; set; }
     }
 
     public class Plan_Campaign_Program_TacticModel
@@ -434,7 +432,7 @@ namespace RevenuePlanner.Models
         public bool isRequired { get; set; }
         public string entityType { get; set; }
         public List<CustomFieldOptionModel> option { get; set; }
-        public string value { get; set; }
+        public List<string> value { get; set; }
 
     }
 
@@ -454,5 +452,19 @@ namespace RevenuePlanner.Models
         public int ModelId { get; set; }
         public int? ParentModelId { get; set; }
         public DateTime? EffectiveDate { get; set; }
+    }
+
+    /// <summary>
+    /// Added By : Mitesh Vaishnav for PL ticket #1074
+    /// Added Date : 17/01/2015
+    /// return mapped list for Advanced/Basic attributes option values of dropdownlist custom fields 
+    /// </summary>
+    public class CustomFieldStageWeight
+    {
+        public int CustomFieldId { get; set; }
+        public string Value { get; set; }
+        public int? Weight { get; set; }
+        public string StageCode { get; set; }
+        public int? StageWeight { get; set; }
     }
 }

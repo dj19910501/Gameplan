@@ -11352,3 +11352,76 @@ float:left;
 {
     color: #FF0000; 
 }
+
+/*Start-Added by Mitesh Vaishnav for PL ticket #1073*/
+.dropdown-wrapper {	display:none;	width:245px;background-color: #fff;position: absolute;z-index: 1;}
+.drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding: 0 10px;max-height: 290px;overflow: auto;}
+.dropdown-block {min-width:535px !important;max-width:640px !important;width:auto;}
+.dropdown_new_btn {
+    background: url("../images/drpdown.png") no-repeat scroll right -1% top 55% #dff0f8;
+    border: 1px solid #c6c6c6;
+    border-radius: 6px;
+    display: inline-block;
+    height: 26px;
+    margin-bottom: 10px;
+    margin-right: 15px;
+    min-width: 115px;
+   padding: 2px 0 0 9px;
+    position: relative;
+    width: 233px;
+	color:#6c6c6c;
+	font-size:14px;
+	line-height:21px;
+}
+
+.table_drpdwn tr {    height: 40px; font-size:14px;}
+.drop_down_header > div {float: left;	width: 50%;  }
+.advance > a {color: #3fa9f5;	padding-right: 10px;}
+.value_header, .weight_header , .sus_header, .mql_header , .cw_header, .revenue_header, .cost_header{border-bottom: 1px solid #dfdfdf;}
+.table_drpdwn {border-collapse: collapse;	width:100%;}
+.first_show > input {background: none repeat scroll 0 0 #dff0f8;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
+.first_hide > input {background: none repeat scroll 0 0 #dff0f8;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
+.first_show, .first_hide {padding: 5px;   font-size: 14px; }
+ .advance {text-align: end;}
+.first_hide > input {width: 74px; height: 27px; }
+.firstshow_width {height: 27px;    width: 74px;}
+.first_hide,.sus_header,.mql_header,.cw_header,.revenue_header,.cost_header{display:none;}
+.firstshow_width.text_default {color: #6c6c6c; background:#f1f1f1;}
+.inspect-column-parent input[type="checkbox"] {
+    margin-right: 6px;
+    margin-top: -1px;
+    width: auto !important;
+}
+.first_show input[type="text"] {
+    margin-right: 6px;
+    margin-top: -1px;
+    width: 74px !important;
+}
+.first_hide input[type="text"] {
+    margin-right: 6px;
+    margin-top: -1px;
+    width: 74px !important;
+}
+.dropdown_new_btn > p {display: inline-block;margin-top: 1px; overflow: hidden;    text-overflow: ellipsis;   white-space: nowrap;    width: 200px;}
+.text_ellipsis {
+    display: inline-block;
+    margin: 0 0 -8px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 65px;
+}
+.lable_inline {
+       display: inline ;
+}
+ 
+}
+.table_drpdwn > tbody { height: 162px;overflow: auto;}
+/*.dropdow_table_header > tr, tbody{display:block;}*/	
+.value_header { height: 40px; padding: 0 60px 0 30px;}
+.weight_header {padding-right:29px;}
+.sus_header {padding-right:44px;}
+.mql_header {padding-right: 50px;}
+.cw_header {padding-right: 40px;}
+.revenue_header { padding-right: 29px;}
+/*End-Added by Mitesh Vaishnav for PL ticket #1073*/

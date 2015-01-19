@@ -93,5 +93,7 @@ namespace RevenuePlanner.Models
         public DbSet<CampaignNameConvention> CampaignNameConventions { get; set; }
         public DbSet<Client_Activity> Client_Activity { get; set; }
         public DbSet<Client_Integration_Permission> Client_Integration_Permission { get; set; }
+        public DbSet<CustomField_Entity_StageWeight> CustomField_Entity_StageWeight { get; set; }
+        public DbSet<CustomRestriction> CustomRestrictions { get; set; }
     }
 }

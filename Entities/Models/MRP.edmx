@@ -16,9 +16,11 @@
           <EntitySet Name="ClientTacticType" EntityType="MRPModel.Store.ClientTacticType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomField" EntityType="MRPModel.Store.CustomField" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomField_Entity" EntityType="MRPModel.Store.CustomField_Entity" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CustomField_Entity_StageWeight" EntityType="MRPModel.Store.CustomField_Entity_StageWeight" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomFieldOption" EntityType="MRPModel.Store.CustomFieldOption" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomFieldType" EntityType="MRPModel.Store.CustomFieldType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomLabel" EntityType="MRPModel.Store.CustomLabel" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CustomRestriction" EntityType="MRPModel.Store.CustomRestriction" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Field" EntityType="MRPModel.Store.Field" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Funnel" EntityType="MRPModel.Store.Funnel" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Funnel_Field" EntityType="MRPModel.Store.Funnel_Field" store:Type="Tables" Schema="dbo" />
@@ -74,19 +76,19 @@
           <EntitySet Name="User_Filter" EntityType="MRPModel.Store.User_Filter" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User_Notification" EntityType="MRPModel.Store.User_Notification" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Vertical" EntityType="MRPModel.Store.Vertical" store:Type="Tables" Schema="dbo" />
-          <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="MRPModel.Store.FK__Plan_Camp__PlanC__43A1090D">
+          <AssociationSet Name="FK__Plan_Camp__PlanC__74794A92" Association="MRPModel.Store.FK__Plan_Camp__PlanC__74794A92">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Plan_Camp__PlanP__42ACE4D4" Association="MRPModel.Store.FK__Plan_Camp__PlanP__42ACE4D4">
+          <AssociationSet Name="FK__Plan_Camp__PlanP__73852659" Association="MRPModel.Store.FK__Plan_Camp__PlanP__73852659">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanC__4589517F" Association="MRPModel.Store.FK__Tactic_Sh__PlanC__4589517F">
+          <AssociationSet Name="FK__Tactic_Sh__PlanC__76619304" Association="MRPModel.Store.FK__Tactic_Sh__PlanC__76619304">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanP__44952D46" Association="MRPModel.Store.FK__Tactic_Sh__PlanP__44952D46">
+          <AssociationSet Name="FK__Tactic_Sh__PlanP__756D6ECB" Association="MRPModel.Store.FK__Tactic_Sh__PlanP__756D6ECB">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
@@ -106,13 +108,21 @@
             <End Role="CustomFieldType" EntitySet="CustomFieldType" />
             <End Role="CustomField" EntitySet="CustomField" />
           </AssociationSet>
-          <AssociationSet Name="FK_CustomField_Entity_CustomField" Association="MRPModel.Store.FK_CustomField_Entity_CustomField">
-            <End Role="CustomField" EntitySet="CustomField" />
+          <AssociationSet Name="FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1" Association="MRPModel.Store.FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1">
             <End Role="CustomField_Entity" EntitySet="CustomField_Entity" />
+            <End Role="CustomField_Entity_StageWeight" EntitySet="CustomField_Entity_StageWeight" />
           </AssociationSet>
           <AssociationSet Name="FK_CustomFieldOption_CustomField" Association="MRPModel.Store.FK_CustomFieldOption_CustomField">
             <End Role="CustomField" EntitySet="CustomField" />
             <End Role="CustomFieldOption" EntitySet="CustomFieldOption" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomRestriction_CustomField" Association="MRPModel.Store.FK_CustomRestriction_CustomField">
+            <End Role="CustomField" EntitySet="CustomField" />
+            <End Role="CustomRestriction" EntitySet="CustomRestriction" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomRestriction_CustomFieldOption" Association="MRPModel.Store.FK_CustomRestriction_CustomFieldOption">
+            <End Role="CustomFieldOption" EntitySet="CustomFieldOption" />
+            <End Role="CustomRestriction" EntitySet="CustomRestriction" />
           </AssociationSet>
           <AssociationSet Name="FK_Funnel_Field_Field" Association="MRPModel.Store.FK_Funnel_Field_Field">
             <End Role="Field" EntitySet="Field" />
@@ -566,6 +576,18 @@
           <Property Name="Value" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Weightage" Type="tinyint" />
+        </EntityType>
+        <EntityType Name="CustomField_Entity_StageWeight">
+          <Key>
+            <PropertyRef Name="StageWeightId" />
+          </Key>
+          <Property Name="StageWeightId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="CustomFieldEntityId" Type="int" Nullable="false" />
+          <Property Name="StageTitle" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Weightage" Type="tinyint" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="CustomFieldOption">
           <Key>
@@ -577,6 +599,8 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
+          <Property Name="Description" Type="nvarchar" />
+          <Property Name="ColorCode" Type="nvarchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="CustomFieldType">
           <Key>
@@ -598,6 +622,18 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="CustomRestriction">
+          <Key>
+            <PropertyRef Name="CustomRestrictionId" />
+          </Key>
+          <Property Name="CustomRestrictionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CustomFieldId" Type="int" Nullable="false" />
+          <Property Name="CustomFieldOptionId" Type="int" Nullable="false" />
+          <Property Name="Permission" Type="smallint" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Field">
           <Key>
@@ -794,6 +830,8 @@
           <Key>
             <PropertyRef Name="IntegrationInstancePlanLogEntityId" />
           </Key>
+          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
           <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
           <Property Name="EntityId" Type="int" Nullable="false" />
           <Property Name="EntityType" Type="varchar" MaxLength="50" />
@@ -803,8 +841,6 @@
           <Property Name="ErrorDescription" Type="nvarchar" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
-          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
-          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="IntegrationInstanceSection">
           <Key>
@@ -1437,7 +1473,7 @@
           <Property Name="ClientId" Type="uniqueidentifier" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
         </EntityType>
-        <Association Name="FK__Plan_Camp__PlanC__43A1090D">
+        <Association Name="FK__Plan_Camp__PlanC__74794A92">
           <End Role="Plan_Campaign" Type="MRPModel.Store.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1449,7 +1485,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Plan_Camp__PlanP__42ACE4D4">
+        <Association Name="FK__Plan_Camp__PlanP__73852659">
           <End Role="Plan_Campaign_Program" Type="MRPModel.Store.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1461,7 +1497,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanC__4589517F">
+        <Association Name="FK__Tactic_Sh__PlanC__76619304">
           <End Role="Plan_Campaign" Type="MRPModel.Store.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="MRPModel.Store.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1473,7 +1509,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanP__44952D46">
+        <Association Name="FK__Tactic_Sh__PlanP__756D6ECB">
           <End Role="Plan_Campaign_Program" Type="MRPModel.Store.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="MRPModel.Store.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1533,15 +1569,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CustomField_Entity_CustomField">
-          <End Role="CustomField" Type="MRPModel.Store.CustomField" Multiplicity="1" />
-          <End Role="CustomField_Entity" Type="MRPModel.Store.CustomField_Entity" Multiplicity="*" />
+        <Association Name="FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1">
+          <End Role="CustomField_Entity" Type="MRPModel.Store.CustomField_Entity" Multiplicity="1" />
+          <End Role="CustomField_Entity_StageWeight" Type="MRPModel.Store.CustomField_Entity_StageWeight" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="CustomField">
-              <PropertyRef Name="CustomFieldId" />
+            <Principal Role="CustomField_Entity">
+              <PropertyRef Name="CustomFieldEntityId" />
             </Principal>
-            <Dependent Role="CustomField_Entity">
-              <PropertyRef Name="CustomFieldId" />
+            <Dependent Role="CustomField_Entity_StageWeight">
+              <PropertyRef Name="CustomFieldEntityId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1554,6 +1590,30 @@
             </Principal>
             <Dependent Role="CustomFieldOption">
               <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomRestriction_CustomField">
+          <End Role="CustomField" Type="MRPModel.Store.CustomField" Multiplicity="1" />
+          <End Role="CustomRestriction" Type="MRPModel.Store.CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomRestriction_CustomFieldOption">
+          <End Role="CustomFieldOption" Type="MRPModel.Store.CustomFieldOption" Multiplicity="1" />
+          <End Role="CustomRestriction" Type="MRPModel.Store.CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomFieldOption">
+              <PropertyRef Name="CustomFieldOptionId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="CustomFieldOptionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2901,6 +2961,20 @@
           <AssociationSet Name="FK_Client_Integration_Permission_IntegrationType" Association="MRPModel.FK_Client_Integration_Permission_IntegrationType">
             <End Role="IntegrationType" EntitySet="IntegrationTypes" />
             <End Role="Client_Integration_Permission" EntitySet="Client_Integration_Permission" />
+          </AssociationSet>
+          <EntitySet Name="CustomField_Entity_StageWeight" EntityType="MRPModel.CustomField_Entity_StageWeight" />
+          <EntitySet Name="CustomRestrictions" EntityType="MRPModel.CustomRestriction" />
+          <AssociationSet Name="FK_CustomRestriction_CustomField" Association="MRPModel.FK_CustomRestriction_CustomField">
+            <End Role="CustomField" EntitySet="CustomFields" />
+            <End Role="CustomRestriction" EntitySet="CustomRestrictions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1" Association="MRPModel.FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1">
+            <End Role="CustomField_Entity" EntitySet="CustomField_Entity" />
+            <End Role="CustomField_Entity_StageWeight" EntitySet="CustomField_Entity_StageWeight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomRestriction_CustomFieldOption" Association="MRPModel.FK_CustomRestriction_CustomFieldOption">
+            <End Role="CustomFieldOption" EntitySet="CustomFieldOptions" />
+            <End Role="CustomRestriction" EntitySet="CustomRestrictions" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Audience">
@@ -4805,6 +4879,7 @@
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_CustomField_CustomFieldId" FromRole="CustomField" ToRole="IntegrationInstanceDataTypeMapping" />
           <NavigationProperty Name="CampaignNameConventions" Relationship="MRPModel.FK_CampaignNameConvention_CustomField" FromRole="CustomField" ToRole="CampaignNameConvention" />
           <Property Type="Boolean" Name="IsDisplayForFilter" Nullable="false" />
+          <NavigationProperty Name="CustomRestrictions" Relationship="MRPModel.FK_CustomRestriction_CustomField" FromRole="CustomField" ToRole="CustomRestriction" />
         </EntityType>
         <EntityType Name="CustomField_Entity">
           <Key>
@@ -4817,6 +4892,8 @@
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CustomField_Entity_CustomField" FromRole="CustomField_Entity" ToRole="CustomField" />
+          <Property Type="Byte" Name="Weightage" />
+          <NavigationProperty Name="CustomField_Entity_StageWeight" Relationship="MRPModel.FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1" FromRole="CustomField_Entity" ToRole="CustomField_Entity_StageWeight" />
         </EntityType>
         <EntityType Name="CustomFieldOption">
           <Key>
@@ -4829,6 +4906,9 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CustomFieldOption_CustomField" FromRole="CustomFieldOption" ToRole="CustomField" />
           <Property Type="String" Name="Abbreviation" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ColorCode" MaxLength="10" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CustomRestrictions" Relationship="MRPModel.FK_CustomRestriction_CustomFieldOption" FromRole="CustomFieldOption" ToRole="CustomRestriction" />
         </EntityType>
         <EntityType Name="CustomFieldType">
           <Key>
@@ -5132,6 +5212,68 @@
             </Principal>
             <Dependent Role="Client_Integration_Permission">
               <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CustomField_Entity_StageWeight">
+          <Key>
+            <PropertyRef Name="StageWeightId" />
+          </Key>
+          <Property Type="Int64" Name="StageWeightId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="CustomFieldEntityId" Nullable="false" />
+          <Property Type="String" Name="StageTitle" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Byte" Name="Weightage" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="CustomField_Entity" Relationship="MRPModel.FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1" FromRole="CustomField_Entity_StageWeight" ToRole="CustomField_Entity" />
+        </EntityType>
+        <EntityType Name="CustomRestriction">
+          <Key>
+            <PropertyRef Name="CustomRestrictionId" />
+          </Key>
+          <Property Type="Int32" Name="CustomRestrictionId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="UserId" Nullable="false" />
+          <Property Type="Int32" Name="CustomFieldId" Nullable="false" />
+          <Property Type="Int32" Name="CustomFieldOptionId" Nullable="false" />
+          <Property Type="Int16" Name="Permission" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CustomRestriction_CustomField" FromRole="CustomRestriction" ToRole="CustomField" />
+          <NavigationProperty Name="CustomFieldOption" Relationship="MRPModel.FK_CustomRestriction_CustomFieldOption" FromRole="CustomRestriction" ToRole="CustomFieldOption" />
+        </EntityType>
+        <Association Name="FK_CustomRestriction_CustomField">
+          <End Type="MRPModel.CustomField" Role="CustomField" Multiplicity="1" />
+          <End Type="MRPModel.CustomRestriction" Role="CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1">
+          <End Type="MRPModel.CustomField_Entity" Role="CustomField_Entity" Multiplicity="1" />
+          <End Type="MRPModel.CustomField_Entity_StageWeight" Role="CustomField_Entity_StageWeight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField_Entity">
+              <PropertyRef Name="CustomFieldEntityId" />
+            </Principal>
+            <Dependent Role="CustomField_Entity_StageWeight">
+              <PropertyRef Name="CustomFieldEntityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomRestriction_CustomFieldOption">
+          <End Type="MRPModel.CustomFieldOption" Role="CustomFieldOption" Multiplicity="1" />
+          <End Type="MRPModel.CustomRestriction" Role="CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomFieldOption">
+              <PropertyRef Name="CustomFieldOptionId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="CustomFieldOptionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6077,6 +6219,7 @@
           <EntitySetMapping Name="CustomField_Entity">
             <EntityTypeMapping TypeName="MRPModel.CustomField_Entity">
               <MappingFragment StoreEntitySet="CustomField_Entity">
+                <ScalarProperty Name="Weightage" ColumnName="Weightage" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
@@ -6089,6 +6232,8 @@
           <EntitySetMapping Name="CustomFieldOptions">
             <EntityTypeMapping TypeName="MRPModel.CustomFieldOption">
               <MappingFragment StoreEntitySet="CustomFieldOption">
+                <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
@@ -6212,6 +6357,31 @@
                 <ScalarProperty Name="IntegrationTypeId" ColumnName="IntegrationTypeId" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="ClientIntegrationPermissionId" ColumnName="ClientIntegrationPermissionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomField_Entity_StageWeight">
+            <EntityTypeMapping TypeName="MRPModel.CustomField_Entity_StageWeight">
+              <MappingFragment StoreEntitySet="CustomField_Entity_StageWeight">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Weightage" ColumnName="Weightage" />
+                <ScalarProperty Name="StageTitle" ColumnName="StageTitle" />
+                <ScalarProperty Name="CustomFieldEntityId" ColumnName="CustomFieldEntityId" />
+                <ScalarProperty Name="StageWeightId" ColumnName="StageWeightId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomRestrictions">
+            <EntityTypeMapping TypeName="MRPModel.CustomRestriction">
+              <MappingFragment StoreEntitySet="CustomRestriction">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Permission" ColumnName="Permission" />
+                <ScalarProperty Name="CustomFieldOptionId" ColumnName="CustomFieldOptionId" />
+                <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="CustomRestrictionId" ColumnName="CustomRestrictionId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

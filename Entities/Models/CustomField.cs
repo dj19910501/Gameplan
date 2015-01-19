@@ -20,6 +20,7 @@ namespace RevenuePlanner.Models
             this.CustomFieldOptions = new HashSet<CustomFieldOption>();
             this.IntegrationInstanceDataTypeMappings = new HashSet<IntegrationInstanceDataTypeMapping>();
             this.CampaignNameConventions = new HashSet<CampaignNameConvention>();
+            this.CustomRestrictions = new HashSet<CustomRestriction>();
         }
     
         public int CustomFieldId { get; set; }
@@ -41,5 +42,6 @@ namespace RevenuePlanner.Models
         public virtual ICollection<CustomFieldOption> CustomFieldOptions { get; set; }
         public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public virtual ICollection<CampaignNameConvention> CampaignNameConventions { get; set; }
+        public virtual ICollection<CustomRestriction> CustomRestrictions { get; set; }
     }
 }

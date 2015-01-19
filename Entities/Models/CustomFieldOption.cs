@@ -14,13 +14,21 @@ namespace RevenuePlanner.Models
     
     public partial class CustomFieldOption
     {
+        public CustomFieldOption()
+        {
+            this.CustomRestrictions = new HashSet<CustomRestriction>();
+        }
+    
         public int CustomFieldOptionId { get; set; }
         public int CustomFieldId { get; set; }
         public string Value { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public string Abbreviation { get; set; }
+        public string Description { get; set; }
+        public string ColorCode { get; set; }
     
         public virtual CustomField CustomField { get; set; }
+        public virtual ICollection<CustomRestriction> CustomRestrictions { get; set; }
     }
 }
