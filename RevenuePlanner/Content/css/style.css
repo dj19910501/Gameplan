@@ -11355,8 +11355,8 @@ float:left;
 
 /*Start-Added by Mitesh Vaishnav for PL ticket #1073*/
 .dropdown-wrapper {	display:none;	width:245px;background-color: #fff;position: absolute;z-index: 1;}
-.drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding: 0 10px;max-height: 290px;overflow: auto;}
-.dropdown-block {min-width:535px !important;max-width:640px !important;width:auto;}
+.drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding: 0 10px;max-height: 358px;overflow: auto;}
+.dropdown-block {min-width:662px !important;max-width:640px !important;width:auto;}
 .dropdown_new_btn {
     background: url("../images/drpdown.png") no-repeat scroll right -1% top 55% #dff0f8;
     border: 1px solid #c6c6c6;
@@ -11403,25 +11403,60 @@ float:left;
     width: 74px !important;
 }
 .dropdown_new_btn > p {display: inline-block;margin-top: 1px; overflow: hidden;    text-overflow: ellipsis;   white-space: nowrap;    width: 200px;}
-.text_ellipsis {
+/*.text_ellipsis {
     display: inline-block;
     margin: 0 0 -8px !important;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 65px;
-}
+}*/
 .lable_inline {
        display: inline ;
 }
  
-}
-.table_drpdwn > tbody { height: 162px;overflow: auto;}
+
+/*.table_drpdwn > tbody { height: 162px;overflow: auto;}
 /*.dropdow_table_header > tr, tbody{display:block;}*/	
-.value_header { height: 40px; padding: 0 60px 0 30px;}
+/*.value_header { height: 40px; padding: 0 60px 0 30px;}
 .weight_header {padding-right:29px;}
 .sus_header {padding-right:44px;}
 .mql_header {padding-right: 50px;}
 .cw_header {padding-right: 40px;}
-.revenue_header { padding-right: 29px;}
+.revenue_header { padding-right: 29px;}*/
+.text_ellipsis{ /*display: inline;*/ margin-bottom:-3px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 77px; margin:-21px -8px 0px 18px;}
+.top_head_attribute > tr, .table_drpdwn tbody{ display:block;}
+.table_drpdwn tbody { height: auto;overflow: auto;max-height:150px;}
+.value_header { height: 40px; padding: 0 60px 0 30px;}
+.weight_header {padding-right:29px;}
+.sus_header {padding-right:61px;}
+.mql_header {padding-right: 50px;}
+.cw_header {padding-right: 47px;}
+.revenue_header { padding-right: 42px;}
+
+
+/*new design*/
+
+.innerpopup {background:#f1dbde; border: 1px solid #e0acab; border-radius: 7px; width: 100%;   margin: 1px 0 15px 2px;  color:#ca6c67; display:none; }
+.inner-text {margin: 10px 0 10px 10px; text-align: justify; width: 80%;}
+.innerpopup > span {color: #a8a8a8; font-size: 20px; font-weight: bolder; margin-left:582px; position: absolute;  margin-top:11px;  cursor: pointer; }
+.proceed_btn
+{
+		background: -moz-linear-gradient(268deg, #fafafa 0%, #c6c6c6 100%);/* FF3.6+ */
+		background: -webkit-gradient(linear, 268deg, color-stop(0%, #fafafa), color-stop(100%, #c6c6c6));/* Chrome,Safari4+ */
+		background: -webkit-linear-gradient(268deg, #fafafa 0%, #c6c6c6 100%);/* Chrome10+,Safari5.1+ */
+		background: -o-linear-gradient(268deg, #fafafa 0%, #c6c6c6 100%);/* Opera 11.10+ */
+		background: -ms-linear-gradient(268deg, #fafafa 0%, #c6c6c6 100%);/* IE10+ */
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fafafa', endColorstr='#c6c6c6', GradientType='1'); /* for IE */
+		background: linear-gradient(182deg, #fafafa 0%, #c6c6c6 100%);/* W3C */
+		border: 1px none;
+    	height: 30px;
+		margin: 10px 10px 0 0;
+		border-radius: 6px;
+	
+}
+.inner-text > a {
+    margin-top: 16px;
+    position: absolute;
+}
 /*End-Added by Mitesh Vaishnav for PL ticket #1073*/

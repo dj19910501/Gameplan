@@ -3312,7 +3312,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                         List<CustomField_Entity_StageWeight> objstageWeight=new List<CustomField_Entity_StageWeight> ();
-                                        objstageWeight=customFields.Where(cf=>cf.CustomFieldId==item.customFieldId && cf.Value==item.Value).Select(cf=>new CustomField_Entity_StageWeight(){
+                                        objstageWeight=customFields.Where(cf=>cf.CustomFieldId==item.customFieldId && cf.Value==item.Value && cf.StageWeight!=null).Select(cf=>new CustomField_Entity_StageWeight(){
                                         StageTitle=cf.StageCode,
                                         Weightage=(byte)cf.StageWeight,
                                         CreatedDate=DateTime.Now,
@@ -3323,6 +3323,10 @@ namespace RevenuePlanner.Controllers
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        if (item.Weight != null)
+                                        {
+                                            objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                        }
                                         objcustomFieldEntity.CustomField_Entity_StageWeight.Concat(objstageWeight);
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
                                     }
@@ -3624,7 +3628,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                         List<CustomField_Entity_StageWeight> objstageWeight = new List<CustomField_Entity_StageWeight>();
-                                        objstageWeight = customFields.Where(cf => cf.CustomFieldId == item.customFieldId && cf.Value == item.Value).Select(cf => new CustomField_Entity_StageWeight()
+                                        objstageWeight = customFields.Where(cf => cf.CustomFieldId == item.customFieldId && cf.Value == item.Value && cf.StageWeight!=null).Select(cf => new CustomField_Entity_StageWeight()
                                         {
                                             StageTitle = cf.StageCode,
                                             Weightage = cf.StageWeight.HasValue ? (byte)cf.StageWeight : (byte)0,
@@ -3636,7 +3640,10 @@ namespace RevenuePlanner.Controllers
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                        if (item.Weight != null)
+                                        {
+                                            objcustomFieldEntity.Weightage =(byte)item.Weight;
+                                        }
                                         //objcustomFieldEntity.CustomField_Entity_StageWeight.Concat(objstageWeight);
                                         if (!objstageWeight.Where(sw => sw.StageTitle == null).Any())
                                         {

@@ -3755,7 +3755,7 @@ namespace RevenuePlanner.Helpers
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
                         //When item value contains double quots then it would be replaced 
-                        string customFieldEntityValue = item.value.Count > 0 ? item.value.First().Replace("\"", "&quot;") : string.Empty;
+                        string customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
                             sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");    
@@ -3777,13 +3777,20 @@ namespace RevenuePlanner.Helpers
                         if (mode == Enums.InspectPopupMode.Edit.ToString())
                         {
                             string DropDownStyle = "";
+                            string divPosition = "";
+                            string require = "";
+                            if (item.isRequired)
+                            {
+                                require = " require=\"true\"";
+                            }
                             if (fieldCounter % 4 == 3)
                             {
-                                DropDownStyle = "style=\"float:right;margin-left:-10px;\"";
+                                DropDownStyle = "style=\"top:0px;right:0px;margin-top:40px;\"";
+                                divPosition = "style=\"position:relative;\"";
                             }
                             string name = "";
-                            sb.Append("#HEADER_OF_DROPDOWN#");
-                            sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"dropdow_table_header\"><tr><td scope=\"col\" class=\"value_header\"><span>Value</span></td><td scope=\"col\" class=\"weight_header\"><span> Weight(%)</sapn></td><td scope=\"col\" class=\"sus_header\" >Stage(%)</td><td scope=\"col\" class=\"cw_header\">CW(%)</td><td scope=\"col\" class=\"revenue_header\">Revenue(%)</td><td scope=\"col\" class=\"cost_header\" >Cost(%)</td></tr></thead>");
+                            sb.Append("<div "+divPosition+"><a class=\"dropdown_new_btn\""+require+"><p class=\"text_ellipsis\">#HEADER_OF_DROPDOWN#</p></a>");
+                            sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\"><tr><td scope=\"col\" class=\"value_header\"><span>Value</span></td><td scope=\"col\" class=\"weight_header\" code=\"weight\"><span> Weight(%)</sapn></td><td scope=\"col\" class=\"sus_header\" code=\"stage\" >Stage(%)</td><td scope=\"col\" class=\"cw_header\" code=\"CW\">CW(%)</td><td scope=\"col\" class=\"revenue_header\" code=\"Revenue\">Revenue(%)</td><td scope=\"col\" class=\"cost_header\" code=\"Cost\" >Cost(%)</td></tr></thead>");
                                 foreach (var objOption in item.option)
                                 {
                                string enableCheck = string.Empty;
@@ -3794,14 +3801,14 @@ namespace RevenuePlanner.Helpers
                                 }
                                 
                                 //if ()
-                                sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" "+enableCheck+" ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_show weight\"><input id=\"" + objOption.customFieldOptionId + "_weight\" type=\"text\" name=\"textfield16\" value=\"\" class=\"firstshow_width text_blk_active \"></td> <td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_stage\" type=\"text\" name=\"textfield4\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_CW\" type=\"text\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_Revenue\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_Cost\" type=\"text\" name=\"textfield13\"></td></tr>");
+                                sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_show weight\"><input id=\"" + objOption.customFieldOptionId + "_weight\" maxlength =\"3\" type=\"text\" name=\"textfield16\" value=\"\" class=\"firstshow_width text_blk_active \"></td> <td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_stage\" maxlength =\"3\" type=\"text\" name=\"textfield4\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_CW\" maxlength =\"3\" type=\"text\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_Revenue\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_Cost\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
                             }
-                            sb.Append(" <tfoot><tr><td colspan=\"7\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">advance attribution ></span></a></td></tr></tfoot></table></div></div>");
+                                sb.Append(" <tfoot><tr><td colspan=\"7\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">advance attribution ></span></a></td></tr></tfoot></table>  <div class=\"innerpopup\"><span class=\"close_btn\">X</span><p class=\"inner-text\"><span>Data will be lost!</span>switching from advance attribution to basic attribution will reset all weight(%) to default<br/><button type=\"button\" class=\"proceed_btn\"> proceed </button> <a href=\"#\" class=\"cncl_btn\">cancel</a></p></div></div></div></div>");
                             if (name.Length > 0)
                             {
                                name= name.Remove(name.Length - 1, 1);
                             }
-                            sb.Replace("#HEADER_OF_DROPDOWN#", "<a class=\"dropdown_new_btn\"><p class=\"text_ellipsis\">"+name+"</p></a>");
+                            sb.Replace("#HEADER_OF_DROPDOWN#", name);
                             sb.Append("</div>");
                         }
                         else
