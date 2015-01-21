@@ -4620,11 +4620,12 @@ namespace RevenuePlanner.Controllers
 
                 //// Set ViewBy list.
                 string audLabel = Common.CustomLabelFor(Enums.CustomLabelCode.Audience);
+                string entTacticType = Enums.EntityType.Tactic.ToString();
                 List<ViewByModel> lstViewBy = new List<ViewByModel>();
                 lstViewBy.Add(new ViewByModel { Text = "Campaigns", Value = "0" });
-                lstViewBy.Add(new ViewByModel { Text = audLabel, Value = "1" });
-                lstViewBy.Add(new ViewByModel { Text = "Geography", Value = "2" });
-                lstViewBy.Add(new ViewByModel { Text = "Vertical", Value = "3" });
+                List<CustomField> lstTacticCustomfield = db.CustomFields.Where(custom => custom.IsDeleted.Equals(false) && custom.EntityType.Equals(entTacticType) && custom.ClientId.Equals(Sessions.User.ClientId) && custom.IsDisplayForFilter.Equals(true)).ToList();
+                if (lstTacticCustomfield != null && lstTacticCustomfield.Count > 0)
+                    lstTacticCustomfield.ForEach(custom => { lstViewBy.Add(new ViewByModel { Text = custom.Name, Value = custom.CustomFieldId.ToString() }); });
                 ViewBag.ViewBy = lstViewBy;
             }
             catch (Exception e)
@@ -5051,7 +5052,12 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetBudgetedData(int PlanId, BudgetTab budgetTab = BudgetTab.Planned, ViewBy viewBy = ViewBy.Campaign)
         {
-            TempData["ViewBy"] = (int)viewBy;
+            //int _viewBy = 6;//1025;
+            TempData["ViewBy"] = (int)viewBy;//_viewBy;//
+            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+            string entTacticType = Enums.EntityType.Tactic.ToString();
+            List<BudgetModel> model = new List<BudgetModel>();
+            BudgetModel obj;
             List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
             try
             {
@@ -5072,8 +5078,7 @@ namespace RevenuePlanner.Controllers
 
                 }
             }
-
-            //// Set Campaign data.
+            //// Set Campaign data to Create Model.
             var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var campaignobj = campaign.Select(p => new
             {
@@ -5098,12 +5103,7 @@ namespace RevenuePlanner.Controllers
                         Cost = pctj.Cost,
                         Budget = budgetTab == BudgetTab.Planned ? pctj.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList()
                                                                   : pctj.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(),
-                        AudianceId = pctj.AudienceId,
-                        GeographyId = pctj.GeographyId,
-                        AudianceName = pctj.Audience.Title,
-                        GeographyName = pctj.Geography.Title,
-                        VerticalId = pctj.VerticalId,
-                        VerticalName = pctj.Vertical.Title,
+                        CustomFieldEntities = db.CustomField_Entity.Where(entity => entity.EntityId.Equals(pctj.PlanTacticId) && entity.CustomField.EntityType.Equals(entTacticType)).ToList(),
                         lineitems = (db.Plan_Campaign_Program_Tactic_LineItem.Where(pcp => pcp.PlanTacticId.Equals(pctj.PlanTacticId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pclj => new
                         {
                             id = "cptl_" + pclj.PlanLineItemId.ToString(),
@@ -5118,11 +5118,9 @@ namespace RevenuePlanner.Controllers
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
             }).Select(p => p).Distinct().OrderBy(p => p.id);
 
-            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
-            List<BudgetModel> model = new List<BudgetModel>();
-            BudgetModel obj;
+            //// Create BudgetModel based on PlanId.
             Plan objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId.Equals(PlanId));
-            string parentPlanId = "0", parentCampaignId = "0", parentProgramId = "0", parentTacticId = "0", parentAudId = "0";
+            string parentPlanId = "0", parentCampaignId = "0", parentProgramId = "0", parentTacticId = "0", parentCustomId = "0";
             if (objPlan != null)
             {
                 AllocatedBy = objPlan.AllocatedBy;
@@ -5183,12 +5181,7 @@ namespace RevenuePlanner.Controllers
                             obj.IsOwner = Convert.ToBoolean(t.isOwner);
                             obj.Budgeted = t.Cost;
                             obj = GetMonthWiseData(obj, t.Budget);
-                            obj.AudienceId = t.AudianceId;
-                            obj.GeographyId = t.GeographyId;
-                            obj.AudienceTitle = t.AudianceName;
-                            obj.GeographyTitle = t.GeographyName;
-                            obj.VerticalId = t.VerticalId;
-                            obj.VerticalTitle = t.VerticalName;
+                            obj.CustomFieldEntities = t.CustomFieldEntities;
                             model.Add(obj);
                             parentTacticId = t.id;
                             foreach (var l in t.lineitems)
@@ -5210,95 +5203,96 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-
-            if (viewBy == ViewBy.Audiance || viewBy == ViewBy.Geography || viewBy == ViewBy.Vertical)
+            int ViewByID = (int)viewBy;//_viewBy;
+            //// if ViewBy is any CustomField then Create Model in this hierarchy level : Plan > CustomField > Campaign > Program > Tactic > LineItem
+            if (ViewByID > 0)
             {
-                string prefix = "";
-                List<BudgetModel> modelAud = new List<BudgetModel>();
-                BudgetModel objPlanAud = model.Where(m => m.ActivityType == ActivityType.ActivityPlan).FirstOrDefault();
-                modelAud.Add(objPlanAud); //Added plan to the Audience model
-
-                List<string> CampaingIds;
-
-                //Retrive the distinct audiances
-                List<string> DistIds = new List<string>();
-                if (viewBy == ViewBy.Audiance)
-                {
-                    prefix = "a_";
-                    DistIds = model.Where(m => m.AudienceId != 0).Select(m => m.AudienceId.ToString()).Distinct().ToList();
-                }
-                else if (viewBy == ViewBy.Geography)
-                {
-                    prefix = "g_";
-                    DistIds = model.Where(m => m.GeographyId != Guid.Empty).Select(m => m.GeographyId.ToString()).Distinct().ToList();
-                }
-                else if (viewBy == ViewBy.Vertical)
-                {
-                    prefix = "v_";
-                    DistIds = model.Where(m => m.VerticalId != 0).Select(m => m.VerticalId.ToString()).Distinct().ToList();
-                }
+                string prefix = "custom_"; // Append Prefix to ActivityId for each model record.
                 string prefixId = "";
-                foreach (string audId in DistIds)
+                List<BudgetModel> modelCustom = new List<BudgetModel>();
+                List<string> CampaingIds;
+                List<CustomField_Entity> fltrModelCustomFieldEntities = new List<CustomField_Entity>(); // Contains list of CustomfieldEntities filtered by CustomFieldId(ViewBy) from Fielter BudgetModel list.
+                string CustomFieldTypeName = db.CustomFields.Where(_customfield => _customfield.CustomFieldId.Equals(ViewByID) && _customfield.EntityType.Equals(entTacticType) && _customfield.ClientId.Equals(Sessions.User.ClientId) && _customfield.IsDeleted.Equals(false)).Select(_customfield => _customfield.CustomFieldType.Name).FirstOrDefault();
+
+                #region "Plan Hierarchy - First Level"
+                //Add plan BudgetModel to the Custom model.
+                BudgetModel objPlanAud = model.Where(m => m.ActivityType == ActivityType.ActivityPlan).FirstOrDefault();
+                modelCustom.Add(objPlanAud); 
+                #endregion
+
+                #region "Get CustomFieldEntity list from filtered BudgetModel list"
+                //// Create CustomFielEnities list(fltrModelCustomFieldEntities) based on selected CustomField.
+                List<BudgetModel> fltrCustomFieldBudgetModel = model.Where(m => m.CustomFieldEntities != null && m.CustomFieldEntities.Count > 0 && m.ActivityType == ActivityType.ActivityTactic && m.CustomFieldEntities.Select(customentity => customentity.CustomFieldId).Contains(ViewByID)).ToList();
+                foreach (BudgetModel _model in fltrCustomFieldBudgetModel)
                 {
-                    CampaingIds = new List<string>();
-                    //Add audiance to the model
-                    BudgetModel tmpTactic;
+                    List<CustomField_Entity> _custmfieldEntity = _model.CustomFieldEntities.Where(s => s.CustomFieldId.Equals(ViewByID)).ToList();
+                    if (_custmfieldEntity != null)
+                        _custmfieldEntity.ForEach(_custmfieldentity => fltrModelCustomFieldEntities.Add(_custmfieldentity));
+                } 
+                #endregion
+                
+                //// Customise BudgetModel based on CustomFieldType.
+                if (CustomFieldTypeName.Equals(Enums.CustomFieldType.DropDownList.ToString()))
+                {
+                    #region "Create  Mapping list of CustomfieldOption with CustomfieldEntities"
+                    List<entCustomFieldOption_EntityMapping> lstMapCustomFieldOption_EntityIds = new List<entCustomFieldOption_EntityMapping>(); // Mapping of each distinct CustomFieldOption with CustomFieldEntities. 
+                    List<int> lstCustomFieldEntityIdsByOptionID = new List<int>();
+                    List<string> DistCustomFieldOptionIDs = fltrModelCustomFieldEntities.Select(_ent => _ent.Value).Distinct().ToList(); // Get distinct CustomFieldOptionIds from filtered CustomFieldEntitylist.
+                    
+                    //// Get distinct CustomFieldOption list by Ids.
+                    List<CustomFieldOption> lstdistCustomFieldOptions = db.CustomFieldOptions.ToList().Where(_option => DistCustomFieldOptionIDs.ToList().Contains(_option.CustomFieldOptionId.ToString())).ToList();
+                    foreach (string OptionId in DistCustomFieldOptionIDs)
+                    {
+                        entCustomFieldOption_EntityMapping objOption_EntityMapping = new entCustomFieldOption_EntityMapping();
+                        //// Get CustomFieldEntity list by OptionId.
+                        lstCustomFieldEntityIdsByOptionID = fltrModelCustomFieldEntities.Where(_fltrEntity => _fltrEntity.Value.Equals(OptionId)).Distinct().Select(_fltrEntity => _fltrEntity.CustomFieldEntityId).ToList();
+                        //// Set CustomFieldOptionId to Entity.
+                        objOption_EntityMapping.CusotmFieldOptionId = !string.IsNullOrEmpty(OptionId) ? Convert.ToInt32(OptionId.ToString()) : 0;
+                        //// Set CustomFieldEntities for distinct CustomFieldOptionId to Entity.
+                        if (lstCustomFieldEntityIdsByOptionID != null)
+                        {
+                            objOption_EntityMapping.CusotmFieldEntityIds = lstCustomFieldEntityIdsByOptionID;
+                            lstMapCustomFieldOption_EntityIds.Add(objOption_EntityMapping);
+                        }
+                    } 
+                    #endregion
+
+                    //// loop of each CustomFieldOption to create hierarchy level like this for Dropdownlist CustomFieldType: CustomField > Campaign > Program > Tactic > LineItem
+                    foreach (entCustomFieldOption_EntityMapping custom_Option in lstMapCustomFieldOption_EntityIds)
+                    {
+                        #region "CustomField Hierarchy - Second Level"
+                        //// Add CustomField data into BudgetModel to create CustomField level to Hierarchy.
                     obj = new BudgetModel();
-                    if (viewBy == ViewBy.Audiance)
-                    {
-                        int objId = Convert.ToInt32(audId);
-                        tmpTactic = model.Where(m => m.AudienceId == objId && m.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
-                        obj.ActivityId = prefix + audId;
-                        obj.ActivityName = tmpTactic.AudienceTitle;
-                        obj.ActivityType = ActivityType.ActivityAudience;
+                        obj.ActivityId = prefix + custom_Option.CusotmFieldOptionId;
+                        obj.ActivityName = lstdistCustomFieldOptions.Where(_option => _option.CustomFieldOptionId.Equals(custom_Option.CusotmFieldOptionId)).Select(_option => _option.Value).FirstOrDefault();
+                        obj.ActivityType = ActivityType.ActivityCustomField;
                         obj.ParentActivityId = objPlanAud.ActivityId;
-                        parentAudId = prefix + audId;
-                        prefixId = "a" + audId + "_";
-                    }
-                    else if (viewBy == ViewBy.Geography)
-                    {
-                        Guid objId = new Guid(audId);
-                        tmpTactic = model.Where(m => m.GeographyId == objId && m.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
-                        obj.ActivityId = prefix + audId;
-                        obj.ActivityName = tmpTactic.GeographyTitle;
-                        obj.ActivityType = ActivityType.ActivityGeography;
-                        obj.ParentActivityId = objPlanAud.ActivityId;
-                        parentAudId = prefix + audId;
-                        prefixId = "g" + audId + "_";
-                    }
-                    else if (viewBy == ViewBy.Vertical)
-                    {
-                        int objId = Convert.ToInt32(audId);
-                        tmpTactic = model.Where(m => m.VerticalId == objId && m.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
-                        obj.ActivityId = prefix + audId;
-                        obj.ActivityName = tmpTactic.VerticalTitle;
-                        obj.ActivityType = ActivityType.ActivityVertical;
-                        obj.ParentActivityId = objPlanAud.ActivityId;
-                        parentAudId = prefix + audId;
-                        prefixId = "v" + audId + "_";
-                    }
                     obj.Budgeted = 0;
                     obj.IsOwner = true;
                     obj.Month = new BudgetMonth();
-                    modelAud.Add(obj);
+                        modelCustom.Add(obj); 
+                        #endregion
+
+                        parentCustomId = prefix + custom_Option.CusotmFieldOptionId; // Set ParentCustomId value using into child record. 
+                        prefixId = "custom_" + custom_Option.CusotmFieldOptionId + "_"; // prefixId to append with it's child record ActivityId.
 
                     //Add all tactics and its line items
                     List<BudgetModel> lstTactic = new List<BudgetModel>();
-                    if (viewBy == ViewBy.Audiance)
-                    {
-                        int objId = Convert.ToInt32(audId);
-                        lstTactic = model.Where(m => m.AudienceId == objId && m.ActivityType == ActivityType.ActivityTactic).ToList();
-                    }
-                    else if (viewBy == ViewBy.Geography)
-                    {
-                        Guid objId = new Guid(audId);
-                        lstTactic = model.Where(m => m.GeographyId == objId && m.ActivityType == ActivityType.ActivityTactic).ToList();
-                    }
-                    else if (viewBy == ViewBy.Vertical)
-                    {
-                        int objId = Convert.ToInt32(audId);
-                        lstTactic = model.Where(m => m.VerticalId == objId && m.ActivityType == ActivityType.ActivityTactic).ToList();
-                    }
+
+                        #region "List of Tactic those contains current CustomFieldEntity"
+                        //// Get list of Tactics for those which contains current CustomFieldEntity.
+                        List<BudgetModel> lstTacticModel = new List<BudgetModel>();
+                        foreach (int EntityId in custom_Option.CusotmFieldEntityIds)
+                        {
+                            lstTacticModel = model.Where(m => m.CustomFieldEntities != null && m.CustomFieldEntities.Count > 0 && m.ActivityType == ActivityType.ActivityTactic && m.CustomFieldEntities.Select(_entity => _entity.CustomFieldEntityId).Contains(EntityId)).Distinct().ToList();
+                            if (lstTacticModel != null && lstTacticModel.Count > 0)
+                                lstTactic.AddRange(lstTacticModel);
+                        }
+                        lstTactic = lstTactic.Distinct().ToList(); 
+                        #endregion
+
+                        #region "Create list of CampaignIds for each filtered Tactics"
+                        CampaingIds = new List<string>();
                     foreach (BudgetModel objTactic in lstTactic)
                     {
                         BudgetModel objProgram = model.Where(m => m.ActivityId == objTactic.ParentActivityId && m.ActivityType == ActivityType.ActivityProgram).FirstOrDefault();
@@ -5314,48 +5308,124 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                     }
-                    //// Set Program related data for each Campaign Ids. 
-                    foreach (string campaingid in CampaingIds)
-                    {
-                        BudgetModel objCampaign = model.Where(_mdl => _mdl.ActivityId == campaingid && _mdl.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
-                        modelAud.Add(GetClone(objCampaign, prefixId + objCampaign.ActivityId, parentAudId));
-                        List<BudgetModel> lstProgram = model.Where(_mdl => _mdl.ParentActivityId == campaingid && _mdl.ActivityType == ActivityType.ActivityProgram).ToList();
-                        foreach (BudgetModel objProgram in lstProgram)
+                        #endregion
+
+                        #region " Create Campaign,Program,Tactic & LineItem hierarchy level "
+                        //// Set Program related data for each Campaign Ids. 
+                        foreach (string campaignid in CampaingIds)
                         {
-                            List<BudgetModel> lstTactics = new List<BudgetModel>();
-                            if (viewBy == ViewBy.Audiance)
+                            #region "Campaign Hierarchy - Third Level"
+                            BudgetModel objCampaign = model.Where(_mdl => _mdl.ActivityId == campaignid && _mdl.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
+                            modelCustom.Add(GetClone(objCampaign, prefixId + objCampaign.ActivityId, parentCustomId));
+                            #endregion
+
+                            List<BudgetModel> lstProgram = model.Where(_mdl => _mdl.ParentActivityId == campaignid && _mdl.ActivityType == ActivityType.ActivityProgram).ToList();
+                            foreach (BudgetModel objProgram in lstProgram)
                             {
-                                int objId = Convert.ToInt32(audId);
-                                lstTactics = model.Where(_mdl => _mdl.ParentActivityId == objProgram.ActivityId && _mdl.ActivityType == ActivityType.ActivityTactic && _mdl.AudienceId == objId).ToList();
-                            }
-                            else if (viewBy == ViewBy.Geography)
-                            {
-                                Guid objId = new Guid(audId);
-                                lstTactics = model.Where(_mdl => _mdl.ParentActivityId == objProgram.ActivityId && _mdl.ActivityType == ActivityType.ActivityTactic && _mdl.GeographyId == objId).ToList();
-                            }
-                            else if (viewBy == ViewBy.Vertical)
-                            {
-                                int objId = Convert.ToInt32(audId);
-                                lstTactics = model.Where(_mdl => _mdl.ParentActivityId == objProgram.ActivityId && _mdl.ActivityType == ActivityType.ActivityTactic && _mdl.VerticalId == objId).ToList();
-                            }
-                            if (lstTactics.Count() > 0)
-                            {
-                                modelAud.Add(GetClone(objProgram, prefixId + objProgram.ActivityId, prefixId + objProgram.ParentActivityId));
-                                foreach (BudgetModel objT in lstTactics)
+                                List<BudgetModel> lstTactics = lstTactic.Where(m => m.ParentActivityId == objProgram.ActivityId).ToList();
+                                lstTactics.ForEach(mdlTactic => mdlTactic.CustomFieldType = Enums.CustomFieldType.DropDownList.ToString());
+                                if (lstTactics != null && lstTactics.Count() > 0)
                                 {
-                                    List<BudgetModel> lstLines = model.Where(_mdl => _mdl.ParentActivityId == objT.ActivityId && _mdl.ActivityType == ActivityType.ActivityLineItem).ToList();
-                                    modelAud.Add(GetClone(objT, prefixId + objT.ActivityId, prefixId + objT.ParentActivityId));
-                                    foreach (BudgetModel objL in lstLines)
+                                    #region "Program Hierarchy - Fourth Level"
+                                    modelCustom.Add(GetClone(objProgram, prefixId + objProgram.ActivityId, prefixId + objProgram.ParentActivityId));
+                                    #endregion
+
+                                    foreach (BudgetModel objT in lstTactics)
                                     {
-                                        modelAud.Add(GetClone(objL, prefixId + objL.ActivityId, prefixId + objL.ParentActivityId));
+                                        #region "Tactic Hierarchy - Fifth Level"
+                                        modelCustom.Add(GetClone(objT, prefixId + objT.ActivityId, prefixId + objT.ParentActivityId));
+                                        #endregion
+
+                                        List<BudgetModel> lstLines = model.Where(_mdl => _mdl.ParentActivityId == objT.ActivityId && _mdl.ActivityType == ActivityType.ActivityLineItem).ToList();
+                                        foreach (BudgetModel objL in lstLines)
+                                        {
+                                            #region "LineItem Hierarchy - Sixth Level"
+                                            modelCustom.Add(GetClone(objL, prefixId + objL.ActivityId, prefixId + objL.ParentActivityId));
+                                            #endregion
+                                        }
+                                    }
+                                }
+                            }
+                        } 
+                        #endregion
+                    }
+                }
+                else
+                {
+                    //// loop of each CustomFieldEntity to create hierarchy level like this for Textbox CustomFieldType: CustomField > Campaign > Program > Tactic > LineItem
+                    foreach (CustomField_Entity custmEntity in fltrModelCustomFieldEntities)
+                    {
+                        #region "CustomField Hierarchy - Second Level"
+                        //// Add CustomField data into BudgetModel to create CustomField level to Hierarchy.
+                        obj = new BudgetModel();
+                        int objId = custmEntity.CustomFieldEntityId;
+                        obj.ActivityId = prefix + custmEntity.CustomFieldEntityId;
+                        obj.ActivityName = custmEntity.Value;
+                        obj.ActivityType = ActivityType.ActivityCustomField;
+                        obj.ParentActivityId = objPlanAud.ActivityId;
+                        obj.Budgeted = 0;
+                        obj.IsOwner = true;
+                        obj.Month = new BudgetMonth();
+                        modelCustom.Add(obj);
+                        #endregion
+
+                        parentCustomId = prefix + custmEntity.CustomFieldEntityId; // Set ParentCustomId value using into child record. 
+                        prefixId = "customText_" + custmEntity.CustomFieldEntityId + "_"; // prefixId to append with it's child record ActivityId.
+
+                        //Add all tactics and its line items
+                        List<BudgetModel> lstTactic = new List<BudgetModel>();
+                        lstTactic = fltrCustomFieldBudgetModel.Where(_mdl => _mdl.CustomFieldEntities.Select(_ent => _ent.CustomFieldEntityId).ToList().Contains(custmEntity.CustomFieldEntityId)).ToList();
+                        
+                        #region "Create list of CampaignIds for each filtered Tactics"
+                        CampaingIds = new List<string>();
+                        foreach (BudgetModel objTactic in lstTactic)
+                        {
+                            BudgetModel objProgram = model.Where(m => m.ActivityId == objTactic.ParentActivityId && m.ActivityType == ActivityType.ActivityProgram).FirstOrDefault();
+                            if (objProgram != null)
+                            {
+                                BudgetModel objCampaign = model.Where(m => m.ActivityId == objProgram.ParentActivityId && m.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
+                                if (objCampaign != null)
+                                {
+                                    if (!CampaingIds.Contains(objCampaign.ActivityId))
+                                    {
+                                        CampaingIds.Add(objCampaign.ActivityId);
                                     }
                                 }
                             }
                         }
-                    }
+                        #endregion
 
+                        #region " Create Campaign,Program,Tactic & LineItem hierarchy level "
+                    //// Set Program related data for each Campaign Ids. 
+                    foreach (string campaingid in CampaingIds)
+                    {
+                        BudgetModel objCampaign = model.Where(_mdl => _mdl.ActivityId == campaingid && _mdl.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
+                            modelCustom.Add(GetClone(objCampaign, prefixId + objCampaign.ActivityId, parentCustomId));
+                        List<BudgetModel> lstProgram = model.Where(_mdl => _mdl.ParentActivityId == campaingid && _mdl.ActivityType == ActivityType.ActivityProgram).ToList();
+                        foreach (BudgetModel objProgram in lstProgram)
+                        {
+                            List<BudgetModel> lstTactics = new List<BudgetModel>();
+                                lstTactics = lstTactic.Where(_mdl => _mdl.ParentActivityId == objProgram.ActivityId).ToList();
+                                lstTactics.ForEach(mdlTactic => mdlTactic.CustomFieldType = Enums.CustomFieldType.TextBox.ToString());
+                            if (lstTactics.Count() > 0)
+                            {
+                                    modelCustom.Add(GetClone(objProgram, prefixId + objProgram.ActivityId, prefixId + objProgram.ParentActivityId));
+                                foreach (BudgetModel objT in lstTactics)
+                                {
+                                    List<BudgetModel> lstLines = model.Where(_mdl => _mdl.ParentActivityId == objT.ActivityId && _mdl.ActivityType == ActivityType.ActivityLineItem).ToList();
+                                        modelCustom.Add(GetClone(objT, prefixId + objT.ActivityId, prefixId + objT.ParentActivityId));
+                                    foreach (BudgetModel objL in lstLines)
+                                    {
+                                            modelCustom.Add(GetClone(objL, prefixId + objL.ActivityId, prefixId + objL.ParentActivityId));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        #endregion
+                    }
                 }
-                model = modelAud;
+                model = modelCustom;
             }
             //Threre is no need to manage lines for actuals
             if (budgetTab == BudgetTab.Planned)
@@ -5386,33 +5456,41 @@ namespace RevenuePlanner.Controllers
             }
 
             ViewBag.AllocatedBy = AllocatedBy;
-            ViewBag.ViewBy = (int)viewBy;
+            ViewBag.ViewBy = ViewByID;//(int)viewBy;
             ViewBag.Tab = (int)budgetTab;
 
+            #region "Calculate Monthly Budget from Bottom to Top for Hierarchy level like: LineItem > Tactic > Program > Campaign > CustomField(if filtered) > Plan"
+           
+
             //// Set ViewBy data to model.
+            //// Calculate monthly Tactic budget from it's child budget i.e LineItem
             model = CalculateBottomUp(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem, budgetTab);
+
+            //// Calculate monthly Program budget from it's child budget i.e Tactic
             model = CalculateBottomUp(model, ActivityType.ActivityProgram, ActivityType.ActivityTactic, budgetTab);
+
+            //// Calculate monthly Campaign budget from it's child budget i.e Program
             model = CalculateBottomUp(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram, budgetTab);
-            if (viewBy == ViewBy.Campaign)
+
+            //// Customize BudgetModel based on ViewBy selection value.
+            if (ViewByID > 0)   // if viewby is customfield.
             {
+                //// Calculate monthly CustomField budget from it's child budget i.e Campaign
+                model = CalculateBottomUp(model, ActivityType.ActivityCustomField, ActivityType.ActivityCampaign, budgetTab);
+                //// Calculate monthly Plan budget from it's child budget i.e CustomField
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCustomField, budgetTab);
+            }
+            else
+            {
+                //// Calculate monthly Plan budget from it's child budget i.e Campaign
                 model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, budgetTab);
             }
-            else if (viewBy == ViewBy.Audiance)
-            {
-                model = CalculateBottomUp(model, ActivityType.ActivityAudience, ActivityType.ActivityCampaign, budgetTab);
-                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityAudience, budgetTab);
-            }
-            else if (viewBy == ViewBy.Geography)
-            {
-                model = CalculateBottomUp(model, ActivityType.ActivityGeography, ActivityType.ActivityCampaign, budgetTab);
-                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityGeography, budgetTab);
-            }
-            else if (viewBy == ViewBy.Vertical)
-            {
-                model = CalculateBottomUp(model, ActivityType.ActivityVertical, ActivityType.ActivityCampaign, budgetTab);
-                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityVertical, budgetTab);
-            }
+            #endregion
+            
+            //// Set LineItem monthly budget cost by it's parent tactic weightage.
+            model = SetLineItemCostByWeightage(model);
 
+            #region "Calculate header monthly allocated Percentage values"
             BudgetMonth a = new BudgetMonth();
             BudgetMonth child = new BudgetMonth();
             BudgetMonth PercAllocated = new BudgetMonth();
@@ -5433,6 +5511,8 @@ namespace RevenuePlanner.Controllers
             PercAllocated.Dec = (a.Dec == 0 && child.Dec == 0) ? 0 : (a.Dec == 0 && child.Dec > 0) ? 101 : child.Dec / a.Dec * 100;
 
             ViewBag.PercAllocated = PercAllocated;
+            #endregion
+            
             Sessions.PlanId = PlanId;
             return PartialView("_Budget", model);
         }
@@ -5452,11 +5532,40 @@ namespace RevenuePlanner.Controllers
             tmp.ActivityName = obj.ActivityName;
             tmp.ActivityType = obj.ActivityType;
             tmp.Allocated = obj.Allocated;
-            tmp.AudienceId = obj.AudienceId;
-            tmp.AudienceTitle = obj.AudienceTitle;
-            tmp.Budgeted = obj.Budgeted;
-            tmp.GeographyId = obj.GeographyId;
-            tmp.GeographyTitle = obj.GeographyTitle;
+            if (obj.ActivityType.Equals(ActivityType.ActivityTactic))
+            {
+                //// if CustomFieldType is Dropdownlist then retrieve weightage from CustomFieldEntity or StageWeight table O/W take default 100% for Textbox type.
+                if (obj.CustomFieldType.Equals(Enums.CustomFieldType.DropDownList.ToString()))
+                {
+                    string[] strTactic = Id.Split('_');
+                    int weightage = 0;
+                    if (strTactic != null && strTactic.Length > 0)
+                    {
+                        string CustomfieldOptionId = strTactic[1] != null ? strTactic[1] : string.Empty; // Get CustomfieldOptionId from Tactic ActivityId.
+                        int TacticId = strTactic[3] != null ? int.Parse(strTactic[3]) : 0; // Get PlanTacticId from Tactic ActivityId.
+                        if (obj.CustomFieldEntities != null && obj.CustomFieldEntities.Count > 0)
+                        {
+                            //// Get CustomFieldEntity based on EntityId and CustomFieldOptionId from CustomFieldEntities.
+                            var _custment = obj.CustomFieldEntities.Where(_ent => _ent.EntityId.Equals(TacticId) && _ent.Value.Equals(CustomfieldOptionId)).FirstOrDefault();
+                            if (_custment == null)
+                                weightage = 0;
+                            else if (_custment.Weightage != null && Convert.ToInt32(_custment.Weightage.Value) > 0) // check if weightage exist in CustomField Entity table then retreive value from the same o/w StageWeight table.
+                                weightage = Convert.ToInt32(_custment.Weightage.Value);
+                            else
+                            {
+                                string constCostStageTitle = "Cost";
+                                var stgweightage = db.CustomField_Entity_StageWeight.Where(_stageweight => _stageweight.CustomFieldEntityId.Equals(_custment.CustomFieldEntityId) && _stageweight.StageTitle.Equals(constCostStageTitle)).Select(_stageweight => _stageweight.Weightage).FirstOrDefault();
+                                weightage = stgweightage != null ? stgweightage : 0;
+                            }
+                        }
+                    }
+                    tmp.Weightage = weightage;
+                }
+                else
+                {
+                    tmp.Weightage = 100;
+                }
+            }
             tmp.Id = obj.Id;
             tmp.IsOwner = obj.IsOwner;
             tmp.Month = obj.Month;
@@ -5475,6 +5584,9 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public List<BudgetModel> CalculateBottomUp(List<BudgetModel> model, string ParentActivityType, string ChildActivityType, BudgetTab budgetTab)
         {
+            int _ViewById = ViewBag.ViewBy != null?(int)ViewBag.ViewBy :0;
+            int weightage =100;
+
             if (budgetTab == BudgetTab.Actual && ParentActivityType == ActivityType.ActivityTactic)
             {
                 foreach (BudgetModel l in model.Where(_mdl => _mdl.ActivityType == ParentActivityType))
@@ -5482,19 +5594,23 @@ namespace RevenuePlanner.Controllers
                     List<BudgetModel> LineCheck = model.Where(lines => lines.ParentActivityId == l.ActivityId && lines.ActivityType == ActivityType.ActivityLineItem).ToList();
                     if (LineCheck.Count() > 0)
                     {
+                        //// check if ViewBy is Campaign selected then set weightage value to 100;
+                        if(_ViewById > 0)
+                         weightage = l.Weightage;
+
                         BudgetMonth parent = new BudgetMonth();
-                        parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jan) ?? 0;
-                        parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Feb) ?? 0;
-                        parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Mar) ?? 0;
-                        parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Apr) ?? 0;
-                        parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.May) ?? 0;
-                        parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jun) ?? 0;
-                        parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jul) ?? 0;
-                        parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Aug) ?? 0;
-                        parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Sep) ?? 0;
-                        parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Oct) ?? 0;
-                        parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Nov) ?? 0;
-                        parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Dec) ?? 0;
+                        parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Jan * weightage) / 100) ?? 0;
+                        parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Feb * weightage) / 100) ?? 0;
+                        parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Mar * weightage) / 100) ?? 0;
+                        parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Apr * weightage) / 100) ?? 0;
+                        parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.May * weightage) / 100) ?? 0;
+                        parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Jun * weightage) / 100) ?? 0;
+                        parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Jul * weightage) / 100) ?? 0;
+                        parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Aug * weightage) / 100) ?? 0;
+                        parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Sep * weightage) / 100) ?? 0;
+                        parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Oct * weightage) / 100) ?? 0;
+                        parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Nov * weightage) / 100) ?? 0;
+                        parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Dec * weightage) / 100) ?? 0;
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonth = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().Month;
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().Month = parent;
                     }
@@ -5509,6 +5625,28 @@ namespace RevenuePlanner.Controllers
                 foreach (BudgetModel l in model.Where(l => l.ActivityType == ParentActivityType))
                 {
                     BudgetMonth parent = new BudgetMonth();
+
+                    if (ParentActivityType.Equals(ActivityType.ActivityTactic))
+                    {
+                        //// check if ViewBy is Campaign selected then set weightage value to 100;
+                        if (_ViewById > 0)
+                            weightage = l.Weightage;
+
+                        parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Jan * weightage) / 100) ?? 0;
+                        parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Feb * weightage) / 100) ?? 0;
+                        parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Mar * weightage) / 100) ?? 0;
+                        parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Apr * weightage) / 100) ?? 0;
+                        parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.May * weightage) / 100) ?? 0;
+                        parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Jun * weightage) / 100) ?? 0;
+                        parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Jul * weightage) / 100) ?? 0;
+                        parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Aug * weightage) / 100) ?? 0;
+                        parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Sep * weightage) / 100) ?? 0;
+                        parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Oct * weightage) / 100) ?? 0;
+                        parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Nov * weightage) / 100) ?? 0;
+                        parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Dec * weightage) / 100) ?? 0;
+                    }
+                    else
+                    {
                     parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jan) ?? 0;
                     parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Feb) ?? 0;
                     parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Mar) ?? 0;
@@ -5521,6 +5659,7 @@ namespace RevenuePlanner.Controllers
                     parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Oct) ?? 0;
                     parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Nov) ?? 0;
                     parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Dec) ?? 0;
+                    }
                     model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().ParentMonth = model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().Month;
                     model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().Month = parent;
                 }
@@ -5826,6 +5965,44 @@ namespace RevenuePlanner.Controllers
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Calculate the LineItem cost value based on it's parent Tactic weightage.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public List<BudgetModel> SetLineItemCostByWeightage(List<BudgetModel> model)
+        {
+            int _ViewById = ViewBag.ViewBy != null ? (int)ViewBag.ViewBy : 0;
+            int weightage = 100;
+            foreach (BudgetModel l in model.Where(_mdl => _mdl.ActivityType == ActivityType.ActivityTactic))
+            {
+                BudgetMonth parent = new BudgetMonth();
+                List<BudgetModel> lstLineItems = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
+                
+                //// check if ViewBy is Campaign selected then set weightage value to 100;
+                if (_ViewById > 0)
+                    weightage = l.Weightage;
+
+                foreach (BudgetModel line in lstLineItems)
+                {
+                    BudgetMonth lineBudget = new BudgetMonth();
+                    lineBudget.Jan = (double)(line.Month.Jan * weightage) / 100;
+                    lineBudget.Feb = (double)(line.Month.Feb * weightage) / 100;
+                    lineBudget.Mar = (double)(line.Month.Mar * weightage) / 100;
+                    lineBudget.Apr = (double)(line.Month.Apr * weightage) / 100;
+                    lineBudget.May = (double)(line.Month.May * weightage) / 100;
+                    lineBudget.Jun = (double)(line.Month.Jun * weightage) / 100;
+                    lineBudget.Jul = (double)(line.Month.Jul * weightage) / 100;
+                    lineBudget.Aug = (double)(line.Month.Aug * weightage) / 100;
+                    lineBudget.Sep = (double)(line.Month.Sep * weightage) / 100;
+                    lineBudget.Oct = (double)(line.Month.Oct * weightage) / 100;
+                    lineBudget.Nov = (double)(line.Month.Nov * weightage) / 100;
+                    lineBudget.Dec = (double)(line.Month.Dec * weightage) / 100;
+                    line.Month = lineBudget;
+                }
+            }
+            return model;
+        }
         #endregion
 
         #region "Actuals Tab of LineItem related functions"

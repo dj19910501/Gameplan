@@ -31,17 +31,10 @@
                                     <div id="divPlanDetails"><a id="aPlanDetails">@plan.ActivityName</a></div>
                                 </td>
                             </tr>
-                            @if (strViewBy == "2")
+                            
+                            @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
                             {
-                                @Html.ActivityMainParent(ActivityType.ActivityGeography, plan.ActivityId, Model, strTab, strViewBy)
-                            }
-                            else if (strViewBy == "1")
-                            {
-                                @Html.ActivityMainParent(ActivityType.ActivityAudience, plan.ActivityId, Model, strTab, strViewBy)
-                            }
-                            else if (strViewBy == "3")
-                            {
-                                @Html.ActivityMainParent(ActivityType.ActivityVertical, plan.ActivityId, Model, strTab, strViewBy)
+                                @Html.ActivityMainParent(ActivityType.ActivityCustomField, plan.ActivityId, Model, strTab, strViewBy)
                             }
                             else
                             {
@@ -50,22 +43,14 @@
                         </tbody>
                         <tbody class="column2">
                             @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy,strTab)
-                            @if (strViewBy == "2")
+                            
+                            @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
                             {
-                                @Html.ParentMonth(ActivityType.ActivityGeography, plan.ActivityId, Model, AllocatedBy,strTab, strViewBy)
-                            }
-                            else if (strViewBy == "1")
-                            {
-                                @Html.ParentMonth(ActivityType.ActivityAudience, plan.ActivityId, Model, AllocatedBy, strTab,strViewBy)
-                            }
-                            else if (strViewBy == "3")
-                            {
-                                @Html.ParentMonth(ActivityType.ActivityVertical, plan.ActivityId, Model, AllocatedBy, strTab,strViewBy)
+                                @Html.ParentMonth(ActivityType.ActivityCustomField, plan.ActivityId, Model, AllocatedBy,strTab, strViewBy)
                             }
                             else
                             {
                             @Html.CampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy,strTab)
-                                
                             }
                         </tbody>
                         <tbody class="column3">
@@ -84,17 +69,9 @@
                                     <div>Allocated</div>
                                 </td>
                             </tr>
-                            @if (strViewBy == "2")
+                            @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
                             {
-                                @Html.ParentSummary(ActivityType.ActivityGeography, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
-                            }
-                            else if (strViewBy == "1")
-                            {
-                                @Html.ParentSummary(ActivityType.ActivityAudience, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
-                            }
-                            else if (strViewBy == "3")
-                            {
-                                @Html.ParentSummary(ActivityType.ActivityVertical, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
+                            @Html.ParentSummary(ActivityType.ActivityCustomField, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
                             }
                             else
                             {

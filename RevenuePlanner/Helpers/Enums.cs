@@ -979,6 +979,7 @@ namespace RevenuePlanner.Helpers
         public const string ActivityAudience = "audience";
         public const string ActivityGeography = "geography";
         public const string ActivityVertical = "vertical";
+        public const string ActivityCustomField = "customfield";
     }
 
     public static class ReportColumnType

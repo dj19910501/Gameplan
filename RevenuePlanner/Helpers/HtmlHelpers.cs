@@ -2368,18 +2368,7 @@ namespace RevenuePlanner.Helpers
         public static MvcHtmlString ActivityMainParent(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "2", string View = "0")
         {
             string strViewBy = "";
-            if (View == "1")
-            {
-                strViewBy = Helpers.ActivityType.ActivityAudience;
-            }
-            else if (View == "2")
-            {
-                strViewBy = Helpers.ActivityType.ActivityGeography;
-            }
-            else if (View == "3")
-            {
-                strViewBy = Helpers.ActivityType.ActivityVertical;
-            }
+            strViewBy = Helpers.ActivityType.ActivityCustomField;
             StringBuilder sb = new StringBuilder();
             foreach (BudgetModel c in model.Where(p => p.ActivityType == strViewBy && p.ParentActivityId == ParentActivityId).ToList())
             {
@@ -2442,18 +2431,7 @@ namespace RevenuePlanner.Helpers
             {
                 mainClass = "sub campaign-lvl";
                 innerClass = "campaignLevel";
-                if (View == "1")
-                {
-                    parentClassName = "audience";
-                }
-                else if (View == "2")
-                {
-                    parentClassName = "geography";
-                }
-                else if (View == "3")
-                {
-                    parentClassName = "vertical";
-                }
+                parentClassName = Helpers.ActivityType.ActivityCustomField;
                 childActivity = "program";
             }
             else if (ActivityType == Helpers.ActivityType.ActivityProgram)
@@ -2559,18 +2537,7 @@ namespace RevenuePlanner.Helpers
         public static MvcHtmlString ParentMonth(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy, string strTab, string View = "0")
         {
             string strViewBy = "";
-            if (View == "1")
-            {
-                strViewBy = Helpers.ActivityType.ActivityAudience;
-            }
-            else if (View == "2")
-            {
-                strViewBy = Helpers.ActivityType.ActivityGeography;
-            }
-            else if (View == "3")
-            {
-                strViewBy = Helpers.ActivityType.ActivityVertical;
-            }
+            strViewBy = Helpers.ActivityType.ActivityCustomField;
             StringBuilder sb = new StringBuilder();
             foreach (BudgetModel c in model.Where(p => p.ActivityType == strViewBy && p.ParentActivityId == ParentActivityId).ToList())
             {
@@ -2821,19 +2788,7 @@ namespace RevenuePlanner.Helpers
             {
                 mainClass = "sub campaign-lvl";
                 innerClass = "campaignLevel";
-                //parentClassName = "audience";
-                if (View == "1")
-                {
-                    parentClassName = "audience";
-                }
-                else if (View == "2")
-                {
-                    parentClassName = "geography";
-                }
-                else if (View == "3")
-                {
-                    parentClassName = "vertical";
-                }
+                parentClassName = Helpers.ActivityType.ActivityCustomField;
             }
             else if (ActivityType == "program")
             {
@@ -3335,18 +3290,7 @@ namespace RevenuePlanner.Helpers
         public static MvcHtmlString ParentSummary(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy, string Tab, string View = "0")
         {
             string strViewBy = "";
-            if (View == "1")
-            {
-                strViewBy = Helpers.ActivityType.ActivityAudience;
-            }
-            else if (View == "2")
-            {
-                strViewBy = Helpers.ActivityType.ActivityGeography;
-            }
-            else if (View == "3")
-            {
-                strViewBy = Helpers.ActivityType.ActivityVertical;
-            }
+            strViewBy = Helpers.ActivityType.ActivityCustomField;
             StringBuilder sb = new StringBuilder();
             BudgetModel plan = model.Where(pl => pl.ActivityType == Helpers.ActivityType.ActivityPlan).SingleOrDefault();
             if (plan != null)
@@ -3518,18 +3462,7 @@ namespace RevenuePlanner.Helpers
             {
                 mainClass = "sub campaign-lvl";
                 innerClass = "campaignLevel";
-                if (View == "1")
-                {
-                    parentClassName = "audience";
-                }
-                else if (View == "2")
-                {
-                    parentClassName = "geography";
-                }
-                else if (View == "3")
-                {
-                    parentClassName = "vertical";
-                }
+                parentClassName = Helpers.ActivityType.ActivityCustomField;
             }
             else if (ActivityType == Helpers.ActivityType.ActivityProgram)
             {

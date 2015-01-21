@@ -41,13 +41,15 @@ namespace RevenuePlanner.Models
         public double Budgeted { get; set; }
 
         public string ParentActivityId { get; set; }
-
-        public int AudienceId {get;set;}
-        public string AudienceTitle { get; set; }
-        public Guid GeographyId { get; set; }
-        public string GeographyTitle { get; set; }
-        public int VerticalId { get; set; }
-        public string VerticalTitle { get; set; }
+        public List<CustomField_Entity> CustomFieldEntities { get; set; }
+        public int Weightage { get; set; }
+        public string CustomFieldType { get; set; }
+        //public int AudienceId { get; set; }
+        //public string AudienceTitle { get; set; }
+        //public Guid GeographyId { get; set; }
+        //public string GeographyTitle { get; set; }
+        //public int VerticalId { get; set; }
+        //public string VerticalTitle { get; set; }
     }
 
     public class BudgetModelReport
@@ -89,5 +91,28 @@ namespace RevenuePlanner.Models
     {
         public string Id { get; set; }
         public string Title { get; set; }
+    }
+    public class CustomBudgetModel
+    {
+        public string Id { get; set; }
+        public string ActivityId { get; set; }
+        public string ActivityName { get; set; }
+        public string ActivityType { get; set; }
+        public bool IsOwner { get; set; }
+
+        public BudgetMonth Month { get; set; }
+        public BudgetMonth SumMonth { get; set; }
+        public BudgetMonth ParentMonth { get; set; }
+
+        public double Allocated { get; set; }
+        public double Budgeted { get; set; }
+
+        public string ParentActivityId { get; set; }
+        List<int> CustomFieldEntities { get; set; }
+    }
+    public class entCustomFieldOption_EntityMapping
+    {
+        public int CusotmFieldOptionId { get; set; }
+        public List<int> CusotmFieldEntityIds { get; set; }
     }
 }
