@@ -1085,40 +1085,41 @@ namespace RevenuePlanner.Helpers
             } ////End - Added by Mitesh Vaishnav for internal review point 91
             else
             {
-                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                if (lstAllowedBusinessUnits.Count > 0)
-                    lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+                //var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                //if (lstAllowedBusinessUnits.Count > 0)
+                //    lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
 
-                // Modified by Dharmraj, For #537
-                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-                {
-                    //// Getting all business unit for client of director.
-                    var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-                    businessUnitIds = clientBusinessUnit.ToList();
-                }
-                else
-                {
-                    // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    if (lstAllowedBusinessUnits.Count > 0)
-                    {
-                        lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
-                    }
-                    else
-                    {
-                        businessUnitIds.Add(Sessions.User.BusinessUnitId);
-                    }
-                    // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                }
+                //// Modified by Dharmraj, For #537
+                //if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                //{
+                //    //// Getting all business unit for client of director.
+                //    var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+                //    businessUnitIds = clientBusinessUnit.ToList();
+                //}
+                //else
+                //{
+                //    // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                //    if (lstAllowedBusinessUnits.Count > 0)
+                //    {
+                //        lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+                //    }
+                //    else
+                //    {
+                //        businessUnitIds.Add(Sessions.User.BusinessUnitId);
+                //    }
+                //    // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                //}
             }
 
             //// Getting active model of above business unit. 
-            string modelPublishedStatus = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
-            var models = db.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).Select(m => m);
+            //string modelPublishedStatus = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
+            //var models = db.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).Select(m => m);
 
             //// Getting modelIds
-            var modelIds = models.Select(m => m.ModelId).ToList();
+            //var modelIds = models.Select(m => m.ModelId).ToList();
 
-            var activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p);
+            //var activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p);
+            var activePlan = db.Plans.Where(p => p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p);
             return activePlan.ToList();
         }
 
@@ -4159,11 +4160,11 @@ namespace RevenuePlanner.Helpers
             //// Initialize the default Plan Gantt Types
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Vertical.ToString(), Value = PlanGanttTypes.Vertical.ToString() });
+            //lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Vertical.ToString(), Value = PlanGanttTypes.Vertical.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Request.ToString(), Value = PlanGanttTypes.Request.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = BusinessUnit.ToString(), Value = PlanGanttTypes.BusinessUnit.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = PlanGanttTypes.Audience.ToString() });
+            //lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
+            //lstViewByTab.Add(new ViewByModel { Text = BusinessUnit.ToString(), Value = PlanGanttTypes.BusinessUnit.ToString() });
+            //lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = PlanGanttTypes.Audience.ToString() });
             lstViewByTab = lstViewByTab.Where(viewBy => !string.IsNullOrEmpty(viewBy.Text)).OrderBy(viewBy => viewBy.Text, new AlphaNumericComparer()).ToList();
 
             //// Check that if list of PlanTactic is not null then we are going to fetch the Custom Fields
@@ -5005,6 +5006,135 @@ namespace RevenuePlanner.Helpers
             }
 
             return lstCustomRestriction;
+        }
+        #endregion
+
+        #region Get None Custom Restriction user list
+        /// <summary>
+        /// Function to retrieve list of custom restriction of None type
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <returns>returns list of CustomRestriction object</returns>
+        public static List<Models.CustomRestriction> GetNoneCustomRestrictionList(Guid userId)
+        {
+            List<Models.CustomRestriction> lstCustomRestriction = new List<Models.CustomRestriction>();
+            try
+            {
+                int NonePermission = (int)Enums.CustomRestrictionPermission.None;
+
+                using (MRPEntities objDB = new MRPEntities())
+                {
+                    lstCustomRestriction = objDB.CustomRestrictions.Where(customRestriction => customRestriction.UserId == userId && customRestriction.Permission == NonePermission)
+                                                                    .Select(customRestriction => customRestriction).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return lstCustomRestriction;
+        }
+        #endregion
+
+        #region Get Restricted EntityId list
+        /// <summary>
+        /// Function to retrieve list of restricted entities
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <returns>returns list of entities</returns>
+        public static List<int> GetRestrictedEntityList(Guid userId)
+        {
+            List<int> lstEntityIds = new List<int>();
+            try
+            {
+                List<Models.CustomRestriction> lstNoneCustomRestriction = new List<Models.CustomRestriction>();
+                lstNoneCustomRestriction = GetNoneCustomRestrictionList(userId);
+
+                if (lstNoneCustomRestriction.Count > 0)
+                {
+                    List<int> lstCustomFieldIds = new List<int>();
+                    List<string> lstCustomFieldOptionIds = new List<string>();
+
+                    lstNoneCustomRestriction.ForEach(customRestriction =>
+                    {
+                        lstCustomFieldIds.Add(customRestriction.CustomFieldId);
+                        lstCustomFieldOptionIds.Add(customRestriction.CustomFieldOptionId.ToString());
+                    });
+
+                    using (MRPEntities objDB = new MRPEntities())
+                    {
+                        lstEntityIds = objDB.CustomField_Entity.Where(customFieldEntity => lstCustomFieldIds.Contains(customFieldEntity.CustomFieldId) &&
+                                                                        customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) &&
+                                                                        lstCustomFieldOptionIds.Contains(customFieldEntity.Value))
+                                                                .Select(customFieldEntity => customFieldEntity.EntityId).ToList();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return lstEntityIds;
+        }
+        #endregion
+
+        #region Get list of Allowed entity Ids
+        /// <summary>
+        /// Function to retrieve list of allowed entity ids
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <param name="clientId">client id</param>
+        /// <returns></returns>
+        public static List<int> GetAllowedCustomFieldEntityList(Guid userId, Guid clientId)
+        {
+            List<int> lstAllowedEntityIds = new List<int>();
+
+            try
+            {
+                //// Custom Restrictions
+                var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(userId);
+
+                if (userCustomRestrictionList.Count() > 0)
+                {
+                    int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+                    int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+
+                    //// Prepare list of allowed Custom Field Option Ids
+                    List<string> lstAllowedCustomFieldOptionIds = new List<string>();
+                    lstAllowedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => (customRestriction.Permission == ViewOnlyPermission || customRestriction.Permission == ViewEditPermission)).Select(customRestriction => customRestriction.CustomFieldOptionId.ToString()).ToList();
+
+                    if (lstAllowedCustomFieldOptionIds.Count() > 0)
+                    {
+                        using (MRPEntities objDbMrpEntities = new MRPEntities())
+                        {
+                            //// Get list of custom fields
+                            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+                            string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+                            List<int> lstCustomFieldIds = new List<int>();
+                            lstCustomFieldIds = objDbMrpEntities.CustomFields.Where(customField => customField.ClientId == clientId && customField.IsDeleted.Equals(false) &&
+                                                                                    customField.EntityType.Equals(EntityTypeTactic) && customField.CustomFieldType.Name.Equals(DropDownList) &&
+                                                                                    customField.IsDisplayForFilter.Equals(true))
+                                                                                .Select(customField => customField.CustomFieldId).ToList();
+
+                            if (lstCustomFieldIds.Count() > 0)
+                            {
+                                //// Get list of allowed entity ids
+                                lstAllowedEntityIds = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => lstCustomFieldIds.Contains(customFieldEntity.CustomFieldId) &&
+                                                                                                lstAllowedCustomFieldOptionIds.Contains(customFieldEntity.Value))
+                                                                                            .Select(customFieldEntity => customFieldEntity.EntityId).Distinct().ToList();
+                            }
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return lstAllowedEntityIds;
         }
         #endregion
 
