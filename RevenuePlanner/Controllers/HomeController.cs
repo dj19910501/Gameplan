@@ -342,7 +342,7 @@ namespace RevenuePlanner.Controllers
                 }
                 //// Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 ViewBag.IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);
-                return View(planmodel);
+                return View("Index", planmodel);
             }
             else
             {

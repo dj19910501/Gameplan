@@ -98,6 +98,17 @@ namespace RevenuePlanner.Test.MockHelpers
             return db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.PlanId).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Get comma separated published plan id list.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetPlanIdList()
+        {
+            string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
+            var planIds = db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.PlanId).Take(10).ToList();
+            return string.Join(",", planIds.Select(plan => plan.ToString()));
+        }
+
         public static Plan_Campaign_Program_Tactic GetPlanTactic(Guid clientId)
         {
             var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.BusinessUnit.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
@@ -194,6 +205,28 @@ namespace RevenuePlanner.Test.MockHelpers
                 }
             }
             
+            return sbCustomRestrictions.ToString();
+        }
+
+        /// <summary>
+        /// Function to retrieve comma separated list of custom restrictions for Search filter
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <returns></returns>
+        public static string GetSearchFilterForCustomRestriction(Guid userId)
+        {
+            StringBuilder sbCustomRestrictions = new StringBuilder(string.Empty);
+
+            using (MRPEntities objDB = new MRPEntities())
+            {
+                var lstCustomRestriction = objDB.CustomRestrictions.Where(customRestriction => customRestriction.UserId == userId).Select(customRestriction => customRestriction).ToList();
+                if (lstCustomRestriction.Count > 0)
+                {
+                    lstCustomRestriction.ForEach(customRestriction => sbCustomRestrictions.Append(customRestriction.CustomFieldId + "_" + customRestriction.CustomFieldOptionId + ","));
+                    return sbCustomRestrictions.ToString().TrimEnd(",".ToCharArray());
+                }
+            }
+
             return sbCustomRestrictions.ToString();
         }
         #endregion
