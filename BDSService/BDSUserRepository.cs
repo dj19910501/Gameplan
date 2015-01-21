@@ -2155,7 +2155,9 @@ namespace BDSService
                     }
                     int res = db.SaveChanges();
                     if (res > 0)
+                    {
                         retVal = 1;
+                    }
 
                     return retVal;
                 }
@@ -2230,8 +2232,7 @@ namespace BDSService
                 if (permissions.Length > 0)
                 {
                     int retDelUserActivity = DeleteUserActivityPermission(userId, applicationId);
-                    int retDelUserCustomRestriction = DeleteUserCustomrestriction(userId, applicationId);
-                    if (retDelUserActivity == 1 && retDelUserCustomRestriction == 1)
+                    if (retDelUserActivity == 1)
                     {
                         foreach (var item in permissions)
                         {
@@ -2248,8 +2249,10 @@ namespace BDSService
                             }
                         }
                         int res = db.SaveChanges();
-                        if (res > 0)
+                        if (res >= 0)
+                        {
                             retVal = 1;
+                        }
                     }
                 }
             }

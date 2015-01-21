@@ -666,13 +666,17 @@ namespace RevenuePlanner.Controllers
                                                                     .Select(customFieldOption => customFieldOption).ToList();
                     }
 
-                    //// Set viewbag of Custom field list, to be used in view
-                    ViewData["CustomFieldList"] = lstCustomField;
-
                     //// Set data to Custom_Restriction model for Custom Fields.
                     List<CustomRestrictionModel> customRestrictionList = new List<CustomRestrictionModel>();
                     if (lstCustomFieldOption.Count > 0)
                     {
+                        List<int> customFieldIdFromOptions = new List<int>();
+                        customFieldIdFromOptions = lstCustomFieldOption.Select(option => option.CustomFieldId).Distinct().ToList();
+                        if (customFieldIdFromOptions.Count() > 0)
+                        {
+                            lstCustomField = lstCustomField.Where(customField => customFieldIdFromOptions.Contains(customField.CustomFieldId)).ToList();
+                        }
+
                         //// Sort custom field option list by custom field id and value
                         lstCustomFieldOption = lstCustomFieldOption.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
 
@@ -698,6 +702,10 @@ namespace RevenuePlanner.Controllers
                             customRestrictionList.Add(objCustomRestrictionModel);
                         }
                     }
+
+                    //// Set viewbag of Custom field list, to be used in view
+                    ViewData["CustomFieldList"] = lstCustomField;
+
                     //// End - Added by Sohel Pathan on 15/01/2015 for PL ticket #1139
 
                     //// Set custom restriction list in viewbag, to be used in view

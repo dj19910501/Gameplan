@@ -183,33 +183,33 @@ else
                                             <span class="check_signup">
                                             @if (@item.Permission == 0)
                                             {
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_@item.CustomField.ToString()_@item.CustomFieldId"  checked="checked" autocomplete="off"  />
+                                                <input type="radio" name="radio_@item.CustomField.ToString()_@item.CustomFieldId" id="0_@item.CustomField.ToString()_@item.CustomFieldId"  checked="checked" autocomplete="off"  />
                                             }
                                             else
                                             {
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off" />
+                                                <input type="radio" name="radio_@item.CustomField.ToString()_@item.CustomFieldId" id="0_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off" />
                                             }
                                             None
                                             </span>      
                                             <span class="check_signup">
                                             @if (@item.Permission == 1)
                                             {
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_@item.CustomField.ToString()_@item.CustomFieldId" checked="checked"  autocomplete="off" />
+                                                <input type="radio" name="radio_@item.CustomField.ToString()_@item.CustomFieldId" id="1_@item.CustomField.ToString()_@item.CustomFieldId" checked="checked"  autocomplete="off" />
                                             }
                                             else
                                             {
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off"  />
+                                                <input type="radio" name="radio_@item.CustomField.ToString()_@item.CustomFieldId" id="1_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off"  />
                                             }
                                             View Only
                                             </span>
                                             <span class="check_signup">
                                             @if (@item.Permission == 2)
                                             {
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off" checked="checked" />
+                                                <input type="radio" name="radio_@item.CustomField.ToString()_@item.CustomFieldId" id="2_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off" checked="checked" />
                                             }
                                             else
                                             {
-                                            <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off"  />
+                                            <input type="radio" name="radio_@item.CustomField.ToString()_@item.CustomFieldId" id="2_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off"  />
                                             }
                                             View/Edit
                                             </span>

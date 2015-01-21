@@ -3564,6 +3564,13 @@ namespace RevenuePlanner.Controllers
 
                     if (lstCustomFieldOption.Count > 0)
                     {
+                        List<int> customFieldIdFromOptions = new List<int>();
+                        customFieldIdFromOptions = lstCustomFieldOption.Select(option => option.CustomFieldId).Distinct().ToList();
+                        if (customFieldIdFromOptions.Count() > 0)
+                        {
+                            lstCustomField = lstCustomField.Where(customField => customFieldIdFromOptions.Contains(customField.CustomFieldId)).ToList();
+                        }
+
                         //// Sort custom field option list by value and custom field id
                         lstCustomFieldOption = lstCustomFieldOption.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
 
