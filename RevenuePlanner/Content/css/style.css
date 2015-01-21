@@ -11438,8 +11438,8 @@ float:left;
 /*new design*/
 
 .innerpopup {background:#f1dbde; border: 1px solid #e0acab; border-radius: 7px; width: 100%;   margin: 1px 0 15px 2px;  color:#ca6c67; display:none; }
-.inner-text {margin: 10px 0 10px 10px; text-align: justify; width: 80%;}
-.innerpopup > span {color: #a8a8a8; font-size: 20px; font-weight: bolder; margin-left:582px; position: absolute;  margin-top:11px;  cursor: pointer; }
+.inner-text {margin: 10px 0 10px 10px; text-align: justify; width: 80%; color: #ca6c67 !important;}
+.innerpopup > span {color: #a8a8a8; font-size: 20px; font-weight: bolder; margin-left:615px; position: absolute;  margin-top:11px;  cursor: pointer; font-family: source_sans_probold; }
 .proceed_btn
 {
 		background: -moz-linear-gradient(268deg, #fafafa 0%, #c6c6c6 100%);/* FF3.6+ */
@@ -11451,12 +11451,18 @@ float:left;
 		background: linear-gradient(182deg, #fafafa 0%, #c6c6c6 100%);/* W3C */
 		border: 1px none;
     	height: 30px;
-		margin: 10px 10px 0 0;
+		margin: 10px 10px 8px 0;
 		border-radius: 6px;
+        padding: 1px 11px;
 	
 }
 .inner-text > a {
     margin-top: 16px;
     position: absolute;
+    color: #9e9894;
+    text-decoration: underline;
+}
+.inner-text > span {
+    font-weight: bold;
 }
 /*End-Added by Mitesh Vaishnav for PL ticket #1073*/
