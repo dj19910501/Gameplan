@@ -23,10 +23,10 @@
                     e.stopPropagation();
                 });
                 $(this).find('.advance_a').on('click', function () {
-                    if ($(this).text() == "advance attribution >") {
+                    if ($(this).text() == "Advance Attribution >") {
                         menu.toggleClass('dropdown-block');
                         menu.find(".weight,.weight_header,.first_hide,.sus_header,.mql_header,.cw_header,.revenue_header,.cost_header").toggle();
-                                $(this).text("Basic attribution");
+                                $(this).text("Basic Attribution");
                             }
                     else {
                         menu.find('.innerpopup').css('display', 'block');
@@ -40,8 +40,8 @@
                     menu.find('.innerpopup').css('display', 'none');
                     menu.toggleClass('dropdown-block');
                     menu.find(".weight,.weight_header,.first_hide,.sus_header,.mql_header,.cw_header,.revenue_header,.cost_header").toggle();
-                    menu.find('.advance_a').text("advance attribution >");
-                    menu.find('input[type=text]').each().val('');
+                    menu.find('.advance_a').text("Advance Attribution >");
+                    menu.find('input[type=text]').val('');
                 });
                 menu.find('input[type=text]').on('keydown', function (e) {
                     // Allow: backspace, delete, tab, escape, enter and .
@@ -130,6 +130,36 @@
                 var j = 2;
                 while (j > 0) {
                     if ($(this).find('thead tr').find('td').eq(j).text() != 'CW(%)') {
+                        $(this).find('tbody tr').find('input[type=text]').on('keydown', function (e) {
+                            // Allow: backspace, delete, tab, escape, enter and .
+                            if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
+                                // Allow: Ctrl+A
+                                (e.keyCode == 65 && e.ctrlKey === true) ||
+                                // Allow: home, end, left, right
+                                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                                // let it happen, don't do anything
+                                return;
+                            }
+                            // Ensure that it is a number and stop the keypress
+                            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                                e.preventDefault();
+                            }
+                        });
+                        $(this).find('tbody tr').find('input[type=text]').on('change', function (e) {
+                            // Allow: backspace, delete, tab, escape, enter and .
+                            if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
+                                // Allow: Ctrl+A
+                                (e.keyCode == 65 && e.ctrlKey === true) ||
+                                // Allow: home, end, left, right
+                                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                                // let it happen, don't do anything
+                                return;
+                            }
+                            // Ensure that it is a number and stop the keypress
+                            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                                e.preventDefault();
+                            }
+                        });
                         $(this).find('tbody tr').find('input[type=text]').on('keyup', function () {
                             var inputText = $(this);
                             var totalWeightage = 0;
