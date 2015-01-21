@@ -100,7 +100,7 @@
                 });
                 menu.find('input[type=checkbox]').on('click', function () {
                     var title = "";
-                    Button.find('span:first').text("");
+                    Button.find('p:first').text("");
                     //var checkedCheckbox = menu.find('input:checked').length;
                     //var inputValues = 100 / checkedCheckbox;
                     //var residual = 100 % checkedCheckbox;
@@ -111,8 +111,11 @@
                         //});
                     });
                     if (title.indexOf(',') > 0) {
-                        title= title.slice(0, -1);
+                        title = title.slice(0, -1);
                         Button.find('p:first').text(title);
+                    }
+                    else {
+                        Button.find('p:first').text('Please Select');
                     }
                 });
             });

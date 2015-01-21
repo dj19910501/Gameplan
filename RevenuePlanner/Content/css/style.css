@@ -11402,7 +11402,7 @@ float:left;
     margin-top: -1px;
     width: 74px !important;
 }
-.dropdown_new_btn > p {display: inline-block;margin-top: 1px; overflow: hidden;    text-overflow: ellipsis;   white-space: nowrap;    width: 200px;}
+.dropdown_new_btn > p {display: inline-block;margin-top: 1px; overflow: hidden;    text-overflow: ellipsis;   white-space: nowrap;    width: 200px;font-family:"source_sans_prolight",Arial,"sans-serif" !important;font-size:14px !important;}
 /*.text_ellipsis {
     display: inline-block;
     margin: 0 0 -8px !important;

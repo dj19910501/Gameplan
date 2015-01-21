@@ -3744,12 +3744,12 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
-                        className+="\" style=\"clear:both;\""; 
+                        className += "\" style=\"clear:both;\"";
                     }
                     if (item.isRequired)
                         sb.Append("<div class=\"" + className + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>");
                     else
-                    sb.Append("<div class=\""+className+"\"><p title=\""+item.name+"\" class=\"ellipsis\">"+item.name+"</p>");
+                        sb.Append("<div class=\"" + className + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
 
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
@@ -3758,11 +3758,11 @@ namespace RevenuePlanner.Helpers
                         string customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
-                            sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");    
+                            sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
                         }
                         else
                         {
-                            sb.Append("<input type=\"text\" maxlength =\"255\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small input-setup\"");    
+                            sb.Append("<input type=\"text\" maxlength =\"255\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small input-setup\"");
                         }
 
                         //If custom field is required than add attribute require
@@ -3779,37 +3779,76 @@ namespace RevenuePlanner.Helpers
                             string DropDownStyle = "";
                             string divPosition = "";
                             string require = "";
+                            string name = "";
                             if (item.isRequired)
                             {
                                 require = " require=\"true\"";
                             }
                             if (fieldCounter % 4 == 3)
                             {
-                                DropDownStyle = "style=\"top:0px;right:0px;margin-top:40px;\"";
+                                DropDownStyle = " style=\"top:0px;right:0px;margin-top:40px;\"";
                                 divPosition = "style=\"position:relative;\"";
                             }
-                            string name = "";
-                            sb.Append("<div "+divPosition+"><a class=\"dropdown_new_btn\""+require+"><p class=\"text_ellipsis\">#HEADER_OF_DROPDOWN#</p></a>");
-                            sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\"><tr><td scope=\"col\" class=\"value_header\"><span>Value</span></td><td scope=\"col\" class=\"weight_header\" code=\"weight\"><span> Weight(%)</sapn></td><td scope=\"col\" class=\"sus_header\" code=\"stage\" >Stage(%)</td><td scope=\"col\" class=\"cw_header\" code=\"CW\">CW(%)</td><td scope=\"col\" class=\"revenue_header\" code=\"Revenue\">Revenue(%)</td><td scope=\"col\" class=\"cost_header\" code=\"Cost\" >Cost(%)</td></tr></thead>");
+                            #region tactic inspect pop up
+
+                            if (section == Enums.EntityType.Tactic.ToString())
+                            {
+                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn\"" + require + "><p>#HEADER_OF_DROPDOWN#</p></a>");
+                                sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\"><tr><td scope=\"col\" class=\"value_header\"><span>Value</span></td><td scope=\"col\" class=\"weight_header\" code=\"weight\"><span> Weight(%)</sapn></td><td scope=\"col\" class=\"sus_header\" code=\"stage\" >Stage(%)</td><td scope=\"col\" class=\"cw_header\" code=\"CW\">CW(%)</td><td scope=\"col\" class=\"revenue_header\" code=\"Revenue\">Revenue(%)</td><td scope=\"col\" class=\"cost_header\" code=\"Cost\" >Cost(%)</td></tr></thead>");
                                 foreach (var objOption in item.option)
                                 {
-                               string enableCheck = string.Empty;
-                                if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
-                                {
-                                    name += objOption.value + ",";
-                                    enableCheck = "checked=\"checked\"";
+                                    string enableCheck = string.Empty;
+                                    if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
+                                    {
+                                        name += objOption.value + ",";
+                                        enableCheck = "checked=\"checked\"";
+                                    }
+
+                                    //if ()
+                                    sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_show weight\"><input id=\"" + objOption.customFieldOptionId + "_weight\" maxlength =\"3\" type=\"text\" name=\"textfield16\" value=\"\" class=\"firstshow_width text_blk_active \"></td> <td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_stage\" maxlength =\"3\" type=\"text\" name=\"textfield4\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_CW\" maxlength =\"3\" type=\"text\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_Revenue\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_Cost\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
                                 }
-                                
-                                //if ()
-                                sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_show weight\"><input id=\"" + objOption.customFieldOptionId + "_weight\" maxlength =\"3\" type=\"text\" name=\"textfield16\" value=\"\" class=\"firstshow_width text_blk_active \"></td> <td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_stage\" maxlength =\"3\" type=\"text\" name=\"textfield4\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_CW\" maxlength =\"3\" type=\"text\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_Revenue\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_Cost\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
-                            }
                                 sb.Append(" <tfoot><tr><td colspan=\"7\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">advance attribution ></span></a></td></tr></tfoot></table>  <div class=\"innerpopup\"><span class=\"close_btn\">X</span><p class=\"inner-text\"><span>Data will be lost!</span>switching from advance attribution to basic attribution will reset all weight(%) to default<br/><button type=\"button\" class=\"proceed_btn\"> proceed </button> <a href=\"#\" class=\"cncl_btn\">cancel</a></p></div></div></div></div>");
-                            if (name.Length > 0)
-                            {
-                               name= name.Remove(name.Length - 1, 1);
+                                if (name.Length > 0)
+                                {
+                                    name = name.Remove(name.Length - 1, 1);
+                                }
+                                else
+                                {
+                                    name = "Please Select";
+                                }
+                                sb.Replace("#HEADER_OF_DROPDOWN#", name);
+                                sb.Append("</div>");
                             }
-                            sb.Replace("#HEADER_OF_DROPDOWN#", name);
-                            sb.Append("</div>");
+                            #endregion
+
+                            #region Campaign/Program inspect popup
+                            else
+                            {
+                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn\"" + require + "><p>#HEADER_OF_DROPDOWN#</p></a>");
+                                sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\">");
+                                foreach (var objOption in item.option)
+                                {
+                                    string enableCheck = string.Empty;
+                                    if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
+                                    {
+                                        name += objOption.value + ",";
+                                        enableCheck = "checked=\"checked\"";
+                                    }
+                                    sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
+                                }
+                                sb.Append("</table></div></div></div>");
+                                if (name.Length > 0)
+                                {
+                                    name = name.Remove(name.Length - 1, 1);
+                                }
+                                else
+                                {
+                                    name = "Please Select";
+                                }
+                                sb.Replace("#HEADER_OF_DROPDOWN#", name);
+                                sb.Append("</div>");
+                            }
+                            #endregion
                         }
                         else
                         {
@@ -3819,14 +3858,14 @@ namespace RevenuePlanner.Helpers
                                 foreach (var objOption in item.option)
                                 {
                                     //check - if custom field's value inserted before from dropdownlist then set it as selected
-                                    if (item.value!=null && item.value.Contains(objOption.customFieldOptionId.ToString()))
+                                    if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
                                     {
-                                        customFieldEntityValue += item.value != null ? objOption.value.Replace("\"", "&quot;")+"," : string.Empty;
+                                        customFieldEntityValue += item.value != null ? objOption.value.Replace("\"", "&quot;") + "," : string.Empty;
                                     }
                                 }
                                 if (customFieldEntityValue.Length > 0)
                                 {
-                                   customFieldEntityValue= customFieldEntityValue.Remove(customFieldEntityValue.Length - 1, 1);
+                                    customFieldEntityValue = customFieldEntityValue.Remove(customFieldEntityValue.Length - 1, 1);
                                 }
                             }
 
@@ -3875,7 +3914,7 @@ namespace RevenuePlanner.Helpers
                     {
                         TagBuilder aAccordian = new TagBuilder("a");
                         aAccordian.AddCssClass("accordionClick");
-                       // aAccordian.AddCssClass("collapse");
+                        // aAccordian.AddCssClass("collapse");
                         div.InnerHtml = aAccordian.ToString();
                         //aLink.Attributes.Add("style", "cursor:pointer;");
                     }

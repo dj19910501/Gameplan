@@ -2349,7 +2349,15 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _DataTypeMappingPullMQLSaveSuccess = value; }
         }
         //// End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061
-
+        
+        ////Start - Added by Mitesh Vaishnav for PL ticket #1124
+        private string _ValidateAttributeWeightSum;
+        public string ValidateAttributeWeightSum
+        {
+            get { return _ValidateAttributeWeightSum; }
+            set { _ValidateAttributeWeightSum = value; }
+        }
+        ////End - Added by Mitesh Vaishnav for PL ticket #1124
         #endregion
 
         #region  Functions
@@ -3085,6 +3093,11 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _DataTypeMappingPullMQLSaveSuccess = strMsgValue;
                                             break;
                                         //// End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061
+                                        ////Start - Added by Mitesh Vaishnav for PL ticket #1124
+                                        case "ValidateAttributeWeightSum":
+                                            _ValidateAttributeWeightSum = strMsgValue;
+                                            break;
+                                        ////End - Added by Mitesh Vaishnav for PL ticket #1124
                                     }
                                 }
                                 i = i + 1;

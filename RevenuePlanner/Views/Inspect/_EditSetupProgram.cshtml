@@ -202,7 +202,15 @@
         }
     }
 
-    $(document).ready(function () {	
+    $(document).ready(function () {
+
+        /*Added by Mitesh Vaishnav for PL ticket #1136
+       Register events of new multiselect dropdown customfields*/
+        $('.dropdown_new_btn').each(function () {
+            $(this).multiselectWeight();
+        });
+        /*End Added by Mitesh Vaishnav for PL ticket #1136*/
+
         //// Call function to redirect on service unavailibility.
         //// Added By: Maninder Singh Wadhva on 11/24/2014.
         //// Ticket: 942 Exception handeling in Gameplan.
@@ -340,7 +348,15 @@
                     }
                 }
             });
-
+            $('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            });
             if (title == '') {
                 iserror = true;
             }
@@ -389,7 +405,7 @@
             document.getElementById("Description").value = htmlEncode($('#Description').val());
 
             var _customFieldValues = [];
-            $('form').find('input[type=text], select').each(function () {
+            $('form').find('input[type=text],input:checked, select').each(function () {
                 if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
                     _customFieldValues.push({
                         Key: $(this).attr('cf_id').toString(),

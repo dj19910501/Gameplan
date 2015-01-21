@@ -897,4 +897,10 @@
 		<value>Pull MQL mapping Information have been saved successfully.</value>
 	</Field>
 	<!--End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 -->
+  <!--start Added by Mitesh Vaishnav for PL ticket #1124-->
+  <Field>
+    <Name>ValidateAttributeWeightSum</Name>
+    <value>The attribute weight for {0} should sum up to 100! Please rectify and proceed. </value>
+  </Field>
+  <!--End Added by Mitesh Vaishnav for PL ticket #1124-->
 </Messages>
