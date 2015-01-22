@@ -3007,8 +3007,9 @@ namespace RevenuePlanner.Controllers
             }).ToList();
             if (customFeilds.Count > 0)
             {
-                customFeilds.Concat<object>(customFeildsWeightage).ToList();
-                ViewBag.customFieldWeightage = JsonConvert.SerializeObject(customFeilds);
+                
+              var concatCustomFields=  customFeilds.Concat<object>(customFeildsWeightage).ToList();
+              ViewBag.customFieldWeightage = JsonConvert.SerializeObject(concatCustomFields);
             }
             else
             {

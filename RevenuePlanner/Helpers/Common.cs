@@ -4125,7 +4125,7 @@ namespace RevenuePlanner.Helpers
                     value = o.Value
                 }).ToList()
 
-            }).ToList();
+            }).OrderBy(a => a.name).ToList();
             return lstCustomFields;
         }
         /// <summary>
