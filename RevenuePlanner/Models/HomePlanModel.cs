@@ -37,6 +37,9 @@ namespace RevenuePlanner.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:g}")]
         public DateTime LastUpdatedDate { get; set; }
         public List<SelectListItem> BusinessUnitIds { get; set; }
+
+        public List<CustomFieldsForFilter> lstCustomFields { get; set; }
+        public List<CustomFieldsForFilter> lstCustomFieldOptions { get; set; }
     }
     public class HomePlan
     {
@@ -260,5 +263,12 @@ namespace RevenuePlanner.Models
         public Plan_Campaign_Program objPlanTacticProgram { get; set; }
         public Plan_Campaign objPlanTacticCampaign { get; set; }
         public Plan objPlanTacticCampaignPlan { get; set; }
+    }
+
+    public class CustomFieldsForFilter
+    {
+        public int CustomFieldId { get; set; }
+        public string Title { get; set; }
+        public int? CustomFieldOptionId { get; set; }
     }
 }

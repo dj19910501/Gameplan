@@ -5009,22 +5009,36 @@ namespace RevenuePlanner.Helpers
         }
         #endregion
 
-        #region Get None Custom Restriction user list
+        #region Get Custom Restriction user list based on permission
         /// <summary>
         /// Function to retrieve list of custom restriction of None type
         /// </summary>
         /// <param name="userId">user id</param>
+        /// <param name="permissionType">permission type</param>
         /// <returns>returns list of CustomRestriction object</returns>
-        public static List<Models.CustomRestriction> GetNoneCustomRestrictionList(Guid userId)
+        public static List<Models.CustomRestriction> GetCustomRestrictionListByPermission(Guid userId, Enums.CustomRestrictionPermission permissionType)
         {
             List<Models.CustomRestriction> lstCustomRestriction = new List<Models.CustomRestriction>();
             try
             {
-                int NonePermission = (int)Enums.CustomRestrictionPermission.None;
+                int Permission = -1;
+
+                if (permissionType.Equals(Enums.CustomRestrictionPermission.None))
+                {
+                    Permission = (int)Enums.CustomRestrictionPermission.None;
+                }
+                else if (permissionType.Equals(Enums.CustomRestrictionPermission.ViewOnly))
+                {
+                    Permission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+                }
+                else if (permissionType.Equals(Enums.CustomRestrictionPermission.ViewEdit))
+                {
+                    Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                }
 
                 using (MRPEntities objDB = new MRPEntities())
                 {
-                    lstCustomRestriction = objDB.CustomRestrictions.Where(customRestriction => customRestriction.UserId == userId && customRestriction.Permission == NonePermission)
+                    lstCustomRestriction = objDB.CustomRestrictions.Where(customRestriction => customRestriction.UserId == userId && customRestriction.Permission == Permission)
                                                                     .Select(customRestriction => customRestriction).ToList();
                 }
             }
@@ -5049,7 +5063,7 @@ namespace RevenuePlanner.Helpers
             try
             {
                 List<Models.CustomRestriction> lstNoneCustomRestriction = new List<Models.CustomRestriction>();
-                lstNoneCustomRestriction = GetNoneCustomRestrictionList(userId);
+                lstNoneCustomRestriction = GetCustomRestrictionListByPermission(userId, Enums.CustomRestrictionPermission.None);
 
                 if (lstNoneCustomRestriction.Count > 0)
                 {
@@ -5057,6 +5071,49 @@ namespace RevenuePlanner.Helpers
                     List<string> lstCustomFieldOptionIds = new List<string>();
 
                     lstNoneCustomRestriction.ForEach(customRestriction =>
+                    {
+                        lstCustomFieldIds.Add(customRestriction.CustomFieldId);
+                        lstCustomFieldOptionIds.Add(customRestriction.CustomFieldOptionId.ToString());
+                    });
+
+                    using (MRPEntities objDB = new MRPEntities())
+                    {
+                        lstEntityIds = objDB.CustomField_Entity.Where(customFieldEntity => lstCustomFieldIds.Contains(customFieldEntity.CustomFieldId) &&
+                                                                        customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) &&
+                                                                        lstCustomFieldOptionIds.Contains(customFieldEntity.Value))
+                                                                .Select(customFieldEntity => customFieldEntity.EntityId).ToList();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return lstEntityIds;
+        }
+        #endregion
+
+        #region Get ViewEdit EntityId list
+        /// <summary>
+        /// Function to retrieve list of ViewEdit entities
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <returns>returns list of entities</returns>
+        public static List<int> GetViewEditEntityList(Guid userId)
+        {
+            List<int> lstEntityIds = new List<int>();
+            try
+            {
+                List<Models.CustomRestriction> lstViewEditCustomRestriction = new List<Models.CustomRestriction>();
+                lstViewEditCustomRestriction = GetCustomRestrictionListByPermission(userId, Enums.CustomRestrictionPermission.ViewEdit);
+
+                if (lstViewEditCustomRestriction.Count > 0)
+                {
+                    List<int> lstCustomFieldIds = new List<int>();
+                    List<string> lstCustomFieldOptionIds = new List<string>();
+
+                    lstViewEditCustomRestriction.ForEach(customRestriction =>
                     {
                         lstCustomFieldIds.Add(customRestriction.CustomFieldId);
                         lstCustomFieldOptionIds.Add(customRestriction.CustomFieldOptionId.ToString());

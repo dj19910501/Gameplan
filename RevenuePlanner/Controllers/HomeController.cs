@@ -2974,23 +2974,12 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                //// Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
-                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-
-                //// Prepare a list of geography and apply custom restictions
-                List<string> lstAllowedGeography = lstUserCustomRestriction.Where(CustomRestriction => (CustomRestriction.Permission == ViewOnlyPermission || CustomRestriction.Permission == ViewEditPermission) && CustomRestriction.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId).ToList();
-                List<Guid> lstAllowedGeographyId = new List<Guid>();
-                lstAllowedGeography.ForEach(geography => lstAllowedGeographyId.Add(Guid.Parse(geography)));
-                planmodel.objGeography = objDbMrpEntities.Geographies.Where(geography => geography.IsDeleted.Equals(false) && geography.ClientId == Sessions.User.ClientId && lstAllowedGeographyId.Contains(geography.GeographyId)).Select(geography => geography).OrderBy(geography => geography.Title).ToList();
-
                 List<string> tacticStatus = Common.GetStatusListAfterApproved();
 
                 //// Tthis is inititalized as 0 bcoz to get the status for tactics.
                 string planGanttType = PlanGanttTypes.Tactic.ToString();
                 ViewBag.AddActualFlag = true;     // Added by Arpita Soni on 01/17/2015 for Ticket #1090 
-                List<User> lstIndividuals = GetIndividualsByPlanId(Sessions.PlanId.ToString(), planGanttType, Enums.ActiveMenu.Home.ToString());
+                List<User> lstIndividuals = GetIndividualsByPlanId(Sessions.PlanId.ToString(), planGanttType, Enums.ActiveMenu.Home.ToString(), true);
                 ////Start - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
 
                 //// Fetch individual's records distinct
@@ -3060,6 +3049,17 @@ namespace RevenuePlanner.Controllers
 
                 ViewBag.IsPlanEditable = IsPlanEditable;
                 ViewBag.IsNewPlanEnable = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
+                //// Start - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
+                List<CustomFieldsForFilter> lstCustomField = new List<CustomFieldsForFilter>();
+                List<CustomFieldsForFilter> lstCustomFieldOption = new List<CustomFieldsForFilter>();
+
+                //// Retrive Custom Fields and CustomFieldOptions list
+                GetCustomFieldAndOptions(out lstCustomField, out lstCustomFieldOption);
+
+                planmodel.lstCustomFields = lstCustomField;
+                planmodel.lstCustomFieldOptions = lstCustomFieldOption;
+                //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
             }
             catch (Exception objException)
             {
@@ -3083,9 +3083,71 @@ namespace RevenuePlanner.Controllers
         /// Action to Get Actual Value of Tactic.
         /// </summary>
         /// <param name="status">status of tactic</param>
+        /// <param name="tacticTypeId"></param>
+        /// <param name="customFieldId"></param>
+        /// <param name="ownerId"></param>
         /// <returns>Returns Json Result.</returns>
-        public JsonResult GetActualTactic(int status)
+        public JsonResult GetActualTactic(int status, string tacticTypeId, string customFieldId, string ownerId)
         {
+            //// Start - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
+            //// Get TacticTypes selected  in search filter
+            List<int> filteredTacticTypeIds = string.IsNullOrWhiteSpace(tacticTypeId) ? new List<int>() : tacticTypeId.Split(',').Select(tacticType => int.Parse(tacticType)).ToList();
+                        
+            //// Custom Field Filter Criteria.
+            List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldId) ? new List<string>() : customFieldId.Split(',').Select(customField => customField.ToString()).ToList();
+            List<int> lstEntityIds = new List<int>();
+            bool recordsFound = true;
+            if (filteredCustomFields.Count > 0)
+            {
+                List<int> filterdCustomFieldIds = new List<int>();
+                List<int> filterdCustomFieldOptionIds = new List<int>();
+                List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
+
+                filteredCustomFields.ForEach(customField =>
+                {
+
+                    string[] splittedCustomField = customField.Split('_');
+                    filterdCustomFieldIds.Add(int.Parse(splittedCustomField[0]));
+                    filterdCustomFieldOptionIds.Add(int.Parse(splittedCustomField[1]));
+                });
+
+                filterdCustomFieldIds = filterdCustomFieldIds.Distinct().ToList();
+                filterdCustomFieldOptionIds = filterdCustomFieldOptionIds.Distinct().ToList();
+
+                lstCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => filterdCustomFieldIds.Contains(customFieldEntity.CustomFieldId))
+                                                                            .Select(customFieldEntity => customFieldEntity).ToList();
+
+                lstCustomFieldEntities = lstCustomFieldEntities.Where(customFieldEntity => filterdCustomFieldOptionIds.Contains(int.Parse(customFieldEntity.Value)))
+                                                    .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
+
+                var CustomFieldWiseEntityList = filterdCustomFieldIds.Select(customField => new
+                {
+                    customField,
+                    EntityList = lstCustomFieldEntities.Where(cc => cc.CustomFieldId == customField).Select(cc => cc.EntityId).ToList(),
+                }).ToList();
+
+                var AndEntityList = from list in CustomFieldWiseEntityList
+                                    from option in list.EntityList
+                                    where CustomFieldWiseEntityList.All(l => l.EntityList.Any(o => o == option))
+                                    orderby option
+                                    select option;
+
+                if (AndEntityList.Count() > 0)
+                {
+                    lstEntityIds = AndEntityList.Distinct().ToList();
+                }
+                else
+                {
+                    recordsFound = false;
+                }
+            }
+
+            List<int> lstRestrictedEntities = Common.GetRestrictedEntityList(Sessions.User.UserId);
+
+            //// Owner filter criteria.
+            List<Guid> filteredOwner = string.IsNullOrWhiteSpace(ownerId) ? new List<Guid>() : ownerId.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
+
             List<Plan_Campaign_Program_Tactic> TacticList = new List<Plan_Campaign_Program_Tactic>();
             List<string> tacticStatus = Common.GetStatusListAfterApproved();
             if (status == 0)
@@ -3093,41 +3155,25 @@ namespace RevenuePlanner.Controllers
                 //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
                 TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(planTactic => planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
                                                                                 tacticStatus.Contains(planTactic.Status) && planTactic.IsDeleted.Equals(false) &&
-                                                                                planTactic.CostActual == null && !planTactic.Plan_Campaign_Program_Tactic_Actual.Any()).ToList();
+                                                                                planTactic.CostActual == null && !planTactic.Plan_Campaign_Program_Tactic_Actual.Any() &&
+                                                                                (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(planTactic.TacticType.TacticTypeId)) &&
+                                                                                recordsFound == true &&
+                                                                                (lstEntityIds.Count.Equals(0) || lstEntityIds.Contains(planTactic.PlanTacticId)) &&
+                                                                                (lstRestrictedEntities.Count.Equals(0) || !lstRestrictedEntities.Contains(planTactic.PlanTacticId)) &&
+                                                                                (filteredOwner.Count.Equals(0) || filteredOwner.Contains(planTactic.CreatedBy))
+                                                                                ).ToList();
             }
             else
             {
-                TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false).ToList();
+                TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && 
+                                                                                tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false &&
+                                                                                (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(tactic.TacticType.TacticTypeId)) &&
+                                                                                recordsFound == true &&
+                                                                                (lstEntityIds.Count.Equals(0) || lstEntityIds.Contains(tactic.PlanTacticId)) &&
+                                                                                (lstRestrictedEntities.Count.Equals(0) || !lstRestrictedEntities.Contains(tactic.PlanTacticId)) &&
+                                                                                (filteredOwner.Count.Equals(0) || filteredOwner.Contains(tactic.CreatedBy))
+                                                                                ).ToList();
             }
-
-            //// Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
-            var lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
-            try
-            {
-                lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-
-                //// To handle unavailability of BDSService
-                if (objException is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-                }
-            }
-
-            //// Apply Custom Restriction
-            int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            var lstAllowedVertical = lstUserCustomRestriction.Where(CustomRestriction => (CustomRestriction.Permission == ViewOnlyPermission || CustomRestriction.Permission == ViewEditPermission) && CustomRestriction.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId).ToList();
-            var lstAllowedGeography = lstUserCustomRestriction.Where(CustomRestriction => (CustomRestriction.Permission == ViewOnlyPermission || CustomRestriction.Permission == ViewEditPermission) && CustomRestriction.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId.ToString().ToLower()).ToList();
-            var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(CustomRestriction => (CustomRestriction.Permission == ViewOnlyPermission || CustomRestriction.Permission == ViewEditPermission) && CustomRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId).ToList();
-
-            TacticList = TacticList.Where(tactic => lstAllowedVertical.Contains(tactic.VerticalId.ToString()) && lstAllowedGeography.Contains(tactic.GeographyId.ToString().ToLower())).ToList();
 
             List<int> TacticIds = TacticList.Select(tactic => tactic.PlanTacticId).ToList();
             var lstPlanTacticActual = (from tacticActual in objDbMrpEntities.Plan_Campaign_Program_Tactic_Actual
@@ -3160,10 +3206,7 @@ namespace RevenuePlanner.Controllers
                 string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
                 List<Plan_Campaign_Program_Tactic_Actual> lstTacticActual = objDbMrpEntities.Plan_Campaign_Program_Tactic_Actual.Where(tacticActual => TacticIds.Contains(tacticActual.PlanTacticId)).ToList();
 
-                //// Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
-                var lstEditableVertical = lstUserCustomRestriction.Where(CustomRestriction => CustomRestriction.Permission == ViewEditPermission && CustomRestriction.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId).ToList();
-                var lstEditableGeography = lstUserCustomRestriction.Where(CustomRestriction => CustomRestriction.Permission == ViewEditPermission && CustomRestriction.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId.ToString().ToLower()).ToList();
-                var lstEditableBusinessUnit = lstUserCustomRestriction.Where(CustomRestriction => CustomRestriction.Permission == ViewEditPermission && CustomRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId.ToString()).ToList();
+                List<int> lstViewEditEntities = Common.GetViewEditEntityList(Sessions.User.UserId);
 
                 List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
 
@@ -3223,7 +3266,7 @@ namespace RevenuePlanner.Controllers
                     tacticStageTitle = tactic.Stage.Title,
                     projectedStageValue = tactic.ProjectedStageValue,
                     projectedStageValueActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleProjectedStageValue).Sum(tacticActual => tacticActual.Actualvalue),
-                    IsTacticEditable = (lstEditableGeography.Contains(tactic.GeographyId.ToString().ToLower()) && lstEditableVertical.Contains(tactic.VerticalId.ToString()) && lstEditableBusinessUnit.Contains(tactic.BusinessUnitId.ToString())),
+                    IsTacticEditable = (lstViewEditEntities.Contains(tactic.PlanTacticId)),
                     //// Set Line Item data with it's actual values and Sum
                     LineItemsData = (tacticLineItem.Where(lineItem => lineItem.PlanTacticId.Equals(tactic.PlanTacticId)).ToList()).Select(lineItem => new
                     {
@@ -3379,8 +3422,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="PlanId">comma separated list of plan id(s)</param>
         /// <param name="ViewBy">/viewBy option selected from dropdown</param>
         /// <param name="ActiveMenu">current active menu</param>
+        /// <param name="IsForAddActuals">flag to check call from Add Actual screen</param>
         /// <returns>returns list of users</returns>
-        private List<User> GetIndividualsByPlanId(string PlanId, string ViewBy, string ActiveMenu)
+        private List<User> GetIndividualsByPlanId(string PlanId, string ViewBy, string ActiveMenu, bool IsForAddActuals = false)
         {
             List<int> PlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
 
@@ -3390,18 +3434,11 @@ namespace RevenuePlanner.Controllers
             
             // Start - Added by Arpita Soni on 01/17/2015 for Ticket #1090 
             // To remove owner of submitted tactics from filter list
-            if (ViewBag.AddActualFlag==null)
+            if (IsForAddActuals)
             {
                 status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
             }
             // End - Added by Arpita Soni on 01/17/2015 for Ticket #1090
-
-            ////// Custom Restrictions
-            //var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            //int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-            //int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            //var lstAllowedVertical = lstUserCustomRestriction.Where(CustomRestriction => (CustomRestriction.Permission == ViewOnlyPermission || CustomRestriction.Permission == ViewEditPermission) && CustomRestriction.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId).ToList();
-            //var lstAllowedGeography = lstUserCustomRestriction.Where(CustomRestriction => (CustomRestriction.Permission == ViewOnlyPermission || CustomRestriction.Permission == ViewEditPermission) && CustomRestriction.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(CustomRestriction => CustomRestriction.CustomFieldId.ToString().ToLower()).ToList();
 
             //// Select Tactics of selected plans
             var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && PlanIds.Contains(campaign.PlanId)).Select(campaign => campaign.PlanCampaignId).ToList();
@@ -3522,62 +3559,18 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-                //// Custom Restrictions
-                var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
-                int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                List<CustomFieldsForFilter> lstCustomField = new List<CustomFieldsForFilter>();
+                List<CustomFieldsForFilter> lstCustomFieldOption = new List<CustomFieldsForFilter>();
 
-                //// Prepare list of allowed Custom Field Option Ids
-                List<int> lstAllowedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => (customRestriction.Permission == ViewOnlyPermission || customRestriction.Permission == ViewEditPermission)).Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
-                
-                //// Get list of custom fields
-                string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
-                string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
-                var lstCustomField = objDbMrpEntities.CustomFields.Where(customField => customField.ClientId == Sessions.User.ClientId && customField.IsDeleted.Equals(false) &&
-                                                                    customField.EntityType.Equals(EntityTypeTactic) && customField.CustomFieldType.Name.Equals(DropDownList) &&
-                                                                    customField.IsDisplayForFilter.Equals(true))
-                                                                    .Select(customField => new
-                                                                    {
-                                                                        customField.Name,
-                                                                        customField.CustomFieldId
-                                                                    }).ToList();
+                //// Retrive Custom Fields and CustomFieldOptions list
+                GetCustomFieldAndOptions(out lstCustomField, out lstCustomFieldOption);
 
-                List<int> lstCustomFieldId = new List<int>();
-                
                 if (lstCustomField.Count > 0)
                 {
-                    //// Get list of Custom Field Ids
-                    lstCustomFieldId = lstCustomField.Select(customField => customField.CustomFieldId).Distinct().ToList();
-
-                    //// Sort custom fields by name
-                    lstCustomField = lstCustomField.OrderBy(customField => customField.Name).ToList();
-
-                    //// Get list of custom field options
-                    var lstCustomFieldOption = objDbMrpEntities.CustomFieldOptions
-                                                                .Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId) && lstAllowedCustomFieldOptionIds.Contains(customFieldOption.CustomFieldOptionId))
-                                                                .Select(customFieldOption => new
-                                                                {
-                                                                    customFieldOption.CustomFieldId,
-                                                                    customFieldOption.CustomFieldOptionId,
-                                                                    customFieldOption.Value
-                                                                }).ToList();
-
                     if (lstCustomFieldOption.Count > 0)
                     {
-                        List<int> customFieldIdFromOptions = new List<int>();
-                        customFieldIdFromOptions = lstCustomFieldOption.Select(option => option.CustomFieldId).Distinct().ToList();
-                        if (customFieldIdFromOptions.Count() > 0)
-                        {
-                            lstCustomField = lstCustomField.Where(customField => customFieldIdFromOptions.Contains(customField.CustomFieldId)).ToList();
-                        }
-
-                        //// Sort custom field option list by value and custom field id
-                        lstCustomFieldOption = lstCustomFieldOption.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
-
                         return Json(new { isSuccess = true, lstCustomFields = lstCustomField, lstCustomFieldOptions = lstCustomFieldOption }, JsonRequestBehavior.AllowGet);
                     }
-
-                    return Json(new { isSuccess = true, lstCustomFields = lstCustomField }, JsonRequestBehavior.AllowGet);
                 }
 
                 //// return all custom attribures in json object format
@@ -3589,6 +3582,85 @@ namespace RevenuePlanner.Controllers
             }
 
             return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Function to prepare list of custom fields and customfield options
+        /// </summary>
+        /// <param name="customFieldListOut"></param>
+        /// <param name="customFieldOptionsListOut"></param>
+        public void GetCustomFieldAndOptions(out List<CustomFieldsForFilter> customFieldListOut, out List<CustomFieldsForFilter> customFieldOptionsListOut)
+        {
+            customFieldListOut = new List<CustomFieldsForFilter>();
+            customFieldOptionsListOut = new List<CustomFieldsForFilter>();
+
+            //// Custom Restrictions
+            var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
+            int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+
+            //// Prepare list of allowed Custom Field Option Ids
+            List<int> lstAllowedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => (customRestriction.Permission == ViewOnlyPermission || customRestriction.Permission == ViewEditPermission)).Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
+
+            //// Get list of custom fields
+            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+            string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+            var lstCustomField = objDbMrpEntities.CustomFields.Where(customField => customField.ClientId == Sessions.User.ClientId && customField.IsDeleted.Equals(false) &&
+                                                                customField.EntityType.Equals(EntityTypeTactic) && customField.CustomFieldType.Name.Equals(DropDownList) &&
+                                                                customField.IsDisplayForFilter.Equals(true))
+                                                                .Select(customField => new
+                                                                {
+                                                                    customField.Name,
+                                                                    customField.CustomFieldId
+                                                                }).ToList();
+
+            List<int> lstCustomFieldId = new List<int>();
+
+            if (lstCustomField.Count > 0)
+            {
+                //// Get list of Custom Field Ids
+                lstCustomFieldId = lstCustomField.Select(customField => customField.CustomFieldId).Distinct().ToList();
+
+                ////// Sort custom fields by name
+                lstCustomField = lstCustomField.OrderBy(customField => customField.Name).ToList();
+
+                //// Get list of custom field options
+                var lstCustomFieldOption = objDbMrpEntities.CustomFieldOptions
+                                                            .Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId) && lstAllowedCustomFieldOptionIds.Contains(customFieldOption.CustomFieldOptionId))
+                                                            .Select(customFieldOption => new
+                                                            {
+                                                                customFieldOption.CustomFieldId,
+                                                                customFieldOption.CustomFieldOptionId,
+                                                                customFieldOption.Value
+                                                            }).ToList();
+
+                if (lstCustomFieldOption.Count > 0)
+                {
+                    List<int> customFieldIdFromOptions = new List<int>();
+                    customFieldIdFromOptions = lstCustomFieldOption.Select(option => option.CustomFieldId).Distinct().ToList();
+                    if (customFieldIdFromOptions.Count() > 0)
+                    {
+                        lstCustomField = lstCustomField.Where(customField => customFieldIdFromOptions.Contains(customField.CustomFieldId)).ToList();
+                    }
+
+                    ////// Sort custom field option list by value and custom field id
+                    lstCustomFieldOption = lstCustomFieldOption.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
+
+                    customFieldListOut = lstCustomField.Select(customField => new CustomFieldsForFilter() 
+                                                            {
+                                                                CustomFieldId = customField.CustomFieldId, 
+                                                                Title = customField.Name
+                                                            }).ToList();
+
+                    customFieldOptionsListOut = lstCustomFieldOption.Select(customFieldOption => new CustomFieldsForFilter()
+                                                                            { 
+                                                                                CustomFieldId = customFieldOption.CustomFieldId, 
+                                                                                CustomFieldOptionId = customFieldOption.CustomFieldOptionId, 
+                                                                                Title = customFieldOption.Value
+                                                                            }).ToList();
+                    
+                }
+            }
         }
 
         #endregion

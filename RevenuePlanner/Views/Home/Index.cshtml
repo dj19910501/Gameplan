@@ -392,38 +392,6 @@
             <div style="clear: both;"></div>
             @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
             {
-                @*<div id="accordion-1" class="dropdown-section accordion">
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-1" href="#accordion-element-BusniessUnit">Business Unit<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
-                        </div>
-                        <div id="accordion-element-BusniessUnit" class="accordion-body collapse">
-                            <ul class="scroll-list" id="ulBusniessUnit">
-
-                                @foreach (var item in Model.BusinessUnitIds)
-                                {
-                                    string id = "li" + item.Value;
-                                    if (item.Value == Sessions.BusinessUnitId.ToString())
-                                    {
-                                    <li class="accordion-inner close-list" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" BuTitile="@item.Text" id="@item.Value" onchange="toggleBusinessUnit(this)" checked="checked"/></li>
-                                    }
-                                    else
-                                    {
-                                    <li class="accordion-inner" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" BuTitile="@item.Text" id="@item.Value" onchange="toggleBusinessUnit(this)"/></li>
-                                    }
-                                }
-                            </ul>
-                            <div class="list-tab">
-                                <ul id="BUAllModule">
-                                    <li><a onclick="BulkBUOperation(true)">select all</a></li>
-                                    <li>|</li>
-                                    <li><a onclick="BulkBUOperation(false)">deselect all</a></li>
-                                </ul>
-                                <div id="NoFoundBU"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>*@
                 <div id="accordion-2" class="dropdown-section accordion">
                     <div class="accordion-group">
                         <div class="accordion-heading">
@@ -445,10 +413,10 @@
                 </div>
             }
             <div id="divCustomFieldsFilter"></div>
-            <div id="accordion-61" class="dropdown-section accordion">
+            <div id="accordion-Owner" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-61" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-Owner" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulSelectedOwner">
@@ -977,9 +945,9 @@
             var html = '';
             if (customFieldsCount > 0) {
                 $("#divCustomFieldsFilter").css("display", "block");
-                $.each(data.lstCustomFields, function (i, geoitem) {
-                    var customFieldId = geoitem.CustomFieldId.toString();
-                    var customFieldName = geoitem.Name;
+                $.each(data.lstCustomFields, function (i, customFielditem) {
+                    var customFieldId = customFielditem.CustomFieldId.toString();
+                    var customFieldName = customFielditem.Title;
                     html += '<div id="accordion-' + customFieldId + '" class="dropdown-section accordion">';
                     html += '<div class="accordion-group">';
                     html += '<div class="accordion-heading">';
@@ -993,7 +961,7 @@
                         if (customFieldOptionsCount > 0) {
                             $.each(data.lstCustomFieldOptions, function (i, optionitem) {
                                 if (parseInt(optionitem.CustomFieldId) == customFieldId) {
-                                    html += '<li class="accordion-inner " title="' + optionitem.Value + '" id="li_' + optionitem.CustomFieldId + '_' + optionitem.CustomFieldOptionId + '"><span class="sidebarliwidth">' + optionitem.Value + '</span><input type="checkbox" class="chkbxfilter"  customFieldTitle="' + optionitem.Value + '" onchange="toggleCustomFields(this)" id="' + optionitem.CustomFieldId + '_' + optionitem.CustomFieldOptionId + '"></input></li>';
+                                    html += '<li class="accordion-inner " title="' + optionitem.Title + '" id="li_' + optionitem.CustomFieldId + '_' + optionitem.CustomFieldOptionId + '"><span class="sidebarliwidth">' + optionitem.Title + '</span><input type="checkbox" class="chkbxfilter"  customFieldTitle="' + optionitem.Title + '" onchange="toggleCustomFields(this)" id="' + optionitem.CustomFieldId + '_' + optionitem.CustomFieldOptionId + '"></input></li>';
                                     customFieldSpecificOptions = customFieldSpecificOptions + 1;
                                 }
                                 });
