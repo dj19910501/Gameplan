@@ -135,9 +135,8 @@
                     
                 </div>
 
-                <div class="cf inputs-aligned-horizontal">
+                @*<div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.BusinessUnitId)
-                    @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
                     <div class="selectBox UserProfile" id="ddlBusinessUnitIdSelectBox">
                         @if (ViewData["BusinessUnits"] != null)
                         {
@@ -150,7 +149,7 @@
                     </div>
                     @Html.ValidationMessageFor(model => model.BusinessUnitId)
                     @Html.Label("", Common.objCached.BusinessunitRequired, new { @class="field-validation-error selectbox-validation-message", id="lblBusinessUnitIdRequired" })
-                </div>
+                </div>*@
 
                 
                 <div class="cf inputs-aligned-horizontal">

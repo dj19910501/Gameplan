@@ -608,7 +608,6 @@ namespace RevenuePlanner.Controllers
                     ViewBag.RoleColorCode = roleColorCode;
                     ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
                     ViewBag.RoleName = userDetails.RoleTitle;
-                    ViewBag.userBusinessUnit = userDetails.BusinessUnitId.ToString();
 
                     var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
                     var allActivity = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);

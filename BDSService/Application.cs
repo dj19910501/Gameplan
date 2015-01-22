@@ -16,10 +16,9 @@ namespace BDSService
     {
         public Application()
         {
-            this.Application_Activity = new HashSet<Application_Activity>();
+            this.CustomRestrictions = new HashSet<CustomRestriction>();
             this.Application_Role = new HashSet<Application_Role>();
             this.Menu_Application = new HashSet<Menu_Application>();
-            this.CustomRestrictions = new HashSet<CustomRestriction>();
             this.User_Application = new HashSet<User_Application>();
         }
     
@@ -34,10 +33,9 @@ namespace BDSService
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public string ReleaseVersion { get; set; }
     
-        public virtual ICollection<Application_Activity> Application_Activity { get; set; }
+        public virtual ICollection<CustomRestriction> CustomRestrictions { get; set; }
         public virtual ICollection<Application_Role> Application_Role { get; set; }
         public virtual ICollection<Menu_Application> Menu_Application { get; set; }
-        public virtual ICollection<CustomRestriction> CustomRestrictions { get; set; }
         public virtual ICollection<User_Application> User_Application { get; set; }
     }
 }

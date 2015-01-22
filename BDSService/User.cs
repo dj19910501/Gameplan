@@ -35,7 +35,6 @@ namespace BDSService
         public byte[] ProfilePhoto { get; set; }
         public string DisplayName { get; set; }
         public string JobTitle { get; set; }
-        public System.Guid BusinessUnitId { get; set; }
         public bool IsDeleted { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
         public Nullable<int> SecurityQuestionId { get; set; }

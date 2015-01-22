@@ -34,8 +34,8 @@ namespace BDSService
         public Nullable<System.Guid> ClientId { get; set; }
     
         public virtual ICollection<Application_Role> Application_Role { get; set; }
+        public virtual Client Client { get; set; }
         public virtual ICollection<Role_Activity_Permission> Role_Activity_Permission { get; set; }
         public virtual ICollection<Role_Permission> Role_Permission { get; set; }
-        public virtual Client Client { get; set; }
     }
 }

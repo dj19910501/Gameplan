@@ -56,8 +56,6 @@ namespace RevenuePlanner.Controllers
                     foreach (var user in lstUser)
                     {
                         UserModel objUserModel = new UserModel();
-                        objUserModel.BusinessUnitId = user.BusinessUnitId;
-                        objUserModel.BusinessUnit = db.BusinessUnits.Where(busUnit => busUnit.BusinessUnitId == objUserModel.BusinessUnitId && busUnit.IsDeleted == false).Select(busUnit => busUnit.Title).FirstOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
                         objUserModel.ClientId = user.ClientId;
                         objUserModel.Client = user.Client;
                         objUserModel.DisplayName = user.DisplayName;
@@ -549,7 +547,7 @@ namespace RevenuePlanner.Controllers
                             objUser.ProfilePhoto = data;
                         }
                     }
-                    objUser.BusinessUnitId = form.BusinessUnitId;
+
                     objUser.ManagerId = form.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     //PL Ticket#892 - Set Custom Restriction Permissions to View/Edit
                     List<Guid> lstBU = db.BusinessUnits.Where(busUnit => busUnit.ClientId == Sessions.User.ClientId && busUnit.IsDeleted == false).Select(busUnit => busUnit.BusinessUnitId).ToList();
@@ -735,8 +733,6 @@ namespace RevenuePlanner.Controllers
                 if (objUser != null)
                 {
                     //// Set User details to Model.
-                    objUserModel.BusinessUnitId = objUser.BusinessUnitId;
-                    objUserModel.BusinessUnit = db.BusinessUnits.Where(busUnit => busUnit.BusinessUnitId == objUserModel.BusinessUnitId && busUnit.IsDeleted == false).Select(busUnit => busUnit.Title).FirstOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
                     objUserModel.ClientId = objUser.ClientId;
                     objUserModel.Client = objUser.Client;
                     objUserModel.DisplayName = objUser.DisplayName;
@@ -904,7 +900,6 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     objUser.ClientId = form.ClientId;
-                    objUser.BusinessUnitId = form.BusinessUnitId;
                     objUser.RoleId = form.RoleId;
                     if (form.RoleId != null)
                     {

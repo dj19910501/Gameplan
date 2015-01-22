@@ -109,7 +109,7 @@
             @*}*@
             @*End Modified by Dharmraj for ticket #583 on 7th July 2014 *@
         </div>
-        <div class="cf inputs-aligned-horizontal">
+        @*<div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.BusinessUnitId)
             @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
                     {
@@ -126,7 +126,7 @@
                 @Html.HiddenFor(model => model.BusinessUnit)
                 @Html.TextBox("txtBusinessUnit", Model.BusinessUnit, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.BusinessUnit })
                     }
-        </div>
+        </div>*@
 
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.RoleId)

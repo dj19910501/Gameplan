@@ -788,39 +788,6 @@
     <None Include="Service References\BDSService\BDSService3.xsd">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Client.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.CustomRestriction.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Menu.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.PasswordResetRequest.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Permission.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Role.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.SecurityQuestion.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.User.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserApplicationPermission.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
     <Content Include="Views\User\_UpdateUserDetails.cshtml" />
     <Content Include="Views\Boost\_InspectPopupImprovementTacticType.cshtml" />
     <Content Include="Views\Shared\PageNotFound.cshtml" />
@@ -862,6 +829,39 @@
     <Content Include="Views\Inspect\_ResubmissionPopup.cshtml" />
     <Content Include="Views\ExternalService\_PullEloquaMQL.cshtml" />
     <Content Include="Views\Model\_publishmodel.cshtml" />
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Client.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.CustomRestriction.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Menu.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.PasswordResetRequest.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Permission.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Role.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.SecurityQuestion.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.User.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserApplicationPermission.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
@@ -912,7 +912,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>56910</DevelopmentServerPort>
+          <DevelopmentServerPort>58996</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
