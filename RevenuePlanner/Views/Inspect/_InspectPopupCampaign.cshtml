@@ -101,7 +101,7 @@
 @if (campaignMaster != null)
 {
     <div class="modal-popup-summary" id="campaignSummary">
-        <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
+        <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight" style="margin-bottom:0px;">
         <p class="modal-status">
             Status: 
             @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)

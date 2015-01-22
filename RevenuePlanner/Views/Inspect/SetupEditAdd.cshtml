@@ -95,7 +95,7 @@
  @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
  @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
      
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom:0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>Parent Campaign</p>
             @Html.TextBoxFor(model => model.CampaignTitle, new { @class = "span12 input-small truncate", id = "txtCampaign", @readonly = "true", style = "background:#F2F2F2;" })
@@ -958,10 +958,15 @@
         }
         for (var i = 0; i < arrStageTitles.length; i++) {
             $(".table_drpdwn").each(function () {
-                $(this).find('thead tr').find('td').eq(i + 1).after('<td class="sus_header" scope="col" style="display: none;" code="' + arrStageCode[i]+ '">' + arrStageTitles[i] + '(%)</td>');
+                var rowStyle = "display: none;";
+                
+                if ($(this).find('.advance_a').text() != 'Advanced Attribution >') {
+                     rowStyle = "display: table-cell;";
+                }
+                $(this).find('thead tr').find('td').eq(i + 1).after('<td class="sus_header" scope="col" style="'+rowStyle+'" code="' + arrStageCode[i]+ '">' + arrStageTitles[i] + '(%)</td>');
                 $(this).find('tbody tr').each(function () {
                     var optionId = $(this).find('td').eq(0).find('input').val();
-                    $(this).find('td').eq(i + 1).after('<td class="first_hide"><input type="text" maxlength="3" name="textfield4" id="' + optionId + '_' + arrStageCode[i] + '"></td>')
+                    $(this).find('td').eq(i + 1).after('<td class="first_hide" style="' + rowStyle + '"><input type="text" maxlength="3" name="textfield4" id="' + optionId + '_' + arrStageCode[i] + '"></td>')
                     });
             });
         }

@@ -20,7 +20,7 @@
 {
     @Html.HiddenFor(model => model.PlanTacticId)
     
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom:0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>Parent Campaign</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })

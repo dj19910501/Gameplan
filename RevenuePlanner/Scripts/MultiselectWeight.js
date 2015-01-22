@@ -54,8 +54,10 @@
                         var total = 0;
                         var counter=0
                         $(this).parents('tr').find('input[type=text]').not('.text_blk_active').each(function () {
-                            counter += 1;
-                            total += ($(this).val() != '' && typeof $(this).val() != 'undefined') ? parseInt($(this).val()) : 0;
+                            if ($(this).val() != '' && typeof $(this).val() != 'undefined'){
+                                counter += 1;
+                                total += parseInt($(this).val());
+                            }
                         });
                         var avg = total / counter;
                         $(this).parents('tr').find('.text_blk_active').val(parseInt(avg).toString());

@@ -83,7 +83,7 @@
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
             @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })       @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
 
-            <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting">
+            <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting" style="margin-bottom:0px;">
                 <div class="span6" id="inspect-modal-left-column1">
               <p>@Html.Raw("Parent Campaign")</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(CampaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = CampaignTitle })

@@ -2390,10 +2390,10 @@ namespace RevenuePlanner.Controllers
             TacticType tt = db.TacticTypes.Where(tacType => tacType.TacticTypeId == tacticTypeId).FirstOrDefault();
             /*Start modified by Mitesh Vaishnav for PL ticket #1074
              Provide stageTitle/Code perameter when tactic type changed*/
-            string mqlCode=Enums.Stage.MQL.ToString();
+            string mqlCode = Enums.InspectStage.MQL.ToString();
             var mqlForClient=db.Stages.Where(stage => stage.ClientId == tt.Stage.ClientId && stage.Code == mqlCode).FirstOrDefault();
             int mqlLevel =mqlForClient!=null? (int)mqlForClient.Level:0;
-            string advanceStageTitles = tt.Stage.Title, advanceStagecodes = tt.Stage.Code;
+            string advanceStageTitles = tt.Stage.Title, advanceStagecodes = Enums.InspectStage.ProjectedStageValue.ToString();
             if (mqlLevel > tt.Stage.Level)
             {
                 advanceStageTitles += "," + mqlForClient.Title;

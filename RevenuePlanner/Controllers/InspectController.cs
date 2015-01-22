@@ -2983,7 +2983,7 @@ namespace RevenuePlanner.Controllers
             string mqlCode = Enums.Stage.MQL.ToString();
             var mqlForClient = db.Stages.Where(stage => stage.ClientId == pcpt.TacticType.Stage.ClientId && stage.Code == mqlCode).FirstOrDefault();
             int mqlLevel = mqlForClient != null ? (int)mqlForClient.Level : 0;
-            string advanceStageTitles = pcpt.TacticType.Stage.Title, advanceStagecodes = pcpt.TacticType.Stage.Code;
+            string advanceStageTitles = pcpt.TacticType.Stage.Title, advanceStagecodes = Enums.InspectStage.ProjectedStageValue.ToString();
             if (mqlLevel > pcpt.TacticType.Stage.Level)
             {
                 advanceStageTitles += "," + mqlForClient.Title;
