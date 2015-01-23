@@ -3598,13 +3598,13 @@ namespace RevenuePlanner.Helpers
                 foreach (var item in customFieldList)
                 {
                     string className = "span3 margin-top10";
-                    if (fieldCounter % 4 != 0)
+                    if (fieldCounter % 4 != 0 && fieldCounter!=0)
                     {
                         className += " paddingleft25px";
                     }
                     else
                     {
-                        className += "\" style=\"clear:both;\"";
+                        className += "\" style=\"clear:both;";
                     }
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() || item.option.Count > 0)
                     {
@@ -3634,6 +3634,7 @@ namespace RevenuePlanner.Helpers
                             sb.Append(" require=\"true\"");
                         }
                         sb.Append("></div>");
+                        fieldCounter = fieldCounter + 1;
                     }
                     else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString() && item.option.Count>0)
                     {
@@ -3681,6 +3682,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 sb.Replace("#HEADER_OF_DROPDOWN#", name);
                                 sb.Append("</div>");
+                                fieldCounter = fieldCounter + 1;
                             }
                             #endregion
 
@@ -3710,6 +3712,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 sb.Replace("#HEADER_OF_DROPDOWN#", name);
                                 sb.Append("</div>");
+                                fieldCounter = fieldCounter + 1;
                             }
                             #endregion
                         }
@@ -3734,10 +3737,11 @@ namespace RevenuePlanner.Helpers
 
                             sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" title=\""+customFieldEntityValue+"\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
                             sb.Append("></div>");
+                    fieldCounter = fieldCounter + 1;
                         }
                     }
 
-                    fieldCounter = fieldCounter + 1;
+                    
 
                 }
             }
