@@ -8,14 +8,13 @@
     <div id="DivSummaryButtonsRevenueSummary" class="summary-btns">
         <p>View By:</p>
      <span>
-             @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text", Common.RevenueAudience.ToString()))
+             @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text"))
          </span>
       <span class="margin-left20px">
-             @Html.DropDownList("ddlChildRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"))
+             @Html.DropDownList("ddlChildRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListRevenueSummary, "Value", "Text"))
          </span>
     </div>
     </div>
-
 
 <div id="DivHtmlContent" class="padding-content cf source-sans-proregular">
     <table id="table_reports" class="table">
@@ -48,10 +47,10 @@
                 @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934*@
         <p>View By:</p>
             <span>
-             @Html.DropDownList("ddlParentRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueToPlan, "Value", "Text", Common.RevenueAudience.ToString()))
+             @Html.DropDownList("ddlParentRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueToPlan, "Value", "Text"))
          </span>
       <span class="margin-left20px">
-             @Html.DropDownList("ddlChildRevenueToPlan",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"))
+             @Html.DropDownList("ddlChildRevenueToPlan",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListRevenueToPlan, "Value", "Text"))
          </span>
     </div>
         </div>
@@ -84,17 +83,7 @@
     <div class="title-header-reports border-btm">
         <h4>Revenue Realization</h4>
             <div id="DivSummaryButtonsRevenueRealization">
-                @if (RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds != null && RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.Count == 1)
-                {
-                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title", @RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.FirstOrDefault()), new { @class = "ddlStyleReport", @disabled = "disabled" })
-                    @Html.Hidden("hdnBusinessUnitId", true);
-                }
-                else
-                {
-                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title"), new { @class = "ddlStyleReport" })
-                    @Html.Hidden("hdnBusinessUnitId", false);
-                }
-                 @Html.DropDownList("ddlCampaign", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"), new { @class = "ddlStyleReport" })
+                  @Html.DropDownList("ddlCampaign", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"), new { @class = "ddlStyleReport" })
             
                   @Html.DropDownList("ddlProgram", new SelectList((System.Collections.IEnumerable)ViewBag.ProgramDropdownList, "PlanProgramId", "Title"), new { @class = "ddlStyleReport" })
             
@@ -124,15 +113,15 @@
     <div class="report-gray-container">
         <div class="report-chart-group">
             <div class="report-chart" id="chartDiv4Parent">
-                <label>Business Unit (Top 5)</label>
+                <label id="customField1"></label>
                 <div id="chartDiv4" class="report-chart4"></div>
             </div>
             <div class="report-chart" id="chartDiv5Parent">
-                <label>Geography (Top 5)</label>
+                <label id="customField2"></label>
                 <div id="chartDiv5" class="report-chart5"></div>
             </div>
             <div class="report-chart" id="chartDiv6Parent">
-                <label>Vertical (Top 5)</label>
+                <label id="customField3"></label>
                 <div id="chartDiv6" class="report-chart6"></div>
             </div>
         </div>
@@ -172,17 +161,6 @@
                 <th class="width53 main_table_header"></th>
             </tr>
             <tr>
-                @if (RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds != null && RevenuePlanner.Helpers.Sessions.ReportBusinessUnitIds.Count > 1)
-                {
-                    <th class="border-r table_header">
-                         @Html.DropDownList("ddlBusinessUnitContribution",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListBusinessUnit, "Value", "Text"), new { @class = "ddlStyleReport" })
-                    </th>
-                }
-                else
-                {
-                    <th class="border-r table_header">&nbsp;
-                    </th>
-                }
                 <th class="table_header">Plan</th>
                 <th class="table_header">Actual</th>
                 <th class="border-r table_header"></th>
@@ -210,9 +188,8 @@
     var ddlChildRevenueToPlanId = 'ddlChildRevenueToPlan';
     var ddlChildRevenueSummeryId = 'ddlChildRevenueSummery';
     $(document).ready(function () {
-
-        $('.summary-btns').find('select').each(function(){
-            if ($(this).attr('id') != ddlChildRevenueSummeryId && $(this).attr('id') != ddlChildRevenueToPlanId){
+        $('.summary-btns').find('select').each(function () {
+            //if ($(this).attr('id') != ddlChildRevenueSummeryId && $(this).attr('id') != ddlChildRevenueToPlanId) {
             $(this).multiselect({
                 multiple: false,
                 noneSelectedText: "Please Select",
@@ -225,7 +202,7 @@
                 CustomProgramName: "@Common.ProgramCustomTitle",
                 CustomTacticName: "@Common.TacticCustomTitle"
             });
-          }
+            //}
         });
 
         // Start - Added by Sohel Pathan on 11/11/2014 for PL ticket #934
@@ -237,11 +214,11 @@
 
         GenerateCustomizeMultiselect(ddlChildRevenueToPlanId, true, false, false);
         GenerateCustomizeMultiselect(ddlChildRevenueSummeryId, true, false, false);
-        GenerateCustomizeMultiselect('ddlBusinessUnit', true, false, false);
+       // GenerateCustomizeMultiselect('ddlBusinessUnit', true, false, false);
         GenerateCustomizeMultiselect('ddlCampaign', true, false, false);
         GenerateCustomizeMultiselect('ddlProgram', true, false, false);
         GenerateCustomizeMultiselect('ddlTactic', true, false, false);
-        GenerateCustomizeMultiselect('ddlBusinessUnitContribution', true, false, false);
+      //  GenerateCustomizeMultiselect('ddlBusinessUnitContribution', true, false, false);
         $('#ddlParentRevenueSummery').bind('change', function () {
             var selectedOption = $(this).val();
             loadChildListData(selectedOption, ddlChildRevenueSummeryId, true);
@@ -312,7 +289,7 @@
             FillRevenueToPlan(id);
         });
 
-        var BusinessUnitId = $('#ddlBusinessUnit').val();
+       // var BusinessUnitId = $('#ddlBusinessUnit').val();
         var campaignId = $('#ddlCampaign').val();
         var programId = $('#ddlProgram').val();
         var sumColTotalRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -1158,12 +1135,7 @@
 
        
 
-        $('#ddlBusinessUnit').change(function () {
-            $('#ddlCampaign').empty();
-            $("#ddlProgram").empty();
-            $('#ddlTactic').empty();
-            fillCampaignDropdown();
-        });
+
         $('#ddlCampaign').change(function () {
             $("#ddlProgram").empty();
             $('#ddlTactic').empty();
@@ -1177,12 +1149,11 @@
             LoadDataRevenueRealization();
         });
         function fillCampaignDropdown() {
-            BusinessUnitId = $('#ddlBusinessUnit').val();
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/LoadCampaignDropDown/")',
                 data: {
-                    id: BusinessUnitId,
+                    id: null,
                     selectOption: selectOption
                 },
                 success: function (data) {
@@ -1208,16 +1179,12 @@
         }
 
         function fillProgramDropdown() {
-            var id;
+            var id = '';
             var Type = '';
             campaignId = $('#ddlCampaign').val();
             if (campaignId > 0) {
                 Type = '';
                 id = campaignId.toString();
-            }
-            else {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
-                id = BusinessUnitId.toString();
             }
             $.ajax({
                 type: 'POST',
@@ -1247,7 +1214,7 @@
 
         }
         function fillTacticDropdown() {
-            var id;
+            var id = '';
             var Type = '';
             programId = $('#ddlProgram').val();
             if (programId > 0) {
@@ -1256,43 +1223,39 @@
             }
             else if (campaignId > 0) {
                 Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
-                id = campaignId.toString();
-            }
-            else {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
-                id = BusinessUnitId.toString();
-            }
+                    id = campaignId.toString();
+                }
 
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Report/LoadTacticDropDown/")',
-            data: {
-                id: id,
-                type: Type,
-                selectOption: selectOption
-            },
-            success: function (data) {
-                $("#ddlTactic").empty();
-                $("#ddlTactic").append("<option value='0'>All Tactics</option>");
-                $.each(data, function (index, optionData) {
-                    $("#ddlTactic").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
-                });
-                $('#ddlTactic').multiselect("refresh");
-                LoadDataRevenueRealization();
-                myApp.hidePleaseWait();
-            },
-            error: function () {
-                $("#ddlTactic").empty();
-                $("#ddlTactic").append("<option value='0'>All Tactics</option>");
-                $('#ddlTactic').multiselect("refresh");
-                LoadDataRevenueRealization();
-                GoToLogin();
-            }
-        });
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/LoadTacticDropDown/")',
+                data: {
+                    id: id,
+                    type: Type,
+                    selectOption: selectOption
+                },
+                success: function (data) {
+                    $("#ddlTactic").empty();
+                    $("#ddlTactic").append("<option value='0'>All Tactics</option>");
+                    $.each(data, function (index, optionData) {
+                        $("#ddlTactic").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
+                    });
+                    $('#ddlTactic').multiselect("refresh");
+                    //LoadDataRevenueRealization();
+                    myApp.hidePleaseWait();
+                },
+                error: function () {
+                    $("#ddlTactic").empty();
+                    $("#ddlTactic").append("<option value='0'>All Tactics</option>");
+                    $('#ddlTactic').multiselect("refresh");
+                    //LoadDataRevenueRealization();
+                    GoToLogin();
+                }
+            });
 
     }
         function LoadDataRevenueRealization() {
-            var id;
+            var id = '';
             var Type = '';
             var tacticId = $("#ddlTactic").val();
             if (tacticId > 0) {
@@ -1305,46 +1268,25 @@
             }
             else if (campaignId > 0) {
                 Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
-                id = campaignId.toString();
-            }
-            else {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
-                id = BusinessUnitId.toString();
-            }
-
-    var bid = BusinessUnitId.toString();
-    $.ajax({
-        type: 'POST',
-        url: '@Url.Content("~/Report/LoadRevenueRealization/")',
-        data: {
-            id: id,
-            businessUnitId: bid,
-            type: Type,
-            selectOption: selectOption
-        },
-        success: function (r) {
-            reportTableInfo3 = r;
-            fillReportTable3();
-            if ($("#hdnBusinessUnitId").val() == 'True') {
-                $("#ddlBusinessUnitSelectBox").find('.sbSelector').each(function () {
-                    $(this).unbind("click");
-                    $(this).removeAttr("href");
-                    $(this).attr('style', 'cursor:default');//Added by Mitesh Vaishnav For PL ticket #606
-                    $(this).prev().unbind("click");
-                    $(this).prev().removeAttr("href");
-                });
-                /*Start :Added by Mitesh Vaishnav For PL ticket #606*/
-                $("#ddlBusinessUnitSelectBox").find('.sbToggle').each(function () {
-                    $(this).attr('style', 'cursor:default');
-                });
-                /*End :Added by Mitesh Vaishnav For PL ticket #606*/
-            }
-        },
-        error: function () {
-            //$(".selectBox select").selectbox('attach');
-            GoToLogin();
-        }
-    });
+                    id = campaignId.toString();
+                }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadRevenueRealization/")',
+                data: {
+                    id: id,
+                    type: Type,
+                    selectOption: selectOption
+                },
+                success: function (r) {
+                    reportTableInfo3 = r;
+                    fillReportTable3();
+                },
+                error: function () {
+                    //$(".selectBox select").selectbox('attach');
+                    GoToLogin();
+                }
+            });
 
 }
 
@@ -1482,31 +1424,32 @@
                       dataType: "json",
                       success: function (data) {
                           console.log(data);
-                          dataset1 = null;
-                          dataset2 = null;
-                          dataset3 = null;
                           var chartDataSourcePerformance = {
-                              ChartBusinessUnit: data.ChartBusinessUnit,
-                              ChartGeography: data.ChartGeography,
-                              ChartVertical: data.ChartVertical
+                              ChartCustomField1: data.ChartCustomField1,
+                              ChartCustomField2: data.ChartCustomField2,
+                              ChartCustomField3: data.ChartCustomField3
                           }
+                          
+                          $('#customField1').text(JSON.stringify(data.CustomField1).replace(/"/g,"") +" (Top 5)");
+                          $('#customField2').text(JSON.stringify(data.CustomField2).replace(/"/g, "") + " (Top 5)");
+                          $('#customField3').text(JSON.stringify(data.CustomField3).replace(/"/g, "") + " (Top 5)");
 
                           //// Hidden field to store chart data that is consumed while generating PDF report.
                           $('#chartDataSourcePerformance').val(JSON.stringify(chartDataSourcePerformance));
 
-                          dataset1 = data.ChartBusinessUnit;
-                          dataset2 = data.ChartGeography;
-                          dataset3 = data.ChartVertical;
-                          //dataset = data.chartData;
+                          dataset1 = data.ChartCustomField1;
+                          dataset2 = data.ChartCustomField2;
+                          dataset3 = data.ChartCustomField3;
+                          
                           //fill data on reports table
-                          FillChartSourcePerformanceBusinessUnit();
-                          FillChartSourcePerformanceGeography();
-                          FillChartSourcePerformanceVertical();
+                          FillChartSourcePerformanceChartCustomField1();
+                          FillChartSourcePerformanceChartCustomField2();
+                          FillChartSourcePerformanceChartCustomField3();
                       }
                   });
               }
 
-        function FillChartSourcePerformanceBusinessUnit() {
+        function FillChartSourcePerformanceChartCustomField1() {
             $('#chartDiv4Parent').find('#chartDiv4').remove();
             $('#chartDiv4Parent').append('<div id="chartDiv4" class="report-chart4"></div>');
 
@@ -1562,7 +1505,7 @@
             });
         }
 
-        function FillChartSourcePerformanceGeography() {
+        function FillChartSourcePerformanceChartCustomField2() {
             $('#chartDiv5Parent').find('#chartDiv5').remove();
             $('#chartDiv5Parent').append('<div id="chartDiv5" class="report-chart5"></div>');
 
@@ -1618,7 +1561,7 @@
             });
         }
 
-        function FillChartSourcePerformanceVertical() {
+        function FillChartSourcePerformanceChartCustomField3() {
             $('#chartDiv6Parent').find('#chartDiv6').remove();
             $('#chartDiv6Parent').append('<div id="chartDiv6" class="report-chart6"></div>');
 
@@ -1705,39 +1648,19 @@
         }
         BindSelectBoxes();
 
-        $('#ddlBusinessUnitContribution').change(function () {
-            LoadRevenueContributionData();
-        });
         $('#ddlParentRevenueContribution').bind('change', function () {
             var id = $(this).val();
-            if (id == "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
-                    $("#ddlBusinessUnitContribution").next().hide();
-                LoadRevenueContributionData();
-                }
-                else {
-                    $("#ddlBusinessUnitContribution").next().show();
-                addHeaderPart();
-            }
-            
+            LoadRevenueContributionData();
+
         });
         
         LoadRevenueContributionData();
         function LoadRevenueContributionData() {
-            var buid = 0;
-            if ($("#ddlBusinessUnitContribution").length > 0) {
-            buid = $("#ddlBusinessUnitContribution").val();
-            }
-            var isBusiness = true;
-            if (buid == 0) {
-                isBusiness = false;
-            }
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/LoadRevenueContribution/")',
                 data: {
                     parentlabel: $('#ddlParentRevenueContribution').val(),
-                    businessUnitId: buid,
-                    isBusinessUnit: isBusiness,
                     selectOption: selectOption
                 },
                 success: function (r) {
@@ -1746,32 +1669,7 @@
                 }
             });
         }
-        function addHeaderPart() {
-            AddDropdown();
-        }
-        function AddDropdown() {
-            
-            var plabel = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/GetChildLabelData/")',
-                data: { ParentLabel: plabel },
-                success: function (data) {
-                    $("#ddlBusinessUnitContribution").empty();
-                    $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
-                    $.each(data, function (index, optionData) {
-                        $("#ddlBusinessUnitContribution").append("<option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
-                    });
-                    $("#ddlBusinessUnitContribution").multiselect("refresh");
-                    LoadRevenueContributionData();
-                },
-                error: function () {
-                    $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
-                    $("#ddlBusinessUnitContribution").multiselect("refresh");
-                    GoToLogin();
-                }
-            });
-        }
+
         //fill reports table with data from json
         function fillReportTable4() {
             $('#table_reports4 > tbody').empty();
@@ -1793,16 +1691,13 @@
                     addLastRow();
                     if (reportTableInfo4.length < 3) {
                         $("#multipleselect_ddlParentRevenueContribution .ui-multiselect-checkboxes").css("max-height", "95px");
-                        $("#multipleselect_ddlBusinessUnitContribution .ui-multiselect-checkboxes").css("max-height", "33px");
 
                     } else {
                         $("#multipleselect_ddlParentRevenueContribution .ui-multiselect-checkboxes").css("max-height", "150px");
-                        $("#multipleselect_ddlBusinessUnitContribution .ui-multiselect-checkboxes").css("max-height", "80px");
                     }
                 } else {
                     $('#table_reports4 > tbody').append('<tr><td colspan="9" class="gray"><div style="min-height:130px;">No saved reports to display.</div></td></tr>');
                     $("#multipleselect_ddlParentRevenueContribution .ui-multiselect-checkboxes").css("max-height", "175px");
-                    $("#multipleselect_ddlBusinessUnitContribution .ui-multiselect-checkboxes").css("max-height", "93px");
                 }
             }
         }

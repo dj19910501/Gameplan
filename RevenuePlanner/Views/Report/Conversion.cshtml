@@ -49,10 +49,12 @@
                 @* Modified by Sohel Pathan on 11/11/2014 for PL ticket #934 *@
         <p>View By:</p>
            <span>
-             @Html.DropDownList("ddlParentConversionPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text", Common.RevenueAudience.ToString()), new { @class = "hide" })
+             @Html.DropDownList("ddlParentConversionPlan", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text"), new { @class = "hide" })
          </span>
           <span class="margin-left20px">
-             @Html.DropDownList("ddlChildConversionPlan",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListAudience, "Value", "Text"), new { @class = "hide" })
+             
+                  @Html.DropDownList("ddlChildConversionPlan",new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListConvertionSummary, "Value", "Text"),new { @class = "hide" })
+              
          </span>
     </div>
         </div>
@@ -92,15 +94,15 @@
     <div class="report-gray-container">
         <div class="report-chart-group">
             <div class="report-chart" id="chartDiv1Parent">
-                <label>Business Unit (Top 5)</label>
+                <label id="customField1"></label>
                 <div id="chartDiv1" class="report-chart4"></div>
             </div>
             <div class="report-chart" id="chartDiv2Parent">
-                <label>Geography (Top 5)</label>
+               <label id="customField2"></label>
                 <div id="chartDiv2" class="report-chart5"></div>
             </div>
             <div class="report-chart" id="chartDiv3Parent">
-                <label>Vertical (Top 5)</label>
+                <label id="customField3"></label>
                 <div id="chartDiv3" class="report-chart6"></div>
             </div>
         </div>
@@ -126,7 +128,7 @@
 
         //NOTE : Please don't change class name, it is used in js.
         $('.summary-btns').find('select').each(function () {
-            if ($(this).attr('id') != ddlChildConversionPlanId && $(this).attr('id') != 'ddlParentConversionPerformance') {
+            if ($(this).attr('id') != 'ddlParentConversionPerformance') {
             $(this).multiselect({
                 multiple: false,
                 noneSelectedText: "Please Select",
@@ -542,6 +544,7 @@
 
         LoadPerformanceData(); //default tab loading
 
+        var customField1, customField2, customField3;
         // Function to load MQL performance report
         function LoadPerformanceData() {
             $.ajax(
@@ -559,9 +562,10 @@
                          dataset2 = null;
                          dataset3 = null;
                          var chartDataMQLPerformance = {
-                             ChartBusinessUnit: data.ChartBusinessUnit,
-                             ChartGeography: data.ChartGeography,
-                             ChartVertical: data.ChartVertical
+                             
+                             ChartBusinessUnit: data.ChartCustomField1,
+                             ChartGeography: data.ChartCustomField1,
+                             ChartVertical: data.ChartCustomField1
                          }
 
                          $('#chartDataMQLPerformance').val(JSON.stringify(chartDataMQLPerformance));
@@ -569,16 +573,22 @@
                          dataset1 = data.ChartBusinessUnit;
                          dataset2 = data.ChartGeography;
                          dataset3 = data.ChartVertical;
+                         customField1 = data.CustomField1;
+                         customField2 = data.CustomField2;
+                         customField3 = data.CustomField3;
+                         $('#customField1').text(JSON.stringify(customField1).replace(/"/g, "") + " (Top 5)");
+                         $('#customField2').text(JSON.stringify(customField2).replace(/"/g, "") + " (Top 5)");
+                         $('#customField3').text(JSON.stringify(customField3).replace(/"/g, "") + " (Top 5)");
                          //fill data on reports table
-                         FillChartSourcePerformanceBusinessUnit();
-                         FillChartSourcePerformanceGeography();
-                         FillChartSourcePerformanceVertical();
+                         FillChartSourcePerformanceCustomField1();
+                         FillChartSourcePerformanceCustomField2();
+                         FillChartSourcePerformanceCustomField3();
                      }
                  });
              }
 
         // chart for businessunit
-        function FillChartSourcePerformanceBusinessUnit() {
+        function FillChartSourcePerformanceCustomField1() {
             $('#chartDiv1Parent').find('#chartDiv1').remove();
             $('#chartDiv1Parent').append('<div id="chartDiv1" class="report-chart4"></div>');
 
@@ -635,7 +645,7 @@
         }
 
         // chart for geography
-        function FillChartSourcePerformanceGeography() {
+        function FillChartSourcePerformanceCustomField2() {
             $('#chartDiv2Parent').find('#chartDiv2').remove();
             $('#chartDiv2Parent').append('<div id="chartDiv2" class="report-chart5"></div>');
 
@@ -692,7 +702,7 @@
         }
 
         // chart for vertical
-        function FillChartSourcePerformanceVertical() {
+        function FillChartSourcePerformanceCustomField3() {
             $('#chartDiv3Parent').find('#chartDiv3').remove();
             $('#chartDiv3Parent').append('<div id="chartDiv3" class="report-chart6"></div>');
 

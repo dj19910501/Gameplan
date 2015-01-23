@@ -1,4 +1,5 @@
-﻿@using RevenuePlanner.Helpers
+﻿@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
 @{
     string SelectedYear = ViewBag.SelectedYear;
     //var ViewBusinessUnitSelectedValue = (List<SelectListItem>)ViewBag.ViewBusinessUnit;
@@ -140,7 +141,7 @@
             <span class="selectBox" id="ddlYearSpan" style="width: 115px; line-height: 2.5; padding-right: 7px;">
                 @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text", SelectedYear), new { @class = "ddlStyleReport" })
             </span>
-            @Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units", style = "display:none" })
+            @*@Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units", style = "display:none" })*@
             @Html.DropDownList("ddlPlan", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text", ViewPlanSelectedValue.Where(p => p.Selected).Select(p => p.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans", style = "display:none" })
              <!--Start - Modified by Arpita Soni on 01/19/2015 for Ticket #1148-->
             @*@Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units", style = "display:none" })
