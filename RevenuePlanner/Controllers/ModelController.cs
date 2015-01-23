@@ -303,7 +303,7 @@ namespace RevenuePlanner.Controllers
             bool? isBenchmarkDb = null;
             int.TryParse(Convert.ToString(Request.Form["CurrentModelId"]), out currentModelId);
             string redirectModelZero = string.Empty;
-            Guid modelBusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
+            //Guid modelBusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
 
             try
             {
@@ -580,7 +580,7 @@ namespace RevenuePlanner.Controllers
                  return RedirectToAction("Tactics", "Model");
             }
             ViewBag.ModelId = currentModelId;
-            ViewBag.BusinessUnitId = Convert.ToString(modelBusinessUnitId);
+            //ViewBag.BusinessUnitId = Convert.ToString(modelBusinessUnitId);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
             ViewBag.IsBenchmarked = IsBenchmarked;
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
@@ -603,7 +603,7 @@ namespace RevenuePlanner.Controllers
                 {
                     List<Guid> lstViewEditBusinessUnits = new List<Guid>();
                     lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
-                    ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(modelBusinessUnitId);
+                    //ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(modelBusinessUnitId);
                 }
 
                 objBaselineModel = FillInitialData(currentModelId);
