@@ -115,7 +115,7 @@ namespace RevenuePlanner.Controllers
 
             //// Get Plan List
             List<SelectListItem> lstYear = new List<SelectListItem>();
-            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.BusinessUnit.ClientId == Sessions.User.ClientId && plan.Model.IsDeleted == false && plan.IsActive == true).ToList();
+            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId && plan.Model.IsDeleted == false && plan.IsActive == true).ToList();
             if (lstPlan.Count == 0)
             {
                 TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
