@@ -155,9 +155,6 @@
     <Compile Include="SecurityQuestion.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
-    <Compile Include="sysdiagram.cs">
-      <DependentUpon>BDSAuth.tt</DependentUpon>
-    </Compile>
     <Compile Include="User.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
