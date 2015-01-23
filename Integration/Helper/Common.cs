@@ -295,16 +295,21 @@ namespace Integration.Helper
                         CustomFieldId = cf.CustomFieldId,
                         Type = cf.CustomField.CustomFieldType.Name,
                         Abbreviation = string.Compare(cf.CustomField.CustomFieldType.Name, Enums.CustomFieldType.TextBox.ToString(), true) == 0 ? cf.Value : !string.IsNullOrEmpty(cf.CustomField.CustomFieldOptions.Where(cfo => cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault()) ? cf.CustomField.CustomFieldOptions.Where(cfo => cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault() : cf.CustomField.CustomFieldOptions.Where(cfo => cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Value).FirstOrDefault(),
+                        AbbreviationForMulti=cf.CustomField.AbbreviationForMulti
                     });
 
                     foreach (CampaignNameConvention objCampaignNameConvention in SequencialOrderedTableList)
                     {
                         if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.CustomField.ToString())
                         {
-                            var objCustomField = customFieldsForSequencialOrderedList.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId).FirstOrDefault();
-                            if (objCustomField != null && !string.IsNullOrEmpty(objCustomField.Abbreviation))
+                            var objCustomField = customFieldsForSequencialOrderedList.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId).ToList();
+                            if (objCustomField.Count > 0)
                             {
-                                customTacticName.Append(RemoveSpaceAndUppercaseFirst(objCustomField.Abbreviation) + "_");
+                                customTacticName.Append(RemoveSpaceAndUppercaseFirst(objCustomField.FirstOrDefault().AbbreviationForMulti) + "_");
+                            }
+                            else if (objCustomField.FirstOrDefault() != null && !string.IsNullOrEmpty(objCustomField.FirstOrDefault().Abbreviation))
+                            {
+                                customTacticName.Append(RemoveSpaceAndUppercaseFirst(objCustomField.FirstOrDefault().Abbreviation) + "_");
                             }
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Audience.ToString())

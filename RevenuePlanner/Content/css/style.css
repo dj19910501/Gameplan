@@ -4984,7 +4984,7 @@ span.red-arrow-down-icon {
     width: 65px !important;
 }
 
-.busunit {
+.customfield-review1 {
     background: url("../images/busunit.png") no-repeat;
     width: 33px;
     cursor: pointer;
@@ -5004,7 +5004,7 @@ span.red-arrow-down-icon {
     display: block;
 }
 
-.vertical {
+.customfield-review2 {
     background: url("../images/vertical.png") no-repeat;
     width: 35px;
     cursor: pointer;
@@ -5012,7 +5012,7 @@ span.red-arrow-down-icon {
     display: block;
 }
 
-.audience-review {
+.customfield-review3 {
     background: url("../images/audience.png") no-repeat;
     width: 37px;
     cursor: pointer;

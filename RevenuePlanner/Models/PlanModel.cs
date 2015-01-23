@@ -447,6 +447,18 @@ namespace RevenuePlanner.Models
         public string value { get; set; }
     }
 
+    /// <summary>
+    /// Added By : Mitesh Vaishnav
+    /// Added Date : 23/01/2015
+    /// return mapped list review tab custom field design
+    /// </summary>
+    public class CustomFieldReviewTab
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public string Class { get; set; }
+    }
+
     public class ModelDateList
     {
         public int ModelId { get; set; }

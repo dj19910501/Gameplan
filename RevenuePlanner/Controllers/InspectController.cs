@@ -2304,7 +2304,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.TacticDetail = _inspetmodel;
             ViewBag.IsModelDeploy = _inspetmodel.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(_inspetmodel.BusinessUnitId);
+            //ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(_inspetmodel.BusinessUnitId);
 
             bool isValidOwner = false;
             if (_inspetmodel.OwnerId == Sessions.User.UserId)
@@ -2471,6 +2471,14 @@ namespace RevenuePlanner.Controllers
                 ViewBag.MQLLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullQualifiedLeads).FirstOrDefault().SyncTimeStamp;
             }
             ////End : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+            var topThreeCustomFields = db.CustomFields.Where(cf => cf.IsDefault == true && cf.IsDeleted == false && cf.IsRequired == true && cf.ClientId == Sessions.User.ClientId).Take(3).ToList().Select((cf,Index) => new CustomFieldReviewTab()
+            {
+             Name=cf.Name,
+             Class ="customfield-review"+ (Index+1).ToString(),
+             Value = cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Count > 0 ? string.Join(",", cf.CustomFieldOptions.Where(a => cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Contains(a.CustomFieldOptionId.ToString())).Select(a=>a.Value).ToList()) : "N/A"
+            }).ToList();
+            ViewBag.TopThreeCustomFields = topThreeCustomFields;
+
             return PartialView("Review");
         }
 
