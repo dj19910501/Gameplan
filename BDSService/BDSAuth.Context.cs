@@ -36,7 +36,6 @@ namespace BDSService
         public DbSet<Role_Activity_Permission> Role_Activity_Permission { get; set; }
         public DbSet<Role_Permission> Role_Permission { get; set; }
         public DbSet<SecurityQuestion> SecurityQuestions { get; set; }
-        public DbSet<sysdiagram> sysdiagrams { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<User_Activity_Permission> User_Activity_Permission { get; set; }
         public DbSet<User_Application> User_Application { get; set; }

@@ -17,7 +17,6 @@
           <EntitySet Name="Role_Activity_Permission" EntityType="BDSAuthModel.Store.Role_Activity_Permission" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Role_Permission" EntityType="BDSAuthModel.Store.Role_Permission" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="SecurityQuestion" EntityType="BDSAuthModel.Store.SecurityQuestion" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="sysdiagrams" EntityType="BDSAuthModel.Store.sysdiagrams" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User" EntityType="BDSAuthModel.Store.User" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User_Activity_Permission" EntityType="BDSAuthModel.Store.User_Activity_Permission" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User_Application" EntityType="BDSAuthModel.Store.User_Application" store:Type="Tables" Schema="dbo" />
@@ -261,16 +260,6 @@
           <Property Name="SecurityQuestion" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="128" />
-          <Property Name="principal_id" Type="int" Nullable="false" />
-          <Property Name="diagram_id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="int" />
-          <Property Name="definition" Type="varbinary(max)" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -597,7 +586,6 @@
           <EntitySet Name="Role_Activity_Permission" EntityType="BDSAuthModel.Role_Activity_Permission" />
           <EntitySet Name="Role_Permission" EntityType="BDSAuthModel.Role_Permission" />
           <EntitySet Name="SecurityQuestions" EntityType="BDSAuthModel.SecurityQuestion" />
-          <EntitySet Name="sysdiagrams" EntityType="BDSAuthModel.sysdiagram" />
           <EntitySet Name="Users" EntityType="BDSAuthModel.User" />
           <EntitySet Name="User_Activity_Permission" EntityType="BDSAuthModel.User_Activity_Permission" />
           <EntitySet Name="User_Application" EntityType="BDSAuthModel.User_Application" />
@@ -869,16 +857,6 @@
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <NavigationProperty Name="Users" Relationship="BDSAuthModel.FK_User_SecurityQuestion" FromRole="SecurityQuestion" ToRole="User" />
-        </EntityType>
-        <EntityType Name="sysdiagram">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Type="String" Name="name" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="principal_id" Nullable="false" />
-          <Property Type="Int32" Name="diagram_id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="version" />
-          <Property Type="Binary" Name="definition" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -1371,17 +1349,6 @@
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="SecurityQuestion1" ColumnName="SecurityQuestion" />
                 <ScalarProperty Name="SecurityQuestionId" ColumnName="SecurityQuestionId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="BDSAuthModel.sysdiagram">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="definition" ColumnName="definition" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="name" ColumnName="name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
