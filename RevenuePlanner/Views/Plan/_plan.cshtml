@@ -57,7 +57,7 @@
                         </li>
                         @if (ViewBag.PageTitle == "Create")
                         {
-                            if (Sessions.PlanId != 0 && (bool)ViewBag.IsBusinessUnitEditable == true)
+                            if (Sessions.PlanId != 0)
                             {
                             <li>
                                 <a id="spanPlanDuplicate">Duplicate</a>

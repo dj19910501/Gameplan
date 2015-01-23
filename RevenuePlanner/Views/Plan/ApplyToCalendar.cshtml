@@ -4,7 +4,7 @@
     ViewBag.Title = "Plan";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    bool showBid = ViewBag.showBid;
+    //bool showBid = ViewBag.showBid;
     string Planid = Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
@@ -230,7 +230,7 @@
 </div>
 @* changed by Nirav for Custom Dropdown - 388*@
 
-@{
+@*@{
     if (showBid == true)
     {
         //Modified By : Kalpesh Sharma #859 Different Business Unit Drop Down List on Plan Pages
@@ -245,7 +245,7 @@
         }
     </span>
     }
-}
+}*@
 <script>
     var pid = $('#PlanId').val();
     var CurrentPlanId = pid;

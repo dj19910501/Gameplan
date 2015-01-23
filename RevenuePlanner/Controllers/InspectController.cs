@@ -643,7 +643,7 @@ namespace RevenuePlanner.Controllers
             var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == planId);
 
             #region "Set values in ViewBag"
-            ViewBag.BudinessUnitTitle = objPlan.Model.BusinessUnit.Title;
+            //ViewBag.BudinessUnitTitle = objPlan.Model.BusinessUnit.Title;
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
             ViewBag.IsDeployedToIntegration = false;
             ViewBag.IsCreated = true;
@@ -729,7 +729,8 @@ namespace RevenuePlanner.Controllers
             ViewBag.Year = pc.Plan.Year;
             ViewBag.PlanTitle = pc.Plan.Title;
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pc.Plan.Model);
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(pc.Plan.Model.BusinessUnitId);
+            //ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(pc.Plan.Model.BusinessUnitId);
+            
             #endregion
 
             //// Set Plan_CampaignModel data to pass into partialview.
@@ -1414,7 +1415,7 @@ namespace RevenuePlanner.Controllers
             var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
             double lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList().Sum(c => c.ProgramBudget);
             ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - lstSelectedProgram);
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(pcp.Plan_Campaign.Plan.Model.BusinessUnitId);
+            //ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(pcp.Plan_Campaign.Plan.Model.BusinessUnitId);
             try
             {
                 ViewBag.IsServiceUnavailable = false;
@@ -2059,7 +2060,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
 
             ViewBag.IsCreated = true;
-            ViewBag.BudinessUnitTitle = objPlan.Model.BusinessUnit.Title;
+            //ViewBag.BudinessUnitTitle = objPlan.Model.BusinessUnit.Title;
             ViewBag.CampaignTitle = pcp.Title;
             User userName = new User();
             try
@@ -3763,8 +3764,8 @@ namespace RevenuePlanner.Controllers
                               (from pcp in db.Plan_Campaign_Program where pcp.PlanProgramId == id select pcp.PlanCampaignId).FirstOrDefault()
                           select pc.PlanId).FirstOrDefault();
 
-            var businessUnitId = GetBusinessUnitIDByPlanId(PlanId);
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(businessUnitId);
+            //var businessUnitId = GetBusinessUnitIDByPlanId(PlanId);
+            //ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(businessUnitId);
 
             #region "Set Inspect_Popup_Plan_Campaign_Program_TacticModel to pass into Partialview"
             Inspect_Popup_Plan_Campaign_Program_TacticModel pcptm = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
@@ -3773,7 +3774,7 @@ namespace RevenuePlanner.Controllers
             pcptm.StageId = 0;
             pcptm.StageTitle = "Stage";
             ViewBag.IsOwner = true;
-            pcptm.BusinessUnitId = businessUnitId;
+            //pcptm.BusinessUnitId = businessUnitId;
             ViewBag.IsAllowCustomRestriction = true;
             pcptm.ProgramTitle = HttpUtility.HtmlDecode(pcpt.Title);
             pcptm.CampaignTitle = HttpUtility.HtmlDecode(pcpt.Plan_Campaign.Title);
@@ -4528,7 +4529,7 @@ namespace RevenuePlanner.Controllers
                                 picpt.EffectiveDate = form.EffectiveDate;
                                 picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
                                 //// Get Businessunit id from model.
-                                picpt.BusinessUnitId = GetBusinessUnitIDByPlanId(Sessions.PlanId);
+                                //picpt.BusinessUnitId = GetBusinessUnitIDByPlanId(Sessions.PlanId);
                                 picpt.CreatedBy = Sessions.User.UserId;
                                 picpt.CreatedDate = DateTime.Now;
                                 picpt.IsDeployedToIntegration = form.IsDeployedToIntegration;
@@ -4752,8 +4753,8 @@ namespace RevenuePlanner.Controllers
                 pitm.IsDeployedToIntegration = false;
 
                 //// Get BusinessUnitId from Model table based on PlanId.
-                var businessUnitId = GetBusinessUnitIDByPlanId(Sessions.PlanId);
-                ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(businessUnitId);
+                //var businessUnitId = GetBusinessUnitIDByPlanId(Sessions.PlanId);
+                //ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(businessUnitId);
                 ViewBag.IsOwner = true;
                 ViewBag.RedirectType = false;
                 ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
@@ -6256,8 +6257,7 @@ namespace RevenuePlanner.Controllers
                 Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
                 Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
                 bool IsPlanEditable = false;
-                Guid BusinessUnitId = Guid.Empty;
-                bool IsBusinessUnitEditable = false;
+                //Guid BusinessUnitId = Guid.Empty;
                 #endregion
 
                 //// load section wise data to ViewBag.
@@ -6269,8 +6269,8 @@ namespace RevenuePlanner.Controllers
                         ViewBag.PlanId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                         //Added by Mitesh Vaishnav for PL ticket #926
                         //Add restriction of BU for edit button in inspect popup 
-                        BusinessUnitId = objPlan_Campaign_Program_Tactic.BusinessUnitId;
-                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        //BusinessUnitId = objPlan_Campaign_Program_Tactic.BusinessUnitId;
+                        //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
                         //Start - Added by Mitesh Vaishnav for PL ticket 746 - Edit Own and Subordinates Tactics Doesnt work
                         //Verify that existing user has created tactic or it has subordinate permission and tactic owner is subordinate of existing user
                         bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
@@ -6281,7 +6281,7 @@ namespace RevenuePlanner.Controllers
                         }
                         //End - Added by Mitesh Vaishnav for PL ticket 746 - Edit Own and Subordinates Tactics Doesnt work
                         //Modify by Mitesh Vaishnav for PL ticket 746
-                        if ((objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy)) && IsBusinessUnitEditable)
+                        if ((objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy)) )
                         {
                             IsPlanEditable = true;
                         }
@@ -6295,9 +6295,9 @@ namespace RevenuePlanner.Controllers
                         ViewBag.PlanId = objPlan_Campaign_Program.Plan_Campaign.PlanId;
                         //Added by Mitesh Vaishnav for PL ticket #926
                         //Add restriction of BU for edit button in inspect popup
-                        BusinessUnitId = objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
-                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
-                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        //BusinessUnitId = objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
+                        //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) )
                         {
                             IsPlanEditable = true;
                         }
@@ -6310,10 +6310,10 @@ namespace RevenuePlanner.Controllers
                         ViewBag.PlanId = objPlan_Campaign.PlanId;
                         //Added by Mitesh Vaishnav for PL ticket #926
                         //Add restriction of BU for edit button in inspect popup
-                        BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
-                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        //BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
+                        //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
                         // planId = objPlan_Campaign.PlanId;
-                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) )
                         {
                             IsPlanEditable = true;
                         }
@@ -6324,9 +6324,9 @@ namespace RevenuePlanner.Controllers
                         ViewBag.PlanId = objPlan_Improvement_Campaign_Program_Tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId;
                         //Added by Mitesh Vaishnav for PL ticket #926
                         //Add restriction of BU for edit button in inspect popup
-                        BusinessUnitId = objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
-                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
-                        if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        //BusinessUnitId = objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
+                        //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) )
                         {
                             IsPlanEditable = true;
                         }
@@ -6337,11 +6337,11 @@ namespace RevenuePlanner.Controllers
                         ViewBag.LineItemId = objPlan_Campaign_Program_Tactic_LineItem.PlanLineItemId;
                         ViewBag.LineItemTitle = objPlan_Campaign_Program_Tactic_LineItem.Title;
                         ViewBag.PlanId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
-                        BusinessUnitId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
-                        IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
+                        //BusinessUnitId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
+                        //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
                         ViewBag.tacticId = objPlan_Campaign_Program_Tactic_LineItem.PlanTacticId;
 
-                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable)
+                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId) )
                         {
                             IsPlanEditable = true;
                         }
@@ -6538,9 +6538,9 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 // To get permission status for Plan Edit, By dharmraj PL #519
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(im.BusinessUnitId);
+                //bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(im.BusinessUnitId);
 
-                if (IsBusinessUnitEditable)
+                //if (IsBusinessUnitEditable)
                 {
                     if (im.OwnerId.Equals(Sessions.User.UserId))
                     {
@@ -6772,7 +6772,7 @@ namespace RevenuePlanner.Controllers
                     imodel.PlanCampaignId = objPlan_Campaign_Program.PlanCampaignId;
                     imodel.PlanProgramId = objPlan_Campaign_Program.PlanProgramId;
                     imodel.OwnerId = objPlan_Campaign_Program.CreatedBy;
-                    imodel.BusinessUnitId = objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId;
+                    //imodel.BusinessUnitId = objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId;
                     imodel.Cost = Common.CalculateProgramCost(objPlan_Campaign_Program.PlanProgramId); //objPlan_Campaign_Program.Cost; // Modified for PL#440 by Dharmraj
                     imodel.StartDate = objPlan_Campaign_Program.StartDate;
                     imodel.EndDate = objPlan_Campaign_Program.EndDate;
@@ -6836,7 +6836,7 @@ namespace RevenuePlanner.Controllers
                         imodel.AudienceId = objPlan_Campaign.AudienceId;
                     imodel.PlanCampaignId = objPlan_Campaign.PlanCampaignId;
                     imodel.OwnerId = objPlan_Campaign.CreatedBy;
-                    imodel.BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId;
+                    //imodel.BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId;
                     imodel.Cost = Common.CalculateCampaignCost(objPlan_Campaign.PlanCampaignId); //objPlan_Campaign.Cost; // Modified for PL#440 by Dharmraj
                     imodel.StartDate = objPlan_Campaign.StartDate;
                     imodel.EndDate = objPlan_Campaign.EndDate;
@@ -6890,7 +6890,7 @@ namespace RevenuePlanner.Controllers
                     imodel.ColorCode = Plan_InspectPopup_Flag_Color;
                     imodel.Description = objPlan.Description;
                     imodel.OwnerId = objPlan.CreatedBy;
-                    imodel.BusinessUnitId = objPlan.Model.BusinessUnitId;
+                    //imodel.BusinessUnitId = objPlan.Model.BusinessUnitId;
                     imodel.Title = objPlan.Title;
                     imodel.ModelId = objPlan.ModelId;
                     imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Model.Version;
@@ -8005,20 +8005,20 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="PlanId"></param>
         /// <returns></returns>
-        public Guid GetBusinessUnitIDByPlanId(int PlanId)
-        {
-            Guid BusinessUnitId = new Guid();
+        //public Guid GetBusinessUnitIDByPlanId(int PlanId)
+        //{
+        //    Guid BusinessUnitId = new Guid();
 
-            //// Get BusinessUnit ID from Models table by PlanId.
-            var businessUnitId = (from model in db.Models
-                                  join plan in db.Plans on model.ModelId equals plan.ModelId
-                                  where plan.PlanId == PlanId
-                                  select model.BusinessUnitId).FirstOrDefault();
-            if (businessUnitId != null)
-                BusinessUnitId = businessUnitId;
+        //    //// Get BusinessUnit ID from Models table by PlanId.
+        //    var businessUnitId = (from model in db.Models
+        //                          join plan in db.Plans on model.ModelId equals plan.ModelId
+        //                          where plan.PlanId == PlanId
+        //                          select model.BusinessUnitId).FirstOrDefault();
+        //    if (businessUnitId != null)
+        //        BusinessUnitId = businessUnitId;
 
-            return BusinessUnitId;
-        }
+        //    return BusinessUnitId;
+        //}
 
         /// <summary>
         /// Return Business Unit Title

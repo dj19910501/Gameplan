@@ -12,12 +12,8 @@
     @Html.HiddenFor(m => m.BusinessUnitId)
     <div id="nl-form" class="nl-form">
         @Html.Raw("I'm editing a model called")
-
         @*Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014*@
-        <span class="color5693B3">@HttpUtility.HtmlDecode(Model.Title)</span>
-
-        @Html.Raw("for")
-        <span class="color5693B3">@Model.BusinessUnitName.</span>
+        <span class="color5693B3">@HttpUtility.HtmlDecode(Model.Title)</span>.
         <div class="nl-overlay"></div>
     </div>
 }
@@ -25,9 +21,9 @@ else
 {
     <div id="nl-form" class="nl-form">
         @Html.Raw("I'm creating a model called")
-        @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datadefault = "Title", datasubline = "For example: <em>SMB Baseline</em>" })
-        @Html.Raw("for")
-        @Html.DropDownListFor(m => m.BusinessUnitId, (SelectList)TempData["BusinessUnitList"], new { @class = "hide" }).
+        @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datadefault = "Title", datasubline = "For example: <em>SMB Baseline</em>" }).
+        @*@Html.Raw("for")*@
+        @*@Html.DropDownListFor(m => m.BusinessUnitId, (SelectList)TempData["BusinessUnitList"], new { @class = "hide" }).*@
         <div class="nl-overlay"></div>
     </div>
     @Html.Hidden("hdnmoelexist", ""); // hidden field added to check if model exist or not
@@ -60,7 +56,7 @@ else
                 type: "GET",
                 cache: false,
                 url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-               data: { Title: encodeURIComponent($(sender).val()), BusinessUnitId: $("#BusinessUnitId").val() },
+               data: { Title: encodeURIComponent($(sender).val()) },
                dataType: "json",
                success: function (data) {
                    if (data == 'exist') {

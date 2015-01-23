@@ -22,11 +22,11 @@ namespace RevenuePlanner.Models
             this.IntegrationInstanceLogs = new HashSet<IntegrationInstanceLog>();
             this.IntegrationInstancePlanEntityLogs = new HashSet<IntegrationInstancePlanEntityLog>();
             this.IntegrationInstanceSections = new HashSet<IntegrationInstanceSection>();
+            this.IntegrationInstanceDataTypeMappings = new HashSet<IntegrationInstanceDataTypeMapping>();
             this.Models = new HashSet<Model>();
             this.Models1 = new HashSet<Model>();
             this.Models2 = new HashSet<Model>();
             this.Models3 = new HashSet<Model>();
-            this.IntegrationInstanceDataTypeMappings = new HashSet<IntegrationInstanceDataTypeMapping>();
         }
     
         public int IntegrationInstanceId { get; set; }
@@ -52,12 +52,12 @@ namespace RevenuePlanner.Models
         public virtual ICollection<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
         public virtual ICollection<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public virtual ICollection<IntegrationInstanceSection> IntegrationInstanceSections { get; set; }
+        public virtual SyncFrequency SyncFrequency { get; set; }
+        public virtual IntegrationType IntegrationType { get; set; }
+        public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public virtual ICollection<Model> Models { get; set; }
         public virtual ICollection<Model> Models1 { get; set; }
         public virtual ICollection<Model> Models2 { get; set; }
         public virtual ICollection<Model> Models3 { get; set; }
-        public virtual SyncFrequency SyncFrequency { get; set; }
-        public virtual IntegrationType IntegrationType { get; set; }
-        public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
     }
 }

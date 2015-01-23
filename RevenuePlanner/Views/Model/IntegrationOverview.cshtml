@@ -16,8 +16,8 @@
     bool PublisheStatus = ViewBag.Flag;
     @Html.Hidden("PublisheStatus", PublisheStatus);
     var currentdate = System.DateTime.Today.ToShortDateString();
-    string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
-    @Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
+    //string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
+    //@Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
     string IsOwner = Convert.ToString(ViewBag.IsOwner);
     @Html.Hidden("IsOwner", IsOwner);
 }
@@ -129,7 +129,7 @@
             $('#dp_start').datepicker('show');
         });
 
-        if ('@ModelStatus' == "Draft" && ('@IsViewEditBusinessUnit.ToString().ToLower()' == 'true' || '@IsOwner.ToString().ToLower()' == 'true')) {
+        if ('@ModelStatus' == "Draft" && ('@IsOwner.ToString().ToLower()' == 'true')) {
             $("#publish").removeClass('btn-blue-disable');
             $("#publish").addClass('btn-blue');
         }
@@ -233,7 +233,7 @@
                     type: "GET",
                     cache: false,
                     url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-                    data: { Title: titleName, BusinessUnitId: '@BusinessUnitId' },
+                    data: { Title: titleName },
                     dataType: "json",
                     success: function (data) {
                         if (data == 'exist') {

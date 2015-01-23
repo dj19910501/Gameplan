@@ -1075,52 +1075,13 @@ namespace RevenuePlanner.Helpers
         public static List<Plan> GetPlan(bool isFromReport = false)
         {
             MRPEntities db = new MRPEntities();
-            List<Guid> businessUnitIds = new List<Guid>();
-            ////start - Added by Mitesh Vaishnav for internal review point 91
-            //If functional call from report section than user allowed for all business unit Id
-            if (isFromReport)
-            {
-                businessUnitIds.Clear();
-                db.BusinessUnits.Where(s => s.ClientId == Sessions.User.ClientId && s.IsDeleted == false).ToList().ForEach(s => businessUnitIds.Add(s.BusinessUnitId));
-            } ////End - Added by Mitesh Vaishnav for internal review point 91
-            else
-            {
-                //var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                //if (lstAllowedBusinessUnits.Count > 0)
-                //    lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
 
-                //// Modified by Dharmraj, For #537
-                //if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-                //{
-                //    //// Getting all business unit for client of director.
-                //    var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-                //    businessUnitIds = clientBusinessUnit.ToList();
-                //}
-                //else
-                //{
-                //    // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //    if (lstAllowedBusinessUnits.Count > 0)
-                //    {
-                //        lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
-                //    }
-                //    else
-                //    {
-                //        businessUnitIds.Add(Sessions.User.BusinessUnitId);
-                //    }
-                //    // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //}
-            }
+            //// Getting active model of client. 
+            var modelIds = db.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m.ModelId).ToList();
 
-            //// Getting active model of above business unit. 
-            //string modelPublishedStatus = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
-            //var models = db.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).Select(m => m);
-
-            //// Getting modelIds
-            //var modelIds = models.Select(m => m.ModelId).ToList();
-
-            //var activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p);
-            var activePlan = db.Plans.Where(p => p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p);
-            return activePlan.ToList();
+            //// Getting active plans of ModelId(s).
+            var activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p).ToList();
+            return activePlan;
         }
 
         /// <summary>
@@ -1361,8 +1322,8 @@ namespace RevenuePlanner.Helpers
                 BDSServiceClient objBDSUserRepository = new BDSServiceClient();
                 List<User> users = objBDSUserRepository.GetMultipleTeamMemberDetails(string.Join(",", newCollaboratorId), Sessions.ApplicationId);
 
-                var userlist = users.Select(u => u.BusinessUnitId).ToList();
-                var businesslist = db.BusinessUnits.Where(bui => userlist.Contains(bui.BusinessUnitId)).ToList();//#416
+                //////var userlist = users.Select(u => u.BusinessUnitId).ToList();
+                //////var businesslist = db.BusinessUnits.Where(bui => userlist.Contains(bui.BusinessUnitId)).ToList();//#416
 
                 foreach (User user in users)
                 {
@@ -1390,13 +1351,13 @@ namespace RevenuePlanner.Helpers
                         }
                     }
 
-                    var busititle = businesslist.Single(bui => bui.BusinessUnitId == user.BusinessUnitId).Title;//#416
+                    //////var busititle = businesslist.Single(bui => bui.BusinessUnitId == user.BusinessUnitId).Title;//#416
                     string imageBytesBase64String = Convert.ToBase64String(imageBytes);
                     System.Web.HttpContext.Current.Cache[user.UserId + "_photo"] = imageBytesBase64String;
                     System.Web.HttpContext.Current.Cache[user.UserId + "_name"] = user.FirstName + " " + user.LastName;
-                    System.Web.HttpContext.Current.Cache[user.UserId + "_bu"] = busititle;//uday #416
+                    //////System.Web.HttpContext.Current.Cache[user.UserId + "_bu"] = busititle;//uday #416
                     System.Web.HttpContext.Current.Cache[user.UserId + "_jtitle"] = user.JobTitle;//uday #416
-                    var userData = new { imageBytes = imageBytesBase64String, name = user.FirstName + " " + user.LastName, businessUnit = busititle, jobTitle = user.JobTitle };//added by uday buid & title #416 };
+                    var userData = new { imageBytes = imageBytesBase64String, name = user.FirstName + " " + user.LastName, businessUnit = "", jobTitle = user.JobTitle };//added by uday buid & title #416 };
                     data.Add(userData);
                 }
                 jsonResult.Data = data;
@@ -1749,43 +1710,16 @@ namespace RevenuePlanner.Helpers
 
         public static MVCUrl DefaultRedirectURL(Enums.ActiveMenu from)
         {
-            MRPEntities mydb = new MRPEntities();
-            List<Guid> businessUnitIds = new List<Guid>();
+            MRPEntities db = new MRPEntities();
+
             try
             {
-                // Modified by Dharmraj, For #537
-                //if (Sessions.IsSystemAdmin)
-                //{
-                //    var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
-                //    businessUnitIds = clientBusinessUnit.ToList();
-                //}
-                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                if (lstAllowedBusinessUnits.Count > 0)
-                    lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
-                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)//else if (Sessions.IsDirector || Sessions.IsClientAdmin)
-                {
-                    var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
-                    businessUnitIds = clientBusinessUnit.ToList();
-                }
-                else
-                {
-                    // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    if (lstAllowedBusinessUnits.Count > 0)
-                    {
-                        lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
-                    }
-                    else
-                    {
-                        businessUnitIds.Add(Sessions.User.BusinessUnitId);
-                    }
-                    // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                }
                 string modelPublished = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
                 string modelDraft = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
                 string planPublished = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
                 string planDraft = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value;
 
-                var models = mydb.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).Select(m => m);
+                var models = db.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m);
 
                 var allModelIds = models.Select(m => m.ModelId).ToList();
                 if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.None)
@@ -1796,15 +1730,6 @@ namespace RevenuePlanner.Helpers
                 {
                     if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.Home)
                     {
-                        // Modified by Dharmraj, For #537
-                        //if (Sessions.IsPlanner)
-                        //{
-                        //    return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
-                        //}
-                        //else
-                        //{
-                        //    return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };
-                        //}
                         if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate))
                         {
                             return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
@@ -1813,13 +1738,13 @@ namespace RevenuePlanner.Helpers
                         {
                             return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };
                         }
-
                     }
+
                     var publishedModelIds = models.Where(m => m.Status.Equals(modelPublished)).Select(m => m.ModelId).ToList();
                     var draftModelIds = models.Where(m => m.Status.Equals(modelDraft)).Select(m => m.ModelId).ToList();
 
-                    var draftPlan = mydb.Plans.Where(p => (publishedModelIds.Contains(p.Model.ModelId) || draftModelIds.Contains(p.Model.ModelId)) && p.IsDeleted.Equals(false) && p.Status.Equals(planDraft)).Select(p => p);
-                    var publishedPlan = mydb.Plans.Where(p => (publishedModelIds.Contains(p.Model.ModelId) || draftModelIds.Contains(p.Model.ModelId)) && p.IsDeleted.Equals(false) && p.Status.Equals(planPublished)).Select(p => p);
+                    var draftPlan = db.Plans.Where(p => (publishedModelIds.Contains(p.Model.ModelId) || draftModelIds.Contains(p.Model.ModelId)) && p.IsDeleted.Equals(false) && p.Status.Equals(planDraft)).Select(p => p);
+                    var publishedPlan = db.Plans.Where(p => (publishedModelIds.Contains(p.Model.ModelId) || draftModelIds.Contains(p.Model.ModelId)) && p.IsDeleted.Equals(false) && p.Status.Equals(planPublished)).Select(p => p);
 
                     if (publishedPlan != null && publishedPlan.Count() > 0)
                     {
@@ -1851,8 +1776,7 @@ namespace RevenuePlanner.Helpers
             }
             finally
             {
-                mydb = null;
-                businessUnitIds = null;
+                db = null;
             }
 
             return null;
@@ -3758,11 +3682,11 @@ namespace RevenuePlanner.Helpers
                                                                                                                         }).ToList();
             ////Modified by Mitesh Vaishnav for PL ticket 819 BDS QA: New User Cannot Log In if Permissions Are Not Set
             ////If list has not custom restriction for user's Business unit than add user's business unit with View/Edit permission
-            if (!listCustomRestriction.Any(a => a.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString() && a.CustomFieldId.ToLower() == Sessions.User.BusinessUnitId.ToString().ToLower()))
+            if (!listCustomRestriction.Any(a => a.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()) && false)
             {
                 UserCustomRestrictionModel objUserCustomRestriction = new UserCustomRestrictionModel();
                 objUserCustomRestriction.CustomField = Enums.CustomRestrictionType.BusinessUnit.ToString();
-                objUserCustomRestriction.CustomFieldId = Sessions.User.BusinessUnitId.ToString();
+                //objUserCustomRestriction.CustomFieldId = Sessions.User.BusinessUnitId.ToString();
                 objUserCustomRestriction.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                 listCustomRestriction.Add(objUserCustomRestriction);
             }
@@ -4801,7 +4725,7 @@ namespace RevenuePlanner.Helpers
                 {
                     if (EntityType.Equals(Enums.PlanEntity.Tactic.ToString()))
                     {
-                        var entityObj = objMRPEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == InspectEntityId).Select(tactic => new { tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnit.ClientId, tactic.IsDeleted, tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId });
+                        var entityObj = objMRPEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == InspectEntityId).Select(tactic => new { tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId, tactic.IsDeleted, tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId });
                         if (entityObj.Count() != 0)
                         {
                             IsEntityExists = true;
@@ -4818,7 +4742,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else if (EntityType.Equals(Enums.PlanEntity.Program.ToString()))
                     {
-                        var entityObj = objMRPEntities.Plan_Campaign_Program.Where(program => program.PlanProgramId == InspectEntityId).Select(program => new { program.Plan_Campaign.Plan.Model.BusinessUnit.ClientId, program.IsDeleted, program.Plan_Campaign.Plan.PlanId });
+                        var entityObj = objMRPEntities.Plan_Campaign_Program.Where(program => program.PlanProgramId == InspectEntityId).Select(program => new { program.Plan_Campaign.Plan.Model.ClientId, program.IsDeleted, program.Plan_Campaign.Plan.PlanId });
                         if (entityObj.Count() != 0)
                         {
                             IsEntityExists = true;
@@ -4835,7 +4759,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else if (EntityType.Equals(Enums.PlanEntity.Campaign.ToString()))
                     {
-                        var entityObj = objMRPEntities.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == InspectEntityId).Select(campaign => new { campaign.Plan.Model.BusinessUnit.ClientId, campaign.IsDeleted, campaign.Plan.PlanId });
+                        var entityObj = objMRPEntities.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == InspectEntityId).Select(campaign => new { campaign.Plan.Model.ClientId, campaign.IsDeleted, campaign.Plan.PlanId });
                         if (entityObj.Count() != 0)
                         {
                             IsEntityExists = true;
@@ -4852,7 +4776,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else if (EntityType.Equals(Enums.PlanEntity.ImprovementTactic.ToString()))
                     {
-                        var entityObj = objMRPEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => improvementTactic.ImprovementPlanTacticId == InspectEntityId).Select(improvementTactic => new { improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.BusinessUnit.ClientId, improvementTactic.IsDeleted, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId });
+                        var entityObj = objMRPEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => improvementTactic.ImprovementPlanTacticId == InspectEntityId).Select(improvementTactic => new { improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.ClientId, improvementTactic.IsDeleted, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId });
                         if (entityObj.Count() != 0)
                         {
                             IsEntityExists = true;

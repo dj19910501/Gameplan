@@ -32,7 +32,6 @@ namespace RevenuePlanner.Models
         public int Year { get; set; }
         public long AddressableContacts { get; set; }
         public string Status { get; set; }
-        public System.Guid BusinessUnitId { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
@@ -46,8 +45,8 @@ namespace RevenuePlanner.Models
         public Nullable<int> IntegrationInstanceIdINQ { get; set; }
         public Nullable<int> IntegrationInstanceIdMQL { get; set; }
         public Nullable<int> IntegrationInstanceIdCW { get; set; }
+        public System.Guid ClientId { get; set; }
     
-        public virtual BusinessUnit BusinessUnit { get; set; }
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstance IntegrationInstance1 { get; set; }
         public virtual IntegrationInstance IntegrationInstance2 { get; set; }

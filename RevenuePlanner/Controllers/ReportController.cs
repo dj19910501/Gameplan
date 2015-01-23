@@ -52,8 +52,8 @@ namespace RevenuePlanner.Controllers
             if (Sessions.PlanId > 0)
             {
                 Sessions.ReportPlanIds.Add(Sessions.PlanId);
-                reportBusinessUnitId = db.Plans.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Model.BusinessUnitId).FirstOrDefault();
-                Sessions.ReportBusinessUnitIds.Add(reportBusinessUnitId);
+                //reportBusinessUnitId = db.Plans.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Model.BusinessUnitId).FirstOrDefault();
+                //Sessions.ReportBusinessUnitIds.Add(reportBusinessUnitId);
             }
 
             //// List of Tab - Parent
@@ -95,7 +95,7 @@ namespace RevenuePlanner.Controllers
 
             //// Get Plan List
             List<SelectListItem> lstYear = new List<SelectListItem>();
-            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.BusinessUnit.ClientId == Sessions.User.ClientId && plan.Model.IsDeleted == false && plan.IsActive == true).ToList();
+            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId && plan.Model.IsDeleted == false && plan.IsActive == true).ToList();
             if (lstPlan.Count == 0)
             {
                 TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
@@ -993,7 +993,7 @@ namespace RevenuePlanner.Controllers
             else if (ParentLabel == Common.RevenuePlans)
             {
                 string year = selectOption;
-                var plans = db.Plans.Where(plan => plan.Model.BusinessUnit.ClientId.Equals(Sessions.User.ClientId) && plan.IsDeleted.Equals(false) && plan.Status == PublishedPlan && Sessions.ReportPlanIds.Contains(plan.PlanId)).ToList();
+                var plans = db.Plans.Where(plan => plan.Model.ClientId.Equals(Sessions.User.ClientId) && plan.IsDeleted.Equals(false) && plan.Status == PublishedPlan && Sessions.ReportPlanIds.Contains(plan.PlanId)).ToList();
                 if (selectOption == Enums.UpcomingActivities.thisquarter.ToString())
                 {
                     year = currentYear;
@@ -3367,7 +3367,7 @@ namespace RevenuePlanner.Controllers
 
             //// Set Year list.
             List<SelectListItem> lstYear = new List<SelectListItem>();
-            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList();
+            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId).ToList();
             var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
             yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year }));
 
@@ -3397,7 +3397,7 @@ namespace RevenuePlanner.Controllers
             string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
             
             //// Set Plan list.
-            var planList = db.Plans.Where(plan => plan.Year == Year && plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.IsDeleted == false && plan.Model.BusinessUnit.ClientId == Sessions.User.ClientId).ToList().Select(plan => new
+            var planList = db.Plans.Where(plan => plan.Year == Year && plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId).ToList().Select(plan => new
             {
                 Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy),
                 Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy

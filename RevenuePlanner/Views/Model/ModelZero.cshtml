@@ -57,8 +57,7 @@
         <table id="table_baseline" class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th class="idth390">Model Title</th>
-                    <th class="width75">Business Unit</th>
+                    <th class="width390">Model Title</th>
                     <th class="width86">Version</th>
                     <th>Status</th>
                     <th>Effective Date</th>
@@ -264,7 +263,7 @@ function fillBaselineTable() {
             $('#table_baseline tr').not(function () { if ($(this).has('th').length) { return true } }).remove(); //clear table
             for (i in baselinesModels) {
                 @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column, effectiveDate parameter has been added. *@
-                addRowBaseline(i, baselinesModels[i].id, baselinesModels[i].title, baselinesModels[i].businessUnit, baselinesModels[i].version, baselinesModels[i].status, baselinesModels[i].isOwner, baselinesModels[i].effectiveDate);
+                addRowBaseline(i, baselinesModels[i].id, baselinesModels[i].title,  baselinesModels[i].version, baselinesModels[i].status, baselinesModels[i].isOwner, baselinesModels[i].effectiveDate);
                 @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
             }
         }
@@ -273,7 +272,7 @@ function fillBaselineTable() {
 
 //add row in baselinesModels table
     @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column, effectiveDate parameter has been added. *@
-    function addRowBaseline(_index, _id, _title, _businessUnit, _version, _status, _isOwner, _effectiveDate) {
+    function addRowBaseline(_index, _id, _title, _version, _status, _isOwner, _effectiveDate) {
         var $baselineTable = $('#table_baseline > tbody');
         var $html = "";
         var status = "Draft";
@@ -292,7 +291,6 @@ function fillBaselineTable() {
         }
 
         $html += '<span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span><span id="' + _id + '" class="duplicate-icon"></span></td>' +
-        '<td>' + _businessUnit + '</td>' +
         '<td>' + _version + '</td>' +
         '<td>' + _status + '</td>' +
         '<td>' + _effectiveDate + '</td>' +     @* Added By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column. *@

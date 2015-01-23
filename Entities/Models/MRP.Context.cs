@@ -47,7 +47,6 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
         public DbSet<LineItemType> LineItemTypes { get; set; }
         public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
-        public DbSet<Model> Models { get; set; }
         public DbSet<Model_Audience_Event> Model_Audience_Event { get; set; }
         public DbSet<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }
         public DbSet<Model_Audience_Outbound> Model_Audience_Outbound { get; set; }
@@ -95,5 +94,6 @@ namespace RevenuePlanner.Models
         public DbSet<Client_Integration_Permission> Client_Integration_Permission { get; set; }
         public DbSet<CustomField_Entity_StageWeight> CustomField_Entity_StageWeight { get; set; }
         public DbSet<CustomRestriction> CustomRestrictions { get; set; }
+        public DbSet<Model> Models { get; set; }
     }
 }

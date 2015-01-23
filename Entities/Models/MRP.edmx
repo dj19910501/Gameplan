@@ -76,19 +76,19 @@
           <EntitySet Name="User_Filter" EntityType="MRPModel.Store.User_Filter" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User_Notification" EntityType="MRPModel.Store.User_Notification" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Vertical" EntityType="MRPModel.Store.Vertical" store:Type="Tables" Schema="dbo" />
-          <AssociationSet Name="FK__Plan_Camp__PlanC__74794A92" Association="MRPModel.Store.FK__Plan_Camp__PlanC__74794A92">
+          <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="MRPModel.Store.FK__Plan_Camp__PlanC__43A1090D">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Plan_Camp__PlanP__73852659" Association="MRPModel.Store.FK__Plan_Camp__PlanP__73852659">
+          <AssociationSet Name="FK__Plan_Camp__PlanP__42ACE4D4" Association="MRPModel.Store.FK__Plan_Camp__PlanP__42ACE4D4">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanC__76619304" Association="MRPModel.Store.FK__Tactic_Sh__PlanC__76619304">
+          <AssociationSet Name="FK__Tactic_Sh__PlanC__4589517F" Association="MRPModel.Store.FK__Tactic_Sh__PlanC__4589517F">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanP__756D6ECB" Association="MRPModel.Store.FK__Tactic_Sh__PlanP__756D6ECB">
+          <AssociationSet Name="FK__Tactic_Sh__PlanP__44952D46" Association="MRPModel.Store.FK__Tactic_Sh__PlanP__44952D46">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
@@ -108,7 +108,11 @@
             <End Role="CustomFieldType" EntitySet="CustomFieldType" />
             <End Role="CustomField" EntitySet="CustomField" />
           </AssociationSet>
-          <AssociationSet Name="FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1" Association="MRPModel.Store.FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1">
+          <AssociationSet Name="FK_CustomField_Entity_CustomField" Association="MRPModel.Store.FK_CustomField_Entity_CustomField">
+            <End Role="CustomField" EntitySet="CustomField" />
+            <End Role="CustomField_Entity" EntitySet="CustomField_Entity" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight" Association="MRPModel.Store.FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight">
             <End Role="CustomField_Entity" EntitySet="CustomField_Entity" />
             <End Role="CustomField_Entity_StageWeight" EntitySet="CustomField_Entity_StageWeight" />
           </AssociationSet>
@@ -223,10 +227,6 @@
           <AssociationSet Name="FK_Model_Audience_Outbound_Model" Association="MRPModel.Store.FK_Model_Audience_Outbound_Model">
             <End Role="Model" EntitySet="Model" />
             <End Role="Model_Audience_Outbound" EntitySet="Model_Audience_Outbound" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_BusinessUnit" Association="MRPModel.Store.FK_Model_BusinessUnit">
-            <End Role="BusinessUnit" EntitySet="BusinessUnit" />
-            <End Role="Model" EntitySet="Model" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_Category_Stage_Stage" Association="MRPModel.Store.FK_Model_Category_Stage_Stage">
             <End Role="Stage" EntitySet="Stage" />
@@ -565,6 +565,8 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="IsDisplayForFilter" Type="bit" Nullable="false" />
+          <Property Name="AbbreviationForMulti" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="IsDefault" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CustomField_Entity">
           <Key>
@@ -830,8 +832,6 @@
           <Key>
             <PropertyRef Name="IntegrationInstancePlanLogEntityId" />
           </Key>
-          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
           <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
           <Property Name="EntityId" Type="int" Nullable="false" />
           <Property Name="EntityType" Type="varchar" MaxLength="50" />
@@ -841,6 +841,8 @@
           <Property Name="ErrorDescription" Type="nvarchar" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
+          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="IntegrationInstanceSection">
           <Key>
@@ -914,7 +916,6 @@
           <Property Name="Year" Type="int" Nullable="false" />
           <Property Name="AddressableContacts" Type="bigint" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" />
-          <Property Name="BusinessUnitId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
@@ -928,6 +929,7 @@
           <Property Name="IntegrationInstanceIdINQ" Type="int" />
           <Property Name="IntegrationInstanceIdMQL" Type="int" />
           <Property Name="IntegrationInstanceIdCW" Type="int" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Model_Audience_Event">
           <Key>
@@ -1473,7 +1475,7 @@
           <Property Name="ClientId" Type="uniqueidentifier" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
         </EntityType>
-        <Association Name="FK__Plan_Camp__PlanC__74794A92">
+        <Association Name="FK__Plan_Camp__PlanC__43A1090D">
           <End Role="Plan_Campaign" Type="MRPModel.Store.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1485,7 +1487,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Plan_Camp__PlanP__73852659">
+        <Association Name="FK__Plan_Camp__PlanP__42ACE4D4">
           <End Role="Plan_Campaign_Program" Type="MRPModel.Store.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1497,7 +1499,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanC__76619304">
+        <Association Name="FK__Tactic_Sh__PlanC__4589517F">
           <End Role="Plan_Campaign" Type="MRPModel.Store.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="MRPModel.Store.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1509,7 +1511,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanP__756D6ECB">
+        <Association Name="FK__Tactic_Sh__PlanP__44952D46">
           <End Role="Plan_Campaign_Program" Type="MRPModel.Store.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="MRPModel.Store.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1569,7 +1571,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1">
+        <Association Name="FK_CustomField_Entity_CustomField">
+          <End Role="CustomField" Type="MRPModel.Store.CustomField" Multiplicity="1" />
+          <End Role="CustomField_Entity" Type="MRPModel.Store.CustomField_Entity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="CustomField_Entity">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight">
           <End Role="CustomField_Entity" Type="MRPModel.Store.CustomField_Entity" Multiplicity="1" />
           <End Role="CustomField_Entity_StageWeight" Type="MRPModel.Store.CustomField_Entity_StageWeight" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1914,18 +1928,6 @@
             </Principal>
             <Dependent Role="Model_Audience_Outbound">
               <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_BusinessUnit">
-          <End Role="BusinessUnit" Type="MRPModel.Store.BusinessUnit" Multiplicity="1" />
-          <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="BusinessUnit">
-              <PropertyRef Name="BusinessUnitId" />
-            </Principal>
-            <Dependent Role="Model">
-              <PropertyRef Name="BusinessUnitId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2568,7 +2570,6 @@
           <EntitySet Name="IntegrationTypeAttributes" EntityType="MRPModel.IntegrationTypeAttribute" />
           <EntitySet Name="LineItemTypes" EntityType="MRPModel.LineItemType" />
           <EntitySet Name="MasterTacticTypes" EntityType="MRPModel.MasterTacticType" />
-          <EntitySet Name="Models" EntityType="MRPModel.Model" />
           <EntitySet Name="Model_Audience_Event" EntityType="MRPModel.Model_Audience_Event" />
           <EntitySet Name="Model_Audience_Inbound" EntityType="MRPModel.Model_Audience_Inbound" />
           <EntitySet Name="Model_Audience_Outbound" EntityType="MRPModel.Model_Audience_Outbound" />
@@ -2615,10 +2616,6 @@
           <AssociationSet Name="FK_BestInClass_Stage" Association="MRPModel.FK_BestInClass_Stage">
             <End Role="Stage" EntitySet="Stages" />
             <End Role="BestInClass" EntitySet="BestInClasses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_BusinessUnit" Association="MRPModel.FK_Model_BusinessUnit">
-            <End Role="BusinessUnit" EntitySet="BusinessUnits" />
-            <End Role="Model" EntitySet="Models" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_BusinessUnit" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_BusinessUnit">
             <End Role="BusinessUnit" EntitySet="BusinessUnits" />
@@ -2696,22 +2693,6 @@
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="IntegrationInstanceSection" EntitySet="IntegrationInstanceSections" />
           </AssociationSet>
-          <AssociationSet Name="FK_Model_IntegrationInstance" Association="MRPModel.FK_Model_IntegrationInstance">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
-            <End Role="Model" EntitySet="Models" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_IntegrationInstanceCW" Association="MRPModel.FK_Model_IntegrationInstanceCW">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
-            <End Role="Model" EntitySet="Models" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_IntegrationInstanceINQ" Association="MRPModel.FK_Model_IntegrationInstanceINQ">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
-            <End Role="Model" EntitySet="Models" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_IntegrationInstanceMQL" Association="MRPModel.FK_Model_IntegrationInstanceMQL">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
-            <End Role="Model" EntitySet="Models" />
-          </AssociationSet>
           <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="MRPModel.FK_SyncFrequency_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="SyncFrequency" EntitySet="SyncFrequencies" />
@@ -2728,41 +2709,9 @@
             <End Role="IntegrationInstanceSection" EntitySet="IntegrationInstanceSections" />
             <End Role="IntegrationInstancePlanEntityLog" EntitySet="IntegrationInstancePlanEntityLogs" />
           </AssociationSet>
-          <AssociationSet Name="FK_LineItemType_Model" Association="MRPModel.FK_LineItemType_Model">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="LineItemType" EntitySet="LineItemTypes" />
-          </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType">
             <End Role="LineItemType" EntitySet="LineItemTypes" />
             <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Audience_Event_Model_Audience_Event" Association="MRPModel.FK_Model_Audience_Event_Model_Audience_Event">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Model_Audience_Event" EntitySet="Model_Audience_Event" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Audience_Inbound_Model" Association="MRPModel.FK_Model_Audience_Inbound_Model">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Model_Audience_Inbound" EntitySet="Model_Audience_Inbound" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Audience_Outbound_Model" Association="MRPModel.FK_Model_Audience_Outbound_Model">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Model_Audience_Outbound" EntitySet="Model_Audience_Outbound" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Funnel_Model" Association="MRPModel.FK_Model_Funnel_Model">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Model" Association="MRPModel.FK_Model_Model">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Model1" EntitySet="Models" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Plan" Association="MRPModel.FK_Plan_Plan">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Plan" EntitySet="Plans" />
-          </AssociationSet>
-          <AssociationSet Name="fk_TacticType_Model" Association="MRPModel.fk_TacticType_Model">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="TacticType" EntitySet="TacticTypes" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_Funnel_Stage_Model_Funnel" Association="MRPModel.FK_Model_Funnel_Stage_Model_Funnel">
             <End Role="Model_Funnel" EntitySet="Model_Funnel" />
@@ -2976,6 +2925,55 @@
             <End Role="CustomFieldOption" EntitySet="CustomFieldOptions" />
             <End Role="CustomRestriction" EntitySet="CustomRestrictions" />
           </AssociationSet>
+          <EntitySet Name="Models" EntityType="MRPModel.Model" />
+          <AssociationSet Name="FK_Model_IntegrationInstance" Association="MRPModel.FK_Model_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="Model" EntitySet="Models" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_IntegrationInstanceCW" Association="MRPModel.FK_Model_IntegrationInstanceCW">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="Model" EntitySet="Models" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_IntegrationInstanceINQ" Association="MRPModel.FK_Model_IntegrationInstanceINQ">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="Model" EntitySet="Models" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_IntegrationInstanceMQL" Association="MRPModel.FK_Model_IntegrationInstanceMQL">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="Model" EntitySet="Models" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LineItemType_Model" Association="MRPModel.FK_LineItemType_Model">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="LineItemType" EntitySet="LineItemTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_Audience_Event_Model_Audience_Event" Association="MRPModel.FK_Model_Audience_Event_Model_Audience_Event">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="Model_Audience_Event" EntitySet="Model_Audience_Event" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_Audience_Inbound_Model" Association="MRPModel.FK_Model_Audience_Inbound_Model">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="Model_Audience_Inbound" EntitySet="Model_Audience_Inbound" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_Audience_Outbound_Model" Association="MRPModel.FK_Model_Audience_Outbound_Model">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="Model_Audience_Outbound" EntitySet="Model_Audience_Outbound" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_Funnel_Model" Association="MRPModel.FK_Model_Funnel_Model">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_Model" Association="MRPModel.FK_Model_Model">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="Model1" EntitySet="Models" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Plan" Association="MRPModel.FK_Plan_Plan">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="Plan" EntitySet="Plans" />
+          </AssociationSet>
+          <AssociationSet Name="fk_TacticType_Model" Association="MRPModel.fk_TacticType_Model">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="TacticType" EntitySet="TacticTypes" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -3025,7 +3023,6 @@
           <Property Type="Guid" Name="CreatedBy" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Models" Relationship="MRPModel.FK_Model_BusinessUnit" FromRole="BusinessUnit" ToRole="Model" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_BusinessUnit" FromRole="BusinessUnit" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit" FromRole="BusinessUnit" ToRole="Plan_Improvement_Campaign_Program_Tactic" />
           <Property Type="String" Name="Abbreviation" MaxLength="255" FixedLength="false" Unicode="true" />
@@ -3197,14 +3194,14 @@
           <NavigationProperty Name="IntegrationInstanceLogs" Relationship="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceLog" />
           <NavigationProperty Name="IntegrationInstancePlanEntityLogs" Relationship="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstancePlanEntityLog" />
           <NavigationProperty Name="IntegrationInstanceSections" Relationship="MRPModel.FK_IntegrationInstanceSection_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceSection" />
-          <NavigationProperty Name="Models" Relationship="MRPModel.FK_Model_IntegrationInstance" FromRole="IntegrationInstance" ToRole="Model" />
-          <NavigationProperty Name="Models1" Relationship="MRPModel.FK_Model_IntegrationInstanceCW" FromRole="IntegrationInstance" ToRole="Model" />
-          <NavigationProperty Name="Models2" Relationship="MRPModel.FK_Model_IntegrationInstanceINQ" FromRole="IntegrationInstance" ToRole="Model" />
-          <NavigationProperty Name="Models3" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
           <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationInstance" ToRole="IntegrationType" />
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceDataTypeMapping" />
           <Property Type="Boolean" Name="CustomNamingPermission" Nullable="false" />
+          <NavigationProperty Name="Models" Relationship="MRPModel.FK_Model_IntegrationInstance" FromRole="IntegrationInstance" ToRole="Model" />
+          <NavigationProperty Name="Models1" Relationship="MRPModel.FK_Model_IntegrationInstanceCW" FromRole="IntegrationInstance" ToRole="Model" />
+          <NavigationProperty Name="Models2" Relationship="MRPModel.FK_Model_IntegrationInstanceINQ" FromRole="IntegrationInstance" ToRole="Model" />
+          <NavigationProperty Name="Models3" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="IntegrationInstance" ToRole="Model" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -3326,8 +3323,8 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Model" Relationship="MRPModel.FK_LineItemType_Model" FromRole="LineItemType" ToRole="Model" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" FromRole="LineItemType" ToRole="Plan_Campaign_Program_Tactic_LineItem" />
+          <NavigationProperty Name="Model" Relationship="MRPModel.FK_LineItemType_Model" FromRole="LineItemType" ToRole="Model" />
         </EntityType>
         <EntityType Name="MasterTacticType">
           <Key>
@@ -3339,45 +3336,6 @@
           <Property Type="String" Name="ColorCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <Property Type="String" Name="Abbreviation" MaxLength="255" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="Model">
-          <Key>
-            <PropertyRef Name="ModelId" />
-          </Key>
-          <Property Type="Int32" Name="ModelId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Version" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="Year" Nullable="false" />
-          <Property Type="Int64" Name="AddressableContacts" Nullable="false" />
-          <Property Type="String" Name="Status" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Guid" Name="BusinessUnitId" Nullable="false" />
-          <Property Type="Boolean" Name="IsActive" Nullable="false" />
-          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <Property Type="Int32" Name="ParentModelId" />
-          <Property Type="Boolean" Name="IsBenchmarked" />
-          <Property Type="DateTime" Name="EffectiveDate" Precision="3" />
-          <Property Type="Int32" Name="IntegrationInstanceId" />
-          <Property Type="Int32" Name="IntegrationInstanceIdINQ" />
-          <Property Type="Int32" Name="IntegrationInstanceIdMQL" />
-          <Property Type="Int32" Name="IntegrationInstanceIdCW" />
-          <NavigationProperty Name="BusinessUnit" Relationship="MRPModel.FK_Model_BusinessUnit" FromRole="Model" ToRole="BusinessUnit" />
-          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_Model_IntegrationInstance" FromRole="Model" ToRole="IntegrationInstance" />
-          <NavigationProperty Name="IntegrationInstance1" Relationship="MRPModel.FK_Model_IntegrationInstanceCW" FromRole="Model" ToRole="IntegrationInstance" />
-          <NavigationProperty Name="IntegrationInstance2" Relationship="MRPModel.FK_Model_IntegrationInstanceINQ" FromRole="Model" ToRole="IntegrationInstance" />
-          <NavigationProperty Name="IntegrationInstance3" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="Model" ToRole="IntegrationInstance" />
-          <NavigationProperty Name="LineItemTypes" Relationship="MRPModel.FK_LineItemType_Model" FromRole="Model" ToRole="LineItemType" />
-          <NavigationProperty Name="Model_Audience_Event" Relationship="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" FromRole="Model" ToRole="Model_Audience_Event" />
-          <NavigationProperty Name="Model_Audience_Inbound" Relationship="MRPModel.FK_Model_Audience_Inbound_Model" FromRole="Model" ToRole="Model_Audience_Inbound" />
-          <NavigationProperty Name="Model_Audience_Outbound" Relationship="MRPModel.FK_Model_Audience_Outbound_Model" FromRole="Model" ToRole="Model_Audience_Outbound" />
-          <NavigationProperty Name="Model_Funnel" Relationship="MRPModel.FK_Model_Funnel_Model" FromRole="Model" ToRole="Model_Funnel" />
-          <NavigationProperty Name="Model1" Relationship="MRPModel.FK_Model_Model" FromRole="Model" ToRole="Model1" />
-          <NavigationProperty Name="Model2" Relationship="MRPModel.FK_Model_Model" FromRole="Model1" ToRole="Model" />
-          <NavigationProperty Name="Plans" Relationship="MRPModel.FK_Plan_Plan" FromRole="Model" ToRole="Plan" />
-          <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Model" FromRole="Model" ToRole="TacticType" />
         </EntityType>
         <EntityType Name="Model_Audience_Event">
           <Key>
@@ -3463,9 +3421,9 @@
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
           <NavigationProperty Name="Funnel" Relationship="MRPModel.FK_Model_Funnel_Funnel" FromRole="Model_Funnel" ToRole="Funnel" />
-          <NavigationProperty Name="Model" Relationship="MRPModel.FK_Model_Funnel_Model" FromRole="Model_Funnel" ToRole="Model" />
           <NavigationProperty Name="Model_Funnel_Stage" Relationship="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" FromRole="Model_Funnel" ToRole="Model_Funnel_Stage" />
           <NavigationProperty Name="ModelReviews" Relationship="MRPModel.FK_ModelReview_Model_Funnel" FromRole="Model_Funnel" ToRole="ModelReview" />
+          <NavigationProperty Name="Model" Relationship="MRPModel.FK_Model_Funnel_Model" FromRole="Model_Funnel" ToRole="Model" />
         </EntityType>
         <EntityType Name="Model_Funnel_Stage">
           <Key>
@@ -3546,12 +3504,12 @@
           <Property Type="String" Name="GoalType" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="Double" Name="GoalValue" Nullable="false" />
           <Property Type="String" Name="AllocatedBy" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Model" Relationship="MRPModel.FK_Plan_Plan" FromRole="Plan" ToRole="Model" />
           <NavigationProperty Name="Plan_Budget" Relationship="MRPModel.FK_Plan_Budget_Plan" FromRole="Plan" ToRole="Plan_Budget" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Team" Relationship="MRPModel.FK_Plan_Collaborator_Plan" FromRole="Plan" ToRole="Plan_Team" />
           <Property Type="String" Name="EloquaFolderPath" MaxLength="4000" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Plan_Improvement_Campaign" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Plan" FromRole="Plan" ToRole="Plan_Improvement_Campaign" />
+          <NavigationProperty Name="Model" Relationship="MRPModel.FK_Plan_Plan" FromRole="Plan" ToRole="Model" />
         </EntityType>
         <EntityType Name="Plan_Budget">
           <Key>
@@ -3922,10 +3880,10 @@
           <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
           <Property Type="Double" Name="ProjectedStageValue" />
           <Property Type="Boolean" Name="IsDeployedToModel" Nullable="false" />
-          <NavigationProperty Name="Model" Relationship="MRPModel.fk_TacticType_Model" FromRole="TacticType" ToRole="Model" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.fk_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
           <Property Type="String" Name="Abbreviation" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Model" Relationship="MRPModel.fk_TacticType_Model" FromRole="TacticType" ToRole="Model" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -4013,18 +3971,6 @@
             </Principal>
             <Dependent Role="BestInClass">
               <PropertyRef Name="StageId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_BusinessUnit">
-          <End Type="MRPModel.BusinessUnit" Role="BusinessUnit" Multiplicity="1" />
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="BusinessUnit">
-              <PropertyRef Name="BusinessUnitId" />
-            </Principal>
-            <Dependent Role="Model">
-              <PropertyRef Name="BusinessUnitId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4256,54 +4202,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Model_IntegrationInstance">
-          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="Model">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_IntegrationInstanceCW">
-          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="Model">
-              <PropertyRef Name="IntegrationInstanceIdCW" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_IntegrationInstanceINQ">
-          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="Model">
-              <PropertyRef Name="IntegrationInstanceIdINQ" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_IntegrationInstanceMQL">
-          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="Model">
-              <PropertyRef Name="IntegrationInstanceIdMQL" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_SyncFrequency_IntegrationInstance">
           <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
           <End Type="MRPModel.SyncFrequency" Role="SyncFrequency" Multiplicity="0..1" />
@@ -4352,18 +4250,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_LineItemType_Model">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.LineItemType" Role="LineItemType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="LineItemType">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType">
           <End Type="MRPModel.LineItemType" Role="LineItemType" Multiplicity="0..1" />
           <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Role="Plan_Campaign_Program_Tactic_LineItem" Multiplicity="*" />
@@ -4373,90 +4259,6 @@
             </Principal>
             <Dependent Role="Plan_Campaign_Program_Tactic_LineItem">
               <PropertyRef Name="LineItemTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Audience_Event_Model_Audience_Event">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.Model_Audience_Event" Role="Model_Audience_Event" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Audience_Event">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Audience_Inbound_Model">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.Model_Audience_Inbound" Role="Model_Audience_Inbound" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Audience_Inbound">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Audience_Outbound_Model">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.Model_Audience_Outbound" Role="Model_Audience_Outbound" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Audience_Outbound">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Funnel_Model">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.Model_Funnel" Role="Model_Funnel" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Funnel">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Model">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="0..1" />
-          <End Type="MRPModel.Model" Role="Model1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model1">
-              <PropertyRef Name="ParentModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Plan">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.Plan" Role="Plan" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Plan">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_TacticType_Model">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.TacticType" Role="TacticType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="TacticType">
-              <PropertyRef Name="ModelId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4880,6 +4682,8 @@
           <NavigationProperty Name="CampaignNameConventions" Relationship="MRPModel.FK_CampaignNameConvention_CustomField" FromRole="CustomField" ToRole="CampaignNameConvention" />
           <Property Type="Boolean" Name="IsDisplayForFilter" Nullable="false" />
           <NavigationProperty Name="CustomRestrictions" Relationship="MRPModel.FK_CustomRestriction_CustomField" FromRole="CustomField" ToRole="CustomRestriction" />
+          <Property Type="String" Name="AbbreviationForMulti" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsDefault" Nullable="false" />
         </EntityType>
         <EntityType Name="CustomField_Entity">
           <Key>
@@ -5277,6 +5081,188 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Model">
+          <Key>
+            <PropertyRef Name="ModelId" />
+          </Key>
+          <Property Type="Int32" Name="ModelId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Version" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="Year" Nullable="false" />
+          <Property Type="Int64" Name="AddressableContacts" Nullable="false" />
+          <Property Type="String" Name="Status" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsActive" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+          <Property Type="Int32" Name="ParentModelId" />
+          <Property Type="Boolean" Name="IsBenchmarked" />
+          <Property Type="DateTime" Name="EffectiveDate" Precision="3" />
+          <Property Type="Int32" Name="IntegrationInstanceId" />
+          <Property Type="Int32" Name="IntegrationInstanceIdINQ" />
+          <Property Type="Int32" Name="IntegrationInstanceIdMQL" />
+          <Property Type="Int32" Name="IntegrationInstanceIdCW" />
+          <Property Type="Guid" Name="ClientId" Nullable="false" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_Model_IntegrationInstance" FromRole="Model" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="IntegrationInstance1" Relationship="MRPModel.FK_Model_IntegrationInstanceCW" FromRole="Model" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="IntegrationInstance2" Relationship="MRPModel.FK_Model_IntegrationInstanceINQ" FromRole="Model" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="IntegrationInstance3" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="Model" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="LineItemTypes" Relationship="MRPModel.FK_LineItemType_Model" FromRole="Model" ToRole="LineItemType" />
+          <NavigationProperty Name="Model_Audience_Event" Relationship="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" FromRole="Model" ToRole="Model_Audience_Event" />
+          <NavigationProperty Name="Model_Audience_Inbound" Relationship="MRPModel.FK_Model_Audience_Inbound_Model" FromRole="Model" ToRole="Model_Audience_Inbound" />
+          <NavigationProperty Name="Model_Audience_Outbound" Relationship="MRPModel.FK_Model_Audience_Outbound_Model" FromRole="Model" ToRole="Model_Audience_Outbound" />
+          <NavigationProperty Name="Model_Funnel" Relationship="MRPModel.FK_Model_Funnel_Model" FromRole="Model" ToRole="Model_Funnel" />
+          <NavigationProperty Name="Model1" Relationship="MRPModel.FK_Model_Model" FromRole="Model" ToRole="Model1" />
+          <NavigationProperty Name="Model2" Relationship="MRPModel.FK_Model_Model" FromRole="Model1" ToRole="Model" />
+          <NavigationProperty Name="Plans" Relationship="MRPModel.FK_Plan_Plan" FromRole="Model" ToRole="Plan" />
+          <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Model" FromRole="Model" ToRole="TacticType" />
+        </EntityType>
+        <Association Name="FK_Model_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_IntegrationInstanceCW">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceIdCW" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_IntegrationInstanceINQ">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceIdINQ" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_IntegrationInstanceMQL">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceIdMQL" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LineItemType_Model">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
+          <End Type="MRPModel.LineItemType" Role="LineItemType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="LineItemType">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_Audience_Event_Model_Audience_Event">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
+          <End Type="MRPModel.Model_Audience_Event" Role="Model_Audience_Event" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="Model_Audience_Event">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_Audience_Inbound_Model">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
+          <End Type="MRPModel.Model_Audience_Inbound" Role="Model_Audience_Inbound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="Model_Audience_Inbound">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_Audience_Outbound_Model">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
+          <End Type="MRPModel.Model_Audience_Outbound" Role="Model_Audience_Outbound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="Model_Audience_Outbound">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_Funnel_Model">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
+          <End Type="MRPModel.Model_Funnel" Role="Model_Funnel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="Model_Funnel">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_Model">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="0..1" />
+          <End Type="MRPModel.Model" Role="Model1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="Model1">
+              <PropertyRef Name="ParentModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Plan">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
+          <End Type="MRPModel.Plan" Role="Plan" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="Plan">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_TacticType_Model">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
+          <End Type="MRPModel.TacticType" Role="TacticType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="TacticType">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5611,32 +5597,6 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="MasterTacticTypeId" ColumnName="MasterTacticTypeId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Models">
-            <EntityTypeMapping TypeName="MRPModel.Model">
-              <MappingFragment StoreEntitySet="Model">
-                <ScalarProperty Name="IntegrationInstanceIdCW" ColumnName="IntegrationInstanceIdCW" />
-                <ScalarProperty Name="IntegrationInstanceIdMQL" ColumnName="IntegrationInstanceIdMQL" />
-                <ScalarProperty Name="IntegrationInstanceIdINQ" ColumnName="IntegrationInstanceIdINQ" />
-                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
-                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
-                <ScalarProperty Name="IsBenchmarked" ColumnName="IsBenchmarked" />
-                <ScalarProperty Name="ParentModelId" ColumnName="ParentModelId" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="BusinessUnitId" ColumnName="BusinessUnitId" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="AddressableContacts" ColumnName="AddressableContacts" />
-                <ScalarProperty Name="Year" ColumnName="Year" />
-                <ScalarProperty Name="Version" ColumnName="Version" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -6200,6 +6160,8 @@
           <EntitySetMapping Name="CustomFields">
             <EntityTypeMapping TypeName="MRPModel.CustomField">
               <MappingFragment StoreEntitySet="CustomField">
+                <ScalarProperty Name="IsDefault" ColumnName="IsDefault" />
+                <ScalarProperty Name="AbbreviationForMulti" ColumnName="AbbreviationForMulti" />
                 <ScalarProperty Name="IsDisplayForFilter" ColumnName="IsDisplayForFilter" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
@@ -6382,6 +6344,32 @@
                 <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="CustomRestrictionId" ColumnName="CustomRestrictionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Models">
+            <EntityTypeMapping TypeName="MRPModel.Model">
+              <MappingFragment StoreEntitySet="Model">
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="IntegrationInstanceIdCW" ColumnName="IntegrationInstanceIdCW" />
+                <ScalarProperty Name="IntegrationInstanceIdMQL" ColumnName="IntegrationInstanceIdMQL" />
+                <ScalarProperty Name="IntegrationInstanceIdINQ" ColumnName="IntegrationInstanceIdINQ" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
+                <ScalarProperty Name="IsBenchmarked" ColumnName="IsBenchmarked" />
+                <ScalarProperty Name="ParentModelId" ColumnName="ParentModelId" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="AddressableContacts" ColumnName="AddressableContacts" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

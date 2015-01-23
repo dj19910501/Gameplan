@@ -27,7 +27,6 @@
         <EntityTypeShape EntityType="MRPModel.IntegrationTypeAttribute" Width="1.5" PointX="0.5" PointY="0.75" IsExpanded="false" />
         <EntityTypeShape EntityType="MRPModel.LineItemType" Width="1.5" PointX="3.4790275057214437" PointY="11.007593636870196" IsExpanded="false" />
         <EntityTypeShape EntityType="MRPModel.MasterTacticType" Width="1.5" PointX="3.0966482176895478" PointY="25.133384448072587" />
-        <EntityTypeShape EntityType="MRPModel.Model" Width="1.5" PointX="10.119841792676525" PointY="18.002545707860286" IsExpanded="false" />
         <EntityTypeShape EntityType="MRPModel.Model_Audience_Event" Width="1.5" PointX="0.023773843433602643" PointY="24.173194136551206" IsExpanded="false" />
         <EntityTypeShape EntityType="MRPModel.Model_Audience_Inbound" Width="1.5" PointX="7.0078814472108526" PointY="29.310049562393711" />
         <EntityTypeShape EntityType="MRPModel.Model_Audience_Outbound" Width="1.5" PointX="7" PointY="1.25" IsExpanded="false" />
@@ -63,7 +62,6 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Audience" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Audience" />
         <AssociationConnector Association="MRPModel.FK_BestInClass_Stage" />
-        <AssociationConnector Association="MRPModel.FK_Model_BusinessUnit" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_BusinessUnit" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit" />
         <AssociationConnector Association="MRPModel.FK_Funnel_Field_Field" />
@@ -83,23 +81,11 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceSection_IntegrationInstance" />
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance" />
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceCW" />
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceINQ" />
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceMQL" />
         <AssociationConnector Association="MRPModel.FK_SyncFrequency_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceSection_IntegrationInstanceLog" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection" />
-        <AssociationConnector Association="MRPModel.FK_LineItemType_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" />
-        <AssociationConnector Association="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" />
-        <AssociationConnector Association="MRPModel.FK_Model_Audience_Inbound_Model" />
-        <AssociationConnector Association="MRPModel.FK_Model_Audience_Outbound_Model" />
-        <AssociationConnector Association="MRPModel.FK_Model_Funnel_Model" />
-        <AssociationConnector Association="MRPModel.FK_Model_Model" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Plan" />
-        <AssociationConnector Association="MRPModel.fk_TacticType_Model" />
         <AssociationConnector Association="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" />
         <AssociationConnector Association="MRPModel.FK_ModelReview_Model_Funnel" />
         <AssociationConnector Association="MRPModel.FK_Model_Category_Stage_Stage" />
@@ -165,6 +151,19 @@
         <AssociationConnector Association="MRPModel.FK_CustomRestriction_CustomField" />
         <AssociationConnector Association="MRPModel.FK_CustomField_Entity_StageWeight_CustomField_Entity_StageWeight1" />
         <AssociationConnector Association="MRPModel.FK_CustomRestriction_CustomFieldOption" />
+        <EntityTypeShape EntityType="MRPModel.Model" Width="1.5" PointX="0.95841931410060233" PointY="9.3702118738415709" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceCW" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceINQ" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceMQL" />
+        <AssociationConnector Association="MRPModel.FK_LineItemType_Model" />
+        <AssociationConnector Association="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" />
+        <AssociationConnector Association="MRPModel.FK_Model_Audience_Inbound_Model" />
+        <AssociationConnector Association="MRPModel.FK_Model_Audience_Outbound_Model" />
+        <AssociationConnector Association="MRPModel.FK_Model_Funnel_Model" />
+        <AssociationConnector Association="MRPModel.FK_Model_Model" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Plan" />
+        <AssociationConnector Association="MRPModel.fk_TacticType_Model" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

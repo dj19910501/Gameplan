@@ -80,7 +80,7 @@
         </li>
     </ul>
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
-        <div class="span3 margin-top10">
+        @*<div class="span3 margin-top10">
             <p class="ellipsis-left" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p> <span class="required-asterisk">*</span>
             @Html.TextBox("txtAudience", (string)ViewBag.Audience, new { @class = "span12 input-small", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.Audience })
         </div>
@@ -95,9 +95,9 @@
         <div class="span3 margin-top10 paddingleft25px">
             <p>Geography <span class="required-asterisk">*</span></p>
             @Html.TextBoxFor(model => model.GeographyTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.GeographyTitle })
-        </div>
+        </div>*@
         
-         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(tactic.PlanTacticId, Enums.EntityType.Tactic.ToString(),4)
+         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(tactic.PlanTacticId, Enums.EntityType.Tactic.ToString(),0)
     </div>
    
                                         

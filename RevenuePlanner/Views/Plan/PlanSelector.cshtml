@@ -57,7 +57,7 @@
         <h2>Plan Selector</h2>
     </li>
 </ul>
-<ul class="nav nav-tabs" id="BUTabs"></ul>
+@*<ul class="nav nav-tabs" id="BUTabs"></ul>*@
 <div class="padding-content padding-top0 cf source-sans-proregular">
     <table id="table_baseline" class="table table-striped table-hover">
         <thead>
@@ -124,7 +124,7 @@
 
         // Function to attach event to li element of Business Units tab
         $('#BUTabs').on('click', 'li', function (e) {
-            RemoveActiveClass_BUTab();
+            //RemoveActiveClass_BUTab();
             $(this).addClass("active");
             TabClick();
         });
@@ -229,7 +229,8 @@
             url: '@Url.Content("~/Plan/GetYearsTab/")',
             success: function (r) {
                 BindYearTabs(r);
-                LoadBUData(); //function call to load Business Units tabs
+                TabClick()
+                //LoadBUData(); //function call to load Business Units tabs
             }
         });
     }
@@ -271,7 +272,7 @@
 
     /***** Code to load Business Units Tab *****/
 
-    function LoadBUData() {
+@*    function LoadBUData() {
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/GetBUTab/")',
@@ -283,35 +284,35 @@
                 window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
-                    BindBUTabs(r);
+                    //BindBUTabs(r);
                     TabClick();
                 }
             }
     });
-    }
+    }*@
 
-    function BindBUTabs(BU) {
-        if (typeof BU != 'undefined') {
-            $('#BUTabs').empty();
-            if (BU.length) {
-                for (i in BU) {
-                    $("#BUTabs").append('<li class="pull-left" id="' + BU[i].id + '"><a >' + BU[i].title + '</a></li>');
-                }
-                $("#BUTabs").find('li:first').addClass("active");
-            }
-            else {
-                $("#BUTabs").append('No Records found for This Selection.');
-            }
-        }
-    }
+    //function BindBUTabs(BU) {
+    //    if (typeof BU != 'undefined') {
+    //        $('#BUTabs').empty();
+    //        if (BU.length) {
+    //            for (i in BU) {
+    //                $("#BUTabs").append('<li class="pull-left" id="' + BU[i].id + '"><a >' + BU[i].title + '</a></li>');
+    //            }
+    //            $("#BUTabs").find('li:first').addClass("active");
+    //        }
+    //        else {
+    //            $("#BUTabs").append('No Records found for This Selection.');
+    //        }
+    //    }
+    //}
 
-    function RemoveActiveClass_BUTab() {
-        $('#BUTabs').children().each(function () {
-            if ($(this).hasClass('active')) {
-                $(this).removeClass("active");
-            }
-        });
-    }
+    //function RemoveActiveClass_BUTab() {
+    //    $('#BUTabs').children().each(function () {
+    //        if ($(this).hasClass('active')) {
+    //            $(this).removeClass("active");
+    //        }
+    //    });
+    //}
 
     /***** Code to Fill Plan table *****/
 
@@ -367,7 +368,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/GetPlanSelectorData/")',
-            data: { Year: SelectedYear, BusinessUnit: SelectedBU },
+            data: { Year: SelectedYear },
             dataType: "json",
             success: function (r) {
                 if (r.serviceUnavailable != 'undefined' && r.serviceUnavailable == '#') {
@@ -396,11 +397,11 @@
     /***** Code to fill Plan table according the filter *****/
     function TabClick() {
         var SelectedYear = $('#YearTabs > li.active a').text();
-        var SelectedBU = $('#BUTabs > li.active').attr("id");
-        if (SelectedBU === 'undefined') {
-            SelectedBU = "";
-        }
-        LoadPlanData(SelectedYear, SelectedBU);
+        //var SelectedBU = $('#BUTabs > li.active').attr("id");
+        //if (SelectedBU === 'undefined') {
+        //    SelectedBU = "";
+        //}
+        LoadPlanData(SelectedYear);
     }
 
     function TruncateTitle() {

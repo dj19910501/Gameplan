@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Budgeting";
     ViewBag.PageTitle = "Budgeting";
-    bool showBid = ViewBag.showBid;
+    //bool showBid = ViewBag.showBid;
     int CurrentPlanId = ViewBag.PlanId;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string type = Convert.ToString(Request.QueryString["type"]);
@@ -68,7 +68,7 @@
     </div>
 </div>
 <div class="filter-base source-sans-prosemibold">
-@{
+@*@{
     if (showBid == true)
     {
         <div class="businessUnit">
@@ -91,7 +91,7 @@
                 @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text" ,myView), new { @class = "ddlStyleReport hide" })
             </span>
         </div>
-    }
+    }*@
 </div>
 <div id="DivloadPlan"></div>
 <div id="divTabData" style="margin-top: 20px;margin-bottom: 30px;"></div>
@@ -129,8 +129,8 @@
     $(document).ready(function () {
         $("#errorMessageDuplicatePlan").slideUp(300);
         $(".selectBox select").selectbox();
-        LoadPlanBuBusinessUnit($('#ddlBusinessUnit').val());
-        $("#hdnBudgetingBussinessUnitId").val($('#ddlBusinessUnit').val());
+        //LoadPlanBuBusinessUnit($('#ddlBusinessUnit').val());
+        //$("#hdnBudgetingBussinessUnitId").val($('#ddlBusinessUnit').val());
     });
     function ExpandItems() {
         expand = $("#hdnBudgetingExpandId").val();
@@ -245,17 +245,19 @@
             CurrentView = $('#ddlViewBy').val();
             TabLoad(currentTab);
         });
-        $('#ddlBusinessUnit').change(function () {
-            Bid = $('#ddlBusinessUnit').val();
-            LoadPlanBuBusinessUnit(Bid);
-            $("#hdnBudgetingBussinessUnitId").val(Bid);
 
-        $('.datepicker.dropdown-menu').css("display", "none");
-        $("#slidepanel").css("display", "none");
-        $("#slidepanel-container").empty();
-        $("#errorMessageDuplicatePlan").slideUp(300);
-        HideMessages();
-    });
+        //$('#ddlBusinessUnit').change(function () {
+        //    Bid = $('#ddlBusinessUnit').val();
+        //    LoadPlanBuBusinessUnit(Bid);
+        //    $("#hdnBudgetingBussinessUnitId").val(Bid);
+
+        //$('.datepicker.dropdown-menu').css("display", "none");
+        //$("#slidepanel").css("display", "none");
+        //$("#slidepanel-container").empty();
+        //$("#errorMessageDuplicatePlan").slideUp(300);
+        //HideMessages();
+        //});
+
     function TabLoad(sender) {
         currentTab = sender;
         $("#hdnBudgetingCurrentTab").val(currentTab);
@@ -324,9 +326,10 @@
 }
 
 
-function LoadPlanBuBusinessUnit(Bid) {
+@*function LoadPlanBuBusinessUnit(Bid) {
     $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true;  });
-    }
+}*@
+
     function populateNF(items, id) {
         var $dropdown = $("#" + id);
         var $html = '';

@@ -18,8 +18,8 @@
     bool PublisheStatus = ViewBag.Flag;
     @Html.Hidden("PublisheStatus", PublisheStatus);
     var currentdate = System.DateTime.Today.ToShortDateString();
-    string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
-    @Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
+    //string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
+    //@Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
     string IsOwner = Convert.ToString(ViewBag.IsOwner);
     @Html.Hidden("IsOwner", IsOwner);
 }
@@ -110,20 +110,17 @@
                         @Html.DropDownListFor(model => model.IntegrationInstanceIdCW, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
-                </div>
-                if (Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")
-                {
+                </div>                
                 <div class="cf inputs-aligned-horizontal">
                     <div>
                         <input id="btnSubmit" type="button" value="Save" title="save" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 179px; float: left; margin-right: 30px;" />
                         <button id="btnCancel" class="close-form btn-link source-sans-proregular" style="padding-top: 8px; color: #999999; text-decoration: underline;" type="button" tabindex="12">Cancel</button>
                     </div>
-                </div>
-                }
+                </div>               
             }
         </div>
 
-        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized && Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic    
+        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic    
         {
             <p class="small-content source-sans-prolight" style="clear: both;">Manage integration instances in <a href="@Url.Action("Index", "ExternalService")" style="text-decoration:underline;">Preferences > Integrations.</a></p>
         }
@@ -215,7 +212,7 @@
             window.location.href = "@Url.Action("Create", "Model")";
         });
 
-        if ('@ModelStatus' == "Draft" && ('@IsViewEditBusinessUnit.ToString().ToLower()' == 'true' || '@IsOwner.ToString().ToLower()' == 'true')) {
+        if ('@ModelStatus' == "Draft" && ('@IsOwner.ToString().ToLower()' == 'true')) {
             $("#publish").removeClass('btn-blue-disable');
             $("#publish").addClass('btn-blue');
         }
@@ -313,7 +310,7 @@
                     type: "GET",
                     cache: false,
                     url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-                    data: { Title: titleName, BusinessUnitId: '@BusinessUnitId' },
+                    data: { Title: titleName },
                     dataType: "json",
                     success: function (data) {
                         if (data == 'exist') {

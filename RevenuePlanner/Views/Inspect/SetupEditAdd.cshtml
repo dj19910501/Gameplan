@@ -188,7 +188,7 @@
     </ul>
 
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
-        <div class="span3 margin-top10" style="clear: both;">
+        @*<div class="span3 margin-top10" style="clear: both;">
             <p class="ellipsis-left" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p> <span class="required-asterisk">*</span>
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
                 @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", label = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience), require = "true" })
@@ -209,8 +209,8 @@
             <span class="verticalIdSelectBox" style="margin-left: -2px;">
                 @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", label = "Geography" })
             </span>
-        </div>
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 4, Enums.InspectPopupMode.Edit.ToString())
+        </div>*@
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
     </div>   
 
     <div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">

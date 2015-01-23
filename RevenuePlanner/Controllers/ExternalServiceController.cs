@@ -150,8 +150,7 @@ namespace RevenuePlanner.Controllers
                 ////Get published plan list year for logged in client.
                 var objPlan = (from _pln in db.Plans
                                join _mdl in db.Models on _pln.ModelId equals _mdl.ModelId
-                               join bu in db.BusinessUnits on _mdl.BusinessUnitId equals bu.BusinessUnitId
-                               where bu.ClientId == clientId && bu.IsDeleted == false && _mdl.IsDeleted == false && _pln.IsDeleted == false && _pln.Status == status
+                               where _mdl.ClientId == clientId && _mdl.IsDeleted == false && _pln.IsDeleted == false && _pln.Status == status
                                select _pln).OrderBy(_pln => _pln.Year).ToList().Select(_pln => _pln.Year).Distinct().ToList();
 
                 ViewBag.Year = objPlan;
@@ -180,7 +179,7 @@ namespace RevenuePlanner.Controllers
                 string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
                 int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
 
-                List<string> lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                //List<string> lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
 
                 //// Get Custom Restriction model.
                 List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
@@ -189,21 +188,20 @@ namespace RevenuePlanner.Controllers
                 int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                 lstUserCustomRestriction = lstUserCustomRestriction.Where(_custmRestrctn => (_custmRestrctn.Permission == ViewOnlyPermission || _custmRestrctn.Permission == ViewEditPermission) && _custmRestrctn.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).ToList();
 
-                List<Guid> lstBUs = new List<Guid>();
-                foreach (UserCustomRestrictionModel o in lstUserCustomRestriction)
-                {
-                    lstBUs.Add(new Guid(o.CustomFieldId));
-                }
+                //List<Guid> lstBUs = new List<Guid>();
+                //foreach (UserCustomRestrictionModel o in lstUserCustomRestriction)
+                //{
+                //    lstBUs.Add(new Guid(o.CustomFieldId));
+                //}
 
                 // Get the list of plan, filtered by Business Unit , Year selected and published plan for logged in client.
                 if (Int_Year > 0)
                 {
                     objIntegrationPlanList = (from _pln in db.Plans
                                               join _mdl in db.Models on _pln.ModelId equals _mdl.ModelId
-                                              join bu in db.BusinessUnits on _mdl.BusinessUnitId equals bu.BusinessUnitId
-                                              where bu.ClientId == clientId && bu.IsDeleted == false && _mdl.IsDeleted == false &&
-                                              _pln.IsDeleted == false && _pln.Year == Year && _pln.Status == status && lstBUs.Contains(_mdl.BusinessUnitId)
-                                              select new { _pln, _mdl }).OrderByDescending(d => d._pln.ModifiedDate ?? d._pln.CreatedDate).ThenBy(d => d._pln.Title).ToList().Select(d => new IntegrationPlanList { PlanId = d._pln.PlanId, PlanTitle = d._pln.Title, FolderPath = d._pln.EloquaFolderPath, BUId = d._mdl.BusinessUnitId }).ToList();
+                                              where _mdl.ClientId == clientId && _mdl.IsDeleted == false &&
+                                              _pln.IsDeleted == false && _pln.Year == Year && _pln.Status == status
+                                              select new { _pln, _mdl }).OrderByDescending(d => d._pln.ModifiedDate ?? d._pln.CreatedDate).ThenBy(d => d._pln.Title).ToList().Select(d => new IntegrationPlanList { PlanId = d._pln.PlanId, PlanTitle = d._pln.Title, FolderPath = d._pln.EloquaFolderPath }).ToList();
 
                     //// Set permission for the plan on bases of BU permission
                     foreach (var item in objIntegrationPlanList)

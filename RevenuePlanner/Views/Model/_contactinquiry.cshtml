@@ -14,12 +14,12 @@
     var nlform2 = new NLForm(document.getElementById('nl-form2'));
 
     // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-    if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false') {
-        $('#nl-form2 :input').each(function () {
-            if ($(this).attr('type') == 'text') {
-                $(this).attr('readonly', 'readonly');
-            }
-        });
-    }
+    //if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false') {
+    //    $('#nl-form2 :input').each(function () {
+    //        if ($(this).attr('type') == 'text') {
+    //            $(this).attr('readonly', 'readonly');
+    //        }
+    //    });
+    //}
     // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
 </script>

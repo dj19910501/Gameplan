@@ -7,7 +7,7 @@
     string strValidateForEmptyField = Common.objCached.ValidateForValidField;
     string strErrorOccured = Common.objCached.ErrorOccured;
     string ModelId = Convert.ToString(ViewBag.ModelId);
-    string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
+    //string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
     bool IsBenchmarked = ViewBag.IsBenchmarked;
     string errormsg = Convert.ToString(TempData["StageNotExist"]);
     /*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*/
@@ -19,9 +19,9 @@
     @Html.Hidden("Planflag", flag);
                                   var currentdate = System.DateTime.Today.ToShortDateString();
                                   // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                                  string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);   
-    @Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
-                                                                  string IsOwner = Convert.ToString(ViewBag.IsOwner);
+                                  //string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);   
+                                  //@Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
+                                  string IsOwner = Convert.ToString(ViewBag.IsOwner);
     @Html.Hidden("IsOwner", IsOwner);
                                     // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                                     ViewBag.ModelIdPartial = ViewBag.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
@@ -57,7 +57,7 @@
     @Html.Hidden("ValidateForEmptyField", @strValidateForEmptyField)
     @Html.Hidden("ErrorOccured", @strErrorOccured)
     @Html.Hidden("ModelId", ModelId)
-    @Html.Hidden("_BusinessUnitId", BusinessUnitId)
+    //@Html.Hidden("_BusinessUnitId", BusinessUnitId)
     @Html.Hidden("Errormsg", errormsg)
     @Html.Hidden("hdnMsg", (string)ViewBag.Msg, new { id = "hdnMsg" })
     @Html.Hidden("TempDataErrorMsg", ((string)TempData["ErrorMessage"]))
@@ -84,13 +84,13 @@
 
             </li>
             <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
-                <a href="#" onclick="LoadModelData(@v.ModelId,'@v.BusinessUnitId', true)">@Html.Raw("v")@v.Version</a>
+                <a href="#" onclick="LoadModelData(@v.ModelId, true)">@Html.Raw("v")@v.Version</a>
             </li>
                 }
                 else
                 {
             <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
-                <a href="#" onclick="LoadModelData(@v.ModelId,'@v.BusinessUnitId',false)">@Html.Raw("v")@v.Version</a>
+                <a href="#" onclick="LoadModelData(@v.ModelId, false)">@Html.Raw("v")@v.Version</a>
             </li>
                 }
             }
@@ -232,14 +232,14 @@
                 <br />
                 <div class="container-button">
                     @{ 
-                        if (Model.lstmodelstage.Count() > 0)
-                        {
-                            if (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")  // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                            {
-                                        <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
-                                        <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
-                            }
-                        }
+        if (Model.lstmodelstage.Count() > 0)
+        {
+            if (Convert.ToString(ViewBag.IsOwner) == "True" )  // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            {
+                        <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
+                        <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
+            }
+        }
                     }
                 </div>
                 @Html.Hidden("isPublishButton")
@@ -309,7 +309,7 @@
                 type: "GET",
                 cache: false,
                 url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-                data: { Title: titleName, BusinessUnitId: '@BusinessUnitId' },
+                data: { Title: titleName },
                 dataType: "json",
                 success: function (data) {
                     if (data == 'exist') {
@@ -366,7 +366,7 @@
 
     $(".targetStageclick").click(function () {
         // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false' && $('#IsOwner').val().toLowerCase() == 'false') {
+        if ( $('#IsOwner').val().toLowerCase() == 'false') {
             return false;
         }
         // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
@@ -420,7 +420,7 @@
 
 $(document).ready(function () {
     // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-    if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false' && $('#IsOwner').val().toLowerCase() == 'false') {
+    if ( $('#IsOwner').val().toLowerCase() == 'false') {
         $('#form1 :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
                 $(this).attr('readonly', 'readonly');
@@ -489,17 +489,17 @@ $(document).ready(function () {
 
     $('.doubleText').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
     $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-    LoadModelData($("#ModelId").val(), $("#_BusinessUnitId").val(), true);
+    LoadModelData($("#ModelId").val(), true);
 });
 $(".subheader").click(function () {
     $(".subheader").removeClass('active');
     $(this).addClass('active');
 });
-function LoadModelData(modelId, BusinessUnitId, bool) {
+function LoadModelData(modelId, bool) {
 
     if (modelId == $("#latestModelId").val()) {
         $("#button-save").show();
-        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+        if ($('#IsOwner').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             $("#btnsave").show();
         MakeEditable();
         $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
@@ -508,7 +508,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
     }
     else {
         $("#button-save").hide();
-        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+        if ($('#IsOwner').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             $("#btnsave").hide();
         MakeViewOnly();//Bug 17:Should not be able to edit a published model
         $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
@@ -560,7 +560,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
          modelStatus = obj.Status;/* changed by Nirav shah for TFS Point :252 editing a published model*/
          _AddressableContract = obj.AddressableContacts;
          if (modelId == $("#latestModelId").val()) {
-             if (obj.Status.toString().toLocaleLowerCase() == 'draft' && ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true')) {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+             if (obj.Status.toString().toLocaleLowerCase() == 'draft' && ( $('#IsOwner').val().toLowerCase() == 'true')) {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                  $("#publishModelDisabled").hide();
                  $("#publishModel").show();
                  $("#publishModel").attr('ModelId', obj.ModelId);
@@ -577,7 +577,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
              $("#publishModel").attr('ModelId', '0');
          }
          $("#divModelOverview").html('');
-         $("#divModelOverview").load('LoadModelOverview' + '?title=' + encodeURIComponent(obj.Title) + '&BusinessUnitId=' + obj.BusinessUnitId + '&ModelId=' + obj.ModelId);
+         $("#divModelOverview").load('LoadModelOverview' + '?title=' + encodeURIComponent(obj.Title) + '&ModelId=' + obj.ModelId);
      });
  }
  function fillmodelfunnel(data) {
@@ -972,7 +972,7 @@ $("#publishModel").click(function () {
                 }
     }
     $('#isPublishButton').val('publish');
-    if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true')     // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+    if ( $('#IsOwner').val().toLowerCase() == 'true')     // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
         $('#btnsave').click();
     $('#isPublishButton').val('');
 });
@@ -981,13 +981,13 @@ $("#publishModel").click(function () {
 function onClickActivity() {
     $('#nl-form > div[class="nl-field nl-dd"]').find('li').click(function (e) {
         var Title = $(this).text();
-        var option = $.grep($('#BusinessUnitId option'), function (value) { return $(value).text() == Title; })
+        //var option = $.grep($('#BusinessUnitId option'), function (value) { return $(value).text() == Title; })
         $.ajax(
         {
             type: "GET",
             cache: false,
             url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-            data: { Title: encodeURIComponent($("#lnkTitle").html().trim()), BusinessUnitId: $(option[0]).val() },
+            data: { Title: encodeURIComponent($("#lnkTitle").html().trim()) },
             dataType: "json",
             success: function (data) {
                 if (data == 'exist') {

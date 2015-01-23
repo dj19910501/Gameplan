@@ -155,12 +155,11 @@
         </li>
     </ul>
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0" id="attributesControlsArea">
-        <div class="span3 margin-top10" style="clear: both;">
+        @*<div class="span3 margin-top10" style="clear: both;">
             <p>Business Unit</p>
             @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
-        </div>
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString(), 1, Enums.InspectPopupMode.Edit.ToString())
-
+        </div>*@
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
     </div>
     
                 if ((bool)ViewBag.IsOwner)

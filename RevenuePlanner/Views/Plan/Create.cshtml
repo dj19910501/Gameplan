@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     string strPlanId = Convert.ToString(Model.PlanId);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
-    bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;
+    //bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;
     ViewBag.strplanid = strPlanId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
     ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
     bool isBackFromAssortment = false;//Added by Mitesh vaishnav on 25/07/2014 for PL ticket 619
@@ -27,7 +27,7 @@
 }
 
 @Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
-@Html.Hidden("IsBusinessUnitEditable", IsBusinessUnitEditable)
+@*@Html.Hidden("IsBusinessUnitEditable", IsBusinessUnitEditable)*@
 
 @section Sidebar
 {
@@ -59,7 +59,7 @@
                         <div id="divPlanDefinationEnabled">
                             I'm using the 
                         @{
-    if (strPlanId == "" || strPlanId == "0")
+    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
     {
                             @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
                             <span id="ModelTitle" class="source-sans-proregular"></span>
@@ -73,7 +73,7 @@
 						@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })
                             in
                         @{
-    if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
+    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
     {
                             @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
     }
@@ -85,7 +85,7 @@
                             @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                             with a
                         @{
-    if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
+    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
     {
                             @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType })
     }
@@ -101,7 +101,7 @@
                         @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat" })
                             allocated by
                         @{
-    if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
+    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
     {
                             @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue hide", placeholder = @Model.AllocatedBy })
     }
@@ -307,7 +307,8 @@
               });
           }
           // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-          if ($('#IsBusinessUnitEditable').val().toLowerCase() == 'false') {
+          if ('@isPlanDefinationDisable'.toLowerCase().toString() == "true")
+          {
               $('#form1 :input').each(function () {
                   if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
                       $(this).attr('readonly', 'readonly');

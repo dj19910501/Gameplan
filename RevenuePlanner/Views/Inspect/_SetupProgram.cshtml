@@ -83,12 +83,12 @@
         </li>
     </ul>
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
-        <div class="span3 margin-top10">
+        @*<div class="span3 margin-top10">
             <p>Business Unit</p>
             @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
-        </div>
+        </div>*@
         
-         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(program.PlanProgramId, Enums.EntityType.Program.ToString(), 1)
+         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(program.PlanProgramId, Enums.EntityType.Program.ToString(), 0)
     </div>     
     //End - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section                           
     <span class="flag-icon"></span>

@@ -36,6 +36,8 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool IsDisplayForFilter { get; set; }
+        public string AbbreviationForMulti { get; set; }
+        public bool IsDefault { get; set; }
     
         public virtual CustomFieldType CustomFieldType { get; set; }
         public virtual ICollection<CustomField_Entity> CustomField_Entity { get; set; }
