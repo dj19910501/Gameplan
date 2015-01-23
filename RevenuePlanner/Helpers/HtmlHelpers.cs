@@ -339,7 +339,7 @@ namespace RevenuePlanner.Helpers
 
         #region Advance Budgeting
 
-        static string formatThousand = "#,##.##";
+        static string formatThousand = "#,#0.##";
         static string budgetError = " budgetError";
 
         #region Column1
