@@ -11,6 +11,8 @@ using Elmah;
 using EvoPdf.HtmlToPdf;
 using System.Web;
 using System.IO;
+using System.Web.Script.Serialization;
+using System.Data.Objects.SqlClient;
 
 namespace RevenuePlanner.Controllers
 {
@@ -42,11 +44,13 @@ namespace RevenuePlanner.Controllers
             // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.TacticActualsAddEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
             ViewBag.ActiveMenu = activeMenu;
-
+			
             ////Start Added by Mitesh Vaishnav for PL ticket #846
-            Guid reportBusinessUnitId = Guid.Empty;
+            //Guid reportBusinessUnitId = Guid.Empty;
             Sessions.ReportPlanIds = new List<int>();
-            Sessions.ReportBusinessUnitIds = new List<Guid>();
+			// Added by Arpita Soni for Ticket #1148 on 01/23/2015
+            Sessions.ReportCustomFieldIds = null;
+			//Sessions.ReportBusinessUnitIds = new List<Guid>();
 
             //// Set Report BusinessUnitId in Session.
             if (Sessions.PlanId > 0)
@@ -55,14 +59,14 @@ namespace RevenuePlanner.Controllers
                 //reportBusinessUnitId = db.Plans.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Model.BusinessUnitId).FirstOrDefault();
                 //Sessions.ReportBusinessUnitIds.Add(reportBusinessUnitId);
             }
-
+			//// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
             //// List of Tab - Parent
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
             lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Plan.ToString(), Value = ReportTabType.Plan.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Vertical.ToString(), Value = ReportTabType.Vertical.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Geography.ToString(), Value = ReportTabType.Geography.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = ReportTabType.Audience.ToString() });
+           // lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Vertical.ToString(), Value = ReportTabType.Vertical.ToString() });
+            //lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Geography.ToString(), Value = ReportTabType.Geography.ToString() });
+           // lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
+           // lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = ReportTabType.Audience.ToString() });
             lstViewByTab = lstViewByTab.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewByTab = lstViewByTab;
 
@@ -73,29 +77,45 @@ namespace RevenuePlanner.Controllers
             lstViewByAllocated = lstViewByAllocated.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewByAllocated = lstViewByAllocated;
 
-            //// Geography Value
-            List<SelectListItem> lstGeography = new List<SelectListItem>();
-            lstGeography = db.Geographies.Where(geography => geography.ClientId == Sessions.User.ClientId && geography.IsDeleted == false).ToList().Select(geography => new SelectListItem { Text = geography.Title, Value = geography.GeographyId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewGeography = lstGeography.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+			//// Start - Added by Arpita Soni for Ticket #1148 on 01/23/2015
+			//// Custom Field Value
+            List<CustomField> lstCustomFields = new List<CustomField>();
+            string tactic = Enums.EntityType.Tactic.ToString();
+            lstCustomFields = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId &&
+                customfield.EntityType == tactic &&
+                customfield.IsDisplayForFilter == true &&
+                customfield.IsDeleted == false).ToList();
+
+            //// Filter Custom Fields having no options
+            var lstCustomFieldIds = db.CustomFieldOptions.Select(customfieldid => customfieldid.CustomFieldId).Distinct();
+            lstCustomFields = lstCustomFields.Where(c => lstCustomFieldIds.Contains(c.CustomFieldId)).ToList();
+			
+			ViewBag.ViewCustomFields = lstCustomFields;
+			//// End - Added by Arpita Soni for Ticket #1148 on 01/23/2015			
+            
+			//// Geography Value
+            //List<SelectListItem> lstGeography = new List<SelectListItem>();
+            //lstGeography = db.Geographies.Where(geography => geography.ClientId == Sessions.User.ClientId && geography.IsDeleted == false).ToList().Select(geography => new SelectListItem { Text = geography.Title, Value = geography.GeographyId.ToString(), Selected = true }).ToList();
+            //ViewBag.ViewGeography = lstGeography.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
 
             //// Businessunit Value
-            List<SelectListItem> lstBusinessUnit = new List<SelectListItem>();
-            lstBusinessUnit = db.BusinessUnits.Where(businessunit => businessunit.ClientId == Sessions.User.ClientId && businessunit.IsDeleted == false).ToList().Select(businessunit => new SelectListItem { Text = businessunit.Title, Value = businessunit.BusinessUnitId.ToString(), Selected = (businessunit.BusinessUnitId == reportBusinessUnitId ? true : false) }).ToList();
-            ViewBag.ViewBusinessUnit = lstBusinessUnit.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+            //List<SelectListItem> lstBusinessUnit = new List<SelectListItem>();
+            //lstBusinessUnit = db.BusinessUnits.Where(businessunit => businessunit.ClientId == Sessions.User.ClientId && businessunit.IsDeleted == false).ToList().Select(businessunit => new SelectListItem { Text = businessunit.Title, Value = businessunit.BusinessUnitId.ToString(), Selected = (businessunit.BusinessUnitId == reportBusinessUnitId ? true : false) }).ToList();
+            //ViewBag.ViewBusinessUnit = lstBusinessUnit.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
 
             //// Vertical value
-            List<SelectListItem> lstVertical = new List<SelectListItem>();
-            lstVertical = db.Verticals.Where(vertical => vertical.ClientId == Sessions.User.ClientId && vertical.IsDeleted == false).ToList().Select(vertical => new SelectListItem { Text = vertical.Title, Value = vertical.VerticalId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewVertical = lstVertical.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+            //List<SelectListItem> lstVertical = new List<SelectListItem>();
+            //lstVertical = db.Verticals.Where(vertical => vertical.ClientId == Sessions.User.ClientId && vertical.IsDeleted == false).ToList().Select(vertical => new SelectListItem { Text = vertical.Title, Value = vertical.VerticalId.ToString(), Selected = true }).ToList();
+            //ViewBag.ViewVertical = lstVertical.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
 
             //// Audience Value
-            List<SelectListItem> lstAudience = new List<SelectListItem>();
-            lstAudience = db.Audiences.Where(audience => audience.ClientId == Sessions.User.ClientId && audience.IsDeleted == false).ToList().Select(audience => new SelectListItem { Text = audience.Title, Value = audience.AudienceId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewAudience = lstAudience.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+            //List<SelectListItem> lstAudience = new List<SelectListItem>();
+            //lstAudience = db.Audiences.Where(audience => audience.ClientId == Sessions.User.ClientId && audience.IsDeleted == false).ToList().Select(audience => new SelectListItem { Text = audience.Title, Value = audience.AudienceId.ToString(), Selected = true }).ToList();
+            //ViewBag.ViewAudience = lstAudience.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
 
             //// Get Plan List
             List<SelectListItem> lstYear = new List<SelectListItem>();
-            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId && plan.Model.IsDeleted == false && plan.IsActive == true).ToList();
+            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.BusinessUnit.ClientId == Sessions.User.ClientId && plan.Model.IsDeleted == false && plan.IsActive == true).ToList();
             if (lstPlan.Count == 0)
             {
                 TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
@@ -371,6 +391,11 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Report General
+        public class CustomFieldFilter
+        {
+            public int CustomFieldId { get; set; }
+            public string OptionId { get; set; }
+        }
 
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #846

@@ -392,6 +392,26 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        /// <summary>
+        /// Added By: Arpita Soni for PL ticket #1148
+        /// Date: 01/23/2015
+        /// Store multiple selected Custom Field Ids 
+        /// </summary>
+        public static RevenuePlanner.Controllers.ReportController.CustomFieldFilter[] ReportCustomFieldIds
+        {
+            get
+            {
+                if (HttpContext.Current.Session["ReportCustomFieldIds"] != null)
+                {
+                    return (RevenuePlanner.Controllers.ReportController.CustomFieldFilter[])HttpContext.Current.Session["ReportCustomFieldIds"];
+                }
+                return null;
+            }
+            set
+            {
+                HttpContext.Current.Session["ReportCustomFieldIds"] = value;
+            }
+        }
 
     }
 }
