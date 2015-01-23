@@ -85,13 +85,14 @@
     </span>
         </div>
         }
-        <div id="divViewBy" style="display: none;">
+    }*@
+        <div id="divViewBy" style="display: none; border-left: none;margin-left: 0;padding-left: 0;">
             @Html.Label("View By:", new { id = "lblViewBy",style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px;" })
             <span class="selectBox" id="ddlCampaignSelectBox" style="width: 158px;">
                 @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text" ,myView), new { @class = "ddlStyleReport hide" })
             </span>
         </div>
-    }*@
+    
 </div>
 <div id="DivloadPlan"></div>
 <div id="divTabData" style="margin-top: 20px;margin-bottom: 30px;"></div>
@@ -129,7 +130,7 @@
     $(document).ready(function () {
         $("#errorMessageDuplicatePlan").slideUp(300);
         $(".selectBox select").selectbox();
-        //LoadPlanBuBusinessUnit($('#ddlBusinessUnit').val());
+        LoadPlanBuBusinessUnit();
         //$("#hdnBudgetingBussinessUnitId").val($('#ddlBusinessUnit').val());
     });
     function ExpandItems() {
@@ -326,9 +327,9 @@
 }
 
 
-@*function LoadPlanBuBusinessUnit(Bid) {
-    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true;  });
-}*@
+function LoadPlanBuBusinessUnit() {
+    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")', function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true;  });
+}
 
     function populateNF(items, id) {
         var $dropdown = $("#" + id);

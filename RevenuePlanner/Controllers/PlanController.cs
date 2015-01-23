@@ -4969,12 +4969,12 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="Bid"></param>
         /// <returns></returns>
-        public ActionResult BudgetPlanList(string Bid)
+        public ActionResult BudgetPlanList()
         {
             HomePlan objHomePlan = new HomePlan();
             List<SelectListItem> planList;
-            if (Bid == "false")
-            {
+            //if (Bid == "false")
+            //{
                 planList = Common.GetPlan().Select(_pln => new SelectListItem() { Text = _pln.Title, Value = _pln.PlanId.ToString() }).OrderBy(_pln => _pln.Text).ToList();
                 if (planList.Count > 0)
                 {
@@ -4995,47 +4995,47 @@ namespace RevenuePlanner.Controllers
                             Sessions.PublishedPlanId = 0;
                     }
                 }
-            }
-            else
-            {
-                /*changed by Nirav for plan consistency on 14 apr 2014*/
-                Guid bId = Sessions.User.ClientId;
-                //if (Sessions.BusinessUnitId == bId)
-                //{
-                //    bId = Common.GetPlan().Where(_pln => _pln.PlanId == Sessions.PlanId).Select(_pln => _pln.Model.BusinessUnitId).FirstOrDefault();
-                //}
-                //Sessions.BusinessUnitId = bId;
+            //}
+            //else
+            //{
+            //    /*changed by Nirav for plan consistency on 14 apr 2014*/
+            //    Guid bId = Sessions.User.ClientId;
+            //    //if (Sessions.BusinessUnitId == bId)
+            //    //{
+            //    //    bId = Common.GetPlan().Where(_pln => _pln.PlanId == Sessions.PlanId).Select(_pln => _pln.Model.BusinessUnitId).FirstOrDefault();
+            //    //}
+            //    //Sessions.BusinessUnitId = bId;
 
-                planList = Common.GetPlan().Where(_pln => _pln.Model.ClientId == bId).Select(_pln => new SelectListItem() { Text = _pln.Title, Value = _pln.PlanId.ToString() }).OrderBy(_pln => _pln.Text).ToList();
-                if (planList.Count > 0)
-                {
-                    var objexists = planList.Where(_pln => _pln.Value == Sessions.PlanId.ToString()).ToList();
-                    if (objexists.Count != 0)
-                    {
-                        planList.FirstOrDefault(_pln => _pln.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
-                    }
-                    else
-                    {
-                        planList.FirstOrDefault().Selected = true;
-                        int planID = 0;
-                        int.TryParse(planList.Select(_pln => _pln.Value).FirstOrDefault(), out planID);
-                        Sessions.PlanId = planID;
-                        if (!Common.IsPlanPublished(Sessions.PlanId))
-                        {
-                            string planPublishedStatus = Enums.PlanStatus.Published.ToString();
-                            var activeplan = db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false && _pln.Status == planPublishedStatus).ToList();
-                            if (activeplan.Count > 0)
-                            {
-                                Sessions.PublishedPlanId = planID;
-                            }
-                            else
-                            {
-                                Sessions.PublishedPlanId = 0;
-                            }
-                        }
-                    }
-                }
-            }
+            //    planList = Common.GetPlan().Where(_pln => _pln.Model.ClientId == bId).Select(_pln => new SelectListItem() { Text = _pln.Title, Value = _pln.PlanId.ToString() }).OrderBy(_pln => _pln.Text).ToList();
+            //    if (planList.Count > 0)
+            //    {
+            //        var objexists = planList.Where(_pln => _pln.Value == Sessions.PlanId.ToString()).ToList();
+            //        if (objexists.Count != 0)
+            //        {
+            //            planList.FirstOrDefault(_pln => _pln.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
+            //        }
+            //        else
+            //        {
+            //            planList.FirstOrDefault().Selected = true;
+            //            int planID = 0;
+            //            int.TryParse(planList.Select(_pln => _pln.Value).FirstOrDefault(), out planID);
+            //            Sessions.PlanId = planID;
+            //            if (!Common.IsPlanPublished(Sessions.PlanId))
+            //            {
+            //                string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+            //                var activeplan = db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false && _pln.Status == planPublishedStatus).ToList();
+            //                if (activeplan.Count > 0)
+            //                {
+            //                    Sessions.PublishedPlanId = planID;
+            //                }
+            //                else
+            //                {
+            //                    Sessions.PublishedPlanId = 0;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
             objHomePlan.plans = planList;
 
             return PartialView("_BudgetingPlanList", objHomePlan);
