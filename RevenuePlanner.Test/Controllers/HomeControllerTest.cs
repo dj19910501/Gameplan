@@ -238,5 +238,146 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #endregion
+
+        #region PL#1144 Multi select: Add actuals page changes for custom fields 
+        
+        #region Add Actual view
+        /// <summary>
+        /// To check to retrieve Add actual view
+        /// </summary>
+        /// <auther>Sohel Pathan</auther>
+        /// <createddate>23Jan2015</createddate>
+        [TestMethod]
+        public void Get_Add_Actual_View()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call AddActual method
+            HomeController objHomeController = new HomeController();
+            Sessions.PlanId = DataHelper.GetPlanId();
+            var result = objHomeController.AddActual() as ViewResult;
+
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.AreEqual("AddActual", result.ViewName);
+                
+                Assert.IsNotNull(result.Model);
+                HomePlanModel objModel = (HomePlanModel)result.Model;
+                Assert.IsNotNull(objModel.objIndividuals);
+                
+                Assert.IsNotNull(result.ViewBag.IsPlanEditable);
+            }
+        }
+        #endregion
+
+        #region Add actual tactics with no filter paramater for OpenTactic tab 
+        /// <summary>
+        /// To check to retrieve add actual tactics with no filter paramters for open tactic tab
+        /// </summary>
+        /// <auther>Sohel Pathan</auther>
+        /// <createddate>23Jan2015</createddate>
+        [TestMethod]
+        public void Get_Add_Actual_Tactic_With_No_Filter_Parameter_For_OpenTactic_Tab()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call AddActual method
+            HomeController objHomeController = new HomeController();
+            Sessions.PlanId = DataHelper.GetPlanId();
+            int Status = 0; // Open tactic
+            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty) as JsonResult;
+
+            if (result != null)
+            {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Add actual tactics with no filter paramater for AllTactic tab
+        /// <summary>
+        /// To check to retrieve add actual tactics with no filter paramters for all tactic tab
+        /// </summary>
+        /// <auther>Sohel Pathan</auther>
+        /// <createddate>23Jan2015</createddate>
+        [TestMethod]
+        public void Get_Add_Actual_Tactic_With_No_Filter_Parameter_For_AllTactic_Tab()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call AddActual method
+            HomeController objHomeController = new HomeController();
+            Sessions.PlanId = DataHelper.GetPlanId();
+            int Status = 1; // All tactic
+            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty) as JsonResult;
+
+            if (result != null)
+            {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Add actual tactics with filter paramaters for OpenTactic tab
+        /// <summary>
+        /// To check to retrieve add actual tactics with filter paramters for open tactic tab
+        /// </summary>
+        /// <auther>Sohel Pathan</auther>
+        /// <createddate>23Jan2015</createddate>
+        [TestMethod]
+        public void Get_Add_Actual_Tactic_With_Filter_Parameters_For_OpenTactic_Tab()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call AddActual method
+            HomeController objHomeController = new HomeController();
+            Sessions.PlanId = DataHelper.GetPlanId();
+            int Status = 0; // Open tactic
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+            var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty) as JsonResult;
+
+            if (result != null)
+            {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Add actual tactics with filter paramaters for AllTactic tab
+        /// <summary>
+        /// To check to retrieve add actual tactics with filter paramters for all tactic tab
+        /// </summary>
+        /// <auther>Sohel Pathan</auther>
+        /// <createddate>23Jan2015</createddate>
+        [TestMethod]
+        public void Get_Add_Actual_Tactic_With_Filter_Parameters_For_AllTactic_Tab()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call AddActual method
+            HomeController objHomeController = new HomeController();
+            Sessions.PlanId = DataHelper.GetPlanId();
+            int Status = 1; // All tactic
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+            var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty) as JsonResult;
+
+            if (result != null)
+            {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #endregion
     }
 }

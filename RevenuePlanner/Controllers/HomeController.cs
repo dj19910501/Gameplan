@@ -420,42 +420,42 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> planList;
             //if (businessUnitId == "false")
             //{
-                var lstPlanAll = Common.GetPlan();
-                //// if condition added to dispaly only published plan on home page
-                if (objactivemenu.Equals(Enums.ActiveMenu.Home))
-                {
-                    //// Getting Active plan for all above models.
-                    string planPublishedStatus = Enums.PlanStatusValues.Single(planStatus => planStatus.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-                    planList = lstPlanAll.Where(plan => plan.Status.Equals(planPublishedStatus)).Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
-                }
-                else
-                {
-                    planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
-                }
+            var lstPlanAll = Common.GetPlan();
+            //// if condition added to dispaly only published plan on home page
+            if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+            {
+                //// Getting Active plan for all above models.
+                string planPublishedStatus = Enums.PlanStatusValues.Single(planStatus => planStatus.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+                planList = lstPlanAll.Where(plan => plan.Status.Equals(planPublishedStatus)).Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+            }
+            else
+            {
+                planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+            }
 
-                //var objexists = planList.Where(plan => plan.Value == currentPlanId.ToString()).ToList();
-                //if (objexists.Count != 0)
-                //{
-                //    planList.Single(plan => plan.Value.Equals(currentPlanId.ToString())).Selected = true;
-                //}
+            //var objexists = planList.Where(plan => plan.Value == currentPlanId.ToString()).ToList();
+            //if (objexists.Count != 0)
+            //{
+            //    planList.Single(plan => plan.Value.Equals(currentPlanId.ToString())).Selected = true;
+            //}
             //}
             //else
             //{
-                //Guid currentBusinessUnitId = new Guid(businessUnitId);
-                ////// added by Nirav for plan consistency on 14 apr 2014
-                //Sessions.BusinessUnitId = currentBusinessUnitId;
-                //var currentBusinessUnitsPlan = Common.GetPlan().Where(plan => plan.Model.BusinessUnitId == currentBusinessUnitId);
-                //// if condition added to dispaly only published plan on home page
-                //if (objactivemenu.Equals(Enums.ActiveMenu.Home))
-                //{
-                //    //// Getting Active plan for all above models.
-                //    string planPublishedStatus = Enums.PlanStatusValues.Single(planStatus => planStatus.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-                //    planList = currentBusinessUnitsPlan.Where(plan => plan.Status.Equals(planPublishedStatus)).Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
-                //}
-                //else
-                //{
-                //    planList = currentBusinessUnitsPlan.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
-                //}
+            //Guid currentBusinessUnitId = new Guid(businessUnitId);
+            ////// added by Nirav for plan consistency on 14 apr 2014
+            //Sessions.BusinessUnitId = currentBusinessUnitId;
+            //var currentBusinessUnitsPlan = Common.GetPlan().Where(plan => plan.Model.BusinessUnitId == currentBusinessUnitId);
+            //// if condition added to dispaly only published plan on home page
+            //if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+            //{
+            //    //// Getting Active plan for all above models.
+            //    string planPublishedStatus = Enums.PlanStatusValues.Single(planStatus => planStatus.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+            //    planList = currentBusinessUnitsPlan.Where(plan => plan.Status.Equals(planPublishedStatus)).Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+            //}
+            //else
+            //{
+            //    planList = currentBusinessUnitsPlan.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+            //}
 
             //    if (planList.Count > 0)
             //    {
@@ -624,66 +624,21 @@ namespace RevenuePlanner.Controllers
             bool recordsFound = true;
             if (filteredCustomFields.Count > 0)
             {
-                List<int> filterdCustomFieldIds = new List<int>();
-                List<int> filterdCustomFieldOptionIds = new List<int>();
-                List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
-
-                filteredCustomFields.ForEach(customField =>
-                {
-
-                    string[] splittedCustomField = customField.Split('_');
-                    filterdCustomFieldIds.Add(int.Parse(splittedCustomField[0]));
-                    filterdCustomFieldOptionIds.Add(int.Parse(splittedCustomField[1]));
-                });
-
-                filterdCustomFieldIds = filterdCustomFieldIds.Distinct().ToList();
-                filterdCustomFieldOptionIds = filterdCustomFieldOptionIds.Distinct().ToList();
-
-                lstCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => filterdCustomFieldIds.Contains(customFieldEntity.CustomFieldId))
-                                                                            .Select(customFieldEntity => customFieldEntity).ToList();
-
-                //lstEntityIds = lstCustomFieldEntities.Where(customFieldEntity => filterdCustomFieldOptionIds.Contains(int.Parse(customFieldEntity.Value)))
-                //                                    .Select(customFieldEntity => customFieldEntity.EntityId).Distinct().ToList();
-
-                lstCustomFieldEntities = lstCustomFieldEntities.Where(customFieldEntity => filterdCustomFieldOptionIds.Contains(int.Parse(customFieldEntity.Value)))
-                                                    .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
-
-                var CustomFieldWiseEntityList = filterdCustomFieldIds.Select(customField => new
-                {
-                    customField,
-                    EntityList = lstCustomFieldEntities.Where(cc => cc.CustomFieldId == customField).Select(cc => cc.EntityId).ToList(),
-                }).ToList();
-
-                var AndEntityList = from list in CustomFieldWiseEntityList
-                                    from option in list.EntityList
-                                    where CustomFieldWiseEntityList.All(l => l.EntityList.Any(o => o == option))
-                                    orderby option
-                                    select option;
-
-                if (AndEntityList.Count() > 0)
-                {
-                    lstEntityIds = AndEntityList.Distinct().ToList();
-                }
-                else
-                {
-                    recordsFound = false;
-                }
-
-                //lstEntityIds = lstCustomFieldEntities.GroupBy(customFieldEntity => customFieldEntity.EntityId).Where(customFieldEntity => customFieldEntity.Count() >= filterdCustomFieldIds.Count())
-                //                                    .Select(customFieldEntity => customFieldEntity.Key).Distinct().ToList();
+                //// get Allowed Entity Ids
+                lstEntityIds = GetAllowedEntitiesBasedonCustomFieldFilterParameter(filteredCustomFields, out recordsFound);
             }
-
+            //// Get restricted Entity Ids
             List<int> lstRestrictedEntities = Common.GetRestrictedEntityList(Sessions.User.UserId);
             //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
 
             //// Applying filters to tactic (IsDelete, Geography, Individuals and Show My Tactic)
             List<Plan_Tactic> lstTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
                                                                        lstProgramId.Contains(tactic.PlanProgramId) &&
-                                                                        //// Start - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
-                                                                        recordsFound == true && 
+                //// Start - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
+                                                                        recordsFound == true &&
                                                                         (lstEntityIds.Count.Equals(0) || lstEntityIds.Contains(tactic.PlanTacticId)) &&
                                                                         (lstRestrictedEntities.Count.Equals(0) || !lstRestrictedEntities.Contains(tactic.PlanTacticId)) &&
-                                                                        //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
+                //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
                                                                        (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))
                                                                         && (!((tactic.EndDate < CalendarStartDate) || (tactic.StartDate > CalendarEndDate)))
                                                                        )
@@ -881,109 +836,109 @@ namespace RevenuePlanner.Controllers
             DateTime MinStartDateForPlan;
 
             //// Prepare task tactic list for CustomFields tab(ViewBy)
-            
-                //// Get list of tactic ids from tactic list
-                List<int> tacticIdList = lstTactic.Select(tactic => tactic.objPlanTactic.PlanTacticId).ToList().Distinct().ToList<int>();
 
-                CustomFieldOption objCustomFieldOption = new CustomFieldOption();
-                objCustomFieldOption.CustomFieldOptionId = 0;
-                string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+            //// Get list of tactic ids from tactic list
+            List<int> tacticIdList = lstTactic.Select(tactic => tactic.objPlanTactic.PlanTacticId).ToList().Distinct().ToList<int>();
 
-                //// Fetch list of tactic for selected CustomField whether CustomFieldType is textBox or Dropdown
-                var lstCustomFieldTactic = (from customfield in objDbMrpEntities.CustomFields
-                                            join customfieldtype in objDbMrpEntities.CustomFieldTypes on customfield.CustomFieldTypeId equals customfieldtype.CustomFieldTypeId
-                                            join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
-                                            join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals
-                                                (IsCampaign ? tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tactic.PlanProgramId : tactic.PlanTacticId))
-                                            join customfieldoptionLeftJoin in objDbMrpEntities.CustomFieldOptions on new { Key1 = customfield.CustomFieldId, Key2 = customfieldentity.Value.Trim() } equals
-                                                new { Key1 = customfieldoptionLeftJoin.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)customfieldoptionLeftJoin.CustomFieldOptionId).Trim() } into cAll
-                                            from cfo in cAll.DefaultIfEmpty()
-                                            where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == entityType && customfield.CustomFieldId == CustomTypeId &&
-                                            customfield.ClientId == Sessions.User.ClientId && tacticIdList.Contains(tactic.PlanTacticId)
-                                            select new
-                                            {
-                                                tactic = tactic,
-                                                masterCustomFieldId = customfield.CustomFieldId,
-                                                customFieldId = customfieldtype.Name == DropDownList ? (cfo.CustomFieldOptionId == null ? 0 : cfo.CustomFieldOptionId) : customfieldentity.CustomFieldEntityId,
-                                                customFieldTitle = customfieldtype.Name == DropDownList ? cfo.Value : customfieldentity.Value,
-                                                customFieldTYpe = customfieldtype.Name,
-                                                EntityId = customfieldentity.EntityId,
-                                            }).ToList().Distinct().ToList();
+            CustomFieldOption objCustomFieldOption = new CustomFieldOption();
+            objCustomFieldOption.CustomFieldOptionId = 0;
+            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
 
-                //// Process CustomFieldTactic list retrieved from DB for further use
-                var lstProcessedCustomFieldTactics = lstCustomFieldTactic.Select(customFieldTactic => new
+            //// Fetch list of tactic for selected CustomField whether CustomFieldType is textBox or Dropdown
+            var lstCustomFieldTactic = (from customfield in objDbMrpEntities.CustomFields
+                                        join customfieldtype in objDbMrpEntities.CustomFieldTypes on customfield.CustomFieldTypeId equals customfieldtype.CustomFieldTypeId
+                                        join customfieldentity in objDbMrpEntities.CustomField_Entity on customfield.CustomFieldId equals customfieldentity.CustomFieldId
+                                        join tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on customfieldentity.EntityId equals
+                                            (IsCampaign ? tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tactic.PlanProgramId : tactic.PlanTacticId))
+                                        join customfieldoptionLeftJoin in objDbMrpEntities.CustomFieldOptions on new { Key1 = customfield.CustomFieldId, Key2 = customfieldentity.Value.Trim() } equals
+                                            new { Key1 = customfieldoptionLeftJoin.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)customfieldoptionLeftJoin.CustomFieldOptionId).Trim() } into cAll
+                                        from cfo in cAll.DefaultIfEmpty()
+                                        where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == entityType && customfield.CustomFieldId == CustomTypeId &&
+                                        customfield.ClientId == Sessions.User.ClientId && tacticIdList.Contains(tactic.PlanTacticId)
+                                        select new
+                                        {
+                                            tactic = tactic,
+                                            masterCustomFieldId = customfield.CustomFieldId,
+                                            customFieldId = customfieldtype.Name == DropDownList ? (cfo.CustomFieldOptionId == null ? 0 : cfo.CustomFieldOptionId) : customfieldentity.CustomFieldEntityId,
+                                            customFieldTitle = customfieldtype.Name == DropDownList ? cfo.Value : customfieldentity.Value,
+                                            customFieldTYpe = customfieldtype.Name,
+                                            EntityId = customfieldentity.EntityId,
+                                        }).ToList().Distinct().ToList();
+
+            //// Process CustomFieldTactic list retrieved from DB for further use
+            var lstProcessedCustomFieldTactics = lstCustomFieldTactic.Select(customFieldTactic => new
+            {
+                tactic = customFieldTactic.tactic,
+                masterCustomFieldId = customFieldTactic.masterCustomFieldId,
+                customFieldId = lstCustomFieldTactic.Where(customTactic => customTactic.masterCustomFieldId == customFieldTactic.masterCustomFieldId && customTactic.customFieldTitle.Trim() == customFieldTactic.customFieldTitle.Trim()).Select(customTactic => customTactic.customFieldId).First(),
+                customFieldTitle = customFieldTactic.customFieldTitle,
+                customFieldTacticList = customFieldTactic.customFieldTYpe == DropDownList ? lstCustomFieldTactic.Where(customTactic => customTactic.customFieldId == customFieldTactic.customFieldId).Select(tt => tt.EntityId) : lstCustomFieldTactic.Where(customTactic => customTactic.customFieldTitle == customFieldTactic.customFieldTitle).Select(customTactic => customTactic.EntityId),
+            }).ToList();
+
+            DateTime MaxEndDateForCustomField;
+
+            //// Prepare tactic task list for CustomField to be used in rendering of gantt chart. 
+            foreach (var tacticItem in lstProcessedCustomFieldTactics)
+            {
+                tacticPlanId = tacticItem.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                tacticListByViewById = lstTactic.Where(tactic => tacticItem.customFieldTacticList.Contains(IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId))).Select(tactic => tactic).ToList();
+                MinStartDateForCustomField = GetMinStartDateForCustomField(PlanGanttTypes.Custom, IsCampaign ? tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tacticItem.tactic.PlanProgramId : tacticItem.tactic.PlanTacticId),
+                                                                            lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram);
+                MaxEndDateForCustomField = GetMaxEndDateForCustomField(PlanGanttTypes.Custom, IsCampaign ? tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tacticItem.tactic.PlanProgramId : tacticItem.tactic.PlanTacticId),
+                                                                            lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram);
+                MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, IsCampaign ? tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tacticItem.tactic.PlanProgramId : tacticItem.tactic.PlanTacticId),
+                                                                            tacticPlanId, lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram);
+
+                lstTacticTaskList.Add(new TacticTaskList()
                 {
-                    tactic = customFieldTactic.tactic,
-                    masterCustomFieldId = customFieldTactic.masterCustomFieldId,
-                    customFieldId = lstCustomFieldTactic.Where(customTactic => customTactic.masterCustomFieldId == customFieldTactic.masterCustomFieldId && customTactic.customFieldTitle.Trim() == customFieldTactic.customFieldTitle.Trim()).Select(customTactic => customTactic.customFieldId).First(),
-                    customFieldTitle = customFieldTactic.customFieldTitle,
-                    customFieldTacticList = customFieldTactic.customFieldTYpe == DropDownList ? lstCustomFieldTactic.Where(customTactic => customTactic.customFieldId == customFieldTactic.customFieldId).Select(tt => tt.EntityId) : lstCustomFieldTactic.Where(customTactic => customTactic.customFieldTitle == customFieldTactic.customFieldTitle).Select(customTactic => customTactic.EntityId),
-                }).ToList();
+                    Tactic = tacticItem.tactic,
+                    CustomFieldId = tacticItem.customFieldId.ToString(),
+                    CustomFieldTitle = tacticItem.customFieldTitle,
+                    TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticItem.customFieldId, tacticPlanId, tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId, tacticItem.tactic.PlanProgramId, tacticItem.tactic.PlanTacticId),
+                    ColorCode = Common.ColorCodeForCustomField,
+                    StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
+                    EndDate = Common.GetEndDateAsPerCalendarInDateFormat(CalendarEndDate, MaxEndDateForCustomField),
+                    Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField, MaxEndDateForCustomField),
+                    CampaignProgress = GetCampaignProgress(tacticListByViewById, tacticItem.tactic.Plan_Campaign_Program.Plan_Campaign, lstImprovementTactic, tacticPlanId),
+                    ProgramProgress = GetProgramProgress(tacticListByViewById, tacticItem.tactic.Plan_Campaign_Program, lstImprovementTactic, tacticPlanId),
+                    PlanProgrss = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForPlan),
+                                                Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
+                                                    GetMaxEndDateForPlanOfCustomFields(viewBy, IsCampaign ? tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tacticItem.tactic.PlanProgramId : tacticItem.tactic.PlanTacticId),
+                                                    tacticPlanId, lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram))
+                                                , tacticListByViewById, lstImprovementTactic, tacticPlanId),
+                    lstCustomEntityId = tacticItem.customFieldTacticList.ToList(),
+                });
+            }
 
-                DateTime MaxEndDateForCustomField;
-
-                //// Prepare tactic task list for CustomField to be used in rendering of gantt chart. 
-                foreach (var tacticItem in lstProcessedCustomFieldTactics)
+            //// Prepare CustomFields list for Marketting accrodian for Home screen only.
+            if (activemenu.Equals(Enums.ActiveMenu.Home))
+            {
+                lstCustomFields = (lstProcessedCustomFieldTactics.Select(tactic => tactic)).Select(tactic => new
                 {
-                    tacticPlanId = tacticItem.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
-                    tacticListByViewById = lstTactic.Where(tactic => tacticItem.customFieldTacticList.Contains(IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId))).Select(tactic => tactic).ToList();
-                    MinStartDateForCustomField = GetMinStartDateForCustomField(PlanGanttTypes.Custom, IsCampaign ? tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tacticItem.tactic.PlanProgramId : tacticItem.tactic.PlanTacticId),
-                                                                                lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram);
-                    MaxEndDateForCustomField = GetMaxEndDateForCustomField(PlanGanttTypes.Custom, IsCampaign ? tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tacticItem.tactic.PlanProgramId : tacticItem.tactic.PlanTacticId),
-                                                                                lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram);
-                    MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, IsCampaign ? tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tacticItem.tactic.PlanProgramId : tacticItem.tactic.PlanTacticId),
-                                                                                tacticPlanId, lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram);
-
-                    lstTacticTaskList.Add(new TacticTaskList()
-                    {
-                        Tactic = tacticItem.tactic,
-                        CustomFieldId = tacticItem.customFieldId.ToString(),
-                        CustomFieldTitle = tacticItem.customFieldTitle,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticItem.customFieldId, tacticPlanId, tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId, tacticItem.tactic.PlanProgramId, tacticItem.tactic.PlanTacticId),
-                        ColorCode = Common.ColorCodeForCustomField,
-                        StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
-                        EndDate = Common.GetEndDateAsPerCalendarInDateFormat(CalendarEndDate, MaxEndDateForCustomField),
-                        Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField, MaxEndDateForCustomField),
-                        CampaignProgress = GetCampaignProgress(tacticListByViewById, tacticItem.tactic.Plan_Campaign_Program.Plan_Campaign, lstImprovementTactic, tacticPlanId),
-                        ProgramProgress = GetProgramProgress(tacticListByViewById, tacticItem.tactic.Plan_Campaign_Program, lstImprovementTactic, tacticPlanId),
-                        PlanProgrss = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForPlan),
-                                                    Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
-                                                        GetMaxEndDateForPlanOfCustomFields(viewBy, IsCampaign ? tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId : (IsProgram ? tacticItem.tactic.PlanProgramId : tacticItem.tactic.PlanTacticId),
-                                                        tacticPlanId, lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram))
-                                                    , tacticListByViewById, lstImprovementTactic, tacticPlanId),
-                        lstCustomEntityId = tacticItem.customFieldTacticList.ToList(),
-                    });
-                }
-
-                //// Prepare CustomFields list for Marketting accrodian for Home screen only.
-                if (activemenu.Equals(Enums.ActiveMenu.Home))
+                    CustomFieldId = tactic.customFieldId,
+                    Title = tactic.customFieldTitle,
+                    ColorCode = Common.ColorCodeForCustomField.ToString()
+                }).ToList().Distinct().Select(tactic => new CustomFields()
                 {
-                    lstCustomFields = (lstProcessedCustomFieldTactics.Select(tactic => tactic)).Select(tactic => new
-                    {
-                        CustomFieldId = tactic.customFieldId,
-                        Title = tactic.customFieldTitle,
-                        ColorCode = Common.ColorCodeForCustomField.ToString()
-                    }).ToList().Distinct().Select(tactic => new CustomFields()
-                    {
-                        CustomFieldId = tactic.CustomFieldId.ToString(),
-                        Title = tactic.Title,
-                        ColorCode = tactic.ColorCode
-                    }).ToList().OrderBy(customField => customField.Title).ToList();
-                }
+                    CustomFieldId = tactic.CustomFieldId.ToString(),
+                    Title = tactic.Title,
+                    ColorCode = tactic.ColorCode
+                }).ToList().OrderBy(customField => customField.Title).ToList();
+            }
 
-                //// Prepare ImprovementTactic list that relates to selected tactic and customFields
-                lstImprovementTaskDetails = (from improvementTactic in lstImprovementTactic
-                                             join customfieldtactic in lstProcessedCustomFieldTactics on improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId equals customfieldtactic.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId
-                                             join customfield in objDbMrpEntities.CustomFields on customfieldtactic.masterCustomFieldId equals customfield.CustomFieldId
-                                             where improvementTactic.IsDeleted == false && customfieldtactic.tactic.IsDeleted == false && customfield.IsDeleted == false
-                                             select new ImprovementTaskDetail()
-                                             {
-                                                 ImprovementTactic = improvementTactic,
-                                                 MainParentId = customfieldtactic.customFieldId.ToString(),
-                                                 MinStartDate = lstImprovementTactic.Where(impTactic => impTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impTactic => impTactic.EffectiveDate).Min(),
-                                             }).Select(improvementTactic => improvementTactic).ToList().Distinct().ToList();
+            //// Prepare ImprovementTactic list that relates to selected tactic and customFields
+            lstImprovementTaskDetails = (from improvementTactic in lstImprovementTactic
+                                         join customfieldtactic in lstProcessedCustomFieldTactics on improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId equals customfieldtactic.tactic.Plan_Campaign_Program.Plan_Campaign.PlanId
+                                         join customfield in objDbMrpEntities.CustomFields on customfieldtactic.masterCustomFieldId equals customfield.CustomFieldId
+                                         where improvementTactic.IsDeleted == false && customfieldtactic.tactic.IsDeleted == false && customfield.IsDeleted == false
+                                         select new ImprovementTaskDetail()
+                                         {
+                                             ImprovementTactic = improvementTactic,
+                                             MainParentId = customfieldtactic.customFieldId.ToString(),
+                                             MinStartDate = lstImprovementTactic.Where(impTactic => impTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impTactic => impTactic.EffectiveDate).Min(),
+                                         }).Select(improvementTactic => improvementTactic).ToList().Distinct().ToList();
 
-            
+
 
             //// Prepare task detail list using taskTacticList for all task to be rendered in gantt chart
             var lstTaskDetails = lstTacticTaskList.Select(tacticTask => new
@@ -3083,7 +3038,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            return View(planmodel);
+            return View("AddActual", planmodel);
         }
 
         /// <summary>
@@ -3094,62 +3049,34 @@ namespace RevenuePlanner.Controllers
         /// <param name="tacticTypeId"></param>
         /// <param name="customFieldId"></param>
         /// <param name="ownerId"></param>
+        /// <param name="UserId"></param>
         /// <returns>Returns Json Result.</returns>
-        public JsonResult GetActualTactic(int status, string tacticTypeId, string customFieldId, string ownerId)
+        public JsonResult GetActualTactic(int status, string tacticTypeId, string customFieldId, string ownerId, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnLoginURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
             //// Start - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
             //// Get TacticTypes selected  in search filter
             List<int> filteredTacticTypeIds = string.IsNullOrWhiteSpace(tacticTypeId) ? new List<int>() : tacticTypeId.Split(',').Select(tacticType => int.Parse(tacticType)).ToList();
-                        
+
             //// Custom Field Filter Criteria.
             List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldId) ? new List<string>() : customFieldId.Split(',').Select(customField => customField.ToString()).ToList();
             List<int> lstEntityIds = new List<int>();
             bool recordsFound = true;
             if (filteredCustomFields.Count > 0)
             {
-                List<int> filterdCustomFieldIds = new List<int>();
-                List<int> filterdCustomFieldOptionIds = new List<int>();
-                List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
-
-                filteredCustomFields.ForEach(customField =>
-                {
-
-                    string[] splittedCustomField = customField.Split('_');
-                    filterdCustomFieldIds.Add(int.Parse(splittedCustomField[0]));
-                    filterdCustomFieldOptionIds.Add(int.Parse(splittedCustomField[1]));
-                });
-
-                filterdCustomFieldIds = filterdCustomFieldIds.Distinct().ToList();
-                filterdCustomFieldOptionIds = filterdCustomFieldOptionIds.Distinct().ToList();
-
-                lstCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => filterdCustomFieldIds.Contains(customFieldEntity.CustomFieldId))
-                                                                            .Select(customFieldEntity => customFieldEntity).ToList();
-
-                lstCustomFieldEntities = lstCustomFieldEntities.Where(customFieldEntity => filterdCustomFieldOptionIds.Contains(int.Parse(customFieldEntity.Value)))
-                                                    .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
-
-                var CustomFieldWiseEntityList = filterdCustomFieldIds.Select(customField => new
-                {
-                    customField,
-                    EntityList = lstCustomFieldEntities.Where(cc => cc.CustomFieldId == customField).Select(cc => cc.EntityId).ToList(),
-                }).ToList();
-
-                var AndEntityList = from list in CustomFieldWiseEntityList
-                                    from option in list.EntityList
-                                    where CustomFieldWiseEntityList.All(l => l.EntityList.Any(o => o == option))
-                                    orderby option
-                                    select option;
-
-                if (AndEntityList.Count() > 0)
-                {
-                    lstEntityIds = AndEntityList.Distinct().ToList();
-                }
-                else
-                {
-                    recordsFound = false;
-                }
+                //// get Allowed Entity Ids
+                lstEntityIds = GetAllowedEntitiesBasedonCustomFieldFilterParameter(filteredCustomFields, out recordsFound);
             }
 
+            //// Get restrocted Entity Ids
             List<int> lstRestrictedEntities = Common.GetRestrictedEntityList(Sessions.User.UserId);
 
             //// Owner filter criteria.
@@ -3173,7 +3100,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && 
+                TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId &&
                                                                                 tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false &&
                                                                                 (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(tactic.TacticType.TacticTypeId)) &&
                                                                                 recordsFound == true &&
@@ -3439,7 +3366,7 @@ namespace RevenuePlanner.Controllers
             //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, ActiveMenu.ToLower());
             List<string> status = Common.GetStatusListAfterApproved();
-            
+
             // Start - Added by Arpita Soni on 01/17/2015 for Ticket #1090 
             // To remove owner of submitted tactics from filter list
             if (IsForAddActuals)
@@ -3454,7 +3381,7 @@ namespace RevenuePlanner.Controllers
             var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic);
 
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-            
+
             List<int> lstAllowedEntityIds = new List<int>();
 
             //// Added by :- Sohel Pathan on 21/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
@@ -3466,7 +3393,7 @@ namespace RevenuePlanner.Controllers
 
                 var TacticUserList = tacticList.Distinct().ToList();
                 TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status) || ((tactic.CreatedBy == Sessions.User.UserId && !ViewBy.Equals(GanttTabs.Request.ToString())) ? statusCD.Contains(tactic.Status) : false)).Distinct().ToList();
-                
+
                 lstAllowedEntityIds = Common.GetAllowedCustomFieldEntityList(Sessions.User.UserId, Sessions.User.ClientId);
                 if (lstAllowedEntityIds.Count > 0)
                 {
@@ -3535,24 +3462,24 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                    if (activeMenu.Equals(Enums.ActiveMenu.Home.ToString(), StringComparison.OrdinalIgnoreCase))
-                    {
-                        string publishedPlanStatus = Convert.ToString(Enums.PlanStatus.Published);
+                if (activeMenu.Equals(Enums.ActiveMenu.Home.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    string publishedPlanStatus = Convert.ToString(Enums.PlanStatus.Published);
                     activePlan = objDbMrpEntities.Plans.Where(plan => plan.IsActive.Equals(true) && plan.IsDeleted == false && plan.Status == publishedPlanStatus)
                                                             .Select(plan => new { plan.PlanId, plan.Title })
                                                             .ToList().Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
-                    }
-                    else
-                    {
+                }
+                else
+                {
                     activePlan = objDbMrpEntities.Plans.Where(plan => plan.IsActive.Equals(true) && plan.IsDeleted == false)
                                                             .Select(plan => new { plan.PlanId, plan.Title }).ToList()
                                                             .Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
-                    }
                 }
+            }
             catch (Exception objException)
-                {
+            {
                 ErrorSignal.FromCurrentContext().Raise(objException);
-                    return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
+                return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
             }
 
             return Json(new { isSuccess = true, ActivePlans = activePlan }, JsonRequestBehavior.AllowGet);
@@ -3654,19 +3581,19 @@ namespace RevenuePlanner.Controllers
                     ////// Sort custom field option list by value and custom field id
                     lstCustomFieldOption = lstCustomFieldOption.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
 
-                    customFieldListOut = lstCustomField.Select(customField => new CustomFieldsForFilter() 
+                    customFieldListOut = lstCustomField.Select(customField => new CustomFieldsForFilter()
                                                             {
-                                                                CustomFieldId = customField.CustomFieldId, 
+                                                                CustomFieldId = customField.CustomFieldId,
                                                                 Title = customField.Name
                                                             }).ToList();
 
                     customFieldOptionsListOut = lstCustomFieldOption.Select(customFieldOption => new CustomFieldsForFilter()
-                                                                            { 
-                                                                                CustomFieldId = customFieldOption.CustomFieldId, 
-                                                                                CustomFieldOptionId = customFieldOption.CustomFieldOptionId, 
+                                                                            {
+                                                                                CustomFieldId = customFieldOption.CustomFieldId,
+                                                                                CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
                                                                                 Title = customFieldOption.Value
                                                                             }).ToList();
-                    
+
                 }
             }
         }
@@ -3916,6 +3843,71 @@ namespace RevenuePlanner.Controllers
 
             return isValidEntity;
         }
+
+        #endregion
+
+        #region User defined functions
+
+        #region Get Allowed Entity Ids based on Custom Field Filter Critria
+        /// <summary>
+        /// Function to retrieve list of Entity Ids based on given custom field filter paramaters
+        /// </summary>
+        /// <param name="filteredCustomFields"></param>
+        /// <param name="recordsFound"></param>
+        /// <returns></returns>
+        private List<int> GetAllowedEntitiesBasedonCustomFieldFilterParameter(List<string> filteredCustomFields, out bool recordsFound)
+        {
+            recordsFound = true;
+            List<int> lstEntityIds = new List<int>();
+
+            if (filteredCustomFields.Count > 0)
+            {
+                List<int> filterdCustomFieldIds = new List<int>();
+                List<int> filterdCustomFieldOptionIds = new List<int>();
+                List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
+
+                filteredCustomFields.ForEach(customField =>
+                {
+
+                    string[] splittedCustomField = customField.Split('_');
+                    filterdCustomFieldIds.Add(int.Parse(splittedCustomField[0]));
+                    filterdCustomFieldOptionIds.Add(int.Parse(splittedCustomField[1]));
+                });
+
+                filterdCustomFieldIds = filterdCustomFieldIds.Distinct().ToList();
+                filterdCustomFieldOptionIds = filterdCustomFieldOptionIds.Distinct().ToList();
+
+                lstCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => filterdCustomFieldIds.Contains(customFieldEntity.CustomFieldId))
+                                                                            .Select(customFieldEntity => customFieldEntity).ToList();
+
+                lstCustomFieldEntities = lstCustomFieldEntities.Where(customFieldEntity => filterdCustomFieldOptionIds.Contains(int.Parse(customFieldEntity.Value)))
+                                                    .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
+
+                var CustomFieldWiseEntityList = filterdCustomFieldIds.Select(customField => new
+                {
+                    customField,
+                    EntityList = lstCustomFieldEntities.Where(cc => cc.CustomFieldId == customField).Select(cc => cc.EntityId).ToList(),
+                }).ToList();
+
+                var AndEntityList = from list in CustomFieldWiseEntityList
+                                    from option in list.EntityList
+                                    where CustomFieldWiseEntityList.All(l => l.EntityList.Any(o => o == option))
+                                    orderby option
+                                    select option;
+
+                if (AndEntityList.Count() > 0)
+                {
+                    lstEntityIds = AndEntityList.Distinct().ToList();
+                }
+                else
+                {
+                    recordsFound = false;
+                }
+            }
+
+            return lstEntityIds;
+        }
+        #endregion
 
         #endregion
     }

@@ -354,7 +354,7 @@
             }
         });
         //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
-
+        var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Home/GetActualTactic/")',
@@ -362,12 +362,16 @@
                 status: Status,
                 tacticTypeId: tacticTypeIds.toString(),
                 customFieldId: customFieldIds.toString(),
-                ownerId: ownerIds.toString()
+                ownerId: ownerIds.toString(),
+                UserId: uId
             },
             success: function (r) {
                 //// Added By: Maninder Singh Wadhva on 11/24/2014.
                 //// Ticket: 942 Exception handeling in Gameplan.
-                if (r.returnURL != 'undefined' && r.returnURL == '#') {
+                if (r.returnLoginURL != 'undefined' && r.returnLoginURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else if (r.returnURL != 'undefined' && r.returnURL == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
