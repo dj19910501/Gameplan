@@ -484,12 +484,13 @@ namespace Integration.Helper
         /// <param name="SyncStatus">error status flag</param>
         /// <param name="TimeStamp">timestamp</param>
         /// <returns>returns SyncError object</returns>
-        public static SyncError PrepareSyncErrorList(int? EntityId, Enums.EntityType EntityType, string Message, Enums.SyncStatus SyncStatus, DateTime TimeStamp)
+        public static SyncError PrepareSyncErrorList(int? EntityId, Enums.EntityType EntityType, string SectionName, string Message, Enums.SyncStatus SyncStatus, DateTime TimeStamp)
         {
             SyncError objSyncError = new SyncError();
 
             objSyncError.EntityId = EntityId;
             objSyncError.EntityType = EntityType;
+            objSyncError.SectionName = SectionName.ToString();
             objSyncError.Message = Message;
             objSyncError.SyncStatus = SyncStatus;
             objSyncError.TimeStamp = TimeStamp;
@@ -505,7 +506,7 @@ namespace Integration.Helper
         /// <returns></returns>
         public static string PrepareInfoRow(string InfoHeader, string InfoValue)
         {
-            string row = string.Format("<tr><td width='40%'><b>{0}:</b></td><td width='60%'>{1}</td></tr>", InfoHeader, InfoValue);
+            string row = string.Format("<tr><td width='50%'><b>{0}:</b></td><td width='40%'>{1}</td></tr>", InfoHeader, InfoValue);
             return row;
         }
 
@@ -582,6 +583,7 @@ namespace Integration.Helper
     {
         public int? EntityId { get; set; }
         public Enums.EntityType EntityType { get; set; }
+        public string SectionName { get; set; }
         public string Message { get; set; }
         public Enums.SyncStatus SyncStatus { get; set; }
         public DateTime TimeStamp { get; set; }

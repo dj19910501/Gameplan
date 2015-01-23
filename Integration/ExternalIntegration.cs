@@ -213,7 +213,7 @@ namespace Integration
             db.Entry(instanceLogStart).State = EntityState.Added;
             int resulValue = db.SaveChanges();
 
-            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Start Time", instanceLogStart.SyncStart.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Start Time", instanceLogStart.SyncStart.ToString()), Enums.SyncStatus.Header, DateTime.Now));
 
             if (resulValue > 0)
             {
@@ -248,7 +248,7 @@ namespace Integration
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
                         _isResultError = true;
                         //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, "Authentication Failed :" + integrationEloquaClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationEloquaClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
                         //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     }
                 }
@@ -273,14 +273,14 @@ namespace Integration
                 db.SaveChanges();
 
                 //// Start - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
-                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("End Time", instanceLogStart.SyncEnd.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("End Time", instanceLogStart.SyncEnd.ToString()), Enums.SyncStatus.Header, DateTime.Now));
                 TimeSpan ElapsedTicks = instanceLogStart.SyncEnd.Value.Subtract(instanceLogStart.SyncStart);
                 DateTime ElapsedTime = new DateTime(ElapsedTicks.Ticks);
-                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Elapsed Time", ElapsedTime.ToString("HH:mm:ss")), Enums.SyncStatus.Header, DateTime.Now));
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Elapsed Time", ElapsedTime.ToString("HH:mm:ss")), Enums.SyncStatus.Header, DateTime.Now));
                 if (_integrationInstanceId.HasValue)
                 {
                     string InstanceName = Common.GetInstanceName(_integrationInstanceId.Value);
-                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Instance Name used for synching", InstanceName), Enums.SyncStatus.Header, DateTime.Now));
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Instance Name used for synching", InstanceName), Enums.SyncStatus.Header, DateTime.Now));
                 }
                 //// End - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
             }
@@ -297,7 +297,7 @@ namespace Integration
             {
                 BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
                 ClientName = objBDSUserRepository.GetClientName(_userId);
-                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Header, DateTime.Now));
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Header, DateTime.Now));
             }
             catch
             {
@@ -319,9 +319,31 @@ namespace Integration
             Int32 TotalTacticCount = 0;
             TotalTacticCount = SuccessTacticCount + FailedTacticCount;
 
-            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities liable for synching", TotalTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities successfully synched", SuccessTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Common.PrepareInfoRow("Number of Activities failed due to some reason", FailedTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities liable for synching - Push Tactic Data", TotalTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities successfully synched - Push Tactic Data", SuccessTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities failed due to some reason - Push Tactic Data", FailedTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+
+            bool PullMQLError = false;
+            PullMQLError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullMQL.ToString()).Any();
+            if (PullMQLError)
+            {
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+            }
+            else
+            {
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+            }
+
+            bool PullResponsesError = false;
+            PullResponsesError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullResponses.ToString()).Any();
+            if (PullResponsesError)
+            {
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+            }
+            else
+            {
+                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+            }
             /////
         }
 
