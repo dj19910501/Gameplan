@@ -33,8 +33,6 @@ namespace BDSService.BDSEntities
         [DataMember]
         public string RoleTitle { get; set; }
         [DataMember]
-        public System.Guid BusinessUnitId { get; set; }
-        [DataMember]
         public Guid GeographyId { get; set; }
         [DataMember]
         public string Client { get; set; }
