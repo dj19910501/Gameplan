@@ -37,6 +37,9 @@
                             else {
                                 $(this).parents('tr').find('input[type=text]').removeClass('error');
                             }
+                            if (allInputValue == '') {
+                                allInputValue = '0';
+                            }
                             $(this).parents('tr').find('input[type=text]').val(allInputValue);
                         });
                     }
