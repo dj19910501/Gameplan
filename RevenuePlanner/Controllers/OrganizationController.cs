@@ -609,7 +609,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
                     ViewBag.RoleName = userDetails.RoleTitle;
 
-                    var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
+                    var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId, true);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
                     var allActivity = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);
                     var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
 

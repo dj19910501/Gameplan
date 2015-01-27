@@ -55,12 +55,6 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //bool IsBusinessUnitEditable = true; ////Common.IsBusinessUnitEditable(db.Plans.Where(a => a.PlanId == id).Select(a => a.Model.BusinessUnitId).FirstOrDefault());
-                //if (id != 0 && !IsBusinessUnitEditable)
-                //    return AuthorizeUserAttribute.RedirectToNoAccess();
-                // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-
                 if (id > 0)
                 {
                     // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
@@ -183,7 +177,6 @@ namespace RevenuePlanner.Controllers
                         TempData["selectYearList"] = new SelectList(year, "Value", "Text");//Modified by Mitesh Vaishnav for PL ticket #622
                     }
                     #endregion
-                    //ViewBag.IsBusinessUnitEditable = false;////Common.IsBusinessUnitEditable(db.Models.Where(b => b.ModelId == objplan.ModelId).Select(b => b.BusinessUnitId).FirstOrDefault());  // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
                 else
                 {
@@ -191,7 +184,6 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.GoalValue = "0";
                     objPlanModel.Budget = 0;
                     objPlanModel.Year = DateTime.Now.Year.ToString(); // Added by dharmraj to add default year in year dropdown
-                    //ViewBag.IsBusinessUnitEditable = true; // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
                 //end
 
@@ -859,12 +851,6 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //bool IsBusinessUnitEditable = false;///Common.IsBusinessUnitEditable(db.Plans.Where(_plan => _plan.PlanId == Sessions.PlanId).Select(_plan => _plan.Model.BusinessUnitId).FirstOrDefault());
-                //if (!IsBusinessUnitEditable)
-                //    return AuthorizeUserAttribute.RedirectToNoAccess();
-                // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-
                 // To get permission status for Plan Edit , By dharmraj PL #519
                 //Get all subordinates of current user upto n level
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
@@ -1332,16 +1318,17 @@ namespace RevenuePlanner.Controllers
                 Status = task.Status       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
             });
 
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            List<int> lstAllowedEntityIds = new List<int>();
+            lstAllowedEntityIds = Common.GetAllowedCustomFieldEntityList(Sessions.User.UserId, Sessions.User.ClientId, new List<int>(), false);
 
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
             var taskDataTactic = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                             _tac.IsDeleted.Equals(false))
                                                                 .ToList()
                                                                 .Where(_tac => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                         CalendarEndDate,
                                                                                                                         _tac.StartDate,
-                                                                                                                        _tac.EndDate).Equals(false))
+                                                                                                                        _tac.EndDate).Equals(false) && lstAllowedEntityIds.Contains(_tac.PlanTacticId))
                                                                 .Select(_tac => new
                                                                 {
                                                                     id = string.Format("C{0}_P{1}_T{2}", _tac.Plan_Campaign_Program.PlanCampaignId, _tac.Plan_Campaign_Program.PlanProgramId, _tac.PlanTacticId),
@@ -1778,12 +1765,6 @@ namespace RevenuePlanner.Controllers
             Plan plan = db.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(Sessions.PlanId));
             if (plan != null)
             {
-                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //IsBusinessUnitEditable = false;///Common.IsBusinessUnitEditable(plan.Model.BusinessUnitId);
-                //if (!IsBusinessUnitEditable)
-                //    return AuthorizeUserAttribute.RedirectToNoAccess();
-                // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-
                 // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
@@ -1892,7 +1873,6 @@ namespace RevenuePlanner.Controllers
                 mqlStage = MQLStageLabel;
             }
             ViewBag.MQLLabel = mqlStage;
-            //ViewBag.IsBusinessUnitEditable = IsBusinessUnitEditable;  // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             return View("Assortment");
         }
 
@@ -1903,24 +1883,24 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result.</returns>
         public JsonResult GetCampaign()
         {
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
-            try
-            {
-                lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
+            //List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
+            //try
+            //{
+            //    lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            //}
+            //catch (Exception e)
+            //{
+            //    ErrorSignal.FromCurrentContext().Raise(e);
 
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { serviceUnavailable = "#" }, JsonRequestBehavior.AllowGet);
-                }
-            }
+            //    //To handle unavailability of BDSService
+            //    if (e is System.ServiceModel.EndpointNotFoundException)
+            //    {
+            //        //// Flag to indicate unavailability of web service.
+            //        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+            //        //// Ticket: 942 Exception handeling in Gameplan.
+            //        return Json(new { serviceUnavailable = "#" }, JsonRequestBehavior.AllowGet);
+            //    }
+            //}
 
             List<Plan_Campaign> CampaignList = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             List<int> CampaignIds = CampaignList.Select(pc => pc.PlanCampaignId).ToList();
@@ -1962,6 +1942,16 @@ namespace RevenuePlanner.Controllers
                                                                MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
                                                                Revenue = tactic.RevenueValue
                                                            }).ToList();
+
+            List<int> lstEditableTacticIds = new List<int>();
+            List<int> lstAllowedEntityIds = new List<int>();
+            if (CampaignList.Count() > 0)
+            {
+                List<int> lstPlanTacticIds = TacticList.Select(tactic => tactic.PlanTacticId).ToList();
+                lstEditableTacticIds = Common.GetViewEditEntityList(Sessions.User.UserId, lstPlanTacticIds);
+                lstAllowedEntityIds = Common.GetAllowedCustomFieldEntityList(Sessions.User.UserId, Sessions.User.ClientId, lstPlanTacticIds, false);
+            }
+
             //// Get Campaign data.
             var campaignobj = CampaignList.Select(p => new
             {
@@ -1979,14 +1969,14 @@ namespace RevenuePlanner.Controllers
                     cost = LineItemList.Where(l => (TacticList.Where(pcpt => pcpt.PlanProgramId == pcpj.PlanProgramId).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Cost),
                     mqls = ListTacticMQLValue.Where(lt => (TacticList.Where(pcpt => pcpt.PlanProgramId == pcpj.PlanProgramId).Select(pcpt => pcpt.PlanTacticId)).Contains(lt.PlanTacticId)).Sum(lt => lt.MQL),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
-                    tactics = (TacticList.Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
+                    tactics = (TacticList.Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && lstAllowedEntityIds.Contains(pcpt.PlanTacticId)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
                     {
                         id = pcptj.PlanTacticId,
                         title = pcptj.Title,
                         description = pcptj.Description,
                         cost = LineItemList.Where(l => l.PlanTacticId == pcptj.PlanTacticId).Sum(l => l.Cost),
                         mqls = ListTacticMQLValue.Where(lt => lt.PlanTacticId == pcptj.PlanTacticId).Sum(lt => lt.MQL),
-                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 1 : 1,
+                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? ((lstEditableTacticIds.Count.Equals(0) || lstEditableTacticIds.Contains(pcptj.PlanTacticId)) ? 0 : 1) : 1,
                         lineitems = (LineItemList.Where(pcptl => pcptl.PlanTacticId.Equals(pcptj.PlanTacticId))).Select(pcptlj => new
                         {
                             id = pcptlj.PlanLineItemId,
@@ -4572,11 +4562,6 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //bool IsBusinessUnitEditable = false;////Common.IsBusinessUnitEditable(db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId).Select(_pln => _pln.Model.BusinessUnitId).FirstOrDefault());
-                //if (!IsBusinessUnitEditable)
-                //    return AuthorizeUserAttribute.RedirectToNoAccess();
-
                 ViewBag.PlanId = Sessions.PlanId;
 
                 #region Business Unit Ids

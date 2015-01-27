@@ -730,7 +730,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.PlanTitle = pc.Plan.Title;
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pc.Plan.Model);
             //ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(pc.Plan.Model.BusinessUnitId);
-            
+
             #endregion
 
             //// Set Plan_CampaignModel data to pass into partialview.
@@ -2381,7 +2381,7 @@ namespace RevenuePlanner.Controllers
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(usrRestr => usrRestr.CustomFieldId).ToList();
             var lstAllowedGeography = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(usrRestr => usrRestr.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
-            bool IsTacticEditable = true;            
+            bool IsTacticEditable = true;
 
             ViewBag.IsTacticEditable = IsTacticEditable;
 
@@ -2463,11 +2463,11 @@ namespace RevenuePlanner.Controllers
                 ViewBag.MQLLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullQualifiedLeads).FirstOrDefault().SyncTimeStamp;
             }
             ////End : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
-            var topThreeCustomFields = db.CustomFields.Where(cf => cf.IsDefault == true && cf.IsDeleted == false && cf.IsRequired == true && cf.ClientId == Sessions.User.ClientId).Take(3).ToList().Select((cf,Index) => new CustomFieldReviewTab()
+            var topThreeCustomFields = db.CustomFields.Where(cf => cf.IsDefault == true && cf.IsDeleted == false && cf.IsRequired == true && cf.ClientId == Sessions.User.ClientId).Take(3).ToList().Select((cf, Index) => new CustomFieldReviewTab()
             {
-             Name=cf.Name,
-             Class ="customfield-review"+ (Index+1).ToString(),
-             Value = cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Count > 0 ? string.Join(",", cf.CustomFieldOptions.Where(a => cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Contains(a.CustomFieldOptionId.ToString())).Select(a=>a.Value).ToList()) : "N/A"
+                Name = cf.Name,
+                Class = "customfield-review" + (Index + 1).ToString(),
+                Value = cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Count > 0 ? string.Join(",", cf.CustomFieldOptions.Where(a => cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Contains(a.CustomFieldOptionId.ToString())).Select(a => a.Value).ToList()) : "N/A"
             }).ToList();
             ViewBag.TopThreeCustomFields = topThreeCustomFields;
 
@@ -2618,7 +2618,7 @@ namespace RevenuePlanner.Controllers
             var lstAllowedVertical = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(usrRestr => usrRestr.CustomFieldId).ToList();
             var lstAllowedGeography = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(usrRestr => usrRestr.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
             var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(usrRestr => usrRestr.CustomFieldId.ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
-            
+
             ViewBag.IsTacticEditable = true;
             ViewBag.LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanTacticId == id && lineitem.IsDeleted == false).OrderByDescending(lineitem => lineitem.LineItemTypeId).ToList();
             return PartialView("Actual");
@@ -2916,53 +2916,36 @@ namespace RevenuePlanner.Controllers
                 item.Title = HttpUtility.HtmlDecode(item.Title);
 
             #region "Load Verticals,Audience,Geography,ExtIntService values to ViewBags"
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
-            try
-            {
-                lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
 
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            bool isallowrestriction = true;
+            bool isallowrestriction = Common.CheckTacticIsAllowedAndIsEditable(pcpt.PlanTacticId);
             ViewBag.IsAllowCustomRestriction = isallowrestriction;
 
             // Dropdown for Verticals
-            if (isallowrestriction)
-            {
-                ViewBag.Verticals = (from v in db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).ToList()
-                                     join lu in lstUserCustomRestriction on v.VerticalId.ToString() equals lu.CustomFieldId
-                                     where lu.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
-                                     select v).ToList();
-            }
-            else
-            {
-                ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            }
+            //if (isallowrestriction)
+            //{
+            //    ViewBag.Verticals = (from v in db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).ToList()
+            //                         join lu in lstUserCustomRestriction on v.VerticalId.ToString() equals lu.CustomFieldId
+            //                         where lu.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
+            //                         select v).ToList();
+            //}
+            //else
+            //{
+            //    ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
+            //}
 
             ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
 
-            if (isallowrestriction)
-            {
-                ViewBag.Geography = (from g in db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).ToList()
-                                     join lu in lstUserCustomRestriction on g.GeographyId.ToString().ToLower() equals lu.CustomFieldId.ToLower()
-                                     where lu.CustomField == Enums.CustomRestrictionType.Geography.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
-                                     select g).ToList();
-            }
-            else
-            {
-                ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
-            }
+            //if (isallowrestriction)
+            //{
+            //    ViewBag.Geography = (from g in db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).ToList()
+            //                         join lu in lstUserCustomRestriction on g.GeographyId.ToString().ToLower() equals lu.CustomFieldId.ToLower()
+            //                         where lu.CustomField == Enums.CustomRestrictionType.Geography.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
+            //                         select g).ToList();
+            //}
+            //else
+            //{
+            //    ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+            //}
 
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pcpt.TacticType.Model);
             #endregion
@@ -2979,13 +2962,13 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.AdvanceStageTitles = advanceStageTitles;
             ViewBag.AdvanceStageCodes = advanceStagecodes;
-            string entityType=Enums.Section.Tactic.ToString();
+            string entityType = Enums.Section.Tactic.ToString();
             /*Get existing value of Advance/Basic waightage of tactic's attributes*/
             var customFeilds = db.CustomField_Entity_StageWeight.Where(cfs => cfs.CustomField_Entity.EntityId == pcpt.PlanTacticId && cfs.CustomField_Entity.CustomField.EntityType == entityType).Select(cfs => new
             {
-                optionId=cfs.CustomField_Entity.Value,
-                stageType=cfs.StageTitle,
-                Weight=cfs.Weightage
+                optionId = cfs.CustomField_Entity.Value,
+                stageType = cfs.StageTitle,
+                Weight = cfs.Weightage
             }).ToList();
             var customFeildsWeightage = db.CustomField_Entity.Where(cfs => cfs.EntityId == pcpt.PlanTacticId && cfs.CustomField.EntityType == entityType && cfs.Weightage != null).Select(cfs => new
             {
@@ -2995,9 +2978,9 @@ namespace RevenuePlanner.Controllers
             }).ToList();
             if (customFeilds.Count > 0)
             {
-                
-              var concatCustomFields=  customFeilds.Concat<object>(customFeildsWeightage).ToList();
-              ViewBag.customFieldWeightage = JsonConvert.SerializeObject(concatCustomFields);
+
+                var concatCustomFields = customFeilds.Concat<object>(customFeildsWeightage).ToList();
+                ViewBag.customFieldWeightage = JsonConvert.SerializeObject(concatCustomFields);
             }
             else
             {
@@ -3132,16 +3115,22 @@ namespace RevenuePlanner.Controllers
                 //// Added By: Maninder Singh Wadhva on 11/24/2014.
                 //// Ticket: 942 Exception handeling in Gameplan.
                 ViewBag.IsServiceUnavailable = false;
-                Dictionary<string, string> lstCustomRestrictionFields = new Dictionary<string, string>();
-                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.BusinessUnit.ToString(), ippctm.BusinessUnitId.ToString());
-                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Geography.ToString(), ippctm.GeographyId.ToString());
-                lstCustomRestrictionFields.Add(Enums.CustomRestrictionType.Verticals.ToString(), ippctm.VerticalId.ToString());
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                var lstUser = objBDSServiceClient.GetUserListWithCustomRestrictions(Sessions.User.UserId, Sessions.User.ClientId, Sessions.ApplicationId, lstCustomRestrictionFields);
-                if (lstUser != null)
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId);
+                if (lstClientUsers.Count() > 0)
                 {
-                    var lstPreparedOwners = lstUser.Select(u => new { UserId = u.UserId, DisplayName = u.DisplayName }).ToList();
-                    ViewBag.OwnerList = lstPreparedOwners;
+                    string strUserList = string.Join(",", lstClientUsers);
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        ViewBag.OwnerList = lstPreparedOwners;
+                    }
+                    else
+                    {
+                        ViewBag.OwnerList = new List<User>();
+                    }
                 }
                 else
                 {
@@ -3283,19 +3272,20 @@ namespace RevenuePlanner.Controllers
                                 {
                                     var customFieldEntities = customFields.Select(cf => new
                                     {
-                                        customFieldId=cf.CustomFieldId,
-                                        Value=cf.Value,
-                                        Weight=cf.Weight
+                                        customFieldId = cf.CustomFieldId,
+                                        Value = cf.Value,
+                                        Weight = cf.Weight
                                     }).Distinct().ToList();
                                     foreach (var item in customFieldEntities)
                                     {
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
-                                        List<CustomField_Entity_StageWeight> objstageWeight=new List<CustomField_Entity_StageWeight> ();
-                                        objstageWeight=customFields.Where(cf=>cf.CustomFieldId==item.customFieldId && cf.Value==item.Value && cf.StageWeight!=null).Select(cf=>new CustomField_Entity_StageWeight(){
-                                        StageTitle=cf.StageCode,
-                                        Weightage=(byte)cf.StageWeight,
-                                        CreatedDate=DateTime.Now,
-                                        CreatedBy=Sessions.User.UserId
+                                        List<CustomField_Entity_StageWeight> objstageWeight = new List<CustomField_Entity_StageWeight>();
+                                        objstageWeight = customFields.Where(cf => cf.CustomFieldId == item.customFieldId && cf.Value == item.Value && cf.StageWeight != null).Select(cf => new CustomField_Entity_StageWeight()
+                                        {
+                                            StageTitle = cf.StageCode,
+                                            Weightage = (byte)cf.StageWeight,
+                                            CreatedDate = DateTime.Now,
+                                            CreatedBy = Sessions.User.UserId
                                         }).ToList();
                                         objcustomFieldEntity.EntityId = tacticId;
                                         objcustomFieldEntity.CustomFieldId = item.customFieldId;
@@ -3375,7 +3365,7 @@ namespace RevenuePlanner.Controllers
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
                                 pcpobj.Description = form.Description;
-                                
+
                                 // Start - Added by Sohel Pathan on 19/11/2014 for PL ticket #708
                                 Guid oldOwnerId = pcpobj.CreatedBy;
                                 if (pcpobj.CreatedBy != form.OwnerId)
@@ -3573,7 +3563,7 @@ namespace RevenuePlanner.Controllers
                                 //// delete previous custom field values and save modified custom fields value for particular Tactic
                                 string entityTypeTactic = Enums.EntityType.Tactic.ToString();
                                 var prevCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == pcpobj.PlanTacticId && custField.CustomField.EntityType == entityTypeTactic).ToList();
-                                var lstCustomfieldEntityIds=prevCustomFieldList.Select(cf => cf.CustomFieldEntityId).ToList();
+                                var lstCustomfieldEntityIds = prevCustomFieldList.Select(cf => cf.CustomFieldEntityId).ToList();
                                 if (lstCustomfieldEntityIds.Count > 0)
                                 {
                                     var prevCustomfieldStageWeight = db.CustomField_Entity_StageWeight.Where(cfs => lstCustomfieldEntityIds.Contains(cfs.CustomFieldEntityId)).ToList();
@@ -3593,7 +3583,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                         List<CustomField_Entity_StageWeight> objstageWeight = new List<CustomField_Entity_StageWeight>();
-                                        objstageWeight = customFields.Where(cf => cf.CustomFieldId == item.customFieldId && cf.Value == item.Value && cf.StageWeight!=null).Select(cf => new CustomField_Entity_StageWeight()
+                                        objstageWeight = customFields.Where(cf => cf.CustomFieldId == item.customFieldId && cf.Value == item.Value && cf.StageWeight != null).Select(cf => new CustomField_Entity_StageWeight()
                                         {
                                             StageTitle = cf.StageCode,
                                             Weightage = cf.StageWeight.HasValue ? (byte)cf.StageWeight : (byte)0,
@@ -3607,7 +3597,7 @@ namespace RevenuePlanner.Controllers
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
                                         if (item.Weight != null)
                                         {
-                                            objcustomFieldEntity.Weightage =(byte)item.Weight;
+                                            objcustomFieldEntity.Weightage = (byte)item.Weight;
                                         }
                                         //objcustomFieldEntity.CustomField_Entity_StageWeight.Concat(objstageWeight);
                                         if (!objstageWeight.Where(sw => sw.StageTitle == null).Any())
@@ -4394,7 +4384,7 @@ namespace RevenuePlanner.Controllers
                                         //// added by uday for #532
                                         if (tactic.IsDeployedToIntegration == true)
                                         {
-                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId,Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
                                             externalIntegration.Sync();
                                         }
                                         //// End by uday for #532
@@ -5169,7 +5159,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (pcptl.LineItemTypeId.ToString() == item.LineItemTypeId.ToString())
                 {
-                    lineItemTypeName= HttpUtility.HtmlDecode(item.Title);    
+                    lineItemTypeName = HttpUtility.HtmlDecode(item.Title);
                 }
             }
 
@@ -5572,27 +5562,6 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public PartialViewResult LoadLineItemBudgetAllocation(int id = 0)
         {
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
-            try
-            {
-                ViewBag.IsServiceUnavailable = false;
-                lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    ViewBag.IsServiceUnavailable = true;
-                }
-            }
-
             Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobj => pcpobj.PlanLineItemId.Equals(id));
             if (pcptl == null)
             {
@@ -5608,7 +5577,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsOwner = false;
             }
 
-            bool isallowrestriction = true;
+            bool isallowrestriction = Common.CheckTacticIsAllowedAndIsEditable(pcptl.Plan_Campaign_Program_Tactic.PlanTacticId);
             ViewBag.IsAllowCustomRestriction = isallowrestriction;
 
             Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
@@ -6244,7 +6213,7 @@ namespace RevenuePlanner.Controllers
                         }
                         //End - Added by Mitesh Vaishnav for PL ticket 746 - Edit Own and Subordinates Tactics Doesnt work
                         //Modify by Mitesh Vaishnav for PL ticket 746
-                        if ((objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy)) )
+                        if ((objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy)))
                         {
                             IsPlanEditable = true;
                         }
@@ -6260,7 +6229,7 @@ namespace RevenuePlanner.Controllers
                         //Add restriction of BU for edit button in inspect popup
                         //BusinessUnitId = objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
                         //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
-                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) )
+                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId))
                         {
                             IsPlanEditable = true;
                         }
@@ -6276,7 +6245,7 @@ namespace RevenuePlanner.Controllers
                         //BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId != null ? objPlan_Campaign.Plan.Model.BusinessUnitId : BusinessUnitId;
                         //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
                         // planId = objPlan_Campaign.PlanId;
-                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) )
+                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId))
                         {
                             IsPlanEditable = true;
                         }
@@ -6289,7 +6258,7 @@ namespace RevenuePlanner.Controllers
                         //Add restriction of BU for edit button in inspect popup
                         //BusinessUnitId = objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId != null ? objPlan_Improvement_Campaign_Program_Tactic.BusinessUnitId : BusinessUnitId;
                         //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
-                        if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) )
+                        if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId))
                         {
                             IsPlanEditable = true;
                         }
@@ -6304,7 +6273,7 @@ namespace RevenuePlanner.Controllers
                         //IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BusinessUnitId);
                         ViewBag.tacticId = objPlan_Campaign_Program_Tactic_LineItem.PlanTacticId;
 
-                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId) )
+                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
                         {
                             IsPlanEditable = true;
                         }
@@ -6331,9 +6300,9 @@ namespace RevenuePlanner.Controllers
 
 
                 if (Convert.ToString(section) != "")
-                {                    
+                {
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
-                    {                       
+                    {
                         DateTime todaydate = DateTime.Now;
 
                         //// if Tactic status based on Function CheckAfterApprovedStatus
@@ -6392,12 +6361,33 @@ namespace RevenuePlanner.Controllers
                     //47.	Check only for tactic, bhavesh internal review point, modified by Dharmraj
                     if (IsPlanEditable && (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower() || Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower()))
                     {
-                        // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
-                        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                        var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
-                        IsPlanEditable = true;
+                        //// Custom Restriction
+                        //// Added by Sohel Pathan on 27/01/2015 for PL ticket #1140
+                        List<int> planTacticIds = new List<int>();
+                        List<int> lstAllowedEntityIds = new List<int>();
+                        int itemId = 0;
+
+                        if (section.ToString().Equals(Enums.Section.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic != null)
+                        {
+                            itemId = objPlan_Campaign_Program_Tactic.PlanTacticId;
+                            planTacticIds.Add(itemId);
+                            lstAllowedEntityIds = Common.GetAllowedCustomFieldEntityList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        }
+                        else if (section.ToString().Equals(Enums.Section.LineItem.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic_LineItem != null)
+                        {
+                            itemId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.PlanTacticId;
+                            planTacticIds.Add(itemId);
+                            lstAllowedEntityIds = Common.GetAllowedCustomFieldEntityList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        }
+
+                        if (lstAllowedEntityIds.Contains(itemId))
+                        {
+                            IsPlanEditable = true;
+                        }
+                        else
+                        {
+                            IsPlanEditable = false;
+                        }
                     }
                 }
 
@@ -6484,24 +6474,20 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 // To get permission status for Plan Edit, By dharmraj PL #519
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                //bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(im.BusinessUnitId);
 
-                //if (IsBusinessUnitEditable)
+                if (im.OwnerId.Equals(Sessions.User.UserId))
                 {
-                    if (im.OwnerId.Equals(Sessions.User.UserId))
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
+                {
+                    if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
                     {
                         IsPlanEditable = true;
-                    }
-                    else if (IsPlanEditAllAuthorized)
-                    {
-                        IsPlanEditable = true;
-                    }
-                    else if (IsPlanEditSubordinatesAuthorized)
-                    {
-                        if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
-                        {
-                            IsPlanEditable = true;
-                        }
                     }
                 }
 
@@ -6765,9 +6751,9 @@ namespace RevenuePlanner.Controllers
                     }
 
                     imodel.CampaignTitle = objPlan_Campaign.Title;
-                    imodel.Status = objPlan_Campaign.Status;                    
+                    imodel.Status = objPlan_Campaign.Status;
                     imodel.ColorCode = Campaign_InspectPopup_Flag_Color;
-                    imodel.Description = objPlan_Campaign.Description;                    
+                    imodel.Description = objPlan_Campaign.Description;
                     imodel.PlanCampaignId = objPlan_Campaign.PlanCampaignId;
                     imodel.OwnerId = objPlan_Campaign.CreatedBy;
                     //imodel.BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId;
@@ -7060,7 +7046,7 @@ namespace RevenuePlanner.Controllers
                                             //added by uday for #532 
                                             if (tactic.IsDeployedToIntegration == true)
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId,Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
                                                 externalIntegration.Sync();
                                             }
                                             //end
@@ -7112,7 +7098,7 @@ namespace RevenuePlanner.Controllers
                                             //added by uday for #532
                                             if (tactic.IsDeployedToIntegration == true)
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId,Sessions.ApplicationId, new Guid(), EntityType.ImprovementTactic);
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.ImprovementTactic);
                                                 externalIntegration.Sync();
                                             }
                                             //end by uday for #532
