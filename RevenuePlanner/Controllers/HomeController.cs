@@ -85,6 +85,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
+            ViewBag.BusinessUnitTitle = string.Empty;
 
             if (TempData["SuccessMessageDeletedPlan"] != null)
             {
@@ -1791,16 +1792,6 @@ namespace RevenuePlanner.Controllers
             //// Check the case with selected plan gantt type and if it's match then extract the min date from tactic list 
             switch (currentGanttTab)
             {
-                //// If selected plan Gantt type is Vertical at that time we will extract tactic based on vertical id
-                case PlanGanttTypes.Vertical:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                    break;
-                //// If selected plan Gantt type is Audience at that time we will extract tactic based on Audience id
-                case PlanGanttTypes.Audience:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                    break;
                 //// If selected plan Gantt type is Custom at that time we will extract tactic based on Custom id
                 case PlanGanttTypes.Custom:
                     queryPlanProgramId = lstTactic.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == typeId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
@@ -1837,26 +1828,13 @@ namespace RevenuePlanner.Controllers
             //// Check the case with selected plan gantt type and if it's match then extract the min date from tactic list 
             switch (currentGanttTab)
             {
-                case GanttTabs.Vertical:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                    break;
                 case GanttTabs.Stage:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
                     minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
                     break;
-                case GanttTabs.Audience:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                    break;
                 case GanttTabs.Tactic:
                     queryPlanProgramId = lstTactic.Where(t => t.PlanId == planId).Select(t => t.objPlanTactic.PlanProgramId).ToList<int>();
                     minDateTactic = lstTactic.Where(t => t.PlanId == planId).Select(t => t.objPlanTactic.StartDate).ToList().Min();
-                    break;
-                case GanttTabs.BusinessUnit:
-                    var businessUnitId = lstTactic.Where(tactic => tactic.objPlanTactic.PlanTacticId == typeId).Select(tactic => tactic.objPlanTactic.BusinessUnitId).FirstOrDefault();
-                    //queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId && tactic.objPlanTacticCampaignPlan.Model.BusinessUnitId == businessUnitId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    //minDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId && tactic.objPlanTacticCampaignPlan.Model.BusinessUnitId == businessUnitId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
                     break;
                 case GanttTabs.None:
                     queryPlanProgramId = lstProgram.Where(program => program.Plan_Campaign.PlanId == planId).Select(program => program.PlanProgramId).ToList<int>();
@@ -1896,26 +1874,13 @@ namespace RevenuePlanner.Controllers
             //// Check the case with selected plan gantt type and if it's match then extract the min date from tactic list
             switch (objPlanGanttTypes)
             {
-                case PlanGanttTypes.Vertical:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                    break;
                 case PlanGanttTypes.Stage:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
                     minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
                     break;
-                case PlanGanttTypes.Audience:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                    break;
                 case PlanGanttTypes.Tactic:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
                     minDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                    break;
-                case PlanGanttTypes.BusinessUnit:
-                    var businessUnitId = lstTactic.Where(tactic => tactic.objPlanTactic.PlanTacticId == typeId).Select(tactic => tactic.objPlanTactic.BusinessUnitId).FirstOrDefault();
-                    //queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId && tactic.objPlanTacticCampaignPlan.Model.BusinessUnitId == businessUnitId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    //minDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId && tactic.objPlanTacticCampaignPlan.Model.BusinessUnitId == businessUnitId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
                     break;
                 case PlanGanttTypes.Custom:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
@@ -1956,14 +1921,6 @@ namespace RevenuePlanner.Controllers
             //// Check the case with selected plan gantt type and if it's match then extract the max date from tactic list
             switch (currentGanttTab)
             {
-                case PlanGanttTypes.Vertical:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    maxDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                    break;
-                case PlanGanttTypes.Audience:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    maxDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                    break;
                 case PlanGanttTypes.Custom:
                     queryPlanProgramId = lstTactic.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == typeId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
                     maxDateTactic = lstTactic.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == typeId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
@@ -1999,26 +1956,13 @@ namespace RevenuePlanner.Controllers
             //// Check the case with selected plan gantt type and if it's match then extract the max date from tactic list
             switch (currentGanttTab)
             {
-                case GanttTabs.Vertical:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    maxDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                    break;
                 case GanttTabs.Stage:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
                     maxDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
                     break;
-                case GanttTabs.Audience:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    maxDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                    break;
                 case GanttTabs.Tactic:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
                     maxDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                    break;
-                case GanttTabs.BusinessUnit:
-                    var businessUnitId = lstTactic.Where(tactic => tactic.objPlanTactic.PlanTacticId == typeId).Select(tactic => tactic.objPlanTactic.BusinessUnitId).FirstOrDefault();
-                    //queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId && tactic.objPlanTacticCampaignPlan.Model.BusinessUnitId == businessUnitId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    //maxDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId && tactic.objPlanTacticCampaignPlan.Model.BusinessUnitId == businessUnitId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
                     break;
                 case GanttTabs.None:
                     queryPlanProgramId = lstProgram.Where(program => program.Plan_Campaign.PlanId == planId).Select(program => program.PlanProgramId).ToList<int>();
@@ -2058,26 +2002,13 @@ namespace RevenuePlanner.Controllers
             //// Check the case with selected plan gantt type and if it's match then extract the max date from tactic list
             switch (objPlanGanttTypes)
             {
-                case PlanGanttTypes.Vertical:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    maxDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.VerticalId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                    break;
                 case PlanGanttTypes.Stage:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
                     maxDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
                     break;
-                case PlanGanttTypes.Audience:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    maxDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.AudienceId == typeId && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                    break;
                 case PlanGanttTypes.Tactic:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
                     maxDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                    break;
-                case PlanGanttTypes.BusinessUnit:
-                    var businessUnitId = lstTactic.Where(tactic => tactic.objPlanTactic.PlanTacticId == typeId).Select(tactic => tactic.objPlanTactic.BusinessUnitId).FirstOrDefault();
-                    //queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId && tactic.objPlanTacticCampaignPlan.Model.BusinessUnitId == businessUnitId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    //maxDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId && tactic.objPlanTacticCampaignPlan.Model.BusinessUnitId == businessUnitId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
                     break;
                 case PlanGanttTypes.Custom:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
@@ -2998,7 +2929,6 @@ namespace RevenuePlanner.Controllers
 
                     roiProjected = 0,
                     roiActual = 0,
-                    geographyId = tactic.GeographyId,
                     individualId = tactic.CreatedBy,
                     tacticTypeId = tactic.TacticTypeId,
                     ////Modified by Mitesh Vaishnav for PL ticket #743,When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
@@ -3052,7 +2982,6 @@ namespace RevenuePlanner.Controllers
                     roiProjected = tacticActual.costProjected == 0 ? 0 : ((tacticActual.revenueProjected - tacticActual.costProjected) / tacticActual.costProjected),
                     //// Modified by dharmraj for implement new formula to calculate ROI, #533
                     roiActual = tacticActual.costActual == 0 ? 0 : ((tacticActual.revenueActual - tacticActual.costActual) / tacticActual.costActual),
-                    geographyId = tacticActual.geographyId,
                     individualId = tacticActual.individualId,
                     tacticTypeId = tacticActual.tacticTypeId,
                     modifiedBy = tacticActual.modifiedBy,

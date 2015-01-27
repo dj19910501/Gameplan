@@ -821,7 +821,7 @@ namespace RevenuePlanner.Controllers
                         var lstAllowedVertical = lstUserCustomRestriction.Where(_usrRestr => _usrRestr.Permission == ViewEditPermission && _usrRestr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(_usrRestr => _usrRestr.CustomFieldId.ToLower()).ToList();
                         var lstAllowedGeography = lstUserCustomRestriction.Where(_usrRestr => _usrRestr.Permission == ViewEditPermission && _usrRestr.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(_usrRestr => _usrRestr.CustomFieldId.ToLower()).ToList();
                         var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(_usrRestr => _usrRestr.Permission == ViewEditPermission && _usrRestr.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(_usrRestr => _usrRestr.CustomFieldId.ToLower()).ToList();
-                        if (AllTactic.Where(_tac => _tac.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(_tac.GeographyId.ToString().ToLower()) || !lstAllowedVertical.Contains(_tac.VerticalId.ToString().ToLower()) || !lstAllowedBusinessUnit.Contains(_tac.BusinessUnitId.ToString().ToLower()))).ToList().Count > 0)
+                        if (AllTactic.Where(_tac => _tac.CreatedBy == Sessions.User.UserId).ToList().Count > 0)
                         {
                             IsCampaignDeleteble = false;
                         }
@@ -1395,7 +1395,7 @@ namespace RevenuePlanner.Controllers
                         var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
                         var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
                         var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();
-                        if (AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower()) || !lstAllowedVertical.Contains(t.VerticalId.ToString().ToLower()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString().ToLower()))).ToList().Count > 0)
+                        if (AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId).ToList().Count > 0)
                         {
                             IsProgramDeleteble = false;
                         }
@@ -2381,15 +2381,7 @@ namespace RevenuePlanner.Controllers
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(usrRestr => usrRestr.CustomFieldId).ToList();
             var lstAllowedGeography = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(usrRestr => usrRestr.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
-            bool IsTacticEditable = false;
-            if (lstAllowedGeography.Contains(pcpt.GeographyId.ToString().ToLower()) && lstAllowedVertical.Contains(pcpt.VerticalId.ToString()))////Modified by Mitesh Vaishnav For functional review point 89
-            {
-                IsTacticEditable = true;
-            }
-            else
-            {
-                IsTacticEditable = false;
-            }
+            bool IsTacticEditable = true;            
 
             ViewBag.IsTacticEditable = IsTacticEditable;
 
@@ -2626,21 +2618,8 @@ namespace RevenuePlanner.Controllers
             var lstAllowedVertical = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(usrRestr => usrRestr.CustomFieldId).ToList();
             var lstAllowedGeography = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(usrRestr => usrRestr.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
             var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(usrRestr => usrRestr.Permission == ViewEditPermission && usrRestr.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(usrRestr => usrRestr.CustomFieldId.ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
-            if (lstAllowedGeography.Contains(tid.FirstOrDefault().GeographyId.ToString().ToLower()) && lstAllowedVertical.Contains(tid.FirstOrDefault().VerticalId.ToString()) && lstAllowedBusinessUnit.Contains(tid.FirstOrDefault().BusinessUnitId.ToString().ToLower()))//&& IsBusinessUnitEditable)   // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            {
-                if (Common.CheckAfterApprovedStatus(_inspectmodel.Status))
-                {
-                    ViewBag.IsTacticEditable = true;
-                }
-                else
-                {
-                    ViewBag.IsTacticEditable = false;
-                }
-            }
-            else
-            {
-                ViewBag.IsTacticEditable = false;
-            }
+            
+            ViewBag.IsTacticEditable = true;
             ViewBag.LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanTacticId == id && lineitem.IsDeleted == false).OrderByDescending(lineitem => lineitem.LineItemTypeId).ToList();
             return PartialView("Actual");
         }
@@ -2955,7 +2934,7 @@ namespace RevenuePlanner.Controllers
                     return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
                 }
             }
-            bool isallowrestriction = Common.GetRightsForTactic(lstUserCustomRestriction, pcpt.VerticalId, pcpt.GeographyId);
+            bool isallowrestriction = true;
             ViewBag.IsAllowCustomRestriction = isallowrestriction;
 
             // Dropdown for Verticals
@@ -3036,17 +3015,12 @@ namespace RevenuePlanner.Controllers
             ippctm.TacticTypeId = pcpt.TacticTypeId;
             ippctm.Description = HttpUtility.HtmlDecode(pcpt.Description);
             ippctm.OwnerId = pcpt.CreatedBy;
-            ippctm.VerticalId = pcpt.VerticalId;
-            ippctm.AudienceId = pcpt.AudienceId;
-            ippctm.GeographyId = pcpt.GeographyId;
             ippctm.StartDate = pcpt.StartDate;
             ippctm.EndDate = pcpt.EndDate;
             ippctm.PStartDate = pcpt.Plan_Campaign_Program.StartDate;
             ippctm.PEndDate = pcpt.Plan_Campaign_Program.EndDate;
             ippctm.CStartDate = pcpt.Plan_Campaign_Program.Plan_Campaign.StartDate;
             ippctm.CEndDate = pcpt.Plan_Campaign_Program.Plan_Campaign.EndDate;
-            ippctm.BusinessUnitId = pcpt.BusinessUnitId;
-
             //User userName = new User();
             try
             {
@@ -3139,7 +3113,6 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.Tactics = tnewList.OrderBy(t => t.Title);
             ViewBag.Year = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(pcpt.BusinessUnitId);
             ippctm.TacticCost = pcpt.Cost;
             ippctm.AllocatedBy = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
 
@@ -3252,14 +3225,10 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.Title = form.TacticTitle;
                                 pcpobj.TacticTypeId = form.TacticTypeId;
                                 pcpobj.Description = form.Description;
-                                pcpobj.VerticalId = form.VerticalId;
-                                pcpobj.AudienceId = form.AudienceId;
-                                pcpobj.GeographyId = form.GeographyId;
                                 pcpobj.Cost = form.Cost;
                                 pcpobj.StartDate = form.StartDate;
                                 pcpobj.EndDate = form.EndDate;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
-                                pcpobj.BusinessUnitId = form.BusinessUnitId;
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcpobj.StageId = form.StageId;
                                 pcpobj.ProjectedStageValue = form.ProjectedStageValue;
@@ -3406,21 +3375,7 @@ namespace RevenuePlanner.Controllers
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
                                 pcpobj.Description = form.Description;
-                                if (pcpobj.VerticalId != form.VerticalId)
-                                {
-                                    pcpobj.VerticalId = form.VerticalId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                if (pcpobj.AudienceId != form.AudienceId)
-                                {
-                                    pcpobj.AudienceId = form.AudienceId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                if (pcpobj.GeographyId != form.GeographyId)
-                                {
-                                    pcpobj.GeographyId = form.GeographyId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
+                                
                                 // Start - Added by Sohel Pathan on 19/11/2014 for PL ticket #708
                                 Guid oldOwnerId = pcpobj.CreatedBy;
                                 if (pcpobj.CreatedBy != form.OwnerId)
@@ -5653,7 +5608,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsOwner = false;
             }
 
-            bool isallowrestriction = Common.GetRightsForTactic(lstUserCustomRestriction, pcptl.Plan_Campaign_Program_Tactic.VerticalId, pcptl.Plan_Campaign_Program_Tactic.GeographyId);
+            bool isallowrestriction = true;
             ViewBag.IsAllowCustomRestriction = isallowrestriction;
 
             Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
@@ -6376,13 +6331,9 @@ namespace RevenuePlanner.Controllers
 
 
                 if (Convert.ToString(section) != "")
-                {
-                    string verticalId = string.Empty;
-                    string GeographyId = string.Empty;
+                {                    
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
-                    {
-                        verticalId = objPlan_Campaign_Program_Tactic.VerticalId.ToString();
-                        GeographyId = objPlan_Campaign_Program_Tactic.GeographyId.ToString();
+                    {                       
                         DateTime todaydate = DateTime.Now;
 
                         //// if Tactic status based on Function CheckAfterApprovedStatus
@@ -6403,7 +6354,6 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
-                        GeographyId = objPlan_Campaign_Program.GeographyId == null ? string.Empty : objPlan_Campaign_Program.GeographyId.ToString();
                         DateTime todaydate = DateTime.Now;
                         if (Common.CheckAfterApprovedStatus(objPlan_Campaign_Program.Status))
                         {
@@ -6422,7 +6372,6 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
-                        GeographyId = objPlan_Campaign.GeographyId == null ? string.Empty : objPlan_Campaign.GeographyId.ToString();
                         DateTime todaydate = DateTime.Now;
                         if (Common.CheckAfterApprovedStatus(objPlan_Campaign.Status))
                         {
@@ -6448,18 +6397,7 @@ namespace RevenuePlanner.Controllers
                         int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                         var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
                         var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
-
-                        if (GeographyId != string.Empty && verticalId != string.Empty)
-                        {
-                            if (lstAllowedGeography.Contains(GeographyId.ToLower()) && lstAllowedVertical.Contains(verticalId))////Modified by Mitesh Vaishnav For functional review point 89
-                            {
-                                IsPlanEditable = true;
-                            }
-                            else
-                            {
-                                IsPlanEditable = false;
-                            }
-                        }
+                        IsPlanEditable = true;
                     }
                 }
 
@@ -6684,14 +6622,11 @@ namespace RevenuePlanner.Controllers
                                   ProgramTitle = pcpt.Plan_Campaign_Program.Title,
                                   Status = pcpt.Status,
                                   TacticTypeId = pcpt.TacticTypeId,
-                                  VerticalId = pcpt.VerticalId,
                                   ColorCode = pcpt.TacticType.ColorCode,
                                   Description = pcpt.Description,
-                                  AudienceId = pcpt.AudienceId,
                                   PlanCampaignId = pcpt.Plan_Campaign_Program.PlanCampaignId,
                                   PlanProgramId = pcpt.PlanProgramId,
                                   OwnerId = pcpt.CreatedBy,
-                                  BusinessUnitId = pcpt.BusinessUnitId,
                                   //Modified By : Kalpesh Sharma #864 Add Actuals: Unable to update actuals % 864_Actuals.jpg %
                                   // If tactic has a line item at that time we have consider Project cost as sum of all the active line items
                                   Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0
@@ -6701,8 +6636,6 @@ namespace RevenuePlanner.Controllers
                                     : pcpt.Cost,
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,
-                                  VerticalTitle = pcpt.Vertical.Title,
-                                  AudiencTitle = pcpt.Audience.Title,
                                   CostActual = pcpt.CostActual == null ? 0 : pcpt.CostActual,
                                   IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
                                   LastSyncDate = pcpt.LastSyncDate,
@@ -6710,8 +6643,7 @@ namespace RevenuePlanner.Controllers
                                   StageTitle = pcpt.Stage.Title,
                                   StageLevel = pcpt.Stage.Level,
                                   ProjectedStageValue = pcpt.ProjectedStageValue,
-                                  GeographyTitle = pcpt.Geography.Title,
-                                  TacticCustomName=pcpt.TacticCustomName
+                                  TacticCustomName = pcpt.TacticCustomName
                               };
 
 
@@ -6773,10 +6705,8 @@ namespace RevenuePlanner.Controllers
                     imodel.ProgramTitle = objPlan_Campaign_Program.Title;
                     imodel.CampaignTitle = objPlan_Campaign_Program.Plan_Campaign.Title;
                     imodel.Status = objPlan_Campaign_Program.Status;
-                    imodel.VerticalId = objPlan_Campaign_Program.VerticalId;
                     imodel.ColorCode = Program_InspectPopup_Flag_Color;
                     imodel.Description = objPlan_Campaign_Program.Description;
-                    imodel.AudienceId = objPlan_Campaign_Program.AudienceId;
                     imodel.PlanCampaignId = objPlan_Campaign_Program.PlanCampaignId;
                     imodel.PlanProgramId = objPlan_Campaign_Program.PlanProgramId;
                     imodel.OwnerId = objPlan_Campaign_Program.CreatedBy;
@@ -6835,13 +6765,9 @@ namespace RevenuePlanner.Controllers
                     }
 
                     imodel.CampaignTitle = objPlan_Campaign.Title;
-                    imodel.Status = objPlan_Campaign.Status;
-                    if (objPlan_Campaign.VerticalId != null)
-                        imodel.VerticalId = objPlan_Campaign.VerticalId;
+                    imodel.Status = objPlan_Campaign.Status;                    
                     imodel.ColorCode = Campaign_InspectPopup_Flag_Color;
-                    imodel.Description = objPlan_Campaign.Description;
-                    if (objPlan_Campaign.AudienceId != null)
-                        imodel.AudienceId = objPlan_Campaign.AudienceId;
+                    imodel.Description = objPlan_Campaign.Description;                    
                     imodel.PlanCampaignId = objPlan_Campaign.PlanCampaignId;
                     imodel.OwnerId = objPlan_Campaign.CreatedBy;
                     //imodel.BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId;

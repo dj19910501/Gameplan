@@ -1341,7 +1341,7 @@ namespace RevenuePlanner.Controllers
                                                                 .Where(_tac => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                         CalendarEndDate,
                                                                                                                         _tac.StartDate,
-                                                                                                                        _tac.EndDate).Equals(false) && Common.GetRightsForTacticVisibility(lstUserCustomRestriction, _tac.VerticalId, _tac.GeographyId))
+                                                                                                                        _tac.EndDate).Equals(false))
                                                                 .Select(_tac => new
                                                                 {
                                                                     id = string.Format("C{0}_P{1}_T{2}", _tac.Plan_Campaign_Program.PlanCampaignId, _tac.Plan_Campaign_Program.PlanProgramId, _tac.PlanTacticId),
@@ -1979,14 +1979,14 @@ namespace RevenuePlanner.Controllers
                     cost = LineItemList.Where(l => (TacticList.Where(pcpt => pcpt.PlanProgramId == pcpj.PlanProgramId).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Cost),
                     mqls = ListTacticMQLValue.Where(lt => (TacticList.Where(pcpt => pcpt.PlanProgramId == pcpj.PlanProgramId).Select(pcpt => pcpt.PlanTacticId)).Contains(lt.PlanTacticId)).Sum(lt => lt.MQL),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
-                    tactics = (TacticList.Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && Common.GetRightsForTacticVisibility(lstUserCustomRestriction, pcpt.VerticalId, pcpt.GeographyId)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
+                    tactics = (TacticList.Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
                     {
                         id = pcptj.PlanTacticId,
                         title = pcptj.Title,
                         description = pcptj.Description,
                         cost = LineItemList.Where(l => l.PlanTacticId == pcptj.PlanTacticId).Sum(l => l.Cost),
                         mqls = ListTacticMQLValue.Where(lt => lt.PlanTacticId == pcptj.PlanTacticId).Sum(lt => lt.MQL),
-                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? (Common.GetRightsForTactic(lstUserCustomRestriction, pcptj.VerticalId, pcptj.GeographyId) ? 0 : 1) : 1,
+                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 1 : 1,
                         lineitems = (LineItemList.Where(pcptl => pcptl.PlanTacticId.Equals(pcptj.PlanTacticId))).Select(pcptlj => new
                         {
                             id = pcptlj.PlanLineItemId,
@@ -6178,8 +6178,6 @@ namespace RevenuePlanner.Controllers
             List<int> lst_ImprovementTacticIds = new List<int>();
             List<Plan_Improvement_Campaign_Program_Tactic> lst_ImprvTactics = new List<Plan_Improvement_Campaign_Program_Tactic>();
             bool IsBusinessUnitEditable = false;
-            string VerticalId = string.Empty;
-            string GeographyId = string.Empty;
             Guid ModelBusinessUnitId;
             #endregion
 
@@ -6252,14 +6250,8 @@ namespace RevenuePlanner.Controllers
                     var lstAllowedGeography = lstUserCustomRestriction.Where(_custRestrctn => _custRestrctn.Permission == ViewEditPermission && _custRestrctn.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(_custRestrctn => _custRestrctn.CustomFieldId.ToString().ToLower()).ToList();
                     foreach (Plan_Campaign_Program_Tactic Tactic in lst_Tactics)
                     {
-                        VerticalId = Tactic.VerticalId.ToString();
-                        GeographyId = Tactic.GeographyId.ToString();
-
                         IsBusinessUnitEditable = false;
-                        IsBusinessUnitEditable = lstViewEditBusinessUnits.Contains(Tactic.BusinessUnitId);
-
-                        if (IsBusinessUnitEditable && lstAllowedGeography.Contains(GeographyId.ToLower()) && lstAllowedVertical.Contains(VerticalId))
-                            lst_TacticIds.Add(Tactic.PlanTacticId);
+                        IsBusinessUnitEditable = true;                                                
                     }
 
                     //// Check BusinessUnit Editable or not for ImprovementTactic.

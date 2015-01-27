@@ -236,7 +236,7 @@ namespace RevenuePlanner.Controllers
                         List<int> deletedStageId = db.Stages.Where(s => s.ClientId == ClientId && s.IsDeleted == true).Select(s => s.StageId).ToList();
                         if (deletedStageId.Count > 0)
                         {
-                            var tacticlist = db.Plan_Campaign_Program_Tactic.Where(t => deletedStageId.Contains(t.StageId) && t.BusinessUnit.ClientId == ClientId && t.IsDeleted == false).ToList();
+                            var tacticlist = db.Plan_Campaign_Program_Tactic.Where(t => deletedStageId.Contains(t.StageId) && t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == ClientId && t.IsDeleted == false).ToList();
                             if (tacticlist.Count > 0)
                             {
                                 Common.SetCookie("DataClientId" + ClientId.ToString().ToLower(), ClientId.ToString().ToLower(), true);
