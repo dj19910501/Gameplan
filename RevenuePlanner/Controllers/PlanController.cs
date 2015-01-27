@@ -5551,7 +5551,7 @@ namespace RevenuePlanner.Controllers
                                 weightage = Convert.ToInt32(_custment.Weightage.Value);
                             else
                             {
-                                string constCostStageTitle = "Cost";
+                                string constCostStageTitle = Enums.InspectStage.Cost.ToString();
                                 var stgweightage = db.CustomField_Entity_StageWeight.Where(_stageweight => _stageweight.CustomFieldEntityId.Equals(_custment.CustomFieldEntityId) && _stageweight.StageTitle.Equals(constCostStageTitle)).Select(_stageweight => _stageweight.Weightage).FirstOrDefault();
                                 weightage = stgweightage != null ? stgweightage : 0;
                             }

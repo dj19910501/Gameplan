@@ -529,7 +529,7 @@
         function LoadBudgetData() {
             if (isByAllocated) {
                 myApp.showPleaseWait();
-                $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?GeographyIds=' + GeographyIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + OptionMain + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId, function () {
+                $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?Year=' + OptionMain + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId, function () {
                     myApp.hidePleaseWait();
                 });
 
