@@ -89,4 +89,14 @@ BEGIN
 	ALTER TABLE dbo.Plan_Campaign ALTER COLUMN AudienceId INTEGER NULL
 END
 
+
+-------- Improvement Tactic table
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit]') AND parent_object_id = OBJECT_ID(N'[dbo].[Plan_Improvement_Campaign_Program_Tactic]'))
+ALTER TABLE [dbo].[Plan_Improvement_Campaign_Program_Tactic] DROP CONSTRAINT [FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit]
+
+IF EXISTS(SELECT * FROM sys.columns WHERE [name] = 'BusinessUnitId' AND [object_id] = OBJECT_ID(N'Plan_Improvement_Campaign_Program_Tactic'))
+BEGIN
+	ALTER TABLE dbo.Plan_Improvement_Campaign_Program_Tactic ALTER COLUMN BusinessUnitId INTEGER NULL
+END
+
 COMMIT TRANSACTION DeleteVerAudGeoBuIds
