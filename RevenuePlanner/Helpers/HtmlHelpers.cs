@@ -3617,21 +3617,24 @@ namespace RevenuePlanner.Helpers
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
+                        string inputclassName = "span12 input-small";
+                        inputclassName += item.isRequired ? " resubmission" : string.Empty;
                         //When item value contains double quots then it would be replaced 
                         string customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
-                            sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
+                            sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\""+inputclassName+"\"");
                         }
                         else
                         {
-                            sb.Append("<input type=\"text\" maxlength =\"255\" title=\""+customFieldEntityValue+"\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small input-setup\"");
+                            inputclassName += " input-setup";
+                            sb.Append("<input type=\"text\" maxlength =\"255\" title=\""+customFieldEntityValue+"\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\""+inputclassName+"\"");
                         }
 
                         //If custom field is required than add attribute require
                         if (item.isRequired)
                         {
-                            sb.Append(" require=\"true\"");
+                            sb.Append(" require=\"true\" oldValue=\""+item.value+"\" label=\"" + item.name + "\"");
                         }
                         sb.Append("></div>");
                         fieldCounter = fieldCounter + 1;
