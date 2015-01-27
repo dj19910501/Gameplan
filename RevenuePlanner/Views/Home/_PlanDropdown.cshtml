@@ -3,7 +3,8 @@
 
 <ul class="nav nav-tabs" style="margin-left:25px;">
     <li class="title-header source-sans-proregular bold font-size25px" style="padding-top:5px;">
-
+       @if (Model.plans != null && Model.plans.Count > 0)
+       {
         <form id="nl-form2" class="nl-form-plan-title without-margin plantitle" style="display:none;">
 
             <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40" >
@@ -18,6 +19,7 @@
             </script>
 
         </form>
+       }
         <h2 id="lblMarkringActivitiesTitle" style="font-size: 29.5px;display:none;">Marketing Activities</h2>
     </li>
     <li style="padding-top:5px;">
