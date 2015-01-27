@@ -34,6 +34,9 @@
                             if ($('#' + optionId + '_' + StageCodeOfWeight).hasClass('error')) {
                                 $(this).parents('tr').find('input[type=text]').addClass('error');
                             }
+                            else {
+                                $(this).parents('tr').find('input[type=text]').removeClass('error');
+                            }
                             $(this).parents('tr').find('input[type=text]').val(allInputValue);
                         });
                     }
@@ -54,12 +57,15 @@
                         var total = 0;
                         var counter=0
                         $(this).parents('tr').find('input[type=text]').not('.text_blk_active').each(function () {
-                            if ($(this).val() != '' && typeof $(this).val() != 'undefined'){
+                            if ($(this).val() != '' && typeof $(this).val() != 'undefined') {
                                 counter += 1;
                                 total += parseInt($(this).val());
                             }
                         });
-                        var avg = total / counter;
+                        var avg = 0;
+                        if (counter > 0) {
+                            avg=  total / counter;
+                        }
                         $(this).parents('tr').find('.text_blk_active').val(parseInt(avg).toString());
                     });
                     var validateTotalWeightage = 0;

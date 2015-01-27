@@ -3168,7 +3168,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="strDescription"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, string UserId = "", string strDescription = "")
+        public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, string UserId = "", string strDescription = "", bool resubmission = false)
         {
             //// check whether UserId is current loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -3296,7 +3296,11 @@ namespace RevenuePlanner.Controllers
                                         {
                                             objcustomFieldEntity.Weightage = (byte)item.Weight;
                                         }
-                                        objcustomFieldEntity.CustomField_Entity_StageWeight.Concat(objstageWeight);
+                                        //objcustomFieldEntity.CustomField_Entity_StageWeight.Concat(objstageWeight);
+                                        if (!objstageWeight.Where(sw => sw.StageTitle == null).Any())
+                                        {
+                                            objcustomFieldEntity.CustomField_Entity_StageWeight = objstageWeight.ToList();
+                                        }
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
                                     }
                                 }
@@ -3349,31 +3353,33 @@ namespace RevenuePlanner.Controllers
                             {
                                 #region "Variable Initialize"
                                 bool isReSubmission = false;
-                                bool isDirectorLevelUser = false;
                                 bool isOwner = false;
                                 string status = string.Empty;
                                 #endregion
+                                //Start - Added by Mitesh Vaishnav for PL ticket #1137
+                                if (resubmission)
+                                {
+                                    isReSubmission = true;
+                                }
 
                                 Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).FirstOrDefault();
                                 if (pcpobj.CreatedBy == Sessions.User.UserId) isOwner = true;
 
                                 pcpobj.Title = form.TacticTitle;
                                 status = pcpobj.Status;
-                                if (pcpobj.TacticTypeId != form.TacticTypeId)
-                                {
-                                    pcpobj.TacticTypeId = form.TacticTypeId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
                                 pcpobj.Description = form.Description;
-
-                                // Start - Added by Sohel Pathan on 19/11/2014 for PL ticket #708
                                 Guid oldOwnerId = pcpobj.CreatedBy;
-                                if (pcpobj.CreatedBy != form.OwnerId)
+                                //Start - Added by Mitesh Vaishnav - Remove old resubmission condition and combine it for PL ticket #1137
+                                if (isReSubmission)
                                 {
+                                   
+                                    pcpobj.TacticTypeId = form.TacticTypeId;
                                     pcpobj.CreatedBy = form.OwnerId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                    pcpobj.ProjectedStageValue = form.ProjectedStageValue;
                                 }
-                                // End - Added by Sohel Pathan on 19/11/2014 for PL ticket #708
+                                //End - Added by Mitesh Vaishnav - Remove old resubmission condition and combine it
+                                
+
 
                                 DateTime todaydate = DateTime.Now;
 
@@ -3383,12 +3389,9 @@ namespace RevenuePlanner.Controllers
                                 // To check whether status is Approved or not
                                 if (Common.CheckAfterApprovedStatus(pcpobj.Status))
                                 {
+                                    // Modified by Mitesh Vaishnav for PL ticket #1137 - Add resubmission flag in if condition
                                     // If any changes in start/end dates then tactic will go through the approval process
-                                    if (pcpobj.EndDate != form.EndDate || pcpobj.StartDate != form.StartDate)
-                                    {
-                                        if (!isDirectorLevelUser) isReSubmission = true;
-                                    }
-                                    else
+                                    if (!isReSubmission && pcpobj.EndDate == form.EndDate && pcpobj.StartDate == form.StartDate)
                                     {
                                         if (todaydate > form.StartDate && todaydate < form.EndDate)
                                         {
@@ -3425,12 +3428,6 @@ namespace RevenuePlanner.Controllers
                                     pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = form.EndDate;
                                 }
                                 #endregion
-
-                                if (pcpobj.ProjectedStageValue != form.ProjectedStageValue)
-                                {
-                                    pcpobj.ProjectedStageValue = form.ProjectedStageValue;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
 
                                 //// check that Tactic cost count greater than 0 OR Plan's AllocatedBy is None or Defaults.
                                 if ((db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).ToList()).Count() == 0 ||
