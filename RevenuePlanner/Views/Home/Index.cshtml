@@ -12,22 +12,18 @@
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
-    //bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;
-    bool showBid = false;
 }
 
 @Html.Hidden("IsViewOnly")
 @Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
 @Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
-@Html.Hidden("showBid", showBid)
 @Html.Hidden("hdnSelectedPlanIds", 0, new { id = "hdnSelectedPlanIds" })
 
 <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
 @Html.Hidden("hdnIsImprovement", isImprovement)
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 @Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
-@*@Html.Hidden("IsBusinessUnitEditable", IsBusinessUnitEditable)*@
 
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
@@ -78,15 +74,8 @@
             var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
             $("#nl-form2").hide();
             //Added by Nirav for Custom Dropdown - 388
-           @* var showBid = $('#showBid').val();
-            filters.BUId.push('@Sessions.BusinessUnitId');
-            $('#businessunitdetail').html($('#' + '@Sessions.BusinessUnitId').attr('butitile'));
-            filters.BuTitles.push($('#businessunitdetail').html());*@
 
             if (($('#ActiveMenu').val().toLowerCase() == "plan")) {
-                //if (showBid == 'True')
-                {
-                    var id = $('#ddlBusinessUnit').val();
                     $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
                         if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                             //// Call function to redirect on service unavailibility.
@@ -95,17 +84,6 @@
                             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                         }
                     });//activeMenu parameter added
-                }
-               @* else {
-                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
-                        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                            //// Call function to redirect on service unavailibility.
-                            //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                            //// Ticket: 942 Exception handeling in Gameplan.
-                            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                        }
-                    });//activeMenu parameter added
-                }*@
             }
             else {
                 $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
@@ -276,26 +254,6 @@
             }
             $dropdown.append($html);
         }
-
-        function onClickBusinessUnit() {
-            $('#dropdown-business-unit').find('a#option').click(function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-                var Title = $(this).text();
-                var id = $(this).attr("name");
-                $("#selected-option").html('');
-                $("#selected-option").html(Title);
-                $("#DivloadPlan").html('');
-                var pid = $('#PlanId').val();
-                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
-                        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                            //// Call function to redirect on service unavailibility.
-                            //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                            //// Ticket: 942 Exception handeling in Gameplan.
-                            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                    }
-                }); //activeMenu parameter added
-                });
         }
 
     </script>
@@ -502,22 +460,6 @@
     @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
 
-@*@{
-    if (showBid == true && (activeMenu.ToLower() == Enums.ActiveMenu.Plan.ToString().ToLower()))
-    {
-    <span class="selectBox cmbxplan_businessunit" id="dropdown-business-unit">
-        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
-        {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId), new { @class = "hide" })
-        }
-        else
-        {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"), new { @class = "hide" })
-        }
-    </span>
-    }
-}*@
-
 <script>
     var pid = $('#PlanId').val();
     var CurrentPlanId = pid;
@@ -618,7 +560,6 @@
     var SelectedPlanTitle = "";
     var filters = {
         customFieldIds: [],
-        BUId: [],
         PlanIDs: [],
         SelectedPlans: [],
         PlanTitles: [],
@@ -686,28 +627,6 @@
                 break;
             }
         }
-    }
-
-    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
-    function toggleBusinessUnit(obj) {
-        var id = $(obj).attr('id');
-        if ($(obj).is(':checked')) {
-            $("#li" + id).addClass("close-list");
-            filters.BUId.push(id);
-        }
-        else {
-            $("#li" + id).removeClass("close-list");
-            removeByValue(filters.BUId, id);
-        }
-
-        if (filters.BUId.length == 0) {
-            ResetFilterBeforePlan();
-            isFirstCall = false;
-            $("#PlanAllModule").css("display", "none");
-            $("#NoPlanFound").show();
-        }
-
-        BindPlanBySelectedBusniessUnit();
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
@@ -797,7 +716,6 @@
        // Get collaborator image
        var imgs = collaborator.imageBytes;
        var username = collaborator.name;
-       var buid = collaborator.businessUnit;//uday#416
        var title = collaborator.jobTitle;//uday#416
 
        // Set collaborator image
@@ -808,7 +726,7 @@
 
        var referencestart = "<a href='#' class=\"profile-info\">";
        var referencenew = "<div class=\"profile-tooltip\">	<div class=\"profile-tooltip-arrow\"></div> <div class=\"profile-tooltip-inner\"> " +
-                                            " " + username + ', ' + title + "<br /><label>Business Unit:</label> " + buid + "</div> </div>";
+                                            " " + username + ', ' + title + "<br /></div> </div>";
        var endreference = "</a>";
        appendtag += referencestart;
        appendtag += collaboratorImage;
@@ -859,7 +777,7 @@
        filters.SelectedPlans = [];
    }
 
-   function BindPlanBySelectedBusniessUnit() {
+   function BindPlans() {
        ResetFilterBeforePlan();
        var ActiveMenu = $('#ActiveMenu').val().toLowerCase();
        $.ajax({
@@ -867,7 +785,7 @@
                myApp.hidePleaseWait();
            },
            type: 'POST',
-           url: '@Url.Content("~/Home/GetPlansByBusinessId/")',
+           url: '@Url.Content("~/Home/GetPlans/")',
             dataType: "json",
             async: false,
             data: {
@@ -1036,28 +954,6 @@
         }
 
         //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
-        function BulkBUOperation(selection) {
-            filters.BUId = [];
-            if (selection) {
-                $("#ulBusniessUnit li").each(function (i) {
-                    $(this).addClass("close-list");
-                    var chkid = $(this).find("input[type=checkbox]").attr("id");
-                    $("#" + chkid).attr("checked", "checked");
-                    filters.BUId.push(chkid);
-                });
-            }
-            else {
-                $("#ulBusniessUnit li").each(function (i) {
-                    $(this).removeClass("close-list");
-                    var chkid = $(this).find("input[type=checkbox]").attr("id");
-                    $("#" + chkid).removeAttr("checked");
-                });
-            }
-
-            BindPlanBySelectedBusniessUnit();
-        }
-
-        //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
         function BulkPlanOperation(selection) {
             filters.SelectedPlans = [];
             filters.PlanTitles = [];
@@ -1138,24 +1034,7 @@
         window.location.href = url;
     }
     $(".selectBox select").selectbox();
-    $('#ddlBusinessUnit').change(function () {
-        var Bid = $('#ddlBusinessUnit').val();
-        getViewByList = true;
-        CurrentPlanId = $('#PlanId').val();
-        $("#CurrentPlanId").val(CurrentPlanId);
-        if (CurrentPlanId > 0) {
-            BindUpcomingActivites(CurrentPlanId);
-            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
-                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                    //// Call function to redirect on service unavailibility.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-               }
-            });
-       }
 
-    });
    /*end Nirav*/
    /// Script Start
    /// Added By: Maninder Singh Wadhva.
@@ -1275,7 +1154,7 @@
         // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
 
         if (activeMenu.toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-            SetBusinessUnitSection();
+            BindPlans();
             PlanIdsCustom = filters.SelectedPlans.toString();
         }
         else {
@@ -1286,10 +1165,6 @@
         GetOwnerListForFilter(PlanIdsCustom);
         $('#hdnSelectedPlanIds').val(PlanIdsCustom);
     });
-
-    function SetBusinessUnitSection() {
-        BindPlanBySelectedBusniessUnit();
-    }
 
     var appendtag = '';//uday
     function DuplicatePlanMessage() {
@@ -1559,7 +1434,6 @@
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
 
         var Planid = filters.SelectedPlans;
-        var BUId = filters.BUId;
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
         var GetSelectedPlanNo = filters.SelectedPlans.length;
@@ -1575,7 +1449,6 @@
             else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                 // #838 Showing Multiple Plans on Plan Page : Kalpesh Sharma
                 Planid = CurrentPlanId;
-                ///BUId = ($('#ddlBusinessUnit').val());
                 GetSelectedPlanNo = 1;
             }
 
@@ -1588,7 +1461,6 @@
                   viewBy: type,
                   PlanId: Planid.toString(),
                   timeFrame: isQuater,
-                  businessunitIds: BUId.toString(),
                   customFieldIds: CustomFieldId.toString(),
                   ownerIds: OwnerIds.toString(),
                   activeMenu: $('#ActiveMenu').val(),
