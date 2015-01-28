@@ -1,3 +1,5 @@
+/* Execute this script on MRP database */
+
 /* Create Temporary Client & Attributes table */
 Create TABLE #Client 
     (
@@ -29,7 +31,7 @@ Declare @ClientId uniqueidentifier
 Declare @CustomFieldID int=0
 ------ CustomField Table record -----
 Declare @CustomFieldName varchar(50) = ''
-Declare @CustomFieldType int=2
+Declare @CustomFieldType int=0
 Declare @Description nvarchar(max)=''
 Declare @IsRequired bit='1'
 Declare @EntityType varchar(500)='Tactic'
@@ -39,7 +41,7 @@ Declare @IsDisplayforFilter bit ='1'
 /* End - Declare local variables */
 
 BEGIN
-	
+	SELECT Top 1 @CustomFieldType = CustomFieldTypeId FROM CustomFieldType WHERE Name = 'DropDownList'
 	/* Insert CustomField & Values to CustomField and CustomFieldOption table respectively based on ClientId */
 	Select @Attrtotalrows = COUNT(*) from #Attributes
 	While(@AttrCntr <= @Attrtotalrows)
