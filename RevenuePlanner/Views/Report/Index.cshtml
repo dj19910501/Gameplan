@@ -2,7 +2,6 @@
 @using RevenuePlanner.Helpers
 @{
     string SelectedYear = ViewBag.SelectedYear;
-    //var ViewBusinessUnitSelectedValue = (List<SelectListItem>)ViewBag.ViewBusinessUnit;
     var ViewPlanSelectedValue = (List<SelectListItem>)ViewBag.ViewPlan;
     ViewPlanSelectedValue.First().Selected = true;
     
@@ -10,17 +9,6 @@
     var ViewCustomFields = (List<RevenuePlanner.Models.CustomField>)ViewBag.ViewCustomFields;
     // End - Added by Arpita Soni on 01/19/2015 for Ticket #1148 
     
-    //var ViewBusinessUnitSelectedValue = (List<SelectListItem>)ViewBag.ViewBusinessUnit;
-    //var ViewGeographySelectedValue = (List<SelectListItem>)ViewBag.ViewGeography;
-    //var ViewVerticalSelectedValue = (List<SelectListItem>)ViewBag.ViewVertical;
-    //var ViewAudienceSelectedValue = (List<SelectListItem>)ViewBag.ViewAudience;
-    //string AudienceLabel = Common.CustomLabelFor(Enums.CustomLabelCode.Audience);
-    //string AudienceLabelTitle = string.Empty;
-    //if (AudienceLabel.Length > 10)
-    //{
-     //   AudienceLabelTitle = AudienceLabel;
-      //  AudienceLabel = AudienceLabel.Substring(0, 10) + "...";
-    //}
     ViewBag.Title = "Summary";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -141,14 +129,8 @@
             <span class="selectBox" id="ddlYearSpan" style="width: 115px; line-height: 2.5; padding-right: 7px;">
                 @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text", SelectedYear), new { @class = "ddlStyleReport" })
             </span>
-            @*@Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units", style = "display:none" })*@
             @Html.DropDownList("ddlPlan", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text", ViewPlanSelectedValue.Where(p => p.Selected).Select(p => p.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans", style = "display:none" })
              <!--Start - Modified by Arpita Soni on 01/19/2015 for Ticket #1148-->
-            @*@Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units", style = "display:none" })
-            @Html.DropDownList("ddlViewGeography", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewGeography, "Value", "Text", ViewGeographySelectedValue.Where(g => g.Selected).Select(g => g.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewGeography", noneselectedvalue = "Geography", style = "display:none" })
-            @Html.DropDownList("ddlViewVertical", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewVertical, "Value", "Text", ViewVerticalSelectedValue.Where(v => v.Selected).Select(v => v.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewVertical", noneselectedvalue = "Verticals", style = "display:none" })
-            @Html.DropDownList("ddlViewAudience", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewAudience, "Value", "Text", ViewAudienceSelectedValue.Where(a => a.Selected).Select(a => a.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewAudience", noneselectedvalue = @AudienceLabel, style = "display:none" })
-           *@
             @foreach (CustomField custField in ViewCustomFields)
             {
                 string name = "ddlView" + custField.CustomFieldId;
@@ -173,15 +155,7 @@
                     <div class="details" id="@detailid">All</div>
             }
 
-            @*<label id="lblGeography">Geography:</label>
-            <div class="details" id="geographydetail">All</div>
-            <label id="lblVerticals">Verticals:</label>
-            <div class="details" id="verticaldetail">All</div>
-            <label id="lblAudience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience):</label>
-            <div class="details" id="audiencedetail">All</div>
-            <label id="lblBusinessUnit">Business Units:</label>
-            <div class="details" id="businessunitdetail">All</div>
-            *@
+           
         </div>
     </div>
     <div class="budgetReportFilter-area-right">
@@ -197,23 +171,12 @@
 <script type="text/javascript">
 
     var SelectedBUId, SelectedPlanId;
-    var isBusinessUnit = false;
     var IsCallFromYearDropdown = true;
     var OptionMain = $('#ddlYear').val();;
     var isAllowClick = true;
     var multiselectPlanId = "ddlPlan";
     var filterPlanid = "#plandetail";
-    
     var IsPrimaryFilter = true;
-    //var ddlViewAudience = "ddlViewAudience";
-    //var ddlViewVertical = "ddlViewVertical"
-    //var ddlViewBusinessUnit = "ddlViewBusinessUnit";
-    //var ddlViewGeography = "ddlViewGeography";
-
-    //var audiencedetail = "#audiencedetail";
-    //var verticaldetail = "#verticaldetail";
-    //var businessunitdetail = "#businessunitdetail";
-    //var geographydetail = "#geographydetail";
     var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
 
     $(document).ready(function () {
@@ -243,25 +206,10 @@
 
         // Load Multiselect Dropdown list i.e. Bind with new design
         LoadCheckBoxValue(multiselectPlanId, filterPlanid);
-        //LoadCheckBoxValue(ddlViewAudience, audiencedetail);
-        //LoadCheckBoxValue(ddlViewVertical, verticaldetail);
-        //LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
-        //LoadCheckBoxValue(ddlViewGeography, geographydetail);
         LoadYearDropdown();
         loadBasedOnPlan();
-
         $("#DivShareReport").hide();
         GetFilterIdForPlan(multiselectPlanId);
-
-        // Make code for multiselect dropdown close
-        //$(document).mouseup(function (e) {
-        //    var BUcontainer = $('#multipleselect_ddlViewBusinessUnit');
-        //    var BUbutton = $('#btnMultiselect_ddlViewBusinessUnit');
-        //    if (!BUcontainer.is(e.target) && BUcontainer.has(e.target).length === 0 && BUcontainer.css('display') == 'block' && !BUbutton.is(e.target) && BUbutton.has(e.target).length === 0) {
-        //        $('#ddlViewBusinessUnit').multiselect('close');
-        //    }
-        //});
-
     });
 
     // <--- End document.ready Event --->
@@ -325,43 +273,10 @@
             }
         }
 
-    //// Modified By Arpita Soni for Ticket #1148 on 01/23/2015
-    ///Added by Mitesh Vaishnav for PL ticket #846
-    ///If running tab is summary or Revenue or conversion than hide specific filters
-    function HideFilters() {
-     
-            @foreach (var item in ViewCustomFields)
-            {
-                string btnmultiselectid = string.Concat("#btnMultiselect_ddlView", item.CustomFieldId);
-                string lblid = string.Concat("#lbl", item.CustomFieldId);
-                string detailid = string.Concat("#", item.CustomFieldId, "detail");
-                    @: $('@lblid').css('display', 'none');
-                                                @: $('@detailid').css('display', 'none');
-                                                @: $('@btnmultiselectid').css('display', 'none');
-
-            }
-
-        //$('#btnMultiselect_ddlViewGeography').css('display', 'none');
-        //$('#btnMultiselect_ddlViewVertical').css('display', 'none');
-        //$('#btnMultiselect_ddlViewAudience').css('display', 'none');
-        //$('#btnMultiselect_ddlViewBusinessUnit').css('display', 'none');
-        //$('#lblGeography').css('display', 'none');
-        //$('#geographydetail').css('display', 'none');
-        //$('#lblVerticals').css('display', 'none');
-        //$('#verticaldetail').css('display', 'none');
-        //$('#lblAudience').css('display', 'none');
-        //$('#audiencedetail').css('display', 'none');
-        //$('#lblBusinessUnit').css('display', 'none');
-        //$('#businessunitdetail').css('display', 'none');
-    }
-    
     //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
     ///Added by Mitesh Vaishnav for PL ticket #846
     ///If running tab is budgeting than show specific filters
     function ShowFilters() {
-        //$('#btnMultiselect_ddlViewGeography').css('display', 'initial');
-        //$('#btnMultiselect_ddlViewVertical').css('display', 'initial');
-        //$('#btnMultiselect_ddlViewAudience').css('display', 'initial');
 
             @foreach (var item in ViewCustomFields)
             {
@@ -372,17 +287,10 @@
                                                 @: $('@lblid').css('display', 'initial');
                                                 @: $('@detailid').css('display', 'initial');
                 }
-        //$('#lblGeography').css('display', 'initial');
-        //$('#geographydetail').css('display', 'initial');
-        //$('#lblVerticals').css('display', 'initial');
-        //$('#verticaldetail').css('display', 'initial');
-        //$('#lblAudience').css('display', 'initial');
-        //$('#audiencedetail').css('display', 'initial');
     }
 
     //// Load Summary view using ajax - partial view
     function LoadSummary() {
-        //HideFilters();
         $('#budgetHeader').css('display', 'none');
         $('#UlPlanHeader').css('display', 'block');
         $('#formSideFilter').css('display', 'block');
@@ -400,14 +308,12 @@
 
     //// Load Revenue view section
     function LoadRevenueView() {
-        //HideFilters();
         $('#conversionHeader').css('display', 'none');
         $('#revenueHeader').css('display', 'block');
     }
 
     //// Load Conversion view section
     function LoadConversionView() {
-        //HideFilters();
         $('#conversionHeader').css('display', 'block');
         $('#revenueHeader').css('display', 'none');
     }
@@ -584,8 +490,9 @@
         OptionMain = $('#ddlYear').val();
         $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
 	
-            //// load active filter based on selected value in multiselect
-            LoadCheckBoxValue(multiselectPlanId, filterPlanid);
+        //// load active filter based on selected value in multiselect
+        LoadCheckBoxValue(multiselectPlanId, filterPlanid);
+
         @foreach (var item in ViewCustomFields)
         {
             string multiselectid = string.Concat("ddlView", item.CustomFieldId);
@@ -605,18 +512,8 @@
                         
         }
             
-	    
-	    //LoadCheckBoxValue(ddlViewAudience, audiencedetail);
-            //LoadCheckBoxValue(ddlViewVertical, verticaldetail);
-            //LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
-            //LoadCheckBoxValue(ddlViewGeography, geographydetail);
-
             //// get selected value from multiselect 
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
-            //VerticalIds = GetFilterId(ddlViewVertical);
-            //GeographyIds = GetFilterId(ddlViewGeography);
-            //BusinessUnitIds = GetFilterId(ddlViewBusinessUnit);
-            //AudienceIds = GetFilterId(ddlViewAudience);
             
             SortingId = '';
             $.ajax({
@@ -625,7 +522,6 @@
                 url: '@Url.Content("~/Report/SetReportData/")',
                 traditional:true,
                 data: {
-                    businessUnitIds: "123",
                     planIds: PlanIds,
                     customIds: JSON.stringify(queryStringArr),
                 },
@@ -711,7 +607,6 @@ $('#liSummary').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
-        isBusinessUnit = false;
         loadBasedOnPlan();
     }
 });
@@ -725,7 +620,6 @@ $('#liRevenue').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
-        isBusinessUnit = false;
         LoadRevenueView();
         loadBasedOnPlan();
     }
@@ -740,7 +634,6 @@ $('#liConversion').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
-        isBusinessUnit = false;
         LoadConversionView();
         loadBasedOnPlan();
     }

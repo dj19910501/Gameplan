@@ -16,8 +16,6 @@
          
     </div>
     </div>
-@*<ul class="nav nav-tabs nav-bars-table" id="ChildULConversionSummary">
-</ul>*@
 
 <div id="DivHtmlContent" class="padding-content cf source-sans-proregular">
     <table id="table_reports" class="table">
@@ -183,7 +181,7 @@
         });
 
         // load child dropdown for conversion plan
-       // loadChildListData($('#ddlParentConversionPlan').val(), ddlChildConversionPlanId);
+        loadChildListData($('#ddlParentConversionPlan').val(), ddlChildConversionPlanId);
         LoadData();
         // load child dropdown for conversion plan
         function loadChildListData(parentOption, id) {
@@ -317,8 +315,6 @@
 
 
         //--------------- functions related to child tab for MQL performance report ends here ------------------//
-
-
 
         //fill reports table with data from json - For Conversion summary report
         function fillReportTable(reportTableInfo) {
@@ -584,14 +580,14 @@
                  });
              }
 
-        // chart for businessunit
+        // chart for custom field 1 
         function FillChartSourcePerformanceCustomField1() {
             $('#chartDiv1Parent').find('#chartDiv1').remove();
             $('#chartDiv1Parent').append('<div id="chartDiv1" class="report-chart4"></div>');
 
             var xAxisConfig = GetAxisConfiguration(dataset1)
 
-            /* bar chart for Business Unit */
+            /* bar chart for Custom Field 1 */
             var barChart1 = new dhtmlXChart({
                 view: "barH",
                 container: "chartDiv1",
@@ -641,14 +637,14 @@
             });
         }
 
-        // chart for geography
+        // chart for Custom Field 2
         function FillChartSourcePerformanceCustomField2() {
             $('#chartDiv2Parent').find('#chartDiv2').remove();
             $('#chartDiv2Parent').append('<div id="chartDiv2" class="report-chart5"></div>');
 
             var xAxisConfig = GetAxisConfiguration(dataset2)
 
-            /* bar chart for Geography */
+            /* bar chart for Custom Field 2 */
             var barChart2 = new dhtmlXChart({
                 view: "barH",
                 container: "chartDiv2",
@@ -698,14 +694,14 @@
             });
         }
 
-        // chart for vertical
+        // chart for Custom Field 3
         function FillChartSourcePerformanceCustomField3() {
             $('#chartDiv3Parent').find('#chartDiv3').remove();
             $('#chartDiv3Parent').append('<div id="chartDiv3" class="report-chart6"></div>');
 
             var xAxisConfig = GetAxisConfiguration(dataset3)
 
-            /*bar chart for Veritcal */
+            /*bar chart for Custom Field 2 */
             var barChart3 = new dhtmlXChart({
                 view: "barH",
                 container: "chartDiv3",

@@ -30,7 +30,7 @@
     top: 50%;
     vertical-align: top;
     width: 0;
-    z-index: 1999;
+    z-index: 1998;
 }
 .ui-multiselect-single .ui-multiselect-checkboxes input { position:absolute !important; top: auto !important; left:-9999px; }
 .ui-multiselect-single .ui-multiselect-checkboxes label { padding:5px !important }

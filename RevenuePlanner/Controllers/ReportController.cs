@@ -28,6 +28,7 @@ namespace RevenuePlanner.Controllers
         private string PublishedPlan = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
         private string currentYear = DateTime.Now.Year.ToString();
         private int currentMonth = DateTime.Now.Month;
+        private bool IsPrimaryFilterFlag = false;
 
         #endregion
 
@@ -46,27 +47,19 @@ namespace RevenuePlanner.Controllers
             ViewBag.ActiveMenu = activeMenu;
 
             ////Start Added by Mitesh Vaishnav for PL ticket #846
-            //Guid reportBusinessUnitId = Guid.Empty;
             Sessions.ReportPlanIds = new List<int>();
             // Added by Arpita Soni for Ticket #1148 on 01/23/2015
             Sessions.ReportCustomFieldIds = null;
-            //Sessions.ReportBusinessUnitIds = new List<Guid>();
 
-            //// Set Report BusinessUnitId in Session.
+            //// Set Report PlanId in Session.
             if (Sessions.PlanId > 0)
             {
                 Sessions.ReportPlanIds.Add(Sessions.PlanId);
-                //reportBusinessUnitId = db.Plans.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Model.BusinessUnitId).FirstOrDefault();
-                //Sessions.ReportBusinessUnitIds.Add(reportBusinessUnitId);
             }
             //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
             //// List of Tab - Parent
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
             lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Plan.ToString(), Value = ReportTabType.Plan.ToString() });
-            // lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Vertical.ToString(), Value = ReportTabType.Vertical.ToString() });
-            //lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Geography.ToString(), Value = ReportTabType.Geography.ToString() });
-            // lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
-            // lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = ReportTabType.Audience.ToString() });
             lstViewByTab = lstViewByTab.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewByTab = lstViewByTab;
 
@@ -94,26 +87,6 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.ViewCustomFields = lstCustomFields;
             //// End - Added by Arpita Soni for Ticket #1148 on 01/23/2015			
-
-            //// Geography Value
-            //List<SelectListItem> lstGeography = new List<SelectListItem>();
-            //lstGeography = db.Geographies.Where(geography => geography.ClientId == Sessions.User.ClientId && geography.IsDeleted == false).ToList().Select(geography => new SelectListItem { Text = geography.Title, Value = geography.GeographyId.ToString(), Selected = true }).ToList();
-            //ViewBag.ViewGeography = lstGeography.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
-
-            //// Businessunit Value
-            //List<SelectListItem> lstBusinessUnit = new List<SelectListItem>();
-            //lstBusinessUnit = db.BusinessUnits.Where(businessunit => businessunit.ClientId == Sessions.User.ClientId && businessunit.IsDeleted == false).ToList().Select(businessunit => new SelectListItem { Text = businessunit.Title, Value = businessunit.BusinessUnitId.ToString(), Selected = (businessunit.BusinessUnitId == reportBusinessUnitId ? true : false) }).ToList();
-            //ViewBag.ViewBusinessUnit = lstBusinessUnit.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
-
-            //// Vertical value
-            //List<SelectListItem> lstVertical = new List<SelectListItem>();
-            //lstVertical = db.Verticals.Where(vertical => vertical.ClientId == Sessions.User.ClientId && vertical.IsDeleted == false).ToList().Select(vertical => new SelectListItem { Text = vertical.Title, Value = vertical.VerticalId.ToString(), Selected = true }).ToList();
-            //ViewBag.ViewVertical = lstVertical.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
-
-            //// Audience Value
-            //List<SelectListItem> lstAudience = new List<SelectListItem>();
-            //lstAudience = db.Audiences.Where(audience => audience.ClientId == Sessions.User.ClientId && audience.IsDeleted == false).ToList().Select(audience => new SelectListItem { Text = audience.Title, Value = audience.AudienceId.ToString(), Selected = true }).ToList();
-            //ViewBag.ViewAudience = lstAudience.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
 
             //// Get Plan List
             List<SelectListItem> lstYear = new List<SelectListItem>();
@@ -154,9 +127,8 @@ namespace RevenuePlanner.Controllers
         public ActionResult GetSummaryData(bool IsPrimaryFilter = true)
         {
             SummaryReportModel objSummaryReportModel = new SummaryReportModel();
-            //// Getting current year's all published plan for all business unit of clientid of director.
 
-            ViewBag.IsPrimaryFilter = IsPrimaryFilter;
+            IsPrimaryFilterFlag = IsPrimaryFilter;
             //// get tactic list
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
             //// Calculate Value for ecah tactic
@@ -181,16 +153,12 @@ namespace RevenuePlanner.Controllers
             double overAllCWActual = 0;
             double overAllCWProjected = 0;
 
-            //// Check BusinessUnitids selected or not
-            //if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count > 0)
-            //{
             //// check planids selected or not
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
                 //// set viewbag to display plan or msg
                 ViewBag.IsPlanExistToShowReport = true;
             }
-            //}
 
             //// Get Tactic List for actual value
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
@@ -402,46 +370,22 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #846
-        /// set session for multiple selected plans and business units
+        /// set session for multiple selected plans and custom fields
         /// </summary>
-        /// <param name="businessUnitIds">Comma separated string which contains business unit's Ids</param>
         /// <param name="planIds">Comma separated string which contains plan's Ids</param>
         /// <returns>If success than return status 1 else 0</returns>
-        public JsonResult SetReportData(string businessUnitIds, string planIds, string customIds)
+        public JsonResult SetReportData(string planIds, string customIds)
         {
             JavaScriptSerializer js = new JavaScriptSerializer();
             CustomFieldFilter[] arrCustomFieldFilter = js.Deserialize<CustomFieldFilter[]>(customIds);
             try
             {
                 //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
-                //List<Guid> lstBusinessUnitIds = new List<Guid>();
                 List<int> lstPlanIds = new List<int>();
                 if (arrCustomFieldFilter.Count() > 0)
                 {
                     Sessions.ReportCustomFieldIds = arrCustomFieldFilter;
                 }
-                //// Create BusinessUnitIds list from comma separated string of businessUnitIds and assign to Session variable.
-                //if (businessUnitIds != string.Empty)
-                // {
-                //     string[] arrBusinessUnitIds = businessUnitIds.Split(',');
-                //     foreach (string bu in arrBusinessUnitIds)
-                //     {
-                //         Guid BusinessUnitId;
-                //        if (Guid.TryParse(bu, out BusinessUnitId))
-                //         {
-                //             lstBusinessUnitIds.Add(BusinessUnitId);
-                //         }
-                //     }
-                //     if (lstBusinessUnitIds.Count > 0)
-                //     {
-                //         Sessions.ReportBusinessUnitIds = lstBusinessUnitIds;
-                //     }
-
-                //  }
-                //  else
-                // {
-                //      Sessions.ReportBusinessUnitIds = lstBusinessUnitIds;
-                //  }
 
                 //// Create PlanIds list from comma separated string of planIds and assign to Session variable.
                 if (planIds != string.Empty)
@@ -551,7 +495,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns list of Tactic Id.</returns>
         private List<Plan_Campaign_Program_Tactic> GetTacticForReporting()
         {
-            //// Getting current year's all published plan for all business unit of clientid of director.
+            //// Getting current year's all published plan for all custom fields of clientid of director.
             List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
             List<int> planIds = new List<int>();
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
@@ -572,7 +516,7 @@ namespace RevenuePlanner.Controllers
                     entityIds.AddRange(query);
                 }
             }
-            if (ViewBag.IsPrimaryFilter == true)
+            if (IsPrimaryFilterFlag == true)
             {
                 tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false &&
                                                                   tacticStatus.Contains(tactic.Status) &&
@@ -1206,7 +1150,7 @@ namespace RevenuePlanner.Controllers
         {
             //// Get list of month display in view
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
-            ViewBag.IsPrimaryFilter = IsPrimaryFilter;
+            IsPrimaryFilterFlag = IsPrimaryFilter;
             //// get tactic list
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
 
@@ -1224,15 +1168,6 @@ namespace RevenuePlanner.Controllers
 
             //// conversion summary view by dropdown
             List<ViewByModel> lstParentConversionSummery = new List<ViewByModel>();
-            //lstParentConversionSummery.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = Common.RevenueAudience });
-            //lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
-            // lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
-            //if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
-            // {
-            //     lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
-            // }
-            // lstParentConversionSummery = lstParentConversionSummery.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
-            // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report
             //Concat the Campaign and Program custom fields data with exsiting one. 
             var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
             lstParentConversionSummery = lstParentConversionSummery.Concat(lstCustomFields).ToList();
@@ -1249,7 +1184,6 @@ namespace RevenuePlanner.Controllers
             lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Actuals, Value = Common.Actuals });
             lstParentConversionPerformance = lstParentConversionPerformance.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.parentConvertionPerformance = lstParentConversionPerformance;
-            //ViewBag.ChildTabListAudience = GetChildLabelDataViewByModel(Common.RevenueAudience);
 
             return PartialView("Conversion");
         }
@@ -1333,52 +1267,6 @@ namespace RevenuePlanner.Controllers
                 return Json(rdata, JsonRequestBehavior.AllowGet);
             }
             return Json(new { }, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Get Child Tab.
-        /// </summary>
-        /// <param name="ParentTab"></param>
-        /// <returns></returns>
-        public JsonResult GetChildTab(string ParentTab)
-        {
-            var returnDataGuid = new object();
-
-            //// Get child tab data based on ParentTab.
-            if (ParentTab == Common.BusinessUnit)
-            {
-                returnDataGuid = (db.BusinessUnits.Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false))).Select(b => new
-                {
-                    id = b.BusinessUnitId,
-                    title = b.Title
-                }).Distinct().OrderBy(b => b.id);
-            }
-            else if (ParentTab == Common.Audience)
-            {
-                returnDataGuid = (db.Audiences.Where(au => au.ClientId.Equals(Sessions.User.ClientId) && au.IsDeleted.Equals(false))).ToList().Select(a => new
-                {
-                    id = a.AudienceId,
-                    title = a.Title
-                }).Distinct().OrderBy(a => a.id);
-            }
-            else if (ParentTab == Common.Geography)
-            {
-                returnDataGuid = (db.Geographies.Where(ge => ge.ClientId.Equals(Sessions.User.ClientId) && ge.IsDeleted.Equals(false))).ToList().Select(g => new
-                {
-                    id = g.GeographyId,
-                    title = g.Title
-                }).Distinct().OrderBy(g => g.id);
-            }
-            else if (ParentTab == Common.Vertical)
-            {
-                returnDataGuid = (db.Verticals.Where(ve => ve.ClientId.Equals(Sessions.User.ClientId) && ve.IsDeleted.Equals(false))).ToList().Select(v => new
-                {
-                    id = v.VerticalId,
-                    title = v.Title
-                }).Distinct().OrderBy(v => v.id);
-            }
-
-            return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
         }
 
         #endregion
@@ -1663,50 +1551,6 @@ namespace RevenuePlanner.Controllers
             }
             //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
 
-            ////// Applying filters i.e. bussiness unit, audience, vertical or geography.
-            ////Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            //var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
-            //                                    .Select(b => new
-            //                                    {
-            //                                        Title = b.Title,
-            //                                        ColorCode = string.Format("#{0}", b.ColorCode),
-            //                                        Value = Tacticdata.Any(t => t.TacticObj.BusinessUnitId.Equals(b.BusinessUnitId)) ?
-            //                                                GetProjectedMQLValueDataTableForReport(Tacticdata.Where(t => t.TacticObj.BusinessUnitId.Equals(b.BusinessUnitId))
-            //                                                                            .ToList())
-            //                                                                            .Where(mr => includeMonth.Contains(mr.Month))
-            //                                                                            .Sum(r => r.Value) :
-            //                                                                            0
-            //                                    }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5);
-
-
-
-            //var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
-            //                                    .Select(v => new
-            //                                    {
-            //                                        Title = v.Title,
-            //                                        ColorCode = string.Format("#{0}", v.ColorCode),
-            //                                        Value = Tacticdata.Any(t => t.TacticObj.VerticalId.Equals(v.VerticalId)) ?
-            //                                                GetProjectedMQLValueDataTableForReport(Tacticdata.Where(t => t.TacticObj.VerticalId.Equals(v.VerticalId))
-            //                                                                           .ToList())
-            //                                                                           .Where(mr => includeMonth.Contains(mr.Month))
-            //                                                                           .Sum(r => r.Value) :
-            //                                                                           0
-            //                                    }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5);
-
-            //var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
-            //                                    .Select(g => new
-            //                                    {
-            //                                        Title = g.Title,
-            //                                        ColorCode = "#1627a0",
-            //                                        Value = Tacticdata.Any(t => t.TacticObj.GeographyId.Equals(g.GeographyId)) ?
-            //                                        GetProjectedMQLValueDataTableForReport(Tacticdata.Where(t => t.TacticObj.GeographyId.Equals(g.GeographyId))
-            //                                                                   .ToList())
-            //                                                                   .Where(mr => includeMonth.Contains(mr.Month))
-            //                                                                   .Sum(r => r.Value) :
-            //                                                                   0
-            //                                    }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5);
-            //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-
             // Modified by Arpita Soni for Ticket #1148 on 01/27/2015
             return Json(new
             {
@@ -1761,52 +1605,10 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                //Tacticdata = Tacticdata.Where(pcpt =>
-                //    ((ParentConversionSummaryTab == Common.BusinessUnit && pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId) ||
-                //    (ParentConversionSummaryTab == Common.Audience && pcpt.TacticObj.Audience.ClientId == Sessions.User.ClientId) ||
-                //    (ParentConversionSummaryTab == Common.Geography && pcpt.TacticObj.Geography.ClientId == Sessions.User.ClientId) ||
-                //    (ParentConversionSummaryTab == Common.Vertical && pcpt.TacticObj.Vertical.ClientId == Sessions.User.ClientId))
-                //    ).ToList();
-                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId).ToList();
+                Tacticdata = Tacticdata.Where(t => t.TacticObj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
             }
             var DataTitleList = new List<RevenueContrinutionData>();
-
-            //if (ParentConversionSummaryTab == Common.RevenueBusinessUnit)
-            //{
-            //    DataTitleList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.BusinessUnit.Title }).Select(pc =>
-            //             new RevenueContrinutionData
-            //             {
-            //                 Title = pc.Key.title,
-            //                 planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
-            //             }).ToList();
-            //}
-            //else if (ParentConversionSummaryTab == Common.RevenueVertical)
-            //{
-            //    DataTitleList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Vertical.Title }).Select(pc =>
-            //             new RevenueContrinutionData
-            //             {
-            //                 Title = pc.Key.title,
-            //                 planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
-            //             }).ToList();
-            //}
-            //else if (ParentConversionSummaryTab == Common.RevenueGeography)
-            //{
-            //    DataTitleList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Geography.Title }).Select(pc =>
-            //             new RevenueContrinutionData
-            //             {
-            //                 Title = pc.Key.title,
-            //                 planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
-            //             }).ToList();
-            //}
-            //else if (ParentConversionSummaryTab == Common.RevenueAudience)
-            //{
-            //    DataTitleList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Audience.Title }).Select(pc =>
-            //             new RevenueContrinutionData
-            //             {
-            //                 Title = pc.Key.title,
-            //                 planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
-            //             }).ToList();
-            //}
+            
             if (ParentConversionSummaryTab == Common.CampaignCustomTitle || ParentConversionSummaryTab == Common.ProgramCustomTitle || ParentConversionSummaryTab == Common.TacticCustomTitle)
             {
                 int customfieldId = 0;
@@ -1958,7 +1760,6 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Return Revenue Partial View
         /// </summary>
-        /// <param name="BusinessUnitId"></param>
         /// <param name="PlanId"></param>
         /// <param name="timeFrameOption"></param>
         /// <returns></returns>
@@ -1967,18 +1768,8 @@ namespace RevenuePlanner.Controllers
         {
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
             ViewBag.SelectOption = timeFrameOption;
-            ViewBag.IsPrimaryFilter = IsPrimaryFilter;
-            // var lstBusinessunits = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId && bu.IsDeleted == false && Sessions.ReportBusinessUnitIds.Contains(bu.BusinessUnitId)).OrderBy(bu => bu.Title).ToList();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            //if (lstBusinessunits.Count == 0)
-            //{
-            //    BusinessUnit objBusinessUnit = new BusinessUnit();
-            //    objBusinessUnit.BusinessUnitId = Guid.Empty;
-            //    objBusinessUnit.Title = "None";
-            //    lstBusinessunits.Add(objBusinessUnit);
-
-            //}
-            //lstBusinessunits = lstBusinessunits.Where(bu => !string.IsNullOrEmpty(bu.Title)).OrderBy(bu => bu.Title, new AlphaNumericComparer()).ToList();
-            //ViewBag.BusinessUnit = lstBusinessunits;
+            IsPrimaryFilterFlag = IsPrimaryFilter;
+            
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
 
             // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report
@@ -1986,13 +1777,7 @@ namespace RevenuePlanner.Controllers
             List<int> campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
             List<int> programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
 
-            //// Get First Businessunit id
-            //Guid businessunitid = new Guid();
-            //if (lstBusinessunits.Count > 0)
-            //{
-            //    businessunitid = lstBusinessunits.Select(businessunit => businessunit.BusinessUnitId).FirstOrDefault();
-            //}
-
+            
             //// Get Campaign list for dropdown
             List<int> campaignIds = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(t => t.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
             var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
@@ -2024,21 +1809,14 @@ namespace RevenuePlanner.Controllers
             ViewBag.TacticDropdownList = lstTacticList;
 
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist);
-            //string customLableAudience = Common.CustomLabelFor(Enums.CustomLabelCode.Audience);
 
             //// Set Parent Revenue Summary data to list.
             List<ViewByModel> lstParentRevenueSummery = new List<ViewByModel>();
-            //lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
-            //lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
-            //lstParentRevenueSummery.Add(new ViewByModel { Text = customLableAudience, Value = Common.RevenueAudience });
-            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count != 1)
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
                 lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenuePlans, Value = Common.RevenuePlans });
             }
-            //if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
-            //{
-            //    lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
-            //}
+            
             lstParentRevenueSummery = lstParentRevenueSummery.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
             // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report
@@ -2053,13 +1831,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ChildTabListRevenueSummary = "";
             //// Set Parent Revenue Plan data to list.
             List<ViewByModel> lstParentRevenueToPlan = new List<ViewByModel>();
-            //lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
-            //lstParentRevenueToPlan.Add(new ViewByModel { Text = customLableAudience, Value = Common.RevenueAudience });
-            //lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
-            //if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
-            //{
-            //    lstParentRevenueToPlan.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
-            //}
+            
             lstParentRevenueToPlan = lstParentRevenueToPlan.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             lstParentRevenueToPlan = lstParentRevenueToPlan.Concat(lstCustomFields).ToList();
             ViewBag.parentRevenueToPlan = lstParentRevenueToPlan;
@@ -2070,23 +1842,14 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ChildTabListRevenueToPlan = "";
             //// Set Parent Revenue Contribution data to list.
             List<ViewByModel> lstParentRevenueContribution = new List<ViewByModel>();
-            //lstParentRevenueContribution.Add(new ViewByModel { Text = customLableAudience, Value = Common.RevenueAudience });
-            //lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueGeography, Value = Common.RevenueGeography });
-            //lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueVertical, Value = Common.RevenueVertical });
+            
             lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
-            //if (Sessions.ReportBusinessUnitIds != null && Sessions.ReportBusinessUnitIds.Count != 1)
-            //{
-            //    lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueBusinessUnit, Value = Common.RevenueBusinessUnit });
-            //}
+            
             lstParentRevenueContribution = lstParentRevenueContribution.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             //Concat the Campaign and Program custom fields data with exsiting one. 
             lstParentRevenueContribution = lstParentRevenueContribution.Concat(lstCustomFields).ToList();
             ViewBag.parentRevenueContribution = lstParentRevenueContribution;
-            //ViewBag.ChildTabListAudience = GetChildLabelDataViewByModel(lstParentRevenueContribution.First().Text);
-            //// Set child BusinessUnit data to list.
-            //List<ViewByModel> listChildBusinessunit = GetChildLabelDataViewByModel(Common.RevenueBusinessUnit);
-            //listChildBusinessunit.Insert(0, new ViewByModel { Value = "0", Text = "All Business Units" });
-            //ViewBag.ChildTabListBusinessUnit = listChildBusinessunit;
+            
             TempData["ReportData"] = tacticStageList;
 
             return PartialView("Revenue");
@@ -2202,44 +1965,16 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Added By: Bhavesh Dobariya.
-        /// Action to Get Campaign List.
-        /// </summary>
-        /// <param name="id">BusinessUnit Id</param>
-        /// <returns>Returns Json Result of Campaign List.</returns>
-        public JsonResult LoadCampaignDropDown(Guid id, string selectOption = "")
-        {
-            List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
-            //List<int> campaignIds = TacticList.Where(tactic => tactic.BusinessUnitId == id).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
-            List<int> campaignIds = TacticList.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
-            //// Set Campaign list data
-            var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
-                    .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
-                    .OrderBy(pcp => pcp.Title).ToList();
-            if (campaignList == null)
-                return Json(new { });
-            campaignList = campaignList.Where(campaign => !string.IsNullOrEmpty(campaign.Title)).OrderBy(campaign => campaign.Title, new AlphaNumericComparer()).ToList();
-            return Json(campaignList, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
         /// Action to Get Program List.
         /// </summary>
         /// <param name="id"> Id</param>
         /// <returns>Returns Json Result of Program List.</returns>
-        public JsonResult LoadProgramDropDown(string id, string type = "", string selectOption = "")
+        public JsonResult LoadProgramDropDown(string id, string selectOption = "")
         {
+            // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
             List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
             List<int> programIds = new List<int>();
-
-            //if (type == Common.RevenueBusinessUnit)
-            //{
-            //    Guid businessunitid = new Guid(id);
-            //    programIds = TacticList.Where(tactic => tactic.BusinessUnitId == businessunitid).Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
-            //}
-            //else
-            //{
-            if (id != null)
+            if (id != null && id != "")
             {
                 int campaignid = Convert.ToInt32(id);
                 programIds = TacticList.Where(tactic => tactic.Plan_Campaign_Program.PlanCampaignId == campaignid).Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
@@ -2267,20 +2002,9 @@ namespace RevenuePlanner.Controllers
         public JsonResult LoadTacticDropDown(string id, string type = "", string selectOption = "")
         {
             List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
-
-            //// return tactic data bya Type.
-            //if (type == Common.RevenueBusinessUnit)
-            //{
-            //    Guid businessunitid = new Guid(id);
-            //var tacticListinner = TacticList.Where(tactic => tactic.BusinessUnitId == businessunitid)
-            //    .Select(tactic => new { PlanTacticId = tactic.PlanTacticId, Title = tactic.Title })
-            //    .OrderBy(pcp => pcp.Title).ToList();
-            //if (tacticListinner == null)
-            //    return Json(new { });
-            //tacticListinner = tacticListinner.Where(tactic => !string.IsNullOrEmpty(tactic.Title)).OrderBy(tactic => tactic.Title, new AlphaNumericComparer()).ToList();
-            //return Json(tacticListinner, JsonRequestBehavior.AllowGet);
-            //}
-            if (id != null)
+            
+            // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
+            if (id != null && id != "")
             {
                 if (type == Common.RevenueCampaign)
                 {
@@ -2315,7 +2039,6 @@ namespace RevenuePlanner.Controllers
                 tacticListinner = tacticListinner.Where(tactic => !string.IsNullOrEmpty(tactic.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 return Json(tacticListinner, JsonRequestBehavior.AllowGet);
             }
-            return Json(new { });
         }
 
         /// <summary>
@@ -2331,14 +2054,6 @@ namespace RevenuePlanner.Controllers
 
             List<string> includeMonth = GetMonthListForReport(selectOption);
 
-            //Guid BusinessUnitid = new Guid(businessUnitId);
-
-            //// Set Tacticdata based on Type.
-            //if (type == Common.RevenueBusinessUnit)
-            //{
-            //    Guid buid = new Guid(id);
-            //    Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnitId == buid).Select(t => t).ToList();
-            //}
             if (type == Common.RevenueCampaign)
             {
                 int campaignid = Convert.ToInt32(id);
@@ -2356,7 +2071,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId).Select(t => t).ToList();
+                Tacticdata = Tacticdata.Where(t => t.TacticObj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
             }
 
             if (Tacticdata.Count() > 0)
@@ -2420,8 +2135,6 @@ namespace RevenuePlanner.Controllers
         /// Load Revenue Contribution.
         /// </summary>
         /// <param name="parentlabel"></param>
-        /// <param name="businessUnitId"></param>
-        /// <param name="isBusinessUnit"></param>
         /// <returns></returns>
         public JsonResult LoadRevenueContribution(string parentlabel, string selectOption)
         {
@@ -2457,8 +2170,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId ||
-                    (parentlabel == Common.RevenueCampaign)).ToList();
+                Tacticdata = Tacticdata.Where(t=>t.TacticObj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId==Sessions.User.ClientId).ToList();
             }
             var campaignList = new List<RevenueContrinutionData>();
 
@@ -3103,7 +2815,7 @@ namespace RevenuePlanner.Controllers
                 {
                     Title = s.Value,
                     ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
+                    Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
                 }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(item.CustomFieldName);
@@ -3428,10 +3140,6 @@ namespace RevenuePlanner.Controllers
             //// Set Viewby Dropdownlist.
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
             lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Plan.ToString(), Value = ReportTabType.Plan.ToString() });
-            //lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Vertical.ToString(), Value = ReportTabType.Vertical.ToString() });
-            //lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Geography.ToString(), Value = ReportTabType.Geography.ToString() });
-            //lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
-            //lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = ReportTabType.Audience.ToString() });
 
             ////Start - Modified by Mitesh Vaishnav for PL ticket #831
             var campaignProgramList = db.Plan_Campaign_Program_Tactic.Where(tactic => TacticId.Contains(tactic.PlanTacticId)).ToList();

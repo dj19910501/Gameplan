@@ -147,7 +147,7 @@
     <table id="table_reports4" class="table table-striped" style="clear:both;">
         <thead>
             <tr class="border-top-bottom" style="border-bottom:none;">
-                <th class="width130 border-r main_table_header">BUSINESS UNIT</th>
+                <th class="width130 border-r main_table_header"></th>
                 <th class="width53 main_table_header">REVENUE</th>
                 <th class="width53 main_table_header"></th>
                 @*    <th class="width53 main_table_header"></th>*@
@@ -161,6 +161,7 @@
                 <th class="width53 main_table_header"></th>
             </tr>
             <tr>
+                <th class="table_header"></th>
                 <th class="table_header">Plan</th>
                 <th class="table_header">Actual</th>
                 <th class="border-r table_header"></th>
@@ -214,11 +215,9 @@
 
         GenerateCustomizeMultiselect(ddlChildRevenueToPlanId, true, false, false);
         GenerateCustomizeMultiselect(ddlChildRevenueSummeryId, true, false, false);
-       // GenerateCustomizeMultiselect('ddlBusinessUnit', true, false, false);
         GenerateCustomizeMultiselect('ddlCampaign', true, false, false);
         GenerateCustomizeMultiselect('ddlProgram', true, false, false);
         GenerateCustomizeMultiselect('ddlTactic', true, false, false);
-      //  GenerateCustomizeMultiselect('ddlBusinessUnitContribution', true, false, false);
         $('#ddlParentRevenueSummery').bind('change', function () {
             var selectedOption = $(this).val();
             loadChildListData(selectedOption, ddlChildRevenueSummeryId, true);
@@ -289,7 +288,6 @@
             FillRevenueToPlan(id);
         });
 
-       // var BusinessUnitId = $('#ddlBusinessUnit').val();
         var campaignId = $('#ddlCampaign').val();
         var programId = $('#ddlProgram').val();
         var sumColTotalRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -1133,8 +1131,6 @@
         /* Start Revenue Realization Script */
         /// Start Script For Revenue Realization
 
-       
-
 
         $('#ddlCampaign').change(function () {
             $("#ddlProgram").empty();
@@ -1148,50 +1144,20 @@
         $('#ddlTactic').change(function () {
             LoadDataRevenueRealization();
         });
-        function fillCampaignDropdown() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/LoadCampaignDropDown/")',
-                data: {
-                    id: null,
-                    selectOption: selectOption
-                },
-                success: function (data) {
-                    $("#ddlCampaign").empty();
-                    $("#ddlCampaign").append("<option value='0'>All Campaigns</option>");
-                    $.each(data, function (index, optionData) {
-                        $("#ddlCampaign").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
-                    });
-                    fillProgramDropdown();
-                    $('#ddlCampaign').multiselect("refresh");
-                },
-                error: function () {
-                    $("#ddlCampaign").empty();
-                    $("#ddlCampaign").append("<option value='0'>All Campaigns</option>");
-                  
-                    fillProgramDropdown();
-                    $('#ddlCampaign').multiselect("refresh");
-
-                    GoToLogin();
-                }
-            });
-
-        }
+        
 
         function fillProgramDropdown() {
-            var id = '';
-            var Type = '';
+            var id='';
             campaignId = $('#ddlCampaign').val();
-            if (campaignId > 0) {
-                Type = '';
+            if (campaignId > 0)
+            {
                 id = campaignId.toString();
-            }
+                }
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/LoadProgramDropDown/")',
                 data: {
                     id: id,
-                    type: Type,
                     selectOption: selectOption
                 },
                 success: function (data) {
