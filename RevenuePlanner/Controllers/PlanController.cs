@@ -26,6 +26,7 @@ namespace RevenuePlanner.Controllers
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;
         private string PeriodChar = "Y";
+        public const string TacticCustomTitle = "TacticCustom";
         #endregion
 
         #region Create
@@ -4607,7 +4608,7 @@ namespace RevenuePlanner.Controllers
                 lstViewBy.Add(new ViewByModel { Text = "Campaigns", Value = "0" });
                 List<CustomField> lstTacticCustomfield = db.CustomFields.Where(custom => custom.IsDeleted.Equals(false) && custom.EntityType.Equals(entTacticType) && custom.ClientId.Equals(Sessions.User.ClientId) && custom.IsDisplayForFilter.Equals(true)).ToList();
                 if (lstTacticCustomfield != null && lstTacticCustomfield.Count > 0)
-                    lstTacticCustomfield.ForEach(custom => { lstViewBy.Add(new ViewByModel { Text = custom.Name, Value = custom.CustomFieldId.ToString() }); });
+                    lstTacticCustomfield.ForEach(custom => { lstViewBy.Add(new ViewByModel { Text = custom.Name, Value = TacticCustomTitle + custom.CustomFieldId.ToString() }); });
                 ViewBag.ViewBy = lstViewBy;
             }
             catch (Exception e)
