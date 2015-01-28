@@ -4608,7 +4608,10 @@ namespace RevenuePlanner.Controllers
                 lstViewBy.Add(new ViewByModel { Text = "Campaigns", Value = "0" });
                 List<CustomField> lstTacticCustomfield = db.CustomFields.Where(custom => custom.IsDeleted.Equals(false) && custom.EntityType.Equals(entTacticType) && custom.ClientId.Equals(Sessions.User.ClientId) && custom.IsDisplayForFilter.Equals(true)).ToList();
                 if (lstTacticCustomfield != null && lstTacticCustomfield.Count > 0)
+                {
+                    lstTacticCustomfield = lstTacticCustomfield.Where(s => !string.IsNullOrEmpty(s.Name)).OrderBy(s => s.Name, new AlphaNumericComparer()).ToList();
                     lstTacticCustomfield.ForEach(custom => { lstViewBy.Add(new ViewByModel { Text = custom.Name, Value = TacticCustomTitle + custom.CustomFieldId.ToString() }); });
+                }
                 ViewBag.ViewBy = lstViewBy;
             }
             catch (Exception e)
