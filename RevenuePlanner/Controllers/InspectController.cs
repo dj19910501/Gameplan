@@ -3371,13 +3371,9 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.Description = form.Description;
                                 Guid oldOwnerId = pcpobj.CreatedBy;
                                 //Start - Added by Mitesh Vaishnav - Remove old resubmission condition and combine it for PL ticket #1137
-                                if (isReSubmission)
-                                {
-                                   
                                     pcpobj.TacticTypeId = form.TacticTypeId;
                                     pcpobj.CreatedBy = form.OwnerId;
                                     pcpobj.ProjectedStageValue = form.ProjectedStageValue;
-                                }
                                 //End - Added by Mitesh Vaishnav - Remove old resubmission condition and combine it
                                 
 

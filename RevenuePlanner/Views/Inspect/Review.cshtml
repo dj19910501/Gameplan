@@ -82,7 +82,7 @@
         <div class="pull-left size65x38 margin-left20">
             <div class="integration-review"></div>
             <div>
-                <label id="integration">Integration</label>
+                <label class="integrration_label_align" id="integration">Integration</label>
             </div>
             <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
         </div>
@@ -91,7 +91,7 @@
             string marginLeft20 = "margin-left20";
             <div class="pull-left size65x38 @marginLeft20">
                 <div class="@item.Class"></div>
-                <span title="@item.Name">@item.Name</span>
+                <span class="font14" title="@item.Name">@item.Name</span>
                 @if (item.Value != null)
                 {
                     <span class="blue-text bold" title="@item.Value">@item.Value</span>
