@@ -1179,7 +1179,7 @@ namespace Integration.Eloqua
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, planTactic.BusinessUnit.ClientId);
+                    tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId);
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                 }
             }
@@ -1874,7 +1874,7 @@ namespace Integration.Eloqua
             string customName = "";
             if (planTactic != null)
             {
-                customName = Common.GenerateCustomName(planTactic, planTactic.BusinessUnit.ClientId);
+                customName = Common.GenerateCustomName(planTactic, planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId);
             }
             return customName;
         }

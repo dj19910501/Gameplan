@@ -98,10 +98,7 @@ namespace RevenuePlanner.Helpers
                             t.CreatedDate = DateTime.Now;
                             t.Status = TacticStatus;
                             t.Plan_Campaign_Program_Tactic_Comment = null;
-                            t.Tactic_Share = null;
-                            t.Vertical = null;
-                            t.Audience = null;
-                            t.Geography = null;
+                            t.Tactic_Share = null;                           
                             //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                             t.ModifiedDate = null;
                             t.ModifiedBy = null;
@@ -114,10 +111,7 @@ namespace RevenuePlanner.Helpers
                             t.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(pcp =>
                             {
                                 pcp.Plan_Campaign_Program_Tactic_Comment = null;
-                                pcp.Tactic_Share = null;
-                                pcp.Audience = null;
-                                pcp.Geography = null;
-                                pcp.Vertical = null;
+                                pcp.Tactic_Share = null;                                
                                 pcp.Status = TacticStatus;
                                 //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                 pcp.CreatedDate = DateTime.Now;
@@ -133,11 +127,7 @@ namespace RevenuePlanner.Helpers
                                 {
                                     pcpt.Plan_Campaign_Program_Tactic_Actual = null;
                                     pcpt.Plan_Campaign_Program_Tactic_Comment = null;
-                                    pcpt.Tactic_Share = null;
-                                    pcpt.Vertical = null;
-                                    pcpt.Audience = null;
-                                    pcpt.BusinessUnit = null;
-                                    pcpt.Geography = null;
+                                    pcpt.Tactic_Share = null;                                    
                                     pcpt.Plan_Campaign_Program_Tactic1 = null;
                                     pcpt.Plan_Campaign_Program_Tactic2 = null;
                                     pcpt.Stage = null;
@@ -261,15 +251,12 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.CreatedDate = DateTime.Now;
                     objPlanCampaign.Title = (objPlanCampaign.Title + Suffix);
                     objPlanCampaign.Plan_Campaign_Program_Tactic_Comment = null;
-                    objPlanCampaign.Plan = null;
-                    objPlanCampaign.Audience = null;
-                    objPlanCampaign.Geography = null;
+                    objPlanCampaign.Plan = null;                    
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaign.ModifiedDate = null;
                     objPlanCampaign.ModifiedBy = null;
                     //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
-                    objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
-                    objPlanCampaign.Vertical = null;
+                    objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();                    
                     objPlanCampaign.Status = TacticStatus;
                     objPlanCampaign.IntegrationInstanceCampaignId = null;
                     objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
@@ -278,10 +265,7 @@ namespace RevenuePlanner.Helpers
                             t.Tactic_Share = null;
                             t.Plan_Campaign_Program_Tactic_Comment = null;
                             t.CreatedDate = DateTime.Now;
-                            t.Status = TacticStatus;
-                            t.Vertical = null;
-                            t.Audience = null;
-                            t.Geography = null;
+                            t.Status = TacticStatus;                           
                             //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             t.ModifiedDate = null;
                             t.ModifiedBy = null;
@@ -291,11 +275,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 pcpt.Plan_Campaign_Program_Tactic_Actual = null;
                                 pcpt.Plan_Campaign_Program_Tactic_Comment = null;
-                                pcpt.Tactic_Share = null;
-                                pcpt.Vertical = null;
-                                pcpt.Audience = null;
-                                pcpt.BusinessUnit = null;
-                                pcpt.Geography = null;
+                                pcpt.Tactic_Share = null;                               
                                 pcpt.Plan_Campaign_Program_Tactic1 = null;
                                 pcpt.Plan_Campaign_Program_Tactic2 = null;
                                 pcpt.Stage = null;
@@ -398,11 +378,8 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignPrograms.CreatedDate = DateTime.Now;
                     objPlanCampaignPrograms.Title = (objPlanCampaignPrograms.Title + Suffix);
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic_Comment = null;
-                    objPlanCampaignPrograms.Plan_Campaign = null;
-                    objPlanCampaignPrograms.Audience = null;
-                    objPlanCampaignPrograms.Geography = null;
-                    objPlanCampaignPrograms.Tactic_Share = null;
-                    objPlanCampaignPrograms.Vertical = null;
+                    objPlanCampaignPrograms.Plan_Campaign = null;                   
+                    objPlanCampaignPrograms.Tactic_Share = null;                    
                     objPlanCampaignPrograms.Status = TacticStatus;
                     objPlanCampaignPrograms.IntegrationInstanceProgramId = null;
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
@@ -415,16 +392,12 @@ namespace RevenuePlanner.Helpers
                         {
                             t.CreatedDate = DateTime.Now;
                             t.Plan_Campaign_Program_Tactic_Comment = null;
-                            t.Plan_Campaign_Program_Tactic_Actual = null;
-                            t.Audience = null;
-                            t.BusinessUnit = null;
-                            t.Geography = null;
+                            t.Plan_Campaign_Program_Tactic_Actual = null;                            
                             t.Plan_Campaign_Program_Tactic1 = null;
                             t.Plan_Campaign_Program_Tactic2 = null;
                             t.Stage = null;
                             t.Tactic_Share = null;
-                            t.TacticType = null;
-                            t.Vertical = null;
+                            t.TacticType = null;                            
                             t.Status = TacticStatus;
                             //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             t.ModifiedDate = null;
@@ -512,12 +485,6 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Comment = null;
                     objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Actual = null;
                     objPlanCampaignProgramTactic.Plan_Campaign_Program = null;
-                    objPlanCampaignProgramTactic.Audience = null;
-                    objPlanCampaignProgramTactic.BusinessUnit = null;
-                    objPlanCampaignProgramTactic.Geography = null;
-                    //objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic1 = null;
-                    //objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic2 = null;
-                    objPlanCampaignProgramTactic.Vertical = null;
                     objPlanCampaignProgramTactic.TacticType = null;
                     objPlanCampaignProgramTactic.Tactic_Share = null;
                     objPlanCampaignProgramTactic.TacticCustomName = null;

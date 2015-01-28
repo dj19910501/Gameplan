@@ -632,7 +632,8 @@
           }
       });
 
-      function saveTactic() {
+    function saveTactic(resubmission) {
+        resubmission = typeof resubmission !== 'undefined' ? resubmission : false;
          var txtCampaignValue = $("#txtCampaign").val();
          var  txtProgramValue = $("#txtProgram").val();
           var txtTacticValue = $("#txtTacticTitle").val();
@@ -647,7 +648,7 @@
           $.ajax({
               type: 'POST',
               url: '@Url.Content("~/Inspect/SetupSaveTactic")',
-              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) ,
+              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) +'&resubmission='+resubmission ,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
@@ -713,7 +714,7 @@
     }
 
     function assignDefaultValue(classname) {
-        $('form').find(classname).each(function () {
+        $('form').find(classname).not('a').each(function () {
             $(this).attr("oldValue", $(this).val());
         });
     }
@@ -721,9 +722,15 @@
     function checkChangeValue(classname, withResubmissionLabel) {
         var resubmit = false;
         if (withResubmissionLabel) {
-            $('form').find(classname).each(function () {
+            $('form').find(classname).each(function () {                
                 var oldValue = $(this).attr("oldValue");
-                var value = $(this).val();
+                var value="";
+                if ($(this).prop('tagName') != 'A') {
+                    value = $(this).val();
+                }
+                else {
+                    value = $(this).text();
+                }
                 if (oldValue != value) {
                     _resubmissionLabelValues.push({
                         Key: htmlEncode($(this).attr("label").replace(/ /g,"_").toString()),

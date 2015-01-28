@@ -3617,21 +3617,24 @@ namespace RevenuePlanner.Helpers
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
+                        string inputclassName = "span12 input-small";
+                        inputclassName += item.isRequired ? " resubmission" : string.Empty;
                         //When item value contains double quots then it would be replaced 
                         string customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
-                            sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
+                            sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\""+inputclassName+"\"");
                         }
                         else
                         {
-                            sb.Append("<input type=\"text\" maxlength =\"255\" title=\""+customFieldEntityValue+"\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small input-setup\"");
+                            inputclassName += " input-setup";
+                            sb.Append("<input type=\"text\" maxlength =\"255\" title=\""+customFieldEntityValue+"\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\""+inputclassName+"\"");
                         }
 
                         //If custom field is required than add attribute require
                         if (item.isRequired)
                         {
-                            sb.Append(" require=\"true\"");
+                            sb.Append(" require=\"true\" oldValue=\""+item.value+"\" label=\"" + item.name + "\"");
                         }
                         sb.Append("></div>");
                         fieldCounter = fieldCounter + 1;
@@ -3644,9 +3647,11 @@ namespace RevenuePlanner.Helpers
                             string divPosition = "";
                             string require = "";
                             string name = "";
+                            string addResubmissionClass = "";
                             if (item.isRequired)
                             {
-                                require = " require=\"true\"";
+                                require = " require=\"true\" oldValue=\"#OLD_VALUE#\" label=\""+item.name+"\"";
+                                addResubmissionClass = "resubmission";
                             }
                             if (fieldCounter % 4 == 3)
                             {
@@ -3657,7 +3662,7 @@ namespace RevenuePlanner.Helpers
 
                             if (section == Enums.EntityType.Tactic.ToString())
                             {
-                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
+                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn "+addResubmissionClass+"\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
                                 sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\"><tr><td scope=\"col\" class=\"value_header\"><span>Value</span></td><td scope=\"col\" class=\"weight_header\" code=\"weight\"><span> Weight(%)</sapn></td><td scope=\"col\" class=\"sus_header\" code=\"stage\" >Stage(%)</td><td scope=\"col\" class=\"cw_header\" code=\"" + Enums.InspectStage.CW.ToString() + "\">CW(%)</td><td scope=\"col\" class=\"revenue_header\" code=\"" + Enums.InspectStage.Revenue.ToString() + "\">Revenue(%)</td><td scope=\"col\" class=\"cost_header\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" >Cost(%)</td></tr></thead>");
                                 foreach (var objOption in item.option)
                                 {
@@ -3681,6 +3686,7 @@ namespace RevenuePlanner.Helpers
                                     name = "Please Select";
                                 }
                                 sb.Replace("#HEADER_OF_DROPDOWN#", name);
+                                sb.Replace("#OLD_VALUE#", name);
                                 sb.Append("</div>");
                                 fieldCounter = fieldCounter + 1;
                             }

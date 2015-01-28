@@ -1676,7 +1676,7 @@ namespace RevenuePlanner.Controllers
                 //    (ParentConversionSummaryTab == Common.Geography && pcpt.TacticObj.Geography.ClientId == Sessions.User.ClientId) ||
                 //    (ParentConversionSummaryTab == Common.Vertical && pcpt.TacticObj.Vertical.ClientId == Sessions.User.ClientId))
                 //    ).ToList();
-                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId).ToList();
+                Tacticdata = Tacticdata.ToList();
             }
             var DataTitleList = new List<RevenueContrinutionData>();
 
@@ -2263,7 +2263,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId).Select(t => t).ToList();
+                Tacticdata = Tacticdata.ToList();
             }
 
             if (Tacticdata.Count() > 0)
@@ -2364,8 +2364,8 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId ||
-                    (parentlabel == Common.RevenueCampaign)).ToList();
+                Tacticdata = Tacticdata.ToList();
+                    //(parentlabel == Common.RevenueCampaign)).ToList();
             }
             var campaignList = new List<RevenueContrinutionData>();
 
@@ -3003,7 +3003,7 @@ namespace RevenuePlanner.Controllers
                 {
                     Title = s.Value,
                     ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
+                    Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
                 }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5);
 
                 lstSourcePerformance = innerList.Select(x => new SourcePerformanceData
@@ -3014,10 +3014,8 @@ namespace RevenuePlanner.Controllers
                     }).ToList();
 
                 lstCustomFieldNames.Add(item.CustomFieldName);
-                lstListSourcePerformance.Add(new ListSourcePerformanceData
-                {
-                    lstSourcePerformanceData = lstSourcePerformance,
-                    CustomFieldName = item.CustomFieldName
+                lstListSourcePerformance.Add(new ListSourcePerformanceData { lstSourcePerformanceData = lstSourcePerformance ,
+                    CustomFieldName=item.CustomFieldName
 
                 });
             }
