@@ -96,7 +96,7 @@ ALTER TABLE [dbo].[Plan_Improvement_Campaign_Program_Tactic] DROP CONSTRAINT [FK
 
 IF EXISTS(SELECT * FROM sys.columns WHERE [name] = 'BusinessUnitId' AND [object_id] = OBJECT_ID(N'Plan_Improvement_Campaign_Program_Tactic'))
 BEGIN
-	ALTER TABLE dbo.Plan_Improvement_Campaign_Program_Tactic ALTER COLUMN BusinessUnitId INTEGER NULL
+	ALTER TABLE dbo.Plan_Improvement_Campaign_Program_Tactic ALTER COLUMN BusinessUnitId UNIQUEIDENTIFIER NULL
 END
 
 COMMIT TRANSACTION DeleteVerAudGeoBuIds
