@@ -1423,6 +1423,9 @@
                       },
                       dataType: "json",
                       success: function (data) {
+                          dataset1 = null;
+                          dataset2 = null;
+                          dataset3 = null;
                           console.log(data);
                           var chartDataSourcePerformance = {
                               ChartCustomField1: data.ChartCustomField1,

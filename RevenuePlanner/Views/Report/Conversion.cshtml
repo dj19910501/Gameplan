@@ -562,23 +562,20 @@
                          dataset2 = null;
                          dataset3 = null;
                          var chartDataMQLPerformance = {
-                             
-                             ChartBusinessUnit: data.ChartCustomField1,
-                             ChartGeography: data.ChartCustomField1,
-                             ChartVertical: data.ChartCustomField1
+                             ChartCustomField1: data.ChartCustomField1,
+                             ChartCustomField2: data.ChartCustomField2,
+                             ChartCustomField3: data.ChartCustomField3
                          }
+                         $('#customField1').text(JSON.stringify(data.CustomField1).replace(/"/g, "") + " (Top 5)");
+                         $('#customField2').text(JSON.stringify(data.CustomField2).replace(/"/g, "") + " (Top 5)");
+                         $('#customField3').text(JSON.stringify(data.CustomField3).replace(/"/g, "") + " (Top 5)");
 
                          $('#chartDataMQLPerformance').val(JSON.stringify(chartDataMQLPerformance));
 
-                         dataset1 = data.ChartBusinessUnit;
-                         dataset2 = data.ChartGeography;
-                         dataset3 = data.ChartVertical;
-                         customField1 = data.CustomField1;
-                         customField2 = data.CustomField2;
-                         customField3 = data.CustomField3;
-                         $('#customField1').text(JSON.stringify(customField1).replace(/"/g, "") + " (Top 5)");
-                         $('#customField2').text(JSON.stringify(customField2).replace(/"/g, "") + " (Top 5)");
-                         $('#customField3').text(JSON.stringify(customField3).replace(/"/g, "") + " (Top 5)");
+                         dataset1 = data.ChartCustomField1;
+                         dataset2 = data.ChartCustomField2;
+                         dataset3 = data.ChartCustomField3;
+                      
                          //fill data on reports table
                          FillChartSourcePerformanceCustomField1();
                          FillChartSourcePerformanceCustomField2();

@@ -83,6 +83,8 @@ namespace RevenuePlanner.Controllers
             string tactic = Enums.EntityType.Tactic.ToString();
             lstCustomFields = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId &&
                 customfield.EntityType == tactic &&
+                customfield.CustomFieldTypeId ==2 &&
+                customfield.IsRequired==true &&
                 customfield.IsDisplayForFilter == true &&
                 customfield.IsDeleted == false).ToList();
 
@@ -1235,6 +1237,7 @@ namespace RevenuePlanner.Controllers
             var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
             lstParentConversionSummery = lstParentConversionSummery.Concat(lstCustomFields).ToList();
             ViewBag.parentConvertionSummery = lstParentConversionSummery;
+            // Get child tab list
             if (lstParentConversionSummery.Count > 0)
                 ViewBag.ChildTabListConvertionSummary = GetChildLabelDataViewByModel(lstParentConversionSummery.First().Value, timeFrameOption);
             else
@@ -1390,19 +1393,18 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return json data for source performance report.</returns>
         public JsonResult GetMQLPerformance(string filter, string selectOption = "")
         {
-            //if (filter.Equals(Common.Plan))
-            //{
-            //    return GetMQLPerformanceProjected(selectOption);
-            //}
-            //else if (filter.Equals(Common.Trend))
-            //{
-            //    return GetMQLPerformanceTrend(selectOption);
-            //}
-            //else
-            //{
-            //    return GetMQLPerformanceActual(selectOption);
-            //}
-            return Json("");
+            if (filter.Equals(Common.Plan))
+            {
+                return GetMQLPerformanceProjected(selectOption);
+            }
+            else if (filter.Equals(Common.Trend))
+            {
+                return GetMQLPerformanceTrend(selectOption);
+            }
+            else
+            {
+                return GetMQLPerformanceActual(selectOption);
+            }
         }
 
         /// <summary>
@@ -1424,8 +1426,12 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
             Tacticdata.ForEach(t => t.ActualTacticList.Where(actual => months.Contains(actual.Period) && actual.StageTitle == mql).ToList().ForEach(a => planTacticActual.Add(a)));
 
+            //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
+            string tactic=Enums.EntityType.Tactic.ToString();
+
+            // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == "Tactic"
+                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == tactic && c.CustomFieldTypeId==2
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
@@ -1435,6 +1441,7 @@ namespace RevenuePlanner.Controllers
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
 
+            // Applying custom field filters
             foreach (var item in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
@@ -1446,34 +1453,30 @@ namespace RevenuePlanner.Controllers
                     lstOptionIds.Add(item1.ToString());
                 }
 
-                var query = from custentity in db.CustomField_Entity
-                            join tacticactual in db.Plan_Campaign_Program_Tactic_Actual
-                            on custentity.EntityId equals tacticactual.PlanTacticId
-                            where custentity.CustomFieldId == item.CustomFieldId &&
-                            lstOptionIds.Contains(custentity.Value)
-                            select new { custentity.Value, custentity.EntityId, tacticactual.Actualvalue };
+                var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
+                    {
+                        EntityId=e.EntityId,
+                        Value=e.Value
+                    }).ToList();
 
-                var tacticTrendCustomField = query.GroupBy(ta => ta.Value).Select
+                var lstTacticActuals = from entity in lstCustomFieldEntity
+                                       join tacticactual in planTacticActual
+                                       on entity.EntityId equals tacticactual.PlanTacticId
+                                       select new { entity.Value, entity.EntityId, tacticactual.Actualvalue };
+
+                var tacticTrendCustomField = lstTacticActuals.GroupBy(ta => ta.Value).Select
                     (ta => new
                     {
                         CustomFieldOptionId = ta.Key,
                         Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
-                    });
+                    }).ToList();
 
-                var customfieldsoptions = db.CustomFieldOptions.Where(s => s.CustomFieldId == item.CustomFieldId).Select(s => new
-                                           {
-                                               Title = s.Value,
-                                               ColorCode = string.Format("#{0}", s.ColorCode),
-                                               Value = tacticTrendCustomField.Any(cf => cf.CustomFieldOptionId.Equals(s.CustomFieldOptionId)) ? tacticTrendCustomField.Where(cf => cf.CustomFieldOptionId.Equals(s.CustomFieldOptionId)).First().Trend : 0
-                                           }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5);
-
-
-                lstSourcePerformance = customfieldsoptions.Select(x => new SourcePerformanceData
+                lstSourcePerformance = db.CustomFieldOptions.Where(s => s.CustomFieldId == item.CustomFieldId).ToList().Select(s => new SourcePerformanceData
                 {
-                    Title = x.Title,
-                    ColorCode = x.ColorCode,
-                    Value = x.Value
-                }).ToList();
+                    Title = s.Value,
+                    ColorCode = string.Format("#{0}", s.ColorCode),
+                    Value = tacticTrendCustomField.Any(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId) ? tacticTrendCustomField.Where(cf => Convert.ToInt32(cf.CustomFieldOptionId)==s.CustomFieldOptionId).FirstOrDefault().Trend : 0
+                }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(item.CustomFieldName);
                 lstListSourcePerformance.Add(new ListSourcePerformanceData
@@ -1482,8 +1485,9 @@ namespace RevenuePlanner.Controllers
                     CustomFieldName = item.CustomFieldName
                 });
             }
+            //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
 
-            //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag 
+            // Modified by Arpita Soni for Ticket #1148 on 01/27/2015 
             return Json(new
             {
                 ChartCustomField1 = lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData,
@@ -1514,53 +1518,73 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic_Actual> planTacticActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
             Tacticdata.ForEach(tactic => tactic.ActualTacticList.ForEach(_tac => planTacticActuals.Add(_tac)));
 
-            //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
-                                                .Select(b => new
-                                                {
-                                                    Title = b.Title,
-                                                    ColorCode = string.Format("#{0}", b.ColorCode),
-                                                    Value = planTacticActuals.Any(ta => ta.StageTitle.Equals(mql) &&
-                                                                                        ta.Plan_Campaign_Program_Tactic.BusinessUnitId.Equals(b.BusinessUnitId)) ?
-                                                            planTacticActuals.Where(ta => ta.Plan_Campaign_Program_Tactic.BusinessUnitId == b.BusinessUnitId &&
-                                                                                          ta.StageTitle.Equals(mql) &&
-                                                                                          includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
-                                                                             .Sum(ta => ta.Actualvalue) :
-                                                                             0
-                                                }).OrderByDescending(ta => ta.Value).ThenBy(b => b.Title).Take(5); ;
-            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
-                                                .Select(v => new
-                                                {
-                                                    Title = v.Title,
-                                                    ColorCode = string.Format("#{0}", v.ColorCode),
-                                                    Value = planTacticActuals.Any(ta => ta.StageTitle.Equals(mql) &&
-                                                                                        ta.Plan_Campaign_Program_Tactic.VerticalId.Equals(v.VerticalId)) ?
-                                                            planTacticActuals.Where(ta => ta.Plan_Campaign_Program_Tactic.VerticalId == v.VerticalId &&
-                                                                                          ta.StageTitle.Equals(mql) &&
-                                                                                          includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
-                                                                             .Sum(ta => ta.Actualvalue) :
-                                                                             0
-                                                }).OrderByDescending(ta => ta.Value).ThenBy(v => v.Title).Take(5);
+            //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
+            string entityType = Enums.EntityType.Tactic.ToString();
 
-            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
-                                                .Select(g => new
+            // Get first 3 custom fields
+            var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
+                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == entityType && c.CustomFieldTypeId == 2
+                ).Select(c => new
+                {
+                    CustomFieldId = c.CustomFieldId,
+                    CustomFieldName = c.Name
+                }).Take(3);
+
+            List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
+            List<string> lstCustomFieldNames = new List<string>();
+
+            // Applying custom field filters
+            foreach (var item in customFields)
+            {
+                List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
+
+                List<string> lstOptionIds = new List<string>();
+                var customFieldOptionsIds = db.CustomFieldOptions.Where(c => c.CustomFieldId == item.CustomFieldId).Select(c => c.CustomFieldOptionId);
+                foreach (var item1 in customFieldOptionsIds)
+                {
+                    lstOptionIds.Add(item1.ToString());
+                }
+
+                var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
+                {
+                    EntityId = e.EntityId,
+                    Value = e.Value
+                }).ToList();
+
+                var lstTacticActuals = from entity in lstCustomFieldEntity
+                                       join tacticactual in planTacticActuals
+                                       on entity.EntityId equals tacticactual.PlanTacticId
+                                       where tacticactual.StageTitle==mql 
+                                       select new { entity.Value, entity.EntityId, tacticactual.Actualvalue, timeFrameOptions = tacticactual.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + tacticactual.Period };
+                
+                lstSourcePerformance = db.CustomFieldOptions.Where(cf => cf.CustomFieldId == item.CustomFieldId).ToList()
+                                                .Select(cf => new SourcePerformanceData
                                                 {
-                                                    Title = g.Title,
-                                                    ColorCode = "#1627a0",
-                                                    Value = planTacticActuals.Any(ta => ta.StageTitle.Equals(mql) &&
-                                                                                        ta.Plan_Campaign_Program_Tactic.GeographyId.Equals(g.GeographyId)) ?
-                                                            planTacticActuals.Where(ta => ta.Plan_Campaign_Program_Tactic.GeographyId == g.GeographyId &&
-                                                                                          ta.StageTitle.Equals(mql) &&
-                                                                                          includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
-                                                                             .Sum(ta => ta.Actualvalue) :
-                                                                             0
-                                                }).OrderByDescending(ta => ta.Value).ThenBy(g => g.Title).Take(5); ;
-            //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+                                                    Title = cf.Value,
+                                                    ColorCode = string.Format("#{0}", cf.ColorCode),
+                                                    Value = lstTacticActuals.Any(ta => ta.Value == Convert.ToString(cf.CustomFieldOptionId)) ? lstTacticActuals.Where(t => t.Value== Convert.ToString(cf.CustomFieldOptionId) &&
+                                                        includeMonth.Contains(t.timeFrameOptions)).Sum(t => t.Actualvalue) : 0
+                                                }).OrderByDescending(cf => cf.Value).ThenBy(cf => cf.Title).Take(5).ToList(); 
+
+                lstCustomFieldNames.Add(item.CustomFieldName);
+
+                lstListSourcePerformance.Add(new ListSourcePerformanceData
+                {
+                    lstSourcePerformanceData = lstSourcePerformance,
+                    CustomFieldName = item.CustomFieldName
+                });
+            }
+            //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
+
+            // Modified by Arpita Soni for Ticket #1148 on 01/27/2015
             return Json(new
             {
-                ChartBusinessUnit = businessUnits,
-                ChartVertical = vertical,
-                ChartGeography = geography
+                ChartCustomField1 = lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData,
+                ChartCustomField2 = lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData,
+                ChartCustomField3 = lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData,
+                CustomField1 = lstCustomFieldNames.ElementAt(0),
+                CustomField2 = lstCustomFieldNames.ElementAt(1),
+                CustomField3 = lstCustomFieldNames.ElementAt(2)
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -1577,54 +1601,121 @@ namespace RevenuePlanner.Controllers
             List<string> includeMonth = GetMonthListForReport(selectOption, true);
             List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
             TempData["ReportData"] = TempData["ReportData"];
-            //// Applying filters i.e. bussiness unit, audience, vertical or geography.
-            //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
-                                                .Select(b => new
+
+            //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
+            string entityType = Enums.EntityType.Tactic.ToString();
+
+            // Get first 3 custom fields
+            var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
+                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == entityType && c.CustomFieldTypeId == 2
+                ).Select(c => new
+                {
+                    CustomFieldId = c.CustomFieldId,
+                    CustomFieldName = c.Name
+                }).Take(3);
+
+            List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
+            List<string> lstCustomFieldNames = new List<string>();
+
+            // Applying custom field filters
+            foreach (var item in customFields)
+            {
+                List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
+
+                List<string> lstOptionIds = new List<string>();
+                var customFieldOptionsIds = db.CustomFieldOptions.Where(c => c.CustomFieldId == item.CustomFieldId).Select(c => c.CustomFieldOptionId);
+                foreach (var item1 in customFieldOptionsIds)
+                {
+                    lstOptionIds.Add(item1.ToString());
+                }
+
+                var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
+                {
+                    EntityId = e.EntityId,
+                    Value = e.Value
+                }).ToList();
+
+                var lstTacticActuals = from entity in lstCustomFieldEntity
+                                       join tacticactual in Tacticdata
+                                       on entity.EntityId equals tacticactual.TacticObj.PlanTacticId
+                                       select new { entity.Value, entity.EntityId, tacticactual };
+
+
+                lstSourcePerformance = db.CustomFieldOptions.Where(b => b.CustomFieldId == item.CustomFieldId).ToList()
+                                                .Select(b => new SourcePerformanceData
                                                 {
-                                                    Title = b.Title,
+                                                    Title = b.Value,
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
-                                                    Value = Tacticdata.Any(t => t.TacticObj.BusinessUnitId.Equals(b.BusinessUnitId)) ?
-                                                            GetProjectedMQLValueDataTableForReport(Tacticdata.Where(t => t.TacticObj.BusinessUnitId.Equals(b.BusinessUnitId))
+                                                    Value = lstTacticActuals.Any(t => t.Value== Convert.ToString(b.CustomFieldOptionId)) ?  
+                                                    GetProjectedMQLValueDataTableForReport(lstTacticActuals.Where(lta=>lta.Value==Convert.ToString(b.CustomFieldOptionId)).Select(ts=>ts.tacticactual) 
                                                                                         .ToList())
                                                                                         .Where(mr => includeMonth.Contains(mr.Month))
-                                                                                        .Sum(r => r.Value) :
-                                                                                        0
-                                                }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5);
+                                                                                        .Sum(r => r.Value) : 0
+                                                }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5).ToList();
+
+                lstCustomFieldNames.Add(item.CustomFieldName);
+
+                lstListSourcePerformance.Add(new ListSourcePerformanceData
+                {
+                    lstSourcePerformanceData = lstSourcePerformance,
+                    CustomFieldName = item.CustomFieldName
+                });
+            }
+            //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
+
+            ////// Applying filters i.e. bussiness unit, audience, vertical or geography.
+            ////Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+            //var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
+            //                                    .Select(b => new
+            //                                    {
+            //                                        Title = b.Title,
+            //                                        ColorCode = string.Format("#{0}", b.ColorCode),
+            //                                        Value = Tacticdata.Any(t => t.TacticObj.BusinessUnitId.Equals(b.BusinessUnitId)) ?
+            //                                                GetProjectedMQLValueDataTableForReport(Tacticdata.Where(t => t.TacticObj.BusinessUnitId.Equals(b.BusinessUnitId))
+            //                                                                            .ToList())
+            //                                                                            .Where(mr => includeMonth.Contains(mr.Month))
+            //                                                                            .Sum(r => r.Value) :
+            //                                                                            0
+            //                                    }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5);
 
 
 
-            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
-                                                .Select(v => new
-                                                {
-                                                    Title = v.Title,
-                                                    ColorCode = string.Format("#{0}", v.ColorCode),
-                                                    Value = Tacticdata.Any(t => t.TacticObj.VerticalId.Equals(v.VerticalId)) ?
-                                                            GetProjectedMQLValueDataTableForReport(Tacticdata.Where(t => t.TacticObj.VerticalId.Equals(v.VerticalId))
-                                                                                       .ToList())
-                                                                                       .Where(mr => includeMonth.Contains(mr.Month))
-                                                                                       .Sum(r => r.Value) :
-                                                                                       0
-                                                }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5);
+            //var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
+            //                                    .Select(v => new
+            //                                    {
+            //                                        Title = v.Title,
+            //                                        ColorCode = string.Format("#{0}", v.ColorCode),
+            //                                        Value = Tacticdata.Any(t => t.TacticObj.VerticalId.Equals(v.VerticalId)) ?
+            //                                                GetProjectedMQLValueDataTableForReport(Tacticdata.Where(t => t.TacticObj.VerticalId.Equals(v.VerticalId))
+            //                                                                           .ToList())
+            //                                                                           .Where(mr => includeMonth.Contains(mr.Month))
+            //                                                                           .Sum(r => r.Value) :
+            //                                                                           0
+            //                                    }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5);
 
-            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
-                                                .Select(g => new
-                                                {
-                                                    Title = g.Title,
-                                                    ColorCode = "#1627a0",
-                                                    Value = Tacticdata.Any(t => t.TacticObj.GeographyId.Equals(g.GeographyId)) ?
-                                                    GetProjectedMQLValueDataTableForReport(Tacticdata.Where(t => t.TacticObj.GeographyId.Equals(g.GeographyId))
-                                                                               .ToList())
-                                                                               .Where(mr => includeMonth.Contains(mr.Month))
-                                                                               .Sum(r => r.Value) :
-                                                                               0
-                                                }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5);
+            //var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
+            //                                    .Select(g => new
+            //                                    {
+            //                                        Title = g.Title,
+            //                                        ColorCode = "#1627a0",
+            //                                        Value = Tacticdata.Any(t => t.TacticObj.GeographyId.Equals(g.GeographyId)) ?
+            //                                        GetProjectedMQLValueDataTableForReport(Tacticdata.Where(t => t.TacticObj.GeographyId.Equals(g.GeographyId))
+            //                                                                   .ToList())
+            //                                                                   .Where(mr => includeMonth.Contains(mr.Month))
+            //                                                                   .Sum(r => r.Value) :
+            //                                                                   0
+            //                                    }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5);
             //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+
+            // Modified by Arpita Soni for Ticket #1148 on 01/27/2015
             return Json(new
             {
-                ChartBusinessUnit = businessUnits,
-                ChartVertical = vertical,
-                ChartGeography = geography
+                ChartCustomField1 = lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData,
+                ChartCustomField2 = lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData,
+                ChartCustomField3 = lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData,
+                CustomField1 = lstCustomFieldNames.ElementAt(0),
+                CustomField2 = lstCustomFieldNames.ElementAt(1),
+                CustomField3 = lstCustomFieldNames.ElementAt(2)
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -1676,7 +1767,7 @@ namespace RevenuePlanner.Controllers
                 //    (ParentConversionSummaryTab == Common.Geography && pcpt.TacticObj.Geography.ClientId == Sessions.User.ClientId) ||
                 //    (ParentConversionSummaryTab == Common.Vertical && pcpt.TacticObj.Vertical.ClientId == Sessions.User.ClientId))
                 //    ).ToList();
-                Tacticdata = Tacticdata.ToList();
+                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId).ToList();
             }
             var DataTitleList = new List<RevenueContrinutionData>();
 
@@ -1955,6 +2046,7 @@ namespace RevenuePlanner.Controllers
             var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
             lstParentRevenueSummery = lstParentRevenueSummery.Concat(lstCustomFields).ToList();
             ViewBag.parentRevenueSummery = lstParentRevenueSummery;
+            // Get child tab list
             if (lstParentRevenueSummery.Count > 0)
                 ViewBag.ChildTabListRevenueSummary = GetChildLabelDataViewByModel(lstParentRevenueSummery.First().Value, timeFrameOption);
             else
@@ -1971,6 +2063,7 @@ namespace RevenuePlanner.Controllers
             lstParentRevenueToPlan = lstParentRevenueToPlan.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             lstParentRevenueToPlan = lstParentRevenueToPlan.Concat(lstCustomFields).ToList();
             ViewBag.parentRevenueToPlan = lstParentRevenueToPlan;
+            // Get child tab list
             if (lstParentRevenueToPlan.Count > 0)
                 ViewBag.ChildTabListRevenueToPlan = GetChildLabelDataViewByModel(lstParentRevenueToPlan.First().Value, timeFrameOption);
             else
@@ -2263,7 +2356,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Tacticdata = Tacticdata.ToList();
+                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId).Select(t => t).ToList();
             }
 
             if (Tacticdata.Count() > 0)
@@ -2364,8 +2457,8 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Tacticdata = Tacticdata.ToList();
-                    //(parentlabel == Common.RevenueCampaign)).ToList();
+                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId ||
+                    (parentlabel == Common.RevenueCampaign)).ToList();
             }
             var campaignList = new List<RevenueContrinutionData>();
 
@@ -2986,8 +3079,12 @@ namespace RevenuePlanner.Controllers
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ActualTacticList = ActualTacticList.Where(mr => mr.StageTitle == Revenue && includeMonthUpCurrent.Contains((Tacticdata.FirstOrDefault(t => t.TacticObj.PlanTacticId == mr.PlanTacticId).TacticYear) + mr.Period)).ToList();
 
-            var customFieldIds = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == "Tactic"
+            //// Start - Added by Arpita Soni for Ticket #1148 on 01/23/2015
+            string tactic = Enums.EntityType.Tactic.ToString();
+
+            // Get first 3 custom fields
+            var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
+                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == tactic
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
@@ -2996,22 +3093,18 @@ namespace RevenuePlanner.Controllers
 
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
-            foreach (var item in customFieldIds)
+            
+            // Applying custom field filters 
+            foreach (var item in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
-                var innerList = db.CustomFieldOptions.Where(s => s.CustomFieldId == item.CustomFieldId).ToList().Select(s => new
+                
+                lstSourcePerformance = db.CustomFieldOptions.Where(s => s.CustomFieldId == item.CustomFieldId).ToList().Select(s => new SourcePerformanceData
                 {
                     Title = s.Value,
                     ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
-                }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5);
-
-                lstSourcePerformance = innerList.Select(x => new SourcePerformanceData
-                    {
-                        Title = x.Title,
-                        ColorCode = x.ColorCode,
-                        Value = x.Value
-                    }).ToList();
+                    Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.BusinessUnit.ClientId == Sessions.User.ClientId).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
+                }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(item.CustomFieldName);
                 lstListSourcePerformance.Add(new ListSourcePerformanceData { lstSourcePerformanceData = lstSourcePerformance ,
@@ -3019,7 +3112,8 @@ namespace RevenuePlanner.Controllers
 
                 });
             }
-
+            //// End - Added by Arpita Soni for Ticket #1148 on 01/23/2015
+			// Modified by Arpita Soni for Ticket #1148 on 01/27/2015
             return Json(new
             {
                 ChartCustomField1 = lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData,
