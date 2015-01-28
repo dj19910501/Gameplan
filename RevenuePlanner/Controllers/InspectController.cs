@@ -2463,7 +2463,8 @@ namespace RevenuePlanner.Controllers
                 ViewBag.MQLLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullQualifiedLeads).FirstOrDefault().SyncTimeStamp;
             }
             ////End : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
-            var topThreeCustomFields = db.CustomFields.Where(cf => cf.IsDefault == true && cf.IsDeleted == false && cf.IsRequired == true && cf.ClientId == Sessions.User.ClientId).Take(3).ToList().Select((cf, Index) => new CustomFieldReviewTab()
+            string entityType = Enums.EntityType.Tactic.ToString();
+            var topThreeCustomFields = db.CustomFields.Where(cf => cf.IsDefault == true && cf.IsDeleted == false && cf.IsRequired == true && cf.ClientId == Sessions.User.ClientId && cf.EntityType==entityType).Take(3).ToList().Select((cf, Index) => new CustomFieldReviewTab()
             {
                 Name = cf.Name,
                 Class = "customfield-review" + (Index + 1).ToString(),

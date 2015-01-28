@@ -11362,8 +11362,8 @@ float:left;
 
 /*Start-Added by Mitesh Vaishnav for PL ticket #1073*/
 .dropdown-wrapper {	display:none;	width:245px;background-color: #fff;position: absolute;z-index: 1;}
-.drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding: 0 10px;max-height: 358px;overflow: auto;}
-.dropdown-block {min-width:662px !important;max-width:640px !important;width:auto;}
+.drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding: 0 10px;max-height: 358px;overflow: auto;/*width:100%;background-color:#fff;*/}
+.dropdown-block {min-width:560px !important;max-width:662px !important;width:auto;}
 .dropdown_new_btn {
     background: url("../images/drpdown.png") no-repeat scroll right -1% top 55% #dff0f8;
     border: 1px solid #c6c6c6;
