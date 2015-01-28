@@ -4145,7 +4145,11 @@ namespace RevenuePlanner.Helpers
                 ProgramCustomText = Enums.EntityType.Program.ToString(),
                 TacticCustomText = Enums.EntityType.Tactic.ToString();
 
-            var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.IsDeleted == false && customfield.IsDisplayForFilter == true).ToList(); //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
+            var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId 
+                && customfield.IsDeleted == false
+                && customfield.IsDisplayForFilter == true //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
+                && customfield.CustomFieldTypeId == 2).ToList(); //Modified by Arpita Soni for PL ticket 1148 (added filter of CustomFieldTypeId)
+
             var customfieldentity = (from customfield in customfieldlist
                                      join cfe in db.CustomField_Entity on customfield.CustomFieldId equals cfe.CustomFieldId
                                      select cfe).ToList();

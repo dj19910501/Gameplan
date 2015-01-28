@@ -1819,9 +1819,11 @@ namespace RevenuePlanner.Controllers
             
             lstParentRevenueSummery = lstParentRevenueSummery.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
+
+
             // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report
             //Concat the Campaign and Program custom fields data with exsiting one. 
-            var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
+            var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId ).ToList(), programlist, campaignlist);
             lstParentRevenueSummery = lstParentRevenueSummery.Concat(lstCustomFields).ToList();
             ViewBag.parentRevenueSummery = lstParentRevenueSummery;
             // Get child tab list
@@ -2796,7 +2798,7 @@ namespace RevenuePlanner.Controllers
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == tactic
+                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == tactic && c.CustomFieldTypeId==2
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
