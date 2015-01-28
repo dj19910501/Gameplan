@@ -111,7 +111,7 @@ namespace RevenuePlanner.Test.MockHelpers
 
         public static Plan_Campaign_Program_Tactic GetPlanTactic(Guid clientId)
         {
-            var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.BusinessUnit.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             return objTactic;
         }
 
