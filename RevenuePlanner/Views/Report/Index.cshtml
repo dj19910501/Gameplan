@@ -3,7 +3,6 @@
 @{
     string SelectedYear = ViewBag.SelectedYear;
     var ViewPlanSelectedValue = (List<SelectListItem>)ViewBag.ViewPlan;
-    ViewPlanSelectedValue.First().Selected = true;
     
     // Start - Added by Arpita Soni on 01/19/2015 for Ticket #1148 
     var ViewCustomFields = (List<RevenuePlanner.Models.CustomField>)ViewBag.ViewCustomFields;
