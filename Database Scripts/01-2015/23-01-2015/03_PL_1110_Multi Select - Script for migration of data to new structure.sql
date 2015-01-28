@@ -1,3 +1,5 @@
+/* Execute this script on MRP database */
+
 /* Start - Declare local variables */
 Declare @PlanTacticId int = 0		
 Declare @Tac_VerticalId int = 0

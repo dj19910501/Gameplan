@@ -1,3 +1,5 @@
+/* Execute this script on MRP database */
+
 Declare @PlanTacticId int = 0		
 Declare @Tac_VerticalId int = 0
 Declare @Tac_AudienceId int = 0
