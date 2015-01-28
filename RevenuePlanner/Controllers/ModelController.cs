@@ -1661,8 +1661,11 @@ namespace RevenuePlanner.Controllers
         {
             if (TempData["modelIdForTactics"] != null)
             {
-                id = (int)TempData["modelIdForTactics"];
-                TempData["modelIdForTactics"] = id;
+                if (id <= 0)
+                {
+                    id = (int)TempData["modelIdForTactics"];
+                    TempData["modelIdForTactics"] = id;
+                }
             }
             int Modelid = id;
             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == Modelid).Select(model => model).FirstOrDefault();
