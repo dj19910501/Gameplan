@@ -18,12 +18,7 @@ namespace BDSService.Helpers
             { CustomRestrictionPermission.ViewOnly.ToString(),"View Only"},
             {CustomRestrictionPermission.ViewEdit.ToString(),"View/Edit"}
          };
-        public enum CustomRestrictionType
-        {
-            Verticals,
-            Geography,
-            BusinessUnit
-        }
+        
         public enum ActivityType
         {
             User,

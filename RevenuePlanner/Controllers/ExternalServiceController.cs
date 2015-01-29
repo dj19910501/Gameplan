@@ -179,22 +179,7 @@ namespace RevenuePlanner.Controllers
                 string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
                 int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
 
-                //List<string> lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-
-                //// Get Custom Restriction model.
-                List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
-                lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                lstUserCustomRestriction = lstUserCustomRestriction.Where(_custmRestrctn => (_custmRestrctn.Permission == ViewOnlyPermission || _custmRestrctn.Permission == ViewEditPermission) && _custmRestrctn.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).ToList();
-
-                //List<Guid> lstBUs = new List<Guid>();
-                //foreach (UserCustomRestrictionModel o in lstUserCustomRestriction)
-                //{
-                //    lstBUs.Add(new Guid(o.CustomFieldId));
-                //}
-
-                // Get the list of plan, filtered by Business Unit , Year selected and published plan for logged in client.
+                // Get the list of plan, filtered by Year selected and published plan for logged in client.
                 if (Int_Year > 0)
                 {
                     objIntegrationPlanList = (from _pln in db.Plans
@@ -206,13 +191,13 @@ namespace RevenuePlanner.Controllers
                     //// Set permission for the plan on bases of BU permission
                     foreach (var item in objIntegrationPlanList)
                     {
-                        foreach (var list in lstUserCustomRestriction)
-                        {
-                            if (item.BUId.ToString() == list.CustomFieldId)
-                            {
-                                item.Permission = list.Permission;
-                            }
-                        }
+                    //    foreach (var list in lstUserCustomRestriction)
+                    //    {
+                    //        if (item.BUId.ToString() == list.CustomFieldId)
+                    //        {
+                                item.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                    //        }
+                    //    }
                     }
                 }
             }

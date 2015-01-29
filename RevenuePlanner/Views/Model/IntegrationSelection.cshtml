@@ -18,8 +18,6 @@
     bool PublisheStatus = ViewBag.Flag;
     @Html.Hidden("PublisheStatus", PublisheStatus);
     var currentdate = System.DateTime.Today.ToShortDateString();
-    //string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
-    //@Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
     string IsOwner = Convert.ToString(ViewBag.IsOwner);
     @Html.Hidden("IsOwner", IsOwner);
 }

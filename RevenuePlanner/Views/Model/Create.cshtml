@@ -19,8 +19,6 @@
     @Html.Hidden("Planflag", flag);
                                   var currentdate = System.DateTime.Today.ToShortDateString();
                                   // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                                  //string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);   
-                                  //@Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
                                   string IsOwner = Convert.ToString(ViewBag.IsOwner);
     @Html.Hidden("IsOwner", IsOwner);
                                     // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units

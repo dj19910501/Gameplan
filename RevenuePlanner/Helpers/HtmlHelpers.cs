@@ -3595,10 +3595,18 @@ namespace RevenuePlanner.Helpers
             //fieldCounter variable for defining raw style
             if (customFieldList.Count != 0)
             {
+                //// Start - Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
+                List<Models.CustomRestriction> lstUserCustomRestrictions = new List<CustomRestriction>();
+                if (mode != Enums.InspectPopupMode.ReadOnly.ToString() && section == Enums.EntityType.Tactic.ToString())
+                {
+                    lstUserCustomRestrictions = Common.GetCustomRestrictionListByPermission(Sessions.User.UserId, Enums.CustomRestrictionPermission.ViewEdit);
+                }
+                //// End - Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
+
                 foreach (var item in customFieldList)
                 {
                     string className = "span3 margin-top10";
-                    if (fieldCounter % 4 != 0 && fieldCounter!=0)
+                    if (fieldCounter % 4 != 0 && fieldCounter != 0)
                     {
                         className += " paddingleft25px";
                     }
@@ -3606,12 +3614,16 @@ namespace RevenuePlanner.Helpers
                     {
                         className += "\" style=\"clear:both;";
                     }
-                    if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() || item.option.Count > 0)
+
+                    //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
+                    Int32 editableOptionsCount = lstUserCustomRestrictions.Where(customRestriction => customRestriction.CustomFieldId == item.customFieldId).Count();
+
+                    if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() || editableOptionsCount > 0)
                     {
-                    if (item.isRequired)
-                        sb.Append("<div class=\"" + className + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>");
-                    else
-                        sb.Append("<div class=\"" + className + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
+                        if (item.isRequired)
+                            sb.Append("<div class=\"" + className + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>");
+                        else
+                            sb.Append("<div class=\"" + className + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
                     }
 
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
@@ -3623,23 +3635,23 @@ namespace RevenuePlanner.Helpers
                         string customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
-                            sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\""+inputclassName+"\"");
+                            sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
                         }
                         else
                         {
                             inputclassName += " input-setup";
-                            sb.Append("<input type=\"text\" maxlength =\"255\" title=\""+customFieldEntityValue+"\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\""+inputclassName+"\"");
+                            sb.Append("<input type=\"text\" maxlength =\"255\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
                         }
 
                         //If custom field is required than add attribute require
                         if (item.isRequired)
                         {
-                            sb.Append(" require=\"true\" oldValue=\""+item.value+"\" label=\"" + item.name + "\"");
+                            sb.Append(" require=\"true\" oldValue=\"" + item.value + "\" label=\"" + item.name + "\"");
                         }
                         sb.Append("></div>");
                         fieldCounter = fieldCounter + 1;
                     }
-                    else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString() && item.option.Count>0)
+                    else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString() && editableOptionsCount > 0)
                     {
                         if (mode == Enums.InspectPopupMode.Edit.ToString())
                         {
@@ -3650,7 +3662,7 @@ namespace RevenuePlanner.Helpers
                             string addResubmissionClass = "";
                             if (item.isRequired)
                             {
-                                require = " require=\"true\" oldValue=\"#OLD_VALUE#\" label=\""+item.name+"\"";
+                                require = " require=\"true\" oldValue=\"#OLD_VALUE#\" label=\"" + item.name + "\"";
                                 addResubmissionClass = "resubmission";
                             }
                             if (fieldCounter % 4 == 3)
@@ -3662,19 +3674,23 @@ namespace RevenuePlanner.Helpers
 
                             if (section == Enums.EntityType.Tactic.ToString())
                             {
-                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn "+addResubmissionClass+"\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
+                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn " + addResubmissionClass + "\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
                                 sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\"><tr><td scope=\"col\" class=\"value_header\"><span>Value</span></td><td scope=\"col\" class=\"weight_header\" code=\"weight\" title=\"Weight(%)\"><span> Weight(%)</sapn></td><td scope=\"col\" class=\"sus_header\" code=\"stage\" title=\"Stage(%)\">Stage(%)</td><td scope=\"col\" class=\"cw_header\" code=\"" + Enums.InspectStage.CW.ToString() + "\" title=\"CW(%)\">CW(%)</td><td scope=\"col\" class=\"revenue_header\" code=\"" + Enums.InspectStage.Revenue.ToString() + "\" title=\"Revenue(%)\">Revenue(%)</td><td scope=\"col\" class=\"cost_header\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead>");
                                 foreach (var objOption in item.option)
                                 {
-                                    string enableCheck = string.Empty;
-                                    if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
+                                    //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
+                                    bool isEditable = lstUserCustomRestrictions.Where(customRestriction => customRestriction.CustomFieldId == item.customFieldId && customRestriction.CustomFieldOptionId == objOption.customFieldOptionId).Any();
+                                    if (isEditable) //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                                     {
-                                        name += objOption.value + ",";
-                                        enableCheck = "checked=\"checked\"";
-                                    }
+                                        string enableCheck = string.Empty;
+                                        if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
+                                        {
+                                            name += objOption.value + ",";
+                                            enableCheck = "checked=\"checked\"";
+                                        }
 
-                                    //if ()
-                                    sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_show weight\"><input id=\"" + objOption.customFieldOptionId + "_weight\" maxlength =\"3\" type=\"text\" name=\"textfield16\" value=\"\" class=\"firstshow_width text_blk_active \"></td> <td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_stage\" maxlength =\"3\" type=\"text\" name=\"textfield4\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.CW.ToString() + "\" maxlength =\"3\" type=\"text\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Revenue.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
+                                        sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_show weight\"><input id=\"" + objOption.customFieldOptionId + "_weight\" maxlength =\"3\" type=\"text\" name=\"textfield16\" value=\"\" class=\"firstshow_width text_blk_active \"></td> <td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_stage\" maxlength =\"3\" type=\"text\" name=\"textfield4\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.CW.ToString() + "\" maxlength =\"3\" type=\"text\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Revenue.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
+                                    }
                                 }
                                 sb.Append(" <tfoot><tr><td colspan=\"7\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">Advanced Attribution ></span></a></td></tr></tfoot></table>  <div class=\"innerpopup\"><span class=\"close_btn\">X</span><p class=\"inner-text\"><span>Data will be lost!</span> Switching from Advanced Attribution to Basic Attribution will reset all weight(%) to default.<br/><button type=\"button\" class=\"proceed_btn\"> Proceed </button> <a href=\"#\" class=\"cncl_btn\">Cancel</a></p></div></div></div></div>");
                                 if (name.Length > 0)
@@ -3741,13 +3757,13 @@ namespace RevenuePlanner.Helpers
                                 }
                             }
 
-                            sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" title=\""+customFieldEntityValue+"\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
+                            sb.Append("<input type=\"text\" readonly = \"true\" value=\"" + customFieldEntityValue + "\" title=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
                             sb.Append("></div>");
-                    fieldCounter = fieldCounter + 1;
+                            fieldCounter = fieldCounter + 1;
                         }
                     }
 
-                    
+
 
                 }
             }

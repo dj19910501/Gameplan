@@ -32,6 +32,7 @@
 @Html.Hidden("hdnProgramStatus", programStatus, new { id = "hdnProgramStatus" })
 @Html.Hidden("hdnProgramOpt", "View", new { id = "hdnProgramOpt" })
 @Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
+@Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
 
 <style type="text/css">
     #successMessageViewProgram, #errorMessageEditProgram
@@ -60,7 +61,7 @@
             {
             <span>
                 <span id="lblProgramTitle"  class="tipsyclassTitle ConcatTextlength" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
-                  @if (programMaster.OwnerId == Sessions.User.UserId)
+                    @if (programMaster.OwnerId == Sessions.User.UserId && IsPlanEditable)
                     {
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
                             <button class="delete-btn-gray" id="deleteProgram" type="button">Delete</button>

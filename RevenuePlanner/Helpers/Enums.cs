@@ -305,12 +305,7 @@ namespace RevenuePlanner.Helpers
             { CustomRestrictionPermission.ViewOnly.ToString(),"View Only"},
             {CustomRestrictionPermission.ViewEdit.ToString(),"View/Edit"}
          };
-        public enum CustomRestrictionType
-        {
-            Verticals,
-            Geography,
-            BusinessUnit
-        }
+        
         public enum UserActivityPermissionType
         {
             Yes,
@@ -934,22 +929,14 @@ namespace RevenuePlanner.Helpers
     public enum GanttTabs
     {
         Tactic = 0,
-        Vertical = 1,
-        Stage = 2,
-        Audience = 3,
-        BusinessUnit = 4,
-        Request = 5,
-        None = 6
+        Request = 1,
+        None = 2
     }
 
 
     public enum PlanGanttTypes
     {
         Tactic,
-        Vertical,
-        Stage,
-        Audience,
-        BusinessUnit,
         Request,
         Custom
     }

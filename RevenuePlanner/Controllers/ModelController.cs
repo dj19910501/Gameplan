@@ -31,7 +31,7 @@ namespace RevenuePlanner.Controllers
         const string SV = "SV";
         const string ModelPublished = "published";
         static Random rnd = new Random();
-        
+
         /// <summary>
         /// Added By: Nirav Shah.
         /// Color code list for get random color .
@@ -83,7 +83,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.Msg = string.Format(Common.objCached.ModelTacticTypeNotexist, Title);
             }
-            
+
             //// TFS point 252: editing a published model, Added by Nirav Shah on 18 feb 2014
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
             ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
@@ -102,40 +102,7 @@ namespace RevenuePlanner.Controllers
                 //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
                 ViewBag.IsOwner = true;
             }
-            //// Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            try
-            {
-                //// Custom restrictions
-                //var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                //int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                //List<string> lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestriction => customRestriction.Permission == ViewEditPermission && customRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestriction => customRestriction.CustomFieldId).ToList();
-                //if (lstAllowedBusinessUnits.Count > 0)
-                //{
-                //    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                //    lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
-                //    //// Modified By Maninder on 07/04/2014 Added if...else...to allow user to add model when it is create mode.
-                //    if (businessunit == Guid.Empty && id == 0)
-                //    {
-                //        ViewBag.IsViewEditBusinessUnit = true;
-                //    }
-                //    else
-                //    {
-                //        ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
-                //    }
-                //}
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-
-                //// To handle unavailability of BDSService
-                if (objException is System.ServiceModel.EndpointNotFoundException)
-                {
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
-            }
-            //// End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            return View("Create",objBaselineModel);
+            return View("Create", objBaselineModel);
         }
 
         /// <summary>
@@ -242,7 +209,7 @@ namespace RevenuePlanner.Controllers
             //// changes done by uday for #497
             List<ModelStage> listModelStage = new List<ModelStage>();
             string CW = Enums.Stage.CW.ToString();
-            
+
             var StageList = objDbMrpEntities.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId && stage.Level != null && stage.Code != CW).OrderBy(stage => stage.Level).ToList();
             if (StageList != null && StageList.Count > 0)
             {
@@ -395,7 +362,7 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
                         }
-    
+
                         Model_Funnel objModel_Funnel = new Model_Funnel();
                         objModel_Funnel.ModelId = intModelid;
                         objModel_Funnel.FunnelId = Convert.ToInt32(Request.Form["hdn_FunnelMarketing"]);
@@ -420,9 +387,8 @@ namespace RevenuePlanner.Controllers
                         ViewBag.EditFlag = false;
                         if (objEditModelFunnel == null)
                         {
-                            ViewBag.IsViewEditBusinessUnit = "true";
                             ViewBag.EditFlag = true;
-                        }    
+                        }
                         if (objModelFunnel == null)
                         {
                             objModel_Funnel.CreatedBy = Sessions.User.UserId;
@@ -479,7 +445,7 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
                         }
-                        
+
                         if (isBenchmarkDb != null)
                         {
                             if (isBenchmarkDb != IsBenchmarked)
@@ -493,17 +459,13 @@ namespace RevenuePlanner.Controllers
                                     Common.InsertChangeLog(Sessions.ModelId, 0, objModel.ModelId, "Inputs", Enums.ChangeLog_ComponentType.updatedto, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.benchmarked);
                                 }
                             }
-                            else if (ViewBag.IsViewEditBusinessUnit == "true")
-                            {
-                                Common.InsertChangeLog(intModelid, currentModelId, intModelid, "Inputs", Enums.ChangeLog_ComponentType.empty, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.updated, "");
-                            }
                         }
 
                         Sessions.ModelId = intModelid;
                         int intAddressableContacts = 0;
                         TempData["AddressableContacts"] = intAddressableContacts;
                         TempData["SuccessMessage"] = string.Format(Common.objCached.ModelSaveSuccess, objModel.Title);
-                        
+
                         if (mode == "version")
                         {
                             ObjectParameter returnValue = new ObjectParameter("ReturnValue", 0);
@@ -577,7 +539,7 @@ namespace RevenuePlanner.Controllers
             else if (redirectModelZero == "Tactics")
             {
                 TempData["modelIdForTactics"] = intModelid;
-                 return RedirectToAction("Tactics", "Model");
+                return RedirectToAction("Tactics", "Model");
             }
             ViewBag.ModelId = currentModelId;
             //ViewBag.BusinessUnitId = Convert.ToString(modelBusinessUnitId);
@@ -596,16 +558,6 @@ namespace RevenuePlanner.Controllers
             //// Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             try
             {
-                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                List<string> lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestriction => customRestriction.Permission == ViewEditPermission && customRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestriction => customRestriction.CustomFieldId).ToList();
-                if (lstAllowedBusinessUnits.Count > 0)
-                {
-                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
-                    //ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(modelBusinessUnitId);
-                }
-
                 objBaselineModel = FillInitialData(currentModelId);
             }
             catch (Exception objException)
@@ -652,15 +604,10 @@ namespace RevenuePlanner.Controllers
                     objModel_Funnel_Stage.Value = doubleValue;
                     objModel_Funnel_Stage.AllowedTargetStage = boolValue;
                     Model_Funnel_Stage existingModelFunnelStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType).FirstOrDefault();
-                    Model_Funnel_Stage checkEditModelFunnelStage= objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType && modelFunnelStage.Value == objModel_Funnel_Stage.Value && modelFunnelStage.AllowedTargetStage == objModel_Funnel_Stage.AllowedTargetStage).FirstOrDefault();
+                    Model_Funnel_Stage checkEditModelFunnelStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType && modelFunnelStage.Value == objModel_Funnel_Stage.Value && modelFunnelStage.AllowedTargetStage == objModel_Funnel_Stage.AllowedTargetStage).FirstOrDefault();
                     if (checkEditModelFunnelStage == null && ViewBag.EditFlag == false)
                     {
-                        ViewBag.IsViewEditBusinessUnit = "true";
                         ViewBag.EditFlag = true;
-                    }
-                    else if (ViewBag.EditFlag == false)
-                    {
-                        ViewBag.IsViewEditBusinessUnit = "false";
                     }
                     if (existingModelFunnelStage == null)
                     {
@@ -1047,7 +994,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult ModelZero()
         {
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
-            
+
             try
             {
                 //// Check whether the logged-in user has a Model built for his/ her Business Unit 
@@ -1262,7 +1209,7 @@ namespace RevenuePlanner.Controllers
         {
             var FunnelList = objDbMrpEntities.Funnels.Where(funnel => funnel.IsDeleted == false && funnel.Title == "Marketing").ToDictionary(funnel => funnel.FunnelId, funnel => funnel.Description);
             TempData["FunnelList"] = FunnelList;
-            
+
             ContactInquiry objContactInquiry = new ContactInquiry();
             objContactInquiry.AddressableContract = AC;
             objContactInquiry.MarketingDealSize = MSize;
@@ -1308,7 +1255,7 @@ namespace RevenuePlanner.Controllers
                         {
                             objModel.IsDeleted = true;
                             objDbMrpEntities.Entry(objModel).State = EntityState.Modified;
-                            
+
                             //// Start - Added by Sohel Pathan on 22/08/2014 for Internal Review Points #90
                             var lstTacticType = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == id && tacticType.IsDeleted == false).Select(tacticType => tacticType).ToList();
                             lstTacticType.ForEach(tacticType => { tacticType.IsDeleted = true; objDbMrpEntities.Entry(tacticType).State = EntityState.Modified; });
@@ -1316,7 +1263,7 @@ namespace RevenuePlanner.Controllers
                             var lstLineItemType = objDbMrpEntities.LineItemTypes.Where(lineItemType => lineItemType.ModelId == id && lineItemType.IsDeleted == false).Select(lineItemType => lineItemType).ToList();
                             lstLineItemType.ForEach(lineItemType => { lineItemType.IsDeleted = true; objDbMrpEntities.Entry(lineItemType).State = EntityState.Modified; });
                             //// End - Added by Sohel Pathan on 22/08/2014 for Internal Review Points #90
-                            
+
                             //// Parent of ModelId
                             while (objModel.Model2 != null)
                             {
@@ -1692,7 +1639,7 @@ namespace RevenuePlanner.Controllers
                 //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
                 ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.UserId).Any();
             }
-            else 
+            else
             {
                 ViewBag.IsOwner = true; //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
             }
@@ -1712,37 +1659,13 @@ namespace RevenuePlanner.Controllers
             }
             //// Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
             ViewBag.TargetStageNotAssociatedWithModelMsg = string.Format(Common.objCached.TargetStageNotAssociatedWithModelMsg);
-            //// Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            try
-            {
-                //// Custom restrictions
-                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestriction => customRestriction.Permission == ViewEditPermission && customRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestriction => customRestriction.CustomFieldId).ToList();
-                if (lstAllowedBusinessUnits.Count > 0)
-                {
-                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
-                    //ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(objModel.BusinessUnitId);
-                }
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
 
-                //// To handle unavailability of BDSService
-                if (objException is System.ServiceModel.EndpointNotFoundException)
-                {
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
-            }
-            
             if (showMessage == false)
             {
                 TempData["SuccessMessage"] = string.Empty;
             }
-            //// End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            return View("Tactics",objTacticTypeModel);
+
+            return View("Tactics", objTacticTypeModel);
         }
 
         /// <summary>
@@ -1777,7 +1700,7 @@ namespace RevenuePlanner.Controllers
             }).Select(model => model).Distinct();
             return Json(objReturnModel, JsonRequestBehavior.AllowGet);
         }
-        
+
         /// <summary>
         /// Added By: Nirav Shah.
         /// Action method to show Tactics List by ModelId.
@@ -1858,14 +1781,14 @@ namespace RevenuePlanner.Controllers
                 //// changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                 objTacticTypeMdoel.ProjectedStageValue = (objTacticType.ProjectedStageValue != null) ? objTacticType.ProjectedStageValue : 0;
                 objTacticTypeMdoel.ProjectedRevenue = (objTacticType.ProjectedRevenue != null) ? objTacticType.ProjectedRevenue : 0;
-                
+
                 //// added by dharmraj for ticket #433 Integration - Model Screen Tactic List
                 objTacticTypeMdoel.IsDeployedToIntegration = objTacticType.IsDeployedToIntegration;
                 objTacticTypeMdoel.StageId = objTacticType.StageId;
                 objTacticTypeMdoel.ModelId = objTacticType.ModelId;
                 //// added by Dharmraj, ticket #592 : Tactic type data model
                 ViewBag.IsDeployed = objTacticType.IsDeployedToModel;
-                
+
                 //// Start Manoj Limbachiya 05May2014 PL#458
                 ViewBag.CanDelete = false;
                 if (objTacticType.ModelId != null)
@@ -1981,14 +1904,14 @@ namespace RevenuePlanner.Controllers
                 objDbMrpEntities.SaveChanges();
 
                 Common.InsertChangeLog(Sessions.ModelId, 0, objTacticTypeDB.TacticTypeId, objTacticTypeDB.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
-                
+
                 //// Dispose db object
                 objDbMrpEntities.Dispose();
                 TempData["SuccessMessage"] = string.Format(Common.objCached.ModelTacticDeleted, objTacticTypeDB.Title);
 
                 return Json(new { status = "SUCCESS" });
             }
-            
+
             return Json(new { status = "ERROR", Message = string.Format(Common.objCached.ErrorOccured) });
         }
 
@@ -2031,7 +1954,7 @@ namespace RevenuePlanner.Controllers
                 //// Start Manoj Limbachiya PL # 486
                 objtactic.ModelId = ModelId;
                 objtactic.IsDeployedToModel = isDeployedToModel;
-                
+
                 if (!isDeployedToModel)
                 {
                     Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
@@ -2048,7 +1971,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
                 ////End Manoj Limbachiya PL # 486
-                
+
                 //// Added by Dharmraj for ticket #433 Integration - Model Screen Tactic List
                 objtactic.IsDeployedToIntegration = isDeployedToIntegration;
 
@@ -2063,7 +1986,7 @@ namespace RevenuePlanner.Controllers
                         objDbMrpEntities.TacticTypes.Attach(objtactic);
                         objDbMrpEntities.Entry(objtactic).State = EntityState.Added;
                         objDbMrpEntities.SaveChanges();
-                        
+
                         Common.InsertChangeLog((int)ModelId, 0, objtactic.TacticTypeId, objtactic.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.added);
                         objDbMrpEntities.Dispose();
 
@@ -2078,7 +2001,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     var existingTacticTypes = objDbMrpEntities.TacticTypes.Where(tacticType => (tacticType.ModelId == ModelId) && tacticType.Title.ToLower() == Title.ToLower() && tacticType.TacticTypeId != TacticTypeId && (tacticType.IsDeleted == null || tacticType.IsDeleted == false)).ToList();
-                    
+
                     //// TFS Bug - 179 : Improper behavior when editing Tactic in model 
                     //// Changed By : Nirav shah on 6 Feb 2014
                     //// Change : add new condition t.ModelId == null
@@ -2099,13 +2022,13 @@ namespace RevenuePlanner.Controllers
 
                         Common.InsertChangeLog((int)ModelId, 0, objtactic.TacticTypeId, objtactic.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.updated);
                         dbedit.Dispose();
-                        
+
                         TempData["SuccessMessage"] = string.Format(Common.objCached.ModelTacticEditSucess, Title);
                     }
                     else
                     {
                         string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    //// Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                        return Json(new { errormsg =strDuplicateMessage });
+                        return Json(new { errormsg = strDuplicateMessage });
                     }
                 }
             }
@@ -2188,7 +2111,7 @@ namespace RevenuePlanner.Controllers
                                     objDbMrpEntities.TacticTypes.Attach(rejTacticType);
                                     objDbMrpEntities.Entry(rejTacticType).State = EntityState.Modified;
                                     result = objDbMrpEntities.SaveChanges();
-                                    
+
                                     //// changed by : Nirav Shah on 31 Jan 2013
                                     ////  Bug 19:Model - should not be able to publish a model with no tactics selected */
                                     if (msgshow == false)
@@ -2376,37 +2299,12 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
                 //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
-                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.UserId).Any();  
+                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.UserId).Any();
             }
             else
             {
                 ViewBag.IsOwner = true; //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
             }
-            //// Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            try
-            {
-                //// Custom restrictions
-                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestriction => customRestriction.Permission == ViewEditPermission && customRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestriction => customRestriction.CustomFieldId).ToList();
-                if (lstAllowedBusinessUnits.Count > 0)
-                {
-                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
-                    //ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
-                }
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-
-                //// To handle unavailability of BDSService
-                if (objException is System.ServiceModel.EndpointNotFoundException)
-                {
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
-            }
-            //// End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
             return View(objBaselineModel);
         }
@@ -2449,7 +2347,7 @@ namespace RevenuePlanner.Controllers
             else
                 return Convert.ToDateTime(objDate).ToString("MMM dd") + " at " + Convert.ToDateTime(objDate).ToString("hh:mm tt");
         }
-        
+
         /// <summary>
         /// Added By: Dharmraj mangukiya
         /// Action to save integration for model by integrationInstanceId and modelId.
@@ -2562,7 +2460,7 @@ namespace RevenuePlanner.Controllers
             string errorMessage = string.Empty, successMessage = string.Empty;
             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
             string Title = objModel.Title;
-            
+
             bool isPublished = PublishModel(ModelId, EffectiveDate, out isTacticTypeExist);
             if (isPublished.Equals(true))
             {
@@ -2623,7 +2521,7 @@ namespace RevenuePlanner.Controllers
                         objDbMrpEntities.Entry(objModel).State = EntityState.Modified;
 
                         Common.InsertChangeLog(modelId, 0, modelId, objModel.Title, Enums.ChangeLog_ComponentType.model, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.published);
-                        
+
                         int result = objDbMrpEntities.SaveChanges();
                         if (result > 0)
                         {
@@ -2659,11 +2557,11 @@ namespace RevenuePlanner.Controllers
 
             return isPublish;
         }
-        
+
         #endregion
 
         #region Common Functions for Model
-        
+
         /// <summary>
         /// Function to update tactics
         /// </summary>
@@ -2743,7 +2641,7 @@ namespace RevenuePlanner.Controllers
                                     foreach (var objModel_Funnel in oldModel_Funnel)
                                     {
                                         int oldModelFunnelId = objModel_Funnel.ModelFunnelId;
-                                        
+
                                         Model_Funnel newModel_Funnel = new Model_Funnel();
                                         newModel_Funnel = objModel_Funnel;
                                         newModel_Funnel.ModelId = NewModelID;
@@ -2840,7 +2738,7 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { status = StatusOpt, msg = result, name = ModelName }, JsonRequestBehavior.AllowGet);
         }
-        
+
         /// <summary>
         /// Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014
         /// When Duplicate model popup will be open at that time we have to set default value in textbox (Old Model Name + TImestamp value) 
@@ -2969,7 +2867,7 @@ namespace RevenuePlanner.Controllers
                     }
 
                     #region Clone TacticTypes table entries
-                    
+
                     var oldTacticTypes = objMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == OldModelID && (tacticType.IsDeleted == null ? false : tacticType.IsDeleted) == false).ToList();
                     if (oldTacticTypes != null)
                     {
@@ -3007,7 +2905,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
-                
+
         #region New Integration
 
         /// <summary>
@@ -3019,12 +2917,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="IsIntegrationChanged">IsIntegrationChanged flag</param>
         /// <returns>returns json result object</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]
-        public JsonResult SaveIntegration(int id, BaselineModel objBaselineModel,bool IsIntegrationChanged=false)
+        public JsonResult SaveIntegration(int id, BaselineModel objBaselineModel, bool IsIntegrationChanged = false)
         {
             //// set values of objDbMrpEntities.Model object as per posted values and update objDbMrpEntities.Model
             bool returnValue = false;
             string message = string.Empty;
-            using (TransactionScope scope = new TransactionScope()) 
+            using (TransactionScope scope = new TransactionScope())
             {
                 try
                 {
@@ -3065,9 +2963,9 @@ namespace RevenuePlanner.Controllers
                 scope.Complete();
             }
 
-            return Json(new { status = false,Id=id }, JsonRequestBehavior.AllowGet); 
+            return Json(new { status = false, Id = id }, JsonRequestBehavior.AllowGet);
         }
-        
+
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #659 
         /// view for list : Integration instances of model
@@ -3100,30 +2998,6 @@ namespace RevenuePlanner.Controllers
             else
             {
                 ViewBag.IsOwner = true;
-            }
-            //// Get list of user's business unit in which user have rights of view edit.Set flag for user's right of view edit business unit
-            try
-            {
-                //// Custom restrictions
-                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestriction => customRestriction.Permission == ViewEditPermission && customRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestriction => customRestriction.CustomFieldId).ToList();
-                if (lstAllowedBusinessUnits.Count > 0)
-                {
-                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
-                    //ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
-                }
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-
-                //// To handle unavailability of BDSService
-                if (objException is System.ServiceModel.EndpointNotFoundException)
-                {
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
             }
 
             List<IntegrationSelectionModel> lstIntegrationOverview = new List<IntegrationSelectionModel>();
@@ -3162,7 +3036,7 @@ namespace RevenuePlanner.Controllers
                     if (objInstance != null)
                     {
                         objIntSelection.Instance = objInstance.Instance;
-                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull; 
+                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
                         objIntSelection.LastSync = objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString(Common.DateFormatForModelIntegrationLastSync) : "---";
                     }
                     else
@@ -3213,7 +3087,7 @@ namespace RevenuePlanner.Controllers
 
             return View(lstIntegrationOverview);
         }
-        
+
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #659 
         /// view for Integration instance selection 
@@ -3269,31 +3143,6 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsOwner = true;
             }
 
-            //// Get list of user's business unit in which user have rights of view edit.Set flag for user's right of view edit business unit
-            try
-            {
-                //// Custom restrictions
-                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestriction => customRestriction.Permission == ViewEditPermission && customRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestriction => customRestriction.CustomFieldId).ToList();
-                if (lstAllowedBusinessUnits.Count > 0)
-                {
-                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
-                    //ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
-                }
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-
-                //// To handle unavailability of BDSService
-                if (objException is System.ServiceModel.EndpointNotFoundException)
-                {
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
-            }
-
             //// List of integration instance of model
             var lstInstance = objDbMrpEntities.IntegrationInstances.Where(instance => instance.ClientId == Sessions.User.ClientId && instance.IsDeleted == false).Select(instance => new
             {
@@ -3317,9 +3166,9 @@ namespace RevenuePlanner.Controllers
             if (objDbMrpEntities.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(eloquaIntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
                 ViewData["MQLFilteredEloquaIntegrationInstances"] = lstInstance.Where(instance => instance.Code == elqType);
             else
-                ViewData["MQLFilteredEloquaIntegrationInstances"] = Enumerable.Empty<entIntegrationInstance>(); 
+                ViewData["MQLFilteredEloquaIntegrationInstances"] = Enumerable.Empty<entIntegrationInstance>();
             #endregion
-            
+
             return View(objBaselineModel);
         }
 
@@ -3329,7 +3178,8 @@ namespace RevenuePlanner.Controllers
 
 }
 
-public class entIntegrationInstance {
+public class entIntegrationInstance
+{
     public string InstanceName { get; set; }
     public int InstanceId { get; set; }
     public string Type { get; set; }

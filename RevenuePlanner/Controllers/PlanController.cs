@@ -898,7 +898,6 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
 
             var plan = db.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(Sessions.PlanId));
-            //Sessions.BusinessUnitId = plan.Model.BusinessUnitId;
             HomePlanModel planModel = new HomePlanModel();
             planModel.objplanhomemodelheader = Common.GetPlanHeaderValue(Sessions.PlanId);
             planModel.PlanId = plan.PlanId;
@@ -935,64 +934,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-            try
-            {
-                //////var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                //////List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                //////if (lstAllowedBusinessUnits.Count > 0)
-                //////    lstAllowedBusinessUnits.ForEach(bu => lstAllowedBusinessUnitIds.Add(Guid.Parse(bu)));
-                //////if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)
-                //////{
-                //////    //// Getting all business unit for client of director.
-                //////    planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
-                //////    //Added by Nirav for Custom Dropdown - 388
-                //////    ViewBag.BusinessUnitIds = planModel.BusinessUnitIds; // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //////    ViewBag.showBid = true;
-                //////}
-                //////else
-                //////{
 
-                //////    // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //////    if (lstAllowedBusinessUnitIds.Count > 0)
-                //////    {
-                //////        var list = db.BusinessUnits.Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted == false).ToList().Select(bu => new SelectListItem
-                //////        {
-                //////            Text = bu.Title,
-                //////            Value = bu.BusinessUnitId.ToString()
-                //////        });
-                //////        List<SelectListItem> items = new List<SelectListItem>(list);
-                //////        planModel.BusinessUnitIds = items;
-                //////        ViewBag.BusinessUnitIds = items;
-                //////    }
-                //////    else
-                //////    {
-                //////        //Added by Nirav for Custom Dropdown - 388
-                //////        var list = db.BusinessUnits.Where(bu => bu.BusinessUnitId == Sessions.User.BusinessUnitId && bu.IsDeleted == false).ToList().Select(bu => new SelectListItem
-                //////        {
-                //////            Text = bu.Title,
-                //////            Value = bu.BusinessUnitId.ToString()
-                //////        });
-                //////        List<SelectListItem> items = new List<SelectListItem>(list);
-                //////        planModel.BusinessUnitIds = items;
-                //////        ViewBag.BusinessUnitIds = items;
-                //////    }
-                //////    // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-
-
-                //////    ViewBag.showBid = true;
-                //////}
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
-                }
-            }
             ViewBag.Msg = ismsg;
             ViewBag.isError = isError;
             return View(planModel);
@@ -1320,7 +1262,7 @@ namespace RevenuePlanner.Controllers
             });
 
             List<int> lstAllowedEntityIds = new List<int>();
-            lstAllowedEntityIds = Common.GetAllowedCustomFieldEntityList(Sessions.User.UserId, Sessions.User.ClientId, new List<int>(), false);
+            lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, new List<int>(), false);
 
             // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
             var taskDataTactic = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
@@ -1762,7 +1704,7 @@ namespace RevenuePlanner.Controllers
             // Added by dharmraj to check user activity permission
             bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
-            
+
             Plan plan = db.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(Sessions.PlanId));
             if (plan != null)
             {
@@ -1884,25 +1826,6 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result.</returns>
         public JsonResult GetCampaign()
         {
-            //List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
-            //try
-            //{
-            //    lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            //}
-            //catch (Exception e)
-            //{
-            //    ErrorSignal.FromCurrentContext().Raise(e);
-
-            //    //To handle unavailability of BDSService
-            //    if (e is System.ServiceModel.EndpointNotFoundException)
-            //    {
-            //        //// Flag to indicate unavailability of web service.
-            //        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-            //        //// Ticket: 942 Exception handeling in Gameplan.
-            //        return Json(new { serviceUnavailable = "#" }, JsonRequestBehavior.AllowGet);
-            //    }
-            //}
-
             List<Plan_Campaign> CampaignList = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             List<int> CampaignIds = CampaignList.Select(pc => pc.PlanCampaignId).ToList();
             List<Plan_Campaign_Program> ProgramList = db.Plan_Campaign_Program.Where(pcp => CampaignIds.Contains(pcp.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList();
@@ -1949,8 +1872,8 @@ namespace RevenuePlanner.Controllers
             if (CampaignList.Count() > 0)
             {
                 List<int> lstPlanTacticIds = TacticList.Select(tactic => tactic.PlanTacticId).ToList();
-                lstEditableTacticIds = Common.GetViewEditEntityList(Sessions.User.UserId, lstPlanTacticIds);
-                lstAllowedEntityIds = Common.GetAllowedCustomFieldEntityList(Sessions.User.UserId, Sessions.User.ClientId, lstPlanTacticIds, false);
+                lstEditableTacticIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstPlanTacticIds, false);
+                lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstPlanTacticIds, false);
             }
 
             //// Get Campaign data.
@@ -2005,7 +1928,7 @@ namespace RevenuePlanner.Controllers
                     description = p.description,
                     cost = p.cost,
                     mqls = p.mqls,
-                    isOwner = p.isOwner == 0 ? (p.tactics.Any(t => t.isOwner == 1) ? 1 : 0) : 1,
+                    isOwner = p.isOwner == 0 ? ((TacticList.Count() > 0 && p.tactics.Count() > 0) ? (p.tactics.Any(t => t.isOwner == 1) ? 1 : 0) : 1) : 1,
                     tactics = p.tactics
                 })
             });
@@ -2386,8 +2309,8 @@ namespace RevenuePlanner.Controllers
             /*Start modified by Mitesh Vaishnav for PL ticket #1074
              Provide stageTitle/Code perameter when tactic type changed*/
             string mqlCode = Enums.InspectStage.MQL.ToString();
-            var mqlForClient=db.Stages.Where(stage => stage.ClientId == tt.Stage.ClientId && stage.Code == mqlCode).FirstOrDefault();
-            int mqlLevel =mqlForClient!=null? (int)mqlForClient.Level:0;
+            var mqlForClient = db.Stages.Where(stage => stage.ClientId == tt.Stage.ClientId && stage.Code == mqlCode).FirstOrDefault();
+            int mqlLevel = mqlForClient != null ? (int)mqlForClient.Level : 0;
             string advanceStageTitles = tt.Stage.Title, advanceStagecodes = Enums.InspectStage.ProjectedStageValue.ToString();
             if (mqlLevel > tt.Stage.Level)
             {
@@ -2401,9 +2324,9 @@ namespace RevenuePlanner.Controllers
                 IsDeployedToIntegration = tt.IsDeployedToIntegration,
                 stageId = tt.StageId,
                 stageTitle = tt.Stage.Title,
-               projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue,
-               AdvanceStageTitles=advanceStageTitles,
-               AdvanceStageCode=advanceStagecodes
+                projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue,
+                AdvanceStageTitles = advanceStageTitles,
+                AdvanceStageCode = advanceStagecodes
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -2881,26 +2804,21 @@ namespace RevenuePlanner.Controllers
                         objPlanSelector.Status = item.Status;
 
                         // Start - Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                        bool IsBusinessUnitEditable = false;////Common.IsBusinessUnitEditable(BUId);
                         bool IsPlanEditable = false;
-
                         // Added to check edit status for current user by dharmraj for #538
-                        if (IsBusinessUnitEditable)
+                        if (item.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                         {
-                            if (item.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+                            IsPlanEditable = true;
+                        }
+                        else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        {
+                            IsPlanEditable = true;
+                        }
+                        else if (IsPlanEditSubordinatesAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        {
+                            if (lstOwnAndSubOrdinates.Contains(item.CreatedBy))
                             {
                                 IsPlanEditable = true;
-                            }
-                            else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                            {
-                                IsPlanEditable = true;
-                            }
-                            else if (IsPlanEditSubordinatesAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                            {
-                                if (lstOwnAndSubOrdinates.Contains(item.CreatedBy))
-                                {
-                                    IsPlanEditable = true;
-                                }
                             }
                         }
 
@@ -2938,71 +2856,6 @@ namespace RevenuePlanner.Controllers
 
             return Json(lstYears, JsonRequestBehavior.AllowGet);
         }
-
-
-        /// <summary>
-        /// Method to get the list of business Unit (Role wise)
-        /// </summary>
-        /// <returns></returns>
-        //public JsonResult GetBUTab()
-        //{
-        //    try
-        //    {
-        //        var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-        //        List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-        //        if (lstAllowedBusinessUnits.Count > 0)
-        //            lstAllowedBusinessUnits.ForEach(bu => lstAllowedBusinessUnitIds.Add(Guid.Parse(bu)));
-        //        if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        //        {
-        //            var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
-        //            {
-        //                id = b.BusinessUnitId,
-        //                title = b.Title
-        //            }).Select(bu => bu).Distinct().OrderBy(bu => bu.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
-
-        //            return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
-        //        }
-        //        else
-        //        // Modified by Dharmraj, For #537
-        //        {
-        //            // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        //            if (lstAllowedBusinessUnitIds.Count > 0)
-        //            {
-        //                var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
-        //            {
-        //                id = b.BusinessUnitId,
-        //                title = b.Title
-        //            }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
-        //                return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
-        //            }
-        //            else
-        //            {
-        //                var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.BusinessUnitId.Equals(Sessions.User.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
-        //                {
-        //                    id = b.BusinessUnitId,
-        //                    title = b.Title
-        //                }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
-        //                return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
-        //            }
-        //            // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-
-        //        //To handle unavailability of BDSService
-        //        if (e is System.ServiceModel.EndpointNotFoundException)
-        //        {
-        //            //// Flag to indicate unavailability of web service.
-        //            //// Added By: Maninder Singh Wadhva on 11/24/2014.
-        //            //// Ticket: 942 Exception handeling in Gameplan.
-        //            return Json(new { serviceUnavailable = "#" }, JsonRequestBehavior.AllowGet);
-        //        }
-        //    }
-
-        //    return Json(new { }, JsonRequestBehavior.AllowGet);
-        //}
 
         /// <summary>
         /// Json method to delete the plan
@@ -4565,44 +4418,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
                 ViewBag.PlanId = Sessions.PlanId;
 
-                #region Business Unit Ids
-                //List<Guid> businessUnitIds = new List<Guid>();
-                //var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                //if (lstAllowedBusinessUnits.Count > 0)
-                //    lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
-                //if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)
-                //{
-                //    var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList<Guid>();
-                //    businessUnitIds = clientBusinessUnit.ToList();
-                //    ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
-                //    if (businessUnitIds.Count > 1)
-                //        ViewBag.showBid = true;
-                //    else
-                //        ViewBag.showBid = false;
-                //}
-                //else
-                //{
-                //    if (lstAllowedBusinessUnits.Count > 0)
-                //    {
-                //        lstAllowedBusinessUnits.ForEach(bu => businessUnitIds.Add(Guid.Parse(bu)));
-                //        var lstClientBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId);
-                //        ViewBag.BusinessUnitIds = lstClientBusinessUnits.Where(a => businessUnitIds.Contains(Guid.Parse(a.Value)));
-                //        if (businessUnitIds.Count > 1)
-                //            ViewBag.showBid = true;
-                //        else
-                //            ViewBag.showBid = false;
-                //    }
-                //    else
-                //    {
-                //        //businessUnitIds.Add(Sessions.User.BusinessUnitId);
-                //        //ViewBag.BusinessUnitIds = Sessions.User.BusinessUnitId;//Added by Nirav for Custom Dropdown - 388
-                //        ViewBag.showBid = false;
-                //    }
-                //}
-                #endregion
-
                 //// Set ViewBy list.
-                string audLabel = Common.CustomLabelFor(Enums.CustomLabelCode.Audience);
                 string entTacticType = Enums.EntityType.Tactic.ToString();
                 List<ViewByModel> lstViewBy = new List<ViewByModel>();
                 lstViewBy.Add(new ViewByModel { Text = "Campaigns", Value = "0" });
@@ -4639,27 +4455,6 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetAllocatedBugetData(int PlanId)
         {
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
-            try
-            {
-                lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
-
-                }
-            }
-
             var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var campaignobj = campaign.Select(_campgn => new
             {
@@ -4964,26 +4759,26 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> planList;
             //if (Bid == "false")
             //{
-                planList = Common.GetPlan().Select(_pln => new SelectListItem() { Text = _pln.Title, Value = _pln.PlanId.ToString() }).OrderBy(_pln => _pln.Text).ToList();
-                if (planList.Count > 0)
+            planList = Common.GetPlan().Select(_pln => new SelectListItem() { Text = _pln.Title, Value = _pln.PlanId.ToString() }).OrderBy(_pln => _pln.Text).ToList();
+            if (planList.Count > 0)
+            {
+                var objexists = planList.Where(_pln => _pln.Value == Sessions.PlanId.ToString()).ToList();
+                if (objexists.Count != 0)
                 {
-                    var objexists = planList.Where(_pln => _pln.Value == Sessions.PlanId.ToString()).ToList();
-                    if (objexists.Count != 0)
-                    {
-                        planList.FirstOrDefault(_pln => _pln.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
-                    }
-                    /*changed by Nirav for plan consistency on 14 apr 2014*/
-                    //Sessions.BusinessUnitId = Common.GetPlan().Where(_pln => _pln.PlanId == Sessions.PlanId).Select(_pln => _pln.Model.BusinessUnitId).FirstOrDefault();
-                    if (!Common.IsPlanPublished(Sessions.PlanId))
-                    {
-                        string planPublishedStatus = Enums.PlanStatus.Published.ToString();
-                        var activeplan = db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false && _pln.Status == planPublishedStatus).ToList();
-                        if (activeplan.Count > 0)
-                            Sessions.PublishedPlanId = Sessions.PlanId;
-                        else
-                            Sessions.PublishedPlanId = 0;
-                    }
+                    planList.FirstOrDefault(_pln => _pln.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
                 }
+                /*changed by Nirav for plan consistency on 14 apr 2014*/
+
+                if (!Common.IsPlanPublished(Sessions.PlanId))
+                {
+                    string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+                    var activeplan = db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false && _pln.Status == planPublishedStatus).ToList();
+                    if (activeplan.Count > 0)
+                        Sessions.PublishedPlanId = Sessions.PlanId;
+                    else
+                        Sessions.PublishedPlanId = 0;
+                }
+            }
             //}
             //else
             //{
@@ -5045,26 +4840,7 @@ namespace RevenuePlanner.Controllers
             string entTacticType = Enums.EntityType.Tactic.ToString();
             List<BudgetModel> model = new List<BudgetModel>();
             BudgetModel obj;
-            List<UserCustomRestrictionModel> lstUserCustomRestriction = new List<UserCustomRestrictionModel>();
-            try
-            {
-                lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
 
-                }
-            }
             //// Set Campaign data to Create Model.
             var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var campaignobj = campaign.Select(p => new
@@ -5204,7 +4980,7 @@ namespace RevenuePlanner.Controllers
                 #region "Plan Hierarchy - First Level"
                 //Add plan BudgetModel to the Custom model.
                 BudgetModel objPlanAud = model.Where(m => m.ActivityType == ActivityType.ActivityPlan).FirstOrDefault();
-                modelCustom.Add(objPlanAud); 
+                modelCustom.Add(objPlanAud);
                 #endregion
 
                 #region "Get CustomFieldEntity list from filtered BudgetModel list"
@@ -5215,9 +4991,9 @@ namespace RevenuePlanner.Controllers
                     List<CustomField_Entity> _custmfieldEntity = _model.CustomFieldEntities.Where(s => s.CustomFieldId.Equals(ViewByID)).ToList();
                     if (_custmfieldEntity != null)
                         _custmfieldEntity.ForEach(_custmfieldentity => fltrModelCustomFieldEntities.Add(_custmfieldentity));
-                } 
+                }
                 #endregion
-                
+
                 //// Customise BudgetModel based on CustomFieldType.
                 if (CustomFieldTypeName.Equals(Enums.CustomFieldType.DropDownList.ToString()))
                 {
@@ -5225,7 +5001,7 @@ namespace RevenuePlanner.Controllers
                     List<entCustomFieldOption_EntityMapping> lstMapCustomFieldOption_EntityIds = new List<entCustomFieldOption_EntityMapping>(); // Mapping of each distinct CustomFieldOption with CustomFieldEntities. 
                     List<int> lstCustomFieldEntityIdsByOptionID = new List<int>();
                     List<string> DistCustomFieldOptionIDs = fltrModelCustomFieldEntities.Select(_ent => _ent.Value).Distinct().ToList(); // Get distinct CustomFieldOptionIds from filtered CustomFieldEntitylist.
-                    
+
                     //// Get distinct CustomFieldOption list by Ids.
                     List<CustomFieldOption> lstdistCustomFieldOptions = db.CustomFieldOptions.ToList().Where(_option => DistCustomFieldOptionIDs.ToList().Contains(_option.CustomFieldOptionId.ToString())).ToList();
                     foreach (string OptionId in DistCustomFieldOptionIDs)
@@ -5241,7 +5017,7 @@ namespace RevenuePlanner.Controllers
                             objOption_EntityMapping.CusotmFieldEntityIds = lstCustomFieldEntityIdsByOptionID;
                             lstMapCustomFieldOption_EntityIds.Add(objOption_EntityMapping);
                         }
-                    } 
+                    }
                     #endregion
 
                     //// loop of each CustomFieldOption to create hierarchy level like this for Dropdownlist CustomFieldType: CustomField > Campaign > Program > Tactic > LineItem
@@ -5249,22 +5025,22 @@ namespace RevenuePlanner.Controllers
                     {
                         #region "CustomField Hierarchy - Second Level"
                         //// Add CustomField data into BudgetModel to create CustomField level to Hierarchy.
-                    obj = new BudgetModel();
+                        obj = new BudgetModel();
                         obj.ActivityId = prefix + custom_Option.CusotmFieldOptionId;
                         obj.ActivityName = lstdistCustomFieldOptions.Where(_option => _option.CustomFieldOptionId.Equals(custom_Option.CusotmFieldOptionId)).Select(_option => _option.Value).FirstOrDefault();
                         obj.ActivityType = ActivityType.ActivityCustomField;
                         obj.ParentActivityId = objPlanAud.ActivityId;
-                    obj.Budgeted = 0;
-                    obj.IsOwner = true;
-                    obj.Month = new BudgetMonth();
-                        modelCustom.Add(obj); 
+                        obj.Budgeted = 0;
+                        obj.IsOwner = true;
+                        obj.Month = new BudgetMonth();
+                        modelCustom.Add(obj);
                         #endregion
 
                         parentCustomId = prefix + custom_Option.CusotmFieldOptionId; // Set ParentCustomId value using into child record. 
                         prefixId = "custom_" + custom_Option.CusotmFieldOptionId + "_"; // prefixId to append with it's child record ActivityId.
 
-                    //Add all tactics and its line items
-                    List<BudgetModel> lstTactic = new List<BudgetModel>();
+                        //Add all tactics and its line items
+                        List<BudgetModel> lstTactic = new List<BudgetModel>();
 
                         #region "List of Tactic those contains current CustomFieldEntity"
                         //// Get list of Tactics for those which contains current CustomFieldEntity.
@@ -5275,26 +5051,26 @@ namespace RevenuePlanner.Controllers
                             if (lstTacticModel != null && lstTacticModel.Count > 0)
                                 lstTactic.AddRange(lstTacticModel);
                         }
-                        lstTactic = lstTactic.Distinct().ToList(); 
+                        lstTactic = lstTactic.Distinct().ToList();
                         #endregion
 
                         #region "Create list of CampaignIds for each filtered Tactics"
                         CampaingIds = new List<string>();
-                    foreach (BudgetModel objTactic in lstTactic)
-                    {
-                        BudgetModel objProgram = model.Where(m => m.ActivityId == objTactic.ParentActivityId && m.ActivityType == ActivityType.ActivityProgram).FirstOrDefault();
-                        if (objProgram != null)
+                        foreach (BudgetModel objTactic in lstTactic)
                         {
-                            BudgetModel objCampaign = model.Where(m => m.ActivityId == objProgram.ParentActivityId && m.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
-                            if (objCampaign != null)
+                            BudgetModel objProgram = model.Where(m => m.ActivityId == objTactic.ParentActivityId && m.ActivityType == ActivityType.ActivityProgram).FirstOrDefault();
+                            if (objProgram != null)
                             {
-                                if (!CampaingIds.Contains(objCampaign.ActivityId))
+                                BudgetModel objCampaign = model.Where(m => m.ActivityId == objProgram.ParentActivityId && m.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
+                                if (objCampaign != null)
                                 {
-                                    CampaingIds.Add(objCampaign.ActivityId);
+                                    if (!CampaingIds.Contains(objCampaign.ActivityId))
+                                    {
+                                        CampaingIds.Add(objCampaign.ActivityId);
+                                    }
                                 }
                             }
                         }
-                    }
                         #endregion
 
                         #region " Create Campaign,Program,Tactic & LineItem hierarchy level "
@@ -5333,7 +5109,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                             }
-                        } 
+                        }
                         #endregion
                     }
                 }
@@ -5362,7 +5138,7 @@ namespace RevenuePlanner.Controllers
                         //Add all tactics and its line items
                         List<BudgetModel> lstTactic = new List<BudgetModel>();
                         lstTactic = fltrCustomFieldBudgetModel.Where(_mdl => _mdl.CustomFieldEntities.Select(_ent => _ent.CustomFieldEntityId).ToList().Contains(custmEntity.CustomFieldEntityId)).ToList();
-                        
+
                         #region "Create list of CampaignIds for each filtered Tactics"
                         CampaingIds = new List<string>();
                         foreach (BudgetModel objTactic in lstTactic)
@@ -5383,26 +5159,26 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                         #region " Create Campaign,Program,Tactic & LineItem hierarchy level "
-                    //// Set Program related data for each Campaign Ids. 
-                    foreach (string campaingid in CampaingIds)
-                    {
-                        BudgetModel objCampaign = model.Where(_mdl => _mdl.ActivityId == campaingid && _mdl.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
-                            modelCustom.Add(GetClone(objCampaign, prefixId + objCampaign.ActivityId, parentCustomId));
-                        List<BudgetModel> lstProgram = model.Where(_mdl => _mdl.ParentActivityId == campaingid && _mdl.ActivityType == ActivityType.ActivityProgram).ToList();
-                        foreach (BudgetModel objProgram in lstProgram)
+                        //// Set Program related data for each Campaign Ids. 
+                        foreach (string campaingid in CampaingIds)
                         {
-                            List<BudgetModel> lstTactics = new List<BudgetModel>();
+                            BudgetModel objCampaign = model.Where(_mdl => _mdl.ActivityId == campaingid && _mdl.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
+                            modelCustom.Add(GetClone(objCampaign, prefixId + objCampaign.ActivityId, parentCustomId));
+                            List<BudgetModel> lstProgram = model.Where(_mdl => _mdl.ParentActivityId == campaingid && _mdl.ActivityType == ActivityType.ActivityProgram).ToList();
+                            foreach (BudgetModel objProgram in lstProgram)
+                            {
+                                List<BudgetModel> lstTactics = new List<BudgetModel>();
                                 lstTactics = lstTactic.Where(_mdl => _mdl.ParentActivityId == objProgram.ActivityId).ToList();
                                 lstTactics.ForEach(mdlTactic => mdlTactic.CustomFieldType = Enums.CustomFieldType.TextBox.ToString());
-                            if (lstTactics.Count() > 0)
-                            {
-                                    modelCustom.Add(GetClone(objProgram, prefixId + objProgram.ActivityId, prefixId + objProgram.ParentActivityId));
-                                foreach (BudgetModel objT in lstTactics)
+                                if (lstTactics.Count() > 0)
                                 {
-                                    List<BudgetModel> lstLines = model.Where(_mdl => _mdl.ParentActivityId == objT.ActivityId && _mdl.ActivityType == ActivityType.ActivityLineItem).ToList();
-                                        modelCustom.Add(GetClone(objT, prefixId + objT.ActivityId, prefixId + objT.ParentActivityId));
-                                    foreach (BudgetModel objL in lstLines)
+                                    modelCustom.Add(GetClone(objProgram, prefixId + objProgram.ActivityId, prefixId + objProgram.ParentActivityId));
+                                    foreach (BudgetModel objT in lstTactics)
                                     {
+                                        List<BudgetModel> lstLines = model.Where(_mdl => _mdl.ParentActivityId == objT.ActivityId && _mdl.ActivityType == ActivityType.ActivityLineItem).ToList();
+                                        modelCustom.Add(GetClone(objT, prefixId + objT.ActivityId, prefixId + objT.ParentActivityId));
+                                        foreach (BudgetModel objL in lstLines)
+                                        {
                                             modelCustom.Add(GetClone(objL, prefixId + objL.ActivityId, prefixId + objL.ParentActivityId));
                                         }
                                     }
@@ -5447,7 +5223,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.Tab = (int)budgetTab;
 
             #region "Calculate Monthly Budget from Bottom to Top for Hierarchy level like: LineItem > Tactic > Program > Campaign > CustomField(if filtered) > Plan"
-           
+
 
             //// Set ViewBy data to model.
             //// Calculate monthly Tactic budget from it's child budget i.e LineItem
@@ -5473,7 +5249,7 @@ namespace RevenuePlanner.Controllers
                 model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, budgetTab);
             }
             #endregion
-            
+
             //// Set LineItem monthly budget cost by it's parent tactic weightage.
             model = SetLineItemCostByWeightage(model);
 
@@ -5499,7 +5275,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.PercAllocated = PercAllocated;
             #endregion
-            
+
             Sessions.PlanId = PlanId;
             return PartialView("_Budget", model);
         }
@@ -5571,8 +5347,8 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public List<BudgetModel> CalculateBottomUp(List<BudgetModel> model, string ParentActivityType, string ChildActivityType, BudgetTab budgetTab)
         {
-            int _ViewById = ViewBag.ViewBy != null?(int)ViewBag.ViewBy :0;
-            int weightage =100;
+            int _ViewById = ViewBag.ViewBy != null ? (int)ViewBag.ViewBy : 0;
+            int weightage = 100;
 
             if (budgetTab == BudgetTab.Actual && ParentActivityType == ActivityType.ActivityTactic)
             {
@@ -5582,8 +5358,8 @@ namespace RevenuePlanner.Controllers
                     if (LineCheck.Count() > 0)
                     {
                         //// check if ViewBy is Campaign selected then set weightage value to 100;
-                        if(_ViewById > 0)
-                         weightage = l.Weightage;
+                        if (_ViewById > 0)
+                            weightage = l.Weightage;
 
                         BudgetMonth parent = new BudgetMonth();
                         parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.Month.Jan * weightage) / 100) ?? 0;
@@ -5634,18 +5410,18 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                    parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jan) ?? 0;
-                    parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Feb) ?? 0;
-                    parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Mar) ?? 0;
-                    parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Apr) ?? 0;
-                    parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.May) ?? 0;
-                    parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jun) ?? 0;
-                    parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jul) ?? 0;
-                    parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Aug) ?? 0;
-                    parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Sep) ?? 0;
-                    parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Oct) ?? 0;
-                    parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Nov) ?? 0;
-                    parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Dec) ?? 0;
+                        parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jan) ?? 0;
+                        parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Feb) ?? 0;
+                        parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Mar) ?? 0;
+                        parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Apr) ?? 0;
+                        parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.May) ?? 0;
+                        parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jun) ?? 0;
+                        parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jul) ?? 0;
+                        parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Aug) ?? 0;
+                        parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Sep) ?? 0;
+                        parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Oct) ?? 0;
+                        parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Nov) ?? 0;
+                        parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Dec) ?? 0;
                     }
                     model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().ParentMonth = model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().Month;
                     model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().Month = parent;
@@ -5965,7 +5741,7 @@ namespace RevenuePlanner.Controllers
             {
                 BudgetMonth parent = new BudgetMonth();
                 List<BudgetModel> lstLineItems = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
-                
+
                 //// check if ViewBy is Campaign selected then set weightage value to 100;
                 if (_ViewById > 0)
                     weightage = l.Weightage;
@@ -6166,8 +5942,6 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> lst_Tactics = new List<Plan_Campaign_Program_Tactic>();
             List<int> lst_ImprovementTacticIds = new List<int>();
             List<Plan_Improvement_Campaign_Program_Tactic> lst_ImprvTactics = new List<Plan_Improvement_Campaign_Program_Tactic>();
-            bool IsBusinessUnitEditable = false;
-            Guid ModelBusinessUnitId;
             #endregion
 
             try
@@ -6177,13 +5951,6 @@ namespace RevenuePlanner.Controllers
                 List<Guid> lstSubordinatesIds = new List<Guid>();
                 if (IsPlanEditSubordinatesAuthorized)
                     lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
-
-                //// Get BusinessUnitId from Model table based on PlanId to check IsEditableBusinessUnitId for Campaign & Program.
-                //ModelBusinessUnitId = (from _mdl in db.Models
-                //                       where _mdl.IsDeleted.Equals(false)
-                //                       join _plan in db.Plans on _mdl.ModelId equals _plan.ModelId
-                //                       where _plan.PlanId.Equals(PlanId) && _plan.IsDeleted.Equals(false)
-                //                       select _mdl.BusinessUnitId).FirstOrDefault();
 
                 //// Get List of all campaigns based on PlanId.
                 lst_AllCampaigns = (from _campagn in db.Plan_Campaign
@@ -6213,44 +5980,23 @@ namespace RevenuePlanner.Controllers
                                     where _imprvTactic.IsDeleted.Equals(false) && _imprvTactic.CreatedBy.Equals(Sessions.User.UserId)
                                     select _imprvTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
 
+                lst_CampaignIds = lst_AllCampaigns.Where(_campagn => _campagn.CreatedBy.Equals(Sessions.User.UserId)).Select(_campagn => _campagn.PlanCampaignId).ToList();
+                lst_ProgramIds = lst_AllPrograms.Where(_prgram => _prgram.CreatedBy.Equals(Sessions.User.UserId)).Select(_prgram => _prgram.PlanProgramId).ToList();
 
-
-                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(customRestriction => customRestriction.Permission == ViewEditPermission && customRestriction.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(customRestriction => customRestriction.CustomFieldId).ToList();
-                if (lstAllowedBusinessUnits.Count > 0)
+                if (lst_Tactics.Count() > 0)
                 {
-                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(businessUnit => lstViewEditBusinessUnits.Add(Guid.Parse(businessUnit)));
-
-                    //// Check BusinessUnit Editable or not for Campaign & Program by ModalBusinessUnitId.
-                    IsBusinessUnitEditable = false;
-                    //IsBusinessUnitEditable = lstViewEditBusinessUnits.Contains(ModelBusinessUnitId);
-                    if (IsBusinessUnitEditable)
+                    //// Check custrom restriction permissions for Tactic.
+                    List<int> lstTacticIds = lst_Tactics.Select(tactic => tactic.PlanTacticId).ToList();
+                    List<int> editableTacticIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    if (editableTacticIds.Count() > 0)
                     {
-                        lst_CampaignIds = lst_AllCampaigns.Where(_campagn => _campagn.CreatedBy.Equals(Sessions.User.UserId)).Select(_campagn => _campagn.PlanCampaignId).ToList();
-                        lst_ProgramIds = lst_AllPrograms.Where(_prgram => _prgram.CreatedBy.Equals(Sessions.User.UserId)).Select(_prgram => _prgram.PlanProgramId).ToList();
+                        editableTacticIds.ForEach(tactic => lst_TacticIds.Add(tactic));
                     }
-                    else
-                        lst_CampaignIds = lst_ProgramIds = new List<int>();
+                }
 
-                    //// Check BusinessUnit, Vertical & Geography permissions for Tactic.
-                    var lstAllowedVertical = lstUserCustomRestriction.Where(_custRestrctn => _custRestrctn.Permission == ViewEditPermission && _custRestrctn.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(_custRestrctn => _custRestrctn.CustomFieldId).ToList();
-                    var lstAllowedGeography = lstUserCustomRestriction.Where(_custRestrctn => _custRestrctn.Permission == ViewEditPermission && _custRestrctn.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(_custRestrctn => _custRestrctn.CustomFieldId.ToString().ToLower()).ToList();
-                    foreach (Plan_Campaign_Program_Tactic Tactic in lst_Tactics)
-                    {
-                        IsBusinessUnitEditable = false;
-                        IsBusinessUnitEditable = true;                                                
-                    }
-
-                    //// Check BusinessUnit Editable or not for ImprovementTactic.
-                    foreach (Plan_Improvement_Campaign_Program_Tactic ImprvmntTactic in lst_ImprvTactics)
-                    {
-                        IsBusinessUnitEditable = false;
-                        IsBusinessUnitEditable = lstViewEditBusinessUnits.Contains(ImprvmntTactic.BusinessUnitId);
-                        if (IsBusinessUnitEditable)
-                            lst_ImprovementTacticIds.Add(ImprvmntTactic.ImprovementPlanTacticId);
-                    }
+                if (lst_ImprvTactics.Count() > 0)
+                {
+                    lst_ImprvTactics.ForEach(improvementTactic => lst_ImprovementTacticIds.Add(improvementTactic.ImprovementPlanTacticId));
                 }
 
                 //// Convert list of Ids to Comma separated string.

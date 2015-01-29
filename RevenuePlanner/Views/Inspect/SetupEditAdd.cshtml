@@ -188,28 +188,6 @@
     </ul>
 
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
-        @*<div class="span3 margin-top10" style="clear: both;">
-            <p class="ellipsis-left" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p> <span class="required-asterisk">*</span>
-            <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", label = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience), require = "true" })
-            </span>
-        </div>
-        <div class="span3 margin-top10 paddingleft25px">
-            <p>Business Unit</p>
-            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
-        </div>
-        <div class="span3 margin-top10 paddingleft25px">
-            <p>Vertical <span class="required-asterisk">*</span></p>
-            <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", label = "Vertical" })
-            </span>
-        </div>
-        <div class="span3 margin-top10 paddingleft25px">
-            <p>Geography <span class="required-asterisk">*</span></p>
-            <span class="verticalIdSelectBox" style="margin-left: -2px;">
-                @Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", label = "Geography" })
-            </span>
-        </div>*@
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
     </div>   
 
@@ -908,14 +886,11 @@
     function fillOwnerList()
     {
         var uId = $(window).attr('name');
-        var businessUnitId = $('#hdnBusinessUnitId').val();
-        var geographyId = $('#GeographyId').val();
-        var verticalId = $('#VerticalId').val();
         $.ajax({
             type: 'GET',
             cache: false,
             url: '@Url.Content("~/Inspect/fillOwner/")',
-            data: { BusinessUnitId: businessUnitId, GeographyId: geographyId, VerticalId: verticalId, UserId: uId },
+            data: { UserId: uId },
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';

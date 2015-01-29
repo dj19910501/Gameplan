@@ -77,7 +77,7 @@
     </div>
     <div class="padding-top10">
         @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-blue-background" })
-        @if (IsProgramEditable && (bool)ViewBag.IsBusinessUnitEditable)
+        @if (IsProgramEditable)
         {
         <img id="btnComment" src="~/Content/images/chat-button.png" alt="" style="float:right" />
         }

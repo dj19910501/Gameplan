@@ -1,7 +1,6 @@
 ﻿@using RevenuePlanner.Helpers
 @{
     var tacticActual = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
-    bool IsTacticEditable = (bool)ViewBag.IsTacticEditable;
     var lineItemList = ViewBag.LineItemList as List<RevenuePlanner.Models.Plan_Campaign_Program_Tactic_LineItem>;
     string planLineItemIds = string.Empty;
     string MQlTitle = string.Empty;
@@ -32,7 +31,7 @@
 </style>
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
-<div id="divActualInner" class="content-panel-tab">
+<div id="divActualInner" class="content-panel-tab" style="display:none;">
     <div class="cf">
         <div>
             <span>Note that imported values override user-generated values.</span>
@@ -269,20 +268,16 @@
                 <label id="last-updated" class="pull-left last-updated" style="Width:45%;">@ViewBag.UpdatedBy</label>
                 <label id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
-                @if (IsTacticEditable)
-                {
-                    //Modiefied by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
-                    <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveTacticActualSection">
-                        <div class="span2 btn-save">
-                            <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left;" type="button">Update Actuals</button>
-                        </div>
-                        <div class="span2">
+            <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveTacticActualSection" style="display:none;">
+                <div class="span2 btn-save">
+                    <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left;" type="button">Update Actuals</button>
+                </div>
+                <div class="span2">
                     <button id="cancelTacticActuals" class="close-form btn-link source-sans-proregular margin-top23 actual_cancel" type="button">Cancel</button>
-                        </div>
-                    </div>
-                }
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 <!--end content-panel-tab-->
 
 <script type="text/javascript">
@@ -294,10 +289,15 @@
             return html;
         }
 
+        if ($('#hdnIsPlanEditable').val().toString().toLowerCase() == 'true') {
+            $('#SaveTacticActualSection').css('display', 'block');
+        }
+
         var hdnTacticStatus = $("#hdnTacticStatus").val();
         var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
         var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
         var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+        $("#divActualInner").css('display', 'block');
         if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
             $("#divActualInner").empty();
             $("#divActualInner").append(ActualTab());

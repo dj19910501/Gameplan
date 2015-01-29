@@ -42,6 +42,7 @@
 @Html.Hidden("hdnCampaignOpt", "View", new { id = "hdnCampaignOpt" })
 @Html.Hidden("hdnCampaignTitle", HttpUtility.HtmlDecode(campaignTitle), new { id = "hdnCampaignTitle" })
 @Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
+@Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
 
 <style type="text/css">
     #successMessageViewCampaign, #errorMessageEditCampaign
@@ -70,7 +71,7 @@
             {
                 <span>
                     <span id="lblCampaignTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(campaignTitle)" >@HttpUtility.HtmlDecode(campaignTitle)</span>
-                    @if (campaignMaster.OwnerId == Sessions.User.UserId)
+                    @if (campaignMaster.OwnerId == Sessions.User.UserId && IsPlanEditable)
                     {
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteCampaign">
                             <button class="delete-btn-gray" id="deleteCampaign" type="button">Delete</button>
