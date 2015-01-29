@@ -11390,6 +11390,8 @@ float:left;
 .table_drpdwn {border-collapse: collapse;	width:100%;}
 .first_show > input {background: none repeat scroll 0 0 #dff0f8;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
 .first_hide > input {background: none repeat scroll 0 0 #dff0f8;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
+.first_show > input[disabled] {background: none repeat scroll 0 0 #eee;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
+.first_hide > input[disabled] {background: none repeat scroll 0 0 #eee;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
 .first_show, .first_hide {padding: 5px;   font-size: 14px; }
  .advance {text-align: end;}
 .first_hide > input {width: 74px; height: 27px; }
@@ -11480,4 +11482,77 @@ float:left;
 }
 .integrration_label_align { margin-bottom:1px;
 }
+.new_tag {
+   float:right;
+   text-decoration:underline;
+}
+
+.gantt_container *, *:after, *:before {
+    box-sizing: border-box !important;
+}
+*, *:after, *:before {
+    box-sizing: content-box !important;
+}
+.gantt_container *, *:after, *:before {
+    box-sizing: border-box !important;
+}
+*, *:after, *:before {
+    box-sizing: content-box !important;
+}
+.drop-down_header.geography_popup {
+    background: none repeat scroll 0 0 #fff;
+    margin-bottom: 20px;
+    margin-top: -43px;
+}
+.top_spacing_geography {
+    padding-top: 10px;
+}
+.resubmission_list > ul {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+
 /*End-Added by Mitesh Vaishnav for PL ticket #1073*/
+
+/*start- added by mitesh for PL ticket #1070*/
+#InspectTab li {
+    background: none repeat scroll 0 0 #f2f2f2;
+    width: 25%;
+}
+#InspectTab li a {
+    font-size: 14px;
+    text-align: center;
+    text-decoration: underline;
+                text-transform:uppercase;
+                font-family: "source_sans_probold",Arial,"sans-serif";
+}
+
+#liReview.active > a {
+    color: #fff !important;
+}
+#liSetup.active > a {
+    color: #fff !important;
+}
+
+#liActuals.active > a {
+    color: #fff !important;
+}
+
+#liBudget.active > a {
+    color: #fff !important;
+}
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #3fa9f5;
+    border-color: #ddd #ddd transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 1px;
+    color: #fff;
+    cursor: default;
+}
+/*End- added by mitesh for PL ticket #1070*/

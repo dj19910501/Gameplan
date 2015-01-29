@@ -2036,6 +2036,47 @@ namespace RevenuePlanner.Controllers
             ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(_inspetmodel.BusinessUnitId);
             ViewBag.IsTackticAddEdit = false;
 
+            /* Added by Mitesh Vaishnav for PL ticket #1143
+             Add number of stages for advance/Basic attributes waightage related to tacticType*/
+            string mqlCode = Enums.Stage.MQL.ToString();
+            var mqlForClient = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == mqlCode).FirstOrDefault();
+            var objTacticType = db.TacticTypes.Where(tType => tType.TacticTypeId == _inspetmodel.TacticTypeId).FirstOrDefault();
+            var projectedStageLevel = objTacticType.Stage.Level;
+
+            int mqlLevel = mqlForClient != null ? (int)mqlForClient.Level : 0;
+            string advanceStageTitles = objTacticType.Stage.Title, advanceStagecodes = Enums.InspectStage.ProjectedStageValue.ToString();
+            if (mqlLevel > projectedStageLevel)
+            {
+                advanceStageTitles += "," + mqlForClient.Title;
+                advanceStagecodes += "," + mqlForClient.Code;
+            }
+            ViewBag.AdvanceStageTitles = advanceStageTitles;
+            ViewBag.AdvanceStageCodes = advanceStagecodes;
+            string entityType = Enums.Section.Tactic.ToString();
+            /*Get existing value of Advance/Basic waightage of tactic's attributes*/
+            var customFeilds = db.CustomField_Entity_StageWeight.Where(cfs => cfs.CustomField_Entity.EntityId == id && cfs.CustomField_Entity.CustomField.EntityType == entityType).Select(cfs => new
+            {
+                optionId = cfs.CustomField_Entity.Value,
+                stageType = cfs.StageTitle,
+                Weight = cfs.Weightage
+            }).ToList();
+            var customFeildsWeightage = db.CustomField_Entity.Where(cfs => cfs.EntityId == id && cfs.CustomField.EntityType == entityType && cfs.Weightage != null).Select(cfs => new
+            {
+                optionId = cfs.Value,
+                stageType = "weight",
+                Weight = cfs.Weightage
+            }).ToList();
+            if (customFeilds.Count > 0)
+            {
+                var concatCustomFields = customFeilds.Concat<object>(customFeildsWeightage).ToList();
+                ViewBag.customFieldWeightage = JsonConvert.SerializeObject(concatCustomFields);
+            }
+            else
+            {
+                ViewBag.customFieldWeightage = JsonConvert.SerializeObject(customFeildsWeightage);
+            }
+            /*End : Added by Mitesh Vaishnav for PL ticket #1143*/
+
             //// if Mode is "View" or "undefined" then load ReadOnly mode of Setup tab for Tactic Inspect
             if (Mode.ToLower() == "view" || Mode.ToLower() == "undefined")
             {

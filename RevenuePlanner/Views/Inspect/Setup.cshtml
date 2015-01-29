@@ -5,6 +5,17 @@
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
     deployStatus = tactic.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus;////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
+    string advanceStageTitles = "";
+    if (ViewBag.AdvanceStageTitles != null)
+    {
+        advanceStageTitles = (string)ViewBag.AdvanceStageTitles;
+    }
+    string advanceStageCodes = "";
+    if (ViewBag.AdvanceStageCodes != null)
+    {
+        advanceStageCodes = (string)ViewBag.AdvanceStageCodes;
+    }
+    string customFieldWeightage = ViewBag.customFieldWeightage;
 }
 <style type="text/css">
     .inspect-column-parent input, .inspect-column-parent textarea {
@@ -92,6 +103,25 @@
 <script type="text/javascript">
     $(document).ready(
       function () {
+          $('.new_tag').each(function () {
+              $(this).on('click', function (e) {
+                  var dropdownMenu= $(this).parent().find('.dropdown-wrapper');
+                  $('.dropdown-wrapper').not(dropdownMenu).fadeOut();
+                  dropdownMenu.slideToggle("fast");
+                  e.stopPropagation();
+              });
+              
+          });
+          $(document).click(function () {
+              // all dropdowns
+              $('.dropdown-wrapper').css('display', 'none');
+          });
+          $('.dropdown-wrapper').on('click', function (e) {
+              e.stopPropagation();
+          });
+          $('.advance_a').click(function () {
+              $('.dropdown-wrapper').css('display', 'none');
+          });
 	  $(this).scrollTop(0);
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point to add title tooltip 2-7-2014
@@ -115,6 +145,64 @@
               var mqlValue = FormatCommas($("#txtmql").val(), false);
               $("#txtmql").val(mqlValue);
               $("#txtmql").attr('title', mqlValue);
+          }
+
+          if ('@advanceStageTitles' != '' && '@advanceStageCodes' != '') {
+              addColumnMultiselectWeight('@advanceStageTitles', '@advanceStageCodes');
+               var customFieldsValues = JSON.parse('@Html.Raw(customFieldWeightage)');
+               var i = customFieldsValues.length;
+               for (var i = 0; i < customFieldsValues.length; i++) {
+                   $('#' + customFieldsValues[i].optionId + '_' + customFieldsValues[i].stageType).val(customFieldsValues[i].Weight);
+               }
+               $(".table_drpdwn").each(function () {
+                   $(this).find('label').each(function () {    
+                       var optionId = $(this).attr('optionId').toString();
+                       var BasicWeightAvailabel = $('#' + optionId + '_weight').val();
+                       if (BasicWeightAvailabel == '' || typeof BasicWeightAvailabel == 'undefined') {
+                           var menu = $(this).parents('.dropdown-wrapper');
+                           menu.toggleClass('dropdown-block');
+                           menu.find(".weight,.weight_header,.first_hide,.sus_header,.mql_header,.cw_header,.revenue_header,.cost_header").toggle();
+                           return false;
+                       }
+                   });
+               });
+          }
+          function addColumnMultiselectWeight(stageTitles, stageCodes) {
+
+              var arrStageTitles = stageTitles.split(',');
+              var arrStageCode = stageCodes.split(',');
+              if (arrStageTitles.length > 0) {
+                  $(".table_drpdwn").each(function () {
+                      var j = 2;
+                      while (j > 0) {
+                          if ($(this).find('thead tr').find('td').eq(j).text() != 'CW(%)') {
+                              $(this).find('thead tr').find('td').eq(j).remove();
+                              $(this).find('tbody tr').each(function () {
+                                  $(this).find('td').eq(j).remove();
+                              });
+                              //j++;
+                          }
+                          else {
+                              j = 0;
+                          }
+                      }
+                  });
+              }
+              for (var i = 0; i < arrStageTitles.length; i++) {
+                  $(".table_drpdwn").each(function () {
+                      
+
+                      //if ($(this).find('.advance_a').text() != 'Advanced Attribution >') {
+                      //    rowStyle = "display: table-cell;";
+                      //}
+                      $(this).find('thead tr').find('td').eq(i + 1).after('<td class="sus_header" scope="col" code="' + arrStageCode[i] + '">' + arrStageTitles[i] + '(%)</td>');
+                      $(this).find('tbody tr').each(function () {
+                          var optionId = $(this).find('td').eq(0).find('label').attr('optionId').toString();
+                          $(this).find('td').eq(i + 1).after('<td class="first_hide"><input type="text" maxlength="3" disabled="disabled" name="textfield4" id="' + optionId + '_' + arrStageCode[i] + '"></td>')
+                      });
+                  });
+              }
+              NumberFormatterTipsyTitle(".sus_header", 7);
           }
       });
 </script>
