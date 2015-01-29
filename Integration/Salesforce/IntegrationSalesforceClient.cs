@@ -46,10 +46,6 @@ namespace Integration.Salesforce
         private Dictionary<string, string> _mappingImprovementCampaign { get; set; }
         private Dictionary<string, string> _mappingImprovementProgram { get; set; }
         private Dictionary<string, string> _mappingImprovementTactic { get; set; }
-        //private Dictionary<int, string> _mappingVertical { get; set; }
-        //private Dictionary<int, string> _mappingAudience { get; set; }
-        //private Dictionary<Guid, string> _mappingGeography { get; set; }
-        //private Dictionary<Guid, string> _mappingBusinessunit { get; set; }
         private Dictionary<Guid, string> _mappingUser { get; set; }
         private Dictionary<string, string> _mappingCustomFields { get; set; }      // Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
         private int _integrationInstanceId { get; set; }
@@ -1079,15 +1075,6 @@ namespace Integration.Salesforce
             // End - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
 
             _clientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
-
-            //_mappingVertical = db.Verticals.Where(v => v.ClientId == _clientId).Select(v => new { v.VerticalId, v.Title })
-            //                    .ToDictionary(v => v.VerticalId, v => v.Title);
-            //_mappingAudience = db.Audiences.Where(a => a.ClientId == _clientId).Select(a => new { a.AudienceId, a.Title })
-            //                    .ToDictionary(a => a.AudienceId, a => a.Title);
-            //_mappingBusinessunit = db.BusinessUnits.Where(b => b.ClientId == _clientId).Select(b => new { b.BusinessUnitId, b.Title })
-            //                    .ToDictionary(b => b.BusinessUnitId, b => b.Title);
-            //_mappingGeography = db.Geographies.Where(g => g.ClientId == _clientId).Select(g => new { g.GeographyId, g.Title })
-            //                    .ToDictionary(g => g.GeographyId, g => g.Title);
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
@@ -2347,22 +2334,6 @@ namespace Integration.Salesforce
                     {
                         value = GetSalesForceStatus(value);
                     }
-                    //else if (mapping.Key == verticalId)
-                    //{
-                    //    value = _mappingVertical[Convert.ToInt32(value)];
-                    //}
-                    //else if (mapping.Key == audienceId)
-                    //{
-                    //    value = _mappingAudience[Convert.ToInt32(value)];
-                    //}
-                    //else if (mapping.Key == geographyid)
-                    //{
-                    //    value = _mappingGeography[Guid.Parse(value)];
-                    //}
-                    //else if (mapping.Key == businessUnitId)
-                    //{
-                    //    value = _mappingBusinessunit[Guid.Parse(value)];
-                    //}
                     else if (mapping.Key == createdBy)
                     {
                         value = _mappingUser[Guid.Parse(value)];
@@ -2495,7 +2466,7 @@ namespace Integration.Salesforce
         private Dictionary<string, string> CreateMappingCustomFieldDictionary(List<int> EntityIdList, string EntityType)
         {
             var CustomFieldList = db.CustomField_Entity.Where(ce => EntityIdList.Contains(ce.EntityId) && ce.CustomField.EntityType == EntityType)
-                                                        .Select(ce => new { ce.CustomField, ce.CustomFieldEntityId, ce.CustomFieldId, ce.EntityId, ce.Value }).ToList();
+                                                        .Select(ce => new { ce.CustomField, ce.CustomFieldEntityId, ce.CustomFieldId, ce.EntityId, ce.Value, ce.CustomField.AbbreviationForMulti }).ToList();
             List<int> CustomFieldIdList = CustomFieldList.Select(cf => cf.CustomFieldId).Distinct().ToList();
             var CustomFieldOptionList = db.CustomFieldOptions.Where(cfo => CustomFieldIdList.Contains(cfo.CustomFieldId)).Select(cfo => new { cfo.CustomFieldOptionId, cfo.Value });
 
@@ -2504,14 +2475,22 @@ namespace Integration.Salesforce
 
             foreach (var item in CustomFieldList)
             {
+                string customKey = EntityTypeInitial + "-" + item.EntityId + "-" + item.CustomFieldId;
                 if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
                 {
-                    CustomFieldsList.Add(EntityTypeInitial + "-" + item.EntityId + "-" + item.CustomFieldId, item.Value);
+                    CustomFieldsList.Add(customKey, item.Value);
                 }
                 else if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.DropDownList.ToString())
                 {
-                    int CustomFieldOptionId = Convert.ToInt32(item.Value);
-                    CustomFieldsList.Add(EntityTypeInitial + "-" + item.EntityId + "-" + item.CustomFieldId, CustomFieldOptionList.Where(cfo => cfo.CustomFieldOptionId == CustomFieldOptionId).Select(cfo => cfo.Value).FirstOrDefault());
+                    if (CustomFieldsList.ContainsKey(customKey))
+                    {
+                        CustomFieldsList[customKey] = item.AbbreviationForMulti;    //// Added by Sohel Pathan on 29/01/2015 for PL ticket #1142
+                    }
+                    else
+                    {
+                        int CustomFieldOptionId = Convert.ToInt32(item.Value);
+                        CustomFieldsList.Add(customKey, CustomFieldOptionList.Where(cfo => cfo.CustomFieldOptionId == CustomFieldOptionId).Select(cfo => cfo.Value).FirstOrDefault());
+                    }
                 }
             }
 

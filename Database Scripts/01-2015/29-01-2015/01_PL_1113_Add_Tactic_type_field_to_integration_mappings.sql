@@ -4,10 +4,6 @@
 -- Description : Insert Tactic Type data type entry into GameplanDataType Table
 -- ======================================================================================
 
-
---select * from IntegrationType WHERE IsDeleted = 0
---select * from GameplanDataType
-
 IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'GameplanDataType') AND
 	EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'IntegrationType')
 BEGIN
