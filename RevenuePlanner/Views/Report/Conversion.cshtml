@@ -561,21 +561,35 @@
                              ChartCustomField1: data.ChartCustomField1,
                              ChartCustomField2: data.ChartCustomField2,
                              ChartCustomField3: data.ChartCustomField3
+                             
                          }
+                     if (data.CustomField1 != null) {
                          $('#customField1').text(JSON.stringify(data.CustomField1).replace(/"/g, "") + " (Top 5)");
-                         $('#customField2').text(JSON.stringify(data.CustomField2).replace(/"/g, "") + " (Top 5)");
-                         $('#customField3').text(JSON.stringify(data.CustomField3).replace(/"/g, "") + " (Top 5)");
+                     }
+            if (data.CustomField2 != null) {
+                $('#customField2').text(JSON.stringify(data.CustomField2).replace(/"/g, "") + " (Top 5)");
+            }
+            if (data.CustomField3 != null) {
+                $('#customField3').text(JSON.stringify(data.CustomField3).replace(/"/g, "") + " (Top 5)");
+            }
 
-                         $('#chartDataMQLPerformance').val(JSON.stringify(chartDataMQLPerformance));
+            //// Hidden field to store chart data that is consumed while generating PDF report.
+            $('#chartDataMQLPerformance').val(JSON.stringify(chartDataMQLPerformance));
 
-                         dataset1 = data.ChartCustomField1;
-                         dataset2 = data.ChartCustomField2;
-                         dataset3 = data.ChartCustomField3;
-                      
-                         //fill data on reports table
-                         FillChartSourcePerformanceCustomField1();
-                         FillChartSourcePerformanceCustomField2();
-                         FillChartSourcePerformanceCustomField3();
+            dataset1 = data.ChartCustomField1;
+            dataset2 = data.ChartCustomField2;
+            dataset3 = data.ChartCustomField3;
+                          
+            //fill data on reports table
+            if (dataset1 != null) {
+                FillChartSourcePerformanceCustomField1();
+            }
+            if (dataset2 != null) {
+                FillChartSourcePerformanceCustomField2();
+            }
+            if (dataset3 != null) {
+                FillChartSourcePerformanceCustomField3();
+            }
                      }
                  });
              }

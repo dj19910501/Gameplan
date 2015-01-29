@@ -175,7 +175,6 @@
     var isAllowClick = true;
     var multiselectPlanId = "ddlPlan";
     var filterPlanid = "#plandetail";
-    var IsPrimaryFilter = true;
     var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
 
     $(document).ready(function () {
@@ -298,7 +297,7 @@
         $('#revenueHeader').css('display', 'none');
 
         var url = '@Url.Content("~/Report/GetSummaryData/")';
-        $('#divMainReportPart').load(url + '?IsPrimaryFilter=' + IsPrimaryFilter, function () {
+        $('#divMainReportPart').load(url , function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
         });
@@ -349,7 +348,7 @@
         $('#divMainReportPart').empty();
 
     var url = '@Url.Content("~/Report/GetRevenueData/")';
-        $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain +'&IsPrimaryFilter=' +IsPrimaryFilter, function () {
+        $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain , function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
         });
@@ -363,7 +362,7 @@
         //$("#divAddActual").css("display", "block");
         $('#divMainReportPart').empty();
         var url = '@Url.Content("~/Report/GetConversionData/")';
-        $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain + '&IsPrimaryFilter=' + IsPrimaryFilter, function () {
+        $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain , function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
         });
@@ -480,7 +479,7 @@
 
         //// handle update button event
         $('#updatedata').click(function () {
-            var queryStringArr = new Array();
+            var arrOptionIds = new Array();
             //// close multiselect
             $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
                 $(this).multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu 
@@ -506,9 +505,8 @@
             @: var filterIds = GetFilterId('@multiselectid');
             @: var arr = filterIds.split(',');
             @: for (var i = 0; i < arr.length;i++) {
-                    @: queryStringArr.push({CustomFieldId:'@item.CustomFieldId', OptionId:arr[i]});
-                @:}
-                        
+            @: arrOptionIds.push({ CustomFieldId: '@item.CustomFieldId', OptionId: arr[i] });
+            @:}
         }
             
             //// get selected value from multiselect 
@@ -522,24 +520,20 @@
                 traditional:true,
                 data: {
                     planIds: PlanIds,
-                    customIds: JSON.stringify(queryStringArr),
+                    customIds: JSON.stringify(arrOptionIds),
                 },
                 success: function (data) {
                     if (data.status) {
                         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
-                            IsPrimaryFilter = false;
                         LoadSummary();
                     }
                         else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
-                            IsPrimaryFilter = false;
                         LoadRevenueData();
                     }
                         else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
-                            IsPrimaryFilter = false;
                         LoadConversionData();
                     }
                         else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
-                            IsPrimaryFilter = false;
                         LoadBudgetView();
                     }
         }

@@ -28,7 +28,6 @@ namespace RevenuePlanner.Controllers
         private string PublishedPlan = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
         private string currentYear = DateTime.Now.Year.ToString();
         private int currentMonth = DateTime.Now.Month;
-        private bool IsPrimaryFilterFlag = false;
 
         #endregion
 
@@ -48,8 +47,6 @@ namespace RevenuePlanner.Controllers
 
             ////Start Added by Mitesh Vaishnav for PL ticket #846
             Sessions.ReportPlanIds = new List<int>();
-            // Added by Arpita Soni for Ticket #1148 on 01/23/2015
-            Sessions.ReportCustomFieldIds = null;
 
             //// Set Report PlanId in Session.
             if (Sessions.PlanId > 0)
@@ -76,14 +73,30 @@ namespace RevenuePlanner.Controllers
             string tactic = Enums.EntityType.Tactic.ToString();
             lstCustomFields = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId &&
                 customfield.EntityType == tactic &&
-                customfield.CustomFieldTypeId ==2 &&
                 customfield.IsRequired==true &&
+                customfield.CustomFieldTypeId == 2 &&
                 customfield.IsDisplayForFilter == true &&
                 customfield.IsDeleted == false).ToList();
+
+            lstCustomFields = lstCustomFields.Where(sort => !string.IsNullOrEmpty(sort.Name)).OrderBy(sort => sort.Name, new AlphaNumericComparer()).ToList();
+            List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+
 
             //// Filter Custom Fields having no options
             var lstCustomFieldIds = db.CustomFieldOptions.Select(customfieldid => customfieldid.CustomFieldId).Distinct();
             lstCustomFields = lstCustomFields.Where(c => lstCustomFieldIds.Contains(c.CustomFieldId)).ToList();
+
+            foreach (var custfield in lstCustomFields)
+            {
+                List<CustomFieldOption> optionIds = custfield.CustomFieldOptions.ToList();
+                optionIds.ForEach(o => lstCustomFieldFilter.Add(new CustomFieldFilter
+                {
+                    CustomFieldId = custfield.CustomFieldId,
+                    OptionId = o.CustomFieldOptionId.ToString()
+                }));
+            }
+
+            Sessions.ReportCustomFieldIds = lstCustomFieldFilter.ToArray();
 
             ViewBag.ViewCustomFields = lstCustomFields;
             //// End - Added by Arpita Soni for Ticket #1148 on 01/23/2015			
@@ -124,11 +137,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return Partial View _Summary</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        public ActionResult GetSummaryData(bool IsPrimaryFilter = true)
+        public ActionResult GetSummaryData()
         {
             SummaryReportModel objSummaryReportModel = new SummaryReportModel();
 
-            IsPrimaryFilterFlag = IsPrimaryFilter;
             //// get tactic list
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
             //// Calculate Value for ecah tactic
@@ -505,34 +517,45 @@ namespace RevenuePlanner.Controllers
 
             //// Get Tactic list.
             List<string> tacticStatus = Common.GetStatusListAfterApproved();
+            List<int> lstEntityIds = new List<int>();
 
-            List<int> entityIds = new List<int>();
             if (Sessions.ReportCustomFieldIds != null && Sessions.ReportCustomFieldIds.Count() > 0)
             {
-                foreach (var item in Sessions.ReportCustomFieldIds)
-                {
-                    var query = db.CustomField_Entity.Where(x => x.CustomFieldId == item.CustomFieldId &&
-                                                            x.Value == item.OptionId).Select(x => x.EntityId).ToList();
-                    entityIds.AddRange(query);
-                }
-            }
-            if (IsPrimaryFilterFlag == true)
-            {
+                List<int> lstCustomFieldIds = new List<int>();
+                List<CustomFieldFilter> lstCustomFieldFilter = Sessions.ReportCustomFieldIds.ToList();
+                List<string> optionIds = new List<string>();
+
+                lstCustomFieldIds = lstCustomFieldFilter.Select(cust => cust.CustomFieldId).Distinct().ToList();
+
                 tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false &&
                                                                   tacticStatus.Contains(tactic.Status) &&
-                                                                  planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                  tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId
+                                                                  planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
                                                                   ).ToList();
+
+                foreach (var item in lstCustomFieldIds)
+                {
+                    optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).First() != "" ?
+                        lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).ToList() :
+                        db.CustomField_Entity.Where(x => x.CustomFieldId == item).Select(x => x.Value).Distinct().ToList();
+                    if (lstEntityIds.Count > 0)
+                    {
+                        var lstEntityData = db.CustomField_Entity.Where(x => x.CustomFieldId == item &&
+                                      optionIds.Contains(x.Value) && lstEntityIds.Contains(x.EntityId));
+                        lstEntityIds = lstEntityData.Select(x => x.EntityId).Distinct().ToList();
+                    }
+                    else
+                    {
+                        var lstEntityData = db.CustomField_Entity.Where(x => x.CustomFieldId == item &&
+                                      optionIds.Contains(x.Value));
+                        lstEntityIds = lstEntityData.Select(x => x.EntityId).Distinct().ToList();
+                    }
+
+                }
+
             }
-            else
-            {
-                entityIds = entityIds.Distinct().ToList();
-                tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false &&
-                                                                  tacticStatus.Contains(tactic.Status) &&
-                                                                  planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                  tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId &&
-                                                                  entityIds.Contains(tactic.PlanTacticId)).ToList();
-            }
+
+            tacticList = tacticList.Where(tactic => lstEntityIds.Contains(tactic.PlanTacticId)).ToList();
+
             return tacticList;
         }
 
@@ -1146,11 +1169,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="timeFrameOption"></param>
         /// <returns>return conversion partial view</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        public ActionResult GetConversionData(string timeFrameOption = "thisquarter", bool IsPrimaryFilter = true)
+        public ActionResult GetConversionData(string timeFrameOption = "thisquarter")
         {
             //// Get list of month display in view
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
-            IsPrimaryFilterFlag = IsPrimaryFilter;
             //// get tactic list
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
 
@@ -1315,17 +1337,18 @@ namespace RevenuePlanner.Controllers
             Tacticdata.ForEach(t => t.ActualTacticList.Where(actual => months.Contains(actual.Period) && actual.StageTitle == mql).ToList().ForEach(a => planTacticActual.Add(a)));
 
             //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
-            string tactic=Enums.EntityType.Tactic.ToString();
+            string tactic = Enums.EntityType.Tactic.ToString();
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == tactic && c.CustomFieldTypeId==2
+                && c.IsDeleted == false && c.IsRequired==true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == 2
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
                     CustomFieldName = c.Name
-                }).Take(3);
+                }).Take(3).ToList();
 
+            customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
 
@@ -1343,8 +1366,8 @@ namespace RevenuePlanner.Controllers
 
                 var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
                     {
-                        EntityId=e.EntityId,
-                        Value=e.Value
+                        EntityId = e.EntityId,
+                        Value = e.Value
                     }).ToList();
 
                 var lstTacticActuals = from entity in lstCustomFieldEntity
@@ -1363,7 +1386,7 @@ namespace RevenuePlanner.Controllers
                 {
                     Title = s.Value,
                     ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = tacticTrendCustomField.Any(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId) ? tacticTrendCustomField.Where(cf => Convert.ToInt32(cf.CustomFieldOptionId)==s.CustomFieldOptionId).FirstOrDefault().Trend : 0
+                    Value = tacticTrendCustomField.Any(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId) ? tacticTrendCustomField.Where(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId).FirstOrDefault().Trend : 0
                 }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(item.CustomFieldName);
@@ -1378,12 +1401,12 @@ namespace RevenuePlanner.Controllers
             // Modified by Arpita Soni for Ticket #1148 on 01/27/2015 
             return Json(new
             {
-                ChartCustomField1 = lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData,
-                ChartCustomField2 = lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData,
-                ChartCustomField3 = lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData,
-                CustomField1 = lstCustomFieldNames.ElementAt(0),
-                CustomField2 = lstCustomFieldNames.ElementAt(1),
-                CustomField3 = lstCustomFieldNames.ElementAt(2)
+                ChartCustomField1 = lstListSourcePerformance.Count > 0 ? lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData : null,
+                ChartCustomField2 = lstListSourcePerformance.Count > 1 ? lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData : null,
+                ChartCustomField3 = lstListSourcePerformance.Count > 2 ? lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData : null,
+                CustomField1 = lstCustomFieldNames.Count > 0 ? lstCustomFieldNames.ElementAt(0) : null,
+                CustomField2 = lstCustomFieldNames.Count > 1 ? lstCustomFieldNames.ElementAt(1) : null,
+                CustomField3 = lstCustomFieldNames.Count > 2 ? lstCustomFieldNames.ElementAt(2) : null
 
             }, JsonRequestBehavior.AllowGet);
 
@@ -1411,12 +1434,14 @@ namespace RevenuePlanner.Controllers
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == entityType && c.CustomFieldTypeId == 2
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == 2
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
                     CustomFieldName = c.Name
-                }).Take(3);
+                }).Take(3).ToList();
+
+            customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
 
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
@@ -1442,17 +1467,17 @@ namespace RevenuePlanner.Controllers
                 var lstTacticActuals = from entity in lstCustomFieldEntity
                                        join tacticactual in planTacticActuals
                                        on entity.EntityId equals tacticactual.PlanTacticId
-                                       where tacticactual.StageTitle==mql 
+                                       where tacticactual.StageTitle == mql
                                        select new { entity.Value, entity.EntityId, tacticactual.Actualvalue, timeFrameOptions = tacticactual.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + tacticactual.Period };
-                
+
                 lstSourcePerformance = db.CustomFieldOptions.Where(cf => cf.CustomFieldId == item.CustomFieldId).ToList()
                                                 .Select(cf => new SourcePerformanceData
                                                 {
                                                     Title = cf.Value,
                                                     ColorCode = string.Format("#{0}", cf.ColorCode),
-                                                    Value = lstTacticActuals.Any(ta => ta.Value == Convert.ToString(cf.CustomFieldOptionId)) ? lstTacticActuals.Where(t => t.Value== Convert.ToString(cf.CustomFieldOptionId) &&
+                                                    Value = lstTacticActuals.Any(ta => ta.Value == Convert.ToString(cf.CustomFieldOptionId)) ? lstTacticActuals.Where(t => t.Value == Convert.ToString(cf.CustomFieldOptionId) &&
                                                         includeMonth.Contains(t.timeFrameOptions)).Sum(t => t.Actualvalue) : 0
-                                                }).OrderByDescending(cf => cf.Value).ThenBy(cf => cf.Title).Take(5).ToList(); 
+                                                }).OrderByDescending(cf => cf.Value).ThenBy(cf => cf.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(item.CustomFieldName);
 
@@ -1467,12 +1492,12 @@ namespace RevenuePlanner.Controllers
             // Modified by Arpita Soni for Ticket #1148 on 01/27/2015
             return Json(new
             {
-                ChartCustomField1 = lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData,
-                ChartCustomField2 = lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData,
-                ChartCustomField3 = lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData,
-                CustomField1 = lstCustomFieldNames.ElementAt(0),
-                CustomField2 = lstCustomFieldNames.ElementAt(1),
-                CustomField3 = lstCustomFieldNames.ElementAt(2)
+                ChartCustomField1 = lstListSourcePerformance.Count > 0 ? lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData : null,
+                ChartCustomField2 = lstListSourcePerformance.Count > 1 ? lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData : null,
+                ChartCustomField3 = lstListSourcePerformance.Count > 2 ? lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData : null,
+                CustomField1 = lstCustomFieldNames.Count > 0 ? lstCustomFieldNames.ElementAt(0) : null,
+                CustomField2 = lstCustomFieldNames.Count > 1 ? lstCustomFieldNames.ElementAt(1) : null,
+                CustomField3 = lstCustomFieldNames.Count > 2 ? lstCustomFieldNames.ElementAt(2) : null
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -1495,13 +1520,14 @@ namespace RevenuePlanner.Controllers
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == entityType && c.CustomFieldTypeId == 2
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == 2
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
                     CustomFieldName = c.Name
-                }).Take(3);
+                }).Take(3).ToList();
 
+            customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
 
@@ -1534,8 +1560,8 @@ namespace RevenuePlanner.Controllers
                                                 {
                                                     Title = b.Value,
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
-                                                    Value = lstTacticActuals.Any(t => t.Value== Convert.ToString(b.CustomFieldOptionId)) ?  
-                                                    GetProjectedMQLValueDataTableForReport(lstTacticActuals.Where(lta=>lta.Value==Convert.ToString(b.CustomFieldOptionId)).Select(ts=>ts.tacticactual) 
+                                                    Value = lstTacticActuals.Any(t => t.Value == Convert.ToString(b.CustomFieldOptionId)) ?
+                                                    GetProjectedMQLValueDataTableForReport(lstTacticActuals.Where(lta => lta.Value == Convert.ToString(b.CustomFieldOptionId)).Select(ts => ts.tacticactual)
                                                                                         .ToList())
                                                                                         .Where(mr => includeMonth.Contains(mr.Month))
                                                                                         .Sum(r => r.Value) : 0
@@ -1554,12 +1580,12 @@ namespace RevenuePlanner.Controllers
             // Modified by Arpita Soni for Ticket #1148 on 01/27/2015
             return Json(new
             {
-                ChartCustomField1 = lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData,
-                ChartCustomField2 = lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData,
-                ChartCustomField3 = lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData,
-                CustomField1 = lstCustomFieldNames.ElementAt(0),
-                CustomField2 = lstCustomFieldNames.ElementAt(1),
-                CustomField3 = lstCustomFieldNames.ElementAt(2)
+                ChartCustomField1 = lstListSourcePerformance.Count > 0 ? lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData : null,
+                ChartCustomField2 = lstListSourcePerformance.Count > 1 ? lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData : null,
+                ChartCustomField3 = lstListSourcePerformance.Count > 2 ? lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData : null,
+                CustomField1 = lstCustomFieldNames.Count > 0 ? lstCustomFieldNames.ElementAt(0) : null,
+                CustomField2 = lstCustomFieldNames.Count > 1 ? lstCustomFieldNames.ElementAt(1) : null,
+                CustomField3 = lstCustomFieldNames.Count > 2 ? lstCustomFieldNames.ElementAt(2) : null
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -1608,7 +1634,7 @@ namespace RevenuePlanner.Controllers
                 Tacticdata = Tacticdata.Where(t => t.TacticObj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
             }
             var DataTitleList = new List<RevenueContrinutionData>();
-            
+
             if (ParentConversionSummaryTab == Common.CampaignCustomTitle || ParentConversionSummaryTab == Common.ProgramCustomTitle || ParentConversionSummaryTab == Common.TacticCustomTitle)
             {
                 int customfieldId = 0;
@@ -1764,12 +1790,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="timeFrameOption"></param>
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        public ActionResult GetRevenueData(string timeFrameOption = "thisquarter", bool IsPrimaryFilter = true)
+        public ActionResult GetRevenueData(string timeFrameOption = "thisquarter")
         {
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
             ViewBag.SelectOption = timeFrameOption;
-            IsPrimaryFilterFlag = IsPrimaryFilter;
-            
+
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
 
             // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report
@@ -1777,7 +1802,7 @@ namespace RevenuePlanner.Controllers
             List<int> campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
             List<int> programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
 
-            
+
             //// Get Campaign list for dropdown
             List<int> campaignIds = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(t => t.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
             var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
@@ -1816,14 +1841,14 @@ namespace RevenuePlanner.Controllers
             {
                 lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenuePlans, Value = Common.RevenuePlans });
             }
-            
+
             lstParentRevenueSummery = lstParentRevenueSummery.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
 
 
 
             // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report
             //Concat the Campaign and Program custom fields data with exsiting one. 
-            var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId ).ToList(), programlist, campaignlist);
+            var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
             lstParentRevenueSummery = lstParentRevenueSummery.Concat(lstCustomFields).ToList();
             ViewBag.parentRevenueSummery = lstParentRevenueSummery;
             // Get child tab list
@@ -1833,7 +1858,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ChildTabListRevenueSummary = "";
             //// Set Parent Revenue Plan data to list.
             List<ViewByModel> lstParentRevenueToPlan = new List<ViewByModel>();
-            
+
             lstParentRevenueToPlan = lstParentRevenueToPlan.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             lstParentRevenueToPlan = lstParentRevenueToPlan.Concat(lstCustomFields).ToList();
             ViewBag.parentRevenueToPlan = lstParentRevenueToPlan;
@@ -1844,7 +1869,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ChildTabListRevenueToPlan = "";
             //// Set Parent Revenue Contribution data to list.
             List<ViewByModel> lstParentRevenueContribution = new List<ViewByModel>();
-            
+
             lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
             
             lstParentRevenueContribution = lstParentRevenueContribution.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
@@ -2798,13 +2823,14 @@ namespace RevenuePlanner.Controllers
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.EntityType == tactic && c.CustomFieldTypeId==2
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == 2
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
                     CustomFieldName = c.Name
                 }).Take(3).ToList();
 
+            customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
             
@@ -2821,8 +2847,10 @@ namespace RevenuePlanner.Controllers
                 }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(item.CustomFieldName);
-                lstListSourcePerformance.Add(new ListSourcePerformanceData { lstSourcePerformanceData = lstSourcePerformance ,
-                    CustomFieldName=item.CustomFieldName
+                lstListSourcePerformance.Add(new ListSourcePerformanceData
+                {
+                    lstSourcePerformanceData = lstSourcePerformance,
+                    CustomFieldName = item.CustomFieldName
 
                 });
             }
@@ -2830,12 +2858,12 @@ namespace RevenuePlanner.Controllers
 			// Modified by Arpita Soni for Ticket #1148 on 01/27/2015
             return Json(new
             {
-                ChartCustomField1 = lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData,
-                ChartCustomField2 = lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData,
-                ChartCustomField3 = lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData,
-                CustomField1 = lstCustomFieldNames.ElementAt(0),
-                CustomField2 = lstCustomFieldNames.ElementAt(1),
-                CustomField3 = lstCustomFieldNames.ElementAt(2)
+                ChartCustomField1 = lstListSourcePerformance.Count > 0 ? lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData : null,
+                ChartCustomField2 = lstListSourcePerformance.Count > 1 ? lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData : null,
+                ChartCustomField3 = lstListSourcePerformance.Count > 2 ? lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData : null,
+                CustomField1 = lstCustomFieldNames.Count > 0 ? lstCustomFieldNames.ElementAt(0) : null,
+                CustomField2 = lstCustomFieldNames.Count > 1 ? lstCustomFieldNames.ElementAt(1) : null,
+                CustomField3 = lstCustomFieldNames.Count > 2 ? lstCustomFieldNames.ElementAt(2) : null
             }, JsonRequestBehavior.AllowGet);
         }
 
