@@ -3278,34 +3278,84 @@ namespace RevenuePlanner.Controllers
             //List<int> CustomFieldOptionIds = new List<int>();
             //string strCustomFieldOptionIds = Sessions.ReportCustomFieldIds != null ? Sessions.ReportCustomFieldIds.ToString() : string.Empty;
             CustomFieldFilter[] arrCustomFieldFilter = Sessions.ReportCustomFieldIds;
-            List<int> lstCustomFieldTacticIds = new List<int>();
+            List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
+            List<CustomFieldFilter> lstArrCustomFieldFilter = new List<CustomFieldFilter>();
+            tacticList = GetTacticListbyFilters(arrCustomFieldFilter, PlanIdList, ref lstArrCustomFieldFilter);
+           
+            #region "Old Filter Tactic Code"
+            //List<CustomField_Entity> tblCustomFieldEntities = (from ent in db.CustomField_Entity
+            //                                                   join tac in db.Plan_Campaign_Program_Tactic on ent.EntityId equals tac.PlanTacticId
+            //                                                   where ent.CustomField.EntityType.Equals(EntTacticType) && tac.IsDeleted.Equals(false) && PlanIdList.Contains(tac.Plan_Campaign_Program.Plan_Campaign.PlanId)
+            //                                                   select ent
+            //                                                   ).ToList();
+            //List<int> EntityIds = new List<int>();
+            //List<int> distCustomFieldids = new List<int>();
+            //List<entMapCustomField_EntityIds> lstCustomFieldMapping = new List<entMapCustomField_EntityIds>();
+            //entMapCustomField_EntityIds objMapEntityId = null;
+            //List<CustomFieldFilter> lstArrCustomFieldFilter = new List<CustomFieldFilter>();
+            //List<int> lstNoneArrCustomFieldFilter = new List<int>();
 
-            List<CustomField_Entity> tblCustomFieldEntities = (from ent in db.CustomField_Entity
-                                                               join tac in db.Plan_Campaign_Program_Tactic on ent.EntityId equals tac.PlanTacticId
-                                                               where ent.CustomField.EntityType.Equals(EntTacticType) && tac.IsDeleted.Equals(false) && PlanIdList.Contains(tac.Plan_Campaign_Program.Plan_Campaign.PlanId) 
-                                                               select ent
-                                                               ).ToList();
-            List<int> EntityIds = new List<int>();
-            if (arrCustomFieldFilter != null && arrCustomFieldFilter.Count() > 0)
-            {
-                foreach (CustomFieldFilter CustmFieldFilter in arrCustomFieldFilter)
-                {
-                    EntityIds = tblCustomFieldEntities.Where(_ent => _ent.CustomFieldId.Equals(CustmFieldFilter.CustomFieldId) && _ent.Value.Equals(CustmFieldFilter.OptionId.ToString())).Select(_ent => _ent.EntityId).ToList();
-                    if (EntityIds != null && EntityIds.Count > 0)
-                        lstCustomFieldTacticIds.AddRange(EntityIds.Distinct());
-                }
-            }
-            //int PlanId = 3533;
-            // Apply filter on tactic
-            var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic =>
-                            PlanIdList.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
-                            && lstCustomFieldTacticIds.Contains(tactic.PlanTacticId)
-                                //&& BusinessUnitIdList.Contains(tactic.BusinessUnitId)
-                                //&& GeographyIdList.Contains(tactic.GeographyId)
-                                //&& VerticalIdList.Contains(tactic.VerticalId)
-                                //&& AudienceIdList.Contains(tactic.AudienceId)
-                            && tactic.IsDeleted.Equals(false)
-                            ).ToList();
+            //if (arrCustomFieldFilter != null && arrCustomFieldFilter.Count() > 0)
+            //{
+            //    foreach (CustomFieldFilter objCustomField in arrCustomFieldFilter)
+            //    {
+            //        if (objCustomField.CustomFieldId > 0 && !string.IsNullOrEmpty(objCustomField.OptionId))
+            //            lstArrCustomFieldFilter.Add(objCustomField);
+            //    }
+            //    lstNoneArrCustomFieldFilter = arrCustomFieldFilter.Where(s => !lstArrCustomFieldFilter.Select(p => p.CustomFieldId).Contains(s.CustomFieldId)).Select(s => s.CustomFieldId).ToList();
+            //    List<CustomFieldOption> tblNoneCustomFieldOptions = new List<CustomFieldOption>();
+            //    tblNoneCustomFieldOptions = db.CustomFieldOptions.Where(co => lstNoneArrCustomFieldFilter.Contains(co.CustomFieldId)).ToList();
+            //    CustomFieldFilter objCustomFieldFilter = null;
+            //    List<int> lstNoneCustomFieldOptions = new List<int>();
+            //    foreach (int _custmfieldId in lstNoneArrCustomFieldFilter)
+            //    {
+            //        lstNoneCustomFieldOptions = tblNoneCustomFieldOptions.Where(co => co.CustomFieldId.Equals(_custmfieldId)).Select(co => co.CustomFieldOptionId).ToList();
+            //        foreach (int optionid in lstNoneCustomFieldOptions)
+            //        {
+            //            objCustomFieldFilter = new CustomFieldFilter();
+            //            objCustomFieldFilter.CustomFieldId = _custmfieldId;
+            //            objCustomFieldFilter.OptionId = optionid.ToString();
+            //            lstArrCustomFieldFilter.Add(objCustomFieldFilter);
+            //        }
+            //    }
+            //    distCustomFieldids = lstArrCustomFieldFilter.Select(_customfield => _customfield.CustomFieldId).Distinct().ToList();
+            //    foreach (int customfieldid in distCustomFieldids)
+            //    {
+            //        objMapEntityId = new entMapCustomField_EntityIds();
+            //        objMapEntityId.CustomFieldEntityIds = new List<int>();
+            //        foreach (CustomFieldFilter CustmFieldFilter in lstArrCustomFieldFilter.Where(_customfield => _customfield.CustomFieldId.Equals(customfieldid)))
+            //        {
+            //            EntityIds = tblCustomFieldEntities.Where(_ent => _ent.CustomFieldId.Equals(CustmFieldFilter.CustomFieldId) && _ent.Value.Equals(CustmFieldFilter.OptionId.ToString())).Select(_ent => _ent.EntityId).ToList();
+            //            if (EntityIds != null && EntityIds.Count > 0)
+            //                objMapEntityId.CustomFieldEntityIds.AddRange(EntityIds.Distinct().ToList());
+            //        }
+            //        if (objMapEntityId.CustomFieldEntityIds != null && objMapEntityId.CustomFieldEntityIds.Count > 0)
+            //            objMapEntityId.CustomFieldEntityIds = objMapEntityId.CustomFieldEntityIds.Distinct().ToList();
+            //        lstCustomFieldMapping.Add(objMapEntityId);
+            //    }
+            //}
+            ////int PlanId = 3533;
+            //// Apply filter on tactic
+            //List<Plan_Campaign_Program_Tactic> tacticList1 = new List<Plan_Campaign_Program_Tactic>();
+            //List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
+            //tacticList1 = db.Plan_Campaign_Program_Tactic.Where(tactic =>
+            //                PlanIdList.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
+            //                    //&& lstCustomFieldTacticIds.Contains(tactic.PlanTacticId)
+            //                    //&& BusinessUnitIdList.Contains(tactic.BusinessUnitId)
+            //                    //&& GeographyIdList.Contains(tactic.GeographyId)
+            //                    //&& VerticalIdList.Contains(tactic.VerticalId)
+            //                    //&& AudienceIdList.Contains(tactic.AudienceId)
+            //                && tactic.IsDeleted.Equals(false)
+            //                ).ToList();
+            //foreach (entMapCustomField_EntityIds objEntityIds in lstCustomFieldMapping)
+            //{
+            //    if (tacticList1 != null && tacticList1.Count > 0)
+            //    {
+            //        tacticList = tacticList1.Where(tactic => objEntityIds.CustomFieldEntityIds.Contains(tactic.PlanTacticId)).ToList();
+            //        tacticList1 = tacticList;
+            //    }
+            //} 
+            #endregion
 
             //// load Filter lists.
             List<int> TacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
@@ -3444,101 +3494,101 @@ namespace RevenuePlanner.Controllers
             {
                 int customfieldId = 0;
                 List<BudgetReportTab> planobj = new List<BudgetReportTab>();
-                string customFieldType = string.Empty;
                 IsCustomFieldViewBy = true;
-                //if (Tab == ReportTabType.Audience.ToString())
-                //{
-                //    planobj = db.Audiences.Where(a => AudienceIdsInner.Contains(a.AudienceId)).ToList().Select(a => new BudgetReportTab { Id = a.AudienceId.ToString(), Title = a.Title }).ToList();
-                //}
-                //if (Tab == ReportTabType.BusinessUnit.ToString())
-                //{
-                //    planobj = db.BusinessUnits.Where(a => BusinessUnitIdsInner.Contains(a.BusinessUnitId)).ToList().Select(a => new BudgetReportTab { Id = a.BusinessUnitId.ToString(), Title = a.Title }).ToList();
-                //}
-                //else if (Tab == ReportTabType.Geography.ToString())
-                //{
-                //    planobj = db.Geographies.Where(a => GeographyIdsInner.Contains(a.GeographyId)).ToList().Select(a => new BudgetReportTab { Id = a.GeographyId.ToString(), Title = a.Title }).ToList();
-                //}
-                //else if (Tab == ReportTabType.Vertical.ToString())
-                //{
-                //    planobj = db.Verticals.Where(a => VerticalIdsInner.Contains(a.VerticalId)).ToList().Select(a => new BudgetReportTab { Id = a.VerticalId.ToString(), Title = a.Title }).ToList();
-                //}
+                string customFieldType = string.Empty;
                 if (Tab.Contains(Common.TacticCustomTitle))
-                {
                     customfieldId = Convert.ToInt32(Tab.Replace(Common.TacticCustomTitle, ""));
-                    customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-
-                    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
-                    {
-                        var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
-                        planobj = optionlist.Select(p => new BudgetReportTab
-                        {
-                            Id = p.CustomFieldOptionId.ToString(),
-                            Title = p.Value
-                        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
-                    }
-                    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
-                    {
-                        List<int> entityids = tacticList.Select(t => t.PlanTacticId).ToList();
-                        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
-                        planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
-                        {
-                            Id = p.Key,
-                            Title = p.Key
-                        }).Select(b => b).OrderBy(b => b.Title).ToList();
-                    }
-
-                }
-                ////Start - Added by Mitesh Vaishnav for PL ticket #831
                 else if (Tab.Contains(Common.ProgramCustomTitle))
-                {
                     customfieldId = Convert.ToInt32(Tab.Replace(Common.ProgramCustomTitle, ""));
-                    customFieldType = db.CustomFields.Where(custm => custm.CustomFieldId == customfieldId).Select(custm => custm.CustomFieldType.Name).FirstOrDefault();
-
-                    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
-                    {
-                        var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
-                        planobj = optionlist.Select(p => new BudgetReportTab
-                        {
-                            Id = p.CustomFieldOptionId.ToString(),
-                            Title = p.Value
-                        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
-                    }
-                    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
-                    {
-                        List<int> entityids = tacticList.Select(t => t.PlanProgramId).ToList();
-                        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
-                        planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
-                        {
-                            Id = p.Key,
-                            Title = p.Key
-                        }).Select(b => b).OrderBy(b => b.Title).ToList();
-                    }
-                }
                 else if (Tab.Contains(Common.CampaignCustomTitle))
-                {
                     customfieldId = Convert.ToInt32(Tab.Replace(Common.CampaignCustomTitle, ""));
-                    customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
 
-                    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
-                    {
-                        var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
-                        planobj = optionlist.Select(p => new BudgetReportTab
-                        {
-                            Id = p.CustomFieldOptionId.ToString(),
-                            Title = p.Value
-                        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
-                    }
-                    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
-                    {
-                        List<int> entityids = tacticList.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
-                        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
-                        planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
-                        {
-                            Id = p.Key,
-                            Title = p.Key
-                        }).Select(b => b).OrderBy(b => b.Title).ToList();
-                    }
-                }
+                    customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                planobj = GetCustomFieldOptionMappinglist(Tab, customfieldId, customFieldType, ref tacticList, ref lstArrCustomFieldFilter);
+                //if (Tab.Contains(Common.TacticCustomTitle))
+                //{
+                //    customfieldId = Convert.ToInt32(Tab.Replace(Common.TacticCustomTitle, ""));
+                //    customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                //    //// Get Filter selected Option values based on ViewBy customfield value.
+                //    lstFilteredOptions = lstArrCustomFieldFilter.Where(custmfield => custmfield.CustomFieldId.Equals(customfieldId)).Select(custmfield => custmfield.OptionId).ToList();
+                //    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                //    {
+                //        //// Retrieve CustomFieldOptions based on CustomField & Filtered CustomFieldOptionValues.
+                //        var optionlist = db.CustomFieldOptions.ToList().Where(co => co.CustomFieldId == customfieldId && lstFilteredOptions.Contains(co.CustomFieldOptionId.ToString())).ToList();
+                //        planobj = optionlist.Select(p => new BudgetReportTab
+                //        {
+                //            Id = p.CustomFieldOptionId.ToString(),
+                //            Title = p.Value
+                //        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
+                //    }
+                //    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                //    {
+                //        List<int> entityids = tacticList.Select(t => t.PlanTacticId).ToList();
+                //        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                //        planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
+                //        {
+                //            Id = p.Key,
+                //            Title = p.Key
+                //        }).Select(b => b).OrderBy(b => b.Title).ToList();
+                //    }
+
+                //}
+                //////Start - Added by Mitesh Vaishnav for PL ticket #831
+                //else if (Tab.Contains(Common.ProgramCustomTitle))
+                //{
+                //    customfieldId = Convert.ToInt32(Tab.Replace(Common.ProgramCustomTitle, ""));
+                //    customFieldType = db.CustomFields.Where(custm => custm.CustomFieldId == customfieldId).Select(custm => custm.CustomFieldType.Name).FirstOrDefault();
+                //    //// Get Filter selected Option values based on ViewBy customfield value.
+                //    lstFilteredOptions = lstArrCustomFieldFilter.Where(custmfield => custmfield.CustomFieldId.Equals(customfieldId)).Select(custmfield => custmfield.OptionId).ToList();
+
+                //    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                //    {
+                //        var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
+                //        planobj = optionlist.Select(p => new BudgetReportTab
+                //        {
+                //            Id = p.CustomFieldOptionId.ToString(),
+                //            Title = p.Value
+                //        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
+                //    }
+                //    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                //    {
+                //        List<int> entityids = tacticList.Select(t => t.PlanProgramId).ToList();
+                //        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                //        planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
+                //        {
+                //            Id = p.Key,
+                //            Title = p.Key
+                //        }).Select(b => b).OrderBy(b => b.Title).ToList();
+                //    }
+                //}
+                //else if (Tab.Contains(Common.CampaignCustomTitle))
+                //{
+                //    customfieldId = Convert.ToInt32(Tab.Replace(Common.CampaignCustomTitle, ""));
+                //    customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                //    //// Get Filter selected Option values based on ViewBy customfield value.
+                //    lstFilteredOptions = lstArrCustomFieldFilter.Where(custmfield => custmfield.CustomFieldId.Equals(customfieldId)).Select(custmfield => custmfield.OptionId).ToList();
+
+                //    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                //    {
+                //        var optionlist = db.CustomFieldOptions.Where(co => co.CustomFieldId == customfieldId).ToList();
+                //        planobj = optionlist.Select(p => new BudgetReportTab
+                //        {
+                //            Id = p.CustomFieldOptionId.ToString(),
+                //            Title = p.Value
+                //        }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
+                //    }
+                //    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                //    {
+                //        List<int> entityids = tacticList.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
+                //        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                //        planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
+                //        {
+                //            Id = p.Key,
+                //            Title = p.Key
+                //        }).Select(b => b).OrderBy(b => b.Title).ToList();
+                //    }
+                //}
+
                 ////End - Added by Mitesh Vaishnav for PL ticket #831
 
                 if (planobj != null)
@@ -3547,23 +3597,23 @@ namespace RevenuePlanner.Controllers
                     {
                         var TacticListInner = tacticList;
 
-                        if (Tab == ReportTabType.Audience.ToString())
-                        {
-                            TacticListInner = tacticList.Where(tactic => tactic.AudienceId.ToString() == p.Id).ToList();
-                        }
-                        if (Tab == ReportTabType.BusinessUnit.ToString())
-                        {
-                            TacticListInner = tacticList.Where(tactic => tactic.BusinessUnitId.ToString() == p.Id).ToList();
-                        }
-                        else if (Tab == ReportTabType.Geography.ToString())
-                        {
-                            TacticListInner = tacticList.Where(tactic => tactic.GeographyId.ToString() == p.Id).ToList();
-                        }
-                        else if (Tab == ReportTabType.Vertical.ToString())
-                        {
-                            TacticListInner = tacticList.Where(tactic => tactic.VerticalId.ToString() == p.Id).ToList();
-                        }
-                        else if (Tab.Contains(Common.TacticCustomTitle))
+                        //if (Tab == ReportTabType.Audience.ToString())
+                        //{
+                        //    TacticListInner = tacticList.Where(tactic => tactic.AudienceId.ToString() == p.Id).ToList();
+                        //}
+                        //if (Tab == ReportTabType.BusinessUnit.ToString())
+                        //{
+                        //    TacticListInner = tacticList.Where(tactic => tactic.BusinessUnitId.ToString() == p.Id).ToList();
+                        //}
+                        //else if (Tab == ReportTabType.Geography.ToString())
+                        //{
+                        //    TacticListInner = tacticList.Where(tactic => tactic.GeographyId.ToString() == p.Id).ToList();
+                        //}
+                        //else if (Tab == ReportTabType.Vertical.ToString())
+                        //{
+                        //    TacticListInner = tacticList.Where(tactic => tactic.VerticalId.ToString() == p.Id).ToList();
+                        //}
+                        if (Tab.Contains(Common.TacticCustomTitle))
                         {
                             var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == p.Id).ToList();
                             List<int> entityids = cusomfieldEntity.Select(e => e.EntityId).ToList();
@@ -3681,7 +3731,6 @@ namespace RevenuePlanner.Controllers
 
             model = SetTacticWeightage(model, IsCustomFieldViewBy);
             model = ManageLineItems(model);
-
 
             //Set actual for quarters
             if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
@@ -4446,5 +4495,167 @@ namespace RevenuePlanner.Controllers
             }
             return model;
         }
+
+        #region "Common Methods"
+        /// <summary>
+        /// Get list of CustomFieldOption mapping.
+        /// </summary>
+        /// <param name="Tab"></param>
+        /// <param name="tacticList"> Reference of Tactic list</param>
+        /// <param name="lstArrCustomFieldFilter">list of filtered CustomFields</param>
+        /// <returns></returns>
+        public List<BudgetReportTab> GetCustomFieldOptionMappinglist(string Tab, int customfieldId, string customFieldType, ref List<Plan_Campaign_Program_Tactic> tacticList, ref List<CustomFieldFilter> lstArrCustomFieldFilter)
+        {
+            List<BudgetReportTab> planobj = new List<BudgetReportTab>();
+            List<string> lstFilteredOptions = new List<string>();
+            try
+            {
+
+                //// Get Filter selected Option values based on ViewBy customfield value.
+                lstFilteredOptions = lstArrCustomFieldFilter.Where(custmfield => custmfield.CustomFieldId.Equals(customfieldId)).Select(custmfield => custmfield.OptionId).ToList();
+                if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                {
+                    //// Retrieve CustomFieldOptions based on CustomField & Filtered CustomFieldOptionValues.
+                    var optionlist = db.CustomFieldOptions.ToList().Where(co => co.CustomFieldId == customfieldId && lstFilteredOptions.Contains(co.CustomFieldOptionId.ToString())).ToList();
+                    planobj = optionlist.Select(p => new BudgetReportTab
+                    {
+                        Id = p.CustomFieldOptionId.ToString(),
+                        Title = p.Value
+                    }).Select(b => b).Distinct().OrderBy(b => b.Title).ToList();
+                }
+                else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                {
+                    List<int> entityids = new List<int>();
+                    if (Tab.Contains(Common.ProgramCustomTitle))
+                        entityids = tacticList.Select(t => t.PlanTacticId).ToList();
+                    else if (Tab.Contains(Common.ProgramCustomTitle))
+                        entityids = tacticList.Select(t => t.PlanProgramId).ToList();
+                    else if (Tab.Contains(Common.ProgramCustomTitle))
+                        entityids = tacticList.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
+                    var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                    planobj = cusomfieldEntity.GroupBy(c => c.Value).Select(p => new BudgetReportTab
+                    {
+                        Id = p.Key,
+                        Title = p.Key
+                    }).Select(b => b).OrderBy(b => b.Title).ToList();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return planobj;
+        }
+
+        /// <summary>
+        /// Get list of Filtered Tactics with .
+        /// </summary>
+        /// <param name="Tab"></param>
+        /// <param name="tacticList"> Reference of Tactic list</param>
+        /// <param name="lstArrCustomFieldFilter">list of filtered CustomFields</param>
+        /// <returns></returns>
+        public List<Plan_Campaign_Program_Tactic> GetTacticListbyFilters(CustomFieldFilter[] arrCustomFieldFilter, List<int> PlanIdList, ref List<CustomFieldFilter> lstArrCustomFieldFilter)
+        {
+            #region "Local Variables"
+            string EntTacticType = Enums.EntityType.Tactic.ToString();
+            List<int> EntityIds = new List<int>();
+            List<int> distCustomFieldids = new List<int>();
+            List<entMapCustomField_EntityIds> lstCustomFieldMapping = new List<entMapCustomField_EntityIds>();
+            entMapCustomField_EntityIds objMapEntityId = null;
+            List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+            List<int> lstNoneArrCustomFieldFilter = new List<int>();
+            List<Plan_Campaign_Program_Tactic> tacticListBasic = new List<Plan_Campaign_Program_Tactic>();
+            List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>(); 
+            #endregion
+            try
+            {
+                //// Get CustomfieldEntities record from table to improve performance.
+                List<CustomField_Entity> tblCustomFieldEntities = (from ent in db.CustomField_Entity
+                                                                   join tac in db.Plan_Campaign_Program_Tactic on ent.EntityId equals tac.PlanTacticId
+                                                                   where ent.CustomField.EntityType.Equals(EntTacticType) && tac.IsDeleted.Equals(false) && PlanIdList.Contains(tac.Plan_Campaign_Program.Plan_Campaign.PlanId)
+                                                                   select ent
+                                                               ).ToList();
+
+                if (arrCustomFieldFilter != null && arrCustomFieldFilter.Count() > 0)
+                {
+                    //// Get list of record those contains CustomFieldOptionId.
+                    foreach (CustomFieldFilter objCustomField in arrCustomFieldFilter)
+                    {
+                        if (objCustomField.CustomFieldId > 0 && !string.IsNullOrEmpty(objCustomField.OptionId))
+                            lstCustomFieldFilter.Add(objCustomField);
+                    }
+                    
+                    #region "Add all CustomFieldOptions for which customfield selected value is None"
+                    //// Get list of record those does not contains any CustomFieldOptionId (i.e Does not select any Values(None)).
+                    lstNoneArrCustomFieldFilter = arrCustomFieldFilter.Where(s => !lstCustomFieldFilter.Select(p => p.CustomFieldId).Contains(s.CustomFieldId)).Select(s => s.CustomFieldId).ToList();
+                    //// load CustomFieldOption table to local variable of list.
+                    List<CustomFieldOption> tblNoneCustomFieldOptions =db.CustomFieldOptions.Where(co => lstNoneArrCustomFieldFilter.Contains(co.CustomFieldId)).ToList();
+                    CustomFieldFilter objCustomFieldFilter = null;
+                    List<int> lstNoneCustomFieldOptions = new List<int>();
+                    foreach (int _custmfieldId in lstNoneArrCustomFieldFilter)
+                    {
+                        lstNoneCustomFieldOptions = tblNoneCustomFieldOptions.Where(co => co.CustomFieldId.Equals(_custmfieldId)).Select(co => co.CustomFieldOptionId).ToList();
+                        foreach (int optionid in lstNoneCustomFieldOptions)
+                        {
+                            objCustomFieldFilter = new CustomFieldFilter();
+                            objCustomFieldFilter.CustomFieldId = _custmfieldId;
+                            objCustomFieldFilter.OptionId = optionid.ToString();
+                            lstCustomFieldFilter.Add(objCustomFieldFilter);
+                        }
+                    } 
+                    #endregion
+
+                    #region "Create Mapping list of CustomField and EntityIds"
+                    //// Get distinct CustomFieldIds.
+                    distCustomFieldids = lstCustomFieldFilter.Select(_customfield => _customfield.CustomFieldId).Distinct().ToList();
+                    foreach (int customfieldid in distCustomFieldids)
+                    {
+                        objMapEntityId = new entMapCustomField_EntityIds();
+                        objMapEntityId.CustomFieldEntityIds = new List<int>();
+                        //// Add EntityIds for each  CustomFieldId.
+                        foreach (CustomFieldFilter CustmFieldFilter in lstCustomFieldFilter.Where(_customfield => _customfield.CustomFieldId.Equals(customfieldid)))
+                        {
+                            EntityIds = tblCustomFieldEntities.Where(_ent => _ent.CustomFieldId.Equals(CustmFieldFilter.CustomFieldId) && _ent.Value.Equals(CustmFieldFilter.OptionId.ToString())).Select(_ent => _ent.EntityId).ToList();
+                            if (EntityIds != null && EntityIds.Count > 0)
+                                objMapEntityId.CustomFieldEntityIds.AddRange(EntityIds.Distinct().ToList());
+                        }
+                        if (objMapEntityId.CustomFieldEntityIds != null && objMapEntityId.CustomFieldEntityIds.Count > 0)
+                            objMapEntityId.CustomFieldEntityIds = objMapEntityId.CustomFieldEntityIds.Distinct().ToList();
+                        lstCustomFieldMapping.Add(objMapEntityId);
+                    } 
+                    #endregion
+
+                    // Apply filter on tactic
+                    tacticListBasic = db.Plan_Campaign_Program_Tactic.Where(tactic =>
+                                    PlanIdList.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
+                                    && tactic.IsDeleted.Equals(false)
+                                    ).ToList();
+                    //// Filter Tactic list based on Filter Value selected.
+                    //// Filter Tactic list with "AND" conditions between selected Filter values.
+                    foreach (entMapCustomField_EntityIds objEntityIds in lstCustomFieldMapping)
+                    {
+                        if (tacticListBasic != null && tacticListBasic.Count > 0)
+                        {
+                            tacticList = tacticListBasic.Where(tactic => objEntityIds.CustomFieldEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                            tacticListBasic = tacticList;
+                        }
+                    }
+                }
+                lstArrCustomFieldFilter = lstCustomFieldFilter;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return tacticList;
+        }
+        #endregion
+    }
+
+    public class entMapCustomField_EntityIds
+    {
+        public List<int> CustomFieldEntityIds { get; set; }
     }
 }
