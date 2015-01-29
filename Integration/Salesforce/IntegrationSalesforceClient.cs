@@ -46,10 +46,10 @@ namespace Integration.Salesforce
         private Dictionary<string, string> _mappingImprovementCampaign { get; set; }
         private Dictionary<string, string> _mappingImprovementProgram { get; set; }
         private Dictionary<string, string> _mappingImprovementTactic { get; set; }
-        private Dictionary<int, string> _mappingVertical { get; set; }
-        private Dictionary<int, string> _mappingAudience { get; set; }
-        private Dictionary<Guid, string> _mappingGeography { get; set; }
-        private Dictionary<Guid, string> _mappingBusinessunit { get; set; }
+        //private Dictionary<int, string> _mappingVertical { get; set; }
+        //private Dictionary<int, string> _mappingAudience { get; set; }
+        //private Dictionary<Guid, string> _mappingGeography { get; set; }
+        //private Dictionary<Guid, string> _mappingBusinessunit { get; set; }
         private Dictionary<Guid, string> _mappingUser { get; set; }
         private Dictionary<string, string> _mappingCustomFields { get; set; }      // Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
         private int _integrationInstanceId { get; set; }
@@ -1080,14 +1080,14 @@ namespace Integration.Salesforce
 
             _clientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
-            _mappingVertical = db.Verticals.Where(v => v.ClientId == _clientId).Select(v => new { v.VerticalId, v.Title })
-                                .ToDictionary(v => v.VerticalId, v => v.Title);
-            _mappingAudience = db.Audiences.Where(a => a.ClientId == _clientId).Select(a => new { a.AudienceId, a.Title })
-                                .ToDictionary(a => a.AudienceId, a => a.Title);
-            _mappingBusinessunit = db.BusinessUnits.Where(b => b.ClientId == _clientId).Select(b => new { b.BusinessUnitId, b.Title })
-                                .ToDictionary(b => b.BusinessUnitId, b => b.Title);
-            _mappingGeography = db.Geographies.Where(g => g.ClientId == _clientId).Select(g => new { g.GeographyId, g.Title })
-                                .ToDictionary(g => g.GeographyId, g => g.Title);
+            //_mappingVertical = db.Verticals.Where(v => v.ClientId == _clientId).Select(v => new { v.VerticalId, v.Title })
+            //                    .ToDictionary(v => v.VerticalId, v => v.Title);
+            //_mappingAudience = db.Audiences.Where(a => a.ClientId == _clientId).Select(a => new { a.AudienceId, a.Title })
+            //                    .ToDictionary(a => a.AudienceId, a => a.Title);
+            //_mappingBusinessunit = db.BusinessUnits.Where(b => b.ClientId == _clientId).Select(b => new { b.BusinessUnitId, b.Title })
+            //                    .ToDictionary(b => b.BusinessUnitId, b => b.Title);
+            //_mappingGeography = db.Geographies.Where(g => g.ClientId == _clientId).Select(g => new { g.GeographyId, g.Title })
+            //                    .ToDictionary(g => g.GeographyId, g => g.Title);
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
@@ -2322,15 +2322,16 @@ namespace Integration.Salesforce
         private Dictionary<string, object> GetTargetKeyValue<T>(object obj, Dictionary<string, string> mappingDataType)
         {
             string status = "Status";
-            string verticalId = "VerticalId";
-            string audienceId = "AudienceId";
-            string businessUnitId = "BusinessUnitId";
-            string geographyid = "GeographyId";
+            //string verticalId = "VerticalId";
+            //string audienceId = "AudienceId";
+            //string businessUnitId = "BusinessUnitId";
+            //string geographyid = "GeographyId";
             string createdBy = "CreatedBy";
             string statDate = "StartDate";
             string endDate = "EndDate";
             string effectiveDate = "EffectiveDate";
             string costActual = "CostActual";   // Added by Sohel Pathan on 11/09/2014 for PL ticket #773
+            string tacticType = "TacticType";   //// Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
 
             Type sourceType = ((T)obj).GetType();
             PropertyInfo[] sourceProps = sourceType.GetProperties();
@@ -2346,22 +2347,22 @@ namespace Integration.Salesforce
                     {
                         value = GetSalesForceStatus(value);
                     }
-                    else if (mapping.Key == verticalId)
-                    {
-                        value = _mappingVertical[Convert.ToInt32(value)];
-                    }
-                    else if (mapping.Key == audienceId)
-                    {
-                        value = _mappingAudience[Convert.ToInt32(value)];
-                    }
-                    else if (mapping.Key == geographyid)
-                    {
-                        value = _mappingGeography[Guid.Parse(value)];
-                    }
-                    else if (mapping.Key == businessUnitId)
-                    {
-                        value = _mappingBusinessunit[Guid.Parse(value)];
-                    }
+                    //else if (mapping.Key == verticalId)
+                    //{
+                    //    value = _mappingVertical[Convert.ToInt32(value)];
+                    //}
+                    //else if (mapping.Key == audienceId)
+                    //{
+                    //    value = _mappingAudience[Convert.ToInt32(value)];
+                    //}
+                    //else if (mapping.Key == geographyid)
+                    //{
+                    //    value = _mappingGeography[Guid.Parse(value)];
+                    //}
+                    //else if (mapping.Key == businessUnitId)
+                    //{
+                    //    value = _mappingBusinessunit[Guid.Parse(value)];
+                    //}
                     else if (mapping.Key == createdBy)
                     {
                         value = _mappingUser[Guid.Parse(value)];
@@ -2376,6 +2377,12 @@ namespace Integration.Salesforce
                         value = Common.CalculateActualCost(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
                     }
                     // End - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
+                    //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
+                    else if (mapping.Key == tacticType)
+                    {
+                        value = ((Plan_Campaign_Program_Tactic)obj).TacticType.Title;
+                    }
+                    //// End - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
 
                     keyvaluepair.Add(mapping.Value, value);
                 }
