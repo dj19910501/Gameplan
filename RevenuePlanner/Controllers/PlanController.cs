@@ -1261,9 +1261,6 @@ namespace RevenuePlanner.Controllers
                 Status = task.Status       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
             });
 
-            List<int> lstAllowedEntityIds = new List<int>();
-            lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, new List<int>(), false);
-
             // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
             var taskDataTactic = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                             _tac.IsDeleted.Equals(false))
@@ -1271,7 +1268,7 @@ namespace RevenuePlanner.Controllers
                                                                 .Where(_tac => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                         CalendarEndDate,
                                                                                                                         _tac.StartDate,
-                                                                                                                        _tac.EndDate).Equals(false) && lstAllowedEntityIds.Contains(_tac.PlanTacticId))
+                                                                                                                        _tac.EndDate).Equals(false))
                                                                 .Select(_tac => new
                                                                 {
                                                                     id = string.Format("C{0}_P{1}_T{2}", _tac.Plan_Campaign_Program.PlanCampaignId, _tac.Plan_Campaign_Program.PlanProgramId, _tac.PlanTacticId),
@@ -1291,7 +1288,14 @@ namespace RevenuePlanner.Controllers
                                                                     Status = _tac.Status       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
                                                                 }).OrderBy(_tac => _tac.text).ToList();
 
-            var NewTaskDataTactic = taskDataTactic.Select(task => new
+            List<int> lstAllowedEntityIds = new List<int>();
+            if (taskDataTactic.Count() > 0)
+            {
+                List<int> lstPlanTacticId = taskDataTactic.Select(tactic => tactic.plantacticid).Distinct().ToList();
+                lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstPlanTacticId, false);
+            }
+
+            var NewTaskDataTactic = taskDataTactic.Where(task => lstAllowedEntityIds.Count.Equals(0) || lstAllowedEntityIds.Contains(task.plantacticid)).Select(task => new
             {
                 id = task.id,
                 text = task.text,
