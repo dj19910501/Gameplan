@@ -1452,6 +1452,7 @@ namespace Integration.Eloqua
             string endDate = "EndDate";
             string effectiveDate = "EffectiveDate";
             string costActual = "CostActual";   // Added by Sohel Pathan on 11/09/2014 for PL ticket #773
+            string tacticType = "TacticType";   //// Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
 
             Type sourceType = ((T)obj).GetType();
             PropertyInfo[] sourceProps = sourceType.GetProperties();
@@ -1494,6 +1495,12 @@ namespace Integration.Eloqua
                         value = Common.CalculateActualCost(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
                     }
                     // End - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
+                    //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
+                    else if (mapping.Key == tacticType)
+                    {
+                        value = ((Plan_Campaign_Program_Tactic)obj).TacticType.Title;
+                    }
+                    //// End - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
 
                     if (campaignMetadata.Contains(mapping.Value))
                     {
