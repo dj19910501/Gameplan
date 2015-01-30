@@ -1900,7 +1900,7 @@ namespace RevenuePlanner.Controllers
                         description = pcptj.Description,
                         cost = LineItemList.Where(l => l.PlanTacticId == pcptj.PlanTacticId).Sum(l => l.Cost),
                         mqls = ListTacticMQLValue.Where(lt => lt.PlanTacticId == pcptj.PlanTacticId).Sum(lt => lt.MQL),
-                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? ((lstEditableTacticIds.Count.Equals(0) || lstEditableTacticIds.Contains(pcptj.PlanTacticId)) ? 0 : 1) : 1,
+                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? ((TacticIds.Count.Equals(0) || lstEditableTacticIds.Contains(pcptj.PlanTacticId)) ? 0 : 1) : 1,
                         lineitems = (LineItemList.Where(pcptl => pcptl.PlanTacticId.Equals(pcptj.PlanTacticId))).Select(pcptlj => new
                         {
                             id = pcptlj.PlanLineItemId,

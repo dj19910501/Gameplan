@@ -398,29 +398,12 @@ namespace RevenuePlanner.Controllers
 
             //// Owner filter criteria.
             List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
-
-            //// Start - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
-            //// Custom Field Filter Criteria.
-            List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
-            List<int> lstEntityIds = new List<int>();
-            bool recordsFound = true;
-            if (filteredCustomFields.Count > 0)
-            {
-                //// get Allowed Entity Ids
-                lstEntityIds = GetAllowedEntitiesBasedonCustomFieldFilterParameter(filteredCustomFields, out recordsFound);
-            }
-            //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
-
-            //// Applying filters to tactic (IsDelete, Geography, Individuals and Show My Tactic)
+            
+            //// Applying filters to tactic (IsDelete, Individuals)
             List<Plan_Tactic> lstTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
                                                                        lstProgramId.Contains(tactic.PlanProgramId) &&
-                //// Start - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
-                                                                        recordsFound == true &&
-                                                                        (lstEntityIds.Count.Equals(0) || lstEntityIds.Contains(tactic.PlanTacticId)) &&
-                //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
                                                                        (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))
-                                                                        && (!((tactic.EndDate < CalendarStartDate) || (tactic.StartDate > CalendarEndDate)))
-                                                                       )
+                                                                        && (!((tactic.EndDate < CalendarStartDate) || (tactic.StartDate > CalendarEndDate))))
                                                                        .ToList().Select(tactic => new Plan_Tactic
                                                                        {
                                                                            objPlanTactic = tactic,
@@ -432,10 +415,25 @@ namespace RevenuePlanner.Controllers
                                                                            TacticType = tactic.TacticType
                                                                        }).ToList();
 
+            List<string> lstFilteredCustomFieldOptionIds = new List<string>();
             //// Apply Custom restriction for None type
             if (lstTactic.Count() > 0)
             {
                 List<int> lstTacticIds = lstTactic.Select(tactic => tactic.objPlanTactic.PlanTacticId).ToList();
+
+                //// Start - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
+                //// Custom Field Filter Criteria.
+                List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+                List<int> lstEntityIds = new List<int>();
+                bool recordsFound = true;
+                if (filteredCustomFields.Count > 0)
+                {
+                    //// get Allowed Entity Ids
+                    lstEntityIds = GetAllowedEntitiesBasedonCustomFieldFilterParameter(filteredCustomFields, lstTacticIds, out recordsFound, out lstFilteredCustomFieldOptionIds);
+                    lstTactic = lstTactic.Where(tactic => recordsFound == true && (lstEntityIds.Count.Equals(0) || lstEntityIds.Contains(tactic.objPlanTactic.PlanTacticId))).ToList();
+                }
+                //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
+
                 List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
                 lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId)).Select(tactic => tactic).ToList();
             }
@@ -540,7 +538,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    return PrepareCustomFieldTabResult(viewBy, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult);
+                    return PrepareCustomFieldTabResult(viewBy, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult, lstFilteredCustomFieldOptionIds);
                 }
             }
             catch (Exception objException)
@@ -578,7 +576,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="improvementTacticTypeForAccordion">list of improvement tactic type for accrodian(left side pane)</param>
         /// <param name="viewByListResult">list of viewBy dropdown options</param>
         /// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        private JsonResult PrepareCustomFieldTabResult(string viewBy, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult)
+        private JsonResult PrepareCustomFieldTabResult(string viewBy, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult, List<string> lstFilteredCustomFieldOptionIds)
         {
             string sourceViewBy = viewBy;
             int CustomTypeId = 0;
@@ -633,7 +631,8 @@ namespace RevenuePlanner.Controllers
                                             new { Key1 = customfieldoptionLeftJoin.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)customfieldoptionLeftJoin.CustomFieldOptionId).Trim() } into cAll
                                         from cfo in cAll.DefaultIfEmpty()
                                         where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == entityType && customfield.CustomFieldId == CustomTypeId &&
-                                        customfield.ClientId == Sessions.User.ClientId && tacticIdList.Contains(tactic.PlanTacticId)
+                                        customfield.ClientId == Sessions.User.ClientId && tacticIdList.Contains(tactic.PlanTacticId) && 
+                                        (customfieldtype.Name == DropDownList ? (lstFilteredCustomFieldOptionIds.Count.Equals(0) || lstFilteredCustomFieldOptionIds.Contains(customfieldentity.Value)) : true)
                                         select new
                                         {
                                             tactic = tactic,
@@ -2699,16 +2698,6 @@ namespace RevenuePlanner.Controllers
             //// Get TacticTypes selected  in search filter
             List<int> filteredTacticTypeIds = string.IsNullOrWhiteSpace(tacticTypeId) ? new List<int>() : tacticTypeId.Split(',').Select(tacticType => int.Parse(tacticType)).ToList();
 
-            //// Custom Field Filter Criteria.
-            List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldId) ? new List<string>() : customFieldId.Split(',').Select(customField => customField.ToString()).ToList();
-            List<int> lstEntityIds = new List<int>();
-            bool recordsFound = true;
-            if (filteredCustomFields.Count > 0)
-            {
-                //// get Allowed Entity Ids
-                lstEntityIds = GetAllowedEntitiesBasedonCustomFieldFilterParameter(filteredCustomFields, out recordsFound);
-            }
-
             //// Owner filter criteria.
             List<Guid> filteredOwner = string.IsNullOrWhiteSpace(ownerId) ? new List<Guid>() : ownerId.Split(',').Select(owner => Guid.Parse(owner)).ToList();
             //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
@@ -2722,28 +2711,34 @@ namespace RevenuePlanner.Controllers
                                                                                 tacticStatus.Contains(planTactic.Status) && planTactic.IsDeleted.Equals(false) &&
                                                                                 planTactic.CostActual == null && !planTactic.Plan_Campaign_Program_Tactic_Actual.Any() &&
                                                                                 (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(planTactic.TacticType.TacticTypeId)) &&
-                                                                                recordsFound == true &&
-                                                                                (lstEntityIds.Count.Equals(0) || lstEntityIds.Contains(planTactic.PlanTacticId)) &&
-                                                                                (filteredOwner.Count.Equals(0) || filteredOwner.Contains(planTactic.CreatedBy))
-                                                                                ).ToList();
+                                                                                (filteredOwner.Count.Equals(0) || filteredOwner.Contains(planTactic.CreatedBy))).ToList();
             }
             else
             {
                 TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId &&
                                                                                 tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false &&
                                                                                 (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(tactic.TacticType.TacticTypeId)) &&
-                                                                                recordsFound == true &&
-                                                                                (lstEntityIds.Count.Equals(0) || lstEntityIds.Contains(tactic.PlanTacticId)) &&
-                                                                                (filteredOwner.Count.Equals(0) || filteredOwner.Contains(tactic.CreatedBy))
-                                                                                ).ToList();
+                                                                                (filteredOwner.Count.Equals(0) || filteredOwner.Contains(tactic.CreatedBy))).ToList();
             }
-
 
             List<int> TacticIds = TacticList.Select(tactic => tactic.PlanTacticId).ToList();
 
             //// Apply Custom restriction for None type
             if (TacticIds.Count() > 0)
             {
+                //// Custom Field Filter Criteria.
+                List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldId) ? new List<string>() : customFieldId.Split(',').Select(customField => customField.ToString()).ToList();
+                List<int> lstEntityIds = new List<int>();
+                bool recordsFound = true;
+                if (filteredCustomFields.Count > 0)
+                {
+                    List<string> lstfilteredCustomFieldOptionIds = new List<string>();
+                    //// get Allowed Entity Ids
+                    lstEntityIds = GetAllowedEntitiesBasedonCustomFieldFilterParameter(filteredCustomFields, TacticIds, out recordsFound, out lstfilteredCustomFieldOptionIds);
+
+                    TacticList = TacticList.Where(tactic => recordsFound == true && (lstEntityIds.Count.Equals(0) || lstEntityIds.Contains(tactic.PlanTacticId))).ToList();
+                }
+
                 List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, TacticIds, false);
                 TacticList = TacticList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).Select(tactic => tactic).ToList();
             }
@@ -3488,9 +3483,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="filteredCustomFields"></param>
         /// <param name="recordsFound"></param>
         /// <returns></returns>
-        private List<int> GetAllowedEntitiesBasedonCustomFieldFilterParameter(List<string> filteredCustomFields, out bool recordsFound)
+        private List<int> GetAllowedEntitiesBasedonCustomFieldFilterParameter(List<string> filteredCustomFields, List<int> lstTacticIds, out bool recordsFound, out List<string> lstCustomFieldOptionIds)
         {
             recordsFound = true;
+            lstCustomFieldOptionIds = new List<string>();
+            List<string> lstCustomFieldOptionIdsStrings = new List<string>();
             List<int> lstEntityIds = new List<int>();
 
             if (filteredCustomFields.Count > 0)
@@ -3509,6 +3506,8 @@ namespace RevenuePlanner.Controllers
 
                 filterdCustomFieldIds = filterdCustomFieldIds.Distinct().ToList();
                 filterdCustomFieldOptionIds = filterdCustomFieldOptionIds.Distinct().ToList();
+                filterdCustomFieldOptionIds.ForEach(option => lstCustomFieldOptionIdsStrings.Add(option.ToString()));
+                lstCustomFieldOptionIds = lstCustomFieldOptionIdsStrings;
 
                 lstCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => filterdCustomFieldIds.Contains(customFieldEntity.CustomFieldId))
                                                                             .Select(customFieldEntity => customFieldEntity).ToList();
