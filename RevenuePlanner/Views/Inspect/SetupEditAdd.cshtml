@@ -181,8 +181,8 @@
         </div>
     </div>
     
-    <ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div" id="InspectTab">
-        <li class="pull-right">
+    <ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
+        <li class="pull-left">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
@@ -572,7 +572,7 @@
                       _customFieldValues.push({
                           CustomFieldId: customFieldId,
                           Value: optionId,
-                          Weight: $('#' + optionId + '_weight').val()!=''?$('#' + optionId + '_weight').val():null,
+                          Weight: $('#' + optionId + '_weight').val()!=''?$('#' + optionId + '_weight').val():'0',
                           StageType: null,
                           StageWeight: null
                       });
@@ -580,14 +580,14 @@
                   else {
                       var i = 1;
                       while (i > 0) {
-                          var StageInput = $(this).closest('tr').find('td').eq(i + 1).find('input');
-                          if (typeof StageInput != 'undefined' && StageInput.val() != '' && StageInput.val() != null) {
+                          var StageInput = $(this).closest('tr').find('td').eq(i + 1).find('input[type=text]');
+                          if (typeof StageInput != 'undefined' && typeof (StageInput.attr('id'))!='undefined') {
                               _customFieldValues.push({
                                   CustomFieldId: customFieldId,
                                   Value: optionId,
                                   Weight: null,
                                   StageCode: StageInput.attr('id').split('_')[1].toString(),
-                                  StageWeight: StageInput.val()
+                                  StageWeight: StageInput.val()!=''?StageInput.val():'0'
                               });
                               i++
                           }

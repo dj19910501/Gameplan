@@ -3485,7 +3485,7 @@ a:focus {
 /* Start - Added by Viral for PL ticket #1017 */
 .ellipsis-left {
     width: auto;
-    max-width:95%;
+    max-width:54%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

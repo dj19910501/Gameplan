@@ -121,16 +121,18 @@
                     var inputText = $(this);
                     var totalWeightage = 0;
                     var stageCode = inputText.attr('id').toString().split('_')[1].toString();
+                    var isAllColumnInputBlank = true;
                     menu.find('input:checked').each(function () {
                         var optionId = $(this).val();
                         if (typeof $('#' + optionId + '_' + stageCode).val() != 'undefined' && $('#' + optionId + '_' + stageCode).val() != '') {
                             totalWeightage += parseInt($('#' + optionId + '_' + stageCode).val());
+                            isAllColumnInputBlank = false;
                         }
                     });
 
                     menu.find('input:checked').each(function () {
                         var optionId = $(this).val();
-                        if (totalWeightage != 100) {
+                        if (totalWeightage != 100 && !isAllColumnInputBlank) {
                             $('#' + optionId + '_' + stageCode).addClass('error');
                         }
                         else {
@@ -148,6 +150,9 @@
                         $(this).parents('tr').find('input[type=text]').val('');
                         $(this).parents('tr').find('input[type=text]').keyup();
                         $(this).parents('tr').find('input[type=text]').removeClass('error');
+                    }
+                    else {
+                        $(this).parents('tr').find('input[type=text]').keyup();
                     }
                     var title = "";
                     Button.find('p:first').text("");
@@ -215,16 +220,18 @@
                             var inputText = $(this);
                             var totalWeightage = 0;
                             var stageCode = inputText.attr('id').toString().split('_')[1].toString();
+                            var isAllColumnInputBlank = true;
                             Menu.find('input:checked').each(function () {
                                 var optionId = $(this).val();
                                 if (typeof $('#' + optionId + '_' + stageCode).val() != 'undefined' && $('#' + optionId + '_' + stageCode).val() != '') {
                                     totalWeightage += parseInt($('#' + optionId + '_' + stageCode).val());
+                                    isAllColumnInputBlank = false;
                                 }
                             });
 
                             Menu.find('input:checked').each(function () {
                                 var optionId = $(this).val();
-                                if (totalWeightage != 100) {
+                                if (totalWeightage != 100 && !isAllColumnInputBlank) {
                                     $('#' + optionId + '_' + stageCode).addClass('error');
                                 }
                                 else {
