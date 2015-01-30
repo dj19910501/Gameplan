@@ -427,6 +427,12 @@ $(document).ready(function () {
     }
     // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
+    // Start - Added by Arpita Soni for Ticket #1071 on 01/30/2015 
+    $('.input-table').blur(function () {
+        $(this).val(number_format($(this).val().toString(), 0, '.', ''));
+    });
+    // End - Added by Arpita Soni for Ticket #1071 on 01/30/2015 
+
     $('#DivBackgroundModel').css("display", "none");
     $('#DivPublishModelPopup').css("display", "none");
     $('#form1').bind("keyup keypress", function (e) {
