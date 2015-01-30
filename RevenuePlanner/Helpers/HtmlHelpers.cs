@@ -3771,10 +3771,6 @@ namespace RevenuePlanner.Helpers
                                                 customFieldEntityValue += item.value != null ? objOption.value.Replace("\"", "&quot;") + "," : string.Empty;
                                             }
                                         }
-                                        if (customFieldEntityValue.Length > 0)
-                                        {
-                                            customFieldEntityValue = customFieldEntityValue.Remove(customFieldEntityValue.Length - 1, 1);
-                                        }
                                         sb.Append("</tbody> <tfoot><tr><td colspan=\"7\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">X close</span></a></td></tr></tfoot></table></div></div></div>");
 
                                         sb = sb.Replace("#VIEW_DETAIL_LINK#", "<span class=\"new_tag\"><a href=\"#\">View Attribution</a></span>");
