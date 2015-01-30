@@ -6093,7 +6093,7 @@ namespace RevenuePlanner.Controllers
                         {
                             lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
 
-                            if (lstAllowedEntityIds.Contains(itemId))
+                            if (lstAllowedEntityIds.Count > 0)
                             {
                                 IsPlanEditable = true;
                             }
