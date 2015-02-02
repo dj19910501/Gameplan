@@ -97,7 +97,7 @@ BEGIN
 				/* Add new record to CustomFieldOption table If record does not exist in table*/
 				IF Not Exists(Select 1 from CustomFieldOption where CustomFieldId=@CustomFieldID and Value IN (Select Title from Vertical where ClientId = @ClientId))
 				Begin
-					Insert Into CustomFieldOption(CustomFieldId,Value,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode) Select @CustomFieldID,Title,CreatedDate,CreatedBy,NULL,[Description],ColorCode from Vertical where ClientId = @ClientId
+					Insert Into CustomFieldOption(CustomFieldId,Value,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode) Select @CustomFieldID,Title,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode from Vertical where ClientId = @ClientId
 				End
 			END
 			Else IF(@CustomFieldName = @lblAudience)
@@ -105,7 +105,7 @@ BEGIN
 				/* Add new record to CustomFieldOption table If record does not exist in table*/
 				IF Not Exists(Select 1 from CustomFieldOption where CustomFieldId=@CustomFieldID and Value IN (Select Title from Audience where ClientId = @ClientId))
 				Begin
-					Insert Into CustomFieldOption(CustomFieldId,Value,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode) Select @CustomFieldID,Title,CreatedDate,CreatedBy,NULL,[Description],ColorCode from Audience where ClientId = @ClientId
+					Insert Into CustomFieldOption(CustomFieldId,Value,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode) Select @CustomFieldID,Title,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode from Audience where ClientId = @ClientId
 				End
 			END
 			Else IF(@CustomFieldName = @lblBusinessUnit)
@@ -113,7 +113,7 @@ BEGIN
 				/* Add new record to CustomFieldOption table If record does not exist in table*/
 				IF Not Exists(Select 1 from CustomFieldOption where CustomFieldId=@CustomFieldID and Value IN (Select Title from BusinessUnit where ClientId = @ClientId))
 				Begin
-					Insert Into CustomFieldOption(CustomFieldId,Value,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode) Select @CustomFieldID,Title,CreatedDate,CreatedBy,NULL,[Description],ColorCode from BusinessUnit where ClientId = @ClientId
+					Insert Into CustomFieldOption(CustomFieldId,Value,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode) Select @CustomFieldID,Title,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode from BusinessUnit where ClientId = @ClientId
 				End
 			END
 			Else IF(@CustomFieldName = @lblGeography)
@@ -121,7 +121,7 @@ BEGIN
 				/* Add new record to CustomFieldOption table If record does not exist in table*/
 				IF Not Exists(Select 1 from CustomFieldOption where CustomFieldId=@CustomFieldID and Value IN (Select Title from [Geography] where ClientId = @ClientId))
 				Begin
-					Insert Into CustomFieldOption(CustomFieldId,Value,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode) Select @CustomFieldID,Title,CreatedDate,CreatedBy,NULL,NULL,NULL from [Geography] where ClientId = @ClientId
+					Insert Into CustomFieldOption(CustomFieldId,Value,CreatedDate,CreatedBy,Abbreviation,[Description],ColorCode) Select @CustomFieldID,Title,CreatedDate,CreatedBy,Abbreviation,NULL,NULL from [Geography] where ClientId = @ClientId
 				End
 			END
 		End
