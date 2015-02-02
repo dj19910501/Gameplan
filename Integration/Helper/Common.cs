@@ -42,10 +42,11 @@ namespace Integration.Helper
         public static string msgRequiredColumnNotExistEloquaPullResponse = "Error: Response doesn't contains EloquaCampaignID or ExternalCampaignID or ResponseDateTime columns";
         public static string msgFileNotFound = "File not found";
         public static string msgMappingFieldsNotFound = "Mapping fields not found";
-        public static string msgMappingNotFoundForSalesforcePullResponse = "Error: Mapping does not found for CampaignId or FirstRespondedDate or Status";
-        public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping does not found for CampaignId or CloseDate or Amount or StageName";
-        public static string msgMappingNotFoundForEloquaPullMQL = "Error: Mapping does not found for CampaignId or MQLDateId or ViewId or ListId";
-        
+        public static string msgMappingNotFoundForSalesforcePullResponse = "Error: Mapping not found for CampaignId or FirstRespondedDate or Status";
+        public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping not found for CampaignId or CloseDate or Amount or StageName";
+        public static string msgMappingNotFoundForEloquaPullMQL = "Error: Mapping not found for CampaignId or MQLDateId or ViewId or ListId";
+        public static string msgChildLevelError = "Error: Error occurred while processing Tactic/Improvement Tactic.";
+
         public static bool IsAutoSync = false;
         /// <summary>
         /// Decrypt string

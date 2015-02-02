@@ -719,6 +719,7 @@ namespace Integration.Eloqua
                 catch (Exception e)
                 {
                     _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua Exception occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                    _ErrorMessage = Common.msgChildLevelError.ToString();
                     if (e.Message.Contains(NotFound))
                     {
                         planIMPTactic.IntegrationInstanceTacticId = null;
@@ -767,6 +768,7 @@ namespace Integration.Eloqua
                 catch (Exception e)
                 {
                     _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua Exception occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                    _ErrorMessage = Common.msgChildLevelError.ToString();
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                     instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                 }
@@ -802,6 +804,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    _ErrorMessage = Common.msgChildLevelError.ToString();
                     if (e.Message.Contains(NotFound))// || e.Message.Contains(InternalServerError))
                     {
                         planIMPTactic.IntegrationInstanceTacticId = null;
@@ -847,6 +850,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    _ErrorMessage = Common.msgChildLevelError.ToString();
                     if (e.Message.Contains(NotFound))
                     {
                         planIMPTactic.IntegrationInstanceTacticId = null;
@@ -994,6 +998,7 @@ namespace Integration.Eloqua
                 {
                     //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                    _ErrorMessage = Common.msgChildLevelError.ToString();
                     //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     if (e.Message.Contains(NotFound))
                     {
@@ -1044,6 +1049,7 @@ namespace Integration.Eloqua
                 {
                     //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                    _ErrorMessage = Common.msgChildLevelError.ToString();
                     //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                     instanceLogTactic.ErrorDescription = GetErrorMessage(e);
@@ -1081,6 +1087,8 @@ namespace Integration.Eloqua
                 {
                     //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                    _ErrorMessage = Common.msgChildLevelError.ToString();
+
                     if (e.Message.Contains(NotFound))
                     {
                         planTactic.IntegrationInstanceTacticId = null;
@@ -1128,6 +1136,8 @@ namespace Integration.Eloqua
                 {
                     //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                    _ErrorMessage = Common.msgChildLevelError.ToString();
+
                     if (e.Message.Contains(NotFound))
                     {
                         planTactic.IntegrationInstanceTacticId = null;

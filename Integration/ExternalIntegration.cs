@@ -259,7 +259,7 @@ namespace Integration
                 {
                     instanceLogEnd.Status = StatusResult.Error.ToString();
                     integrationInstance.LastSyncStatus = StatusResult.Error.ToString();
-                    string errorSections = string.Join(", ", db.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == instanceLogEnd.IntegrationInstanceLogId).Select(integrationSection => integrationSection.SectionName).ToList());
+                    string errorSections = string.Join(", ", db.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == instanceLogEnd.IntegrationInstanceLogId && integrationSection.Status == "Error").Select(integrationSection => integrationSection.SectionName).ToList());
                     instanceLogEnd.ErrorDescription = "Error in section(s): " + errorSections;
                 }
                 else
