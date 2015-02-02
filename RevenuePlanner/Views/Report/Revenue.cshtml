@@ -1418,11 +1418,20 @@
                           if (dataset1 != null) {
                               FillChartSourcePerformanceChartCustomField1();
                           }
+                          else {
+                              $('#chartDiv4Parent').hide();
+                          }
                           if (dataset2 != null) {
                               FillChartSourcePerformanceChartCustomField2();
                           }
+                          else {
+                              $('#chartDiv5Parent').hide();
+                          }
                           if (dataset3 != null) {
                               FillChartSourcePerformanceChartCustomField3();
+                          }
+                          else {
+                              $('#chartDiv6Parent').hide();
                           }
                       }
                   });

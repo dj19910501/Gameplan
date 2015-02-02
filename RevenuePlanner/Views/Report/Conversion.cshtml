@@ -584,11 +584,20 @@
             if (dataset1 != null) {
                 FillChartSourcePerformanceCustomField1();
             }
+            else {
+                $('#chartDiv1Parent').hide();
+            }
             if (dataset2 != null) {
                 FillChartSourcePerformanceCustomField2();
             }
+            else {
+                $('#chartDiv2Parent').hide();
+            }
             if (dataset3 != null) {
                 FillChartSourcePerformanceCustomField3();
+            }
+            else {
+                $('#chartDiv3Parent').hide();
             }
                      }
                  });

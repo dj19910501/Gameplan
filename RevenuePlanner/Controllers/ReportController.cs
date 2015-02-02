@@ -71,16 +71,20 @@ namespace RevenuePlanner.Controllers
             //// Custom Field Value
             List<CustomField> lstCustomFields = new List<CustomField>();
             string tactic = Enums.EntityType.Tactic.ToString();
+            
+            // Get Custom Field Type Id
+            string customFieldType=Enums.CustomFieldType.DropDownList.ToString();
+            int customFieldTypeId=db.CustomFieldTypes.Where(type=>type.Name==customFieldType).Select(type=>type.CustomFieldTypeId).First();
+            
             lstCustomFields = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId &&
                 customfield.EntityType == tactic &&
                 customfield.IsRequired==true &&
-                customfield.CustomFieldTypeId == 2 &&
+                customfield.CustomFieldTypeId == customFieldTypeId &&
                 customfield.IsDisplayForFilter == true &&
                 customfield.IsDeleted == false).ToList();
 
             lstCustomFields = lstCustomFields.Where(sort => !string.IsNullOrEmpty(sort.Name)).OrderBy(sort => sort.Name, new AlphaNumericComparer()).ToList();
             List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
-
 
             //// Filter Custom Fields having no options
             var lstCustomFieldIds = db.CustomFieldOptions.Select(customfieldid => customfieldid.CustomFieldId).Distinct();
@@ -164,9 +168,22 @@ namespace RevenuePlanner.Controllers
             double overAllInqProjected = 0;
             double overAllCWActual = 0;
             double overAllCWProjected = 0;
+            bool isPublishedPlanExist = false;
+
+            // Start - Added by Arpita Soni for Ticket #1148 on 01/30/2015
+            // To avoid summary display when no published plan selected (It displays no data found message.)
+            foreach (var planId in Sessions.ReportPlanIds)
+            {
+                if (Common.IsPlanPublished(planId))
+                {
+                    isPublishedPlanExist=true;
+                    break;
+                }
+            }
+            // End - Added by Arpita Soni for Ticket #1148 on 01/30/2015
 
             //// check planids selected or not
-            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0 && isPublishedPlanExist)
             {
                 //// set viewbag to display plan or msg
                 ViewBag.IsPlanExistToShowReport = true;
@@ -524,28 +541,30 @@ namespace RevenuePlanner.Controllers
                 List<int> lstCustomFieldIds = new List<int>();
                 List<CustomFieldFilter> lstCustomFieldFilter = Sessions.ReportCustomFieldIds.ToList();
                 List<string> optionIds = new List<string>();
-
                 lstCustomFieldIds = lstCustomFieldFilter.Select(cust => cust.CustomFieldId).Distinct().ToList();
+
+                var lstCustomEntityData = db.CustomField_Entity.Where(e=>lstCustomFieldIds.Contains(e.CustomFieldId)).AsQueryable();
+                
 
                 tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false &&
                                                                   tacticStatus.Contains(tactic.Status) &&
                                                                   planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
                                                                   ).ToList();
 
-                foreach (var item in lstCustomFieldIds)
+                foreach (var custfieldid in lstCustomFieldIds)
                 {
-                    optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).First() != "" ?
-                        lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).ToList() :
-                        db.CustomField_Entity.Where(x => x.CustomFieldId == item).Select(x => x.Value).Distinct().ToList();
+                    optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == custfieldid).Select(x => x.OptionId).First() != "" ?
+                        lstCustomFieldFilter.Where(x => x.CustomFieldId == custfieldid).Select(x => x.OptionId).ToList() :
+                        lstCustomEntityData.Where(x => x.CustomFieldId == custfieldid).Select(x => x.Value).Distinct().ToList();
                     if (lstEntityIds.Count > 0)
                     {
-                        var lstEntityData = db.CustomField_Entity.Where(x => x.CustomFieldId == item &&
+                        var lstEntityData = lstCustomEntityData.Where(x => x.CustomFieldId == custfieldid &&
                                       optionIds.Contains(x.Value) && lstEntityIds.Contains(x.EntityId));
                         lstEntityIds = lstEntityData.Select(x => x.EntityId).Distinct().ToList();
                     }
                     else
                     {
-                        var lstEntityData = db.CustomField_Entity.Where(x => x.CustomFieldId == item &&
+                        var lstEntityData = lstCustomEntityData.Where(x => x.CustomFieldId == custfieldid &&
                                       optionIds.Contains(x.Value));
                         lstEntityIds = lstEntityData.Select(x => x.EntityId).Distinct().ToList();
                     }
@@ -1339,9 +1358,14 @@ namespace RevenuePlanner.Controllers
             //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
             string tactic = Enums.EntityType.Tactic.ToString();
 
+            // Get Custom Field Type Id
+            string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
+            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).First();
+            
+
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired==true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == 2
+                && c.IsDeleted == false && c.IsRequired==true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == customFieldTypeId
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
@@ -1351,20 +1375,32 @@ namespace RevenuePlanner.Controllers
             customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
+            List<int> lstCustomFieldId = customFields.Select(c => c.CustomFieldId).Distinct().ToList();
+
+            var customFieldOptions = db.CustomFieldOptions.Where(c => lstCustomFieldId.Contains(c.CustomFieldId)).AsQueryable();
+            List<int> lstCustomFieldOptionIds = customFieldOptions.Select(c => c.CustomFieldOptionId).Distinct().ToList();
+            List<string> lstOptionIds = new List<string>();
+            foreach (var customoptionid in lstCustomFieldOptionIds)
+            {
+                lstOptionIds.Add(customoptionid.ToString());
+            }
+
+            var customFieldEntities = db.CustomField_Entity.Where(e => lstOptionIds.Contains(e.Value)).AsQueryable();
+
 
             // Applying custom field filters
-            foreach (var item in customFields)
+            foreach (var customfield in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
 
-                List<string> lstOptionIds = new List<string>();
-                var customFieldOptionsIds = db.CustomFieldOptions.Where(c => c.CustomFieldId == item.CustomFieldId).Select(c => c.CustomFieldOptionId);
-                foreach (var item1 in customFieldOptionsIds)
+                List<string> lstInnerOptionIds = new List<string>();
+                var customFieldOptionsIds = customFieldOptions.Where(c => c.CustomFieldId == customfield.CustomFieldId).Select(c => c.CustomFieldOptionId);
+                foreach (var customoptionid in customFieldOptionsIds)
                 {
-                    lstOptionIds.Add(item1.ToString());
+                    lstInnerOptionIds.Add(customoptionid.ToString());
                 }
 
-                var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
+                var lstCustomFieldEntity = customFieldEntities.Where(cf => lstInnerOptionIds.Contains(cf.Value)).Select(e => new
                     {
                         EntityId = e.EntityId,
                         Value = e.Value
@@ -1382,18 +1418,18 @@ namespace RevenuePlanner.Controllers
                         Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
                     }).ToList();
 
-                lstSourcePerformance = db.CustomFieldOptions.Where(s => s.CustomFieldId == item.CustomFieldId).ToList().Select(s => new SourcePerformanceData
+                lstSourcePerformance = customFieldOptions.Where(s => s.CustomFieldId == customfield.CustomFieldId).ToList().Select(s => new SourcePerformanceData
                 {
                     Title = s.Value,
                     ColorCode = string.Format("#{0}", s.ColorCode),
                     Value = tacticTrendCustomField.Any(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId) ? tacticTrendCustomField.Where(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId).FirstOrDefault().Trend : 0
                 }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
-                lstCustomFieldNames.Add(item.CustomFieldName);
+                lstCustomFieldNames.Add(customfield.CustomFieldName);
                 lstListSourcePerformance.Add(new ListSourcePerformanceData
                 {
                     lstSourcePerformanceData = lstSourcePerformance,
-                    CustomFieldName = item.CustomFieldName
+                    CustomFieldName = customfield.CustomFieldName
                 });
             }
             //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
@@ -1431,10 +1467,14 @@ namespace RevenuePlanner.Controllers
 
             //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
             string entityType = Enums.EntityType.Tactic.ToString();
+            
+            // Get Custom Field Type Id
+            string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
+            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).First();
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == 2
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == customFieldTypeId
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
@@ -1445,20 +1485,32 @@ namespace RevenuePlanner.Controllers
 
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
+            List<int> lstCustomFieldId = customFields.Select(c => c.CustomFieldId).Distinct().ToList();
+            
+            var customFieldOptions = db.CustomFieldOptions.Where(c => lstCustomFieldId.Contains(c.CustomFieldId)).AsQueryable();
+            List<int> lstCustomFieldOptionIds = customFieldOptions.Select(c => c.CustomFieldOptionId).Distinct().ToList();
+            List<string> lstOptionIds = new List<string>();
+            foreach (var customoptionid in lstCustomFieldOptionIds)
+            {
+                lstOptionIds.Add(customoptionid.ToString());
+            }
+
+            var customFieldEntities = db.CustomField_Entity.Where(e=>lstOptionIds.Contains(e.Value)).AsQueryable();
 
             // Applying custom field filters
-            foreach (var item in customFields)
+            foreach (var customfield in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
 
-                List<string> lstOptionIds = new List<string>();
-                var customFieldOptionsIds = db.CustomFieldOptions.Where(c => c.CustomFieldId == item.CustomFieldId).Select(c => c.CustomFieldOptionId);
-                foreach (var item1 in customFieldOptionsIds)
+                List<string> lstInnerOptionIds = new List<string>();
+                var customFieldOptionsIds = customFieldOptions.Where(c => c.CustomFieldId == customfield.CustomFieldId).Select(c => c.CustomFieldOptionId);
+
+                foreach (var customoptionid in customFieldOptionsIds)
                 {
-                    lstOptionIds.Add(item1.ToString());
+                    lstInnerOptionIds.Add(customoptionid.ToString());
                 }
 
-                var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
+                var lstCustomFieldEntity = customFieldEntities.Where(cf => lstInnerOptionIds.Contains(cf.Value)).Select(e => new
                 {
                     EntityId = e.EntityId,
                     Value = e.Value
@@ -1470,7 +1522,7 @@ namespace RevenuePlanner.Controllers
                                        where tacticactual.StageTitle == mql
                                        select new { entity.Value, entity.EntityId, tacticactual.Actualvalue, timeFrameOptions = tacticactual.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + tacticactual.Period };
 
-                lstSourcePerformance = db.CustomFieldOptions.Where(cf => cf.CustomFieldId == item.CustomFieldId).ToList()
+                lstSourcePerformance = customFieldOptions.Where(cf => cf.CustomFieldId == customfield.CustomFieldId).ToList()
                                                 .Select(cf => new SourcePerformanceData
                                                 {
                                                     Title = cf.Value,
@@ -1479,12 +1531,12 @@ namespace RevenuePlanner.Controllers
                                                         includeMonth.Contains(t.timeFrameOptions)).Sum(t => t.Actualvalue) : 0
                                                 }).OrderByDescending(cf => cf.Value).ThenBy(cf => cf.Title).Take(5).ToList();
 
-                lstCustomFieldNames.Add(item.CustomFieldName);
+                lstCustomFieldNames.Add(customfield.CustomFieldName);
 
                 lstListSourcePerformance.Add(new ListSourcePerformanceData
                 {
                     lstSourcePerformanceData = lstSourcePerformance,
-                    CustomFieldName = item.CustomFieldName
+                    CustomFieldName = customfield.CustomFieldName
                 });
             }
             //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
@@ -1518,9 +1570,13 @@ namespace RevenuePlanner.Controllers
             //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
             string entityType = Enums.EntityType.Tactic.ToString();
 
+            // Get Custom Field Type Id
+            string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
+            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).First();
+
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == 2
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == customFieldTypeId
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
@@ -1530,20 +1586,30 @@ namespace RevenuePlanner.Controllers
             customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
+            List<int> lstCustomFieldId = customFields.Select(c => c.CustomFieldId).Distinct().ToList();
+            var customFieldOptions = db.CustomFieldOptions.Where(c => lstCustomFieldId.Contains(c.CustomFieldId)).AsQueryable();
+            List<int> lstCustomFieldOptionIds = customFieldOptions.Select(c => c.CustomFieldOptionId).Distinct().ToList();
+            List<string> lstOptionIds = new List<string>();
+            foreach (var customoptionid in lstCustomFieldOptionIds)
+            {
+                lstOptionIds.Add(customoptionid.ToString());
+            }
+
+            var customFieldEntities = db.CustomField_Entity.Where(e => lstOptionIds.Contains(e.Value)).AsQueryable();
 
             // Applying custom field filters
-            foreach (var item in customFields)
+            foreach (var customfield in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
 
-                List<string> lstOptionIds = new List<string>();
-                var customFieldOptionsIds = db.CustomFieldOptions.Where(c => c.CustomFieldId == item.CustomFieldId).Select(c => c.CustomFieldOptionId);
-                foreach (var item1 in customFieldOptionsIds)
+                List<string> lstInnerOptionIds = new List<string>();
+                var customFieldOptionsIds = customFieldOptions.Where(c => c.CustomFieldId == customfield.CustomFieldId).Select(c => c.CustomFieldOptionId);
+                foreach (var customoptionid in customFieldOptionsIds)
                 {
-                    lstOptionIds.Add(item1.ToString());
+                    lstInnerOptionIds.Add(customoptionid.ToString());
                 }
 
-                var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
+                var lstCustomFieldEntity = customFieldEntities.Where(cf => lstInnerOptionIds.Contains(cf.Value)).Select(e => new
                 {
                     EntityId = e.EntityId,
                     Value = e.Value
@@ -1555,7 +1621,7 @@ namespace RevenuePlanner.Controllers
                                        select new { entity.Value, entity.EntityId, tacticactual };
 
 
-                lstSourcePerformance = db.CustomFieldOptions.Where(b => b.CustomFieldId == item.CustomFieldId).ToList()
+                lstSourcePerformance = customFieldOptions.Where(b => b.CustomFieldId == customfield.CustomFieldId).ToList()
                                                 .Select(b => new SourcePerformanceData
                                                 {
                                                     Title = b.Value,
@@ -1567,12 +1633,12 @@ namespace RevenuePlanner.Controllers
                                                                                         .Sum(r => r.Value) : 0
                                                 }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5).ToList();
 
-                lstCustomFieldNames.Add(item.CustomFieldName);
+                lstCustomFieldNames.Add(customfield.CustomFieldName);
 
                 lstListSourcePerformance.Add(new ListSourcePerformanceData
                 {
                     lstSourcePerformanceData = lstSourcePerformance,
-                    CustomFieldName = item.CustomFieldName
+                    CustomFieldName = customfield.CustomFieldName
                 });
             }
             //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
@@ -1631,7 +1697,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Tacticdata = Tacticdata.Where(t => t.TacticObj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+                Tacticdata = Tacticdata.ToList();
             }
             var DataTitleList = new List<RevenueContrinutionData>();
 
@@ -1821,8 +1887,7 @@ namespace RevenuePlanner.Controllers
             lstProgramList.Insert(0, new { PlanProgramId = 0, Title = "All Programs" });
 
             //// Get tactic list for dropdown
-            var tacticListinner = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId)
-                .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
+            var tacticListinner = tacticlist.Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
                 .OrderBy(pcp => pcp.Title).ToList();
             tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
             var lstTacticList = tacticListinner;
@@ -2008,7 +2073,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                programIds = TacticList.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
+                programIds = TacticList.Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
             }
             var programList = db.Plan_Campaign_Program.Where(pc => programIds.Contains(pc.PlanProgramId))
                     .Select(program => new { PlanProgramId = program.PlanProgramId, Title = program.Title })
@@ -2058,8 +2123,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                var tacticListinner = TacticList.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId)
-                    .Select(tactic => new { PlanTacticId = tactic.PlanTacticId, Title = tactic.Title })
+                var tacticListinner = TacticList.Select(tactic => new { PlanTacticId = tactic.PlanTacticId, Title = tactic.Title })
                     .OrderBy(pcp => pcp.Title).ToList();
                 if (tacticListinner == null)
                     return Json(new { });
@@ -2098,7 +2162,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Tacticdata = Tacticdata.Where(t => t.TacticObj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+                Tacticdata = Tacticdata.ToList();
             }
 
             if (Tacticdata.Count() > 0)
@@ -2197,7 +2261,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Tacticdata = Tacticdata.Where(t=>t.TacticObj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId==Sessions.User.ClientId).ToList();
+                Tacticdata = Tacticdata.ToList();
             }
             var campaignList = new List<RevenueContrinutionData>();
 
@@ -2821,9 +2885,13 @@ namespace RevenuePlanner.Controllers
             //// Start - Added by Arpita Soni for Ticket #1148 on 01/23/2015
             string tactic = Enums.EntityType.Tactic.ToString();
 
+            // Get Custom Field Type Id
+            string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
+            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).First();
+
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == 2
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == customFieldTypeId
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
@@ -2833,24 +2901,26 @@ namespace RevenuePlanner.Controllers
             customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
-            
+            List<int> lstCustomFieldId = customFields.Select(c => c.CustomFieldId).Distinct().ToList();
+            var customFieldOptions = db.CustomFieldOptions.Where(c => lstCustomFieldId.Contains(c.CustomFieldId)).AsQueryable();
+
             // Applying custom field filters 
-            foreach (var item in customFields)
+            foreach (var customfield in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
-                
-                lstSourcePerformance = db.CustomFieldOptions.Where(s => s.CustomFieldId == item.CustomFieldId).ToList().Select(s => new SourcePerformanceData
+
+                lstSourcePerformance = customFieldOptions.Where(s => s.CustomFieldId == customfield.CustomFieldId).ToList().Select(s => new SourcePerformanceData
                 {
                     Title = s.Value,
                     ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
+                    Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
                 }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
-                lstCustomFieldNames.Add(item.CustomFieldName);
+                lstCustomFieldNames.Add(customfield.CustomFieldName);
                 lstListSourcePerformance.Add(new ListSourcePerformanceData
                 {
                     lstSourcePerformanceData = lstSourcePerformance,
-                    CustomFieldName = item.CustomFieldName
+                    CustomFieldName = customfield.CustomFieldName
 
                 });
             }

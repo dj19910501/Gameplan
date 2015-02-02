@@ -146,11 +146,11 @@
             
             <label>Plans:</label>
             <div class="details" id="plandetail"></div>
-            @foreach (var item in ViewCustomFields)
+            @foreach (var custField in ViewCustomFields)
             {
-                string lblid = string.Concat("lbl", item.CustomFieldId);
-                string detailid = string.Concat(item.CustomFieldId, "detail");
-                    <label id="@lblid">@item.Name:</label>
+                string lblid = string.Concat("lbl", custField.CustomFieldId);
+                string detailid = string.Concat(custField.CustomFieldId, "detail");
+                    <label id="@lblid">@custField.Name:</label>
                     <div class="details" id="@detailid">All</div>
             }
 
@@ -195,10 +195,10 @@
 
         $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
 
-        @foreach (var item in ViewCustomFields)
+        @foreach (var custField in ViewCustomFields)
         {
-            string multiselectid = string.Concat("ddlView", item.Name);
-            string filterid = string.Concat("#", item.Name.ToLower(), "detail");
+            string multiselectid = string.Concat("ddlView", custField.Name);
+            string filterid = string.Concat("#", custField.Name.ToLower(), "detail");
             @: LoadCheckBoxValue('@multiselectid', '@filterid');
         }
 
@@ -276,11 +276,11 @@
     ///If running tab is budgeting than show specific filters
     function ShowFilters() {
 
-            @foreach (var item in ViewCustomFields)
+            @foreach (var custField in ViewCustomFields)
             {
-                string btnmultiselectid = string.Concat("#btnMultiselect_ddlView", item.CustomFieldId);
-                string lblid = string.Concat("lbl", item.CustomFieldId);
-                string detailid = string.Concat(item.CustomFieldId, "detail");
+                string btnmultiselectid = string.Concat("#btnMultiselect_ddlView", custField.CustomFieldId);
+                string lblid = string.Concat("lbl", custField.CustomFieldId);
+                string detailid = string.Concat(custField.CustomFieldId, "detail");
                     @: $('@btnmultiselectid').css('display', 'initial');
                                                 @: $('@lblid').css('display', 'initial');
                                                 @: $('@detailid').css('display', 'initial');
@@ -491,21 +491,21 @@
         //// load active filter based on selected value in multiselect
         LoadCheckBoxValue(multiselectPlanId, filterPlanid);
 
-        @foreach (var item in ViewCustomFields)
+        @foreach (var custField in ViewCustomFields)
         {
-            string multiselectid = string.Concat("ddlView", item.CustomFieldId);
-            string filterid = string.Concat("#", item.CustomFieldId, "detail");
+            string multiselectid = string.Concat("ddlView", custField.CustomFieldId);
+            string filterid = string.Concat("#", custField.CustomFieldId, "detail");
             @: LoadCheckBoxValue('@multiselectid', '@filterid');
          }
             
             
-        @foreach (var item in ViewCustomFields)
+        @foreach (var custField in ViewCustomFields)
         {
-            string multiselectid = string.Concat("ddlView", item.CustomFieldId);
+            string multiselectid = string.Concat("ddlView", custField.CustomFieldId);
             @: var filterIds = GetFilterId('@multiselectid');
-            @: var arr = filterIds.split(',');
-            @: for (var i = 0; i < arr.length;i++) {
-            @: arrOptionIds.push({ CustomFieldId: '@item.CustomFieldId', OptionId: arr[i] });
+            @: var arrFilterId = filterIds.split(',');
+            @: for (var i = 0; i < arrFilterId.length; i++) {
+            @: arrOptionIds.push({ CustomFieldId: '@custField.CustomFieldId', OptionId: arrFilterId[i] });
             @:}
         }
             
