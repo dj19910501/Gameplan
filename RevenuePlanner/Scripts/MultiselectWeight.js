@@ -58,7 +58,7 @@
 
                     menu.find('input:checked').each(function () {
                         var total = 0;
-                        var counter=0
+                        var counter = 0
                         $(this).parents('tr').find('input[type=text]').not('.text_blk_active').each(function () {
                             if ($(this).val() != '' && typeof $(this).val() != 'undefined') {
                                 counter += 1;
@@ -67,7 +67,7 @@
                         });
                         var avg = 0;
                         if (counter > 0) {
-                            avg=  total / counter;
+                            avg = total / counter;
                         }
                         $(this).parents('tr').find('.text_blk_active').val(parseInt(avg).toString());
                     });
@@ -89,7 +89,7 @@
                 });
                 menu.find('input[type=text]').on('keydown', function (e) {
                     // Allow: backspace, delete, tab, escape, enter and .
-                    if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
+                    if ($.inArray(e.keyCode, [8, 9, 27, 13, 46, 110]) !== -1 ||
                         // Allow: Ctrl+A
                         (e.keyCode == 65 && e.ctrlKey === true) ||
                         // Allow: home, end, left, right
@@ -104,7 +104,7 @@
                 });
                 menu.find('input[type=text]').on('change', function (e) {
                     // Allow: backspace, delete, tab, escape, enter and .
-                    if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
+                    if ($.inArray(e.keyCode, [8, 9, 27, 13, 46, 110]) !== -1 ||
                         // Allow: Ctrl+A
                         (e.keyCode == 65 && e.ctrlKey === true) ||
                         // Allow: home, end, left, right
@@ -160,13 +160,13 @@
                     //var inputValues = 100 / checkedCheckbox;
                     //var residual = 100 % checkedCheckbox;
                     menu.find('input:checked').each(function () {
-                        title += $(this).parent().find('p').text() + ',';
+                        title += $(this).parent().find('p').text() + ', ';
                         //$(this).closest('tr').find('input[type=text]').each(function () {
                         //    $(this).val(inputValues.toString());
                         //});
                     });
                     if (title.indexOf(',') > 0) {
-                        title = title.slice(0, -1);
+                        title = title.slice(0, -2);
                         Button.find('p:first').text(title);
                         Button.find('p:first').attr('title', title);
                     }
@@ -188,7 +188,7 @@
                     if ($(this).find('thead tr').find('td').eq(j).text() != 'CW(%)') {
                         $(this).find('tbody tr').find('input[type=text]').on('keydown', function (e) {
                             // Allow: backspace, delete, tab, escape, enter and .
-                            if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
+                            if ($.inArray(e.keyCode, [8, 9, 27, 13, 110, 46]) !== -1 ||
                                 // Allow: Ctrl+A
                                 (e.keyCode == 65 && e.ctrlKey === true) ||
                                 // Allow: home, end, left, right
@@ -203,7 +203,7 @@
                         });
                         $(this).find('tbody tr').find('input[type=text]').on('change', function (e) {
                             // Allow: backspace, delete, tab, escape, enter and .
-                            if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
+                            if ($.inArray(e.keyCode, [8, 9, 27, 13, 110, 46]) !== -1 ||
                                 // Allow: Ctrl+A
                                 (e.keyCode == 65 && e.ctrlKey === true) ||
                                 // Allow: home, end, left, right
