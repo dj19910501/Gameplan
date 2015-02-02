@@ -2773,7 +2773,7 @@ namespace RevenuePlanner.Controllers
                 string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
                 List<Plan_Campaign_Program_Tactic_Actual> lstTacticActual = objDbMrpEntities.Plan_Campaign_Program_Tactic_Actual.Where(tacticActual => TacticIds.Contains(tacticActual.PlanTacticId)).ToList();
 
-                List<int> lstViewEditEntities = Common.GetViewEditEntityList(Sessions.User.UserId, TacticIds);
+                List<int> lstViewEditEntities = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, TacticIds, true);
 
                 List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
 
