@@ -28,6 +28,7 @@ namespace RevenuePlanner.Controllers
         private string PublishedPlan = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
         private string currentYear = DateTime.Now.Year.ToString();
         private int currentMonth = DateTime.Now.Month;
+        bool isPublishedPlanExist = false;
 
         #endregion
 
@@ -113,20 +114,26 @@ namespace RevenuePlanner.Controllers
                 TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
                 return RedirectToAction("PlanSelector", "Plan");
             }
-            var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
-            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year, Selected = year == currentYear ? true : false }));
-            SelectListItem thisQuarter = new SelectListItem { Text = "this quarter", Value = "thisquarter" };
-            lstYear.Add(thisQuarter);
-
+            List<SelectListItem> lstPlanList = new List<SelectListItem>();
             string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
             string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
 
-            List<SelectListItem> lstPlanList = new List<SelectListItem>();
+            // Start - Added by Arpita Soni for Ticket #1148 on 02/02/2015
+            // to make default selected plan from session planId
+            var selectedYear = db.Plans.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Year).FirstOrDefault();
+            lstPlanList = lstPlan.Where(plan => plan.Year == selectedYear).Select(plan => new SelectListItem { Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (plan.PlanId == Sessions.PlanId ? true : false) }).ToList();
+            ViewBag.SelectedYear = selectedYear;
+            // End - Added by Arpita Soni for Ticket #1148 on 02/02/2015
 
-            lstPlanList = lstPlan.Where(plan => plan.Year == currentYear).Select(plan => new SelectListItem { Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (plan.PlanId == Sessions.PlanId ? true : false) }).ToList();
+            var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
+            //var selectedYear = db.Plans.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Year).First();
+            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year, Selected = year == selectedYear ? true : false }));
+            SelectListItem thisQuarter = new SelectListItem { Text = "this quarter", Value = "thisquarter" };
+            lstYear.Add(thisQuarter);
+
+           
             ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
-            ViewBag.SelectedYear = currentYear;
             //End Added by Mitesh Vaishnav for PL ticket #846
 
             return View("Index");
@@ -168,7 +175,6 @@ namespace RevenuePlanner.Controllers
             double overAllInqProjected = 0;
             double overAllCWActual = 0;
             double overAllCWProjected = 0;
-            bool isPublishedPlanExist = false;
 
             // Start - Added by Arpita Soni for Ticket #1148 on 01/30/2015
             // To avoid summary display when no published plan selected (It displays no data found message.)
@@ -1701,7 +1707,7 @@ namespace RevenuePlanner.Controllers
             }
             var DataTitleList = new List<RevenueContrinutionData>();
 
-            if (ParentConversionSummaryTab == Common.CampaignCustomTitle || ParentConversionSummaryTab == Common.ProgramCustomTitle || ParentConversionSummaryTab == Common.TacticCustomTitle)
+            if (ParentConversionSummaryTab.Contains(Common.CampaignCustomTitle) || ParentConversionSummaryTab.Contains(Common.ProgramCustomTitle) || ParentConversionSummaryTab.Contains(Common.TacticCustomTitle))
             {
                 int customfieldId = 0;
                 List<int> entityids = new List<int>();
@@ -1902,7 +1908,7 @@ namespace RevenuePlanner.Controllers
 
             //// Set Parent Revenue Summary data to list.
             List<ViewByModel> lstParentRevenueSummery = new List<ViewByModel>();
-            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0 && isPublishedPlanExist)
             {
                 lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenuePlans, Value = Common.RevenuePlans });
             }

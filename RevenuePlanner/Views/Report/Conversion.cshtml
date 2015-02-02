@@ -105,6 +105,9 @@
             </div>
         </div>
     </div>
+        <div id="NoGraphsMsg" style="text-align:left; color: #908d88; padding:10px 20px 20px 10px">
+            No saved reports to display.
+        </div>
     </div>
     <input type="hidden" id="chartDataMQLPerformance" value="" />
 </div>
@@ -582,9 +585,14 @@
                           
             //fill data on reports table
             if (dataset1 != null) {
+                $('#NoGraphsMsg').hide();
+                $('.report-gray-container').show();
                 FillChartSourcePerformanceCustomField1();
             }
             else {
+                $('.report-gray-container').hide();
+                $('#NoGraphsMsg').show();
+
                 $('#chartDiv1Parent').hide();
             }
             if (dataset2 != null) {
