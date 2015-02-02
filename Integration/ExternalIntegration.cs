@@ -282,7 +282,7 @@ namespace Integration
                 if (_integrationInstanceId.HasValue)
                 {
                     string InstanceName = Common.GetInstanceName(_integrationInstanceId.Value);
-                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Instance Name used for synching", InstanceName), Enums.SyncStatus.Header, DateTime.Now));
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Instance Name used for syncing", InstanceName), Enums.SyncStatus.Header, DateTime.Now));
                 }
                 //// End - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
             }
@@ -321,8 +321,8 @@ namespace Integration
             Int32 TotalTacticCount = 0;
             TotalTacticCount = SuccessTacticCount + FailedTacticCount;
 
-            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities liable for synching - Push Tactic Data", TotalTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
-            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities successfully synched - Push Tactic Data", SuccessTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities available for syncing - Push Tactic Data", TotalTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
+            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities successfully synced - Push Tactic Data", SuccessTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities failed due to some reason - Push Tactic Data", FailedTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
 
             bool PullMQLError = false;

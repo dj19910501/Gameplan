@@ -694,9 +694,9 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                string none = Enums.CustomRestrictionPermission.None.ToString();
-                                objCustomRestrictionModel.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(none)).Value;
-                                objCustomRestrictionModel.Permission = (int)Enums.CustomRestrictionPermission.None;
+                                Enums.CustomRestrictionPermission defaultPermission = Common.GetDefaultCustomRestrictionType();
+                                objCustomRestrictionModel.permissiontext = Enums.CustomRestrictionValues.FirstOrDefault(customRestriction => customRestriction.Key.Equals(defaultPermission.ToString())).Value;
+                                objCustomRestrictionModel.Permission = (int)defaultPermission;
                             }
                             customRestrictionList.Add(objCustomRestrictionModel);
                         }

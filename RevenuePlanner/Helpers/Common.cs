@@ -3955,8 +3955,9 @@ namespace RevenuePlanner.Helpers
         public static List<CustomFieldModel> GetCustomFields(int id, string section)
         {
             MRPEntities db = new MRPEntities();
+            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
 
-            var lstCustomFields = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false).ToList().Select(a => new CustomFieldModel
+            var lstCustomFields = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true)).ToList().Select(a => new CustomFieldModel
             {
                 customFieldId = a.CustomFieldId,
                 name = a.Name,
@@ -5089,13 +5090,21 @@ namespace RevenuePlanner.Helpers
                                     foreach (int currentCustomField in currentTacticCustomFields)
                                     {
                                         //// Get Allowed CustomFieldOptionId list for current selected customField of selected tactic
-                                        List<string> AllowedRightsForCurrentCustomField = userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == currentCustomField &&
-                                                                                                        (restriction.Permission == ViewEditPermission || restriction.Permission == ViewOnlyPermission))
-                                                                                                        .Select(restriction => restriction.CustomFieldOptionId.ToString()).ToList();
+                                        if (userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == currentCustomField).Count() > 0)
+                                        {
+                                            List<string> AllowedRightsForCurrentCustomField = userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == currentCustomField &&
+                                                                                                            (restriction.Permission == ViewEditPermission || restriction.Permission == ViewOnlyPermission))
+                                                                                                            .Select(restriction => restriction.CustomFieldOptionId.ToString()).ToList();
 
-                                        //// Check for currentField tactic is viewable or not
-                                        bool isViewable = currentTacticEntities.Where(entity => entity.CustomFieldId == currentCustomField && AllowedRightsForCurrentCustomField.Contains(entity.Value)).Any();
-                                        if (isViewable == false)
+                                            //// Check for currentField tactic is viewable or not
+                                            bool isViewable = currentTacticEntities.Where(entity => entity.CustomFieldId == currentCustomField && AllowedRightsForCurrentCustomField.Contains(entity.Value)).Any();
+                                            if (isViewable == false)
+                                            {
+                                                isViewableEntity = false;
+                                                break;
+                                            }
+                                        }
+                                        else if (!IsDefaultCustomRestrictionsViewable())
                                         {
                                             isViewableEntity = false;
                                             break;
@@ -5111,6 +5120,15 @@ namespace RevenuePlanner.Helpers
                                     isViewableEntity = true;
                                 }
                             }
+                            else
+                            {
+                                //// Check default custom restrictions is set to viewable
+                                if (IsDefaultCustomRestrictionsViewable())
+                                {
+                                    //// set list of viewable tactic Ids
+                                    lstAllowedEntityIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
+                                }
+                            }
                         }
                     }
                 }
@@ -5121,6 +5139,72 @@ namespace RevenuePlanner.Helpers
             }
 
             return lstAllowedEntityIds;
+        }
+        #endregion
+
+        #region Check default custom restriction is viewable
+        /// <summary>
+        /// Function to check default custom restriction is viewable or not
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsDefaultCustomRestrictionsViewable()
+        {
+            var defaultCustomResriction = ConfigurationManager.AppSettings.Get("DefaultCustomRestriction");
+            if (defaultCustomResriction != null)
+            {
+                if (int.Parse(defaultCustomResriction.ToString()) == (int)Enums.CustomRestrictionPermission.ViewOnly ||
+                    int.Parse(defaultCustomResriction.ToString()) == (int)Enums.CustomRestrictionPermission.ViewEdit)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        #endregion
+
+        #region Check default custom restriction is editable or not
+        /// <summary>
+        /// Function to check default custom restriction is editable or not
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsDefaultCustomRestrictionsEditable()
+        {
+            var defaultCustomResriction = ConfigurationManager.AppSettings.Get("DefaultCustomRestriction");
+            if (defaultCustomResriction != null)
+            {
+                if (int.Parse(defaultCustomResriction.ToString()) == (int)Enums.CustomRestrictionPermission.ViewEdit)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        #endregion
+
+        #region Get default custom restriction type
+        /// <summary>
+        /// Function to get default custom restriction type
+        /// </summary>
+        /// <returns></returns>
+        public static Enums.CustomRestrictionPermission GetDefaultCustomRestrictionType()
+        {
+            var defaultCustomResriction = ConfigurationManager.AppSettings.Get("DefaultCustomRestriction");
+            if (defaultCustomResriction != null)
+            {
+                if (int.Parse(defaultCustomResriction.ToString()) == (int)Enums.CustomRestrictionPermission.ViewEdit)
+                {
+                    return Enums.CustomRestrictionPermission.ViewEdit;
+                }
+                else if (int.Parse(defaultCustomResriction.ToString()) == (int)Enums.CustomRestrictionPermission.ViewOnly)
+                {
+                    return Enums.CustomRestrictionPermission.ViewOnly;
+                }
+                else if (int.Parse(defaultCustomResriction.ToString()) == (int)Enums.CustomRestrictionPermission.None)
+                {
+                    return Enums.CustomRestrictionPermission.None;
+                }
+            }
+            return Enums.CustomRestrictionPermission.None;
         }
         #endregion
 
@@ -5192,6 +5276,10 @@ namespace RevenuePlanner.Helpers
                             }
                         }
                     }
+                }
+                else if (IsDefaultCustomRestrictionsEditable())
+                {
+                    lstEditableEntityIds = lstTactic;
                 }
             }
             catch (Exception ex)

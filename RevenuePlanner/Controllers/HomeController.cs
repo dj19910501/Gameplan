@@ -3162,20 +3162,12 @@ namespace RevenuePlanner.Controllers
             customFieldListOut = new List<CustomFieldsForFilter>();
             customFieldOptionsListOut = new List<CustomFieldsForFilter>();
 
-            //// Custom Restrictions
-            var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
-            int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-
-            //// Prepare list of allowed Custom Field Option Ids
-            List<int> lstAllowedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => (customRestriction.Permission == ViewOnlyPermission || customRestriction.Permission == ViewEditPermission)).Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
-
             //// Get list of custom fields
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
             string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
             var lstCustomField = objDbMrpEntities.CustomFields.Where(customField => customField.ClientId == Sessions.User.ClientId && customField.IsDeleted.Equals(false) &&
                                                                 customField.EntityType.Equals(EntityTypeTactic) && customField.CustomFieldType.Name.Equals(DropDownList) &&
-                                                                customField.IsDisplayForFilter.Equals(true))
+                                                                customField.IsDisplayForFilter.Equals(true) && customField.CustomFieldOptions.Count() > 0)
                                                                 .Select(customField => new
                                                                 {
                                                                     customField.Name,
@@ -3189,12 +3181,12 @@ namespace RevenuePlanner.Controllers
                 //// Get list of Custom Field Ids
                 lstCustomFieldId = lstCustomField.Select(customField => customField.CustomFieldId).Distinct().ToList();
 
-                ////// Sort custom fields by name
-                lstCustomField = lstCustomField.OrderBy(customField => customField.Name).ToList();
+                //////// Sort custom fields by name
+                //lstCustomField = lstCustomField.OrderBy(customField => customField.Name).ToList();
 
                 //// Get list of custom field options
-                var lstCustomFieldOption = objDbMrpEntities.CustomFieldOptions
-                                                            .Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId) && lstAllowedCustomFieldOptionIds.Contains(customFieldOption.CustomFieldOptionId))
+                var lstCustomFieldOptions = objDbMrpEntities.CustomFieldOptions
+                                                            .Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId))
                                                             .Select(customFieldOption => new
                                                             {
                                                                 customFieldOption.CustomFieldId,
@@ -3202,32 +3194,111 @@ namespace RevenuePlanner.Controllers
                                                                 customFieldOption.Value
                                                             }).ToList();
 
-                if (lstCustomFieldOption.Count > 0)
+                //////// Sort custom field option list by value and custom field id
+                //lstCustomFieldOptions = lstCustomFieldOptions.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
+
+                //// Get default custom restriction value
+                bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
+
+                //// Custom Restrictions
+                var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
+
+                if (userCustomRestrictionList.Count() > 0)
                 {
-                    List<int> customFieldIdFromOptions = new List<int>();
-                    customFieldIdFromOptions = lstCustomFieldOption.Select(option => option.CustomFieldId).Distinct().ToList();
-                    if (customFieldIdFromOptions.Count() > 0)
+                    int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+                    int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+
+                    foreach (var customFieldId in lstCustomFieldId)
                     {
-                        lstCustomField = lstCustomField.Where(customField => customFieldIdFromOptions.Contains(customField.CustomFieldId)).ToList();
+                        if (userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == customFieldId).Count() > 0)
+                        {
+                            //// Prepare list of allowed Custom Field Option Ids
+                            List<int> lstAllowedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == customFieldId && 
+                                                                                                    (customRestriction.Permission == ViewOnlyPermission || customRestriction.Permission == ViewEditPermission))
+                                                                                                .Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
+
+                            //// Get list of custom field options
+                            var lstAllowedCustomFieldOption = lstCustomFieldOptions.Where(customFieldOption => customFieldOption.CustomFieldId == customFieldId && 
+                                                                                        lstAllowedCustomFieldOptionIds.Contains(customFieldOption.CustomFieldOptionId))
+                                                                                    .Select(customFieldOption => new
+                                                                                    {
+                                                                                        customFieldOption.CustomFieldId,
+                                                                                        customFieldOption.CustomFieldOptionId,
+                                                                                        customFieldOption.Value
+                                                                                    }).ToList();
+
+                            if (lstAllowedCustomFieldOption.Count > 0)
+                            {
+                                //List<int> customFieldIdFromOptions = new List<int>();
+                                //customFieldIdFromOptions = lstAllowedCustomFieldOption.Select(option => option.CustomFieldId).Distinct().ToList();
+                                //if (customFieldIdFromOptions.Count() > 0)
+                                //{
+                                //    lstCustomField = lstCustomField.Where(customField => customFieldIdFromOptions.Contains(customField.CustomFieldId)).ToList();
+                                //}
+
+                                customFieldListOut.AddRange(lstCustomField.Where(customField => customField.CustomFieldId == customFieldId)
+                                                                        .Select(customField => new CustomFieldsForFilter()
+                                                                        {
+                                                                            CustomFieldId = customField.CustomFieldId,
+                                                                            Title = customField.Name
+                                                                        }).ToList());
+
+                                customFieldOptionsListOut.AddRange(lstAllowedCustomFieldOption.Select(customFieldOption => new CustomFieldsForFilter()
+                                                                                        {
+                                                                                            CustomFieldId = customFieldOption.CustomFieldId,
+                                                                                            CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
+                                                                                            Title = customFieldOption.Value
+                                                                                        }).ToList());
+
+                            }
+                        }
+                        else if (IsDefaultCustomRestrictionsViewable)
+                        {
+                            if (lstCustomFieldOptions.Where(option => option.CustomFieldId == customFieldId).Count() > 0)
+                            {
+                                customFieldListOut.AddRange(lstCustomField.Where(customField => customField.CustomFieldId == customFieldId).Select(customField => new CustomFieldsForFilter()
+                                {
+                                    CustomFieldId = customField.CustomFieldId,
+                                    Title = customField.Name
+                                }).ToList());
+
+                                customFieldOptionsListOut.AddRange(lstCustomFieldOptions.Where(option => option.CustomFieldId == customFieldId).Select(customFieldOption => new CustomFieldsForFilter()
+                                {
+                                    CustomFieldId = customFieldOption.CustomFieldId,
+                                    CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
+                                    Title = customFieldOption.Value
+                                }).ToList());
+                            }
+                        }
                     }
-
-                    ////// Sort custom field option list by value and custom field id
-                    lstCustomFieldOption = lstCustomFieldOption.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
-
-                    customFieldListOut = lstCustomField.Select(customField => new CustomFieldsForFilter()
-                                                            {
-                                                                CustomFieldId = customField.CustomFieldId,
-                                                                Title = customField.Name
-                                                            }).ToList();
-
-                    customFieldOptionsListOut = lstCustomFieldOption.Select(customFieldOption => new CustomFieldsForFilter()
-                                                                            {
-                                                                                CustomFieldId = customFieldOption.CustomFieldId,
-                                                                                CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
-                                                                                Title = customFieldOption.Value
-                                                                            }).ToList();
-
                 }
+                else if (IsDefaultCustomRestrictionsViewable)
+                {
+                    //// If default custom restriction is viewable than add all custom fields for search filter
+                    customFieldListOut = lstCustomField.Select(customField => new CustomFieldsForFilter()
+                    {
+                        CustomFieldId = customField.CustomFieldId,
+                        Title = customField.Name
+                    }).ToList();
+
+                    customFieldOptionsListOut = lstCustomFieldOptions.Select(customFieldOption => new CustomFieldsForFilter()
+                    {
+                        CustomFieldId = customFieldOption.CustomFieldId,
+                        CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
+                        Title = customFieldOption.Value
+                    }).ToList();
+                }
+            }
+
+            if (customFieldListOut.Count() > 0)
+            {
+                ////// Sort custom fields by name
+                customFieldListOut = customFieldListOut.OrderBy(customField => customField.Title).ToList();
+            }
+            if (customFieldOptionsListOut.Count() > 0)
+            {
+                ////// Sort custom field option list by value and custom field id
+                customFieldOptionsListOut = customFieldOptionsListOut.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Title).ToList();
             }
         }
 

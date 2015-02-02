@@ -3595,13 +3595,20 @@ namespace RevenuePlanner.Helpers
             //fieldCounter variable for defining raw style
             if (customFieldList.Count != 0)
             {
+                //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
+                //// User custom Restrictions
+                var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
+
                 //// Start - Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
-                List<Models.CustomRestriction> lstUserCustomRestrictions = new List<CustomRestriction>();
+                List<Models.CustomRestriction> lstEditableRestrictions = new List<CustomRestriction>();
                 if (mode != Enums.InspectPopupMode.ReadOnly.ToString() && section == Enums.EntityType.Tactic.ToString())
                 {
-                    lstUserCustomRestrictions = Common.GetCustomRestrictionListByPermission(Sessions.User.UserId, Enums.CustomRestrictionPermission.ViewEdit);
+                    lstEditableRestrictions = userCustomRestrictionList.Where(restriction => restriction.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit).ToList();
                 }
                 //// End - Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
+
+                //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
+                bool IsDefaultCustomRestrictionsEditable = Common.IsDefaultCustomRestrictionsEditable();
 
                 foreach (var item in customFieldList)
                 {
@@ -3616,9 +3623,17 @@ namespace RevenuePlanner.Helpers
                     }
 
                     //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
-                    Int32 editableOptionsCount = lstUserCustomRestrictions.Where(customRestriction => customRestriction.CustomFieldId == item.customFieldId).Count();
+                    bool editableOptions = false;
+                    if (userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == item.customFieldId).Any())  //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
+                    {
+                        editableOptions = lstEditableRestrictions.Where(customRestriction => customRestriction.CustomFieldId == item.customFieldId).Any();
+                    }
+                    else if (IsDefaultCustomRestrictionsEditable)   //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
+                    {
+                        editableOptions = true;
+                    }
 
-                    if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() || editableOptionsCount > 0 || (mode == Enums.InspectPopupMode.ReadOnly.ToString() && item.option.Count > 0))
+                    if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() || editableOptions == true || (mode == Enums.InspectPopupMode.ReadOnly.ToString() && item.option.Count > 0))
                     {
                         if (item.isRequired)
                             sb.Append("<div class=\"" + className + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
@@ -3654,7 +3669,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                     {
-                        if (mode == Enums.InspectPopupMode.Edit.ToString() && editableOptionsCount > 0)
+                        if (mode == Enums.InspectPopupMode.Edit.ToString() && editableOptions == true)
                         {
                             string DropDownStyle = "";
                             string divPosition = "";
@@ -3680,7 +3695,20 @@ namespace RevenuePlanner.Helpers
                                 foreach (var objOption in item.option)
                                 {
                                     //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
-                                    bool isEditable = lstUserCustomRestrictions.Where(customRestriction => customRestriction.CustomFieldId == item.customFieldId && customRestriction.CustomFieldOptionId == objOption.customFieldOptionId).Any();
+                                    bool isEditable = false;
+                                    if (userCustomRestrictionList.Count() == 0 && IsDefaultCustomRestrictionsEditable)  //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
+                                    {
+                                        isEditable = true;
+                                    }
+                                    else if (userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == item.customFieldId).Count() == 0 && IsDefaultCustomRestrictionsEditable)   //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
+                                    {
+                                        isEditable = true;
+                                    }
+                                    else
+                                    {
+                                        isEditable = lstEditableRestrictions.Where(customRestriction => customRestriction.CustomFieldId == item.customFieldId && customRestriction.CustomFieldOptionId == objOption.customFieldOptionId).Any();
+                                    }
+
                                     if (isEditable) //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                                     {
                                         string enableCheck = string.Empty;
