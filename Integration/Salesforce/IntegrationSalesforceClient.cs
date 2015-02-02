@@ -379,6 +379,7 @@ namespace Integration.Salesforce
                                 catch (SalesforceException e)
                                 {
                                     ErrorFlag = true;
+                                    _ErrorMessage = GetErrorMessage(e);
                                     string TacticId = Convert.ToString(jobj[CampaignId]); ////CRMId
                                    
                                     //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
@@ -404,6 +405,7 @@ namespace Integration.Salesforce
                                 catch (Exception e)
                                 {
                                     ErrorFlag = true;
+                                    _ErrorMessage = e.Message;
                                     string TacticId = Convert.ToString(jobj[CampaignId]); ////CRMId
 
                                     //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
@@ -493,7 +495,7 @@ namespace Integration.Salesforce
                             if (ErrorFlag)
                             {
                                 // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-                                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Empty);
+                                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, _ErrorMessage);
                             }
                             else
                             {
@@ -685,6 +687,7 @@ namespace Integration.Salesforce
                                 catch (SalesforceException e)
                                 {
                                     ErrorFlag = true;
+                                    _ErrorMessage = GetErrorMessage(e);
                                     string TacticId = Convert.ToString(jobj[CampaignId]);
 
                                     //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
@@ -710,6 +713,7 @@ namespace Integration.Salesforce
                                 catch (Exception e)
                                 {
                                     ErrorFlag = true;
+                                    _ErrorMessage = e.Message;
                                     string TacticId = Convert.ToString(jobj[CampaignId]);
 
                                     //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
@@ -814,7 +818,7 @@ namespace Integration.Salesforce
                             if (ErrorFlag)
                             {
                                 // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Empty);
+                                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, _ErrorMessage);
                             }
                             else
                             {
