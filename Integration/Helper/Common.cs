@@ -304,7 +304,7 @@ namespace Integration.Helper
                         if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.CustomField.ToString())
                         {
                             var objCustomField = customFieldsForSequencialOrderedList.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId).ToList();
-                            if (objCustomField.Count > 0)
+                            if (objCustomField.Count > 1)
                             {
                                 customTacticName.Append(RemoveSpaceAndUppercaseFirst(objCustomField.FirstOrDefault().AbbreviationForMulti) + "_");
                             }
