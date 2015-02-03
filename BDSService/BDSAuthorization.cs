@@ -17,7 +17,7 @@ namespace BDSService
 
         #region Validate User
 
-        public BDSEntities.User ValidateUser(Guid applicationId, string userEmail, string userPassword)
+        public BDSEntities.User ValidateUser(Guid applicationId, string userEmail, string userPassword, Guid? clienId = null)
         {
             BDSEntities.User userObj = new BDSEntities.User();
 
@@ -34,6 +34,14 @@ namespace BDSService
                         where u.Email == userEmail && u.Password == HashPassword && ua.ApplicationId == applicationId && u.IsDeleted == false && ua.IsDeleted == false
                         select new { u }).FirstOrDefault();
             //End PL#861 New User's Login Issues Manoj 22Oct2014
+            if (user != null && clienId != null)
+            {
+                if (!user.u.ClientId.Equals(clienId))
+                {
+                    user = null;
+                }
+            }
+
             if (user == null)
             {
                 userObj = null;

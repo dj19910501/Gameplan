@@ -15,6 +15,10 @@ namespace BDSService
         BDSEntities.User ValidateUser(Guid applicationId, string userEmail, string userPassword);
 
         [OperationContract]
+        BDSEntities.User ValidateUserByClient(Guid applicationId, string userEmail, string userPassword, Guid clientId);
+
+
+        [OperationContract]
         BDSEntities.User GetTeamMemberDetails(Guid userId, Guid applicationId);
 
         [OperationContract]

@@ -16,6 +16,11 @@ namespace BDSService
             BDSAuthorization obj = new BDSAuthorization();
             return obj.ValidateUser(ApplicationId, UserEmail, UserPassword);
         }
+        public BDSEntities.User ValidateUserByClient(Guid ApplicationId, string UserEmail, string UserPassword, Guid ClientId)
+        {
+            BDSAuthorization obj = new BDSAuthorization();
+            return obj.ValidateUser(ApplicationId, UserEmail, UserPassword, ClientId);
+        }
 
         public BDSEntities.User GetTeamMemberDetails(Guid userId, Guid applicationId)
         {
