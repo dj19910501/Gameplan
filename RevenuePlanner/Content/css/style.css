@@ -11481,6 +11481,10 @@ float:left;
 .font14 {
     font-size: 14px !important;
 }
+.customfield-review {
+width:70px;
+white-space:nowrap;
+}
 .integrration_label_align { margin-bottom:1px;
 }
 .new_tag {
