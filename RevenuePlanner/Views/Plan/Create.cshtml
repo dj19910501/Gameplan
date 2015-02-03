@@ -107,7 +107,7 @@
     {
                             <span id="spanAllocatedBy">@Model.AllocatedBy</span>
     }
-                        }.
+                      <span id="spanZeroBudget" class="source-sans-prosemibold" style="display:none;">none</span>  }.
                         <div class="nl-overlay"></div>
                         </div>
                         <div id="divPlanDefinationDisabled">
@@ -289,6 +289,7 @@
     $(document).ready(
       function () {
           var hdnPlanId = $("#hdnPlanId").val();
+          changeBudgetValues();
           // Start - Added by Arpita Soni on 01/17/2015 for Ticket #1071
           $(".priceValue").priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           // End - Added by Arpita Soni on 01/17/2015 for Ticket #1071
@@ -325,6 +326,12 @@
           else {
               $('#revenueSign').hide();
           }
+          
+          @* Start - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
+          $('#txtBudget').parent().find('.currency_dollar').blur(function () {
+              changeBudgetValues();
+          });
+          @* End - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
 
           $('#BtnGroup').click(function (e) {
               //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
@@ -372,16 +379,6 @@
                       var tValue = $(this).children('a').text();
 
                       if (tValue == '' || tValue == "Plan Title") {
-                          $(this).children('a').addClass("error-form");
-                          isError = true;
-                      }
-                      else {
-                          $(this).children('a').removeClass("error-form");
-                      }
-                  }
-                  else if ($(this).next().attr('datadefault') == "Budget") {
-                      var tValue = $(this).children('a').text();
-                      if (tValue == '' || tValue == '$0') {
                           $(this).children('a').addClass("error-form");
                           isError = true;
                       }
@@ -652,6 +649,39 @@
 
           /*End : Added by Mitesh Vaishnav for PL ticket 619*/
       });
+
+    @* Start - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
+    function changeBudgetValues() {
+
+        if ($("#txtBudget").val() == "$0") {
+            $('#AllocatedBy').prev().css("display", "none");
+            $('#spanZeroBudget').css("display", "inline");
+            $('#AllocatedBy').prev().children('a').text("none");
+
+            $('#AllocatedBy').prev().children('ul').children('li').removeClass("nl-dd-checked");
+
+            $('#AllocatedBy').prev().children('ul').children('li').each(function () {
+
+                if ($(this).html() == "none") {
+                    $(this).addClass('nl-dd-checked');
+                }
+            });
+
+            $("#AllocatedBy").children("option").each(function () {
+                if ($(this).attr("value") == "default") {
+                    $(this).attr("selected", "selected");
+                }
+                else {
+                    $(this).removeAttr("selected");
+                }
+            });
+        }
+        else {
+            $('#AllocatedBy').prev().css("display", "inline");
+            $('#spanZeroBudget').css("display", "none");
+        }
+    }
+    @* End - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
 
     @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
     $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
