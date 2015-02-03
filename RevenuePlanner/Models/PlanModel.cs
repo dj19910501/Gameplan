@@ -377,6 +377,7 @@ namespace RevenuePlanner.Models
         public double CWVelocity { get; set; }
         public List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList { get; set; }
         public string TacticYear { get; set; }
+        public List<TacticCustomFieldStageWeightage> TacticStageWeightages { get; set; }
     }
 
     public class PlanADSRelation
@@ -478,5 +479,23 @@ namespace RevenuePlanner.Models
         public int? Weight { get; set; }
         public string StageCode { get; set; }
         public int? StageWeight { get; set; }
+    }
+
+    /// <summary>
+    /// Added By : Viral Kadiya for PL ticket #1075
+    /// Added Date : 29/01/2015
+    /// return Tactic related CustomField,CustomFieldOptions and respective Weightage.
+    /// </summary>
+    public class TacticCustomFieldStageWeightage
+    {
+        public int CustomFieldId { get; set; }
+        public string Value { get; set; }
+        public bool? IsAdvanceWeightage { get; set; }
+        public int? Weightage { get; set; }
+        public int? INQWeightage { get; set; }
+        public int? MQLWeightage { get; set; }
+        public int? CWWeightage { get; set; }
+        public int? RevenueWeightage { get; set; }
+        public int? CostWeightage { get; set; }
     }
 }

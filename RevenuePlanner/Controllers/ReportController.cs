@@ -1261,25 +1261,26 @@ namespace RevenuePlanner.Controllers
             List<string> includeMonth = GetMonthListForReport(selectOption);
 
             //// get data from tempdata variable
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<TacticStageValue> Tacticdata = GetTacticStageData();//(List<TacticStageValue>)TempData["ReportData"];
+            //TempData["ReportData"] = TempData["ReportData"];
 
             //// load tacticdata based on ParentTab.
+            int customfieldId = 0;
             if (ParentTab.Contains(Common.TacticCustomTitle))
             {
-                int customfieldId = Convert.ToInt32(ParentTab.Replace(Common.TacticCustomTitle, ""));
+                customfieldId = Convert.ToInt32(ParentTab.Replace(Common.TacticCustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(customfield => customfield.CustomFieldId == customfieldId && customfield.Value == Id).Select(customfield => customfield.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(pcpt => entityids.Contains(pcpt.TacticObj.PlanTacticId)).ToList();
             }
             else if (ParentTab.Contains(Common.CampaignCustomTitle))
             {
-                int customfieldId = Convert.ToInt32(ParentTab.Replace(Common.CampaignCustomTitle, ""));
+                customfieldId = Convert.ToInt32(ParentTab.Replace(Common.CampaignCustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(customfield => customfield.CustomFieldId == customfieldId && customfield.Value == Id).Select(customfield => customfield.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(pcpt => entityids.Contains(pcpt.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
             }
             else if (ParentTab.Contains(Common.ProgramCustomTitle))
             {
-                int customfieldId = Convert.ToInt32(ParentTab.Replace(Common.ProgramCustomTitle, ""));
+                customfieldId = Convert.ToInt32(ParentTab.Replace(Common.ProgramCustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(customfield => customfield.CustomFieldId == customfieldId && customfield.Value == Id).Select(customfield => customfield.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(pcpt => entityids.Contains(pcpt.TacticObj.PlanProgramId)).ToList();
             }
@@ -1294,6 +1295,17 @@ namespace RevenuePlanner.Controllers
                 List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
                 Tacticdata.ForEach(tacticactual => tacticactual.ActualTacticList.ForEach(actual => planTacticActual.Add(actual)));
                 planTacticActual = planTacticActual.Where(tacticactual => includeMonth.Contains((Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == tacticactual.PlanTacticId).TacticYear) + tacticactual.Period)).ToList();
+
+                #region "Set Stage value by respective Weightage"
+                if (ParentTab.Contains(Common.TacticCustomTitle))
+                {
+                    List<Enums.InspectStage> lstTacticStageCode = new List<Enums.InspectStage>();
+                    lstTacticStageCode.Add(Enums.InspectStage.INQ);
+                    lstTacticStageCode.Add(Enums.InspectStage.MQL);
+                    Tacticdata = GetTacticListbyStageWeightage(lstTacticStageCode, customfieldId, Id, Tacticdata);
+                    planTacticActual = GetActualTacticListbyStageWeightage(lstTacticStageCode, customfieldId, Id, planTacticActual, Tacticdata);
+                }
+                #endregion
 
                 var rdata = new[] { new { 
                 INQGoal = GetConversionProjectedINQData(Tacticdata).Where(tactictable => includeMonth.Contains(tactictable.Month)).GroupBy(tactictable => tactictable.Month).Select(tactictable => new
@@ -1362,8 +1374,8 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns json result of source perfromance trend.</returns>
         private JsonResult GetMQLPerformanceTrend(string selectOption)
         {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<TacticStageValue> Tacticdata = GetTacticStageData();//(List<TacticStageValue>)TempData["ReportData"];
+            //TempData["ReportData"] = TempData["ReportData"];
 
             string mql = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
             List<string> months = GetUpToCurrentMonth();
@@ -1374,15 +1386,12 @@ namespace RevenuePlanner.Controllers
 
             //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
             string tactic = Enums.EntityType.Tactic.ToString();
-
-            // Get Custom Field Type Id
-            string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
-            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).First();
-            
+            string dropdownType = Enums.CustomFieldType.DropDownList.ToString();
+            int dropdwnCustomFieldTypeId = db.CustomFieldTypes.Where(custType => custType.Name.Equals(dropdownType)).Select(custType => custType.CustomFieldTypeId).FirstOrDefault();
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired==true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == customFieldTypeId
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == dropdwnCustomFieldTypeId
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
@@ -1392,54 +1401,18 @@ namespace RevenuePlanner.Controllers
             customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
-            List<int> lstCustomFieldId = customFields.Select(c => c.CustomFieldId).Distinct().ToList();
-
-            var customFieldOptions = db.CustomFieldOptions.Where(c => lstCustomFieldId.Contains(c.CustomFieldId)).AsQueryable();
-            List<int> lstCustomFieldOptionIds = customFieldOptions.Select(c => c.CustomFieldOptionId).Distinct().ToList();
-            List<string> lstOptionIds = new List<string>();
-            foreach (var customoptionid in lstCustomFieldOptionIds)
-            {
-                lstOptionIds.Add(customoptionid.ToString());
-            }
-
-            var customFieldEntities = db.CustomField_Entity.Where(e => lstOptionIds.Contains(e.Value)).AsQueryable();
-
+            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList().Where(co => customFields.Select(custm => custm.CustomFieldId).Contains(co.CustomFieldId)).ToList();
 
             // Applying custom field filters
             foreach (var customfield in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
 
-                List<string> lstInnerOptionIds = new List<string>();
-                var customFieldOptionsIds = customFieldOptions.Where(c => c.CustomFieldId == customfield.CustomFieldId).Select(c => c.CustomFieldOptionId);
-                foreach (var customoptionid in customFieldOptionsIds)
-                {
-                    lstInnerOptionIds.Add(customoptionid.ToString());
-                }
-
-                var lstCustomFieldEntity = customFieldEntities.Where(cf => lstInnerOptionIds.Contains(cf.Value)).Select(e => new
-                    {
-                        EntityId = e.EntityId,
-                        Value = e.Value
-                    }).ToList();
-
-                var lstTacticActuals = from entity in lstCustomFieldEntity
-                                       join tacticactual in planTacticActual
-                                       on entity.EntityId equals tacticactual.PlanTacticId
-                                       select new { entity.Value, entity.EntityId, tacticactual.Actualvalue };
-
-                var tacticTrendCustomField = lstTacticActuals.GroupBy(ta => ta.Value).Select
-                    (ta => new
-                    {
-                        CustomFieldOptionId = ta.Key,
-                        Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
-                    }).ToList();
-
-                lstSourcePerformance = customFieldOptions.Where(s => s.CustomFieldId == customfield.CustomFieldId).ToList().Select(s => new SourcePerformanceData
+                lstSourcePerformance = tblCustomFieldOption.Where(s => s.CustomFieldId == customfield.CustomFieldId).ToList().Select(s => new SourcePerformanceData
                 {
                     Title = s.Value,
                     ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = tacticTrendCustomField.Any(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId) ? tacticTrendCustomField.Where(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId).FirstOrDefault().Trend : 0
+                    Value = GetTrendActualTacticData(lastMonth, planTacticActual, customfield.CustomFieldId, s.CustomFieldOptionId.ToString(), Tacticdata) //tacticTrendCustomField.Any(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId) ? tacticTrendCustomField.Where(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId).FirstOrDefault().Trend : 0
                 }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(customfield.CustomFieldName);
@@ -1475,8 +1448,8 @@ namespace RevenuePlanner.Controllers
         {
             List<string> includeYearList = GetYearListForReport(selectOption, true);
             List<string> includeMonth = GetMonthListForReport(selectOption, true);
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<TacticStageValue> Tacticdata = GetTacticStageData();//(List<TacticStageValue>)TempData["ReportData"];
+            //TempData["ReportData"] = TempData["ReportData"];
 
             string mql = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
             List<Plan_Campaign_Program_Tactic_Actual> planTacticActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
@@ -1484,14 +1457,12 @@ namespace RevenuePlanner.Controllers
 
             //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
             string entityType = Enums.EntityType.Tactic.ToString();
-            
-            // Get Custom Field Type Id
-            string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
-            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).First();
+            string dropdownType = Enums.CustomFieldType.DropDownList.ToString();
+            int dropdwnCustomFieldTypeId = db.CustomFieldTypes.Where(custType => custType.Name.Equals(dropdownType)).Select(custType => custType.CustomFieldTypeId).FirstOrDefault();
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == customFieldTypeId
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == dropdwnCustomFieldTypeId
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
@@ -1499,35 +1470,25 @@ namespace RevenuePlanner.Controllers
                 }).Take(3).ToList();
 
             customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
-
+            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList().Where(co => customFields.Select(custm => custm.CustomFieldId).Contains(co.CustomFieldId)).ToList();
+            List<CustomField_Entity> tblCustomfieldEntity = db.CustomField_Entity.ToList().Where(ent => customFields.Select(custm => custm.CustomFieldId).Contains(ent.CustomFieldId)).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
-            List<int> lstCustomFieldId = customFields.Select(c => c.CustomFieldId).Distinct().ToList();
-            
-            var customFieldOptions = db.CustomFieldOptions.Where(c => lstCustomFieldId.Contains(c.CustomFieldId)).AsQueryable();
-            List<int> lstCustomFieldOptionIds = customFieldOptions.Select(c => c.CustomFieldOptionId).Distinct().ToList();
-            List<string> lstOptionIds = new List<string>();
-            foreach (var customoptionid in lstCustomFieldOptionIds)
-            {
-                lstOptionIds.Add(customoptionid.ToString());
-            }
-
-            var customFieldEntities = db.CustomField_Entity.Where(e=>lstOptionIds.Contains(e.Value)).AsQueryable();
-
+            List<Enums.InspectStage> MQLStagecode = new List<Enums.InspectStage>();
+            MQLStagecode.Add(Enums.InspectStage.MQL);
             // Applying custom field filters
             foreach (var customfield in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
 
-                List<string> lstInnerOptionIds = new List<string>();
-                var customFieldOptionsIds = customFieldOptions.Where(c => c.CustomFieldId == customfield.CustomFieldId).Select(c => c.CustomFieldOptionId);
-
-                foreach (var customoptionid in customFieldOptionsIds)
+                List<string> lstOptionIds = new List<string>();
+                var customFieldOptionsIds = db.CustomFieldOptions.Where(c => c.CustomFieldId == customfield.CustomFieldId).Select(c => c.CustomFieldOptionId);
+                foreach (var customOptionId in customFieldOptionsIds)
                 {
-                    lstInnerOptionIds.Add(customoptionid.ToString());
+                    lstOptionIds.Add(customOptionId.ToString());
                 }
 
-                var lstCustomFieldEntity = customFieldEntities.Where(cf => lstInnerOptionIds.Contains(cf.Value)).Select(e => new
+                var lstCustomFieldEntity = tblCustomfieldEntity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
                 {
                     EntityId = e.EntityId,
                     Value = e.Value
@@ -1537,15 +1498,15 @@ namespace RevenuePlanner.Controllers
                                        join tacticactual in planTacticActuals
                                        on entity.EntityId equals tacticactual.PlanTacticId
                                        where tacticactual.StageTitle == mql
-                                       select new { entity.Value, entity.EntityId, tacticactual.Actualvalue, timeFrameOptions = tacticactual.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + tacticactual.Period };
+                                       select new { entity.Value, entity.EntityId, tacticactual.Actualvalue, timeFrameOptions = tacticactual.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + tacticactual.Period,tacticactual };
 
-                lstSourcePerformance = customFieldOptions.Where(cf => cf.CustomFieldId == customfield.CustomFieldId).ToList()
+                lstSourcePerformance = tblCustomFieldOption.Where(cf => cf.CustomFieldId == customfield.CustomFieldId).ToList()
                                                 .Select(cf => new SourcePerformanceData
                                                 {
                                                     Title = cf.Value,
                                                     ColorCode = string.Format("#{0}", cf.ColorCode),
-                                                    Value = lstTacticActuals.Any(ta => ta.Value == Convert.ToString(cf.CustomFieldOptionId)) ? lstTacticActuals.Where(t => t.Value == Convert.ToString(cf.CustomFieldOptionId) &&
-                                                        includeMonth.Contains(t.timeFrameOptions)).Sum(t => t.Actualvalue) : 0
+                                                    Value = lstTacticActuals.Any(ta => ta.Value == Convert.ToString(cf.CustomFieldOptionId)) ? GetActualTacticListbyStageWeightage(MQLStagecode, customfield.CustomFieldId, cf.CustomFieldOptionId.ToString(), lstTacticActuals.Where(t => t.Value == Convert.ToString(cf.CustomFieldOptionId) &&
+                                                        includeMonth.Contains(t.timeFrameOptions)).Select(actTactic => actTactic.tacticactual).ToList(), Tacticdata).Sum(t => t.Actualvalue) : 0
                                                 }).OrderByDescending(cf => cf.Value).ThenBy(cf => cf.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(customfield.CustomFieldName);
@@ -1581,19 +1542,17 @@ namespace RevenuePlanner.Controllers
         {
             List<string> includeYearList = GetYearListForReport(selectOption, true);
             List<string> includeMonth = GetMonthListForReport(selectOption, true);
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<TacticStageValue> Tacticdata = GetTacticStageData();//(List<TacticStageValue>)TempData["ReportData"];
+            //TempData["ReportData"] = TempData["ReportData"];
 
             //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
             string entityType = Enums.EntityType.Tactic.ToString();
-
-            // Get Custom Field Type Id
-            string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
-            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).First();
+            string dropdownType = Enums.CustomFieldType.DropDownList.ToString();
+            int dropdwnCustomFieldTypeId = db.CustomFieldTypes.Where(custType => custType.Name.Equals(dropdownType)).Select(custType => custType.CustomFieldTypeId).FirstOrDefault();
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == customFieldTypeId
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == dropdwnCustomFieldTypeId
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
@@ -1601,32 +1560,26 @@ namespace RevenuePlanner.Controllers
                 }).Take(3).ToList();
 
             customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
+            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList().Where(co => customFields.Select(custm => custm.CustomFieldId).Contains(co.CustomFieldId)).ToList();
+            List<CustomField_Entity> tblCustomfieldEntity = db.CustomField_Entity.Where(ent => customFields.Select(custm => custm.CustomFieldId).Contains(ent.CustomFieldId)).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
-            List<int> lstCustomFieldId = customFields.Select(c => c.CustomFieldId).Distinct().ToList();
-            var customFieldOptions = db.CustomFieldOptions.Where(c => lstCustomFieldId.Contains(c.CustomFieldId)).AsQueryable();
-            List<int> lstCustomFieldOptionIds = customFieldOptions.Select(c => c.CustomFieldOptionId).Distinct().ToList();
-            List<string> lstOptionIds = new List<string>();
-            foreach (var customoptionid in lstCustomFieldOptionIds)
-            {
-                lstOptionIds.Add(customoptionid.ToString());
-            }
-
-            var customFieldEntities = db.CustomField_Entity.Where(e => lstOptionIds.Contains(e.Value)).AsQueryable();
+            List<Enums.InspectStage> lstMQLStageCode = new List<Enums.InspectStage>();
+            lstMQLStageCode.Add(Enums.InspectStage.MQL);
 
             // Applying custom field filters
             foreach (var customfield in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
 
-                List<string> lstInnerOptionIds = new List<string>();
-                var customFieldOptionsIds = customFieldOptions.Where(c => c.CustomFieldId == customfield.CustomFieldId).Select(c => c.CustomFieldOptionId);
-                foreach (var customoptionid in customFieldOptionsIds)
+                List<string> lstOptionIds = new List<string>();
+                var customFieldOptionsIds = tblCustomFieldOption.Where(c => c.CustomFieldId == customfield.CustomFieldId).Select(c => c.CustomFieldOptionId);
+                foreach (var customfieldOptionId in customFieldOptionsIds)
                 {
-                    lstInnerOptionIds.Add(customoptionid.ToString());
+                    lstOptionIds.Add(customfieldOptionId.ToString());
                 }
 
-                var lstCustomFieldEntity = customFieldEntities.Where(cf => lstInnerOptionIds.Contains(cf.Value)).Select(e => new
+                var lstCustomFieldEntity = tblCustomfieldEntity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
                 {
                     EntityId = e.EntityId,
                     Value = e.Value
@@ -1638,14 +1591,14 @@ namespace RevenuePlanner.Controllers
                                        select new { entity.Value, entity.EntityId, tacticactual };
 
 
-                lstSourcePerformance = customFieldOptions.Where(b => b.CustomFieldId == customfield.CustomFieldId).ToList()
+                lstSourcePerformance = tblCustomFieldOption.Where(b => b.CustomFieldId == customfield.CustomFieldId).ToList()
                                                 .Select(b => new SourcePerformanceData
                                                 {
                                                     Title = b.Value,
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
                                                     Value = lstTacticActuals.Any(t => t.Value == Convert.ToString(b.CustomFieldOptionId)) ?
-                                                    GetProjectedMQLValueDataTableForReport(lstTacticActuals.Where(lta => lta.Value == Convert.ToString(b.CustomFieldOptionId)).Select(ts => ts.tacticactual)
-                                                                                        .ToList())
+                                                    GetProjectedMQLValueDataTableForReport(GetTacticListbyStageWeightage(lstMQLStageCode, customfield.CustomFieldId, b.CustomFieldOptionId.ToString(), lstTacticActuals.Where(lta => lta.Value == Convert.ToString(b.CustomFieldOptionId)).Select(ts => ts.tacticactual)
+                                                                                        .ToList()))
                                                                                         .Where(mr => includeMonth.Contains(mr.Month))
                                                                                         .Sum(r => r.Value) : 0
                                                 }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5).ToList();
@@ -1985,17 +1938,17 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetRevenueSummaryDataRevenueReport(string ParentLabel, string id, string selectOption)
         {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<TacticStageValue> Tacticdata = GetTacticStageData(); //(List<TacticStageValue>)TempData["ReportData"];
+            //TempData["ReportData"] = TempData["ReportData"];
 
             List<string> includeYearList = GetYearListForReport(selectOption);
             List<string> includeMonth = GetMonthListForReport(selectOption);
             List<int> entityids = new List<int>();
+            int customfieldId = 0;
             //Check the custom field typa and replace the id with eliminate extra word 
             // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report 
             if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
             {
-                int customfieldId = 0;
                 if (ParentLabel.Contains(Common.TacticCustomTitle))
                 {
                     customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
@@ -2025,6 +1978,17 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
             ActualTacticList = ActualTacticList.Where(mr => includeMonth.Contains((Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == mr.PlanTacticId).TacticYear) + mr.Period)).ToList();
+
+            #region "Set Stage value by respective Weightage"
+            if (ParentLabel.Contains(Common.TacticCustomTitle))
+            {
+                List<Enums.InspectStage> lstTacticStageCode = new List<Enums.InspectStage>();
+                lstTacticStageCode.Add(Enums.InspectStage.Revenue);
+                lstTacticStageCode.Add(Enums.InspectStage.MQL);
+                Tacticdata = GetTacticListbyStageWeightage(lstTacticStageCode, customfieldId, id, Tacticdata);
+                ActualTacticList = GetActualTacticListbyStageWeightage(lstTacticStageCode, customfieldId, id, ActualTacticList, Tacticdata);
+            }
+            #endregion
 
             var campaignListobj = Tacticdata.GroupBy(pc => new { PCid = pc.TacticObj.Plan_Campaign_Program.PlanCampaignId, title = pc.TacticObj.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pc =>
                         new CampaignData
@@ -2237,6 +2201,7 @@ namespace RevenuePlanner.Controllers
         {
             public string Title { get; set; }
             public List<int> planTacticList { get; set; }
+            public int CustomFieldOptionid { get; set; }
         }
 
         /// <summary>
@@ -2246,32 +2211,33 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult LoadRevenueContribution(string parentlabel, string selectOption)
         {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<TacticStageValue> Tacticdata = GetTacticStageData();//(List<TacticStageValue>)TempData["ReportData"];
+            //TempData["ReportData"] = TempData["ReportData"];
 
             bool IsCampaignCustomField = false;
             bool IsProgramCustomField = false;
             bool IsTacticCustomField = false;
-
+             int customfieldId = 0;
+            string customFieldType = string.Empty;
             //Modified By : Kalpesh Sharma #960 Filter changes for Revenue report - Revenue Report
             // Check the custom field type and remove extra string for get Custom Field Id
             if (parentlabel.Contains(Common.TacticCustomTitle))
             {
-                int customfieldId = Convert.ToInt32(parentlabel.Replace(Common.TacticCustomTitle, ""));
+                customfieldId = Convert.ToInt32(parentlabel.Replace(Common.TacticCustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(custField => custField.CustomFieldId == customfieldId).Select(custField => custField.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(t => entityids.Contains(t.TacticObj.PlanTacticId)).ToList();
                 IsTacticCustomField = true;
             }
             else if (parentlabel.Contains(Common.CampaignCustomTitle))
             {
-                int customfieldId = Convert.ToInt32(parentlabel.Replace(Common.CampaignCustomTitle, ""));
+                customfieldId = Convert.ToInt32(parentlabel.Replace(Common.CampaignCustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(custField => custField.CustomFieldId == customfieldId).Select(custField => custField.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(tactic => entityids.Contains(tactic.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
                 IsCampaignCustomField = true;
             }
             else if (parentlabel.Contains(Common.ProgramCustomTitle))
             {
-                int customfieldId = Convert.ToInt32(parentlabel.Replace(Common.ProgramCustomTitle, ""));
+                customfieldId = Convert.ToInt32(parentlabel.Replace(Common.ProgramCustomTitle, ""));
                 List<int> entityids = db.CustomField_Entity.Where(custField => custField.CustomFieldId == customfieldId).Select(custField => custField.EntityId).ToList();
                 Tacticdata = Tacticdata.Where(tactic => entityids.Contains(tactic.TacticObj.PlanProgramId)).ToList();
                 IsProgramCustomField = true;
@@ -2295,7 +2261,7 @@ namespace RevenuePlanner.Controllers
             //Check the custom field type and filter tactic based on Custom field Id
             else if (parentlabel.Contains(Common.TacticCustomTitle) || parentlabel.Contains(Common.CampaignCustomTitle) || parentlabel.Contains(Common.ProgramCustomTitle))
             {
-                int customfieldId = 0;
+               
                 List<int> entityids = new List<int>();
                 if (IsTacticCustomField)
                 {
@@ -2313,7 +2279,7 @@ namespace RevenuePlanner.Controllers
                     entityids = Tacticdata.Select(t => t.TacticObj.PlanProgramId).ToList();
                 }
 
-                string customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
                 if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                 {
@@ -2324,6 +2290,7 @@ namespace RevenuePlanner.Controllers
                                   new RevenueContrinutionData
                                   {
                                       Title = pc.Key.title,
+                                      CustomFieldOptionid = pc.Key.id,
                                       // Modified By : Kalpesh Sharma Filter changes for Revenue report - Revenue Report
                                       // Fetch the filtered list based upon custom fields type
                                       planTacticList = Tacticdata.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
@@ -2352,36 +2319,36 @@ namespace RevenuePlanner.Controllers
                 int lastMonth = GetLastMonthForTrend(selectOption);
                 List<string> includeMonth = GetMonthListForReport(selectOption, true);
                 List<string> monthList = GetUpToCurrentMonth();
-                List<TacticMonthValue> ProjectedRevenueDatatable = GetProjectedRevenueValueDataTableForReport(Tacticdata);
-                List<TacticMonthValue> ProjectedCostDatatable = GetProjectedCostData(Tacticdata);
+                //List<TacticMonthValue> ProjectedRevenueDatatable = GetProjectedRevenueValueDataTableForReport(Tacticdata);
+                //List<TacticMonthValue> ProjectedCostDatatable = GetProjectedCostData(Tacticdata);
 
                 List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
                 Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
 
-                List<Plan_Tactic_Values> ActualRevenueTrendList = GetTrendRevenueDataContribution(ActualTacticList, lastMonth, monthList, revenue);
+                //List<Plan_Tactic_Values> ActualRevenueTrendList = GetTrendRevenueDataContribution(ActualTacticList, lastMonth, monthList, revenue);
                 List<string> monthWithYearList = GetUpToCurrentMonthWithYearForReport(selectOption, true);
 
                 List<int> ObjTactic = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
                 List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => ObjTactic.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
                 List<int> ObjTacticLineItemList = LineItemList.Select(t => t.PlanLineItemId).ToList();
                 List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(l => ObjTacticLineItemList.Contains(l.PlanLineItemId)).ToList();
-                List<TacticMonthValue> ActualCostDatatable = GetActualCostData(Tacticdata, LineItemList, LineItemActualList);
+                //List<TacticMonthValue> ActualCostDatatable = GetActualCostData(Tacticdata, LineItemList, LineItemActualList);
 
                 var campaignListFinal = campaignList.Select(p => new
                 {
                     Title = p.Title,
-                    PlanRevenue = ProjectedRevenueDatatable.Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
-                    ActualRevenue = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => p.planTacticList.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(revenue) && includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period)).ToList().Sum(ta => ta.Actualvalue),
+                    PlanRevenue = GetPlanRevenueContribution(customfieldId,p.CustomFieldOptionid.ToString(),Tacticdata,p.planTacticList,customFieldType,includeMonth),//ProjectedRevenueDatatable.Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
+                    ActualRevenue = GetActualRevenueContribution(customfieldId,p.CustomFieldOptionid.ToString(),Tacticdata,p.planTacticList,customFieldType,includeMonth),//db.Plan_Campaign_Program_Tactic_Actual.Where(ta => p.planTacticList.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(revenue) && includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period)).ToList().Sum(ta => ta.Actualvalue),
                     TrendRevenue = 0,//GetTrendRevenueDataContribution(p.planTacticList, lastMonth),
-                    PlanCost = ProjectedCostDatatable.Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
+                    PlanCost = GetPlanCostContribution(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata, p.planTacticList, customFieldType, includeMonth),
                     //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
-                    ActualCost = ActualCostDatatable.Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
+                    ActualCost = GetActualCostData(customfieldId,p.CustomFieldOptionid.ToString(),customFieldType, Tacticdata,LineItemList,LineItemActualList).Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
                     TrendCost = 0,//GetTrendCostDataContribution(p.planTacticList, lastMonth),
-                    RunRate = ActualRevenueTrendList.Where(ar => p.planTacticList.Contains(ar.PlanTacticId)).Sum(ar => ar.MQL),//GetTrendRevenueDataContribution(p.planTacticList, lastMonth, monthList),
+                    RunRate = GetTrendRevenueDataContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, lastMonth, monthList,Tacticdata).Where(ar => p.planTacticList.Contains(ar.PlanTacticId)).Sum(ar => ar.MQL),//GetTrendRevenueDataContribution(p.planTacticList, lastMonth, monthList),
                     PipelineCoverage = 0,//GetPipelineCoverage(p.planTacticList, lastMonth),
-                    RevSpend = GetRevenueVSSpendContribution(ActualCostDatatable, ActualTacticList, p.planTacticList, monthWithYearList, monthList, revenue),
-                    RevenueTotal = GetActualRevenueTotal(ActualTacticList, p.planTacticList, monthList, revenue),
-                    CostTotal = ActualCostDatatable.Where(mr => p.planTacticList.Contains(mr.Id) && monthWithYearList.Contains(mr.Month)).Sum(r => r.Value)
+                    RevSpend = GetRevenueVSSpendContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthWithYearList, monthList, revenue, Tacticdata, LineItemList, LineItemActualList),
+                    RevenueTotal = GetActualRevenueTotal(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthList, revenue, Tacticdata),
+                    CostTotal = GetActualCostData(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList).Where(mr => p.planTacticList.Contains(mr.Id) && monthWithYearList.Contains(mr.Month)).Sum(r => r.Value)
                 }).Select(p => p).Distinct().OrderBy(p => p.Title);
 
                 return Json(campaignListFinal, JsonRequestBehavior.AllowGet);
@@ -2390,25 +2357,30 @@ namespace RevenuePlanner.Controllers
         }
 
 
-        private List<TacticMonthValue> GetActualCostData(List<TacticStageValue> Tacticdata, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList)
+        private List<TacticMonthValue> GetActualCostData(int CustomFieldId,string CustomFieldOptionId,string CustomFieldType,List<TacticStageValue> Tacticdata, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList)
         {
             List<TacticMonthValue> listmonthwise = new List<TacticMonthValue>();
+            List<Enums.InspectStage> CostStageCode = new List<Enums.InspectStage>();
+            CostStageCode.Add(Enums.InspectStage.Cost);
             foreach (var tactic in Tacticdata)
             {
                 int id = tactic.TacticObj.PlanTacticId;
                 var InnerLineItemList = LineItemList.Where(l => l.PlanTacticId == id).ToList();
                 if (InnerLineItemList.Count() > 0)
                 {
-                    var innerLineItemActualList = LineItemActualList.Where(la => InnerLineItemList.Select(line => line.PlanLineItemId).Contains(la.PlanLineItemId)).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> innerLineItemActualList = LineItemActualList.Where(la => InnerLineItemList.Select(line => line.PlanLineItemId).Contains(la.PlanLineItemId)).ToList();
+                    if (!string.IsNullOrEmpty(CustomFieldType) && CustomFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                        innerLineItemActualList = GetCostLineItemActualListbyWeightage(CustomFieldId, CustomFieldOptionId, id, innerLineItemActualList, tactic);
                     innerLineItemActualList.ForEach(innerline => listmonthwise.Add(new TacticMonthValue { Id = id, Month = tactic.TacticYear + innerline.Period, Value = innerline.Value }));
                 }
                 else
                 {
-                    var innerTacticActualList = tactic.ActualTacticList.Where(actualTac => actualTac.StageTitle == Enums.InspectStage.Cost.ToString()).ToList();
+                    List<Plan_Campaign_Program_Tactic_Actual> innerTacticActualList = tactic.ActualTacticList.Where(actualTac => actualTac.StageTitle == Enums.InspectStage.Cost.ToString()).ToList();
+                    if (!string.IsNullOrEmpty(CustomFieldType) && CustomFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                        innerTacticActualList = GetActualTacticListbyStageWeightage(CostStageCode, CustomFieldId, CustomFieldOptionId, innerTacticActualList, Tacticdata);
                     innerTacticActualList.ForEach(innerTactic => listmonthwise.Add(new TacticMonthValue { Id = id, Month = tactic.TacticYear + innerTactic.Period, Value = innerTactic.Actualvalue }));
                 }
             }
-
             return listmonthwise;
         }
 
@@ -2439,9 +2411,18 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
-        public List<Plan_Tactic_Values> GetTrendRevenueDataContribution(List<Plan_Campaign_Program_Tactic_Actual> planTacticList, int lastMonth, List<string> monthList, string revenue)
+        public List<Plan_Tactic_Values> GetTrendRevenueDataContribution(int CustomFieldId,string CustomFieldOptionId,string CustomFieldType,List<Plan_Campaign_Program_Tactic_Actual> planActualTacticList, int lastMonth, List<string> monthList,List<TacticStageValue> TacticData)
         {
-            return planTacticList.Where(tactic => monthList.Contains(tactic.Period) && tactic.StageTitle == revenue).GroupBy(_tac => _tac.PlanTacticId).Select(pt => new Plan_Tactic_Values
+            List<Enums.InspectStage> RevenueStageCodeList = new List<Enums.InspectStage>();
+            RevenueStageCodeList.Add(Enums.InspectStage.Revenue);
+            string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
+            List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+            if (!string.IsNullOrEmpty(CustomFieldType) && CustomFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                ActualTacticList = GetActualTacticListbyStageWeightage(RevenueStageCodeList, CustomFieldId, CustomFieldOptionId, planActualTacticList, TacticData);
+            else
+                ActualTacticList = planActualTacticList;
+
+            return ActualTacticList.Where(tactic => monthList.Contains(tactic.Period) && tactic.StageTitle == revenue).GroupBy(_tac => _tac.PlanTacticId).Select(pt => new Plan_Tactic_Values
             {
                 PlanTacticId = pt.Key,
                 MQL = (pt.Sum(a => a.Actualvalue) / currentMonth) * lastMonth
@@ -2453,10 +2434,19 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
-        public double GetRevenueVSSpendContribution(List<TacticMonthValue> ActualDT, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthWithYearList, List<string> monthList, string revenue)
+        public double GetRevenueVSSpendContribution(int CustomFieldId, string CustomFieldOptionId, string customFieldType, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthWithYearList, List<string> monthList, string revenue, List<TacticStageValue> TacticData, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList)
         {
-            double costTotal = ActualDT.Where(actual => planTacticList.Contains(actual.Id) && monthWithYearList.Contains(actual.Month)).Sum(actual => actual.Value);
-            double revenueTotal = ActualTacticList.Where(actualTac => planTacticList.Contains(actualTac.PlanTacticId) && monthList.Contains(actualTac.Period) && actualTac.StageTitle == revenue).ToList().Sum(actual => actual.Actualvalue);
+            List<TacticMonthValue> lstMonthData = new List<TacticMonthValue>();
+            List<Enums.InspectStage> RevenueStageCode = new List<Enums.InspectStage>();
+            RevenueStageCode.Add(Enums.InspectStage.Revenue);
+            List<Plan_Campaign_Program_Tactic_Actual> lstActualsTacticData = new List<Plan_Campaign_Program_Tactic_Actual>();
+            lstMonthData = GetActualCostData(CustomFieldId, CustomFieldOptionId, customFieldType, TacticData, LineItemList, LineItemActualList);
+            if (!string.IsNullOrEmpty(customFieldType) && customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                lstActualsTacticData = GetActualTacticListbyStageWeightage(RevenueStageCode, CustomFieldId, CustomFieldOptionId, ActualTacticList, TacticData);
+            else
+                lstActualsTacticData = ActualTacticList;
+            double costTotal = lstMonthData.Where(actual => planTacticList.Contains(actual.Id) && monthWithYearList.Contains(actual.Month)).Sum(actual => actual.Value);
+            double revenueTotal = lstActualsTacticData.Where(actualTac => planTacticList.Contains(actualTac.PlanTacticId) && monthList.Contains(actualTac.Period) && actualTac.StageTitle == revenue).ToList().Sum(actual => actual.Actualvalue);
             double RevenueSpend = 0;
 
             if (costTotal != 0)
@@ -2475,9 +2465,16 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
-        public double GetActualRevenueTotal(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthList, string revenue)
+        public double GetActualRevenueTotal(int CustomFieldId, string CustomFieldOptionId, string customFieldType, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthList, string revenue,List<TacticStageValue>TacticData)
         {
-            return ActualTacticList.Where(ta => planTacticList.Contains(ta.PlanTacticId) && monthList.Contains(ta.Period) && ta.StageTitle == revenue).ToList().Sum(a => a.Actualvalue);
+            List<Enums.InspectStage> RevenueStageCode = new List<Enums.InspectStage>();
+            RevenueStageCode.Add(Enums.InspectStage.Revenue);
+            List<Plan_Campaign_Program_Tactic_Actual> lstActualsTacticData = new List<Plan_Campaign_Program_Tactic_Actual>();
+            if (!string.IsNullOrEmpty(customFieldType) && customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                lstActualsTacticData = GetActualTacticListbyStageWeightage(RevenueStageCode, CustomFieldId, CustomFieldOptionId, ActualTacticList, TacticData);
+            else
+                lstActualsTacticData = ActualTacticList;
+            return lstActualsTacticData.Where(ta => planTacticList.Contains(ta.PlanTacticId) && monthList.Contains(ta.Period) && ta.StageTitle == revenue).ToList().Sum(a => a.Actualvalue);
         }
 
         #endregion
@@ -2492,8 +2489,8 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns json data for revenue to plan report.</returns>
         public JsonResult GetRevenueToPlan(string ParentLabel, string id, string selectOption = "", string originalOption = "")
         {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<TacticStageValue> Tacticdata = GetTacticStageData();//(List<TacticStageValue>)TempData["ReportData"];
+            //TempData["ReportData"] = TempData["ReportData"];
             bool isCustomField = false;
             int customfieldId = 0;
 
@@ -2532,6 +2529,16 @@ namespace RevenuePlanner.Controllers
                 string stageTitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
                 List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
                 Tacticdata.ForEach(t => t.ActualTacticList.Where(pcpta => pcpta.StageTitle == stageTitleRevenue).ToList().ForEach(a => ActualTacticList.Add(a)));
+
+                #region "Set Stage value by respective Weightage"
+                if (ParentLabel.Contains(Common.TacticCustomTitle))
+                {
+                    List<Enums.InspectStage> lstRevenueStageCode = new List<Enums.InspectStage>();
+                    lstRevenueStageCode.Add(Enums.InspectStage.Revenue);
+                    Tacticdata = GetTacticListbyStageWeightage(lstRevenueStageCode, customfieldId, id, Tacticdata);
+                    ActualTacticList = GetActualTacticListbyStageWeightage(lstRevenueStageCode, customfieldId, id, ActualTacticList, Tacticdata);
+                }
+                #endregion
 
                 List<string> includeMonth = GetMonthListForReport(selectOption, true);
                 DataTable dtActualRevenue = GetActualRevenue(ActualTacticList);
@@ -2883,54 +2890,68 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns json result of source perfromance actual.</returns>
         private JsonResult GetSourcePerformanceActual(string selectOption)
         {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<TacticStageValue> Tacticdata = GetTacticStageData();//(List<TacticStageValue>)TempData["ReportData"];
+            //TempData["ReportData"] = TempData["ReportData"];
 
             List<string> includeYearList = GetYearListForReport(selectOption, true);
             List<string> includeMonth = GetMonthListForReport(selectOption, true);
             List<string> includeMonthUpCurrent = GetUpToCurrentMonthWithYearForReport(selectOption, true);
             // List<int> TacticIds = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
-            List<TacticMonthValue> ProjectedRevenueDataTable = GetProjectedRevenueValueDataTableForReport(Tacticdata);
+
+
+
+            string tactic = Enums.EntityType.Tactic.ToString();
+            string dropdownType = Enums.CustomFieldType.DropDownList.ToString();
             string Revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-            //  List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpt => TacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle == Revenue && includeMonthUpCurrent.Contains(pcpt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pcpt.Period)).ToList();
 
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
             ActualTacticList = ActualTacticList.Where(mr => mr.StageTitle == Revenue && includeMonthUpCurrent.Contains((Tacticdata.FirstOrDefault(t => t.TacticObj.PlanTacticId == mr.PlanTacticId).TacticYear) + mr.Period)).ToList();
 
-            //// Start - Added by Arpita Soni for Ticket #1148 on 01/23/2015
-            string tactic = Enums.EntityType.Tactic.ToString();
 
-            // Get Custom Field Type Id
-            string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
-            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).First();
+            int dropdwnCustomFieldTypeId = db.CustomFieldTypes.Where(custType => custType.Name.Equals(dropdownType)).Select(custType => custType.CustomFieldTypeId).FirstOrDefault();
 
             // Get first 3 custom fields
             var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == customFieldTypeId
+                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == dropdwnCustomFieldTypeId
                 ).Select(c => new
                 {
                     CustomFieldId = c.CustomFieldId,
                     CustomFieldName = c.Name
                 }).Take(3).ToList();
+            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList().Where(co => customFields.Select(custm => custm.CustomFieldId).Contains(co.CustomFieldId)).ToList();
+            //List<int> lstCustomFieldOptionId = new List<int>(); 
+            //foreach (var customfield in customFields)
+            //{
+            //    lstCustomFieldOptionId = tblCustomFieldOption.Where(co => co.CustomFieldId.Equals(customfield.CustomFieldId)).Select(co=>co.CustomFieldOptionId).ToList();
+            //    foreach (int coId in lstCustomFieldOptionId)
+            //    {
+            //        Tacticdata = GetTacticListbyStageWeightage(lstRevenueStageCode, customfield.CustomFieldId, coId.ToString(), Tacticdata);
+            //        ActualTacticList = GetActualTacticListbyStageWeightage(lstRevenueStageCode, customfield.CustomFieldId, coId.ToString(), ActualTacticList, Tacticdata);
+            //    }
+            //}
+            //List<TacticMonthValue> ProjectedRevenueDataTable = GetProjectedRevenueValueDataTableForReport(Tacticdata);
+            //  List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpt => TacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle == Revenue && includeMonthUpCurrent.Contains(pcpt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pcpt.Period)).ToList();
+
+            //// Start - Added by Arpita Soni for Ticket #1148 on 01/23/2015
+
+
 
             customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
-            List<int> lstCustomFieldId = customFields.Select(c => c.CustomFieldId).Distinct().ToList();
-            var customFieldOptions = db.CustomFieldOptions.Where(c => lstCustomFieldId.Contains(c.CustomFieldId)).AsQueryable();
 
             // Applying custom field filters 
             foreach (var customfield in customFields)
             {
                 List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
 
-                lstSourcePerformance = customFieldOptions.Where(s => s.CustomFieldId == customfield.CustomFieldId).ToList().Select(s => new SourcePerformanceData
+                lstSourcePerformance = tblCustomFieldOption.Where(s => s.CustomFieldId == customfield.CustomFieldId).ToList().Select(s => new SourcePerformanceData
                 {
                     Title = s.Value,
                     ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
+                    Value = GetActualVSPlannedRevenue(ActualTacticList, customfield.CustomFieldId, s.CustomFieldOptionId.ToString(), Tacticdata, Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
                 }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(customfield.CustomFieldName);
@@ -2973,13 +2994,19 @@ namespace RevenuePlanner.Controllers
         /// <param name="tacticIds"></param>
         /// <param name="includeMonthUpCurrent"></param>
         /// <returns></returns>
-        private double GetActualVSPlannedRevenue(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<TacticMonthValue> ProjectedRevenueDataTable, List<int> tacticIds, List<string> includeMonthUpCurrent)
+        private double GetActualVSPlannedRevenue(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, int CustomFieldId, string CustomFieldOptionId, List<TacticStageValue> TacticData, List<int> tacticIds, List<string> includeMonthUpCurrent)
         {
             double actualRevenueValue = 0;
             double percentageValue = 0;
+            List<TacticStageValue> lstTacticData = new List<TacticStageValue>();
+            List<Enums.InspectStage> lstRevenueStageCode = new List<Enums.InspectStage>();
+            lstRevenueStageCode.Add(Enums.InspectStage.Revenue);
+            lstTacticData = GetTacticListbyStageWeightage(lstRevenueStageCode, CustomFieldId, CustomFieldOptionId, TacticData);
+            List<TacticMonthValue> ProjectedRevenueDataTable = GetProjectedRevenueValueDataTableForReport(lstTacticData);
+            List<Plan_Campaign_Program_Tactic_Actual> lstActualTacticlist = GetActualTacticListbyStageWeightage(lstRevenueStageCode, CustomFieldId, CustomFieldOptionId, ActualTacticList, lstTacticData);
             if (tacticIds.Count() > 0)
             {
-                var ActualRevenue = ActualTacticList.Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId)).ToList();
+                var ActualRevenue = lstActualTacticlist.Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId)).ToList();
                 if (ActualRevenue.Count() > 0)
                 {
                     actualRevenueValue = ActualRevenue.Sum(a => a.Actualvalue);
@@ -4457,7 +4484,419 @@ namespace RevenuePlanner.Controllers
             return planobj;
         }
 
-            #endregion
+        /// <summary>
+        /// Get list of Tactic by weightage.
+        /// </summary>
+        /// <returns></returns>
+        public List<TacticStageValue> GetTacticListbyStageWeightage(List<Enums.InspectStage> lstStageCode, int CustomFieldId, string CustomFieldOptionId, List<TacticStageValue> lstTacticData)
+        {
+            int? weightage = 0;
+            TacticCustomFieldStageWeightage objTacticStageWeightage = new TacticCustomFieldStageWeightage();
+            List<TacticStageValue> tacticData = new List<TacticStageValue>();
+            tacticData = lstTacticData;
+            try
+            {
+
+                if (lstStageCode.Contains(Enums.InspectStage.INQ))
+                {
+                    foreach (TacticStageValue objTactic in tacticData)
+                    {
+                        weightage = 0;
+                        objTacticStageWeightage = objTactic.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.INQWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objTactic.INQValue = (objTactic.INQValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+                if (lstStageCode.Contains(Enums.InspectStage.MQL))
+                {
+                    foreach (TacticStageValue objTactic in tacticData)
+                    {
+                        weightage = 0;
+                        objTacticStageWeightage = objTactic.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.MQLWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objTactic.MQLValue = (objTactic.MQLValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+                if (lstStageCode.Contains(Enums.InspectStage.CW))
+                {
+                    foreach (TacticStageValue objTactic in tacticData)
+                    {
+                        weightage = 0;
+                        objTacticStageWeightage = objTactic.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.CWWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objTactic.CWValue = (objTactic.CWValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+                if (lstStageCode.Contains(Enums.InspectStage.Revenue))
+                {
+                    foreach (TacticStageValue objTactic in tacticData)
+                    {
+                        weightage = 0;
+                        objTacticStageWeightage = objTactic.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.RevenueWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objTactic.RevenueValue = (objTactic.RevenueValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+                if (lstStageCode.Contains(Enums.InspectStage.Cost))
+                {
+                    foreach (TacticStageValue objTactic in tacticData)
+                    {
+                        weightage = 0;
+                        objTacticStageWeightage = objTactic.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.CostWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objTactic.TacticObj.Cost = (objTactic.TacticObj.Cost * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return tacticData;
+        }
+
+        /// <summary>
+        /// Get list of Filtered Tactics with .
+        /// </summary>
+        /// <param name="Tab"></param>
+        /// <param name="tacticList"> Reference of Tactic list</param>
+        /// <param name="lstArrCustomFieldFilter">list of filtered CustomFields</param>
+        /// <returns></returns>
+        public List<Plan_Campaign_Program_Tactic_Actual> GetActualTacticListbyStageWeightage(List<Enums.InspectStage> lstStageCode, int CustomFieldId, string CustomFieldOptionId, List<Plan_Campaign_Program_Tactic_Actual> lstActualTacticlist, List<TacticStageValue> TacticData)
+        {
+            int? weightage = 0;
+            TacticStageValue objTacticStageValue = new TacticStageValue();
+            TacticCustomFieldStageWeightage objTacticStageWeightage = new TacticCustomFieldStageWeightage();
+            string stagecode = string.Empty;
+            List<Plan_Campaign_Program_Tactic_Actual> ActualTacticlist = new List<Plan_Campaign_Program_Tactic_Actual>();
+            ActualTacticlist = lstActualTacticlist;
+            try
+            {
+
+                if (lstStageCode.Contains(Enums.InspectStage.INQ))
+                {
+                    stagecode = Enums.InspectStage.INQ.ToString();
+                    foreach (Plan_Campaign_Program_Tactic_Actual objActual in ActualTacticlist.Where(actual => actual.StageTitle.Equals(stagecode)))
+                    {
+                        weightage = 0;
+                        objTacticStageValue = TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(objActual.PlanTacticId)).FirstOrDefault();
+                        objTacticStageWeightage = objTacticStageValue.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.CWWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objActual.Actualvalue = (objActual.Actualvalue * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+                if (lstStageCode.Contains(Enums.InspectStage.MQL))
+                {
+                    stagecode = Enums.InspectStage.MQL.ToString();
+                    foreach (Plan_Campaign_Program_Tactic_Actual objActual in ActualTacticlist.Where(actual => actual.StageTitle.Equals(stagecode)))
+                    {
+                        weightage = 0;
+                        objTacticStageValue = TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(objActual.PlanTacticId)).FirstOrDefault();
+                        objTacticStageWeightage = objTacticStageValue.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.MQLWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objActual.Actualvalue = (objActual.Actualvalue * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+                if (lstStageCode.Contains(Enums.InspectStage.CW))
+                {
+                    stagecode = Enums.InspectStage.CW.ToString();
+                    foreach (Plan_Campaign_Program_Tactic_Actual objActual in ActualTacticlist.Where(actual => actual.StageTitle.Equals(stagecode)))
+                    {
+                        weightage = 0;
+                        objTacticStageValue = TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(objActual.PlanTacticId)).FirstOrDefault();
+                        objTacticStageWeightage = objTacticStageValue.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.CWWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objActual.Actualvalue = (objActual.Actualvalue * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+                if (lstStageCode.Contains(Enums.InspectStage.Revenue))
+                {
+                    stagecode = Enums.InspectStage.Revenue.ToString();
+                    foreach (Plan_Campaign_Program_Tactic_Actual objActual in ActualTacticlist.Where(actual => actual.StageTitle.Equals(stagecode)))
+                    {
+                        weightage = 0;
+                        objTacticStageValue = TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(objActual.PlanTacticId)).FirstOrDefault();
+                        objTacticStageWeightage = objTacticStageValue.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.RevenueWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objActual.Actualvalue = (objActual.Actualvalue * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+                if (lstStageCode.Contains(Enums.InspectStage.Cost))
+                {
+                    stagecode = Enums.InspectStage.Cost.ToString();
+                    foreach (Plan_Campaign_Program_Tactic_Actual objActual in ActualTacticlist.Where(actual => actual.StageTitle.Equals(stagecode)))
+                    {
+                        weightage = 0;
+                        objTacticStageValue = TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(objActual.PlanTacticId)).FirstOrDefault();
+                        objTacticStageWeightage = objTacticStageValue.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+
+                        if (objTacticStageWeightage != null)
+                        {
+                            if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                                weightage = objTacticStageWeightage.CostWeightage;
+                            else
+                                weightage = objTacticStageWeightage.Weightage;
+                        }
+                        objActual.Actualvalue = (objActual.Actualvalue * (weightage.HasValue ? weightage.Value : 0)) / 100;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return ActualTacticlist;
+        }
+
+        /// <summary>
+        /// Get list of Filtered Actual Tactics.
+        /// </summary>
+        /// <returns></returns>
+        public List<Plan_Campaign_Program_Tactic_LineItem_Actual> GetCostLineItemActualListbyWeightage(int CustomFieldId, string CustomFieldOptionId, int PlanTacticId, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstLineItemActuallist, TacticStageValue TacticData)
+        {
+            int? weightage = 0;
+            TacticStageValue objTacticStageValue = new TacticStageValue();
+            TacticCustomFieldStageWeightage objTacticStageWeightage = new TacticCustomFieldStageWeightage();
+            string stagecode = string.Empty;
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActuallist = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+            LineItemActuallist = lstLineItemActuallist;
+            try
+            {
+              stagecode = Enums.InspectStage.Cost.ToString();
+              foreach (Plan_Campaign_Program_Tactic_LineItem_Actual objActual in LineItemActuallist)
+              {
+                  weightage = 0;
+                  objTacticStageValue = TacticData;
+                  objTacticStageWeightage = objTacticStageValue.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+
+                  if (objTacticStageWeightage != null)
+                  {
+                      if (objTacticStageWeightage.IsAdvanceWeightage.Value)
+                          weightage = objTacticStageWeightage.CostWeightage;
+                      else
+                          weightage = objTacticStageWeightage.Weightage;
+                  }
+                  objActual.Value = (objActual.Value * (weightage.HasValue ? weightage.Value : 0)) / 100;
+              }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return LineItemActuallist;
+        }
+
+        /// <summary>
+        /// Get list of Filtered Tactics with .
+        /// </summary>
+        /// <param name="Tab"></param>
+        /// <param name="tacticList"> Reference of Tactic list</param>
+        /// <param name="lstArrCustomFieldFilter">list of filtered CustomFields</param>
+        /// <returns></returns>
+        public List<TacticStageValue> GetTacticStageData()
+        {
+            List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
+            try
+            {
+                List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
+                tacticStageList = Common.GetTacticStageRelation(tacticlist);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return tacticStageList;
+        }
+
+        /// <summary>
+        /// Get list of Actual Tactic data for MQL Performance.
+        /// </summary>
+        /// <param name="Tab"></param>
+        /// <param name="tacticList"> Reference of Tactic list</param>
+        /// <param name="lstArrCustomFieldFilter">list of filtered CustomFields</param>
+        /// <returns></returns>
+        public double GetTrendActualTacticData(int lastMonth, List<Plan_Campaign_Program_Tactic_Actual> lstActual, int CustomFieldID, string CustomFieldOptionID,List<TacticStageValue> TacticData)
+        {
+            List<Plan_Campaign_Program_Tactic_Actual> lstActualsbyWeight = new List<Plan_Campaign_Program_Tactic_Actual>();
+            List<Enums.InspectStage> MQLStageCode = new List<Enums.InspectStage>();
+            MQLStageCode.Add(Enums.InspectStage.MQL);
+            double trendValue = 0;
+            try
+            {
+                lstActualsbyWeight = GetActualTacticListbyStageWeightage(MQLStageCode, CustomFieldID, CustomFieldOptionID, lstActual, TacticData);
+                var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => cf.Value.Equals(CustomFieldOptionID)).Select(e => new
+                {
+                    EntityId = e.EntityId,
+                    Value = e.Value
+                }).ToList();
+
+                var lstTacticActuals = (from entity in lstCustomFieldEntity
+                                        join tacticactual in lstActualsbyWeight
+                                        on entity.EntityId equals tacticactual.PlanTacticId
+                                        select new {entity.Value, entity.EntityId, tacticactual.Actualvalue});
+
+                var tacticTrendCustomField = lstTacticActuals.GroupBy(ta => ta.Value).Select
+                    (ta => new
+                    {
+                        CustomFieldOptionId = ta.Key,
+                        Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
+                    }).ToList();
+                if (tacticTrendCustomField != null && tacticTrendCustomField.Count > 0)
+                    trendValue = tacticTrendCustomField.FirstOrDefault().Trend;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return trendValue;
+        }
+
+        /// <summary>
+        /// Get PlanRevenue value by weightage.
+        /// </summary>
+        /// <returns></returns>
+        public double GetPlanRevenueContribution(int CustomFieldId, string CustomFieldOptionId, List<TacticStageValue> TacticData, List<int> PlanTacticIds, string CustomFieldType, List<string> includeMonth)
+        {
+            double PlanRevenueValue = 0;
+            List<Enums.InspectStage> lststageCode = new List<Enums.InspectStage>();
+            lststageCode.Add(Enums.InspectStage.Revenue);
+            List<TacticStageValue> TacticDataWeightage = new List<TacticStageValue>();
+            try
+            {
+                if (!string.IsNullOrEmpty(CustomFieldType) && CustomFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                    TacticDataWeightage = GetTacticListbyStageWeightage(lststageCode, CustomFieldId, CustomFieldOptionId, TacticData);
+                else
+                    TacticDataWeightage = TacticData;
+                List<TacticMonthValue> ProjectedRevenueDatatable = GetProjectedRevenueValueDataTableForReport(TacticDataWeightage);
+                PlanRevenueValue = ProjectedRevenueDatatable.Where(mr => PlanTacticIds.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value);
+            }
+            catch (Exception ex)
+            {   
+                throw ex;
+            }
+            return PlanRevenueValue;
+        }
+
+        /// <summary>
+        /// Get ActualRevenue value by weightage.
+        /// </summary>
+        /// <returns></returns>
+        public double GetActualRevenueContribution(int CustomFieldId, string CustomFieldOptionId, List<TacticStageValue> TacticData, List<int> PlanTacticIds, string CustomFieldType, List<string> includeMonth)
+        {
+            double ActualRevenueValue = 0;
+            List<Enums.InspectStage> lststageCode = new List<Enums.InspectStage>();
+            lststageCode.Add(Enums.InspectStage.Revenue);
+            List<Plan_Campaign_Program_Tactic_Actual> ActualTacticDataWeightage = new List<Plan_Campaign_Program_Tactic_Actual>();
+            List<Plan_Campaign_Program_Tactic_Actual> lstActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
+            string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
+            try
+            {
+                lstActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => PlanTacticIds.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(revenue) && includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period)).ToList();
+                if (!string.IsNullOrEmpty(CustomFieldType) && CustomFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                    ActualTacticDataWeightage = GetActualTacticListbyStageWeightage(lststageCode, CustomFieldId, CustomFieldOptionId,lstActuals, TacticData);
+                else
+                    ActualTacticDataWeightage = lstActuals;
+                ActualRevenueValue = ActualTacticDataWeightage.Sum(ta => ta.Actualvalue);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return ActualRevenueValue;
+        }
+        
+        /// <summary>
+        /// Get PlanCost value by weightage.
+        /// </summary>
+        /// <returns></returns>
+        public double GetPlanCostContribution(int CustomFieldId, string CustomFieldOptionId, List<TacticStageValue> TacticData, List<int> PlanTacticIds, string CustomFieldType, List<string> includeMonth)
+        {
+            double PlanCostValue = 0;
+            List<Enums.InspectStage> lststageCode = new List<Enums.InspectStage>();
+            lststageCode.Add(Enums.InspectStage.Cost);
+            List<TacticStageValue> TacticDataWeightage = new List<TacticStageValue>();
+            try
+            {
+                if (!string.IsNullOrEmpty(CustomFieldType) && CustomFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                    TacticDataWeightage = GetTacticListbyStageWeightage(lststageCode, CustomFieldId, CustomFieldOptionId, TacticData);
+                else
+                    TacticDataWeightage = TacticData;
+                List<TacticMonthValue> ProjectedCostDatatable = GetProjectedCostData(TacticDataWeightage);
+                PlanCostValue = ProjectedCostDatatable.Where(mr => PlanTacticIds.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return PlanCostValue;
+        }
+
+        #endregion
     }
 
+    public class entMapCustomField_EntityIds
+    {
+        public List<int> CustomFieldEntityIds { get; set; }
+    }
 }
