@@ -11586,3 +11586,18 @@ white-space:nowrap;
     font-weight: 400;
 }
 /*End- added by mitesh for PL ticket #1070*/
+
+/*Start- added by mitesh for PL ticket #1070 Review Observation*/
+#InspectTab{border-bottom:0 !important;}
+#InspectTab li{border: 1px solid #dcdcdc; border-right:0 !important;}
+
+#InspectTab li:last-child{border-top-right-radius:6px;
+ border-bottom-right-radius:6px; border-right: 1px solid #dcdcdc !important;}
+
+#InspectTab li:last-child a{border-top-right-radius:6px;
+ border-bottom-right-radius:6px; margin:0;}
+
+
+#InspectTab li:first-child,#InspectTab li:first-child a{border-top-left-radius:6px;
+ border-bottom-left-radius:6px; margin:0;}
+/*End- added by mitesh for PL ticket #1070  Review Observation*/
