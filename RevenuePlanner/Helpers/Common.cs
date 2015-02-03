@@ -3970,7 +3970,7 @@ namespace RevenuePlanner.Helpers
                 {
                     customFieldOptionId = o.CustomFieldOptionId,
                     value = o.Value
-                }).ToList()
+                }).OrderBy(o=>o.value).ToList()
 
             }).OrderBy(a => a.name).ToList();
             return lstCustomFields;
