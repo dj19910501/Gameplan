@@ -5134,12 +5134,20 @@ namespace RevenuePlanner.Helpers
 
                             if (userCustomRestrictionList.Count() > 0)
                             {
-                                int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-                                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-
                                 //// Get list of tactic Ids
                                 List<int> lstTacticIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
+
+                                //// Get list of all custom field Ids
+                                var lstAllCustomFieldIds = lstAllTacticCustomFieldEntities.Select(entity => entity.CustomFieldId).Distinct().ToList();
+
+                                //// Get list of all custom field option Ids
+                                var lstAllCustomFieldOptionIds = objDbMrpEntities.CustomFieldOptions.Where(option => lstAllCustomFieldIds.Contains(option.CustomFieldId)).Select(option => option.CustomFieldOptionId).Distinct().ToList();
+
                                 bool isViewableEntity = true;
+                                int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+                                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                                int NonePermission = (int)Enums.CustomRestrictionPermission.None;
+
                                 foreach (int tacticId in lstTacticIds)
                                 {
                                     //// Get list of CustomFieldEntities for current selected tactic
@@ -5157,8 +5165,14 @@ namespace RevenuePlanner.Helpers
                                                                                                             (restriction.Permission == ViewEditPermission || restriction.Permission == ViewOnlyPermission))
                                                                                                             .Select(restriction => restriction.CustomFieldOptionId.ToString()).ToList();
 
+                                            List<int> lstRestrictedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == currentCustomField &&
+                                                                                                            customRestriction.Permission == NonePermission)
+                                                                                                    .Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
+
                                             //// Check for currentField tactic is viewable or not
-                                            bool isViewable = currentTacticEntities.Where(entity => entity.CustomFieldId == currentCustomField && AllowedRightsForCurrentCustomField.Contains(entity.Value)).Any();
+                                            bool isViewable = currentTacticEntities.Where(entity => entity.CustomFieldId == currentCustomField && 
+                                                                                        (AllowedRightsForCurrentCustomField.Contains(entity.Value) || lstAllCustomFieldOptionIds.Contains(int.Parse(entity.Value)))
+                                                                                        && !lstRestrictedCustomFieldOptionIds.Contains(int.Parse(entity.Value))).Any();
                                             if (isViewable == false)
                                             {
                                                 isViewableEntity = false;
@@ -5318,21 +5332,13 @@ namespace RevenuePlanner.Helpers
                                     //// Get list of CustomFieldEntities for current selected tactic
                                     var currentTacticEntities = lstAllTacticCustomFieldEntities.Where(entity => entity.EntityId == tacticId).ToList();
 
-                                    //// Get list of CustomFieldIds associated with current selected tactic
-                                    List<int> currentTacticCustomFields = currentTacticEntities.Select(entity => entity.CustomFieldId).ToList().Distinct().ToList();
-
-                                    foreach (int currentCustomField in currentTacticCustomFields)
+                                    foreach (var entity in currentTacticEntities)
                                     {
-                                        //// Get Allowed CustomFieldOptionId list for current selected customField of selected tactic
-                                        if (userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == currentCustomField).Count() > 0)
+                                        if (userCustomRestrictionList.Where(option => option.CustomFieldOptionId == int.Parse(entity.Value)).Any())
                                         {
-                                            List<string> EditsRightsForCurrentCustomField = userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == currentCustomField &&
-                                                                                                                            restriction.Permission == ViewEditPermission)
-                                                                                                                    .Select(restriction => restriction.CustomFieldOptionId.ToString()).ToList();
-
-                                            //// Check for currentField tactic is editable or not
-                                            bool isEditable = currentTacticEntities.Where(entity => entity.CustomFieldId == currentCustomField && EditsRightsForCurrentCustomField.Contains(entity.Value)).Any();
-                                            if (isEditable == false)
+                                            bool IsEditable = userCustomRestrictionList.Where(restriction => restriction.CustomFieldOptionId == int.Parse(entity.Value) &&
+                                                                                                restriction.Permission == ViewEditPermission).Any();
+                                            if (IsEditable == false)
                                             {
                                                 isEditableEntity = false;
                                                 break;

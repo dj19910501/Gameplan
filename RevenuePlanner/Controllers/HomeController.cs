@@ -3190,9 +3190,6 @@ namespace RevenuePlanner.Controllers
                 //// Get list of Custom Field Ids
                 lstCustomFieldId = lstCustomField.Select(customField => customField.CustomFieldId).Distinct().ToList();
 
-                //////// Sort custom fields by name
-                //lstCustomField = lstCustomField.OrderBy(customField => customField.Name).ToList();
-
                 //// Get list of custom field options
                 var lstCustomFieldOptions = objDbMrpEntities.CustomFieldOptions
                                                             .Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId))
@@ -3202,9 +3199,6 @@ namespace RevenuePlanner.Controllers
                                                                 customFieldOption.CustomFieldOptionId,
                                                                 customFieldOption.Value
                                                             }).ToList();
-
-                //////// Sort custom field option list by value and custom field id
-                //lstCustomFieldOptions = lstCustomFieldOptions.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
 
                 //// Get default custom restriction value
                 bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
@@ -3216,6 +3210,7 @@ namespace RevenuePlanner.Controllers
                 {
                     int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
                     int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                    int NonePermission = (int)Enums.CustomRestrictionPermission.None;
 
                     foreach (var customFieldId in lstCustomFieldId)
                     {
@@ -3225,6 +3220,10 @@ namespace RevenuePlanner.Controllers
                             List<int> lstAllowedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == customFieldId && 
                                                                                                     (customRestriction.Permission == ViewOnlyPermission || customRestriction.Permission == ViewEditPermission))
                                                                                                 .Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
+
+                            List<int> lstRestrictedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == customFieldId &&
+                                                                                                            customRestriction.Permission == NonePermission)
+                                                                                                    .Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
 
                             //// Get list of custom field options
                             var lstAllowedCustomFieldOption = lstCustomFieldOptions.Where(customFieldOption => customFieldOption.CustomFieldId == customFieldId && 
@@ -3238,13 +3237,6 @@ namespace RevenuePlanner.Controllers
 
                             if (lstAllowedCustomFieldOption.Count > 0)
                             {
-                                //List<int> customFieldIdFromOptions = new List<int>();
-                                //customFieldIdFromOptions = lstAllowedCustomFieldOption.Select(option => option.CustomFieldId).Distinct().ToList();
-                                //if (customFieldIdFromOptions.Count() > 0)
-                                //{
-                                //    lstCustomField = lstCustomField.Where(customField => customFieldIdFromOptions.Contains(customField.CustomFieldId)).ToList();
-                                //}
-
                                 customFieldListOut.AddRange(lstCustomField.Where(customField => customField.CustomFieldId == customFieldId)
                                                                         .Select(customField => new CustomFieldsForFilter()
                                                                         {
@@ -3260,6 +3252,34 @@ namespace RevenuePlanner.Controllers
                                                                                         }).ToList());
 
                             }
+
+                            //// If default custom restiction is viewable then select custom field and option who dont have restrictions
+                            if (IsDefaultCustomRestrictionsViewable)
+                            {
+                                var lstNewCustomFieldOptions =  lstCustomFieldOptions.Where(option => !lstAllowedCustomFieldOptionIds.Contains(option.CustomFieldOptionId) && !lstRestrictedCustomFieldOptionIds.Contains(option.CustomFieldOptionId) && option.CustomFieldId == customFieldId).ToList();
+                                if (lstNewCustomFieldOptions.Count() > 0)
+                                {
+                                    //// If CustomField is not added in out list then add it
+                                    if (!(customFieldListOut.Where(customField => customField.CustomFieldId == customFieldId).Any()))
+                                    {
+                                        customFieldListOut.AddRange(lstCustomField.Where(customField => customField.CustomFieldId == customFieldId)
+                                                                                    .Select(customField => new CustomFieldsForFilter()
+                                                                                    {
+                                                                                        CustomFieldId = customField.CustomFieldId,
+                                                                                        Title = customField.Name
+                                                                                    }).ToList());
+                                    }
+
+                                    ///// Add custom field options that are not in Custom Restriction list
+                                    customFieldOptionsListOut.AddRange(lstNewCustomFieldOptions.Select(customFieldOption => new CustomFieldsForFilter()
+                                                                                                {
+                                                                                                    CustomFieldId = customFieldOption.CustomFieldId,
+                                                                                                    CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
+                                                                                                    Title = customFieldOption.Value
+                                                                                                }).ToList());
+                                }
+                            }
+
                         }
                         else if (IsDefaultCustomRestrictionsViewable)
                         {

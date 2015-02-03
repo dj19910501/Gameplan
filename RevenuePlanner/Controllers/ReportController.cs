@@ -3159,6 +3159,7 @@ namespace RevenuePlanner.Controllers
             if (reportType.Equals(Enums.ReportType.Summary.ToString()))
             {
                 htmlOfCurrentView = htmlOfCurrentView.Replace("class=\"dollarFormat\"", "");
+                htmlOfCurrentView = htmlOfCurrentView.Replace("class=\"percentageFormat\"", "");
             }
             //// End - Added Sohel Pathan on 30/12/2014 for and Internal Review Point
             PdfConverter pdfConverter = new PdfConverter();

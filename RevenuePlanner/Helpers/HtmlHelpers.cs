@@ -3700,7 +3700,7 @@ namespace RevenuePlanner.Helpers
                                     {
                                         isEditable = true;
                                     }
-                                    else if (userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == item.customFieldId).Count() == 0 && IsDefaultCustomRestrictionsEditable)   //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
+                                    else if (userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == item.customFieldId && restriction.CustomFieldOptionId == objOption.customFieldOptionId).Count() == 0 && IsDefaultCustomRestrictionsEditable)   //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
                                     {
                                         isEditable = true;
                                     }
