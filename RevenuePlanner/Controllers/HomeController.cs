@@ -2772,6 +2772,15 @@ namespace RevenuePlanner.Controllers
                 string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
                 string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
                 List<Plan_Campaign_Program_Tactic_Actual> lstTacticActual = objDbMrpEntities.Plan_Campaign_Program_Tactic_Actual.Where(tacticActual => TacticIds.Contains(tacticActual.PlanTacticId)).ToList();
+                
+                //// Start - Added by Sohel Pathan on 03/02/2015 for PL ticket #1090
+                bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                List<Guid> lstSubordinatesIds = new List<Guid>();
+                if (IsTacticAllowForSubordinates)
+                {
+                    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+                }
+                //// End - Added by Sohel Pathan on 03/02/2015 for PL ticket #1090
 
                 List<int> lstViewEditEntities = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, TacticIds, true);
 
@@ -2832,7 +2841,7 @@ namespace RevenuePlanner.Controllers
                     tacticStageTitle = tactic.Stage.Title,
                     projectedStageValue = tactic.ProjectedStageValue,
                     projectedStageValueActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleProjectedStageValue).Sum(tacticActual => tacticActual.Actualvalue),
-                    IsTacticEditable = (lstViewEditEntities.Contains(tactic.PlanTacticId)),
+                    IsTacticEditable = ((tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? (lstViewEditEntities.Contains(tactic.PlanTacticId)) : false),
                     //// Set Line Item data with it's actual values and Sum
                     LineItemsData = (tacticLineItem.Where(lineItem => lineItem.PlanTacticId.Equals(tactic.PlanTacticId)).ToList()).Select(lineItem => new
                     {
@@ -3098,13 +3107,13 @@ namespace RevenuePlanner.Controllers
                 if (activeMenu.Equals(Enums.ActiveMenu.Home.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     string publishedPlanStatus = Convert.ToString(Enums.PlanStatus.Published);
-                    activePlan = objDbMrpEntities.Plans.Where(plan => plan.IsActive.Equals(true) && plan.IsDeleted == false && plan.Status == publishedPlanStatus)
+                    activePlan = objDbMrpEntities.Plans.Where(plan => plan.IsActive.Equals(true) && plan.IsDeleted == false && plan.Status == publishedPlanStatus && plan.Model.ClientId == Sessions.User.ClientId)
                                                             .Select(plan => new { plan.PlanId, plan.Title })
                                                             .ToList().Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
                 }
                 else
                 {
-                    activePlan = objDbMrpEntities.Plans.Where(plan => plan.IsActive.Equals(true) && plan.IsDeleted == false)
+                    activePlan = objDbMrpEntities.Plans.Where(plan => plan.IsActive.Equals(true) && plan.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId)
                                                             .Select(plan => new { plan.PlanId, plan.Title }).ToList()
                                                             .Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
                 }

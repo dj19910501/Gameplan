@@ -6065,6 +6065,8 @@ namespace RevenuePlanner.Controllers
                                 {
                                     planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programIds.Contains(tactic.Plan_Campaign_Program.PlanProgramId))
                                                                                     .Select(tactic => tactic.PlanTacticId).ToList();
+                                    lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                                    planTacticIds.ForEach(tactic => { if (!lstAllowedEntityIds.Contains(tactic)) { IsPlanEditable = false; } });
                                 }
                             }
                         }
@@ -6073,12 +6075,23 @@ namespace RevenuePlanner.Controllers
                             if (objPlan_Campaign_Program.Plan_Campaign_Program_Tactic != null)
                             {
                                 planTacticIds = objPlan_Campaign_Program.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false)).Select(tactic => tactic.PlanTacticId).ToList();
+                                lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                                planTacticIds.ForEach(tactic => { if (!lstAllowedEntityIds.Contains(tactic)) { IsPlanEditable = false; } });
                             }
                         }
                         else if (section.ToString().Equals(Enums.Section.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic != null)
                         {
                             itemId = objPlan_Campaign_Program_Tactic.PlanTacticId;
                             planTacticIds.Add(itemId);
+                            lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                            if (lstAllowedEntityIds.Contains(itemId))
+                            {
+                                IsPlanEditable = true;
+                            }
+                            else
+                            {
+                                IsPlanEditable = false;
+                            }
                         }
                         else if (section.ToString().Equals(Enums.Section.LineItem.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic_LineItem != null)
                         {
@@ -6086,20 +6099,15 @@ namespace RevenuePlanner.Controllers
                             {
                                 itemId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.PlanTacticId;
                                 planTacticIds.Add(itemId);
-                            }
-                        }
-
-                        if (planTacticIds.Count() > 0)
-                        {
-                            lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-
-                            if (lstAllowedEntityIds.Count > 0)
-                            {
-                                IsPlanEditable = true;
-                            }
-                            else
-                            {
-                                IsPlanEditable = false;
+                                lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                                if (lstAllowedEntityIds.Contains(itemId))
+                                {
+                                    IsPlanEditable = true;
+                                }
+                                else
+                                {
+                                    IsPlanEditable = false;
+                                }
                             }
                         }
                         //// End - Added by Sohel Pathan on 27/01/2015 for PL ticket #1140

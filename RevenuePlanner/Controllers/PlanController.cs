@@ -1932,7 +1932,7 @@ namespace RevenuePlanner.Controllers
                     description = p.description,
                     cost = p.cost,
                     mqls = p.mqls,
-                    isOwner = p.isOwner == 0 ? ((TacticList.Count() > 0 && p.tactics.Count() > 0) ? (p.tactics.Any(t => t.isOwner == 1) ? 1 : 0) : 1) : 1,
+                    isOwner = p.isOwner == 0 ? ((TacticList.Where(tactic => tactic.PlanProgramId == p.id).Count() == p.tactics.Count()) ? (p.tactics.Any(t => t.isOwner == 1) ? 1 : 0) : 1) : 1,
                     tactics = p.tactics
                 })
             });
