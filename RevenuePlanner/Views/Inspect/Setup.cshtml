@@ -16,7 +16,9 @@
         advanceStageCodes = (string)ViewBag.AdvanceStageCodes;
     }
     string customFieldWeightage = ViewBag.customFieldWeightage;
+    string TacticTypeTitle = HttpUtility.HtmlDecode(Model.TacticTypeTitle);
 }
+
 <style type="text/css">
     .inspect-column-parent input, .inspect-column-parent textarea {
     min-height: 22px !important;
@@ -47,7 +49,7 @@
         </div>
         <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
             <p>Tactic Type <span class="required-asterisk">*</span></p>
-            @Html.TextBoxFor(model => model.TacticTypeTitle, new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.TacticTypeTitle })
+            @Html.TextBox("txtTacticTypeTitle", TacticTypeTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTypeTitle", @readonly = "true", @title=TacticTypeTitle })
             <p>Tactic Planned Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate", id = "txtCost", @readonly = "true", })
             @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
