@@ -403,6 +403,10 @@ namespace RevenuePlanner.Controllers
                 {
                     Sessions.ReportCustomFieldIds = arrCustomFieldFilter;
                 }
+                else
+                {
+                    Sessions.ReportCustomFieldIds = null;
+                }
 
                 //// Create PlanIds list from comma separated string of planIds and assign to Session variable.
                 if (planIds != string.Empty)
