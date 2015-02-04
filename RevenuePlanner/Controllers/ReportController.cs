@@ -85,23 +85,10 @@ namespace RevenuePlanner.Controllers
                 customfield.IsDeleted == false).ToList();
 
             lstCustomFields = lstCustomFields.Where(sort => !string.IsNullOrEmpty(sort.Name)).OrderBy(sort => sort.Name, new AlphaNumericComparer()).ToList();
-            List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
 
             //// Filter Custom Fields having no options
             var lstCustomFieldIds = db.CustomFieldOptions.Select(customfieldid => customfieldid.CustomFieldId).Distinct();
             lstCustomFields = lstCustomFields.Where(c => lstCustomFieldIds.Contains(c.CustomFieldId)).ToList();
-
-            foreach (var custfield in lstCustomFields)
-            {
-                List<CustomFieldOption> optionIds = custfield.CustomFieldOptions.ToList();
-                optionIds.ForEach(o => lstCustomFieldFilter.Add(new CustomFieldFilter
-                {
-                    CustomFieldId = custfield.CustomFieldId,
-                    OptionId = o.CustomFieldOptionId.ToString()
-                }));
-            }
-
-            Sessions.ReportCustomFieldIds = lstCustomFieldFilter.ToArray();
 
             ViewBag.ViewCustomFields = lstCustomFields;
             //// End - Added by Arpita Soni for Ticket #1148 on 01/23/2015			

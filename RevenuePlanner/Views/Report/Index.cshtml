@@ -134,7 +134,7 @@
             {
                 string name = "ddlView" + custField.CustomFieldId;
                 var list1 = custField.CustomFieldOptions.ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Value, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
-                @Html.DropDownList(name, new MultiSelectList((System.Collections.IEnumerable)list1, "Value", "Text", list1.Where(a => a.Selected).Select(a => a.Value)), new { @class = "multiselection-select", multiple = "multiple", id = name, noneselectedvalue = custField.Name, style = "display:none" })
+                @Html.DropDownList(name, new MultiSelectList((System.Collections.IEnumerable)list1, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = name, noneselectedvalue = custField.Name, style = "display:none" })
             }
             <!--End - Modified by Arpita Soni on 01/19/2015 for Ticket #1148*-->
         </div>
@@ -151,7 +151,7 @@
                 string lblid = string.Concat("lbl", custField.CustomFieldId);
                 string detailid = string.Concat(custField.CustomFieldId, "detail");
                     <label id="@lblid">@custField.Name:</label>
-                    <div class="details" id="@detailid">All</div>
+                    <div class="details" id="@detailid">None</div>
             }
 
            
@@ -195,12 +195,12 @@
 
         $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
 
-        @foreach (var custField in ViewCustomFields)
+       @* @foreach (var custField in ViewCustomFields)
         {
             string multiselectid = string.Concat("ddlView", custField.Name);
             string filterid = string.Concat("#", custField.Name.ToLower(), "detail");
             @: LoadCheckBoxValue('@multiselectid', '@filterid');
-        }
+        }*@
 
         // Load Multiselect Dropdown list i.e. Bind with new design
         LoadCheckBoxValue(multiselectPlanId, filterPlanid);
@@ -514,8 +514,11 @@
             string multiselectid = string.Concat("ddlView", custField.CustomFieldId);
             @: var filterIds = GetFilterId('@multiselectid');
             @: var arrFilterId = filterIds.split(',');
+            @: if(arrFilterId != "")
+            @: {
             @: for (var i = 0; i < arrFilterId.length; i++) {
             @: arrOptionIds.push({ CustomFieldId: '@custField.CustomFieldId', OptionId: arrFilterId[i] });
+            @:}
             @:}
         }
             

@@ -5399,22 +5399,10 @@ namespace RevenuePlanner.Helpers
                 bool isListExits = false;
                 foreach (var item in lstCustomFieldIds)
                 {
-                    if (customfieldentitieslist.Where(x => x.CustomFieldId == item).Any())
-                    {
-                        bool isoptionExits = false;
-                        optionIds = new List<string>();
-                        if (lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).FirstOrDefault() != "")
-                        {
-                            isoptionExits = true;
-                        }
-                        if (isoptionExits)
+                    string optionvalue = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).FirstOrDefault();
+                    if (optionvalue != "" && optionvalue != string.Empty)
                         {
                             optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).ToList();
-                        }
-                        else
-                        {
-                            optionIds = customfieldentitieslist.Where(x => x.CustomFieldId == item).Select(x => x.Value).Distinct().ToList();
-                        }
 
                         if (isListExits)
                         {
