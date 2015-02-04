@@ -5380,6 +5380,64 @@ namespace RevenuePlanner.Helpers
         #endregion
 
         #endregion
+
+        #region "Common Get Tactic By Filter Custom Field"
+
+        public static List<int> GetTacticBYCustomFieldFilter(List<CustomFieldFilter> lstCustomFieldFilter, List<int> tacticIds)
+        {
+            MRPEntities db = new MRPEntities();
+           
+            if (lstCustomFieldFilter.Count() > 0)
+            {
+                List<int> lstCustomFieldIds = new List<int>();
+                List<int> lstEntityIds = new List<int>();
+                List<string> optionIds = new List<string>();
+                lstCustomFieldIds = lstCustomFieldFilter.Select(cust => cust.CustomFieldId).Distinct().ToList();
+
+                List<CustomField_Entity> customfieldentitieslist = new List<CustomField_Entity>();
+                customfieldentitieslist = db.CustomField_Entity.Where(entity => lstCustomFieldIds.Contains(entity.CustomFieldId) && tacticIds.Contains(entity.EntityId)).ToList();
+                bool isListExits = false;
+                foreach (var item in lstCustomFieldIds)
+                {
+                    if (customfieldentitieslist.Where(x => x.CustomFieldId == item).Any())
+                    {
+                        bool isoptionExits = false;
+                        optionIds = new List<string>();
+                        if (lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).FirstOrDefault() != "")
+                        {
+                            isoptionExits = true;
+                        }
+                        if (isoptionExits)
+                        {
+                            optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).ToList();
+                        }
+                        else
+                        {
+                            optionIds = customfieldentitieslist.Where(x => x.CustomFieldId == item).Select(x => x.Value).Distinct().ToList();
+                        }
+
+                        if (isListExits)
+                        {
+                            var lstEntityData = customfieldentitieslist.Where(x => x.CustomFieldId == item &&
+                                          optionIds.Contains(x.Value) && lstEntityIds.Contains(x.EntityId));
+                            lstEntityIds = lstEntityData.Select(x => x.EntityId).Distinct().ToList();
+                        }
+                        else
+                        {
+                            var lstEntityData = customfieldentitieslist.Where(x => x.CustomFieldId == item &&
+                                          optionIds.Contains(x.Value));
+                            lstEntityIds = lstEntityData.Select(x => x.EntityId).Distinct().ToList();
+                            isListExits = true;
+                        }
+                    }
+
+                }
+                tacticIds = tacticIds.Where(tactic => lstEntityIds.Contains(tactic)).ToList();
+            }
+            return tacticIds;
+        }
+
+        #endregion
     }
 
     /// <summary>

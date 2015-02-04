@@ -397,11 +397,6 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Report General
-        public class CustomFieldFilter
-        {
-            public int CustomFieldId { get; set; }
-            public string OptionId { get; set; }
-        }
 
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #846
@@ -557,40 +552,11 @@ namespace RevenuePlanner.Controllers
             }
             if (Sessions.ReportCustomFieldIds != null && Sessions.ReportCustomFieldIds.Count() > 0)
             {
-                List<int> lstCustomFieldIds = new List<int>();
-                List<int> lstEntityIds = new List<int>();
-                List<CustomFieldFilter> lstCustomFieldFilter = Sessions.ReportCustomFieldIds.ToList();
-                List<string> optionIds = new List<string>();
-
-                lstCustomFieldIds = lstCustomFieldFilter.Select(cust => cust.CustomFieldId).Distinct().ToList();
-              
-
                 List<int> tacticids = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
-                List<CustomField_Entity> customfieldentitieslist = new List<CustomField_Entity>();
-                customfieldentitieslist = db.CustomField_Entity.Where(entity => lstCustomFieldIds.Contains(entity.CustomFieldId) && tacticids.Contains(entity.EntityId)).ToList();
-                foreach (var item in lstCustomFieldIds)
-                {
-                    optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).First() != "" ?
-                        lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).ToList() :
-                        customfieldentitieslist.Where(x => x.CustomFieldId == item).Select(x => x.Value).Distinct().ToList();
-                    if (lstEntityIds.Count > 0)
-                    {
-                        var lstEntityData = customfieldentitieslist.Where(x => x.CustomFieldId == item &&
-                                      optionIds.Contains(x.Value) && lstEntityIds.Contains(x.EntityId));
-                        lstEntityIds = lstEntityData.Select(x => x.EntityId).Distinct().ToList();
-                    }
-                    else
-                    {
-                        var lstEntityData = customfieldentitieslist.Where(x => x.CustomFieldId == item &&
-                                      optionIds.Contains(x.Value));
-                        lstEntityIds = lstEntityData.Select(x => x.EntityId).Distinct().ToList();
-                    }
-
-                }
-                tacticList = tacticList.Where(tactic => lstEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                List<CustomFieldFilter> lstCustomFieldFilter = Sessions.ReportCustomFieldIds.ToList();
+                tacticids = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, tacticids);
+                tacticList = tacticList.Where(tactic => tacticids.Contains(tactic.PlanTacticId)).ToList();
             }
-
-            
 
             return tacticList;
         }

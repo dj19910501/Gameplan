@@ -397,13 +397,13 @@ namespace RevenuePlanner.Helpers
         /// Date: 01/23/2015
         /// Store multiple selected Custom Field Ids 
         /// </summary>
-        public static RevenuePlanner.Controllers.ReportController.CustomFieldFilter[] ReportCustomFieldIds
+        public static RevenuePlanner.Models.CustomFieldFilter[] ReportCustomFieldIds
         {
             get
             {
                 if (HttpContext.Current.Session["ReportCustomFieldIds"] != null)
                 {
-                    return (RevenuePlanner.Controllers.ReportController.CustomFieldFilter[])HttpContext.Current.Session["ReportCustomFieldIds"];
+                    return (RevenuePlanner.Models.CustomFieldFilter[])HttpContext.Current.Session["ReportCustomFieldIds"];
                 }
                 return null;
             }

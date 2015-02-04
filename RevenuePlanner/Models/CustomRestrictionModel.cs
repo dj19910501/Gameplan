@@ -33,4 +33,10 @@ namespace RevenuePlanner.Models
 
         public string Title { get; set; }
     }
+
+    public class CustomFieldFilter
+    {
+        public int CustomFieldId { get; set; }
+        public string OptionId { get; set; }
+    }
 }

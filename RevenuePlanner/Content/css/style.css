@@ -11531,6 +11531,9 @@ white-space:nowrap;
     text-decoration: underline;
                 text-transform:uppercase;
                 font-family: "source_sans_probold",Arial,"sans-serif";
+    border-width:0;
+    border-radius:0;
+    margin-right:0;
 }
 
 #liReview.active > a {
@@ -11547,7 +11550,7 @@ white-space:nowrap;
 #liBudget.active > a {
     color: #fff !important;
 }
-.nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
+#InspectTab > .active > a, #InspectTab > .active > a:hover, #InspectTab > .active > a:focus {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
@@ -11556,7 +11559,7 @@ white-space:nowrap;
     border-color: #ddd #ddd transparent;
     border-image: none;
     border-style: solid;
-    border-width: 1px;
+    border-width: 0;
     color: #fff;
     cursor: default;
 }
@@ -11600,4 +11603,5 @@ white-space:nowrap;
 
 #InspectTab li:first-child,#InspectTab li:first-child a{border-top-left-radius:6px;
  border-bottom-left-radius:6px; margin:0;}
+
 /*End- added by mitesh for PL ticket #1070  Review Observation*/

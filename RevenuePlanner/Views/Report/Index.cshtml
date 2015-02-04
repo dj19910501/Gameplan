@@ -208,6 +208,14 @@
         loadBasedOnPlan();
         $("#DivShareReport").hide();
         GetFilterIdForPlan(multiselectPlanId);
+
+        $(document).mouseup(function (e) {
+            var BUcontainer = $('#multipleselect_ddlPlan');
+            var BUbutton = $('#btnMultiselect_ddlPlan');
+            if (!BUcontainer.is(e.target) && BUcontainer.has(e.target).length === 0 && BUcontainer.css('display') == 'block' && !BUbutton.is(e.target) && BUbutton.has(e.target).length === 0) {
+                $('#ddlPlan').multiselect('close');
+            }
+    });
     });
 
     // <--- End document.ready Event --->
@@ -295,7 +303,7 @@
         $('#divMainReportPart').empty();
         $('#conversionHeader').css('display', 'none');
         $('#revenueHeader').css('display', 'none');
-
+        $("#BtnShareReport").show();
         var url = '@Url.Content("~/Report/GetSummaryData/")';
         $('#divMainReportPart').load(url , function () {
             isAllowClick = true;
@@ -345,6 +353,7 @@
         $('#UlPlanHeader').css('display', 'block');
         $('#formSideFilter').css('display', 'block');
         //$("#divAddActual").css("display", "block");
+        $("#BtnShareReport").show();
         $('#divMainReportPart').empty();
 
     var url = '@Url.Content("~/Report/GetRevenueData/")';
@@ -360,6 +369,7 @@
         $('#UlPlanHeader').css('display', 'block');
         $('#formSideFilter').css('display', 'block');
         //$("#divAddActual").css("display", "block");
+        $("#BtnShareReport").show();
         $('#divMainReportPart').empty();
         var url = '@Url.Content("~/Report/GetConversionData/")';
         $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain , function () {
@@ -371,7 +381,7 @@
         //// Load Budget View
         function LoadBudgetView() {
             $("#BtnShareReport").hide(); //Added by Arpita Soni on 01/08/2015 for ticket #1108
-            ShowFilters();
+        //    ShowFilters();
             $('#budgetHeader').css('display', 'block');
             $('#conversionHeader').css('display', 'none');
             $('#revenueHeader').css('display', 'none');
