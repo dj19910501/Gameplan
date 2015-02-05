@@ -7,7 +7,6 @@
     string strValidateForEmptyField = Common.objCached.ValidateForValidField;
     string strErrorOccured = Common.objCached.ErrorOccured;
     string ModelId = Convert.ToString(ViewBag.ModelId);
-    //string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
     bool IsBenchmarked = ViewBag.IsBenchmarked;
     string errormsg = Convert.ToString(TempData["StageNotExist"]);
     /*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*/
@@ -55,7 +54,6 @@
     @Html.Hidden("ValidateForEmptyField", @strValidateForEmptyField)
     @Html.Hidden("ErrorOccured", @strErrorOccured)
     @Html.Hidden("ModelId", ModelId)
-    //@Html.Hidden("_BusinessUnitId", BusinessUnitId)
     @Html.Hidden("Errormsg", errormsg)
     @Html.Hidden("hdnMsg", (string)ViewBag.Msg, new { id = "hdnMsg" })
     @Html.Hidden("TempDataErrorMsg", ((string)TempData["ErrorMessage"]))
@@ -548,7 +546,7 @@ function LoadModelData(modelId, bool) {
              else {
                  $("#divModelOverview").html('');
                  $("#divcontactInquiry").html('');
-                 $("#divModelOverview").load('LoadModelOverview' + '?title=' + encodeURIComponent("Baseline Model") + '&BusinessUnitId=0&ModelId=0');
+                 $("#divModelOverview").load('LoadModelOverview' + '?title=' + encodeURIComponent("Baseline Model") + '&ModelId=0');
                  $("#divcontactInquiry").load('LoadContactInquiry' + '?AC=0&MLeads=0&MSize=0&TLeads=0&TSize=0&SLeads=0&SSize=0');
              }
          },
@@ -985,7 +983,6 @@ $("#publishModel").click(function () {
 function onClickActivity() {
     $('#nl-form > div[class="nl-field nl-dd"]').find('li').click(function (e) {
         var Title = $(this).text();
-        //var option = $.grep($('#BusinessUnitId option'), function (value) { return $(value).text() == Title; })
         $.ajax(
         {
             type: "GET",

@@ -282,7 +282,7 @@ namespace RevenuePlanner.Controllers
                         objModel.Title = Convert.ToString(collection["Title"]);
                         if (mode == "version")
                         {
-                            OtherModelEntries(currentModelId, true, Convert.ToString(collection["Title"]), Convert.ToString(collection["BusinessUnitId"]), IsBenchmarked, ref intModelid);
+                            OtherModelEntries(currentModelId, true, Convert.ToString(collection["Title"]), IsBenchmarked, ref intModelid);
                         }
                         else
                         {
@@ -2629,7 +2629,7 @@ namespace RevenuePlanner.Controllers
                         using (TransactionScope scope = new TransactionScope())
                         {
                             //// Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-                            OtherModelEntries(modelId, false, title, string.Empty, false, ref NewModelID);
+                            OtherModelEntries(modelId, false, title, false, ref NewModelID);
 
                             #region Clone Model_Funnel table entries
 
@@ -2783,7 +2783,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="BusinessUntiID">businessUnit of model</param>
         /// <param name="IsBenchmarked">IsBenchmarked flag</param>
         /// <param name="newModelId">newModelId (out parameter)</param>
-        public void OtherModelEntries(int OldModelID, bool IsVersion, string Title, string BusinessUntiID, bool IsBenchmarked, ref int newModelId)
+        public void OtherModelEntries(int OldModelID, bool IsVersion, string Title, bool IsBenchmarked, ref int newModelId)
         {
             using (MRPEntities objMrpEntities = new MRPEntities())
             {
@@ -2811,7 +2811,6 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        Guid modelBusinessUnitId = Guid.Parse(BusinessUntiID);
                         newModel.ParentModelId = OldModelID;
                         newModel.IsActive = true;
                         newModel.IsDeleted = false;
@@ -2825,9 +2824,11 @@ namespace RevenuePlanner.Controllers
                         newModel.IntegrationInstanceIdCW = oldModel.IntegrationInstanceIdCW;
                         newModel.IntegrationInstanceIdINQ = oldModel.IntegrationInstanceIdINQ;
                         newModel.IntegrationInstanceIdMQL = oldModel.IntegrationInstanceIdMQL;
+                        newModel.ClientId = oldModel.ClientId;
                         ////End :Added by Mitesh Vaishnav for PL ticket #659 
                         //// title condition added by uday for review point on 5-6-2014 bcoz version clashes when two users are creating version of same buisiness unit.
-                        var version = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ClientId == modelBusinessUnitId && model.Title == Title).OrderByDescending(model => model.CreatedDate).Select(model => model.Version).FirstOrDefault();
+                        
+                        var version = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ClientId.Equals(Sessions.User.ClientId) && model.Title == Title).OrderByDescending(model => model.CreatedDate).Select(model => model.Version).FirstOrDefault();
                         if (version != null && version != "")
                         {
                             newModel.Version = Convert.ToString((Convert.ToDouble(version) + 0.1));

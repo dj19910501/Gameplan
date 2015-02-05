@@ -10,7 +10,6 @@ namespace RevenuePlanner.Models
     {
         [Key]
         public int ModelId { get; set; }
-        public Guid BusinessUnitId { get; set; }
         public string Title { get; set; }
         public int Year { get; set; }
 
