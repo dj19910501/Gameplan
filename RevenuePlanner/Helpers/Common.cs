@@ -2638,8 +2638,6 @@ namespace RevenuePlanner.Helpers
                 lstTacticCustomFieldEntity = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).ToList();
                 TacticCustomFieldStageWeightage objStageWeightage = null;
                 List<CustomField_Entity_StageWeight> lstTacticStageWeightage = new List<CustomField_Entity_StageWeight>();
-                string RevenueStageCode = "Revenue";
-                string CostStageCode = "Cost";
                 string MQLStageCode = Enums.Stage.MQL.ToString();
                 string CWStageCode = Enums.Stage.CW.ToString();
                 string INQStageCode = Enums.InspectStage.ProjectedStageValue.ToString();
@@ -2650,36 +2648,8 @@ namespace RevenuePlanner.Helpers
 
                     objStageWeightage.CustomFieldId = objCustmEnt.CustomFieldId;
                     objStageWeightage.Value = objCustmEnt.Value;
-                    if (objCustmEnt.Weightage != null && objCustmEnt.Weightage > 0)
-                    {
-                        objStageWeightage.IsAdvanceWeightage = false;
-                        objStageWeightage.Weightage = objCustmEnt.Weightage;
-                    }
-                    else
-                    {
-                        objStageWeightage.IsAdvanceWeightage = true;
-                        lstTacticStageWeightage = tblStageWeightage.Where(stage => stage.CustomFieldEntityId.Equals(objCustmEnt.CustomFieldEntityId)).ToList();
-                        if (lstTacticStageWeightage != null && lstTacticStageWeightage.Count > 0)
-                        {
-                            if (projectedStageLevel <= levelINQ)
-                            {
-                                objStageWeightage.INQWeightage = lstTacticStageWeightage.Where(_stage => _stage.StageTitle.Equals(INQStageCode)).Select(_stage => _stage.Weightage).FirstOrDefault();
-                                objStageWeightage.MQLWeightage = lstTacticStageWeightage.Where(_stage => _stage.StageTitle.Equals(MQLStageCode)).Select(_stage => _stage.Weightage).FirstOrDefault();
-                            }
-                            else if (projectedStageLevel <= levelMQL)
-                            {
-                                objStageWeightage.INQWeightage = 0;
-                                objStageWeightage.MQLWeightage = lstTacticStageWeightage.Where(_stage => _stage.StageTitle.Equals(MQLStageCode)).Select(_stage => _stage.Weightage).FirstOrDefault();
-                            }
-                            else
-                            {
-                                objStageWeightage.INQWeightage = objStageWeightage.MQLWeightage = 0;
-                            }
-                            objStageWeightage.CWWeightage = lstTacticStageWeightage.Where(_stage => _stage.StageTitle.Equals(CWStageCode)).Select(_stage => _stage.Weightage).FirstOrDefault();
-                            objStageWeightage.RevenueWeightage = lstTacticStageWeightage.Where(_stage => _stage.StageTitle.Equals(RevenueStageCode)).Select(_stage => _stage.Weightage).FirstOrDefault();
-                            objStageWeightage.CostWeightage = lstTacticStageWeightage.Where(_stage => _stage.StageTitle.Equals(CostStageCode)).Select(_stage => _stage.Weightage).FirstOrDefault();
-                        }
-                    }
+                    objStageWeightage.CostWeightage = objCustmEnt.CostWeightage != null && objCustmEnt.CostWeightage.Value != null ? objCustmEnt.CostWeightage.Value : 0;
+                    objStageWeightage.CVRWeightage = objCustmEnt.Weightage != null && objCustmEnt.Weightage.Value != null ? objCustmEnt.Weightage.Value : 0;
                     lstMapTacticStageWeightage.Add(objStageWeightage);
                 }
 

@@ -5316,14 +5316,14 @@ namespace RevenuePlanner.Controllers
                             var _custment = obj.CustomFieldEntities.Where(_ent => _ent.EntityId.Equals(TacticId) && _ent.Value.Equals(CustomfieldOptionId)).FirstOrDefault();
                             if (_custment == null)
                                 weightage = 0;
-                            else if (_custment.Weightage != null && Convert.ToInt32(_custment.Weightage.Value) > 0) // check if weightage exist in CustomField Entity table then retreive value from the same o/w StageWeight table.
-                                weightage = Convert.ToInt32(_custment.Weightage.Value);
-                            else
-                            {
-                                string constCostStageTitle = Enums.InspectStage.Cost.ToString();
-                                var stgweightage = db.CustomField_Entity_StageWeight.Where(_stageweight => _stageweight.CustomFieldEntityId.Equals(_custment.CustomFieldEntityId) && _stageweight.StageTitle.Equals(constCostStageTitle)).Select(_stageweight => _stageweight.Weightage).FirstOrDefault();
-                                weightage = stgweightage != null ? stgweightage : 0;
-                            }
+                            else if (_custment.CostWeightage != null && Convert.ToInt32(_custment.CostWeightage.Value) > 0) // Get CostWeightage from table CustomFieldEntity.
+                                weightage = Convert.ToInt32(_custment.CostWeightage.Value);
+                            //else
+                            //{
+                            //    string constCostStageTitle = Enums.InspectStage.Cost.ToString();
+                            //    var stgweightage = db.CustomField_Entity_StageWeight.Where(_stageweight => _stageweight.CustomFieldEntityId.Equals(_custment.CustomFieldEntityId) && _stageweight.StageTitle.Equals(constCostStageTitle)).Select(_stageweight => _stageweight.Weightage).FirstOrDefault();
+                            //    weightage = stgweightage != null ? stgweightage : 0;
+                            //}
                         }
                     }
                     tmp.Weightage = weightage;

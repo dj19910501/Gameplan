@@ -489,12 +489,8 @@ namespace RevenuePlanner.Models
     {
         public int CustomFieldId { get; set; }
         public string Value { get; set; }
-        public bool? IsAdvanceWeightage { get; set; }
         public int? Weightage { get; set; }
-        public int? INQWeightage { get; set; }
-        public int? MQLWeightage { get; set; }
-        public int? CWWeightage { get; set; }
-        public int? RevenueWeightage { get; set; }
+        public int? CVRWeightage { get; set; }
         public int? CostWeightage { get; set; }
     }
 }
