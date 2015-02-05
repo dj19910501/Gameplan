@@ -185,9 +185,9 @@
             var filterHTML = $('.budgetReportFilter-area-left').parent().parent().html();
             var html = filterHTML;
             var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div></div></div>');
-            $html.find('div[id="chartDiv1"]').empty();
-            $html.find('div[id="chartDiv2"]').empty();
-            $html.find('div[id="chartDiv3"]').empty();
+         //   $html.find('div[id="chartDiv1"]').empty();
+         //   $html.find('div[id="chartDiv2"]').empty();
+         //   $html.find('div[id="chartDiv3"]').empty();
             $html.find("li.disabled > a").each(function(){
                 $(this).parent().removeClass("disabled");
                 $(this).css("background-color","#E0DFDF");
@@ -351,7 +351,6 @@
         //// Function replace multiselect by label in revenue realization section.
         //// Added By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF
         function ReplaceMultiselectByLableRevenueRealization($html) {
-            var businessUnit = $html.find('#btnMultiselect_ddlBusinessUnit').attr("title");
             var campaign = $html.find('#btnMultiselect_ddlCampaign').attr("title");
             var program = $html.find('#btnMultiselect_ddlProgram').attr("title");
             var tactic = $html.find('#btnMultiselect_ddlTactic').attr("title");
@@ -365,7 +364,6 @@
                                                                         <div style='max-width: 20%; float: right; border-left: 1px solid rgb(128, 128, 128); margin-left: 9px; margin-top:5px; padding-left: 12px; padding-right: 3px; white-space: normal; overflow: hidden; text-overflow: ellipsis;'>" + tactic + "</div>\
                                                                         <div style='max-width: 20%; float: right; border-left: 1px solid rgb(128, 128, 128); margin-left: 9px; margin-top:5px; padding-left: 12px; padding-right: 3px; white-space: normal; overflow: hidden; text-overflow: ellipsis;'>" + program + "</div>\
                                                                         <div style='max-width: 20%; float: right; border-left: 1px solid rgb(128, 128, 128); margin-left: 9px; margin-top:5px; padding-left: 12px; padding-right: 3px; white-space: normal; overflow: hidden; text-overflow: ellipsis;'>" + campaign + "</div>\
-                                                                        <div style='max-width: 20%; float: right;  white-space: normal; overflow: hidden; text-overflow: ellipsis;margin-top:4px;'>"+ businessUnit +"</div>\
                                                                     </div>\
                                                                     </div>");
 

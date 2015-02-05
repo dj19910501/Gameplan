@@ -91,7 +91,7 @@
         });
 
         $('.dhx_canvas_text').each(function () {
-            $(this).css("font-size", "12px");
+            $(this).css("font-size", "10px");
         });
            
     }

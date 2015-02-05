@@ -3746,7 +3746,7 @@ namespace RevenuePlanner.Helpers
                                 string footerText = "< Single-selection";
                                 sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
                                 sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\">");
-                                if (item.value.Count <= 1)
+                                if (item.value != null && item.value.Count <= 1)
                                 {
                                     displayCheckbox = " style=\"display:none;\"";
                                     selectionMode = "Single";

@@ -96,20 +96,44 @@
     }
 
     var sourcePerformanceData = JSON.parse($('#chartDataSourcePerformance').val());
-    var dataset1 = sourcePerformanceData.ChartBusinessUnit, dataset2 = sourcePerformanceData.ChartGeography, dataset3 = sourcePerformanceData.ChartVertical;
-    FillChartSourcePerformanceBusinessUnit();
-    FillChartSourcePerformanceGeography();
-    FillChartSourcePerformanceVertical();
+    var dataset1 = sourcePerformanceData.ChartCustomField1, dataset2 = sourcePerformanceData.ChartCustomField2, dataset3 = sourcePerformanceData.ChartCustomField3;
 
-    function FillChartSourcePerformanceBusinessUnit() {
-        var xAxisConfig = GetAxisConfiguration(dataset1)
+    //fill data on reports table
+    if (dataset1 != null) {
+        $('#NoGraphsMsg').hide();
+        $('.report-gray-container').show();
+        FillChartSourcePerformanceChartCustomField1();
+    }
+    else {
+        $('.report-gray-container').hide();
+        $('#NoGraphsMsg').show();
+        $('#chartDiv4Parent').hide();
+    }
+    if (dataset2 != null) {
+        FillChartSourcePerformanceChartCustomField2();
+    }
+    else {
+        $('#chartDiv5Parent').hide();
+    }
+    if (dataset3 != null) {
+        FillChartSourcePerformanceChartCustomField3();
+    }
+    else {
+        $('#chartDiv6Parent').hide();
+    }
+
+    function FillChartSourcePerformanceChartCustomField1() {
+        $('#chartDiv4Parent').find('#chartDiv4').remove();
+        $('#chartDiv4Parent').append('<div id="chartDiv4" class="report-chart4"></div>');
+
+        var xAxisConfig = GetAxisConfiguration(dataset1);
 
         /*bar chart*/
         var barChart2 = new dhtmlXChart({
             view: "barH",
             container: "chartDiv4",
             value: "#Value#",
-            tooltip: "#Value#",
+            tooltip: "#Value#%",
             radius: 0,
             border: false,
             color: "#ColorCode#",
@@ -118,14 +142,14 @@
                 start: 0,
                 step: xAxisConfig.stepValue,
                 end: xAxisConfig.endValue,
-                lines: false,
+                lines: false
             },
             yAxis: {
                 template: "#Title#",
                 lines: false,
             },
             padding: {
-                left: 80
+                left: 75
             }
         });
 
@@ -152,9 +176,12 @@
                 $(element).html(newText);
             }
         });
-
     }
-    function FillChartSourcePerformanceGeography() {
+
+    function FillChartSourcePerformanceChartCustomField2() {
+        $('#chartDiv5Parent').find('#chartDiv5').remove();
+        $('#chartDiv5Parent').append('<div id="chartDiv5" class="report-chart5"></div>');
+
         var xAxisConfig = GetAxisConfiguration(dataset2)
 
         /*bar chart*/
@@ -162,7 +189,7 @@
             view: "barH",
             container: "chartDiv5",
             value: "#Value#",
-            tooltip: "#Value#",
+            tooltip: "#Value#%",
             radius: 0,
             border: false,
             color: "#ColorCode#",
@@ -206,7 +233,11 @@
             }
         });
     }
-    function FillChartSourcePerformanceVertical() {
+
+    function FillChartSourcePerformanceChartCustomField3() {
+        $('#chartDiv6Parent').find('#chartDiv6').remove();
+        $('#chartDiv6Parent').append('<div id="chartDiv6" class="report-chart6"></div>');
+
         var xAxisConfig = GetAxisConfiguration(dataset3)
 
         /*bar chart*/
@@ -214,7 +245,7 @@
             view: "barH",
             container: "chartDiv6",
             value: "#Value#",
-            tooltip: "#Value#",
+            tooltip: "#Value#%",
             radius: 0,
             border: false,
             color: "#ColorCode#",
@@ -230,7 +261,7 @@
                 lines: false,
             },
             padding: {
-                left: 90
+                left: 85
             }
         });
 
@@ -257,6 +288,5 @@
                 $(element).html(newText);
             }
         });
-
     }
 }
