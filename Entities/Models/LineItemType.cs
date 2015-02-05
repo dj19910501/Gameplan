@@ -29,7 +29,7 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
     
-        public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
         public virtual Model Model { get; set; }
+        public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
     }
 }

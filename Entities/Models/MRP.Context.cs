@@ -28,25 +28,39 @@ namespace RevenuePlanner.Models
         public DbSet<Audience> Audiences { get; set; }
         public DbSet<BestInClass> BestInClasses { get; set; }
         public DbSet<BusinessUnit> BusinessUnits { get; set; }
+        public DbSet<CampaignNameConvention> CampaignNameConventions { get; set; }
         public DbSet<ChangeLog> ChangeLogs { get; set; }
+        public DbSet<Client_Activity> Client_Activity { get; set; }
+        public DbSet<Client_Integration_Permission> Client_Integration_Permission { get; set; }
         public DbSet<ClientTacticType> ClientTacticTypes { get; set; }
+        public DbSet<CustomField> CustomFields { get; set; }
+        public DbSet<CustomField_Entity> CustomField_Entity { get; set; }
+        public DbSet<CustomField_Entity_StageWeight> CustomField_Entity_StageWeight { get; set; }
+        public DbSet<CustomFieldOption> CustomFieldOptions { get; set; }
+        public DbSet<CustomFieldType> CustomFieldTypes { get; set; }
+        public DbSet<CustomLabel> CustomLabels { get; set; }
+        public DbSet<CustomRestriction> CustomRestrictions { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<Funnel> Funnels { get; set; }
         public DbSet<Funnel_Field> Funnel_Field { get; set; }
+        public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
         public DbSet<GameplanDataTypePull> GameplanDataTypePulls { get; set; }
         public DbSet<Geography> Geographies { get; set; }
         public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
         public DbSet<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public DbSet<IntegrationInstance> IntegrationInstances { get; set; }
         public DbSet<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
+        public DbSet<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public DbSet<IntegrationInstanceDataTypeMappingPull> IntegrationInstanceDataTypeMappingPulls { get; set; }
         public DbSet<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
         public DbSet<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
         public DbSet<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public DbSet<IntegrationInstanceSection> IntegrationInstanceSections { get; set; }
+        public DbSet<IntegrationType> IntegrationTypes { get; set; }
         public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
         public DbSet<LineItemType> LineItemTypes { get; set; }
         public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
+        public DbSet<Model> Models { get; set; }
         public DbSet<Model_Audience_Event> Model_Audience_Event { get; set; }
         public DbSet<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }
         public DbSet<Model_Audience_Outbound> Model_Audience_Outbound { get; set; }
@@ -65,7 +79,10 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic_LineItem_Actual> Plan_Campaign_Program_Tactic_LineItem_Actual { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost { get; set; }
+        public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
+        public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
@@ -78,22 +95,5 @@ namespace RevenuePlanner.Models
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic_LineItem_Actual> Plan_Campaign_Program_Tactic_LineItem_Actual { get; set; }
-        public DbSet<CustomLabel> CustomLabels { get; set; }
-        public DbSet<CustomField> CustomFields { get; set; }
-        public DbSet<CustomField_Entity> CustomField_Entity { get; set; }
-        public DbSet<CustomFieldOption> CustomFieldOptions { get; set; }
-        public DbSet<CustomFieldType> CustomFieldTypes { get; set; }
-        public DbSet<IntegrationType> IntegrationTypes { get; set; }
-        public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
-        public DbSet<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
-        public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
-        public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
-        public DbSet<CampaignNameConvention> CampaignNameConventions { get; set; }
-        public DbSet<Client_Activity> Client_Activity { get; set; }
-        public DbSet<Client_Integration_Permission> Client_Integration_Permission { get; set; }
-        public DbSet<CustomField_Entity_StageWeight> CustomField_Entity_StageWeight { get; set; }
-        public DbSet<CustomRestriction> CustomRestrictions { get; set; }
-        public DbSet<Model> Models { get; set; }
     }
 }

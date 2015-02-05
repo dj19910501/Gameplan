@@ -13,6 +13,8 @@
         _bindEventsM: function () {
             var Button = this.element;
             var dropdownMenu = Button.parent().find('.dropdown-wrapper');
+            var singleMode = 'Single';
+            var multiMode = 'Multi';
             Button.on('click', function (e) {
                 $('.dropdown-wrapper').not(dropdownMenu).fadeOut();
                 dropdownMenu.slideToggle("fast");
@@ -24,27 +26,36 @@
                     e.stopPropagation();
                 });
                 $(this).find('.advance_a').on('click', function () {
-                    if ($(this).text() == "Advanced Attribution >") {
+                    if ($(this).attr('mode').toString() == singleMode) {
                         menu.toggleClass('dropdown-block');
-                        menu.find(".weight,.weight_header,.first_hide,.sus_header,.mql_header,.cw_header,.revenue_header,.cost_header").toggle();
-                        $(this).text("Basic Attribution");
-                        menu.find('input:checked').each(function () {
-                            var optionId = $(this).val();
-                            var allInputValue = $('#' + optionId + '_' + StageCodeOfWeight).val();
-                            if ($('#' + optionId + '_' + StageCodeOfWeight).hasClass('error')) {
-                                $(this).parents('tr').find('input[type=text]').addClass('error');
-                            }
-                            else {
-                                $(this).parents('tr').find('input[type=text]').removeClass('error');
-                            }
-                            if (allInputValue == '') {
-                                allInputValue = '0';
-                            }
-                            $(this).parents('tr').find('input[type=text]').val(allInputValue);
-                        });
+                        menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
+                        $(this).text("< Single-selection");
+                        $(this).attr('mode', multiMode);
+                        menu.find('input[type=checkbox]').toggle();
+                        //menu.find('input:checked').each(function () {
+                        //    var optionId = $(this).val();
+                        //    var allInputValue = $('#' + optionId + '_' + StageCodeOfWeight).val();
+                        //    if ($('#' + optionId + '_' + StageCodeOfWeight).hasClass('error')) {
+                        //        $(this).parents('tr').find('input[type=text]').addClass('error');
+                        //    }
+                        //    else {
+                        //        $(this).parents('tr').find('input[type=text]').removeClass('error');
+                        //    }
+                        //    if (allInputValue == '') {
+                        //        allInputValue = '0';
+                        //    }
+                        //    $(this).parents('tr').find('input[type=text]').val(allInputValue);
+                        //});
                     }
                     else {
-                        menu.find('.innerpopup').css('display', 'block');
+                        menu.toggleClass('dropdown-block');
+                        menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
+                        menu.find('input[type=checkbox]').toggle();
+                        $(this).text("> Multi-selection");
+                        $(this).attr('mode', singleMode);
+                        Button.find('p:first').text("Please Select");
+                        menu.find('input:checkbox').removeAttr('checked');
+                        //menu.find('.innerpopup').css('display', 'block');
                     }
                 });
                 menu.find('.close_btn,.cncl_btn').on('click', function () {
@@ -156,22 +167,31 @@
                     }
                     var title = "";
                     Button.find('p:first').text("");
-                    //var checkedCheckbox = menu.find('input:checked').length;
-                    //var inputValues = 100 / checkedCheckbox;
-                    //var residual = 100 % checkedCheckbox;
-                    menu.find('input:checked').each(function () {
-                        title += $(this).parent().find('p').text() + ', ';
-                        //$(this).closest('tr').find('input[type=text]').each(function () {
-                        //    $(this).val(inputValues.toString());
-                        //});
-                    });
-                    if (title.indexOf(',') > 0) {
-                        title = title.slice(0, -2);
+                    if (menu.find('.advance_a').attr('mode') == singleMode) {
+                        menu.find('input:checkbox').removeAttr('checked');
+                        $(this).attr('checked', 'checked');
+                        title += $(this).parent().find('p').text();
                         Button.find('p:first').text(title);
                         Button.find('p:first').attr('title', title);
                     }
                     else {
-                        Button.find('p:first').text('Please Select');
+                        //var checkedCheckbox = menu.find('input:checked').length;
+                        //var inputValues = 100 / checkedCheckbox;
+                        //var residual = 100 % checkedCheckbox;
+                        menu.find('input:checked').each(function () {
+                            title += $(this).parent().find('p').text() + ', ';
+                            //$(this).closest('tr').find('input[type=text]').each(function () {
+                            //    $(this).val(inputValues.toString());
+                            //});
+                        });
+                        if (title.indexOf(',') > 0) {
+                            title = title.slice(0, -2);
+                            Button.find('p:first').text(title);
+                            Button.find('p:first').attr('title', title);
+                        }
+                        else {
+                            Button.find('p:first').text('Please Select');
+                        }
                     }
                 });
             });

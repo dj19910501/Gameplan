@@ -14,13 +14,6 @@ namespace RevenuePlanner.Models
     
     public partial class Geography
     {
-        public Geography()
-        {
-            this.Plan_Campaign = new HashSet<Plan_Campaign>();
-            this.Plan_Campaign_Program = new HashSet<Plan_Campaign_Program>();
-            this.Plan_Campaign_Program_Tactic = new HashSet<Plan_Campaign_Program_Tactic>();
-        }
-    
         public System.Guid GeographyId { get; set; }
         public string Title { get; set; }
         public System.Guid ClientId { get; set; }
@@ -30,9 +23,5 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public string Abbreviation { get; set; }
-    
-        public virtual ICollection<Plan_Campaign> Plan_Campaign { get; set; }
-        public virtual ICollection<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
-        public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
     }
 }

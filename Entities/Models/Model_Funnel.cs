@@ -31,8 +31,8 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> ModifiedBy { get; set; }
     
         public virtual Funnel Funnel { get; set; }
+        public virtual Model Model { get; set; }
         public virtual ICollection<Model_Funnel_Stage> Model_Funnel_Stage { get; set; }
         public virtual ICollection<ModelReview> ModelReviews { get; set; }
-        public virtual Model Model { get; set; }
     }
 }

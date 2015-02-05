@@ -3691,7 +3691,7 @@ namespace RevenuePlanner.Helpers
                             if (section == Enums.EntityType.Tactic.ToString())
                             {
                                 sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn " + addResubmissionClass + "\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
-                                sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\"><tr><td scope=\"col\" class=\"value_header\"><span>Value</span></td><td scope=\"col\" class=\"weight_header\" code=\"weight\" title=\"Weight(%)\"><span> Weight(%)</sapn></td><td scope=\"col\" class=\"sus_header\" code=\"stage\" title=\"Stage(%)\">Stage(%)</td><td scope=\"col\" class=\"cw_header\" code=\"" + Enums.InspectStage.CW.ToString() + "\" title=\"CW(%)\">CW(%)</td><td scope=\"col\" class=\"revenue_header\" code=\"" + Enums.InspectStage.Revenue.ToString() + "\" title=\"Revenue(%)\">Revenue(%)</td><td scope=\"col\" class=\"cost_header\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
+                                sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\" style=\"display:none;\"><tr><td scope=\"col\" class=\"value_header\" style=\"display:none;\"><span>Value</span></td><td scope=\"col\" class=\"revenue_header\" code=\"cvr\" title=\"CVR(%)\">CVR(%)</td><td scope=\"col\" class=\"cost_header\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
                                 foreach (var objOption in item.option)
                                 {
                                     //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
@@ -3718,10 +3718,10 @@ namespace RevenuePlanner.Helpers
                                             enableCheck = "checked=\"checked\"";
                                         }
 
-                                        sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_show weight\"><input id=\"" + objOption.customFieldOptionId + "_weight\" maxlength =\"3\" type=\"text\" name=\"textfield16\" value=\"\" class=\"firstshow_width text_blk_active \"></td> <td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_stage\" maxlength =\"3\" type=\"text\" name=\"textfield4\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.CW.ToString() + "\" maxlength =\"3\" type=\"text\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Revenue.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
+                                        sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
                                     }
                                 }
-                                sb.Append("</tbody><tfoot><tr><td colspan=\"7\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">Advanced Attribution ></span></a></td></tr></tfoot></table>  <div class=\"innerpopup\"><p class=\"inner-text\"><span class=\"close_btn\">X</span><span>Data will be lost!</span> Switching from Advanced Attribution to Basic Attribution will reset all weight(%) to default.<br/><button type=\"button\" class=\"proceed_btn\"> Proceed </button> <a href=\"#\" class=\"cncl_btn\">Cancel</a></p></div></div></div></div>");
+                                sb.Append("</tbody><tfoot><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"Single\"><span class=\"swap-text\">> Multi-selection</span></a></td></tr></tfoot></table>  <div class=\"innerpopup\"><p class=\"inner-text\"><span class=\"close_btn\">X</span><span>Data will be lost!</span> Switching from Advanced Attribution to Basic Attribution will reset all weight(%) to default.<br/><button type=\"button\" class=\"proceed_btn\"> Proceed </button> <a href=\"#\" class=\"cncl_btn\">Cancel</a></p></div></div></div></div>");
                                 if (name.Length > 0)
                                 {
                                     name = name.Remove(name.Length - 2, 2);
@@ -3741,19 +3741,30 @@ namespace RevenuePlanner.Helpers
                             #region Campaign/Program inspect popup
                             else
                             {
+                                string displayCheckbox = string.Empty;
+                                string selectionMode = "Multi";
+                                string footerText = "< Single-selection";
                                 sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
                                 sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\">");
+                                if (item.value.Count <= 1)
+                                {
+                                    displayCheckbox = " style=\"display:none;\"";
+                                    selectionMode = "Single";
+                                    footerText = "> Multi-selection";
+                                }
                                 foreach (var objOption in item.option)
                                 {
                                     string enableCheck = string.Empty;
+                                    
                                     if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
                                     {
                                         name += objOption.value + ", ";
                                         enableCheck = "checked=\"checked\"";
+                                        
                                     }
-                                    sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " ><label class=\"lable_inline\"><p class=\"text_ellipsis\" style=\"width:180px;\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
+                                    sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + ""+ displayCheckbox+"><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
                                 }
-                                sb.Append("</table></div></div></div>");
+                                sb.Append("</table><tfoot><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\""+selectionMode+"\"><span class=\"swap-text\">"+footerText+"</span></a></td></tr></tfoot></div></div></div>");
                                 if (name.Length > 0)
                                 {
                                     name = name.Remove(name.Length - 2, 2);
@@ -3788,17 +3799,17 @@ namespace RevenuePlanner.Helpers
                                         divPosition = "style=\"position:relative;\"";
                                     }
 
-                                    sb.Append("<div " + divPosition + "><div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header geography_popup\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\"><tr><td scope=\"col\" class=\"value_header\"><span>Value</span></td><td scope=\"col\" class=\"weight_header\" code=\"weight\" title=\"Weight(%)\"><span> Weight(%)</sapn></td><td scope=\"col\" class=\"sus_header\" code=\"stage\" title=\"Stage(%)\">Stage(%)</td><td scope=\"col\" class=\"cw_header\" code=\"" + Enums.InspectStage.CW.ToString() + "\" title=\"CW(%)\">CW(%)</td><td scope=\"col\" class=\"revenue_header\" code=\"" + Enums.InspectStage.Revenue.ToString() + "\" title=\"Revenue(%)\">Revenue(%)</td><td scope=\"col\" class=\"cost_header\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
+                                    sb.Append("<div " + divPosition + "><div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header geography_popup\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\" style=\"display:none;\"><tr><td scope=\"col\" class=\"value_header\" style=\"display:none;\"><span>Value</span></td><td scope=\"col\" class=\"revenue_header\" code=\"cvr\" title=\"CVR(%)\">CVR(%)</td><td scope=\"col\" class=\"cost_header\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
                                     foreach (var objOption in item.option)
                                     {
                                         //check - if custom field's value inserted before from dropdownlist then set it as selected
                                         if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
                                         {
-                                            sb.Append("<tr><td class=\"first_show\"><label class=\"lable_inline\" optionId=\"" + objOption.customFieldOptionId + "\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></td><td class=\"first_show weight\"><input id=\"" + objOption.customFieldOptionId + "_weight\" maxlength =\"3\" type=\"text\" name=\"textfield16\" value=\"\" class=\"firstshow_width text_blk_active \" disabled=\"disabled\"></td> <td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_stage\" disabled=\"disabled\" maxlength =\"3\" type=\"text\" name=\"textfield4\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.CW.ToString() + "\" disabled=\"disabled\" maxlength =\"3\" type=\"text\"></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Revenue.ToString() + "\" disabled=\"disabled\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" disabled=\"disabled\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
+                                            sb.Append("<tr><td class=\"first_show\"><label class=\"lable_inline\" optionId=\"" + objOption.customFieldOptionId + "\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_cvr\" disabled=\"disabled\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" disabled=\"disabled\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
                                             customFieldEntityValue += item.value != null ? objOption.value.Replace("\"", "&quot;") + ", " : string.Empty;
                                         }
                                     }
-                                    sb.Append("</tbody> <tfoot><tr><td colspan=\"7\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">X close</span></a></td></tr></tfoot></table></div></div></div>");
+                                    sb.Append("</tbody> <tfoot><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">X close</span></a></td></tr></tfoot></table></div></div></div>");
 
                                     sb = sb.Replace("#VIEW_DETAIL_LINK#", "<span class=\"new_tag\"><a href=\"#\">View Attribution</a></span>");
 

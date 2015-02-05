@@ -37,8 +37,8 @@ namespace RevenuePlanner.Models
         public bool IsDeployedToModel { get; set; }
         public string Abbreviation { get; set; }
     
+        public virtual Model Model { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public virtual Stage Stage { get; set; }
-        public virtual Model Model { get; set; }
     }
 }

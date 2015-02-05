@@ -28,10 +28,10 @@ namespace RevenuePlanner.Models
         public int TacticTypeId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int VerticalId { get; set; }
-        public int AudienceId { get; set; }
-        public System.Guid GeographyId { get; set; }
-        public System.Guid BusinessUnitId { get; set; }
+        public Nullable<int> VerticalId { get; set; }
+        public Nullable<int> AudienceId { get; set; }
+        public Nullable<System.Guid> GeographyId { get; set; }
+        public Nullable<System.Guid> BusinessUnitId { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public double Cost { get; set; }
@@ -49,9 +49,6 @@ namespace RevenuePlanner.Models
         public int StageId { get; set; }
         public string TacticCustomName { get; set; }
     
-        public virtual Audience Audience { get; set; }
-        public virtual BusinessUnit BusinessUnit { get; set; }
-        public virtual Geography Geography { get; set; }
         public virtual Plan_Campaign_Program Plan_Campaign_Program { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost { get; set; }
@@ -61,7 +58,6 @@ namespace RevenuePlanner.Models
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic2 { get; set; }
         public virtual Stage Stage { get; set; }
         public virtual TacticType TacticType { get; set; }
-        public virtual Vertical Vertical { get; set; }
         public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
     }
 }

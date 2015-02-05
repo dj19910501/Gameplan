@@ -11363,9 +11363,9 @@ float:left;
 }
 
 /*Start-Added by Mitesh Vaishnav for PL ticket #1073*/
-.dropdown-wrapper {	display:none;	width:245px;background-color: #fff;position: absolute;z-index: 1;}
+.dropdown-wrapper {	display:none;	width:145px;background-color: #fff;position: absolute;z-index: 1;}
 .drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding: 0 10px;max-height: 363px;overflow: auto;/*width:100%;background-color:#fff;*/}
-.dropdown-block {min-width:560px !important;max-width:662px !important;width:auto;}
+.dropdown-block {min-width:260px !important;/*max-width:662px !important;*/width:auto;}
 .dropdown_new_btn {
     background: url("../images/drpdown.png") no-repeat scroll right -1% top 55% #dff0f8;
     border: 1px solid #c6c6c6;
@@ -11393,7 +11393,7 @@ float:left;
 .first_show > input[disabled] {background: none repeat scroll 0 0 #eee;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
 .first_hide > input[disabled] {background: none repeat scroll 0 0 #eee;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
 .first_show, .first_hide {padding: 5px;   font-size: 14px; }
- .advance {text-align: end;}
+ .advance {text-align: left;}
 .first_hide > input {width: 74px; height: 27px; }
 .firstshow_width {height: 27px;    width: 74px;}
 .first_hide,.sus_header,.mql_header,.cw_header,.revenue_header,.cost_header{display:none;}
@@ -11411,7 +11411,8 @@ float:left;
 .first_hide input[type="text"] {
     margin-right: 6px;
     margin-top: -1px;
-    width: 74px !important;
+    width: 35px !important;
+    height:15px;
 }
 .dropdown_new_btn > p {display: inline-block;margin-top: 1px; overflow: hidden;    text-overflow: ellipsis;   white-space: nowrap;    width: 198px;font-family:"source_sans_prolight",Arial,"sans-serif" !important;font-size:14px !important;}
 /*.text_ellipsis {
@@ -11437,8 +11438,8 @@ float:left;
 .revenue_header { padding-right: 29px;}*/
 .text_ellipsis{ /*display: inline;*/ margin-bottom:-3px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 76px; margin:-21px -8px 0px 18px; padding-right: 5px;}
 .top_head_attribute > tr, .table_drpdwn tbody{ display:block;}
-.table_drpdwn tbody { height: auto;overflow: auto;max-height:150px;}
-.value_header { height: 40px; padding: 0 50px 0 30px;}
+.table_drpdwn tbody { height: auto;overflow: auto;max-height:200px;}
+.value_header { height: 40px; padding: 0 35px 0 30px;}
 .weight_header {padding-right:29px;}
 .sus_header {padding-right:51px;}
 .mql_header {padding-right: 50px;}
@@ -11571,9 +11572,9 @@ white-space:nowrap;
     font-size: 14px;
     padding: 0 2px;
 }
-.cost_header {
+/*.cost_header {
     padding: 0 40px 0 36px;
-}
+}*/
 .close_btn {
     color: #888;
     float: right;

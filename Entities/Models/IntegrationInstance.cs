@@ -17,12 +17,12 @@ namespace RevenuePlanner.Models
         public IntegrationInstance()
         {
             this.IntegrationInstance_Attribute = new HashSet<IntegrationInstance_Attribute>();
+            this.IntegrationInstanceDataTypeMappings = new HashSet<IntegrationInstanceDataTypeMapping>();
             this.IntegrationInstanceDataTypeMappingPulls = new HashSet<IntegrationInstanceDataTypeMappingPull>();
             this.IntegrationInstanceExternalServers = new HashSet<IntegrationInstanceExternalServer>();
             this.IntegrationInstanceLogs = new HashSet<IntegrationInstanceLog>();
             this.IntegrationInstancePlanEntityLogs = new HashSet<IntegrationInstancePlanEntityLog>();
             this.IntegrationInstanceSections = new HashSet<IntegrationInstanceSection>();
-            this.IntegrationInstanceDataTypeMappings = new HashSet<IntegrationInstanceDataTypeMapping>();
             this.Models = new HashSet<Model>();
             this.Models1 = new HashSet<Model>();
             this.Models2 = new HashSet<Model>();
@@ -47,17 +47,17 @@ namespace RevenuePlanner.Models
         public bool CustomNamingPermission { get; set; }
     
         public virtual ICollection<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
+        public virtual IntegrationType IntegrationType { get; set; }
+        public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public virtual ICollection<IntegrationInstanceDataTypeMappingPull> IntegrationInstanceDataTypeMappingPulls { get; set; }
         public virtual ICollection<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
         public virtual ICollection<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
         public virtual ICollection<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public virtual ICollection<IntegrationInstanceSection> IntegrationInstanceSections { get; set; }
-        public virtual SyncFrequency SyncFrequency { get; set; }
-        public virtual IntegrationType IntegrationType { get; set; }
-        public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public virtual ICollection<Model> Models { get; set; }
         public virtual ICollection<Model> Models1 { get; set; }
         public virtual ICollection<Model> Models2 { get; set; }
         public virtual ICollection<Model> Models3 { get; set; }
+        public virtual SyncFrequency SyncFrequency { get; set; }
     }
 }

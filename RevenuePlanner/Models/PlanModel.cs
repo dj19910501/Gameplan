@@ -474,11 +474,10 @@ namespace RevenuePlanner.Models
     /// </summary>
     public class CustomFieldStageWeight
     {
-        public int CustomFieldId { get; set; }
+         public int CustomFieldId { get; set; }
         public string Value { get; set; }
-        public int? Weight { get; set; }
-        public string StageCode { get; set; }
-        public int? StageWeight { get; set; }
+        public int Weight { get; set; }
+        public int CostWeight { get; set; }
     }
 
     /// <summary>

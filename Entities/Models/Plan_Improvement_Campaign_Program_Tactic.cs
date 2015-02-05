@@ -25,7 +25,7 @@ namespace RevenuePlanner.Models
         public int ImprovementTacticTypeId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public System.Guid BusinessUnitId { get; set; }
+        public Nullable<System.Guid> BusinessUnitId { get; set; }
         public System.DateTime EffectiveDate { get; set; }
         public double Cost { get; set; }
         public string Status { get; set; }
@@ -38,10 +38,9 @@ namespace RevenuePlanner.Models
         public string IntegrationInstanceTacticId { get; set; }
         public Nullable<System.DateTime> LastSyncDate { get; set; }
     
-        public virtual BusinessUnit BusinessUnit { get; set; }
         public virtual ImprovementTacticType ImprovementTacticType { get; set; }
+        public virtual Plan_Improvement_Campaign_Program Plan_Improvement_Campaign_Program { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
-        public virtual Plan_Improvement_Campaign_Program Plan_Improvement_Campaign_Program { get; set; }
     }
 }

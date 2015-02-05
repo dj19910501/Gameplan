@@ -14,12 +14,6 @@ namespace RevenuePlanner.Models
     
     public partial class BusinessUnit
     {
-        public BusinessUnit()
-        {
-            this.Plan_Campaign_Program_Tactic = new HashSet<Plan_Campaign_Program_Tactic>();
-            this.Plan_Improvement_Campaign_Program_Tactic = new HashSet<Plan_Improvement_Campaign_Program_Tactic>();
-        }
-    
         public System.Guid BusinessUnitId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -31,8 +25,5 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public string Abbreviation { get; set; }
-    
-        public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
-        public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
     }
 }

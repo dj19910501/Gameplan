@@ -26,6 +26,7 @@ namespace RevenuePlanner.Models
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public Nullable<byte> Weightage { get; set; }
+        public Nullable<byte> CostWeightage { get; set; }
     
         public virtual CustomField CustomField { get; set; }
         public virtual ICollection<CustomField_Entity_StageWeight> CustomField_Entity_StageWeight { get; set; }

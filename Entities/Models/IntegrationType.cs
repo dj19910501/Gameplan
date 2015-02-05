@@ -16,11 +16,11 @@ namespace RevenuePlanner.Models
     {
         public IntegrationType()
         {
+            this.Client_Integration_Permission = new HashSet<Client_Integration_Permission>();
+            this.GameplanDataTypes = new HashSet<GameplanDataType>();
             this.GameplanDataTypePulls = new HashSet<GameplanDataTypePull>();
             this.IntegrationInstances = new HashSet<IntegrationInstance>();
             this.IntegrationTypeAttributes = new HashSet<IntegrationTypeAttribute>();
-            this.GameplanDataTypes = new HashSet<GameplanDataType>();
-            this.Client_Integration_Permission = new HashSet<Client_Integration_Permission>();
         }
     
         public int IntegrationTypeId { get; set; }
@@ -31,10 +31,10 @@ namespace RevenuePlanner.Models
         public string APIURL { get; set; }
         public string Code { get; set; }
     
+        public virtual ICollection<Client_Integration_Permission> Client_Integration_Permission { get; set; }
+        public virtual ICollection<GameplanDataType> GameplanDataTypes { get; set; }
         public virtual ICollection<GameplanDataTypePull> GameplanDataTypePulls { get; set; }
         public virtual ICollection<IntegrationInstance> IntegrationInstances { get; set; }
         public virtual ICollection<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
-        public virtual ICollection<GameplanDataType> GameplanDataTypes { get; set; }
-        public virtual ICollection<Client_Integration_Permission> Client_Integration_Permission { get; set; }
     }
 }

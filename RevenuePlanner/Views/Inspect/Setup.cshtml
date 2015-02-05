@@ -149,26 +149,21 @@
               $("#txtmql").attr('title', mqlValue);
           }
 
-          if ('@advanceStageTitles' != '' && '@advanceStageCodes' != '') {
-              addColumnMultiselectWeight('@advanceStageTitles', '@advanceStageCodes');
+          
+              /*Modified by Mitesh Vaishnav for PL ticket #1165*/
                var customFieldsValues = JSON.parse('@Html.Raw(customFieldWeightage)');
                var i = customFieldsValues.length;
                for (var i = 0; i < customFieldsValues.length; i++) {
-                   $('#' + customFieldsValues[i].optionId + '_' + customFieldsValues[i].stageType).val(customFieldsValues[i].Weight);
+                   $('#' + customFieldsValues[i].optionId + '_Cost').val(customFieldsValues[i].Weight);
+                   $('#' + customFieldsValues[i].optionId + '_cvr').val(customFieldsValues[i].CostWeight);
                }
                $(".table_drpdwn").each(function () {
-                   $(this).find('label').each(function () {    
-                       var optionId = $(this).attr('optionId').toString();
-                       var BasicWeightAvailabel = $('#' + optionId + '_weight').val();
-                       if (BasicWeightAvailabel == '' || typeof BasicWeightAvailabel == 'undefined') {
                            var menu = $(this).parents('.dropdown-wrapper');
                            menu.toggleClass('dropdown-block');
-                           menu.find(".weight,.weight_header,.first_hide,.sus_header,.mql_header,.cw_header,.revenue_header,.cost_header").toggle();
-                           return false;
-                       }
+                       menu.find(".first_hide,.revenue_header,.cost_header,.top_head_attribute,.value_header").toggle();
                    });
-               });
-          }
+          /*End - Modified by Mitesh Vaishnav for PL ticket #1165*/
+
           function addColumnMultiselectWeight(stageTitles, stageCodes) {
 
               var arrStageTitles = stageTitles.split(',');
