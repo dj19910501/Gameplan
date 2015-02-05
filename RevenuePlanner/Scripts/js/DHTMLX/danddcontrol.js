@@ -53,6 +53,7 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
         }
         else
         {        
+            if (task.parent != 0) {
             var parentInfo = this.getTask(task.parent);
             leftLimit=parentInfo.start_date;
             rightLimit=parentInfo.end_date;
@@ -73,6 +74,7 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
                 task.start_date = realEndDate;
                 if(mode == modes.move)
                     task.start_date = realEndDate;
+                }
             }                    
         }
     }
