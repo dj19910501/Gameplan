@@ -46,6 +46,7 @@ namespace Integration.Helper
         public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping not found for CampaignId or CloseDate or Amount or StageName";
         public static string msgMappingNotFoundForEloquaPullMQL = "Error: Mapping not found for CampaignId or MQLDateId or ViewId or ListId";
         public static string msgChildLevelError = "Error: Error occurred while processing Tactic/Improvement Tactic.";
+        public static readonly int CustomNameLimitSet = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["CustomNameLimitSet"]); ////Added by :- Pratik Chauhan on 04/02/2015 for PL ticket #1147
 
         public static bool IsAutoSync = false;
         /// <summary>
@@ -568,6 +569,17 @@ namespace Integration.Helper
         }
 
         #endregion
+
+        /// <summary>
+        /// Truncate name up to valid limit.
+        /// </summary>
+        /// <param name="name">Name of activity.</param>
+        /// <returns>Truncated Name.</returns>
+        public static string TruncateName(string name)
+        {
+            name = name.Substring(0, ((name.Length > (CustomNameLimitSet + 1)) ? CustomNameLimitSet : name.Length));
+            return name;
+        }
     }
 
     public class CRM_EloquaMapping

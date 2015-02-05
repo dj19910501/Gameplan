@@ -60,6 +60,8 @@ namespace Integration.Eloqua
         //private List<BDSService.ClientApplicationActivity> _clientActivityList { get; set; }
         //End - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
 
+        private string titleMappedValue = "name";
+
         #endregion
 
         #region Properties
@@ -600,6 +602,11 @@ namespace Integration.Eloqua
                 RequestFormat = DataFormat.Json
             };
 
+            if (tactic.ContainsKey(titleMappedValue))
+            {
+                tactic[titleMappedValue] = Common.TruncateName(tactic[titleMappedValue].ToString());
+            }
+
             request.AddBody(tactic);
             IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
 
@@ -663,6 +670,12 @@ namespace Integration.Eloqua
                 Resource = string.Format("/assets/campaign/{0}", id),
                 RequestFormat = DataFormat.Json
             };
+
+            if (tactic.ContainsKey(titleMappedValue))
+            {
+                tactic[titleMappedValue] = Common.TruncateName(tactic[titleMappedValue].ToString());
+            }
+
             request.AddBody(tactic);
 
             IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
@@ -884,6 +897,12 @@ namespace Integration.Eloqua
         private string CreateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
             IDictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Create);
+
+            if (_mappingTactic.ContainsKey("Title"))
+            {
+                titleMappedValue = _mappingTactic["Title"].ToString();
+            }
+
             return CreateEloquaCampaign(tactic);
         }
 
@@ -896,6 +915,12 @@ namespace Integration.Eloqua
         private bool UpdateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
             IDictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Update);
+
+            if (_mappingTactic.ContainsKey("Title"))
+            {
+                titleMappedValue = _mappingTactic["Title"].ToString();
+            }
+
             return UpdateEloquaCampaign(planIMPTactic.IntegrationInstanceTacticId, tactic);
         }
 
@@ -962,8 +987,12 @@ namespace Integration.Eloqua
             IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
             if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
             {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-                tactic[titleMappedValue] = planTactic.TacticCustomName;
+                titleMappedValue = _mappingTactic["Title"].ToString();
+                
+                if (tactic.ContainsKey(titleMappedValue))
+                {
+                    tactic[titleMappedValue] = planTactic.TacticCustomName;
+                }
             }
             return UpdateEloquaCampaign(planTactic.IntegrationInstanceTacticId, tactic);
         }
@@ -1173,7 +1202,7 @@ namespace Integration.Eloqua
             IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
             if (_mappingTactic.ContainsKey("Title") && planTactic != null && _CustomNamingPermissionForInstance && IsClientAllowedForCustomNaming)//_clientActivityList.Where(clientActivity=>clientActivity.Code==Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any() && 
             {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
+                titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
                     tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId);

@@ -652,8 +652,7 @@
 
     @* Start - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
     function changeBudgetValues() {
-
-        if ($("#txtBudget").val() == "$0") {
+        if ($("#txtBudget").val().replace("$","") == "0") {
             $('#AllocatedBy').prev().css("display", "none");
             $('#spanZeroBudget').css("display", "inline");
             $('#AllocatedBy').prev().children('a').text("none");

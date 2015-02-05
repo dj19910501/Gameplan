@@ -2163,6 +2163,16 @@ namespace Integration.Salesforce
         private string CreateCampaign(Plan_Campaign planCampaign)
         {
             Dictionary<string, object> campaign = GetCampaign(planCampaign);
+
+            if (_mappingTactic.ContainsKey("Title") && planCampaign != null)
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                if (campaign.ContainsKey(titleMappedValue))
+                {
+                    campaign[titleMappedValue] = Common.TruncateName(campaign[titleMappedValue].ToString());
+                }
+            }
+            
             string campaignId = _client.Create(objectName, campaign);
             return campaignId;
         }
@@ -2170,6 +2180,16 @@ namespace Integration.Salesforce
         private string CreateProgram(Plan_Campaign_Program planProgram)
         {
             Dictionary<string, object> program = GetProgram(planProgram, Enums.Mode.Create);
+
+            if (_mappingTactic.ContainsKey("Title") && planProgram != null)
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                if (program.ContainsKey(titleMappedValue))
+                {
+                    program[titleMappedValue] = Common.TruncateName(program[titleMappedValue].ToString());
+                }
+            }
+
             string programId = _client.Create(objectName, program);
             return programId;
         }
@@ -2184,6 +2204,7 @@ namespace Integration.Salesforce
                 {
                     tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, _clientId);
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
+                    tactic[titleMappedValue] = Common.TruncateName(planTactic.TacticCustomName.ToString());
                 }
             }
             string tacticId = _client.Create(objectName, tactic);
@@ -2193,6 +2214,16 @@ namespace Integration.Salesforce
         private string CreateImprovementCampaign(Plan_Improvement_Campaign planIMPCampaign)
         {
             Dictionary<string, object> campaign = GetImprovementCampaign(planIMPCampaign);
+
+            if (_mappingTactic.ContainsKey("Title") && planIMPCampaign != null)
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                if (campaign.ContainsKey(titleMappedValue))
+                {
+                    campaign[titleMappedValue] = Common.TruncateName(campaign[titleMappedValue].ToString());
+                }
+            }
+
             string campaignId = _client.Create(objectName, campaign);
             return campaignId;
         }
@@ -2200,6 +2231,16 @@ namespace Integration.Salesforce
         private string CreateImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram)
         {
             Dictionary<string, object> program = GetImprovementProgram(planIMPProgram, Enums.Mode.Create);
+
+            if (_mappingTactic.ContainsKey("Title") && planIMPProgram != null)
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                if (program.ContainsKey(titleMappedValue))
+                {
+                    program[titleMappedValue] = Common.TruncateName(program[titleMappedValue].ToString());
+                }
+            }
+
             string programId = _client.Create(objectName, program);
             return programId;
         }
@@ -2207,6 +2248,16 @@ namespace Integration.Salesforce
         private string CreateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
             Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Create);
+
+            if (_mappingTactic.ContainsKey("Title") && planIMPTactic != null)
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                if (tactic.ContainsKey(titleMappedValue))
+                {
+                    tactic[titleMappedValue] = Common.TruncateName(tactic[titleMappedValue].ToString());
+                }
+            }
+
             string tacticId = _client.Create(objectName, tactic);
             return tacticId;
         }
@@ -2214,12 +2265,32 @@ namespace Integration.Salesforce
         private bool UpdateCampaign(Plan_Campaign planCampaign)
         {
             Dictionary<string, object> campaign = GetCampaign(planCampaign);
+
+            if (_mappingTactic.ContainsKey("Title") && planCampaign != null)
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                if (campaign.ContainsKey(titleMappedValue))
+                {
+                    campaign[titleMappedValue] = Common.TruncateName(campaign[titleMappedValue].ToString());
+                }
+            }
+
             return _client.Update(objectName, planCampaign.IntegrationInstanceCampaignId, campaign);
         }
 
         private bool UpdateProgram(Plan_Campaign_Program planProgram)
         {
             Dictionary<string, object> program = GetProgram(planProgram, Enums.Mode.Update);
+
+            if (_mappingTactic.ContainsKey("Title") && planProgram != null)
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                if (program.ContainsKey(titleMappedValue))
+                {
+                    program[titleMappedValue] = Common.TruncateName(program[titleMappedValue].ToString());
+                }
+            }
+
             return _client.Update(objectName, planProgram.IntegrationInstanceProgramId, program);
         }
 
@@ -2230,7 +2301,11 @@ namespace Integration.Salesforce
             if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
             {
                 string titleMappedValue = _mappingTactic["Title"].ToString();
-                tactic[titleMappedValue] = planTactic.TacticCustomName;
+
+                if (tactic.ContainsKey(titleMappedValue))
+                {
+                    tactic[titleMappedValue] = Common.TruncateName(planTactic.TacticCustomName.ToString());
+                }
             }
             return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
         }
@@ -2238,6 +2313,16 @@ namespace Integration.Salesforce
         private bool UpdateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
             Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Update);
+
+            if (_mappingTactic.ContainsKey("Title") && planIMPTactic != null)
+            {
+                string titleMappedValue = _mappingTactic["Title"].ToString();
+                if (tactic.ContainsKey(titleMappedValue))
+                {
+                    tactic[titleMappedValue] = Common.TruncateName(tactic[titleMappedValue].ToString());
+                }
+            }
+
             return _client.Update(objectName, planIMPTactic.IntegrationInstanceTacticId, tactic);
         }
 
