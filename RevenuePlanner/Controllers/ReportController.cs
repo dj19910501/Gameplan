@@ -2363,24 +2363,75 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Get Projected Cost Data With Month Wise.
+        /// Added By: Viral Kadiya
         /// </summary>
-        /// <param name="cl"></param>
-        /// <returns></returns>
-        public List<TacticMonthValue> GetProjectedCostData(List<TacticStageValue> tacticDataList)
+        /// <param name="CustomFieldId"></param>
+        /// <param name="CustomFieldOptionId"></param>
+        /// <param name="CustomFieldType"></param>
+        /// <param name="Tacticdata"></param>
+        /// <returns> Return Tactic Projected MonthWise Cost Data </returns>
+        private List<TacticMonthValue> GetProjectedCostData(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, List<TacticStageValue> Tacticdata)
         {
-            List<TacticDataTable> tacticdata = new List<TacticDataTable>();
-            tacticdata = tacticDataList.Select(
-                td => new TacticDataTable
-                {
-                    TacticId = td.TacticObj.PlanTacticId,
-                    Value = td.TacticObj.Cost,
-                    StartMonth = td.TacticObj.StartDate.Month,
-                    EndMonth = td.TacticObj.EndDate.Month,
-                    StartYear = td.TacticObj.StartDate.Year,
-                    EndYear = td.TacticObj.EndDate.Year
-                }).ToList();
+            #region "Declare Local variables"
+            List<TacticMonthValue> listmonthwise = new List<TacticMonthValue>();
+            List<Plan_Campaign_Program_Tactic_LineItem> lstTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+            List<Plan_Campaign_Program_Tactic_LineItem_Cost> tblLineItemCost = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
+            List<Plan_Campaign_Program_Tactic_Cost> tblTacticCostList = new List<Plan_Campaign_Program_Tactic_Cost>();
+            List<Plan_Campaign_Program_Tactic_Cost> TacticCostList = new List<Plan_Campaign_Program_Tactic_Cost>();
+            List<int> lstTacticIds = new List<int>();
+            List<Enums.InspectStage> CostStageCode = new List<Enums.InspectStage>();
+            CostStageCode.Add(Enums.InspectStage.Cost); 
+            #endregion
+            
+            lstTacticIds = Tacticdata.Select(tac => tac.TacticObj.PlanTacticId).ToList();
+            lstTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(line => lstTacticIds.Contains(line.PlanTacticId) && line.IsDeleted == false).ToList();
+            tblTacticCostList = db.Plan_Campaign_Program_Tactic_Cost.ToList().Where(line => lstTacticIds.Contains(line.PlanTacticId)).ToList();
+            tblLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList().Where(line => lstTacticLineItem.Select(ln => ln.PlanLineItemId).Contains(line.PlanLineItemId)).ToList();
+            
+            //// Get TacticMonth value for each Tactic.
+            foreach (TacticStageValue tactic in Tacticdata)
+            {
+                int PlanTacticId = tactic.TacticObj.PlanTacticId;
+                List<Plan_Campaign_Program_Tactic_LineItem> InnerLineItemList = lstTacticLineItem.Where(l => l.PlanTacticId == PlanTacticId).ToList();
+                TacticCostList = tblTacticCostList.Where(tacCost => tacCost.PlanTacticId.Equals(PlanTacticId)).ToList();
+                string Period = string.Empty;
+                double lineTotalValue = 0,TacticTotalValue=0;
+                int? weightage = 0;
 
-            return GetMonthWiseValueList(tacticdata);
+                //// Get Tactic weightage if CustomFieldType is Dropdownlist o/w take 100 in Textbox.
+                if (!string.IsNullOrEmpty(CustomFieldType) && CustomFieldType.Equals(Enums.CustomFieldType.DropDownList.ToString()))
+                {
+                    TacticCustomFieldStageWeightage objTacticStageWeightage = new TacticCustomFieldStageWeightage();
+                    objTacticStageWeightage = tactic.TacticStageWeightages.Where(_stage => _stage.CustomFieldId.Equals(CustomFieldId) && _stage.Value.Equals(CustomFieldOptionId)).FirstOrDefault();
+
+                    if (objTacticStageWeightage != null)
+                        weightage = objTacticStageWeightage.CostWeightage;
+                    weightage = weightage != null ? weightage.Value : 0;
+                }
+                else
+                    weightage = 100;
+
+                //// if LineItem exist for this Tactic then check sum of LineItemCost with TacticCost.
+                if (InnerLineItemList.Count() > 0)
+                {
+                    //// Get sum of LineItemCost based on LineItemID.
+                   lineTotalValue = tblLineItemCost.Where(lineCost => InnerLineItemList.Select(line => line.PlanLineItemId).Contains(lineCost.PlanLineItemId)).Select(lineCost => lineCost.Value).Sum(r => r);
+                   //// Get sum of TacticCost based on PlanTacticId.
+                   TacticTotalValue = TacticCostList.Select(lineCost => lineCost.Value).Sum(r => r);
+                   
+                    //// if sum of LineItemCost greater than TacticCost then retrieve TacticMonth value from LineItemCost o/w TacticCost.
+                    if (lineTotalValue > TacticTotalValue)
+                       tblLineItemCost.ForEach(lineCost=>listmonthwise.Add(new TacticMonthValue { Id = PlanTacticId, Month = tactic.TacticYear + lineCost.Period, Value = (lineCost.Value * weightage.Value) / 100 }));
+                   else
+                       TacticCostList.ForEach(tacCost => listmonthwise.Add(new TacticMonthValue { Id = PlanTacticId, Month = tactic.TacticYear + tacCost.Period, Value = (tacCost.Value * weightage.Value) / 100 }));
+                }
+                else
+                {
+                    //// LineItem does not exist then retrieve TacticMonth value from TacticCost table.
+                    TacticCostList.ForEach(tacCost => listmonthwise.Add(new TacticMonthValue { Id = PlanTacticId, Month = tactic.TacticYear + tacCost.Period, Value = (tacCost.Value * weightage.Value) / 100 }));
+                }
+            }
+            return listmonthwise;
         }
 
         /// <summary>
@@ -4774,7 +4825,7 @@ namespace RevenuePlanner.Controllers
                 else if (stageCode.Equals(Enums.InspectStage.Revenue))
                     ProjectedDatatable = GetProjectedRevenueValueDataTableForReport(TacticDataWeightage);
                 else if (stageCode.Equals(Enums.InspectStage.Cost))
-                    ProjectedDatatable = GetProjectedCostData(TacticDataWeightage);
+                    ProjectedDatatable = GetProjectedCostData(CustomFieldId, CustomFieldOptionId, CustomFieldType,TacticDataWeightage);
 
                 PlanValue = ProjectedDatatable.Where(mr => includeMonth.Contains(mr.Month)).Sum(r => r.Value);
             }
