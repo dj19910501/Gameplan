@@ -56,6 +56,11 @@
 @Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
 @Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
 <form>
+     <div id="MultiSelectProcced" class="alert alert-error hide message-position-popup" proccedobject="#ATTRIBUTUTES#" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                                <a class="close">×</a>
+                                <strong>Error!</strong> <span id="spanMultiSelectProcced"><b>Data will be lost!</b> Switching <attributetext>#ATTRIBUTUTES#</attributetext> from Multi-selection to Single-selection will reset all weight (%) to default value.</span>
+                                <button class="proceed_btn" type="button"> Proceed </button> <a class="cncl_btn" href="#">Cancel</a>
+                            </div>
 <div class="modal-popup-title" style="margin-bottom:3px;">
     <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>
     <h2 class="title-simple source-sans-prolight">
@@ -187,7 +192,7 @@
                   $(this).addClass("active pull-left");
                   $("#errorMessage").css("display", "none");
                   $("#successMessage").css("display", "none");
-                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                  $('#MultiSelectProcced').css("display", "none");
                   var tabtext = ($(this).children('a').text());
                   var planTacticId = $("#hdnPlanTacticId").val();
                   loadReview(planTacticId, tabtext);
@@ -212,6 +217,7 @@
           $("#EditForm").on("click", function (e) {
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
+              $('#MultiSelectProcced').css("display", "none");
               $("#txtTacticTitle").removeClass("error");              
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();
@@ -251,6 +257,7 @@
         $("#li" + tabText).addClass("active pull-left");
         $("#errorMessage").css("display", "none");
         $("#successMessage").css("display", "none");
+        $('#MultiSelectProcced').css("display", "none");
         /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
         var tabtext = ($("#li" + tabText).children('a').text());
         var planTacticId = $("#hdnPlanTacticId").val();

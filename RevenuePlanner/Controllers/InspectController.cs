@@ -2038,28 +2038,8 @@ namespace RevenuePlanner.Controllers
 
             /* Added by Mitesh Vaishnav for PL ticket #1143
              Add number of stages for advance/Basic attributes waightage related to tacticType*/
-            string mqlCode = Enums.Stage.MQL.ToString();
-            var mqlForClient = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == mqlCode).FirstOrDefault();
-            var objTacticType = db.TacticTypes.Where(tType => tType.TacticTypeId == _inspetmodel.TacticTypeId).FirstOrDefault();
-            var projectedStageLevel = objTacticType.Stage.Level;
-
-            int mqlLevel = mqlForClient != null ? (int)mqlForClient.Level : 0;
-            string advanceStageTitles = objTacticType.Stage.Title, advanceStagecodes = Enums.InspectStage.ProjectedStageValue.ToString();
-            if (mqlLevel > projectedStageLevel)
-            {
-                advanceStageTitles += "," + mqlForClient.Title;
-                advanceStagecodes += "," + mqlForClient.Code;
-            }
-            ViewBag.AdvanceStageTitles = advanceStageTitles;
-            ViewBag.AdvanceStageCodes = advanceStagecodes;
             string entityType = Enums.Section.Tactic.ToString();
             /*Get existing value of Advance/Basic waightage of tactic's attributes*/
-            //var customFeilds = db.CustomField_Entity_StageWeight.Where(cfs => cfs.CustomField_Entity.EntityId == id && cfs.CustomField_Entity.CustomField.EntityType == entityType).Select(cfs => new
-            //{
-            //    optionId = cfs.CustomField_Entity.Value,
-            //    stageType = cfs.StageTitle,
-            //    Weight = cfs.Weightage
-            //}).ToList();
             string customFieldType=Enums.CustomFieldType.DropDownList.ToString();
             var customFeildsWeightage = db.CustomField_Entity.Where(cfs => cfs.EntityId == id && cfs.CustomField.EntityType == entityType && cfs.CustomField.CustomFieldType.Name == customFieldType).Select(cfs => new
             {
@@ -2713,25 +2693,8 @@ namespace RevenuePlanner.Controllers
 
             /* Added by Mitesh Vaishnav for PL ticket #1073
              Add number of stages for advance/Basic attributes waightage related to tacticType*/
-            string mqlCode = Enums.Stage.MQL.ToString();
-            var mqlForClient = db.Stages.Where(stage => stage.ClientId == pcpt.TacticType.Stage.ClientId && stage.Code == mqlCode).FirstOrDefault();
-            int mqlLevel = mqlForClient != null ? (int)mqlForClient.Level : 0;
-            string advanceStageTitles = pcpt.TacticType.Stage.Title, advanceStagecodes = Enums.InspectStage.ProjectedStageValue.ToString();
-            if (mqlLevel > pcpt.TacticType.Stage.Level)
-            {
-                advanceStageTitles += "," + mqlForClient.Title;
-                advanceStagecodes += "," + mqlForClient.Code;
-            }
-            ViewBag.AdvanceStageTitles = advanceStageTitles;
-            ViewBag.AdvanceStageCodes = advanceStagecodes;
             string entityType = Enums.Section.Tactic.ToString();
             /*Get existing value of Advance/Basic waightage of tactic's attributes*/
-            //var customFeilds = db.CustomField_Entity_StageWeight.Where(cfs => cfs.CustomField_Entity.EntityId == pcpt.PlanTacticId && cfs.CustomField_Entity.CustomField.EntityType == entityType).Select(cfs => new
-            //{
-            //    optionId = cfs.CustomField_Entity.Value,
-            //    stageType = cfs.StageTitle,
-            //    Weight = cfs.Weightage
-            //}).ToList();
             string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
             var customFeildsWeightage = db.CustomField_Entity.Where(cfs => cfs.EntityId == pcpt.PlanTacticId && cfs.CustomField.EntityType == entityType && cfs.CustomField.CustomFieldType.Name==customFieldType).Select(cfs => new
             {

@@ -6,19 +6,9 @@
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
-    string advanceStageTitles = "";
-    if (ViewBag.AdvanceStageTitles!=null)
-    {
-        advanceStageTitles = (string)ViewBag.AdvanceStageTitles;
-    }
-    string advanceStageCodes = "";
-    if (ViewBag.AdvanceStageCodes != null)
-    {
-        advanceStageCodes = (string)ViewBag.AdvanceStageCodes;
-    }
     string customFieldWeightage = ViewBag.customFieldWeightage;
 }
- <style type="text/css">
+<style type="text/css">
      @@media screen and (-webkit-min-device-pixel-ratio:0) {
     #dp_start .datepicker{
         top: 32px !important;
@@ -83,19 +73,19 @@
     <script src="~/Scripts/js/bootstrap-datepicker.js"></script> 
  
     bool ExtIntService = (bool)ViewBag.ExtIntService;  
- @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
- @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
- @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
- @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
- @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
- @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
- @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
- @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
- @Html.HiddenFor(model => model.BusinessUnitId, new { id = "hdnBusinessUnitId" })
- @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
- @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
+    @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+    @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
+    @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
+    @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
+    @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
+    @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
+    @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+    @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
+    @Html.HiddenFor(model => model.BusinessUnitId, new { id = "hdnBusinessUnitId" })
+    @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
+    @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
      
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom:0px;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom: 0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>Parent Campaign</p>
             @Html.TextBoxFor(model => model.CampaignTitle, new { @class = "span12 input-small truncate", id = "txtCampaign", @readonly = "true", style = "background:#F2F2F2;" })
@@ -112,33 +102,33 @@
             <p class="margin-top-10">Tactic Planned Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Start Date</p>
-             <span style="position:relative;">
-            <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small resubmission input-setup", id = "t_startdate", label = "Start_Date" })
-                <span class="add-on">
-                    <img src="~/Content/images/gray-calendar-icon.png"></span>
-            </div>
-                 </span>
-            <p class="clear-section" style="margin-top:2px;">End Date</p>
-            <span style="position:relative;">
-             <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small resubmission input-setup", id = "t_enddate", label = "End_Date" })
-                <span class="add-on">
-                    <img src="~/Content/images/gray-calendar-icon.png"></span>
-            </div>
-                </span>
+            <span style="position: relative;">
+                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                    @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small resubmission input-setup", id = "t_startdate", label = "Start_Date" })
+                    <span class="add-on">
+                        <img src="~/Content/images/gray-calendar-icon.png"></span>
+                </div>
+            </span>
+            <p class="clear-section" style="margin-top: 2px;">End Date</p>
+            <span style="position: relative;">
+                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                    @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small resubmission input-setup", id = "t_enddate", label = "End_Date" })
+                    <span class="add-on">
+                        <img src="~/Content/images/gray-calendar-icon.png"></span>
+                </div>
+            </span>
         </div>
         <div class="span3" id="inspect-modal-left-column3">
             <p>Owner <span class="required-asterisk">*</span></p>
             @if (IsTackticAddEdit)
             {
-                <span style="min-width:100%; position:relative;">
+                <span style="min-width: 100%; position: relative;">
                     @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
             else
             {
-            @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = Model.Owner })
+                @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = Model.Owner })
             }
 
             @if (ExtIntService)
@@ -159,12 +149,12 @@
                 <div class="margin-right10 pull-left" style="width: 47%">
                     <label id="lblStageTitle" title="@Model.StageTitle" class="stage-title inspect-bolder-label">@Model.StageTitle &nbsp;</label>
 
-                        @if (ViewBag.IsDiffrentStageType == true)
-                        {
-                            <span>
-                                <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
+                    @if (ViewBag.IsDiffrentStageType == true)
+                    {
+                        <span>
+                            <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
-                        }
+                    }
                     @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue input-setup", label = @Model.StageTitle, maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
@@ -192,7 +182,7 @@
     </div>   
 
     <div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
-        <div class="span2 btn-save" style="width:80px;">
+        <div class="span2 btn-save" style="width: 80px;">
             <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save</button>
         </div>
         <div class="span2">
@@ -213,11 +203,13 @@
     }
 
     $(document).ready(
-      function () {	 
+      function () {
           /*Added by Mitesh Vaishnav for PL ticket #1073
           Register events of new multiselect dropdown customfields*/
           $('.dropdown_new_btn').each(function () {
-              $(this).multiselectWeight();
+              $(this).multiselectWeight({
+                  errorDivId: 'MultiSelectProcced'
+              });
           });
           NumberFormatterTipsyTitle(".sus_header", 24);
           /*End Added by Mitesh Vaishnav for PL ticket #1073*/
@@ -235,7 +227,7 @@
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
           $('#divTacticSaveCancel').css('display', 'block');
-          $('#EditForm').css('display', 'none');          
+          $('#EditForm').css('display', 'none');
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val());
           $(".selectBox select").selectbox();
@@ -265,8 +257,8 @@
           });;
 
           //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
-           $('.input-setup').addClass('light-blue-background');
-           $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
+          $('.input-setup').addClass('light-blue-background');
+          $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
           //End - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
           /*hide the other datepicker in input onclick*/
 
@@ -378,6 +370,7 @@
               $('#divDeleteTactic').css('display', 'block');
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
+              $('#MultiSelectProcced').css("display", "none");
               $('#divTacticSaveCancel').css('display', 'none');
               $('#EditForm').css('display', 'block');
               $("#hdnTacticBudgetAllocationOpt").val("View");
@@ -399,10 +392,10 @@
           });
 
           $('#ddlOwner').multiselect({
-                multiple: false,
-                noneSelectedText: "Please Select",
-                selectedList: 1,
-                CustomName: '@Common.CustomTitle'
+              multiple: false,
+              noneSelectedText: "Please Select",
+              selectedList: 1,
+              CustomName: '@Common.CustomTitle'
           }).multiselectfilter();
 
           $('#ddlOwner').next().css('width', '95%');
@@ -411,33 +404,38 @@
           var spanOwner = $('#multipleselect_ddlOwner');
           $('#btnMultiselect_ddlOwner').after(spanOwner);
 
-              /*Modified by Mitesh Vaishnav for PL ticket #1165*/
-          var customFieldsValues = JSON.parse('@Html.Raw(customFieldWeightage)');
-               
+          /*Modified by Mitesh Vaishnav for PL ticket #1165*/
+          debugger;
+          var customFieldsValues = {};
+          if ('@customFieldWeightage' != '') {
+           customFieldsValues=   JSON.parse('@Html.Raw(customFieldWeightage)');
+          }
+
           for (var i = 0; i < customFieldsValues.length; i++) {
               $('#' + customFieldsValues[i].optionId + '_Cost').val(customFieldsValues[i].Weight);
               $('#' + customFieldsValues[i].optionId + '_cvr').val(customFieldsValues[i].CostWeight);
-              }
+          }
           $(".table_drpdwn").each(function () {
-                  var chekcedCount = $(this).find('input:checked').length;
-                  if (chekcedCount > 1) {
-                      var menu = $(this).parents('.dropdown-wrapper');
-                      menu.toggleClass('dropdown-block');
-                      menu.find(".first_hide,.revenue_header,.cost_header,.top_head_attribute,.value_header").toggle();
-                      menu.find('.advance_a').text("< Single-selection");
-                      menu.find('.advance_a').attr('mode', 'Multi');
-                      menu.find('input[type=checkbox]').toggle();
-                  }
-              });
-          
+              var chekcedCount = $(this).find('input:checked').length;
+              if (chekcedCount > 1) {
+                  var menu = $(this).parents('.dropdown-wrapper');
+                  menu.toggleClass('dropdown-block');
+                  menu.find(".first_hide,.revenue_header,.cost_header,.top_head_attribute,.value_header").toggle();
+                  menu.find('.advance_a').text("< Single-selection");
+                  menu.find('.advance_a').attr('mode', 'Multi');
+                  menu.find('input[type=checkbox]').toggle();
+              }
+          });
+
       });
 
     $("#btnUploadResult").on("click", function (e) {
+        $('#MultiSelectProcced').css("display", "none");
           document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
           document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
           document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
           document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
-          
+
           var isLowBudgeted = false;
           var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
           var lowBudgetedMonths = "";
@@ -464,7 +462,7 @@
                   $(this).removeClass("error");
               }
           })
-          //sbSelector
+        //sbSelector
           $('form').find('.sbSelector').each(function () {
               if ($(this).parent().prev().attr('require') == 'true') {
                   if ($(this).text() == 'Please Select') {
@@ -477,8 +475,8 @@
               }
           });
 
-          /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
-          //// RequireField validation for Owner Dropdown
+        /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
+        //// RequireField validation for Owner Dropdown
           if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
               var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
               if (OwnerValue == "Please Select") {
@@ -488,130 +486,111 @@
                   $('#btnMultiselect_ddlOwner').removeClass("error");
               }
           }
-          /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
+        /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
           if (iserror) {
               ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
               return false;
           }
 
-          var regex = /(>|<)/m;
+        var regex = /(>|<)/m;
 
-          var descriptionvalue = $("#Description").val();
-          if (descriptionvalue.search(regex) >= 0) {
-              var test = "@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription";
+        var descriptionvalue = $("#Description").val();
+        if (descriptionvalue.search(regex) >= 0) {
+            var test = "@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription";
               ShowError(test);
               $("#Description").addClass("error");
-            return false;
+              return false;
+          }
+
+        var sdate = $('#t_startdate').val();
+        var edate = $('#t_enddate').val();
+        if (!isDate(sdate)) {
+            alert('@Common.objCached.ValidateStartDate');
+              return false;
+          }
+        if (!isDate(edate)) {
+            alert('@Common.objCached.ValidateEndDate');
+              return false;
+          }
+
+
+        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+        if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+
+        $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
+        if ($("#txtmql").val() == 'N/A') {
+            $("#txtmql").val(0);
+            $("#txtmql").attr("title", "0");
+        }
+        else {
+            var mqlValue = ReplaceCC($("#txtmql").val());
+            $("#txtmql").val(mqlValue);
+            $("#txtmql").attr("title", mqlValue);
         }
 
-          var sdate = $('#t_startdate').val();
-          var edate = $('#t_enddate').val();
-          if (!isDate(sdate)) {
-              alert('@Common.objCached.ValidateStartDate');
+        $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));
+
+        arrClosedTaskString = null;
+        if (typeof arrClosedTask != 'undefined') {
+            arrClosedTaskString = arrClosedTask.toString();
+        }
+
+        arLineitem = [];
+        var _Lineitems = $("#frm_campaigns #c_tactics select");
+        for (var l = 0; l < _Lineitems.length; l++) {
+            var typeid = $(_Lineitems[l]).val();
+            arLineitem[l] = typeid;
+        }
+        var arrError = autoGeneratedmultiselectWaightage();
+        if (arrError.length > 0) {
+            var errorAttrbutes = arrError.join(',');
+            ShowError('@Common.objCached.ValidateAttributeWeightSum'.replace('{0}', errorAttrbutes.toString()));
               return false;
           }
-          if (!isDate(edate)) {
-              alert('@Common.objCached.ValidateEndDate');
-              return false;
-          }
+        ////creating object which contains value of custom fields
+        _customFieldValues = [];
+        $('form').find('input[type=text], select').each(function () {
+            if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
+                _customFieldValues.push({
+                    customFieldId: $(this).attr('cf_id').toString(),
+                    Value: htmlEncode($(this).val().toString()),
+                    Weight: "100",
+                    CostWeight: "100"
+                });
+            }
+        });
+        $('form').find('input:checkbox:checked').each(function () {
+            if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
+                var customFieldId = $(this).attr('cf_id').toString();
+                var optionId = $(this).val();
+                if ($('#' + optionId + '_weight').parent().css('display') != 'none') {
+                    _customFieldValues.push({
+                        CustomFieldId: customFieldId,
+                        Value: optionId,
+                        Weight: $('#' + optionId + '_cvr').val() != '' ? $('#' + optionId + '_cvr').val() : '100',
+                        CostWeight: $('#' + optionId + '_Cost').val() != '' ? $('#' + optionId + '_Cost').val() : '100'
 
+                    });
+                }
+            }
+        });
+        _customFieldValues = JSON.stringify(_customFieldValues);
+        var isAssortment = true;
 
-          if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-          if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+        _resubmissionLabelValues = [];
 
-          $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
-          if ($("#txtmql").val() == 'N/A') {
-              $("#txtmql").val(0);
-              $("#txtmql").attr("title", "0");
-          }
-          else {
-              var mqlValue = ReplaceCC($("#txtmql").val());
-              $("#txtmql").val(mqlValue);
-              $("#txtmql").attr("title", mqlValue);
-          }
-
-          $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));
-
-          arrClosedTaskString = null;
-          if (typeof arrClosedTask != 'undefined') {
-              arrClosedTaskString = arrClosedTask.toString();
-          }
-
-          arLineitem = [];
-          var _Lineitems = $("#frm_campaigns #c_tactics select");
-          for (var l = 0; l < _Lineitems.length; l++) {
-              var typeid = $(_Lineitems[l]).val();
-              arLineitem[l] = typeid;
-          }
-          var arrError = autoGeneratedmultiselectWaightage();
-          if (arrError.length > 0) {
-              var errorAttrbutes = arrError.join(',');
-              ShowError('@Common.objCached.ValidateAttributeWeightSum'.replace('{0}', errorAttrbutes.toString()));
-              return false;
-          }
-          ////creating object which contains value of custom fields
-          _customFieldValues = [];
-          $('form').find('input[type=text], select').each(function () {
-              if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
-                  _customFieldValues.push({
-                      customFieldId: $(this).attr('cf_id').toString(),
-                      Value: htmlEncode($(this).val().toString()),
-                      Weight: "100",
-                      CostWeight: "100"
-                  });
-              }
-          });
-          $('form').find('input:checkbox:checked').each(function () {
-              if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
-                  var customFieldId = $(this).attr('cf_id').toString();
-                  var optionId = $(this).val();
-                  if ($('#' + optionId + '_weight').parent().css('display') != 'none') {
-                      _customFieldValues.push({
-                          CustomFieldId: customFieldId,
-                          Value: optionId,
-                          Weight: $('#' + optionId + '_cvr').val()!=''?$('#' + optionId + '_cvr').val():'100',
-                          CostWeight: $('#' + optionId + '_Cost').val() != '' ? $('#' + optionId + '_Cost').val() : '100'
-                          
-                      });
-                  }
-                  //else {
-                  //    var i = 1;
-                  //    while (i > 0) {
-                  //        var StageInput = $(this).closest('tr').find('td').eq(i + 1).find('input[type=text]');
-                  //        if (typeof StageInput != 'undefined' && typeof (StageInput.attr('id'))!='undefined') {
-                  //            _customFieldValues.push({
-                  //                CustomFieldId: customFieldId,
-                  //                Value: optionId,
-                  //                Weight: null,
-                  //                StageCode: StageInput.attr('id').split('_')[1].toString(),
-                  //                StageWeight: StageInput.val()!=''?StageInput.val():'0'
-                  //            });
-                  //            i++
-                  //        }
-                  //        else {
-                  //            i = 0;
-                  //        }
-                  //    }
-                  //}
-              }
-          });
-          _customFieldValues = JSON.stringify(_customFieldValues);
-          var isAssortment = true;
-          
-          _resubmissionLabelValues = [];
-
-          if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
-              url = '@Url.Content("~/Inspect/LoadResubmission")';
+        if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
+            url = '@Url.Content("~/Inspect/LoadResubmission")';
               $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
           } else {
               saveTactic();
           }
-      });
+    });
 
-    function saveTactic(resubmission) {
-        resubmission = typeof resubmission !== 'undefined' ? resubmission : false;
-         var txtCampaignValue = $("#txtCampaign").val();
-         var  txtProgramValue = $("#txtProgram").val();
+      function saveTactic(resubmission) {
+          resubmission = typeof resubmission !== 'undefined' ? resubmission : false;
+          var txtCampaignValue = $("#txtCampaign").val();
+          var txtProgramValue = $("#txtProgram").val();
           var txtTacticValue = $("#txtTacticTitle").val();
           var txtDescriptionValue = htmlEncode($("#Description").val());
           document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
@@ -624,10 +603,10 @@
           $.ajax({
               type: 'POST',
               url: '@Url.Content("~/Inspect/SetupSaveTactic")',
-              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) +'&resubmission='+resubmission ,
-            success: function (data) {
-                if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&resubmission=' + resubmission,
+              success: function (data) {
+                  if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                      window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
                     if (!data.IsDuplicate) {
@@ -678,7 +657,7 @@
                     }
                 }
             }
-        });
+          });
     }
 
     function ShowError(value) {
@@ -698,9 +677,9 @@
     function checkChangeValue(classname, withResubmissionLabel) {
         var resubmit = false;
         if (withResubmissionLabel) {
-            $('form').find(classname).each(function () {                
+            $('form').find(classname).each(function () {
                 var oldValue = $(this).attr("oldValue");
-                var value="";
+                var value = "";
                 if ($(this).prop('tagName') != 'A') {
                     value = $(this).val();
                 }
@@ -709,7 +688,7 @@
                 }
                 if (oldValue != value) {
                     _resubmissionLabelValues.push({
-                        Key: htmlEncode($(this).attr("label").replace(/ /g,"_").toString()),
+                        Key: htmlEncode($(this).attr("label").replace(/ /g, "_").toString()),
                         Value: htmlEncode($(this).attr("label").replace(/ /g, "_").toString())
                     });
 
@@ -767,7 +746,6 @@
 
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                        addColumnMultiselectWeight(data.AdvanceStageTitles, data.AdvanceStageCode);
                         if (data.IsDeployedToIntegration) {
                             $("#t_integration_status").val("Synced to integration");
                             $("#t_integration_status").addClass("icon-check-blue");
@@ -843,31 +821,31 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/CalculateMQL")',
-                    data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
-                    success: function (data) {
-                        if (data.mql == 'N/A') {
-                            $("#txtmql").val(data.mql);
-                            $("#txtmql").attr("title", data.mql);
-                            $("#txtmql").removeClass('priceValue');
-                        }
-                        else {
-                            mqlConversion = data.mql;
-                            var mqlValue = FormatCommas(mqlConversion.toString(), false);
-                            $("#txtmql").val(mqlValue);
-                            $("#txtmql").attr("title", mqlValue);
-                        }
-
-                        $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
-                        $("#txtRevenue").attr("title", $("#txtRevenue").val());
-
-                        $("#txtCampaign").val(txtCampaignValue);
-                        $("#txtProgram").val(txtProgramValue);
-                        $("#txtTacticTitle").val(txtTacticValue);
-                        $("#Description").val(txtDescriptionValue);
+                data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
+                success: function (data) {
+                    if (data.mql == 'N/A') {
+                        $("#txtmql").val(data.mql);
+                        $("#txtmql").attr("title", data.mql);
+                        $("#txtmql").removeClass('priceValue');
                     }
-                });
-            }
+                    else {
+                        mqlConversion = data.mql;
+                        var mqlValue = FormatCommas(mqlConversion.toString(), false);
+                        $("#txtmql").val(mqlValue);
+                        $("#txtmql").attr("title", mqlValue);
+                    }
+
+                    $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
+                    $("#txtRevenue").attr("title", $("#txtRevenue").val());
+
+                    $("#txtCampaign").val(txtCampaignValue);
+                    $("#txtProgram").val(txtProgramValue);
+                    $("#txtTacticTitle").val(txtTacticValue);
+                    $("#Description").val(txtDescriptionValue);
+                }
+            });
         }
+    }
 
     /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
     var tacticId = $('#hdnPlanTacticId').val();
@@ -880,8 +858,7 @@
         });
     }
 
-    function fillOwnerList()
-    {
+    function fillOwnerList() {
         var uId = $(window).attr('name');
         $.ajax({
             type: 'GET',
@@ -894,8 +871,7 @@
                 }
                 else {
                     if (data != null) {
-                        if(data.isSuccess)
-                        {
+                        if (data.isSuccess) {
                             var preservedOwner = $("#ddlOwner").val();
                             $("#ddlOwner").empty();
                             $("#ddlOwner").append("<option value='0'>Please Select</option>");
@@ -915,86 +891,17 @@
         $('#multipleselect_ddlOwner').css('display', 'none');
     });
     /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
-    //function addColumnMultiselectWeight(stageTitles, stageCodes) {
-       
-    //    var arrStageTitles = stageTitles.split(',');
-    //    var arrStageCode = stageCodes.split(',');
-    //    if (arrStageTitles.length > 0) {
-    //        $(".table_drpdwn").each(function () {
-    //            var j = 2;
-    //            while (j > 0) {
-    //                if ($(this).find('thead tr').find('td').eq(j).text() != 'CW(%)') {
-    //                    $(this).find('thead tr').find('td').eq(j).remove();
-    //                    $(this).find('tbody tr').each(function () {
-    //                        $(this).find('td').eq(j).remove();
-    //                    });
-    //                    //j++;
-    //                }
-    //                else {
-    //                    j = 0;
-    //                }
-    //            }
-    //        });
-    //    }
-    //    for (var i = 0; i < arrStageTitles.length; i++) {
-    //        $(".table_drpdwn").each(function () {
-    //            var rowStyle = "display: none;";
-                
-    //            if ($(this).find('.advance_a').text() != 'Advanced Attribution >') {
-    //                 rowStyle = "display: table-cell;";
-    //            }
-    //            $(this).find('thead tr').find('td').eq(i + 1).after('<td class="sus_header" scope="col" style="'+rowStyle+'" code="' + arrStageCode[i]+ '">' + arrStageTitles[i] + '(%)</td>');
-    //            $(this).find('tbody tr').each(function () {
-    //                var optionId = $(this).find('td').eq(0).find('input').val();
-    //                $(this).find('td').eq(i + 1).after('<td class="first_hide" style="' + rowStyle + '"><input type="text" maxlength="3" name="textfield4" id="' + optionId + '_' + arrStageCode[i] + '"></td>')
-    //                });
-    //        });
-    //    }
-    //    $('.dropdown_new_btn').each(function () {
-    //        $(this).multiselectWeight('refresh');
-    //    });
-    //    NumberFormatterTipsyTitle(".sus_header", 7);
-    //}
     function autoGeneratedmultiselectWaightage() {
         var isError = [];
         $(".table_drpdwn").each(function () {
-            //if ($(this).find('.advance_a:first').text() == 'Advanced Attribution >') {
-            //    var stageCode = 'weight';
-            //    var waightage = 0;
-            //    $(this).find('input:checked').each(function () {
-            //        var optionId = $(this).val();
-            //        if (typeof $('#' + optionId + '_' + stageCode).val() != 'undefined' && $('#' + optionId + '_' + stageCode).val() != '') {
-            //            waightage += parseInt($('#' + optionId + '_' + stageCode).val());
-            //        }
-            //    });
-            //    if (waightage != 100 && waightage > 0) {
-            //        isError.push($(this).parents(".dropdown-wrapper").parents().eq(1).find('.ellipsis-left').attr('title').toString());
-            //    }
-            //    else if (waightage == 0) {
-            //        var checkedCount = $(this).find('input:checked').length;
-            //        var residual = 100 % checkedCount;
-            //        var inputValue = 100 / checkedCount;
-            //        $(this).find('input:checked').each(function () {
-            //            var optionId = $(this).val();
-            //            $('#' + optionId + '_' + stageCode).val(parseInt(inputValue).toString());
-            //        });
-            //        if (residual != 0) {
-            //            $(this).find('input:checked:last').each(function () {
-            //                var optionId = $(this).val();
-            //                $('#' + optionId + '_' + stageCode).val(parseInt(inputValue + residual).toString());
-            //            });
-            //        }
-            //    }
-            //}
-             if ($(this).find('.advance_a:first').attr('mode') == 'Multi') {
+            if ($(this).find('.advance_a:first').attr('mode') == 'Multi') {
                 var arrStageCode = [];
                 $(this).find('.revenue_header,.cost_header').each(function () {
                     arrStageCode.push({
-                        s_code:$(this).attr('code').toString()
+                        s_code: $(this).attr('code').toString()
                     });
                 });
                 for (var i = 0; i < arrStageCode.length; i++) {
-                    debugger;
                     var stageCode = arrStageCode[i].s_code;
                     var waightage = 0;
                     $(this).find('input:checked').each(function () {
@@ -1026,8 +933,26 @@
                     }
                 }
             }
-            
+
         });
         return isError;
     };
+    $('.proceed_btn').click(function (e) {
+        var label = $('#MultiSelectProcced').attr('proccedObject').toString();
+        $('.dropdown_new_btn').each(function () {
+            if ($(this).attr('label').toString() == label) {
+                var menu = $(this).parent().find('.dropdown-wrapper');
+                menu.toggleClass('dropdown-block');
+                menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
+                menu.find('input[type=checkbox]').toggle();
+                menu.find('.advance_a').text("> Multi-selection");
+                menu.find('.advance_a').attr('mode', 'Single');
+                $(this).find('p:first').text("Please Select");
+                menu.find('input:checkbox').removeAttr('checked');
+                menu.find('input[type=text]').val('');
+            }
+        });
+        $('#MultiSelectProcced').slideUp(400);
+        e.stopPropagation();
+    });
 </script>
