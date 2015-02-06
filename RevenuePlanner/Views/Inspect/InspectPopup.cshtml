@@ -56,10 +56,10 @@
 @Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
 @Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
 <form>
-     <div id="MultiSelectProcced" class="alert alert-error hide message-position-popup" proccedobject="#ATTRIBUTUTES#" style="display: none; margin: auto !important; max-width: 1000px !important;">
-                                <a class="close">×</a>
-                                <strong>Error!</strong> <span id="spanMultiSelectProcced"><b>Data will be lost!</b> Switching <attributetext>#ATTRIBUTUTES#</attributetext> from Multi-selection to Single-selection will reset all weight (%) to default value.</span>
-                                <button class="proceed_btn" type="button"> Proceed </button> <a class="cncl_btn" href="#">Cancel</a>
+     <div id="MultiSelectProcced" class="alert alert-error hide message-position-popup message-position-popup-border-color " proccedobject="#ATTRIBUTUTES#" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                                <a class="close multiselect-close-button-popup">×</a>
+                                <strong>Error!</strong> <span id="spanMultiSelectProcced" class="spanMultiSelectProcced-popup"><b>Data will be lost!</b> Switching <attributetext>#ATTRIBUTUTES#</attributetext> from Multi-selection to Single-selection will reset all weight (%) to default value.</span>
+                                <button class="proceed_btn" type="button"> Proceed </button> <a class="cncl_btn multiselect-cancel-link-popup" href="#">Cancel</a>
                             </div>
 <div class="modal-popup-title" style="margin-bottom:3px;">
     <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>

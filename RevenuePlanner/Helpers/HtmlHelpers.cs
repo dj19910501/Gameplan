@@ -3683,15 +3683,40 @@ namespace RevenuePlanner.Helpers
                             }
                             if (fieldCounter % 4 == 3)
                             {
-                                DropDownStyle = " style=\"top:0px;right:-15px;margin-top:40px;\"";
+                                DropDownStyle = " style=\"top:0px;margin-top:40px;\"";
                                 divPosition = "style=\"position:relative;\"";
                             }
+
+                            string displayCheckbox = "";
+                            string selectionMode = "Multi";
+                            string footerText = "< Single-selection";
+                            string singlehover = "";
+                            string footerclose = "";
+                            if (item.value != null && item.value.Count <= 1)
+                            {
+                                displayCheckbox = "style=\"display:none;\"";
+                                selectionMode = "Single";
+                                footerText = "> Multi-selection";
+                                singlehover = "single-p";
+                                footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:none;\"><span class=\"swap-text\">X close</span></a>";
+                            }
+                            else
+                            {
+                                displayCheckbox = "";
+                                selectionMode = "Multi";
+                                footerText = "< Single-selection";
+                                singlehover = "";
+                                footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:block;\"><span class=\"swap-text\">X close</span></a>";
+                            }
+
                             #region tactic inspect pop up
 
                             if (section == Enums.EntityType.Tactic.ToString())
                             {
+                               
                                 sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn " + addResubmissionClass + "\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
-                                sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\" style=\"display:none;\"><tr><td scope=\"col\" class=\"value_header\" style=\"display:none;\"><span>Value</span></td><td scope=\"col\" class=\"revenue_header\" code=\"cvr\" title=\"CVR(%)\">CVR(%)</td><td scope=\"col\" class=\"cost_header\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
+                                sb.Append("<div class=\"dropdown-wrapper paddingBottom20px\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\" style=\"display:none;\"><tr><td scope=\"col\" class=\"value_header\" style=\"display:none;\"><span>Value</span></td><td scope=\"col\" class=\"revenue_header\" code=\"cvr\" title=\"CVR(%)\">CVR(%)</td><td scope=\"col\" class=\"cost_header\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
+                                
                                 foreach (var objOption in item.option)
                                 {
                                     //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
@@ -3712,16 +3737,18 @@ namespace RevenuePlanner.Helpers
                                     if (isEditable) //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                                     {
                                         string enableCheck = string.Empty;
+                                        string inputcolorcss = "class=\"multiselect-input-text-color-grey\"";
                                         if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
                                         {
                                             name += objOption.value + ", ";
                                             enableCheck = "checked=\"checked\"";
+                                            inputcolorcss = string.Empty;
                                         }
 
-                                        sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
+                                        sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + "\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
                                     }
                                 }
-                                sb.Append("</tbody><tfoot><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"Single\"><span class=\"swap-text\">> Multi-selection</span></a></td></tr></tfoot></table></div></div></div>");
+                                sb.Append("</tbody><tfoot class=\"dropdown-table-footer\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span>" + footerclose + "</a></td></tr></tfoot></table></div></div></div>");
                                 if (name.Length > 0)
                                 {
                                     name = name.Remove(name.Length - 2, 2);
@@ -3741,17 +3768,10 @@ namespace RevenuePlanner.Helpers
                             #region Campaign/Program inspect popup
                             else
                             {
-                                string displayCheckbox = string.Empty;
-                                string selectionMode = "Multi";
-                                string footerText = "< Single-selection";
+                                
                                 sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
-                                sb.Append("<div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\">");
-                                if (item.value != null && item.value.Count <= 1)
-                                {
-                                    displayCheckbox = " style=\"display:none;\"";
-                                    selectionMode = "Single";
-                                    footerText = "> Multi-selection";
-                                }
+                                sb.Append("<div class=\"dropdown-wrapper paddingBottom20px\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\">");
+                               
                                 foreach (var objOption in item.option)
                                 {
                                     string enableCheck = string.Empty;
@@ -3795,7 +3815,7 @@ namespace RevenuePlanner.Helpers
                                     string divPosition = "";
                                     if (fieldCounter % 4 == 3)
                                     {
-                                        DropDownStyle = " style=\"top:0px;right:-15px;\"";
+                                        DropDownStyle = " style=\"top:0px;\"";
                                         divPosition = "style=\"position:relative;\"";
                                     }
 

@@ -34,6 +34,8 @@
                         $(this).text("< Single-selection");
                         $(this).attr('mode', multiMode);
                         menu.find('input[type=checkbox]').toggle();
+                        menu.find('p').removeClass('single-p');
+                        menu.find('#aclose_tag').css('display', 'block');
                     }
                     else {
                         if (o.errorDivId != 'noId') {
@@ -52,6 +54,8 @@
                             $(this).attr('mode', singleMode);
                             Button.find('p:first').text("Please Select");
                             menu.find('input:checkbox').removeAttr('checked');
+                            menu.find('p').addClass('single-p');
+                            menu.find('#aclose_tag').css('display', 'none');
                         }
                     }
                 });
@@ -64,7 +68,9 @@
                 menu.find('.close_btn,.cncl_btn').on('click', function () {
                     menu.find('.innerpopup').css('display', 'none');
                 });
-                
+                menu.find('.close_a').on('click', function () {
+                    $('.dropdown-wrapper').css('display', 'none');
+                });
                 menu.find('input[type=text]').on('keydown', function (e) {
                     // Allow: backspace, delete, tab, escape, enter and .
                     if ($.inArray(e.keyCode, [8, 9, 27, 13, 46, 110]) !== -1 ||
@@ -166,9 +172,11 @@
                         $(this).parents('tr').find('input[type=text]').val('');
                         $(this).parents('tr').find('input[type=text]').keyup();
                         $(this).parents('tr').find('input[type=text]').removeClass('error');
+                        $(this).parents('tr').find('input[type=text]').addClass('multiselect-input-text-color-grey');
                     }
                     else {
                         $(this).parents('tr').find('input[type=text]').keyup();
+                        $(this).parents('tr').find('input[type=text]').removeClass('multiselect-input-text-color-grey');
                     }
                 });
             });
