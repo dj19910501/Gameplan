@@ -212,6 +212,7 @@ namespace Integration
             instanceLogStart.CreatedDate = DateTime.Now;
             db.Entry(instanceLogStart).State = EntityState.Added;
             int resulValue = db.SaveChanges();
+            bool IsAuthenticationError = false;
 
             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Start Time", instanceLogStart.SyncStart.ToString()), Enums.SyncStatus.Header, DateTime.Now));
 
@@ -230,6 +231,7 @@ namespace Integration
                     {
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
                         _isResultError = true;
+                        IsAuthenticationError = true;
                     }
                 }
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
@@ -247,6 +249,7 @@ namespace Integration
                     {
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
                         _isResultError = true;
+                        IsAuthenticationError = true;
                         //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                         _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationEloquaClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
                         //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
@@ -259,8 +262,11 @@ namespace Integration
                 {
                     instanceLogEnd.Status = StatusResult.Error.ToString();
                     integrationInstance.LastSyncStatus = StatusResult.Error.ToString();
-                    string errorSections = string.Join(", ", db.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == instanceLogEnd.IntegrationInstanceLogId && integrationSection.Status == "Error").Select(integrationSection => integrationSection.SectionName).ToList());
-                    instanceLogEnd.ErrorDescription = "Error in section(s): " + errorSections;
+                    if (!IsAuthenticationError)
+                    {
+                        string errorSections = string.Join(", ", db.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == instanceLogEnd.IntegrationInstanceLogId && integrationSection.Status == "Error").Select(integrationSection => integrationSection.SectionName).ToList());
+                        instanceLogEnd.ErrorDescription = "Error in section(s): " + errorSections;
+                    }
                 }
                 else
                 {

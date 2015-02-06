@@ -161,46 +161,55 @@ namespace Integration.Salesforce
             _isResultError = false;
             SetMappingDetails();
             bool IsInstanceSync = false;
-            if (EntityType.Tactic.Equals(_entityType))
+
+            try
             {
-                Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).SingleOrDefault();
-                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
-                _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                planTactic = SyncTacticData(planTactic);
-                db.SaveChanges();
+                if (EntityType.Tactic.Equals(_entityType))
+                {
+                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).SingleOrDefault();
+                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
+                    _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    planTactic = SyncTacticData(planTactic);
+                    db.SaveChanges();
+                }
+                else if (EntityType.Program.Equals(_entityType))
+                {
+                    Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id).SingleOrDefault();
+                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
+                    _mappingCustomFields = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    planProgram = SyncProgramData(planProgram);
+                    db.SaveChanges();
+                }
+                else if (EntityType.Campaign.Equals(_entityType))
+                {
+                    Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id).SingleOrDefault();
+                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    List<int> campaignIdList = new List<int>() { planCampaign.PlanCampaignId };
+                    _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    planCampaign = SyncCampaingData(planCampaign);
+                    db.SaveChanges();
+                }
+                else if (EntityType.ImprovementTactic.Equals(_entityType))
+                {
+                    Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id).SingleOrDefault();
+                    planImprovementTactic = SyncImprovementData(planImprovementTactic);
+                    db.SaveChanges();
+                }
+                else
+                {
+                    IsInstanceSync = true;
+                    SyncInstanceData();
+                }
             }
-            else if (EntityType.Program.Equals(_entityType))
+            catch (Exception e)
             {
-                Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id).SingleOrDefault();
-                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
-                _mappingCustomFields = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
-                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                planProgram = SyncProgramData(planProgram);
-                db.SaveChanges();
-            }
-            else if (EntityType.Campaign.Equals(_entityType))
-            {
-                Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id).SingleOrDefault();
-                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                List<int> campaignIdList = new List<int>() { planCampaign.PlanCampaignId };
-                _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
-                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                planCampaign = SyncCampaingData(planCampaign);
-                db.SaveChanges();
-            }
-            else if (EntityType.ImprovementTactic.Equals(_entityType))
-            {
-                Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id).SingleOrDefault();
-                planImprovementTactic = SyncImprovementData(planImprovementTactic);
-                db.SaveChanges();
-            }
-            else
-            {
-                IsInstanceSync = true;
-                SyncInstanceData();
+                _isResultError = true;
+                _ErrorMessage = e.Message;
             }
 
             if (_isResultError)
