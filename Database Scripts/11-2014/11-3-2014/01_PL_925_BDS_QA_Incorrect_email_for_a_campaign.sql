@@ -1,4 +1,0 @@
-IF Exists(Select 1 from [Notification] Where NotificationInternalUseOnly='CampaignCommentAdded')
-BEGIN
-	Update [Notification] Set EmailContent=N'Dear [NameToBeReplaced],<br/><br/>Please note that comment has been added to the following campaign<br/><br/><table><tr><td>Campaign Name</td><td>:</td><td>[CampaignNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Comment</td><td>:</td><td>[CommentToBeReplaced]</td></tr><tr><td>Comment added by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Bulldog Gameplan Admin' Where NotificationInternalUseOnly='CampaignCommentAdded'
-END
