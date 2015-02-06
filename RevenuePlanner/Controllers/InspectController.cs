@@ -2041,7 +2041,15 @@ namespace RevenuePlanner.Controllers
             string entityType = Enums.Section.Tactic.ToString();
             /*Get existing value of Advance/Basic waightage of tactic's attributes*/
             string customFieldType=Enums.CustomFieldType.DropDownList.ToString();
-            var customFeildsWeightage = db.CustomField_Entity.Where(cfs => cfs.EntityId == id && cfs.CustomField.EntityType == entityType && cfs.CustomField.CustomFieldType.Name == customFieldType).Select(cfs => new
+            var customFieldEntity = (from customentity in db.CustomField_Entity
+                     where customentity.EntityId == id && 
+                     customentity.CustomField.EntityType == entityType &&
+                     customentity.CustomField.CustomFieldType.Name == customFieldType
+                     select customentity).ToList();
+            var customfieldids = customFieldEntity.Select(customentity => customentity.CustomFieldId).ToList();
+            var customOptionFieldList = db.CustomFieldOptions.Where(option => customfieldids.Contains(option.CustomFieldId)).ToList().Select(option => option.CustomFieldOptionId.ToString()).ToList();
+
+            var customFeildsWeightage = customFieldEntity.Where(cfs => customOptionFieldList.Contains(cfs.Value)).Select(cfs => new
             {
                 optionId = cfs.Value,
                 CostWeight = cfs.CostWeightage,
