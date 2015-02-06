@@ -653,6 +653,29 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
+        /// Get Projected MQL Data & Calculation.
+        /// </summary>
+        /// <param name="planTacticList"></param>
+        /// <returns></returns>
+        public List<TacticMonthValue> GetProjectedMQLValueDataTableForReport(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, Enums.InspectStage stagecode, List<TacticStageValue> planTacticList)
+        {
+            //// Get tactic MQL data from planTacticlist.
+            List<TacticDataTable> tacticdata = GetTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, CustomFieldType, stagecode, planTacticList);
+            //List<TacticDataTable> tacticdata = (from tactic in planTacticList
+            //                                    select new TacticDataTable
+            //                                    {
+            //                                        TacticId = tactic.TacticObj.PlanTacticId,
+            //                                        Value = tactic.MQLValue,
+            //                                        StartMonth = tactic.TacticObj.StartDate.Month,
+            //                                        EndMonth = tactic.TacticObj.EndDate.Month,
+            //                                        StartYear = tactic.TacticObj.StartDate.Year,
+            //                                        EndYear = tactic.TacticObj.EndDate.Year
+            //                                    }).ToList();
+
+            return GetMonthWiseValueList(tacticdata);
+        }
+
+        /// <summary>
         /// Get Projected CW Data & Calculation.
         /// </summary>
         /// <param name="planTacticList"></param>
@@ -716,6 +739,30 @@ namespace RevenuePlanner.Controllers
                                                     StartYear = tactic.TacticObj.StartDate.Year,
                                                     EndYear = tactic.TacticObj.EndDate.Year
                                                 }).ToList();
+
+            return GetMonthWiseValueList(tacticdata);
+        }
+
+        /// <summary>
+        /// Get Projected INQ Data With Month Wise.
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
+        /// </summary>
+        /// <param name="TacticList"></param>
+        /// <returns></returns>
+        public List<TacticMonthValue> GetConversionProjectedINQData(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, Enums.InspectStage stagecode, List<TacticStageValue> planTacticList)
+        {
+            //// Get tactic INQ data from planTacticlist.
+            List<TacticDataTable> tacticdata = GetTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, CustomFieldType, stagecode, planTacticList);
+            //List<TacticDataTable> tacticdata = (from tactic in planTacticList
+            //                                    select new TacticDataTable
+            //                                    {
+            //                                        TacticId = tactic.TacticObj.PlanTacticId,
+            //                                        Value = tactic.INQValue,
+            //                                        StartMonth = tactic.TacticObj.StartDate.Month,
+            //                                        EndMonth = tactic.TacticObj.EndDate.Month,
+            //                                        StartYear = tactic.TacticObj.StartDate.Year,
+            //                                        EndYear = tactic.TacticObj.EndDate.Year
+            //                                    }).ToList();
 
             return GetMonthWiseValueList(tacticdata);
         }
@@ -1283,11 +1330,14 @@ namespace RevenuePlanner.Controllers
             }
             //// Calculate MQL & INQ data.
             string inq = Enums.Stage.INQ.ToString();
+            string CustomfieldType = string.Empty;
             int INQStageId = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == inq && stage.IsDeleted == false).StageId;
             if (Tacticdata.Count() > 0)
             {
                 string inspectStageINQ = Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString();
                 string inspectStageMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
+
+                CustomfieldType = db.CustomFields.Where(customfield =>customfield.CustomFieldId.Equals(customfieldId)).Select(customfield => customfield.CustomFieldType.Name).FirstOrDefault();
 
                 List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
                 Tacticdata.ForEach(tacticactual => tacticactual.ActualTacticList.ForEach(actual => planTacticActual.Add(actual)));
@@ -1409,7 +1459,7 @@ namespace RevenuePlanner.Controllers
                 {
                     Title = s.Value,
                     ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = GetTrendActualTacticData(lastMonth, planTacticActual, customfield.CustomFieldId, s.CustomFieldOptionId.ToString(), Tacticdata) //tacticTrendCustomField.Any(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId) ? tacticTrendCustomField.Where(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId).FirstOrDefault().Trend : 0
+                    Value = GetTrendActualTacticData(lastMonth, planTacticActual, customfield.CustomFieldId, s.CustomFieldOptionId.ToString(),dropdownType, Tacticdata) //tacticTrendCustomField.Any(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId) ? tacticTrendCustomField.Where(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId).FirstOrDefault().Trend : 0
                 }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(customfield.CustomFieldName);
@@ -1471,8 +1521,6 @@ namespace RevenuePlanner.Controllers
             List<CustomField_Entity> tblCustomfieldEntity = db.CustomField_Entity.ToList().Where(ent => customFields.Select(custm => custm.CustomFieldId).Contains(ent.CustomFieldId)).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
-            List<Enums.InspectStage> MQLStagecode = new List<Enums.InspectStage>();
-            MQLStagecode.Add(Enums.InspectStage.MQL);
             // Applying custom field filters
             foreach (var customfield in customFields)
             {
@@ -1502,8 +1550,8 @@ namespace RevenuePlanner.Controllers
                                                 {
                                                     Title = cf.Value,
                                                     ColorCode = string.Format("#{0}", cf.ColorCode),
-                                                    Value = lstTacticActuals.Any(ta => ta.Value == Convert.ToString(cf.CustomFieldOptionId)) ? GetActualTacticListbyStageWeightage(MQLStagecode, customfield.CustomFieldId, cf.CustomFieldOptionId.ToString(), lstTacticActuals.Where(t => t.Value == Convert.ToString(cf.CustomFieldOptionId) &&
-                                                        includeMonth.Contains(t.timeFrameOptions)).Select(actTactic => actTactic.tacticactual).ToList(), Tacticdata).Sum(t => t.Actualvalue) : 0
+                                                    Value = lstTacticActuals.Any(ta => ta.Value == Convert.ToString(cf.CustomFieldOptionId)) ? GetActualTacticDataTablebyStageCode(customfield.CustomFieldId, cf.CustomFieldOptionId.ToString(), dropdownType, Enums.InspectStage.MQL, lstTacticActuals.Where(t => t.Value == Convert.ToString(cf.CustomFieldOptionId) &&
+                                                        includeMonth.Contains(t.timeFrameOptions)).Select(actTactic => actTactic.tacticactual).ToList(), Tacticdata).Sum(t => t.ActualValue) : 0
                                                 }).OrderByDescending(cf => cf.Value).ThenBy(cf => cf.Title).Take(5).ToList();
 
                 lstCustomFieldNames.Add(customfield.CustomFieldName);
@@ -1561,8 +1609,8 @@ namespace RevenuePlanner.Controllers
             List<CustomField_Entity> tblCustomfieldEntity = db.CustomField_Entity.ToList().Where(ent => customFields.Select(custm => custm.CustomFieldId).Contains(ent.CustomFieldId)).ToList();
             List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
             List<string> lstCustomFieldNames = new List<string>();
-            List<Enums.InspectStage> lstMQLStageCode = new List<Enums.InspectStage>();
-            lstMQLStageCode.Add(Enums.InspectStage.MQL);
+            //List<Enums.InspectStage> lstMQLStageCode = new List<Enums.InspectStage>();
+            //lstMQLStageCode.Add(Enums.InspectStage.MQL);
 
             // Applying custom field filters
             foreach (var customfield in customFields)
@@ -1594,8 +1642,8 @@ namespace RevenuePlanner.Controllers
                                                     Title = b.Value,
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
                                                     Value = lstTacticActuals.Any(t => t.Value == Convert.ToString(b.CustomFieldOptionId)) ?
-                                                    GetProjectedMQLValueDataTableForReport(GetTacticListbyStageWeightage(lstMQLStageCode, customfield.CustomFieldId, b.CustomFieldOptionId.ToString(), lstTacticActuals.Where(lta => lta.Value == Convert.ToString(b.CustomFieldOptionId)).Select(ts => ts.tacticactual)
-                                                                                        .ToList()))
+                                                    GetProjectedMQLValueDataTableForReport(customfield.CustomFieldId, b.CustomFieldOptionId.ToString(),dropdownType,Enums.InspectStage.MQL, lstTacticActuals.Where(lta => lta.Value == Convert.ToString(b.CustomFieldOptionId)).Select(ts => ts.tacticactual)
+                                                                                        .ToList())
                                                                                         .Where(mr => includeMonth.Contains(mr.Month))
                                                                                         .Sum(r => r.Value) : 0
                                                 }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5).ToList();
@@ -5016,15 +5064,15 @@ namespace RevenuePlanner.Controllers
         /// <param name="tacticList"> Reference of Tactic list</param>
         /// <param name="lstArrCustomFieldFilter">list of filtered CustomFields</param>
         /// <returns></returns>
-        public double GetTrendActualTacticData(int lastMonth, List<Plan_Campaign_Program_Tactic_Actual> lstActual, int CustomFieldID, string CustomFieldOptionID, List<TacticStageValue> TacticData)
+        public double GetTrendActualTacticData(int lastMonth, List<Plan_Campaign_Program_Tactic_Actual> lstActual, int CustomFieldID, string CustomFieldOptionID,string customFieldType, List<TacticStageValue> TacticData)
         {
-            List<Plan_Campaign_Program_Tactic_Actual> lstActualsbyWeight = new List<Plan_Campaign_Program_Tactic_Actual>();
+            List<ActualDataTable> lstActualsbyWeight = new List<ActualDataTable>();
             List<Enums.InspectStage> MQLStageCode = new List<Enums.InspectStage>();
             MQLStageCode.Add(Enums.InspectStage.MQL);
             double trendValue = 0;
             try
             {
-                lstActualsbyWeight = GetActualTacticListbyStageWeightage(MQLStageCode, CustomFieldID, CustomFieldOptionID, lstActual, TacticData);
+                lstActualsbyWeight = GetActualTacticDataTablebyStageCode(CustomFieldID, CustomFieldOptionID, customFieldType, Enums.InspectStage.MQL, lstActual, TacticData);
                 var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => cf.Value.Equals(CustomFieldOptionID)).Select(e => new
                 {
                     EntityId = e.EntityId,
@@ -5034,13 +5082,13 @@ namespace RevenuePlanner.Controllers
                 var lstTacticActuals = (from entity in lstCustomFieldEntity
                                         join tacticactual in lstActualsbyWeight
                                         on entity.EntityId equals tacticactual.PlanTacticId
-                                        select new { entity.Value, entity.EntityId, tacticactual.Actualvalue });
+                                        select new { entity.Value, entity.EntityId, tacticactual.ActualValue });
 
                 var tacticTrendCustomField = lstTacticActuals.GroupBy(ta => ta.Value).Select
                     (ta => new
                     {
                         CustomFieldOptionId = ta.Key,
-                        Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
+                        Trend = ((ta.Sum(actual => actual.ActualValue) / currentMonth) * lastMonth)
                     }).ToList();
                 if (tacticTrendCustomField != null && tacticTrendCustomField.Count > 0)
                     trendValue = tacticTrendCustomField.FirstOrDefault().Trend;
