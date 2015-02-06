@@ -98,7 +98,7 @@
 </div>
     @if(tacticMaster!=null && !string.IsNullOrEmpty(tacticMaster.TacticCustomName))
     {   
-    <div class="Machine-Name"><span>Machine Name:</span> @tacticMaster.TacticCustomName</div>
+    <div class="Machine-Name"><span>Machine Name: </span><label style="display:inline;" id="lblCustomNameFormat">@tacticMaster.TacticCustomName </label></div>
     }
 </form>
 
@@ -164,6 +164,7 @@
 
     $(document).ready(
       function () {
+          NumberFormatterTipsyTitle($("#lblCustomNameFormat"), 130);
           $("#AddForm").css("display", "block");
           CloseIconClick();          
           NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
