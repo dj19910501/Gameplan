@@ -685,6 +685,10 @@
     @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
     $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
         var element = $(this).parent().parent().next();
+
+        $('#AllocatedBy').prev().children('ul').children('li').removeClass("nl-dd-checked");
+        $(this).addClass('nl-dd-checked');
+
         if (element.hasClass('calculateBudget')) {
             if ($("#GoalType").val().toLowerCase() == 'revenue') {
                 $('#revenueSign').show();
