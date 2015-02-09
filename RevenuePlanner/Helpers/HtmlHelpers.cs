@@ -3678,7 +3678,7 @@ namespace RevenuePlanner.Helpers
                             string addResubmissionClass = "";
                             if (item.isRequired)
                             {
-                                require = " require=\"true\" oldValue=\"#OLD_VALUE#\" label=\"" + item.name + "\"";
+                                require = " require=\"true\" oldValue=\"#OLD_VALUE#\"";
                                 addResubmissionClass = "resubmission";
                             }
                             if (fieldCounter % 4 == 3)
@@ -3714,7 +3714,7 @@ namespace RevenuePlanner.Helpers
                             if (section == Enums.EntityType.Tactic.ToString())
                             {
                                
-                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn " + addResubmissionClass + "\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
+                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn " + addResubmissionClass + "\"" + require + "  label=\"" + item.name + "\"><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
                                 sb.Append("<div class=\"dropdown-wrapper paddingBottom20px\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\" style=\"display:none;\"><tr><td scope=\"col\" class=\"value_header\" style=\"display:none;\"><span>Value</span></td><td scope=\"col\" class=\"revenue_header\" code=\"cvr\" title=\"CVR(%)\">CVR(%)</td><td scope=\"col\" class=\"cost_header\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
                                 
                                 foreach (var objOption in item.option)
@@ -3769,7 +3769,7 @@ namespace RevenuePlanner.Helpers
                             else
                             {
                                 
-                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn\"" + require + "><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
+                                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn\"" + require + "  label=\"" + item.name + "\"><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
                                 sb.Append("<div class=\"dropdown-wrapper paddingBottom20px\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\">");
                                
                                 foreach (var objOption in item.option)
@@ -3782,7 +3782,7 @@ namespace RevenuePlanner.Helpers
                                         enableCheck = "checked=\"checked\"";
                                         
                                     }
-                                    sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + ""+ displayCheckbox+"><label class=\"lable_inline\"><p class=\"text_ellipsis\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
+                                    sb.Append("<tr><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis "+singlehover+"\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
                                 }
                                 sb.Append("</table><tfoot><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\""+selectionMode+"\"><span class=\"swap-text\">"+footerText+"</span></a></td></tr></tfoot></div></div></div>");
                                 if (name.Length > 0)

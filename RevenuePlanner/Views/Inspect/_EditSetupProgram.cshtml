@@ -203,7 +203,9 @@
         /*Added by Mitesh Vaishnav for PL ticket #1136
        Register events of new multiselect dropdown customfields*/
         $('.dropdown_new_btn').each(function () {
-            $(this).multiselectWeight();
+            $(this).multiselectWeight({
+                errorDivId: 'MultiSelectProcced'
+            });
         });
         /*End Added by Mitesh Vaishnav for PL ticket #1136*/
 
@@ -587,5 +589,23 @@
         $('#t_enddate').click(function () {
             $('#dp_start').datepicker('hide');
         })
-
+        $('.proceed_btn').click(function (e) {
+            var label = $('#MultiSelectProcced').attr('proccedObject').toString();
+            $('.dropdown_new_btn').each(function () {
+                if ($(this).attr('label').toString() == label) {
+                    var menu = $(this).parent().find('.dropdown-wrapper');
+                    menu.toggleClass('dropdown-block');
+                    menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
+                    menu.find('input[type=checkbox]').toggle();
+                    menu.find('.advance_a').text("> Multi-selection");
+                    menu.find('.advance_a').attr('mode', 'Single');
+                    $(this).find('p:first').text("Please Select");
+                    menu.find('input:checkbox').removeAttr('checked');
+                    menu.find('p').addClass('single-p');
+                    //menu.find('#aclose_tag').css('display', 'none');
+                }
+            });
+            $('#MultiSelectProcced').slideUp(400);
+            e.stopPropagation();
+        });
   </script>
