@@ -144,8 +144,8 @@
                var customFieldsValues = JSON.parse('@Html.Raw(customFieldWeightage)');
                var i = customFieldsValues.length;
                for (var i = 0; i < customFieldsValues.length; i++) {
-                   $('#' + customFieldsValues[i].optionId + '_Cost').val(customFieldsValues[i].Weight);
-                   $('#' + customFieldsValues[i].optionId + '_cvr').val(customFieldsValues[i].CostWeight);
+                   $('#' + customFieldsValues[i].optionId + '_Cost').val(customFieldsValues[i].CostWeight);
+                   $('#' + customFieldsValues[i].optionId + '_cvr').val(customFieldsValues[i].Weight);
                }
                $(".table_drpdwn").each(function () {
                            var menu = $(this).parents('.dropdown-wrapper');

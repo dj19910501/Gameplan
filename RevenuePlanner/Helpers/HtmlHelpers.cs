@@ -3692,7 +3692,7 @@ namespace RevenuePlanner.Helpers
                             string footerText = "< Single-selection";
                             string singlehover = "";
                             string footerclose = "";
-                            if (item.value != null && item.value.Count <= 1)
+                            if ((item.value == null) || (item.value != null && item.value.Count <= 1))
                             {
                                 displayCheckbox = "style=\"display:none;\"";
                                 selectionMode = "Single";
