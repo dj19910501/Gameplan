@@ -900,7 +900,7 @@
   <!--start Added by Mitesh Vaishnav for PL ticket #1124-->
   <Field>
     <Name>ValidateAttributeWeightSum</Name>
-    <value>The attribute weight for {0} should sum up to 100! Please rectify and proceed. </value>
+    <value>The weights(%) for {0} should sum up to 100! Please rectify and proceed. </value>
   </Field>
   <!--End Added by Mitesh Vaishnav for PL ticket #1124-->
 </Messages>
