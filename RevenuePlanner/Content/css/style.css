@@ -11363,8 +11363,8 @@ float:left;
 }
 
 /*Start-Added by Mitesh Vaishnav for PL ticket #1073*/
-.dropdown-wrapper {	display:none;	width:145px;background-color: #fff;position: absolute;z-index: 1; padding-bottom: 10px;/*23*/}
-.drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding: 0 10px;max-height: 363px;overflow: auto;/*width:100%;background-color:#fff;*/}
+.dropdown-wrapper {	display:none;/*width:145px;*/	width:auto;background-color: #fff;position: absolute;z-index: 1; padding-bottom: 10px;/*23*/}
+.drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding: 0 10px;max-height: 363px;overflow: auto;width:100%;background-color:#fff;}
 .dropdown-block {min-width:260px !important;/*max-width:662px !important;*/width:auto;}
 .dropdown_new_btn {
     background: url("../images/drpdown.png") no-repeat scroll right -1% top 55% #dff0f8;
@@ -11386,7 +11386,9 @@ float:left;
 .table_drpdwn tr {    /*height: 40px;*/ height:36px; font-size:14px;}
 .drop_down_header > div {float: left;	width: 50%;  }
 .advance > a {color: #3fa9f5;	padding-right: 10px;text-decoration:underline;}
-.value_header, .weight_header , .sus_header, .mql_header , .cw_header, .revenue_header, .cost_header{border-bottom: 1px solid #dfdfdf;font-weight:bold;padding: 0 36px 0 0; }
+.weight_header , .sus_header, .mql_header , .cw_header{border-bottom: 1px solid #dfdfdf;font-weight:bold;padding: 0 36px 0 0; }
+/*.value_header, .weight_header , .sus_header, .mql_header , .cw_header, .revenue_header, .cost_header{border-bottom: 1px solid #dfdfdf;font-weight:bold;padding: 0 36px 0 0; }*/
+.value_header,.revenue_header, .cost_header{padding: 0 0; border-bottom: 1px solid #dfdfdf; }
 .table_drpdwn {border-collapse: collapse;	width:100%;}
 .first_show > input {background: none repeat scroll 0 0 #dff0f8;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
 .first_hide > input {background: none repeat scroll 0 0 #dff0f8;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
@@ -11420,7 +11422,7 @@ float:left;
        display: inline ;
 }
  
-.text_ellipsis{ /*display: inline;*/ margin-bottom:-3px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 76px; margin:-21px -8px 0px 18px; padding-right: 5px;}
+.text_ellipsis{ /*display: inline;*/ margin-bottom:-3px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;max-width:200px; /*width: 76px;*/ margin:-21px -8px 0px 18px; padding-right: 5px; min-width: 85px; }
 .top_head_attribute > tr, .table_drpdwn tbody{ display:block;}
 .table_drpdwn tbody { height: auto;overflow: auto;max-height:200px;}
 .value_header { height: 40px; padding: 0 31px 0 30px;}/* padding 0 35 0 30  */
@@ -11429,7 +11431,7 @@ float:left;
 .sus_header {padding-right:51px;}
 .mql_header {padding-right: 50px;}
 .cw_header {padding-right: 37px;}
-.revenue_header { padding-right: 20px;}
+/*.revenue_header { padding-right: 20px;}*/
 
 
 /*new design*/
@@ -11610,7 +11612,7 @@ white-space:nowrap;
 .text_ellipsis.single-p:hover {
         background: none repeat scroll 0 0 #009ad5;
     color: #fff;
-    padding: 5px 39px 5px 1px;
+    padding: 5px 0px 5px 1px;
 }
 .dropdown-table-footer {
     border-top:1px solid #D4D4D4;
@@ -11628,4 +11630,27 @@ white-space:nowrap;
 
 .paddingBottom20px {
     padding-bottom: 20px;
+}
+.first_show:hover {
+   
+    /*padding: 5px 68px 5px 1px;*/
+    /*background: none repeat scroll 0 0 #009ad5;
+    color: #fff;*/
+        
+}
+.value_header.top-head-attribute-header2 {
+  padding:0;
+    width: 21%;
+    font-weight:bold;
+}
+.revenue_header.top-head-attribute-cvr {
+    width:7%;
+    font-weight:bold;
+}
+.cost_header.top-head-attribute-cost {
+    width:14%;
+    font-weight:bold;
+}
+.first_show {
+    width: 42%;
 }
