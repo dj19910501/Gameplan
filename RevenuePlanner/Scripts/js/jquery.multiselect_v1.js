@@ -44,7 +44,8 @@
             CustomCampaignName: "",
             CustomProgramName: "",
             CustomTacticName: "",
-            CustomName: ""
+            CustomName: "",
+            IsTacticSection: ""
         },
 
         _create: function () {
@@ -145,6 +146,7 @@
             var isProgramCustomField = false;
             var isTacticCustomField = false;
             var isCustomField = false;
+            var istacticSectionDisplay = false;
             //End: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
             // build items
             el.find('option').each(function (i) {
@@ -212,6 +214,15 @@
                         html += '<div class="report-seperator" id="' + tempId + '_tacticCustomHeader"><span>TACTIC FIELDS</span></div>'
                     }
                 }
+
+                if (!istacticSectionDisplay && o.IsTacticSection != '') {
+                   // if (value.substring(0, o.IsTacticSection.length) == o.IsTacticSection) {
+                        istacticSectionDisplay = true;
+                        var tempId = $this.parent().attr('id');
+                        html += '<div class="report-seperator" id="' + tempId + '_TacticSectionHeader"><span>' + o.IsTacticSection + '</span></div>'
+                   // }
+                }
+
                 //End: Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
                 html += '<li class="' + liClasses + ' ' + borderTopClass + '">';
 

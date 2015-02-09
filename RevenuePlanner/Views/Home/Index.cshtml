@@ -198,7 +198,7 @@
                                     $("#NoOwnerFound").hide();
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
                                         $('#ulSelectedOwner').append('<li class="accordion-inner" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"></input></li>');
-                                        filters.OwnerIds.push(OwnerItem.OwnerId);
+                                       // filters.OwnerIds.push(OwnerItem.OwnerId);
                                     });
                                 }
                                 else {
@@ -670,12 +670,17 @@
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#liOwner" + id).addClass("close-list");
-            filters.OwnerIds.push(id);
         }
         else {
             $("#liOwner" + id).removeClass("close-list");
-            removeByValue(filters.OwnerIds, id);
         }
+        filters.OwnerIds = [];
+        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.OwnerIds.push(chkid);
+            }
+        });
     }
 
     function GetCollaborators(planId) {
