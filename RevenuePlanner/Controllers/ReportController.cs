@@ -1196,7 +1196,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            return Json(new { ProjectedRevenueValue = projectedRevenue, ActualRevenueValue = actualRevenue, ProjectedMQLValue = Math.Round(projectedMQL), ActualMQLValue = Math.Round(actualMQL) });
+            return Json(new { ProjectedRevenueValue = projectedRevenue, ActualRevenueValue = actualRevenue, ProjectedMQLValue = Math.Round((double)projectedMQL, 0, MidpointRounding.AwayFromZero), ActualMQLValue = Math.Round(actualMQL) });
         }
 
         /// <summary>
@@ -1822,7 +1822,7 @@ namespace RevenuePlanner.Controllers
 
             lstActualsTactic = planTacticActual.Where(pcpta => pcpta.StageTitle == stagecode.ToString()).ToList();
             List<ActualDataTable> lstActualData = new List<ActualDataTable>();
-            lstActualData = GetActualTacticDataTablebyStageCode(customfieldId, CustomFieldOptionId, customfieldType, Enums.InspectStage.Revenue, lstActualsTactic, TacticData);
+            lstActualData = GetActualTacticDataTablebyStageCode(customfieldId, CustomFieldOptionId, customfieldType, stagecode, lstActualsTactic, TacticData);
             double actualValue = lstActualData.Sum(pcpta => pcpta.ActualValue);
             return actualValue;
         }
@@ -4773,7 +4773,7 @@ namespace RevenuePlanner.Controllers
 
                 if (lstStageCode.Contains(Enums.InspectStage.INQ))
                 {
-                    stagecode = Enums.InspectStage.INQ.ToString();
+                    stagecode = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
                     foreach (Plan_Campaign_Program_Tactic_Actual objActual in ActualTacticlist.Where(actual => actual.StageTitle.Equals(stagecode)))
                     {
                         weightage = 0;
@@ -5279,7 +5279,7 @@ namespace RevenuePlanner.Controllers
             TacticStageValue objTacticStageValue = new TacticStageValue();
             if (stagecode.Equals(Enums.InspectStage.INQ))
             {
-                strStage = Enums.InspectStage.INQ.ToString();
+                strStage = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
                 foreach (Plan_Campaign_Program_Tactic_Actual objActual in ActualTacticList.Where(actual => actual.StageTitle.Equals(strStage)))
                 {
                     weightage = 0;
