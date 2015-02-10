@@ -11701,7 +11701,8 @@ white-space:nowrap;
 }
 .viewmodedropdown .advance {text-align: right;}
 
-.top_spacing_geography .trdropdownhover:hover,tbodycampaignprogram .trdropdownhover:hover {
+.top_spacing_geography .trdropdownhover:hover,
+.tbodycampaignprogram .trdropdownhover:hover {
     background: none repeat scroll 0 0 #009ad5;
     color: #fff;
     padding: 5px 0 5px 1px;
