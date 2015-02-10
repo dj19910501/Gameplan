@@ -950,6 +950,7 @@
                 $(this).find('p:first').text("Please Select");
                 menu.find('input:checkbox').removeAttr('checked');
                 menu.find('input[type=text]').val('');
+                menu.find('input[type=text]').addClass('multiselect-input-text-color-grey');
                 menu.find('p').addClass('single-p');
                 menu.find('tr').addClass('trdropdownhover');
                 menu.find('#aclose_tag').css('display', 'none');

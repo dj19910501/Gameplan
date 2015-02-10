@@ -197,14 +197,14 @@
                     if (value.substring(0, o.CustomCampaignName.length) == o.CustomCampaignName) {
                         isCampaignCustomField = true;
                         var tempId = $this.parent().attr('id');
-                        html += '<div class="report-seperator" id="' + tempId + '_campaignCustomHeader"><span>CAMPAIGN FIELDS</span></div>'
+                        html += '<div class="report-seperator" id="' + tempId + '_campaignCustomHeader"><span>Campaign Fields</span></div>'
                     }
                 }
                 if (!isProgramCustomField && o.CustomProgramName != '') {
                     if (value.substring(0, o.CustomProgramName.length) == o.CustomProgramName) {
                         isProgramCustomField = true;
                         var tempId = $this.parent().attr('id');
-                        html += '<div class="report-seperator" id="' + tempId + '_programCustomHeader"><span>PROGRAM FIELDS</span></div>'
+                        html += '<div class="report-seperator" id="' + tempId + '_programCustomHeader"><span>Program Fields</span></div>'
                     }
                 }
 
@@ -213,7 +213,7 @@
                         isTacticCustomField = true;
                         istacticSectionDisplay = true;
                         var tempId = $this.parent().attr('id');
-                        html += '<div class="report-seperator" id="' + tempId + '_tacticCustomHeader"><span>TACTIC FIELDS</span></div>'
+                        html += '<div class="report-seperator" id="' + tempId + '_tacticCustomHeader"><span>Tactic Fields</span></div>'
                     }
                 }
 

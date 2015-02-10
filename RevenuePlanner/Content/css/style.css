@@ -11707,3 +11707,11 @@ white-space:nowrap;
     color: #fff;
     padding: 5px 0 5px 1px;
 }
+
+.top_spacing_geography .trdropdownhover,
+.tbodycampaignprogram .trdropdownhover,
+.top_spacing_geography .trdropdownhover p,
+.tbodycampaignprogram .trdropdownhover p
+{
+    cursor:pointer;
+}

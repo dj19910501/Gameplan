@@ -4119,7 +4119,7 @@ namespace RevenuePlanner.Helpers
             List<ViewByModel> lstCustomFieldsViewByTabTactic = customfieldlist.Where(cf => cf.EntityType == TacticCustomText && tacticcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = TacticCustomTitle + cf.CustomFieldId.ToString() }).ToList();
             lstCustomFieldsViewByTabTactic = lstCustomFieldsViewByTabTactic.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
 
-            lstCustomFieldsViewByTab = lstCustomFieldsViewByTab.Concat(lstCustomFieldsViewByTabCampaign).Concat(lstCustomFieldsViewByTabProgram).Concat(lstCustomFieldsViewByTabTactic).ToList();
+            lstCustomFieldsViewByTab = lstCustomFieldsViewByTab.Concat(lstCustomFieldsViewByTabTactic).Concat(lstCustomFieldsViewByTabProgram).Concat(lstCustomFieldsViewByTabCampaign).ToList();
 
             return lstCustomFieldsViewByTab;
         }
