@@ -174,16 +174,18 @@ menu.find('tr').addClass('trdropdownhover');
 
 
                 });
-                menu.find('input[type=checkbox]').on('click', function () {
+                menu.find('.lblCustomCheckbox').on('click', function (e) {
+                    var checkbx = $(this).find('input:checkbox');
                     var title = "";
                     Button.find('p:first').text("");
                     if (menu.find('.advance_a').attr('mode') == singleMode) {
                         menu.find('input:checkbox').removeAttr('checked');
-                        $(this).attr('checked', 'checked');
-                        title += $(this).parent().find('p').text();
+                        $(checkbx).attr('checked', 'checked');
+                        title += $(checkbx).parent().find('p').text();
                         Button.find('p:first').text(title);
                         Button.find('p:first').attr('title', title);
                         menu.slideToggle("fast");
+                        e.preventDefault();
                     }
                     else {
                         title = DivideEqualInputValue(menu);
@@ -196,15 +198,15 @@ menu.find('tr').addClass('trdropdownhover');
                             Button.find('p:first').text('Please Select');
                         }
                     }
-                    if ($(this).prop('checked') != true) {
-                        $(this).parents('tr').find('input[type=text]').val('');
-                        $(this).parents('tr').find('input[type=text]').keyup();
-                        $(this).parents('tr').find('input[type=text]').removeClass('error');
-                        $(this).parents('tr').find('input[type=text]').addClass('multiselect-input-text-color-grey');
+                    if ($(checkbx).prop('checked') != true) {
+                        $(checkbx).parents('tr').find('input[type=text]').val('');
+                        $(checkbx).parents('tr').find('input[type=text]').keyup();
+                        $(checkbx).parents('tr').find('input[type=text]').removeClass('error');
+                        $(checkbx).parents('tr').find('input[type=text]').addClass('multiselect-input-text-color-grey');
                     }
                     else {
-                        $(this).parents('tr').find('input[type=text]').keyup();
-                        $(this).parents('tr').find('input[type=text]').removeClass('multiselect-input-text-color-grey');
+                        $(checkbx).parents('tr').find('input[type=text]').keyup();
+                        $(checkbx).parents('tr').find('input[type=text]').removeClass('multiselect-input-text-color-grey');
                     }
                 });
             });
