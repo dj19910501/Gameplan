@@ -207,21 +207,17 @@
                         html += '<div class="report-seperator" id="' + tempId + '_programCustomHeader"><span>PROGRAM FIELDS</span></div>'
                     }
                 }
-                if (!isTacticCustomField && o.CustomTacticName != '') {
-                    if (value.substring(0, o.CustomTacticName.length) == o.CustomTacticName) {
+
+                if ((!isTacticCustomField && o.CustomTacticName != '') || (!istacticSectionDisplay && o.IsTacticSection != '')) {
+                    if ((value.substring(0, o.CustomTacticName.length) == o.CustomTacticName) || o.IsTacticSection != '') {
                         isTacticCustomField = true;
+                        istacticSectionDisplay = true;
                         var tempId = $this.parent().attr('id');
                         html += '<div class="report-seperator" id="' + tempId + '_tacticCustomHeader"><span>TACTIC FIELDS</span></div>'
                     }
                 }
 
-                if (!istacticSectionDisplay && o.IsTacticSection != '') {
-                   // if (value.substring(0, o.IsTacticSection.length) == o.IsTacticSection) {
-                        istacticSectionDisplay = true;
-                        var tempId = $this.parent().attr('id');
-                        html += '<div class="report-seperator" id="' + tempId + '_TacticSectionHeader"><span>' + o.IsTacticSection + '</span></div>'
-                   // }
-                }
+              
 
                 //End: Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
                 html += '<li class="' + liClasses + ' ' + borderTopClass + '">';
