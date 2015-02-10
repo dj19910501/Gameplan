@@ -49,7 +49,6 @@
                             }
                             var label = menu.parent().find('a').attr('label').toString();
                             if (!isAllColumnInputBlank) {
-                                
                                 if (label != '' && typeof label != 'undefined') {
                                     $('#' + o.errorDivId).attr('proccedObject', label);
                                     $('#' + o.errorDivId).slideDown(400);
@@ -66,6 +65,7 @@
                                     else if (campaignerrmsg != null && campaignerrmsg != 'undefined' && campaignerrmsg.toString() == 'true') {
                                         $('#errorMessageEditCampaign').css('display', 'none');
                                     }
+                                    window.location = '#MultiSelectProcced';
                                 }
                             }
                             else {
