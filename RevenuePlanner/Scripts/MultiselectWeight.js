@@ -36,17 +36,58 @@
                         menu.find('input[type=checkbox]').toggle();
                         menu.find('p').removeClass('single-p');
                         menu.find('#aclose_tag').css('display', 'block');
+                        var title = DivideEqualInputValue(menu);
                     }
                     else {
                         if (o.errorDivId != 'noId') {
+                            var isAllColumnInputBlank = true;
+                            var totalWeightage = 0;
+                            var checkCount = menu.find('input:checked').length;
+                            if (checkCount > 0) {
+                                isAllColumnInputBlank = false;
+                            }
                             var label = menu.parent().find('a').attr('label').toString();
-                            if (label != '' && typeof label != 'undefined') {
-                                $('#' + o.errorDivId).attr('proccedObject', label);
-                                $('#' + o.errorDivId).slideDown(400);
-                                $('#' + o.errorDivId + ' span').find('attributetext').text(label);
+                            if (!isAllColumnInputBlank) {
+                                
+                                if (label != '' && typeof label != 'undefined') {
+                                    $('#' + o.errorDivId).attr('proccedObject', label);
+                                    $('#' + o.errorDivId).slideDown(400);
+                                    $('#' + o.errorDivId + ' span').find('attributetext').text(label);
+                                    var errmsg = $("#errorMessage").is(':visible');
+                                    var programerrmsg = $("#errorMessageEditProgram").is(':visible');
+                                    var campaignerrmsg = $("#errorMessageEditCampaign").is(':visible');
+                                    if (errmsg != null && errmsg != 'undefined' && errmsg.toString() == 'true') {
+                                        $('#errorMessage').css('display', 'none');
+                                    }
+                                    else if (programerrmsg != null && programerrmsg != 'undefined' && programerrmsg.toString() == 'true') {
+                                        $('#errorMessageEditProgram').css('display', 'none');
+                                    }
+                                    else if (campaignerrmsg != null && campaignerrmsg != 'undefined' && campaignerrmsg.toString() == 'true') {
+                                        $('#errorMessageEditCampaign').css('display', 'none');
+                                    }
+                                }
+                            }
+                            else {
+                                $('.dropdown_new_btn').each(function () {
+                                    if ($(this).attr('label').toString() == label) {
+                                        $('#' + o.errorDivId).slideUp(400);
+                                        var menu = $(this).parent().find('.dropdown-wrapper');
+                                        menu.toggleClass('dropdown-block');
+                                        menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
+                                        menu.find('input[type=checkbox]').toggle();
+                                        menu.find('.advance_a').text("> Multi-selection");
+                                        menu.find('.advance_a').attr('mode', 'Single');
+                                        $(this).find('p:first').text("Please Select");
+                                        menu.find('input:checkbox').removeAttr('checked');
+                                        menu.find('input[type=text]').val('');
+                                        menu.find('p').addClass('single-p');
+                                        menu.find('#aclose_tag').css('display', 'none');
+                                    }
+                                });
                             }
                         }
                         else {
+                            
                             menu.toggleClass('dropdown-block');
                             menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
                             menu.find('input[type=checkbox]').toggle();
@@ -56,6 +97,8 @@
                             menu.find('input:checkbox').removeAttr('checked');
                             menu.find('p').addClass('single-p');
                             menu.find('#aclose_tag').css('display', 'none');
+
+                            
                         }
                     }
                 });
@@ -140,25 +183,7 @@
                         menu.slideToggle("fast");
                     }
                     else {
-                        var checkedCheckbox = menu.find('input:checked').length;
-                        var inputValues =parseInt(100 / checkedCheckbox);
-                        var residual = parseInt(100 % checkedCheckbox);
-                        var checkedResidualDiff = checkedCheckbox - residual;
-                        var res_counter = 0;
-                        menu.find('input:checked').each(function () {
-                            res_counter += 1;
-                            title += $(this).parent().find('p').text() + ', ';
-                            if (res_counter <= checkedResidualDiff) {
-                                $(this).closest('tr').find('input[type=text]').each(function () {
-                                    $(this).val(inputValues.toString());
-                                });
-                            }
-                            else {
-                                $(this).closest('tr').find('input[type=text]').each(function () {
-                                    $(this).val((inputValues + 1).toString());
-                                });
-                            }
-                        });
+                        title = DivideEqualInputValue(menu);
                         if (title.indexOf(',') > 0) {
                             title = title.slice(0, -2);
                             Button.find('p:first').text(title);
@@ -189,3 +214,26 @@
 
 })(jQuery);
 //function MultiselectWeight
+function DivideEqualInputValue(menu) {
+    var title = '';
+    var checkedCheckbox = menu.find('input:checked').length;
+    var inputValues = parseInt(100 / checkedCheckbox);
+    var residual = parseInt(100 % checkedCheckbox);
+    var checkedResidualDiff = checkedCheckbox - residual;
+    var res_counter = 0;
+    menu.find('input:checked').each(function () {
+        res_counter += 1;
+        title += $(this).parent().find('p').text() + ', ';
+        if (res_counter <= checkedResidualDiff) {
+            $(this).closest('tr').find('input[type=text]').each(function () {
+                $(this).val(inputValues.toString());
+            });
+        }
+        else {
+            $(this).closest('tr').find('input[type=text]').each(function () {
+                $(this).val((inputValues + 1).toString());
+            });
+        }
+    });
+    return title;
+}

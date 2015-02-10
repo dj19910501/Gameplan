@@ -405,7 +405,7 @@
             var iserror = false;
             var campaignTitle = htmlEncode($('#txtTitle').val());
             var hdnYear = @ViewBag.Year
-
+           $('#MultiSelectProcced').css("display", "none");
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
                 if ($(this).val().toString().trim() == '') {

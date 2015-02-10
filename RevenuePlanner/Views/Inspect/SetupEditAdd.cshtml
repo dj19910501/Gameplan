@@ -938,6 +938,7 @@
     };
     $('.proceed_btn').click(function (e) {
         var label = $('#MultiSelectProcced').attr('proccedObject').toString();
+        //alert(label);
         $('.dropdown_new_btn').each(function () {
             if ($(this).attr('label').toString() == label) {
                 var menu = $(this).parent().find('.dropdown-wrapper');
