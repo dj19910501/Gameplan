@@ -11388,7 +11388,7 @@ float:left;
 .advance > a {color: #3fa9f5;	padding-right: 10px;text-decoration:underline;}
 .weight_header , .sus_header, .mql_header , .cw_header{border-bottom: 1px solid #dfdfdf;font-weight:bold;padding: 0 36px 0 0; }
 /*.value_header, .weight_header , .sus_header, .mql_header , .cw_header, .revenue_header, .cost_header{border-bottom: 1px solid #dfdfdf;font-weight:bold;padding: 0 36px 0 0; }*/
-.value_header,.revenue_header, .cost_header{padding: 0 0; border-bottom: 1px solid #dfdfdf; }
+.value_header,.revenue_header, .cost_header{padding: 0 0; }
 .table_drpdwn {border-collapse: collapse;	width:100%;}
 .first_show > input {background: none repeat scroll 0 0 #dff0f8;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
 .first_hide > input {background: none repeat scroll 0 0 #dff0f8;border: 1px solid #e6e6e6;border-radius: 3px;text-align: center;}
@@ -11609,14 +11609,14 @@ white-space:nowrap;
    text-decoration:underline;
    font-size:12px;
 }   
-.text_ellipsis.single-p:hover {
+/*.text_ellipsis.single-p:hover {
         background: none repeat scroll 0 0 #009ad5;
     color: #fff;
     padding: 5px 0px 5px 1px;
-}
-.dropdown-table-footer {
+}*/
+/*.dropdown-table-footer {
     border-top:1px solid #D4D4D4;
-}
+}*/
 .multiselect-input-text-color-grey {
     background: #f3f3f3 !important;
 }
@@ -11640,17 +11640,69 @@ white-space:nowrap;
 }
 .value_header.top-head-attribute-header2 {
   padding:0;
-    width: 21%;
+    /*width: 21%;*/
     font-weight:bold;
 }
 .revenue_header.top-head-attribute-cvr {
-    width:7%;
+    /*width:9%;*/
     font-weight:bold;
 }
 .cost_header.top-head-attribute-cost {
-    width:14%;
+    /*width:11%;*/
     font-weight:bold;
 }
 .first_show {
     width: 42%;
+}
+/*2/10/2015*/
+.viewmodedropdown.text_ellipsis
+{
+        margin: -11px 0 0 19px;
+}
+.dropdown-wrapper .text_ellipsis {
+   
+    max-width:98px;
+    min-width:98px;
+}
+
+
+.viewmodedropdown .top_head_attribute .revenue_header
+{
+        width:32%;
+}
+.top_head_attribute .revenue_header
+{
+        width:31%;
+
+}
+.top_head_attribute .value_header
+{
+        min-width:100px;
+      
+}
+.editdropdown .top_head_attribute .value_header
+{
+    width:120px;
+}
+.text_ellipsis.attributes-view-p {
+    margin-top: -3px;
+}
+.top_spacing_geography{
+ 
+    border-bottom: 1px solid #dfdfdf;
+}
+.top_head_attribute
+{
+       border-bottom: 1px solid #dfdfdf;
+}
+.programcampaignborder
+{
+          border-top: 1px solid #dfdfdf;
+}
+.viewmodedropdown .advance {text-align: right;}
+
+.top_spacing_geography .trdropdownhover:hover,tbodycampaignprogram .trdropdownhover:hover {
+    background: none repeat scroll 0 0 #009ad5;
+    color: #fff;
+    padding: 5px 0 5px 1px;
 }

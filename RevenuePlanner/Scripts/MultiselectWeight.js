@@ -35,6 +35,7 @@
                         $(this).attr('mode', multiMode);
                         menu.find('input[type=checkbox]').toggle();
                         menu.find('p').removeClass('single-p');
+                        menu.find('tr').removeClass('trdropdownhover');
                         menu.find('#aclose_tag').css('display', 'block');
                         var title = DivideEqualInputValue(menu);
                     }
@@ -80,7 +81,8 @@
                                         $(this).find('p:first').text("Please Select");
                                         menu.find('input:checkbox').removeAttr('checked');
                                         menu.find('input[type=text]').val('');
-                                        menu.find('p').addClass('single-p');
+                                        menu.find('p').addClass('single-p');  
+menu.find('tr').addClass('trdropdownhover');
                                         menu.find('#aclose_tag').css('display', 'none');
                                     }
                                 });
@@ -96,6 +98,7 @@
                             Button.find('p:first').text("Please Select");
                             menu.find('input:checkbox').removeAttr('checked');
                             menu.find('p').addClass('single-p');
+                            menu.find('tr').addClass('trdropdownhover');
                             menu.find('#aclose_tag').css('display', 'none');
 
                             
