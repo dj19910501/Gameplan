@@ -3785,7 +3785,7 @@ namespace RevenuePlanner.Helpers
                                         enableCheck = "checked=\"checked\"";
                                         
                                     }
-                                    sb.Append("<tr class=\"" + trhover + "\"><td class=\"first_show\"><label><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + "\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
+                                    sb.Append("<tr class=\"" + trhover + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + "\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
                                 }
                                 sb.Append("</tbody><tfoot class=\"programcampaignborder\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span></a></td></tr></tfoot></table></div></div></div>");
                                 if (name.Length > 0)
