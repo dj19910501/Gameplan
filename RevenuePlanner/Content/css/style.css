@@ -11664,7 +11664,13 @@ white-space:nowrap;
     max-width:98px;
     min-width:98px;
 }
-
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .dropdown-wrapper .text_ellipsis {
+   
+    max-width:200px;
+    min-width:98px;
+}
+}
 
 .viewmodedropdown .top_head_attribute .revenue_header
 {
