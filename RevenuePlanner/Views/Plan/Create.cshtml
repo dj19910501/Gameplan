@@ -328,7 +328,14 @@
           }
           
           @* Start - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
-          $('#txtBudget').parent().find('.currency_dollar').blur(function () {
+          $('#txtBudget').parent().find('.currency_dollar').keydown(function (e) {
+              var keycode = (e.keyCode ? e.keyCode : e.which);
+              if (keycode == 13) {//Enter key pressed
+                  changeBudgetValues();//Trigger search button click event
+              }
+          });
+          $('#txtBudget').parent().find('.currency_dollar').blur(function (e) {
+              
               changeBudgetValues();
           });
           @* End - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
@@ -681,6 +688,8 @@
         }
     }
     @* End - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
+
+   
 
     @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
     $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
