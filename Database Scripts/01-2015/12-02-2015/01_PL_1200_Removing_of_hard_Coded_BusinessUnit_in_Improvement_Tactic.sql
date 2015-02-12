@@ -5,8 +5,11 @@
 -- ======================================================================================
 BEGIN TRY
 		BEGIN TRANSACTION
+		 IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='IntegrationInstanceDataTypeMapping') AND EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='GameplanDataType')
+	            BEGIN
 				DELETE FROM dbo.IntegrationInstanceDataTypeMapping WHERE GameplanDataTypeId IN (  SELECT GameplanDataTypeId FROM dbo.GameplanDataType WHERE TableName='Plan_Improvement_Campaign_Program_Tactic' AND ActualFieldName='BusinessUnitId')
 				DELETE FROM dbo.GameplanDataType WHERE TableName='Plan_Improvement_Campaign_Program_Tactic' AND ActualFieldName='BusinessUnitId'
+				END
 		COMMIT
 END TRY
 
