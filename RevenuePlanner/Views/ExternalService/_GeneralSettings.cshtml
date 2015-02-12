@@ -48,7 +48,7 @@
                 }
                 else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
                 {
-                    @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"), new { tabindex = "4", @class="hide" })
+                    @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"), new { tabindex = "4", @class = "hide" })
                 }
             </div>
                                                                 }
@@ -111,9 +111,9 @@
                 <p>Note that imported values override user-generated values.</p>
             </div>
             		
-            if (Model.IntegrationInstanceId > 0)
-            {
-                 <div class="cf inputs-aligned-horizontal">
+                if (Model.IntegrationInstanceId > 0)
+                {
+            <div class="cf inputs-aligned-horizontal">
                 <div class="delete-container">
                     <div class="btn-group">
                         <div class="selectBox" id="ddlIsDeletedSelectBox">
@@ -123,7 +123,7 @@
                     @Html.LabelFor(model => model.IsDeleted, new { style = "float:left;padding-left:20px;padding-top:2px;" })
                 </div>
             </div>	    
-            }								
+                }								
            	
             <!--success message-->
             <div id="successMessageGeneralSettings" class="alert hide alert-success messages">
@@ -170,11 +170,11 @@
 
         if (testIntegrationValidation == false) {
             $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField');
-              $("#cSuccessGeneralSettings").html('');
-              $("#successMessageGeneralSettings").slideUp(1);
-              $("#errorMessageGeneralSettings").slideDown(400);
-              return false;
-          }
+            $("#cSuccessGeneralSettings").html('');
+            $("#successMessageGeneralSettings").slideUp(1);
+            $("#errorMessageGeneralSettings").slideDown(400);
+            return false;
+        }
 
         if ($('#integrationForm #Instance').val().trim() != "" && $('#integrationForm #Username').val().trim() != "" && $('#integrationForm #Password').val().trim() != "") {
             $.ajax({
@@ -182,36 +182,36 @@
                 cache: false,
                 type: 'POST',
                 url: '@Url.Content("~/ExternalService/TestIntegration")',
-                    data: $("form").serialize(),
-                    success: function (data) {
-                        if (data != null) {
-                            if (data.status == 1) {
-                                $("#cSuccessGeneralSettings").html('');
-                                $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
-                                $("#successMessageGeneralSettings").slideDown(1200);
-                                $("#errorMessageGeneralSettings").slideUp(1);
+                data: $("form").serialize(),
+                success: function (data) {
+                    if (data != null) {
+                        if (data.status == 1) {
+                            $("#cSuccessGeneralSettings").html('');
+                            $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
+                            $("#successMessageGeneralSettings").slideDown(1200);
+                            $("#errorMessageGeneralSettings").slideUp(1);
 
-                                $('#integrationStatus').val("Active");
-                                $('#IsActive').val(true);
-                                $('#integrationStatus').addClass("icon-check-blue");
-                                $('#integrationStatus').removeClass("icon-check-gray");
+                            $('#integrationStatus').val("Active");
+                            $('#IsActive').val(true);
+                            $('#integrationStatus').addClass("icon-check-blue");
+                            $('#integrationStatus').removeClass("icon-check-gray");
 
-                                return true;
-                            }
-                            else {
-                                $('#cErrorGeneralSettings').html('');
-                                $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
-                                $("#errorMessageGeneralSettings").slideDown(400);
-                                $("#successMessageGeneralSettings").slideUp(1);
-                                return true;
-                            }
+                            return true;
+                        }
+                        else {
+                            $('#cErrorGeneralSettings').html('');
+                            $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
+                            $("#errorMessageGeneralSettings").slideDown(400);
+                            $("#successMessageGeneralSettings").slideUp(1);
+                            return true;
                         }
                     }
-                });
+                }
+            });
 
-                return false;
-            }
+            return false;
         }
+    }
 
     $(document).ready(function () {
 
@@ -355,15 +355,14 @@
                 $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + '@Common.objCached.ValidateIntegretionCredential');
                 $("#errorMessageGeneralSettings").slideDown(1200);
                 $("#successMessageGeneralSettings").slideUp(1);
-            return false;
-        }
+                return false;
+            }
             CheckActiveStatus();
             SaveGeneralSetting();
         });
 
         /// Added By : Kalpesh Sharma Save the value of General Settings in Integration #682
-        function SaveGeneralSetting()
-        {
+        function SaveGeneralSetting() {
             $.ajax({
                 cache: false,
                 cache: false,
@@ -372,39 +371,47 @@
                 data: $("form").serialize(),
                 success: function (data) {
                     if (data != null) {
-                        if (data.status > 0 ) {
+                        if (data.status > 0) {
                             if (data.status == 1) {
                                 localStorage.Message = data.SuccessMessage.toString();
-                                var URL = "@Url.Content("~/ExternalService/edit/")";
-                                URL = URL + "?id=" + data.Id + "&TypeId=" + '@Model.IntegrationTypeId';
-                                window.location.href = URL;
-                                AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
-                            }
-                            else if (data.status == 3) {
-                                var URL = "@Url.Content("~/ExternalService/Index/")";
-                                window.location.href = URL;
-                            }
-                            else {
-                                $("#cSuccessGeneralSettings").html('');
-                                $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
-                                $("#successMessageGeneralSettings").slideDown(1200);
-                                $("#errorMessageGeneralSettings").slideUp(1);
-                                $('#IntegrationInstanceId').val(data.Id);
-                                AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
-                            }
-                            return true;
-                        }
-                        else {
-                            $('#cErrorGeneralSettings').html('');
-                            $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
-                            $("#errorMessageGeneralSettings").slideDown(400);
-                            $("#successMessageGeneralSettings").slideUp(1);
-                            return true;
-                        }
-                    }
+                                var url = '@Url.Content("~/ExternalService/GetIntegrationFolder")';
+                                var queryStringArr = [];
+                                queryStringArr.push({
+                                    key: 'id',
+                                    Value: data.Id
+                                },
+                                {
+                                    key: 'TypeId',
+                                    Value: '@Model.IntegrationTypeId'
+                                });
+                                 formSubmitEvent(url, queryStringArr);
+                                 AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                             }
+                             else if (data.status == 3) {
+                                 var URL = "@Url.Content("~/ExternalService/Index/")";
+                 window.location.href = URL;
+             }
+             else {
+                 $("#cSuccessGeneralSettings").html('');
+                 $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
+                 $("#successMessageGeneralSettings").slideDown(1200);
+                 $("#errorMessageGeneralSettings").slideUp(1);
+                 $('#IntegrationInstanceId').val(data.Id);
+                 AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+             }
+         return true;
+     }
+     else {
+         $('#cErrorGeneralSettings').html('');
+         $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
+         $("#errorMessageGeneralSettings").slideDown(400);
+         $("#successMessageGeneralSettings").slideUp(1);
+         return true;
+     }
+ }
                 }
-             });
-        }
+            });
+}
 
         function CheckActiveStatus() {
             if (($('#hdnIsActiveIntact').val().toLowerCase().toString() != $('#IsActive').val().toLowerCase().toString()) &&
@@ -420,17 +427,17 @@
                 }
             }
 
-            if ('@Model.IntegrationInstanceId' > 0 ) {
+            if ('@Model.IntegrationInstanceId' > 0) {
                 if ($('#IsDeleted').val().toLowerCase() == 'true') {
-                if (confirm($("#DeleteConfirmationMsg").val())) {
-                    return true;
-                }
-                else {
-                    e.preventDefault();
-                    return false;
+                    if (confirm($("#DeleteConfirmationMsg").val())) {
+                        return true;
+                    }
+                    else {
+                        e.preventDefault();
+                        return false;
+                    }
                 }
             }
-         }
         }
 
         AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
