@@ -7728,6 +7728,7 @@ span.circle-check-icon-gray {
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 12px; /* Added by kapil - 100614 - #509 */
+    white-space:nowrap; /*Added by mitesh on 12-02-2015*/
 }
 
 /* Start - Added by Sohel Pathan on 29/04/2014 for Internal Review Points #7 to set styling for Show on my tactic link */
