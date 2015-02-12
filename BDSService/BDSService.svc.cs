@@ -259,7 +259,12 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.CreateRole(roledesc, permissionID, colorcode, applicationid, createdby, roleid, delpermission,ClientId);
         }
-
+        ///Added By : Arpita Soni for Ticket #131 
+        public Guid CreateRoleWithoutPermission(string roledesc,string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission, Guid ClientId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.CreateRoleWithoutPermission(roledesc, colorcode, applicationid, createdby, roleid, delpermission, ClientId);
+        }
         /// added by uday for #513
         public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby,Guid ClientId)
         {

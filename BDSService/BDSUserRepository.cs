@@ -1788,6 +1788,78 @@ namespace BDSService
             return retVal;
         }
 
+        /// <summary>
+        /// Function Add new role without permission
+        /// Added By : Arpita Soni
+        /// Ticket : #131
+        /// </summary>
+        /// <param name="role id">role id</param>
+        /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
+        public Guid CreateRoleWithoutPermission(string roledesc, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission , Guid ClientId)
+        {
+            Guid retVal = Guid.Empty;
+            Guid NewRoleId = Guid.NewGuid();
+            try
+            {
+                //Insert in Role
+                //Role logical deletion and Application id in Custom restrication
+                var obj = (from roles in db.Roles
+                           join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                           where approle.ApplicationId == applicationid && roles.RoleId == roleid && approle.IsDeleted == false && roles.ClientId == ClientId
+                           select roles).FirstOrDefault();
+
+                //Role logical deletion and Application id in Custom restrication
+                var objnew = (from roles in db.Roles
+                              join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                              where approle.ApplicationId == applicationid && roles.RoleId == roleid && approle.IsDeleted == false && roles.ClientId == ClientId
+                              select approle).FirstOrDefault();
+
+                if (obj != null)
+                {
+                    obj.ColorCode = colorcode;
+                    db.Entry(obj).State = EntityState.Modified;
+                    db.SaveChanges();
+                    retVal = obj.RoleId;
+                }
+                else
+                {
+                    Role objrole = new Role();
+                    objrole.RoleId = NewRoleId;
+                    objrole.Code = "";
+                    objrole.Title = roledesc;
+                    //objrole.Description = roledesc;
+                    objrole.CreatedBy = createdby;
+                    objrole.CreatedDate = DateTime.Now;
+                    objrole.IsDeleted = false;
+                    objrole.ColorCode = colorcode;
+                    objrole.ClientId = ClientId;
+                    db.Entry(objrole).State = EntityState.Added;
+                    db.Roles.Add(objrole);
+                    db.SaveChanges();
+                    retVal = NewRoleId;
+                }
+
+                //Insert in Application_role 
+                if (objnew == null)
+                {
+                    Application_Role objApplication_Role = new Application_Role();
+                    objApplication_Role.ApplicationId = applicationid;
+                    objApplication_Role.RoleId = NewRoleId;
+                    objApplication_Role.CreatedBy = createdby;
+                    objApplication_Role.CreatedDate = DateTime.Now;
+                    objApplication_Role.IsDeleted = false;
+                    db.Entry(objApplication_Role).State = EntityState.Added;
+                    db.Application_Role.Add(objApplication_Role);
+                    db.SaveChanges();
+                    retVal = NewRoleId;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+                return retVal;
+            }
         #endregion
 
         #region delete role and reassign new role to existing users

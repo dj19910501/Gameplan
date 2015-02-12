@@ -148,6 +148,10 @@ namespace BDSService
         [OperationContract]
         int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission,Guid ClientId);
 
+        // Added by Arpita Soni for Ticket #131
+        [OperationContract]
+        Guid CreateRoleWithoutPermission(string roledesc, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission, Guid ClientId);
+
         /// added by uday for #513
         [OperationContract]
         int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby , Guid ClientId);
