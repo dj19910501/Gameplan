@@ -208,7 +208,8 @@
           Register events of new multiselect dropdown customfields*/
           $('.dropdown_new_btn').each(function () {
               $(this).multiselectWeight({
-                  errorDivId: 'MultiSelectProcced'
+                  errorDivId: 'MultiSelectProcced',
+                  pageErrorDivId: 'errorMessage'
               });
           });
           NumberFormatterTipsyTitle(".sus_header", 24);

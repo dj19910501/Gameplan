@@ -5,6 +5,7 @@
     $.widget("ech.multiselectWeight", {
         options: {
             errorDivId: 'noId',
+            pageErrorDivId:'noPageErrorId'
         },
         _create: function () {
             this._namespaceID = this.eventNamespace || ('multiselectWeight' + multiselectID);
@@ -41,37 +42,33 @@
                     }
                     else {
                         if (o.errorDivId != 'noId') {
+                            var errorDivId = o.errorDivId;
                             var isAllColumnInputBlank = true;
                             var totalWeightage = 0;
                             var checkCount = menu.find('input:checked').length;
+                            var pageErrorDivId = '';
+                            var label = menu.parent().find('a').attr('label').toString();
+                            if (o.pageErrorDivId != 'noPageErrorId') {
+                                pageErrorDivId = o.pageErrorDivId;
+                            }
                             if (checkCount > 0) {
                                 isAllColumnInputBlank = false;
                             }
-                            var label = menu.parent().find('a').attr('label').toString();
                             if (!isAllColumnInputBlank) {
                                 if (label != '' && typeof label != 'undefined') {
-                                    $('#' + o.errorDivId).attr('proccedObject', label);
-                                    $('#' + o.errorDivId).slideDown(400);
-                                    $('#' + o.errorDivId + ' span').find('attributetext').text(label);
-                                    var errmsg = $("#errorMessage").is(':visible');
-                                    var programerrmsg = $("#errorMessageEditProgram").is(':visible');
-                                    var campaignerrmsg = $("#errorMessageEditCampaign").is(':visible');
-                                    if (errmsg != null && errmsg != 'undefined' && errmsg.toString() == 'true') {
-                                        $('#errorMessage').css('display', 'none');
+                                    $('#' + errorDivId).attr('proccedObject', label);
+                                    $('#' + errorDivId).slideDown(400);
+                                    $('#' + errorDivId + ' span').find('attributetext').text(label);
+                                    if (pageErrorDivId != null && pageErrorDivId != 'undefined' && pageErrorDivId != '') {
+                                        $('#' + pageErrorDivId).css('display', 'none');
                                     }
-                                    else if (programerrmsg != null && programerrmsg != 'undefined' && programerrmsg.toString() == 'true') {
-                                        $('#errorMessageEditProgram').css('display', 'none');
-                                    }
-                                    else if (campaignerrmsg != null && campaignerrmsg != 'undefined' && campaignerrmsg.toString() == 'true') {
-                                        $('#errorMessageEditCampaign').css('display', 'none');
-                                    }
-                                    window.location = '#MultiSelectProcced';
+                                    window.location = '#' + errorDivId;//'#MultiSelectProcced';
                                 }
                             }
                             else {
                                 $('.dropdown_new_btn').each(function () {
                                     if ($(this).attr('label').toString() == label) {
-                                        $('#' + o.errorDivId).slideUp(400);
+                                        $('#' + errorDivId).slideUp(400);
                                         var menu = $(this).parent().find('.dropdown-wrapper');
                                         menu.toggleClass('dropdown-block');
                                         menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
@@ -82,7 +79,7 @@
                                         menu.find('input:checkbox').removeAttr('checked');
                                         menu.find('input[type=text]').val('');
                                         menu.find('p').addClass('single-p');  
-menu.find('tr').addClass('trdropdownhover');
+                                        menu.find('tr').addClass('trdropdownhover');
                                         menu.find('#aclose_tag').css('display', 'none');
                                     }
                                 });
@@ -174,7 +171,7 @@ menu.find('tr').addClass('trdropdownhover');
 
 
                 });
-                menu.find('.lblCustomCheckbox').on('click', function (e) {
+                menu.find('.first_show').on('click', function (e) {
                     var checkbx = $(this).find('input:checkbox');
                     var title = "";
                     Button.find('p:first').text("");

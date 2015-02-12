@@ -203,9 +203,11 @@
         /*Added by Mitesh Vaishnav for PL ticket #1136
        Register events of new multiselect dropdown customfields*/
         $('.dropdown_new_btn').each(function () {
-            $(this).multiselectWeight({
-                errorDivId: 'MultiSelectProcced'
-            });
+            $(this).multiselectWeight(
+                //{
+                //errorDivId: 'MultiSelectProcced'
+            //}
+            );
         });
         /*End Added by Mitesh Vaishnav for PL ticket #1136*/
 
