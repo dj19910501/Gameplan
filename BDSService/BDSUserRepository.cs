@@ -2369,6 +2369,28 @@ namespace BDSService
             return retVal;
         }
 
+        /// <summary>
+        /// To reset user's permissions to role default permissions
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="CreatorId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns>Return Guid</returns>
+        /// Added by : Arpita Soni for Ticket #132
+        public Guid GetRoleIdFromUser(Guid userId, Guid applicationId)
+        {
+            Guid retVal = Guid.Empty;
+            try
+            {
+                retVal = db.User_Application.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).FirstOrDefault().RoleId;
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return retVal;
+        }
+
         #endregion
 
         #region User hierarchy

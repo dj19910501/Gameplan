@@ -184,6 +184,10 @@ namespace BDSService
 
         /*End: Added by Mitesh Vaishnav #521 */
 
+        //Added by Arpita Soni for Ticket #132
+        [OperationContract]
+        Guid GetRoleIdFromUser(Guid userId, Guid applicationId);
+
         [OperationContract]
         List<BDSEntities.UserHierarchy> GetUserHierarchy(Guid clientId, Guid applicationId);
 
