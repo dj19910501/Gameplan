@@ -552,7 +552,9 @@ namespace Integration.Salesforce
         private class ContactRoleMember
         {
             public string OpportunityId { get; set; }
+            public bool IsPrimary { get; set; }
             public string ContactId { get; set; }
+            public int Count { get; set; }
         }
 
         private class ContactCampaignMember
@@ -770,9 +772,15 @@ namespace Integration.Salesforce
                             {
                                 // Get Primary contact for opportunity
                                 string opportunitysids = String.Join("','", (from opp in OpportunityMemberListInitial select opp.OpportunityId));
-                                List<ContactRoleMember> ContactRoleListInitial = new List<ContactRoleMember>(_client.Query<ContactRoleMember>("SELECT ContactId,OpportunityId FROM OpportunityContactRole WHERE OpportunityId IN ('" + opportunitysids + "') AND IsPrimary = True"));
+                                List<ContactRoleMember> ContactRoleListInitial = new List<ContactRoleMember>(_client.Query<ContactRoleMember>("SELECT ContactId,IsPrimary,OpportunityId FROM OpportunityContactRole WHERE OpportunityId IN ('" + opportunitysids + "')"));
                                 List<ContactRoleMember> ContactRoleList = new List<ContactRoleMember>();
-                                ContactRoleList = ContactRoleListInitial.GroupBy(cr => new { cr.ContactId, cr.OpportunityId }).Select(cr => new ContactRoleMember { ContactId = cr.Key.ContactId, OpportunityId = cr.Key.OpportunityId }).ToList();
+                                ContactRoleList = ContactRoleListInitial.Where(cr => cr.IsPrimary).GroupBy(cr => new { cr.ContactId, cr.OpportunityId }).Select(cr => new ContactRoleMember { ContactId = cr.Key.ContactId, OpportunityId = cr.Key.OpportunityId }).ToList();
+
+                                var opportunityprimaryid = ContactRoleList.Select(crn => crn.OpportunityId).ToList();
+                                List<ContactRoleMember> ContactRoleListNextNonPrimary = new List<ContactRoleMember>();
+                                ContactRoleListNextNonPrimary = ContactRoleListInitial.Where(cr => !opportunityprimaryid.Contains(cr.OpportunityId) && !cr.IsPrimary).GroupBy(cr => new { cr.OpportunityId }).Select(cr => new ContactRoleMember { OpportunityId = cr.Key.OpportunityId, Count = cr.Count() }).ToList().Where(crn => crn.Count == 1).ToList();
+                                var opportunityidssinglecontact = ContactRoleListNextNonPrimary.Select(crn => crn.OpportunityId).ToList();
+                                ContactRoleListInitial.Where(cr => !opportunityprimaryid.Contains(cr.OpportunityId) && !cr.IsPrimary && opportunityidssinglecontact.Contains(cr.OpportunityId)).ToList().ForEach(crl => ContactRoleList.Add(crl));
 
                                 // Get campaign member from contact based on responded
                                 string contactid = String.Join("','", (from contact in ContactRoleList select contact.ContactId));
@@ -858,7 +866,7 @@ namespace Integration.Salesforce
                                 OpportunityMemberList = (from om in OpportunityMemberListInitial
                                                          join crm in ContactRoleList on om.OpportunityId equals crm.OpportunityId
                                                          join ccml in ContactCampaignMemberList on crm.ContactId equals ccml.ContactId
-                                                         where om.CreatedDate >= ccml.RespondedDate && om.Amount != null
+                                                         where om.CreatedDate >= ccml.RespondedDate && om.Amount != 0
                                                          select new OpportunityMember
                                                          {
                                                              OpportunityId = om.OpportunityId,
