@@ -574,28 +574,28 @@ span.green-arrow-up-icon, span.red-arrow-down-icon {
 /* Added By Kuber*/
 
 table.myteam {
-    width: 100%;          /* Modified by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
-    margin-left: 5% !important;      /* Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
+    width: 100%; /* Modified by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
+    margin-left: 5% !important; /* Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
 }
 
 /* Start - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
 #lnkAddUser {
-    margin-left: 5% !important;      
+    margin-left: 5% !important;
 }
 /* End - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
-    table.myteam tbody tr:hover {
-        cursor: pointer;
-    }
+table.myteam tbody tr:hover {
+    cursor: pointer;
+}
 
-    table.myteam.table-striped tbody > tr:nth-child(2n+1) > td, table.myteam.table-striped tbody > tr:nth-child(2n+1) > th {
-        background-color: #dff0f8;
-        cursor: pointer;
-    }
+table.myteam.table-striped tbody > tr:nth-child(2n+1) > td, table.myteam.table-striped tbody > tr:nth-child(2n+1) > th {
+    background-color: #dff0f8;
+    cursor: pointer;
+}
 
-    table.myteam.table-striped tbody > tr:nth-child(2n+1):hover > th {
-        background-color: #f6d87f;
-        cursor: pointer;
-    }
+table.myteam.table-striped tbody > tr:nth-child(2n+1):hover > th {
+    background-color: #f6d87f;
+    cursor: pointer;
+}
 
 .field-validation-error {
     color: red;
@@ -678,7 +678,7 @@ textarea[readonly] {
     padding: 15px 20px 5px;
     position: fixed;
     text-align: center;
-    top: 13%;/*changed 4m 20 to 13 by uday 7-7-14 #453s*/
+    top: 13%; /*changed 4m 20 to 13 by uday 7-7-14 #453s*/
     width: 354px;
     z-index: 2002;
 }
@@ -742,19 +742,21 @@ span.setbackground {
 .nav-gray-planc li a.audience span {
     background-position: -136px 0 !important;
 }
-/*Modified by Mitesh Vaishnav for internal issues (in new Model mode icon display wrong)*/ 
+/*Modified by Mitesh Vaishnav for internal issues (in new Model mode icon display wrong)*/
 .nav-gray-planc li a.tactics span {
     background-position: -70px 0 !important;
 }
 /*Added by Mitesh Vaishnav for internal issue  (in new Model mode icon display wrong)*/
 .nav-gray-planc li a.integrations span {
     background-position: -235px 0 !important;
-}/*End modified by Mitesh Vaishnav for internal issue*/
+}
+/*End modified by Mitesh Vaishnav for internal issue*/
 
 /*Added by mitesh vaishnav on 18/07/2014*/
 .nav-gray-planc li#liCalender span {
     background-position: -170px 0 !important;
 }
+
 .nav-gray-planc li#liBudgeting span {
     background-position: -266px 0 !important;
 }
@@ -811,7 +813,7 @@ span.setbackground {
 .nav > li > a:hover,
 .nav > li > a:focus {
     text-decoration: none;
-    cursor: pointer !important;/*14-7-2014 PL Ticket #591*/
+    cursor: pointer !important; /*14-7-2014 PL Ticket #591*/
     /*background-color: #dddddd !important;*/
 }
 
@@ -1270,21 +1272,22 @@ a {
     /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
     .verticalIdSelectBox .sbHolder {
         z-index: auto;
-        background:url("../images/button-arrow.png") no-repeat center right 8px #fcfcfc !important;margin-bottom:0;box-shadow:1px -8px 13px #ededed inset, 0 1px 2px #ededed;/*Added by Mitesh Vaishnav on 26-06-2014*/
+        background: url("../images/button-arrow.png") no-repeat center right 8px #fcfcfc !important;
+        margin-bottom: 0;
+        box-shadow: 1px -8px 13px #ededed inset, 0 1px 2px #ededed; /*Added by Mitesh Vaishnav on 26-06-2014*/
     }
     /*Modofied by Mitesh Vaishnav on 26-06-2014*/
     .verticalIdSelectBox .sbSelector {
         /*color: #6d6d6d !important;*/
         /*border-right: 1px solid #C6C6C6;*/
         font-size: 14px;
-        width:95%;
-        
+        width: 95%;
     }
     /*Added by Mitesh Vaishnav on 26-06-2014*/
     .verticalIdSelectBox .sbToggle {
         border-left: none;
-    border-right: none;
-    border-top: none;
+        border-right: none;
+        border-top: none;
     }
     /*End : Added by Mitesh Vaishnav on 26-06-2014*/
 
@@ -1512,8 +1515,14 @@ a {
 .close-icon .tactic-level div.accordion-body > div {
     padding-left: 25px;
 }
-.tactic-level > .accordion-inner > .accordion-group > .accordion-header a {padding-left:85px !important; }
-.tactic-level .accordion-inner span.underline {padding-left:10px !important;}
+
+.tactic-level > .accordion-inner > .accordion-group > .accordion-header a {
+    padding-left: 85px !important;
+}
+
+.tactic-level .accordion-inner span.underline {
+    padding-left: 10px !important;
+}
 /* end changes */
 
 /* Pencil icon on Tactic/Program/Campaign popup */
@@ -2301,7 +2310,7 @@ a {
     width: 116px; /* Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 */
     margin-left: 8px; /* Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 */
     margin-top: 10px;
-    float:left;     /* Added by Sohel Pathan on 26/06/2014 for PL ticket #517 */
+    float: left; /* Added by Sohel Pathan on 26/06/2014 for PL ticket #517 */
 }
 
 .selectBoxError {
@@ -2684,7 +2693,7 @@ label {
     /*width: auto;*/
     /*Added By : Kalpesh Sharma :: Functional review point 55, 56 & 57*/
     width: 480px;
-    height: 570px;/*changed 4m 495 to 570 by uday #453s*/
+    height: 570px; /*changed 4m 495 to 570 by uday #453s*/
 }
 
 .note-editor {
@@ -2753,7 +2762,7 @@ label {
 /* Manage Roles  added by uday for user roles screens*/
 .manage-roles {
     padding-left: 69px;
-    margin-bottom:40px;
+    margin-bottom: 40px;
 }
 
     .manage-roles h4 {
@@ -2976,7 +2985,7 @@ label {
 #DivDeleteRolePopup {
     z-index: 10500;
     height: auto;
-    width: 360px;/*change by uday for chrome browser*/
+    width: 360px; /*change by uday for chrome browser*/
 }
 
     #DivDeleteRolePopup h4, #DivAddRolePopup h4, #DivAddRolePopupcopy h4, #DivDefaultRolePopup h4 {
@@ -3002,13 +3011,13 @@ label {
     overflow: auto;
 }
 
-/*added by uday 7-3-2014*/
- .affected-list ul li {
+    /*added by uday 7-3-2014*/
+    .affected-list ul li {
         text-align: left;
         font-size: 16px;
         line-height: 25px;
     }
- /*end*/
+/*end*/
 
 .affected-area ul {
     margin-left: 50px;
@@ -3043,18 +3052,18 @@ label {
         width: 96%;
     }
 
-      .popup .message-position {
-        float: left;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        margin-top: 0 !important;
-        padding: 8px 24px 8px;
-    }
+.popup .message-position {
+    float: left;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 0 !important;
+    padding: 8px 24px 8px;
+}
 
-    .popup .alert .close {
-        right: -15px;
-        top: 0;
-    }
+.popup .alert .close {
+    right: -15px;
+    top: 0;
+}
 
 .reassign-role {
     background: #4d4d4d;
@@ -3094,11 +3103,12 @@ label {
 
 #DivDeleteRolePopup .message-position {
     width: 310px;
-}/*25-6-2014*/
+}
+/*25-6-2014*/
 
-    #DivDefaultRolePopup .form-inspect-share-button {
-        float: none;
-    }
+#DivDefaultRolePopup .form-inspect-share-button {
+    float: none;
+}
 
 #successMessagedel.message-position {
     margin: -1px 3px 3px !important;
@@ -3188,6 +3198,9 @@ label {
         margin: 0;
         width: 235px;
         cursor: text;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .user-permissions .radioGrp .check_signup {
@@ -3317,8 +3330,12 @@ label {
         color: #555 !important;
     }
 
-       /*added by uday for Ticket #416*/
-.profile-info{display: inline-block; position:relative;}
+/*added by uday for Ticket #416*/
+.profile-info {
+    display: inline-block;
+    position: relative;
+}
+
 .profile-tooltip {
     bottom: 0;
     display: none;
@@ -3330,78 +3347,102 @@ label {
     width: 180px;
     z-index: 9999;
 }
-.profile-tooltip-arrow{position: absolute; width: 0; height: 0; line-height: 0; border: 5px dashed #000; border-bottom-color: #000; top: -5px; left: 50%; margin-left: -5px; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent;}
-.profile-tooltip-inner { background-color: #000; color: #FFF; max-width: 200px; padding: 5px 8px 4px 8px; text-align: center; 
-font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#fff;
-						border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
+
+.profile-tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    line-height: 0;
+    border: 5px dashed #000;
+    border-bottom-color: #000;
+    top: -5px;
+    left: 50%;
+    margin-left: -5px;
+    border-bottom-style: solid;
+    border-top: none;
+    border-left-color: transparent;
+    border-right-color: transparent;
 }
-.profile-tooltip-inner label{font-family: 'source_sans_prolight', Arial, "sans-serif"; color:#C0C0C0; display:inline-block;}
+
+.profile-tooltip-inner {
+    background-color: #000;
+    color: #FFF;
+    max-width: 200px;
+    padding: 5px 8px 4px 8px;
+    text-align: center;
+    font-family: 'source_sans_proregular', Arial, "sans-serif" !important;
+    color: #fff;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+    .profile-tooltip-inner label {
+        font-family: 'source_sans_prolight', Arial, "sans-serif";
+        color: #C0C0C0;
+        display: inline-block;
+    }
 
 .margin-bottom-20 {
-    margin-bottom:20px;
+    margin-bottom: 20px;
 }
 
- /* Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517 */
+/* Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517 */
 
 .UserProfile {
-    margin-right:2px;
+    margin-right: 2px;
 }
 
 .field-validation-error.selectbox-validation-message {
-    float:right;
-    text-align:left;
-    line-height:20px;
-    width:203px;
+    float: right;
+    text-align: left;
+    line-height: 20px;
+    width: 203px;
 }
 
 #divUserDelete .selectbox-validation-message {
-    float:right;
-    text-align:left;
-    line-height:20px;
-    width:204px;
-    margin-top:60px;
-
+    float: right;
+    text-align: left;
+    line-height: 20px;
+    width: 204px;
+    margin-top: 60px;
 }
 /* End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517 */
 
-.top-title
-{
+.top-title {
     border-bottom: 1px solid #E6E6E6;
     clear: both;
     line-height: 12px;
     padding: 25px 0 20px 22px;
 }
-.top-title p
-{
-    font-size:14px;
-    color:#333;
-}
-.top-title span
-{
-    font-size:18px;
-    font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-    color:#000;
-}
+
+    .top-title p {
+        font-size: 14px;
+        color: #333;
+    }
+
+    .top-title span {
+        font-size: 18px;
+        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
+        color: #000;
+    }
 
 /*Added By : Kalpesh Sharma PL #453 Contact Us Support Editor Dropdown issue*/
 
-.note-editor .dropdown-menu
-{
+.note-editor .dropdown-menu {
     overflow: scroll;
-    max-height :160px;
-    overflow-x : hidden;
+    max-height: 160px;
+    overflow-x: hidden;
     text-align: left;
 }
 
-.note-color .dropdown-menu
-{
+.note-color .dropdown-menu {
     overflow: auto;
-    max-height :none;
+    max-height: none;
 }
 
-#DivContactSupportPopup [class^="icon-"],#DivContactSupportPopup [class*=" icon-"]
-{
-        background-image: none !important; 
+#DivContactSupportPopup [class^="icon-"], #DivContactSupportPopup [class*=" icon-"] {
+    background-image: none !important;
 }
 
 /*.note-editor .note-editable
@@ -3415,7 +3456,7 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
     font-size: 18px !important;
     font-family: 'Conv_ProximaNova-Light', Arial, "sans-serif" !important;
     color: #FFFFFF !important;
-    margin-top : 18px;
+    margin-top: 18px;
 }
 
 /*Added By : Kalpesh Sharma Functional & code review points 34 */
@@ -3428,33 +3469,34 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
 
 
 a:focus {
-        outline:0 !important;
-    }/*#585*/
+    outline: 0 !important;
+}
+/*#585*/
 
 
-     /*added by uday*/
+/*added by uday*/
 .targetStageclick {
-    cursor:pointer !important;/*14-7-2014  PL Ticket #591*/
+    cursor: pointer !important; /*14-7-2014  PL Ticket #591*/
 }
 
 /* Start - Added by Sohel Pathan on 11/11/2014 for PL ticket #908 */
 .Inspect-Popup-ImprovementTactic .sbSelector {
     font-size: 14px;
-    width:90%;
+    width: 90%;
 }
 /* End - Added by Sohel Pathan on 11/11/2014 for PL ticket #908 */
 /* Start - Added by Viral Kadiya on 11/19/2014 for PL ticket #947 */
-.inspect-bolder-label{
-        color: #343434;
+.inspect-bolder-label {
+    color: #343434;
     font-family: 'source_sans_prosemibold',Arial,"sans-serif";
     font-size: 13px;
-     font-weight:300;
-     }
+    font-weight: 300;
+}
 /* End - Added by Viral Kadiya on 11/19/2014 for PL ticket #947 */
 
 /* Start - Added by Pratik for PL ticket #998 */
 .clear-button-grid {
-        -moz-border-bottom-colors: none;
+    -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
@@ -3477,27 +3519,27 @@ a:focus {
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
     vertical-align: top;
     height: 28px;
-    padding:0px 18px;
+    padding: 0px 18px;
     z-index: 1999;
-    font-family:"source_sans_prolight",Helvetica,Arial,sans-serif !important;
+    font-family: "source_sans_prolight",Helvetica,Arial,sans-serif !important;
 }
 /* End - Added by Pratik for PL ticket #998 */
 /* Start - Added by Viral for PL ticket #1017 */
 .ellipsis-left {
     width: auto;
-    max-width:54%;
+    max-width: 54%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     -o-text-overflow: ellipsis;
     margin-right: 1px;
-    float:left;
+    float: left;
 }
 /* End - Added by Viral for PL ticket #1017 */
 
 /* Start - Added by Sohel Pathan on 08/12/2014 for PL ticket #993 */
 #frmDataMapping .verticalIdSelectBox .sbSelector {
     font-size: 14px;
-    width:90%;
+    width: 90%;
 }
 /* End - Added by Sohel Pathan on 08/12/2014 for PL ticket #993 */
