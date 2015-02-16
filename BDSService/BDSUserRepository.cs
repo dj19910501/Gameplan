@@ -2077,6 +2077,68 @@ namespace BDSService
             return retVal;
         }
 
+        /// <summary>
+        /// Function Copy role and its permissions.
+		/// Added By : Arpita Soni
+		/// Tiekct : #131
+        /// </summary>
+        /// <param name="role id">role id</param>
+        /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
+        public Guid CopyRoleWithoutPermission(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby, Guid ClientId)
+        {
+            Guid retVal = Guid.Empty;
+            try
+            {
+                //Insert in Role
+
+                //Role logical deletion and Application id in Custom restrication
+                var objrole = (from roles in db.Roles
+                               join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                               where approle.ApplicationId == applicationid && roles.RoleId == originalid && approle.IsDeleted == false && roles.ClientId == ClientId
+                               select roles).FirstOrDefault();
+
+                Role objrolenew;
+
+                Guid NewRoleId = Guid.Empty;
+                if (objrole != null)
+                {
+                    objrolenew = new Role();
+
+                    NewRoleId = Guid.NewGuid();
+                    objrolenew.RoleId = NewRoleId;
+                    objrolenew.Code = "";
+                    objrolenew.Title = copyroledesc;
+                    objrolenew.CreatedBy = createdby;
+                    objrolenew.CreatedDate = DateTime.Now;
+                    objrolenew.IsDeleted = false;
+                    objrolenew.ColorCode = objrole.ColorCode;
+                    objrolenew.ClientId = objrole.ClientId;
+                    db.Entry(objrolenew).State = EntityState.Added;
+                    db.Roles.Add(objrolenew);
+                    db.SaveChanges();
+                }
+
+                //Insert in Application_role
+                Application_Role objApplication_Role = new Application_Role();
+                objApplication_Role.ApplicationId = applicationid;
+                objApplication_Role.RoleId = NewRoleId;
+                objApplication_Role.CreatedBy = createdby;
+                objApplication_Role.CreatedDate = DateTime.Now;
+                objApplication_Role.IsDeleted = false;
+                db.Entry(objApplication_Role).State = EntityState.Added;
+                db.Application_Role.Add(objApplication_Role);
+                db.SaveChanges();
+                retVal = NewRoleId;
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return retVal;
+        }
+
+
         #endregion
 
         #region Get List Of roleactivitypermissions

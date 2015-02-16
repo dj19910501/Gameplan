@@ -179,10 +179,13 @@ namespace BDSService
         [OperationContract]
         int DeleteUserCustomrestriction(Guid userId, Guid applicationId);
 
+        //Added by Arpita Soni for Ticket #131
         [OperationContract]
         int resetToRoleDefault(Guid userId, Guid CretorId, Guid applicationId);
 
-        /*End: Added by Mitesh Vaishnav #521 */
+        //Added by Arpita Soni for Ticket #131
+        [OperationContract]
+        Guid CopyRoleWithoutPermission(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby, Guid ClientId);
 
         //Added by Arpita Soni for Ticket #132
         [OperationContract]

@@ -321,12 +321,18 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.DeleteUserCustomrestriction(userId, applicationId);
         }
+		// Added by Arpita Soni for Ticket #131
         public int resetToRoleDefault(Guid userId, Guid CreatorId, Guid applicationId)
         {
             BDSUserRepository obj = new BDSUserRepository();
             return obj.resetToRoleDefault(userId, CreatorId, applicationId);
         }
-        
+		// Added by Arpita Soni for Ticket #131
+        public Guid CopyRoleWithoutPermission(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby, Guid ClientId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.CopyRoleWithoutPermission(copyroledesc, originalid, applicationid, createdby, ClientId);
+        }
         //Added by Arpita Soni for Ticket #132
         public Guid GetRoleIdFromUser(Guid userId, Guid applicationId)
         {
