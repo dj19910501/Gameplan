@@ -1284,6 +1284,8 @@ namespace RevenuePlanner.Controllers
                 {
                     ExternalFieldsCloseDeal = new List<string>();
                 }
+                   
+        
                 ViewData["ExternalFieldListPull"] = ExternalFieldsCloseDeal;
             }
             catch

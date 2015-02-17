@@ -22,7 +22,8 @@ namespace Integration.Helper
             Stage,
             Timestamp,
             CampaignID,
-            Amount
+            Amount,
+            ResponseDate
         }
 
         public enum PullResponseActualField
