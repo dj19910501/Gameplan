@@ -33,6 +33,10 @@ namespace Integration.Helper
         public static string UnableToDelete = "Unable to delete";
         public static string TacticSyncedComment = "Tactic synced with ";
         public static string ImprovementTacticSyncedComment = "Improvement Tactic synced with ";
+
+        public static string OpportunityObjectError = "Opportunity : ";
+        public static string CampaignMemberObjectError = "Campaign Member : ";
+
         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
 
         // Added by Dharmraj on 20-8-2014,#684, Common Error/Success messages
@@ -43,7 +47,7 @@ namespace Integration.Helper
         public static string msgFileNotFound = "File not found";
         public static string msgMappingFieldsNotFound = "Mapping fields not found";
         public static string msgMappingNotFoundForSalesforcePullResponse = "Error: Mapping not found for CampaignId or FirstRespondedDate or Status";
-        public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping not found for CampaignId or CloseDate or Amount or StageName";
+        public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping not found for CampaignId or CloseDate or Amount or StageName or Response Date";
         public static string msgMappingNotFoundForEloquaPullMQL = "Error: Mapping not found for CampaignId or MQLDateId or ViewId or ListId";
         public static string msgChildLevelError = "Error: Error occurred while processing Tactic/Improvement Tactic.";
         public static readonly int CustomNameLimitSet = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["CustomNameLimitSet"]); ////Added by :- Pratik Chauhan on 04/02/2015 for PL ticket #1147

@@ -29,12 +29,30 @@
                                     @Html.HiddenFor(x => x[i].IntegrationInstanceDataTypeMappingPullId)   
                                     @Html.HiddenFor(x => x[i].IntegrationInstanceId) 
                                     @Html.HiddenFor(x => x[i].Type)
+                                    string actualname = Model[i].ActualFieldName;
                                     <tr class="fieldRow">
                                         <td class="title1 width40">
                                             @Html.DisplayFor(x => x[i].DisplayFieldName)
                                         </td>
                                         <td class="width60">
-                                            <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPull"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide", id = i.ToString(), tabindex=((int)(500 + i)).ToString() })</span>
+                                            <span class="verticalIdSelectBox" style="  margin-left: -2px;">
+                                                @if (actualname != "ResponseDate")
+                                                {
+                                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPull"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide", id = i.ToString(), tabindex = ((int)(500 + i)).ToString() })
+                                                }
+                                                else
+                                                {
+                                                    if (ViewData["ExternalFieldListPulling"] != null)
+                                                    {
+                                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPulling"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide", id = i.ToString(), tabindex = ((int)(500 + i)).ToString() })
+                                                }
+                                                 else
+                                                 {
+                                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)"", null), "Select", null)
+                                                }
+                                                }
+
+                                            </span>
                                         </td>
                                     </tr>
                                 }
