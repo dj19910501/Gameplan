@@ -1229,12 +1229,14 @@ namespace RevenuePlanner.Controllers
             }
             double? objPlanProgramBudget = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == id).FirstOrDefault().ProgramBudget;
 
-            ViewBag.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == id && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
+            List<Plan_Tactic_Values> lstTacticValues = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == id && t.IsDeleted == false).ToList());
+
+            ViewBag.MQLs = lstTacticValues.Sum(tm => tm.MQL);
             ViewBag.Cost = Common.CalculateProgramCost(id); //pcp.Cost; modified for PL #440 by dharmraj 
 
             //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
-            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanProgramId == id && t.IsDeleted == false).ToList());
-            ViewBag.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
+            //List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanProgramId == id && t.IsDeleted == false).ToList());
+            ViewBag.Revenue = Math.Round(lstTacticValues.Sum(tm => tm.Revenue));
 
 
             ViewBag.ProgramBudget = objPlanProgramBudget != null ? objPlanProgramBudget : 0;
@@ -1269,21 +1271,22 @@ namespace RevenuePlanner.Controllers
             pcpm.EndDate = pcp.EndDate;
             pcpm.CStartDate = pcp.Plan_Campaign.StartDate;
             pcpm.CEndDate = pcp.Plan_Campaign.EndDate;
-            var tsd = (from tac in db.Plan_Campaign_Program_Tactic where tac.PlanProgramId == id && tac.IsDeleted.Equals(false) select tac);
-            if (tsd != null && tsd.Count() > 0)
+            List<Plan_Campaign_Program_Tactic> lstTactic = (from tac in db.Plan_Campaign_Program_Tactic where tac.PlanProgramId == id && tac.IsDeleted.Equals(false) select tac).ToList();
+            if (lstTactic != null && lstTactic.Count() > 0)
             {
-                pcpm.TStartDate = (from otsd in tsd select otsd.StartDate).Min();
-                pcpm.TEndDate = (from otsd in tsd select otsd.EndDate).Max();
+                pcpm.TStartDate = (from otsd in lstTactic select otsd.StartDate).Min();
+                pcpm.TEndDate = (from otsd in lstTactic select otsd.EndDate).Max();
             }
 
-            pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
+            List<Plan_Tactic_Values> lstPlanTacticValues = Common.GetMQLValueTacticList(lstTactic);
+            pcpm.MQLs = lstPlanTacticValues.Sum(tm => tm.MQL);
             pcpm.Cost = Common.CalculateProgramCost(pcp.PlanProgramId);
 
             ViewBag.CampaignTitle = HttpUtility.HtmlDecode(pcp.Plan_Campaign.Title);
 
-            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pcp.PlanCampaignId &&
-                t.Plan_Campaign_Program.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList());
-            pcpm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
+            //List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pcp.PlanCampaignId &&
+            //    t.Plan_Campaign_Program.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList());
+            pcpm.Revenue = Math.Round(lstPlanTacticValues.Sum(tm => tm.Revenue));
 
             pcpm.ProgramBudget = pcp.ProgramBudget;
             var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == pcp.Plan_Campaign.PlanId);
@@ -2660,10 +2663,12 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.RedirectType = true;
             }
+
+            List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false).ToList();
             //// Get those Tactic types whose ModelId exist in Plan table and IsDeployedToModel = true.
-            var lstTactic = from tacType in db.TacticTypes
+            var lstTactic = from tacType in tblTacticTypes
                             join _plan in db.Plans on tacType.ModelId equals _plan.ModelId
-                            where _plan.PlanId == planId && (tacType.IsDeleted == null || tacType.IsDeleted == false) && tacType.IsDeployedToModel == true
+                            where _plan.PlanId == planId && tacType.IsDeployedToModel == true
                             orderby tacType.Title
                             select tacType;
 
@@ -2671,9 +2676,9 @@ namespace RevenuePlanner.Controllers
             if (!lstTactic.Any(tacType => tacType.TacticTypeId == pcpt.TacticTypeId))
             {
                 //// Get list of Tactic Types based on PlanID.
-                var tacticTypeSpecial = from _tacType in db.TacticTypes
+                var tacticTypeSpecial = from _tacType in tblTacticTypes
                                         join _plan in db.Plans on _tacType.ModelId equals _plan.ModelId
-                                        where _plan.PlanId == planId && _tacType.TacticTypeId == pcpt.TacticTypeId
+                                        where (_plan.PlanId == planId || _plan.PlanId == Sessions.PlanId) && _tacType.TacticTypeId == pcpt.TacticTypeId
                                         orderby _tacType.Title
                                         select _tacType;
                 lstTactic = lstTactic.Concat<TacticType>(tacticTypeSpecial);
@@ -2682,17 +2687,17 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcpt.Status);
 
             //// Check whether current TacticId related TacticType exist or not.
-            if (!lstTactic.Any(tacType => tacType.TacticTypeId == pcpt.TacticTypeId))
-            {
-                //// Get list of Tactic Types based on Session PlanID.
-                var tacticTypeSpecial = from t in db.TacticTypes
-                                        join p in db.Plans on t.ModelId equals p.ModelId
-                                        where p.PlanId == Sessions.PlanId && t.TacticTypeId == pcpt.TacticTypeId
-                                        orderby t.Title
-                                        select t;
-                lstTactic = lstTactic.Concat<TacticType>(tacticTypeSpecial);
-                lstTactic = lstTactic.OrderBy(a => a.Title);
-            }
+            //if (!lstTactic.Any(tacType => tacType.TacticTypeId == pcpt.TacticTypeId))
+            //{
+            //    //// Get list of Tactic Types based on Session PlanID.
+            //    var tacticTypeSpecial = from t in db.TacticTypes
+            //                            join p in db.Plans on t.ModelId equals p.ModelId
+            //                            where p.PlanId == Sessions.PlanId && t.TacticTypeId == pcpt.TacticTypeId
+            //                            orderby t.Title
+            //                            select t;
+            //    lstTactic = lstTactic.Concat<TacticType>(tacticTypeSpecial);
+            //    lstTactic = lstTactic.OrderBy(a => a.Title);
+            //}
 
             foreach (var item in lstTactic)
                 item.Title = HttpUtility.HtmlDecode(item.Title);
@@ -2751,9 +2756,10 @@ namespace RevenuePlanner.Controllers
 
             //Updated By Bhavesh Dobariya Performance Issue
             TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(pcpt, false);
+            List<Stage> tblStage = db.Stages.Where(stg => stg.IsDeleted.Equals(false)).ToList();
             //// Set MQL
             string stageMQL = Enums.Stage.MQL.ToString();
-            int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
+            int levelMQL = tblStage.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
             int tacticStageLevel = Convert.ToInt32(pcpt.Stage.Level);
             if (tacticStageLevel < levelMQL)
             {
@@ -2784,7 +2790,7 @@ namespace RevenuePlanner.Controllers
 
             ippctm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
             ippctm.StageId = Convert.ToInt32(pcpt.StageId);
-            ippctm.StageTitle = db.Stages.FirstOrDefault(varS => varS.StageId == pcpt.StageId).Title;
+            ippctm.StageTitle = tblStage.FirstOrDefault(varS => varS.StageId == pcpt.StageId).Title;
             ippctm.ProjectedStageValue = Convert.ToDouble(pcpt.ProjectedStageValue);
 
             var modelTacticStageType = lstTactic.Where(_tacType => _tacType.TacticTypeId == pcpt.TacticTypeId).FirstOrDefault().StageId;
@@ -2809,7 +2815,7 @@ namespace RevenuePlanner.Controllers
 
             List<TacticType> tnewList = lstTactic.ToList();
             //// if lstTactics contains the same Title tactic then remove from the new Tactic list.
-            TacticType tobj = db.TacticTypes.Where(_tacType => _tacType.TacticTypeId == ippctm.TacticTypeId && _tacType.IsDeleted == true).FirstOrDefault();
+            TacticType tobj = tblTacticTypes.Where(_tacType => _tacType.TacticTypeId == ippctm.TacticTypeId).FirstOrDefault();
             if (tobj != null)
             {
                 TacticType tSameExist = tnewList.Where(_newTacType => _newTacType.Title.Equals(tobj.Title)).FirstOrDefault();
