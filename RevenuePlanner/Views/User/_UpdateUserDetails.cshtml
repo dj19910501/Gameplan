@@ -109,24 +109,6 @@
             @*}*@
             @*End Modified by Dharmraj for ticket #583 on 7th July 2014 *@
         </div>
-        @*<div class="cf inputs-aligned-horizontal">
-            @Html.LabelFor(model => model.BusinessUnitId)
-            @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
-                    {
-                        //Modified by :- Sohel on 27 March 2014 for ticket #334
-                <div class="selectBox UserProfile" id="ddlBusinessUnitIdSelectBox">
-                    @Html.DropDownListFor(c => c.BusinessUnitId, new SelectList((System.Collections.IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Title"), "Please Select", new { @class = "hide" })
-                </div>
-                @Html.ValidationMessageFor(model => model.BusinessUnitId)
-                @Html.Label("", Common.objCached.BusinessunitRequired, new { @class="field-validation-error selectbox-validation-message", id="lblBusinessUnitIdRequired" })   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                    }
-                    else
-                    {
-                @Html.HiddenFor(model => model.BusinessUnitId)
-                @Html.HiddenFor(model => model.BusinessUnit)
-                @Html.TextBox("txtBusinessUnit", Model.BusinessUnit, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.BusinessUnit })
-                    }
-        </div>*@
 
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.RoleId)
@@ -245,7 +227,6 @@
 
         // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         $('#lblClientIdRequired').hide();
-        $('#lblBusinessUnitIdRequired').hide();
         $('#lblRoleIdRequired').hide();
         $('#lblManagerIdRequired').hide();
         $('#lblNewManagerIdRequired').hide();
@@ -267,18 +248,6 @@
                 $("#ddlClientIdSelectBox .sbHolder").removeClass("selectBoxError");
                 $('#lblClientIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             }
-
-            //BusinessID Dropdown Required Validtion
-            if (($("#BusinessUnitId option").eq(0).val() == "" && $("#BusinessUnitId").val() == "")) {
-                $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
-                $('#lblBusinessUnitIdRequired').show(); // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                isValid = false;
-            }
-            else {
-                $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
-                $('#lblBusinessUnitIdRequired').hide(); // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-            }
-
             //RoleID Dropdown Required Validtion
             if (($("#RoleId option").eq(0).val() == "" && $("#RoleId").val() == "")) {
                 $("#ddlRoleIdSelectBox .sbHolder").addClass("selectBoxError");
@@ -289,9 +258,9 @@
                 $("#ddlRoleIdSelectBox .sbHolder").removeClass("selectBoxError");
                 $('#lblRoleIdRequired').hide(); // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             }
-
             // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
             if (($("#ManagerId option").eq(0).val() == "" && $("#ManagerId").val() == "") && $('#IsDeleted').val().toLowerCase() != 'yes') {
+              
                     $("#ddlManagerIdSelectBox .sbHolder").addClass("selectBoxError");
                         $('#lblManagerIdRequired').show();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                         isValid = false;
@@ -371,8 +340,6 @@
         $("#ClientId").change(function () {
             var clientId = $(this).val();
             if (clientId != "") {
-                loadBusinessUnit(clientId);
-                
                 // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
                 loadManagers(clientId);
                 if ($('#IsDeleted').val().toLowerCase() == 'yes')
@@ -381,7 +348,6 @@
 
                 // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                 $('#lblClientIdRequired').hide();
-                $('#lblBusinessUnitIdRequired').hide();
                 $('#lblRoleIdRequired').hide();
                 $('#lblManagerIdRequired').hide();
             }
@@ -391,32 +357,6 @@
             }
             // End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         });
-        function loadBusinessUnit(clientId) {
-            if (clientId != "" && clientId != "0" && clientId != "null") {
-                $.getJSON("@Url.Content("~/User/GetBusinessUnit")", { id: clientId },
-                function (businessUnitData) {
-                    var select = $("#BusinessUnitId");
-                    select.empty();
-                    $.each(businessUnitData, function (index, itemData) {
-                        select.append($('<option/>', {
-                            value: itemData.Value,
-                            text: itemData.Text
-                        }));
-                    });
-                    if ($("#BusinessUnitId option").eq(0).val() != "") {
-                        $("#BusinessUnitId option").eq(0).before($("<option></option>").val("").text("Please select"));
-                    }
-                    if ($("#BusinessUnitId option").eq(0).val() == undefined) {
-                        $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
-                    }
-                    $("#BusinessUnitId").val("");
-
-                    //Added by :- Sohel on 27 March 2014 for ticket #334
-                    $(".selectBox select").selectbox('detach');
-                    $(".selectBox select").selectbox("attach");
-                });
-            }
-        }
         // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
         function loadManagers(clientId) {
             if (clientId != "" && clientId != "0" && clientId != "null") {
@@ -612,21 +552,6 @@
         //}
     });
     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-
-  
-
-    // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-    $("#BusinessUnitId").change(function () {
-        var BusinessUnitId = $(this).val();
-        if (BusinessUnitId != "") {
-            $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
-            $('#lblBusinessUnitIdRequired').hide();
-        }
-        else {
-            $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
-            $('#lblBusinessUnitIdRequired').show();
-        }
-    });
 
     $("#RoleId").change(function () {
         var RoleId = $(this).val();

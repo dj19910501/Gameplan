@@ -26,8 +26,6 @@ namespace BDSService.BDSEntities
         [DataMember]
         public string JobTitle { get; set; }
         [DataMember]
-        public Guid GeographyId { get; set; }
-        [DataMember]
         public string Phone { get; set; }
         [DataMember]
         public Guid? ManagerId { get; set; }

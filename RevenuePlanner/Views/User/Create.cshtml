@@ -134,24 +134,6 @@
                         @Html.TextBox("txtClient", client, new { style = "background:#F2F2F2;", @readonly = "true", title = client })
                     
                 </div>
-
-                @*<div class="cf inputs-aligned-horizontal">
-                    @Html.LabelFor(model => model.BusinessUnitId)
-                    <div class="selectBox UserProfile" id="ddlBusinessUnitIdSelectBox">
-                        @if (ViewData["BusinessUnits"] != null)
-                        {
-                            @Html.DropDownListFor(c => c.BusinessUnitId, new SelectList((System.Collections.IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Title"), "Please Select", new { @class = "hide" })
-                        }
-                        else
-                        {
-                            @Html.DropDownListFor(c => c.BusinessUnitId, Enumerable.Empty<SelectListItem>(), "Please Select", new { @class = "hide" })
-                        }
-                    </div>
-                    @Html.ValidationMessageFor(model => model.BusinessUnitId)
-                    @Html.Label("", Common.objCached.BusinessunitRequired, new { @class="field-validation-error selectbox-validation-message", id="lblBusinessUnitIdRequired" })
-                </div>*@
-
-                
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.RoleId)
                     @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
@@ -195,7 +177,6 @@
     $(document).ready(function () {
 
         $('#lblClientIdRequired').hide();
-        $('#lblBusinessUnitIdRequired').hide();
         $('#lblRoleIdRequired').hide();
         $('#lblManagerIdRequired').hide();
 
@@ -216,17 +197,6 @@
                 $('#lblClientIdRequired').hide();
             }
 
-            //BusinessID Dropdown Required Validtion
-            if (($("#BusinessUnitId option").eq(0).val() == "" && $("#BusinessUnitId").val() == "")) {
-                $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
-                $('#lblBusinessUnitIdRequired').show();
-                isValid = false;
-            }
-            else {
-                $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
-                $('#lblBusinessUnitIdRequired').hide();
-            }
-            
             //RoleID Dropdown Required Validtion
             if (($("#RoleId option").eq(0).val() == "" && $("#RoleId").val() == "")) {
                 $("#ddlRoleIdSelectBox .sbHolder").addClass("selectBoxError");
@@ -329,10 +299,8 @@
         $("#ClientId").change(function () {
             var clientId = $(this).val();
             if (clientId != "") {
-                loadBusinessUnit(clientId);
                 loadManagers(clientId);     // Added by Sohel Pathan on 03/07/2014 for Functional review points.
                 $('#lblClientIdRequired').hide();
-                $('#lblBusinessUnitIdRequired').hide();
                 $('#lblRoleIdRequired').hide();
                 $('#lblManagerIdRequired').hide();
             }
@@ -341,33 +309,6 @@
                 $('#lblClientIdRequired').show();
             }
         });
-                
-        function loadBusinessUnit(clientId) {
-            if (clientId != "" && clientId != "0" && clientId != "null") {
-                $.getJSON("@Url.Content("~/User/GetBusinessUnit")", { id: clientId },
-                    function (businessUnitData) {
-                        var select = $("#BusinessUnitId");
-                        select.empty();
-                        $.each(businessUnitData, function (index, itemData) {
-                            select.append($('<option/>', {
-                                value: itemData.Value,
-                                text: itemData.Text
-                            }));
-                        });
-                        if ($("#BusinessUnitId option").eq(0).val() != "") {
-                            $("#BusinessUnitId option").eq(0).before($("<option></option>").val("").text("Please select"));
-                        }
-                        if ($("#BusinessUnitId option").eq(0).val() == undefined) {
-                            $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
-                        }
-                        $("#BusinessUnitId").val("");
-
-                        //Added by :- Sohel on 27 March 2014 for ticket #334
-                        $(".selectBox select").selectbox('detach');
-                        $(".selectBox select").selectbox("attach");
-                    });
-                }
-        }
                 
         // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
         function loadManagers(clientId) {
@@ -572,18 +513,6 @@
             return 'Strong'
         }
     }
-
-    $("#BusinessUnitId").change(function () {
-        var BusinessUnitId = $(this).val();
-        if (BusinessUnitId != "") {
-            $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
-            $('#lblBusinessUnitIdRequired').hide();
-        }
-        else {
-            $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
-            $('#lblBusinessUnitIdRequired').show();
-        }
-    });
 
     $("#RoleId").change(function () {
         var RoleId = $(this).val();

@@ -30,8 +30,6 @@ namespace RevenuePlanner.Models
     public class ModelOverView
     {
         public int ModelId { get; set; }
-        public Guid BusinessUnitId { get; set; }
-        public string BusinessUnitName { get; set; }
         public string Title { get; set; }
     }
     public class ContactInquiry
@@ -47,7 +45,6 @@ namespace RevenuePlanner.Models
     public class ModelVersion
     {
         public int ModelId { get; set; }
-        public Guid BusinessUnitId { get; set; }
         public string Title { get; set; }
         public string Version { get; set; }
         public string Status { get; set; }

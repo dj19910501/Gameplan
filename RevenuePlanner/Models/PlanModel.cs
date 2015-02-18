@@ -58,9 +58,6 @@ namespace RevenuePlanner.Models
         public int PlanCampaignId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int VerticalId { get; set; }
-        public int AudienceId { get; set; }
-        public Guid GeographyId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         //public long? INQs { get; set; }
@@ -85,9 +82,6 @@ namespace RevenuePlanner.Models
         public int PlanCampaignId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int VerticalId { get; set; }
-        public int AudienceId { get; set; }
-        public Guid GeographyId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         //public long? INQs { get; set; }
@@ -114,10 +108,6 @@ namespace RevenuePlanner.Models
         public int TacticTypeId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int VerticalId { get; set; }
-        public int AudienceId { get; set; }
-        public Guid GeographyId { get; set; }
-
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         //public long INQs { get; set; }
@@ -160,12 +150,6 @@ namespace RevenuePlanner.Models
 
         public string Owner { get; set; }
         public Guid OwnerId { get; set; }
-
-        public int VerticalId { get; set; }
-        public int AudienceId { get; set; }
-        public Guid GeographyId { get; set; }
-
-        public Guid BusinessUnitId { get; set; }
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

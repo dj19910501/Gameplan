@@ -3328,26 +3328,6 @@ namespace RevenuePlanner.Controllers
             lstViewByAllocated = lstViewByAllocated.Where(modal => !string.IsNullOrEmpty(modal.Text)).OrderBy(modal => modal.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewByAllocated = lstViewByAllocated;
 
-            //// Set Geography list.
-            List<SelectListItem> lstGeography = new List<SelectListItem>();
-            lstGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId && geo.IsDeleted == false).ToList().Select(geo => new SelectListItem { Text = geo.Title, Value = geo.GeographyId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewGeography = lstGeography.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
-
-            //// Set BusinessUnit list.
-            List<SelectListItem> lstBusinessUnit = new List<SelectListItem>();
-            lstBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId && bu.IsDeleted == false).ToList().Select(bu => new SelectListItem { Text = bu.Title, Value = bu.BusinessUnitId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewBusinessUnit = lstBusinessUnit.Where(bu => !string.IsNullOrEmpty(bu.Text)).OrderBy(bu => bu.Text, new AlphaNumericComparer()).ToList();
-
-            //// Set Vertical list.
-            List<SelectListItem> lstVertical = new List<SelectListItem>();
-            lstVertical = db.Verticals.Where(vert => vert.ClientId == Sessions.User.ClientId && vert.IsDeleted == false).ToList().Select(vert => new SelectListItem { Text = vert.Title, Value = vert.VerticalId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewVertical = lstVertical.Where(vert => !string.IsNullOrEmpty(vert.Text)).OrderBy(vert => vert.Text, new AlphaNumericComparer()).ToList();
-
-            //// Set Audience list.
-            List<SelectListItem> lstAudience = new List<SelectListItem>();
-            lstAudience = db.Audiences.Where(aud => aud.ClientId == Sessions.User.ClientId && aud.IsDeleted == false).ToList().Select(aud => new SelectListItem { Text = aud.Title, Value = aud.AudienceId.ToString(), Selected = true }).ToList();
-            ViewBag.ViewAudience = lstAudience.Where(aud => !string.IsNullOrEmpty(aud.Text)).OrderBy(aud => aud.Text, new AlphaNumericComparer()).ToList();
-
             //// Set Year list.
             List<SelectListItem> lstYear = new List<SelectListItem>();
             var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId).ToList();

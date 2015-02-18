@@ -9,7 +9,6 @@
 {
    
     @Html.HiddenFor(m => m.Title)
-    @Html.HiddenFor(m => m.BusinessUnitId)
     <div id="nl-form" class="nl-form">
         @Html.Raw("I'm editing a model called")
         @*Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014*@
@@ -22,8 +21,6 @@ else
     <div id="nl-form" class="nl-form">
         @Html.Raw("I'm creating a model called")
         @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datadefault = "Title", datasubline = "For example: <em>SMB Baseline</em>" }).
-        @*@Html.Raw("for")*@
-        @*@Html.DropDownListFor(m => m.BusinessUnitId, (SelectList)TempData["BusinessUnitList"], new { @class = "hide" }).*@
         <div class="nl-overlay"></div>
     </div>
     @Html.Hidden("hdnmoelexist", ""); // hidden field added to check if model exist or not

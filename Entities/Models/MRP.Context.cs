@@ -25,9 +25,7 @@ namespace RevenuePlanner.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public DbSet<Audience> Audiences { get; set; }
         public DbSet<BestInClass> BestInClasses { get; set; }
-        public DbSet<BusinessUnit> BusinessUnits { get; set; }
         public DbSet<CampaignNameConvention> CampaignNameConventions { get; set; }
         public DbSet<ChangeLog> ChangeLogs { get; set; }
         public DbSet<Client_Activity> Client_Activity { get; set; }
@@ -35,7 +33,6 @@ namespace RevenuePlanner.Models
         public DbSet<ClientTacticType> ClientTacticTypes { get; set; }
         public DbSet<CustomField> CustomFields { get; set; }
         public DbSet<CustomField_Entity> CustomField_Entity { get; set; }
-        public DbSet<CustomField_Entity_StageWeight> CustomField_Entity_StageWeight { get; set; }
         public DbSet<CustomFieldOption> CustomFieldOptions { get; set; }
         public DbSet<CustomFieldType> CustomFieldTypes { get; set; }
         public DbSet<CustomLabel> CustomLabels { get; set; }
@@ -45,7 +42,6 @@ namespace RevenuePlanner.Models
         public DbSet<Funnel_Field> Funnel_Field { get; set; }
         public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
         public DbSet<GameplanDataTypePull> GameplanDataTypePulls { get; set; }
-        public DbSet<Geography> Geographies { get; set; }
         public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
         public DbSet<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public DbSet<IntegrationInstance> IntegrationInstances { get; set; }
@@ -70,11 +66,8 @@ namespace RevenuePlanner.Models
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Plan> Plans { get; set; }
         public DbSet<Plan_Budget> Plan_Budget { get; set; }
-        public DbSet<Plan_Campaign> Plan_Campaign { get; set; }
         public DbSet<Plan_Campaign_Budget> Plan_Campaign_Budget { get; set; }
-        public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
         public DbSet<Plan_Campaign_Program_Budget> Plan_Campaign_Program_Budget { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost { get; set; }
@@ -83,7 +76,6 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost { get; set; }
         public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
-        public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
         public DbSet<Plan_Team> Plan_Team { get; set; }
@@ -94,6 +86,9 @@ namespace RevenuePlanner.Models
         public DbSet<TacticType> TacticTypes { get; set; }
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
-        public DbSet<Vertical> Verticals { get; set; }
+        public DbSet<Plan_Campaign> Plan_Campaign { get; set; }
+        public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
+        public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
     }
 }

@@ -35,7 +35,7 @@
                                             @if(Model[i].ActualFieldName.Equals(Enums.PullResponsesMQLFields.MQLDate.ToString(), StringComparison.OrdinalIgnoreCase) ||
                                                 Model[i].ActualFieldName.Equals(Enums.PullResponsesMQLFields.CampaignId.ToString(), StringComparison.OrdinalIgnoreCase))
                                             {
-                                                <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPulling"], "Value", "Text", Model[i].TargetDataType), "Select", new { @class = "ddlStyle", id = i.ToString(), tabindex=((int)(700 + i)).ToString()  })</span>
+                                                <span class="simpleSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPulling"], "Value", "Text", Model[i].TargetDataType), "Select", new { @class = "ddlStyle", id = i.ToString(), tabindex=((int)(700 + i)).ToString()  })</span>
                                             }
                                             else
                                             {
@@ -87,7 +87,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        $(".verticalIdSelectBox select").selectbox();
+        $(".simpleSelectBox select").selectbox();
         $('#frmMQLDataMapping .ddlStyle').each(function () {
             if ($(this).next('.sbHolder').hasClass("error")) {
                 $(this).next('.sbHolder').removeClass("error");

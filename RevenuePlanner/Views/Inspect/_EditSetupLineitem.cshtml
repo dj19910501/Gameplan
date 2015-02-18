@@ -24,7 +24,7 @@
         color: gray;
         margin-top: 6px;
     }
-    #divPartial .verticalIdSelectBox .sbHolder {
+    #divPartial .simpleSelectBox .sbHolder {
             background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
             box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
             margin-bottom: 0;
@@ -66,7 +66,7 @@
             <p>@Html.Raw("Parent Tactic")</p>
             @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticTitle })
               <p id="lblType">Type <span class="required-asterisk">*</span></p>
-            <span class="verticalIdSelectBox" style="margin-left: -2px;" id="ddlTypeArea">
+            <span class="simpleSelectBox" style="margin-left: -2px;" id="ddlTypeArea">
                 @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission hide", require = "true", label = "Type" })
             </span>
 
@@ -110,7 +110,7 @@
         $("#successMessageViewLineItem").slideUp(50);
         $("#errorMessageEditLineitem").slideUp(50);
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-        $(".verticalIdSelectBox select").selectbox();
+        $(".simpleSelectBox select").selectbox();
 
         if ('@isOtherLineitem.ToString().ToLower()' == 'true') {
             $("#lblType").css("display", "none");

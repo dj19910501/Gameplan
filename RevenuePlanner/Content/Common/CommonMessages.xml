@@ -586,10 +586,6 @@
 		<value>Email available.</value>
 	</Field>
 	<Field>
-		<Name>BusinessunitRequired</Name>
-		<value>The Business Unit field is required.</value>
-	</Field>
-	<Field>
 		<Name>RegionRequired</Name>
 		<value>The Region field is required.</value>
 	</Field>
@@ -658,13 +654,6 @@
 		<value>Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.</value>
 	</Field>
 	<!-- End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65-->
-	<!-- Start - Added by Sohel Pathan on 18/07/2014 for PL ticket #596 -->
-	<!-- {0} will be replaced by Audience custom label, #738 Custom label for audience tab -->
-	<Field>
-		<Name>CannotCreateQuickTacticMessage</Name>
-		<value>Either {0}/vertical/geography is not setup for your organization account or you may not have required permissions over them to create a tactic. Please contact system administrator.</value>
-	</Field>
-	<!-- End - Added by Sohel Pathan on 18/07/2014 for PL ticket #596 -->
 	<!-- Start - Added by Mitesh Vaishnav on 21/07/2014 for functional review point 49 -->
 	<Field>
 		<Name>ValidateStartDate</Name>
@@ -897,10 +886,10 @@
 		<value>Pull MQL mapping Information have been saved successfully.</value>
 	</Field>
 	<!--End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 -->
-  <!--start Added by Mitesh Vaishnav for PL ticket #1124-->
-  <Field>
-    <Name>ValidateAttributeWeightSum</Name>
-    <value>The weights(%) for {0} should sum up to 100! Please rectify and proceed. </value>
-  </Field>
-  <!--End Added by Mitesh Vaishnav for PL ticket #1124-->
+	<!--start Added by Mitesh Vaishnav for PL ticket #1124-->
+	<Field>
+		<Name>ValidateAttributeWeightSum</Name>
+		<value>The weights(%) for {0} should sum up to 100! Please rectify and proceed.</value>
+	</Field>
+	<!--End Added by Mitesh Vaishnav for PL ticket #1124-->
 </Messages>

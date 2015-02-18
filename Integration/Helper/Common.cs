@@ -318,30 +318,6 @@ namespace Integration.Helper
                                 customTacticName.Append(RemoveSpaceAndUppercaseFirst(objCustomField.FirstOrDefault().Abbreviation) + "_");
                             }
                         }
-                        //else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Audience.ToString())
-                        //{
-                        //    string audienceTitle = (!string.IsNullOrEmpty(objTactic.Audience.Abbreviation) ? objTactic.Audience.Abbreviation : objTactic.Audience.Title);
-                        //    audienceTitle = RemoveSpaceAndUppercaseFirst(audienceTitle);
-                        //    customTacticName.Append(audienceTitle + "_");
-                        //}
-                        //else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.BusinessUnit.ToString())
-                        //{
-                        //    string businessunitTitle = (!string.IsNullOrEmpty(objTactic.BusinessUnit.Abbreviation) ? objTactic.BusinessUnit.Abbreviation : objTactic.BusinessUnit.Title);
-                        //    businessunitTitle = RemoveSpaceAndUppercaseFirst(businessunitTitle);
-                        //    customTacticName.Append(businessunitTitle + "_");
-                        //}
-                        //else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Geography.ToString())
-                        //{
-                        //    string geographyTitle = (!string.IsNullOrEmpty(objTactic.Geography.Abbreviation) ? objTactic.Geography.Abbreviation : objTactic.Geography.Title);
-                        //    geographyTitle = RemoveSpaceAndUppercaseFirst(geographyTitle);
-                        //    customTacticName.Append(geographyTitle + "_");
-                        //}
-                        //else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Vertical.ToString())
-                        //{
-                        //    string verticalTitle = (!string.IsNullOrEmpty(objTactic.Vertical.Abbreviation) ? objTactic.Vertical.Abbreviation : objTactic.Vertical.Title);
-                        //    verticalTitle = RemoveSpaceAndUppercaseFirst(verticalTitle);
-                        //    customTacticName.Append(verticalTitle + "_");
-                        //}
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program_Tactic.ToString())
                         {
                             string tacticTitle = RemoveSpaceAndUppercaseFirst(System.Web.HttpUtility.HtmlDecode(objTactic.Title));

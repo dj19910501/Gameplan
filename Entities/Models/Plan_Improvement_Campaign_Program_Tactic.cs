@@ -25,7 +25,6 @@ namespace RevenuePlanner.Models
         public int ImprovementTacticTypeId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public Nullable<System.Guid> BusinessUnitId { get; set; }
         public System.DateTime EffectiveDate { get; set; }
         public double Cost { get; set; }
         public string Status { get; set; }

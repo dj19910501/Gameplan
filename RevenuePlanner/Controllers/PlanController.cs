@@ -620,7 +620,6 @@ namespace RevenuePlanner.Controllers
             if (objPlan_Campaign_Program_Tactic == null)
                 return;
 
-            //Guid businessUnitId = db.Models.Where(model => model.IsDeleted == false && model.ModelId == modelId).Select(model => model.BusinessUnitId).FirstOrDefault();
             List<string> lstTacticType = GetTacticTypeListbyModelId(modelId);
             List<Plan_Campaign_Program_Tactic> lstTactic = lstPlan_Campaign_Program_Tactic.Where(_tacType => lstTacticType.Contains(_tacType.TacticType.Title)).Select(_tacType => _tacType).ToList();
 
@@ -635,10 +634,6 @@ namespace RevenuePlanner.Controllers
                         tactic.ModifiedBy = Sessions.User.UserId;
                         tactic.ModifiedDate = DateTime.Now;
                         tactic.TacticTypeId = newTacticTypeId; //Update TacticTypeId column in Plan_Campaign_Program_Tactic Table based on the new model selected
-                        //if (businessUnitId != null)
-                        //{
-                        //    tactic.BusinessUnitId = businessUnitId; //Update BussinessUnitID column in Plan_Campaign_Program_Tactic Table based on the new model selected
-                        //}
                         db.Entry(tactic).State = EntityState.Modified;
                         db.SaveChanges();
                     }
@@ -709,33 +704,6 @@ namespace RevenuePlanner.Controllers
             try
             {
                 Guid clientId = Sessions.User.ClientId;
-                //List<Guid> objBusinessUnit = new List<Guid>();
-
-                //var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                //if (lstAllowedBusinessUnits.Count > 0)
-                //    lstAllowedBusinessUnits.ForEach(bu => lstAllowedBusinessUnitIds.Add(Guid.Parse(bu)));
-
-                //if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)
-                //{
-                //    objBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == clientId && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
-                //}
-                //else
-                //{
-                //    // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //    if (lstAllowedBusinessUnitIds.Count > 0)
-                //    {
-                //        objBusinessUnit = db.BusinessUnits.Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
-                //    }
-                //    else
-                //    {
-                //        objBusinessUnit = db.BusinessUnits.Where(bu => bu.BusinessUnitId == Sessions.User.BusinessUnitId && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
-                //    }
-                //    // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                //}
-
-
-                //fetch published models by businessunitid
                 string strPublish = Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Published.ToString())).Value);
                 string strDraft = Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value);
                 /*Added by Nirav shah on 20 feb 2014 for TFS Point 252 : editing a published model*/
@@ -943,48 +911,13 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Function to return _ApplytoCalendarPlanList Partialview.
         /// </summary>
-        /// <param name="Bid">BusinessUnitId</param>
         /// <returns>Returns Partialview as action result.</returns>
-        public ActionResult PlanList(string Bid)
+        public ActionResult PlanList()
         {
             HomePlan objHomePlan = new HomePlan();
             List<SelectListItem> planList;
-            if (Bid == "false")
-            {
-                planList = Common.GetPlan().Select(_plan => new SelectListItem() { Text = _plan.Title, Value = _plan.PlanId.ToString() }).OrderBy(_plan => _plan.Text).ToList();
-                if (planList.Count > 0)
-                {
-                    var objexists = planList.Where(_plan => _plan.Value == Sessions.PlanId.ToString()).ToList();
-                    if (objexists.Count != 0)
-                    {
-                        planList.FirstOrDefault(_plan => _plan.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
-                    }
                     /*changed by Nirav for plan consistency on 14 apr 2014*/
-                    //Sessions.BusinessUnitId = Common.GetPlan().Where(_plan => _plan.PlanId == Sessions.PlanId).Select(_plan => _plan.Model.BusinessUnitId).FirstOrDefault();
-
-                    //// if plan published then set planId to Session.
-                    if (!Common.IsPlanPublished(Sessions.PlanId))
-                    {
-                        string planPublishedStatus = Enums.PlanStatus.Published.ToString();
-                        var activeplan = db.Plans.Where(_plan => _plan.PlanId == Sessions.PlanId && _plan.IsDeleted == false && _plan.Status == planPublishedStatus).ToList();
-                        if (activeplan.Count > 0)
-                            Sessions.PublishedPlanId = Sessions.PlanId;
-                        else
-                            Sessions.PublishedPlanId = 0;
-                    }
-                }
-            }
-            else
-            {
-                /*changed by Nirav for plan consistency on 14 apr 2014*/
-                Guid bId = Sessions.User.ClientId; ////new Guid(Bid);
-
-                //if (Sessions.BusinessUnitId == bId)
-                //{
-                //    bId = Common.GetPlan().Where(_plan => _plan.PlanId == Sessions.PlanId).Select(_plan => _plan.Model.BusinessUnitId).FirstOrDefault();
-                //}
-                //Sessions.BusinessUnitId = bId;
-
+                Guid bId = Sessions.User.ClientId;
                 planList = Common.GetPlan().Where(_plan => _plan.Model.ClientId == bId).Select(_plan => new SelectListItem() { Text = _plan.Title, Value = _plan.PlanId.ToString() }).OrderBy(_plan => _plan.Text).ToList();
                 if (planList.Count > 0)
                 {
@@ -1012,7 +945,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
-            }
+            
             objHomePlan.plans = planList;
 
             return PartialView("_ApplytoCalendarPlanList", objHomePlan);
@@ -2712,7 +2645,6 @@ namespace RevenuePlanner.Controllers
         /// This method will return the JSON result for Plan listing
         /// </summary>
         /// <param name="Year"></param>
-        /// <param name="BusinessUnit"></param>
         /// <returns></returns>
         public JsonResult GetPlanSelectorData(string Year)
         {
@@ -3544,11 +3476,6 @@ namespace RevenuePlanner.Controllers
                 picpt.Cost = db.ImprovementTacticTypes.Where(itactic => itactic.ImprovementTacticTypeId == improvementTacticTypeId && itactic.IsDeleted.Equals(false)).Select(itactic => itactic.Cost).FirstOrDefault();       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                 picpt.EffectiveDate = DateTime.Now.Date;
                 picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
-                //// Get Businessunit id from model.
-                //picpt.BusinessUnitId = (from _mdl in db.Models
-                //                        join _pln in db.Plans on _mdl.ModelId equals _pln.ModelId
-                //                        where _pln.PlanId == Sessions.PlanId
-                //                        select _mdl.BusinessUnitId).FirstOrDefault();
                 picpt.CreatedBy = Sessions.User.UserId;
                 picpt.CreatedDate = DateTime.Now;
                 db.Entry(picpt).State = EntityState.Added;
@@ -4389,10 +4316,7 @@ namespace RevenuePlanner.Controllers
         }
         public enum ViewBy
         {
-            Campaign = 0,
-            Audiance = 1,
-            Geography = 2,
-            Vertical = 3
+            Campaign = 0
         }
 
         #endregion
@@ -4770,47 +4694,6 @@ namespace RevenuePlanner.Controllers
                         Sessions.PublishedPlanId = 0;
                 }
             }
-            //}
-            //else
-            //{
-            //    /*changed by Nirav for plan consistency on 14 apr 2014*/
-            //    Guid bId = Sessions.User.ClientId;
-            //    //if (Sessions.BusinessUnitId == bId)
-            //    //{
-            //    //    bId = Common.GetPlan().Where(_pln => _pln.PlanId == Sessions.PlanId).Select(_pln => _pln.Model.BusinessUnitId).FirstOrDefault();
-            //    //}
-            //    //Sessions.BusinessUnitId = bId;
-
-            //    planList = Common.GetPlan().Where(_pln => _pln.Model.ClientId == bId).Select(_pln => new SelectListItem() { Text = _pln.Title, Value = _pln.PlanId.ToString() }).OrderBy(_pln => _pln.Text).ToList();
-            //    if (planList.Count > 0)
-            //    {
-            //        var objexists = planList.Where(_pln => _pln.Value == Sessions.PlanId.ToString()).ToList();
-            //        if (objexists.Count != 0)
-            //        {
-            //            planList.FirstOrDefault(_pln => _pln.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
-            //        }
-            //        else
-            //        {
-            //            planList.FirstOrDefault().Selected = true;
-            //            int planID = 0;
-            //            int.TryParse(planList.Select(_pln => _pln.Value).FirstOrDefault(), out planID);
-            //            Sessions.PlanId = planID;
-            //            if (!Common.IsPlanPublished(Sessions.PlanId))
-            //            {
-            //                string planPublishedStatus = Enums.PlanStatus.Published.ToString();
-            //                var activeplan = db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false && _pln.Status == planPublishedStatus).ToList();
-            //                if (activeplan.Count > 0)
-            //                {
-            //                    Sessions.PublishedPlanId = planID;
-            //                }
-            //                else
-            //                {
-            //                    Sessions.PublishedPlanId = 0;
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
             objHomePlan.plans = planList;
 
             return PartialView("_BudgetingPlanList", objHomePlan);

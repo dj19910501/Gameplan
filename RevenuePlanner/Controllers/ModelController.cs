@@ -55,9 +55,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
 
             ViewBag.ModelId = id;
-            //var businessunit = objDbMrpEntities.Models.Where(model => model.ModelId == id && model.IsDeleted == false).OrderByDescending(model => model.CreatedDate).Select(model => model.BusinessUnitId).FirstOrDefault();
             var IsBenchmarked = (id == 0) ? true : objDbMrpEntities.Models.Where(model => model.ModelId == id && model.IsDeleted == false).OrderByDescending(model => model.CreatedDate).Select(model => model.IsBenchmarked).FirstOrDefault();
-            //ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
             ViewBag.IsBenchmarked = (IsBenchmarked != null) ? IsBenchmarked : true;
             BaselineModel objBaselineModel = new BaselineModel();
@@ -99,7 +97,6 @@ namespace RevenuePlanner.Controllers
             else
             {
                 //// For create mode
-                //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
                 ViewBag.IsOwner = true;
             }
             return View("Create", objBaselineModel);
@@ -109,7 +106,6 @@ namespace RevenuePlanner.Controllers
         /// Function to get list of Model Versions
         /// </summary>
         /// <param name="ModelId">model id</param>
-        /// <param name="BusinessUnitId">businessUnit Id of selected model</param>
         /// <returns>returns list of ModelVersions objects</returns>
         private List<ModelVersion> GetModelVersions(int ModelId)
         {
@@ -122,7 +118,6 @@ namespace RevenuePlanner.Controllers
                     //// Current Model
                     ModelVersion objModelVersion = new ModelVersion();
                     objModelVersion.ModelId = versions.ModelId;
-                    //objModelVersion.BusinessUnitId = versions.BusinessUnitId;
                     objModelVersion.Title = versions.Title;
                     objModelVersion.Status = versions.Status;
                     objModelVersion.Version = versions.Version;
@@ -135,7 +130,6 @@ namespace RevenuePlanner.Controllers
                         versions = versions.Model2;
                         objModelVersion = new ModelVersion();
                         objModelVersion.ModelId = versions.ModelId;
-                        //objModelVersion.BusinessUnitId = versions.BusinessUnitId;
                         objModelVersion.Title = versions.Title;
                         objModelVersion.Status = versions.Status;
                         objModelVersion.Version = versions.Version;
@@ -149,7 +143,6 @@ namespace RevenuePlanner.Controllers
                     {
                         objModelVersion = new ModelVersion();
                         objModelVersion.ModelId = objChildModel.ModelId;
-                        //objModelVersion.BusinessUnitId = objChildModel.BusinessUnitId;
                         objModelVersion.Title = objChildModel.Title;
                         objModelVersion.Status = objChildModel.Status;
                         objModelVersion.Version = objChildModel.Version;
@@ -161,7 +154,6 @@ namespace RevenuePlanner.Controllers
                             objChildModel = GetChild(objChildModel.ModelId);
                             objModelVersion = new ModelVersion();
                             objModelVersion.ModelId = objChildModel.ModelId;
-                            //objModelVersion.BusinessUnitId = objChildModel.BusinessUnitId;
                             objModelVersion.Title = objChildModel.Title;
                             objModelVersion.Status = objChildModel.Status;
                             objModelVersion.Version = objChildModel.Version;
@@ -193,13 +185,9 @@ namespace RevenuePlanner.Controllers
         /// Function to fill data for latest model for current year, business unit of logged-in user
         /// </summary>
         /// <param name="ModelId">selected model id</param>
-        /// <param name="BusinessUnitId">businessUnit id of selected model</param>
         /// <returns>retuns BaselineModel object</returns>
         public BaselineModel FillInitialData(int ModelId)
         {
-            //var lstAllowedBusinessUnits = GetBusinessUnitsByClient();
-            //TempData["BusinessUnitList"] = new SelectList(lstAllowedBusinessUnits, "BusinessUnitId", "Title");
-
             var FunnelList = objDbMrpEntities.Funnels.Where(funnel => funnel.IsDeleted == false).ToDictionary(funnel => funnel.FunnelId, funnel => funnel.Description);
             TempData["FunnelList"] = FunnelList;
 
@@ -270,7 +258,6 @@ namespace RevenuePlanner.Controllers
             bool? isBenchmarkDb = null;
             int.TryParse(Convert.ToString(Request.Form["CurrentModelId"]), out currentModelId);
             string redirectModelZero = string.Empty;
-            //Guid modelBusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
 
             try
             {
@@ -542,7 +529,6 @@ namespace RevenuePlanner.Controllers
                 return RedirectToAction("Tactics", "Model");
             }
             ViewBag.ModelId = currentModelId;
-            //ViewBag.BusinessUnitId = Convert.ToString(modelBusinessUnitId);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
             ViewBag.IsBenchmarked = IsBenchmarked;
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
@@ -899,7 +885,6 @@ namespace RevenuePlanner.Controllers
         /// model duplication check by model title
         /// </summary>
         /// <param name="Title">model title(name)</param>
-        /// <param name="BusinessUnitId">model businessUnit id</param>
         /// <returns></returns>
         public JsonResult CheckDuplicateModelTitle(string Title)
         {
@@ -913,52 +898,6 @@ namespace RevenuePlanner.Controllers
                 return Json("exist", JsonRequestBehavior.AllowGet);
             }
         }
-
-        ///// <summary>
-        ///// Function to get businessunit list
-        ///// </summary>
-        ///// <returns>returns list of BusinessUnits</returns>
-        //public List<BaselineModel> GetBusinessUnitsByClient()
-        //{
-        //    //// Prepare list of allowed businessUnit(s)
-        //    List<string> lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-        //    List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-        //    if (lstAllowedBusinessUnits.Count > 0)
-        //        lstAllowedBusinessUnits.ForEach(businessUnit => lstAllowedBusinessUnitIds.Add(Guid.Parse(businessUnit)));
-
-        //    if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)   //// Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        //    {
-        //        return (from busienssUnit in objDbMrpEntities.BusinessUnits.Where(busienssUnit => busienssUnit.IsDeleted == false && busienssUnit.ClientId == Sessions.User.ClientId).ToList()
-        //                select new BaselineModel
-        //                {
-        //                    BusinessUnitId = busienssUnit.BusinessUnitId,
-        //                    Title = busienssUnit.Title
-        //                }).ToList<BaselineModel>();
-        //    }
-        //    else
-        //    {
-        //        //// Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        //        if (lstAllowedBusinessUnitIds.Count > 0)
-        //        {
-        //            return (from busienssUnit in objDbMrpEntities.BusinessUnits.Where(busienssUnit => busienssUnit.IsDeleted == false && lstAllowedBusinessUnitIds.Contains(busienssUnit.BusinessUnitId)).ToList()
-        //                    select new BaselineModel
-        //                    {
-        //                        BusinessUnitId = busienssUnit.BusinessUnitId,
-        //                        Title = busienssUnit.Title
-        //                    }).ToList<BaselineModel>();
-        //        }
-        //        else
-        //        {
-        //            return (from busienssUnit in objDbMrpEntities.BusinessUnits.Where(busienssUnit => busienssUnit.IsDeleted == false && busienssUnit.BusinessUnitId == Sessions.User.BusinessUnitId).ToList()
-        //                    select new BaselineModel
-        //                    {
-        //                        BusinessUnitId = busienssUnit.BusinessUnitId,
-        //                        Title = busienssUnit.Title
-        //                    }).ToList<BaselineModel>();
-        //        }
-        //        //// End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        //    }
-        //}
 
         /// <summary>
         /// Json method to get the model version data based on the tab clicked
@@ -1002,12 +941,6 @@ namespace RevenuePlanner.Controllers
                 if (Sessions.User != null)
                 {
                     Model objModel = new Model();
-                    //// Custom restrictions
-                    //var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                    //List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                    //if (lstAllowedBusinessUnits.Count > 0)
-                    //    lstAllowedBusinessUnits.ForEach(businessUnit => lstAllowedBusinessUnitIds.Add(Guid.Parse(businessUnit)));
-
                     if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))
                     {
                         Guid clientId = Sessions.User.ClientId;
@@ -1015,22 +948,6 @@ namespace RevenuePlanner.Controllers
                                     where model.ClientId == clientId && model.IsDeleted == false
                                     select model).OrderBy(model => model.Status).ThenBy(model => model.CreatedDate).FirstOrDefault();
                     }
-
-                    //else
-                    //{
-                    //    //// Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    //    if (lstAllowedBusinessUnitIds.Count > 0)
-                    //    {
-                    //        objModel = objDbMrpEntities.Models.Where(model => lstAllowedBusinessUnitIds.Contains(model.BusinessUnitId) && model.IsDeleted == false).FirstOrDefault();
-                    //    }
-                    //    else
-                    //    {
-                    //        objModel = objDbMrpEntities.Models.Where(model => model.BusinessUnitId == Sessions.User.BusinessUnitId && model.IsDeleted == false).FirstOrDefault();
-                    //    }
-                    //    //// End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    //}
-
-
                     if (objModel != null)
                     {
                         ViewBag.ModelExists = true;
@@ -1081,34 +998,9 @@ namespace RevenuePlanner.Controllers
             try
             {
                 List<Model> objModelList = new List<Model>();
-                //// Custom restrictions
-                //var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                //List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                //if (lstAllowedBusinessUnits.Count > 0)
-                //    lstAllowedBusinessUnits.ForEach(businessUnit => lstAllowedBusinessUnitIds.Add(Guid.Parse(businessUnit)));
-
                 if (!String.IsNullOrWhiteSpace(listType))
                 {
                     Guid clientId = Sessions.User.ClientId;
-                    //List<Guid> objBusinessUnit = new List<Guid>();
-                    //if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)
-                    //{
-                    //    objBusinessUnit = objDbMrpEntities.BusinessUnits.Where(businessUnit => businessUnit.ClientId == clientId && businessUnit.IsDeleted == false).Select(businessUnit => businessUnit.BusinessUnitId).ToList();
-                    //}
-                    //else
-                    //{
-                    //    //// Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    //    if (lstAllowedBusinessUnitIds.Count > 0)
-                    //    {
-                    //        objBusinessUnit = objDbMrpEntities.BusinessUnits.Where(businessUnit => lstAllowedBusinessUnitIds.Contains(businessUnit.BusinessUnitId) && businessUnit.IsDeleted == false).Select(businessUnit => businessUnit.BusinessUnitId).ToList();
-                    //    }
-                    //    else
-                    //    {
-                    //        objBusinessUnit = objDbMrpEntities.BusinessUnits.Where(businessUnit => businessUnit.BusinessUnitId == Sessions.User.BusinessUnitId && businessUnit.IsDeleted == false).Select(businessUnit => businessUnit.BusinessUnitId).ToList();
-                    //    }
-                    //    //// End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    //}
-
                     List<Model> lstModels = (from model in objDbMrpEntities.Models
                                              where model.IsDeleted == false && model.ClientId == clientId && (model.ParentModelId == 0 || model.ParentModelId == null)
                                              select model).ToList();
@@ -1130,7 +1022,6 @@ namespace RevenuePlanner.Controllers
                 {
                     id = model.ModelId,
                     title = model.Title,
-                    //businessUnit = model.BusinessUnit.Title,
                     version = model.Version,
                     status = model.Status,
                     //// Modified by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
@@ -1161,7 +1052,6 @@ namespace RevenuePlanner.Controllers
         /// Action method to return LoadModelOverview view
         /// </summary>
         /// <param name="title">model title</param>
-        /// <param name="BusinessUnitId">businessUnit id of model</param>
         /// <returns>returns LoadModelOverview view</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult LoadModelOverview(string title, int ModelId)
@@ -1171,12 +1061,8 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.IsServiceUnavailable = false;
-                //var lstBusinessUnits = GetBusinessUnitsByClient();
-                //TempData["BusinessUnitList"] = new SelectList(lstBusinessUnits, "BusinessUnitId", "Title");
                 objModelOverView.ModelId = ModelId;
                 objModelOverView.Title = title;
-                //objModelOverView.BusinessUnitId = string.IsNullOrEmpty(BusinessUnitId) || BusinessUnitId == "0" ? Sessions.User.BusinessUnitId : Guid.Parse(BusinessUnitId);
-                //objModelOverView.BusinessUnitName = Convert.ToString(lstBusinessUnits.Where(businessUnit => businessUnit.BusinessUnitId == objModelOverView.BusinessUnitId).Select(businessUnit => businessUnit.Title).FirstOrDefault());
             }
             catch (Exception objException)
             {
@@ -1643,12 +1529,6 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsOwner = true; //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
             }
-
-            //// Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-            //var businessunit = objDbMrpEntities.Models.Where(model => model.ModelId == id && model.IsDeleted == false).OrderByDescending(model => model.CreatedDate).Select(model => model.BusinessUnitId).FirstOrDefault();
-            //ViewBag.BusinessUnitId = Convert.ToString(businessunit);
-            //// End  :: Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-
             string StageType = Enums.StageType.CR.ToString();
             string ModelTitle = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ModelId == Modelid).Select(model => model.Title).FirstOrDefault();
             string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
@@ -1677,7 +1557,6 @@ namespace RevenuePlanner.Controllers
         public Tactic_TypeModel FillInitialTacticData(int Modelid = 0)
         {
             Tactic_TypeModel objTacticTypeModel = new Tactic_TypeModel();
-            //Guid BusinessUnitId = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ModelId == Modelid).Select(model => model.BusinessUnitId).FirstOrDefault();
             string Status = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ModelId == Modelid).Select(model => model.Status).FirstOrDefault();
             objTacticTypeModel.Versions = GetModelVersions(Modelid);
             objTacticTypeModel.Status = Status;
@@ -2258,10 +2137,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.ModelStatus = objModel.Status;
             ViewBag.ModelTitle = objModel.Title;
-
-            //var businessunit = objDbMrpEntities.Models.Where(model => model.ModelId == id && model.IsDeleted == false).OrderByDescending(model => model.CreatedDate).Select(model => model.BusinessUnitId).FirstOrDefault();
             var IsBenchmarked = (id == 0) ? true : objDbMrpEntities.Models.Where(model => model.ModelId == id && model.IsDeleted == false).OrderByDescending(model => model.CreatedDate).Select(model => model.IsBenchmarked).FirstOrDefault();
-            //ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
             ViewBag.IsBenchmarked = (IsBenchmarked != null) ? IsBenchmarked : true;
             BaselineModel objBaselineModel = new BaselineModel();
@@ -2372,7 +2248,6 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                //var businessunit = objDbMrpEntities.Models.Where(model => model.ModelId == modelId && model.IsDeleted == false).OrderByDescending(model => model.CreatedDate).Select(model => model.BusinessUnitId).FirstOrDefault();
                 List<ModelVersion> lstVersions = GetModelVersions(modelId);
 
                 foreach (var version in lstVersions)
@@ -2780,7 +2655,6 @@ namespace RevenuePlanner.Controllers
         /// <param name="OldModelID">model id of old model</param>
         /// <param name="IsVersion">IsVersion flag</param>
         /// <param name="Title">title of model</param>
-        /// <param name="BusinessUntiID">businessUnit of model</param>
         /// <param name="IsBenchmarked">IsBenchmarked flag</param>
         /// <param name="newModelId">newModelId (out parameter)</param>
         public void OtherModelEntries(int OldModelID, bool IsVersion, string Title, bool IsBenchmarked, ref int newModelId)
@@ -2816,7 +2690,6 @@ namespace RevenuePlanner.Controllers
                         newModel.IsDeleted = false;
                         newModel.Year = DateTime.Now.Year;
                         newModel.AddressableContacts = 0;   //// Modified by Mitesh Vaishnav for PL Ticket #534
-                        //newModel.BusinessUnitId = modelBusinessUnitId;
                         newModel.IsBenchmarked = IsBenchmarked;
                         //// Added by Mitesh Vaishnav for PL ticket #659 
                         var oldModel = objMrpEntities.Models.Where(model => model.ModelId == OldModelID && model.IsDeleted.Equals(false)).FirstOrDefault();
@@ -2981,9 +2854,7 @@ namespace RevenuePlanner.Controllers
             var objModel = objDbMrpEntities.Models.FirstOrDefault(model => model.ModelId == id && model.IsDeleted == false);
             ViewBag.ModelStatus = objModel.Status;
             ViewBag.ModelTitle = objModel.Title;
-            //var businessunit = objDbMrpEntities.Models.Where(model => model.ModelId == id && model.IsDeleted == false).OrderByDescending(model => model.CreatedDate).Select(model => model.BusinessUnitId).FirstOrDefault();
             var IsBenchmarked = (id == 0) ? true : objDbMrpEntities.Models.Where(model => model.ModelId == id && model.IsDeleted == false).OrderByDescending(model => model.CreatedDate).Select(model => model.IsBenchmarked).FirstOrDefault();
-            //ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
             ViewBag.LatestModelID = id;
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
@@ -3104,8 +2975,6 @@ namespace RevenuePlanner.Controllers
             var objModel = objDbMrpEntities.Models.SingleOrDefault(model => model.ModelId == id && model.IsDeleted == false);
             ViewBag.ModelStatus = objModel.Status;
             ViewBag.ModelTitle = objModel.Title;
-            //var businessunit = objDbMrpEntities.Models.Where(model => model.ModelId == id && model.IsDeleted == false).OrderByDescending(model => model.CreatedDate).Select(model => model.BusinessUnitId).FirstOrDefault();
-            //ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
 
             BaselineModel objBaselineModel = new BaselineModel();

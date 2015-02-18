@@ -1409,8 +1409,6 @@ namespace RevenuePlanner.Controllers
                                                      TargetDataType = _map.TargetDataType
                                                  }).ToList();
 
-                listGameplanDataTypeStageZero.ForEach(stage => stage.DisplayFieldName = stage.DisplayFieldName.Replace("Audience", Common.CustomLabelFor(Enums.CustomLabelCode.Audience)));
-
                 #region "Declare Enum Variables"
                 //// Start - Added by :- Sohel Pathan on 03/12/2014 for PL #993
                 string Campaign_EntityType = Enums.EntityType.Campaign.ToString();

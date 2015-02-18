@@ -20,10 +20,7 @@ namespace RevenuePlanner.Models
         //    public bool IsDirector;
         //End Maninder Singh Wadhva : 11/27/2013 - Director.
 
-        //Start Maninder Singh Wadhva : 11/25/2013 - List of geographies and user.
-        public List<Geography> objGeography { get; set; }
         public List<BDSService.User> objIndividuals { get; set; }
-        //End Maninder Singh Wadhva : 11/25/2013 - List of geographies and user.
 
         //  public List<SelectListItem> plans { get; set; }
 
@@ -36,8 +33,6 @@ namespace RevenuePlanner.Models
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:g}")]
         public DateTime LastUpdatedDate { get; set; }
-        public List<SelectListItem> BusinessUnitIds { get; set; }
-
         public List<CustomFieldsForFilter> lstCustomFields { get; set; }
         public List<CustomFieldsForFilter> lstCustomFieldOptions { get; set; }
     }
@@ -80,15 +75,9 @@ namespace RevenuePlanner.Models
 
         public int TacticTypeId { get; set; }
 
-        public int? VerticalId { get; set; }
-        public int tacticVerticalId { get; set; }
-
         public string ColorCode { get; set; }
 
         public string Description { get; set; }
-
-        public int? AudienceId { get; set; }
-        public int tacticAudienceId { get; set; }
 
         public int PlanCampaignId { get; set; }
 
@@ -97,8 +86,6 @@ namespace RevenuePlanner.Models
         public string Owner { get; set; }
 
         public Guid OwnerId { get; set; }
-
-        public Guid BusinessUnitId { get; set; }
 
         public DateTime StartDate { get; set; }
 
@@ -111,10 +98,6 @@ namespace RevenuePlanner.Models
         public double? MQLs { get; set; }
 
         public double? MQLsActual { get; set; }
-
-        public string VerticalTitle { get; set; }
-
-        public string AudiencTitle { get; set; }
 
         public double? CWs { get; set; }
 
@@ -147,8 +130,6 @@ namespace RevenuePlanner.Models
         public double? ProjectedStageValue { get; set; }
 
         public double? ProjectedStageValueActual { get; set; }
-
-        public string GeographyTitle { get; set; }
 
         public int ImprovementPlanTacticId { get; set; }
         public int ImprovementPlanProgramId { get; set; }

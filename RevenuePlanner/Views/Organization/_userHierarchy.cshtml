@@ -7,7 +7,6 @@
         var hdnEmailId = "hdnEmail" + userId;
         var hdnPhoneId = "hdnPhone" + userId;
         var hdnJobTitleId = "hdnJobTitle" + userId;
-        var hdnGeographyId = "hdnGeography" + userId;
         var stringClass = string.Empty;
         if (Model.subUsers.Count == 0)
         {
@@ -34,7 +33,6 @@
         <input type="hidden" id="@hdnEmailId" value="@Model.Email" />
         <input type="hidden" id="@hdnPhoneId" value="@Model.Phone" />
         <input type="hidden" id="@hdnJobTitleId" value="@Model.JobTitle" />
-        <input type="hidden" id="@hdnGeographyId" value="@Model.Geography" />
         @{
             if (Model.subUsers.Count > 0)
             {

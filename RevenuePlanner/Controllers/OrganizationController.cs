@@ -561,15 +561,13 @@ namespace RevenuePlanner.Controllers
             string RoleTitle = objUserHierarchy.RoleTitle;
             string ColorCode = objUserHierarchy.ColorCode;
             string JobTitle = objUserHierarchy.JobTitle;
-            var objGeography = db.Geographies.FirstOrDefault(g => g.GeographyId == objUserHierarchy.GeographyId);
-            string Geography = objGeography == null ? string.Empty : objGeography.Title;
             string Phone = objUserHierarchy.Phone;
             Guid? ManagerId = objUserHierarchy.ManagerId;
             var subUsers = GetSubUsers(lstUserHierarchy, userid)
               .Select(r => CreateUserHierarchy(lstUserHierarchy, r))
               .ToList();
             // Modified by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
-            return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers };
+            return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers };
         }
         #endregion
 

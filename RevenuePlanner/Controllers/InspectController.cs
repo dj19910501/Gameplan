@@ -449,8 +449,6 @@ namespace RevenuePlanner.Controllers
             ViewBag.CampaignDetail = _inspectmodel;
             double? objCampaign = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == id).FirstOrDefault().CampaignBudget;
             ViewBag.CampaignBudget = objCampaign != null ? objCampaign : 0;
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(_inspectmodel.BusinessUnitId);
-
 
             #endregion
 
@@ -530,7 +528,6 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> PlanTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.PlanCampaignId == id && tactic.IsDeleted == false).ToList();
             _inspectmodel.MQLs = Common.GetMQLValueTacticList(PlanTacticIds).Sum(t => t.MQL);
             ViewBag.CampaignDetail = _inspectmodel;
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(_inspectmodel.BusinessUnitId);
 
             bool isValidOwner = false;
             if (_inspectmodel.OwnerId == Sessions.User.UserId)
@@ -1240,7 +1237,6 @@ namespace RevenuePlanner.Controllers
 
 
             ViewBag.ProgramBudget = objPlanProgramBudget != null ? objPlanProgramBudget : 0;
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(_inspectmodel.BusinessUnitId);
 
             return PartialView("_SetupProgram", _inspectmodel);
         }
@@ -1603,7 +1599,6 @@ namespace RevenuePlanner.Controllers
 
             #region "Load ViewBags"
             ViewBag.ProgramDetail = im;
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(im.BusinessUnitId);
 
             bool isValidOwner = false;
             if (im.OwnerId == Sessions.User.UserId)
@@ -2036,7 +2031,6 @@ namespace RevenuePlanner.Controllers
             }
 
             ViewBag.TacticDetail = _inspetmodel;
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(_inspetmodel.BusinessUnitId);
             ViewBag.IsTackticAddEdit = false;
 
             /* Added by Mitesh Vaishnav for PL ticket #1143
@@ -2686,18 +2680,6 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcpt.Status);
 
-            //// Check whether current TacticId related TacticType exist or not.
-            //if (!lstTactic.Any(tacType => tacType.TacticTypeId == pcpt.TacticTypeId))
-            //{
-            //    //// Get list of Tactic Types based on Session PlanID.
-            //    var tacticTypeSpecial = from t in db.TacticTypes
-            //                            join p in db.Plans on t.ModelId equals p.ModelId
-            //                            where p.PlanId == Sessions.PlanId && t.TacticTypeId == pcpt.TacticTypeId
-            //                            orderby t.Title
-            //                            select t;
-            //    lstTactic = lstTactic.Concat<TacticType>(tacticTypeSpecial);
-            //    lstTactic = lstTactic.OrderBy(a => a.Title);
-            //}
 
             foreach (var item in lstTactic)
                 item.Title = HttpUtility.HtmlDecode(item.Title);
@@ -4396,8 +4378,6 @@ namespace RevenuePlanner.Controllers
                 var objPlan = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTactic => _imprvTactic.ImprovementPlanTacticId.Equals(id) && _imprvTactic.IsDeleted.Equals(false)).Select(_imprvTactic => _imprvTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan).FirstOrDefault();
                 int planId = objPlan.PlanId;
 
-                //// Get BusinessUnit Title from BusinessUnits table by BusinessUnitId.
-                ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(im.BusinessUnitId);
                 ViewBag.ApprovedStatus = true;
                 ViewBag.NoOfTacticBoosts = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.IsDeleted == false && _tactic.StartDate >= im.StartDate && _tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList().Count();
 
@@ -4526,8 +4506,6 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
 
-            //// Get BusinessUnitTitle from BusinessUnits table by BusinessUnitId.
-            ViewBag.BudinessUnitTitle = GetBusinessUnitTitleByID(im.BusinessUnitId);
             bool isValidOwner = false;
             if (im.OwnerId == Sessions.User.UserId)
             {
@@ -6422,7 +6400,6 @@ namespace RevenuePlanner.Controllers
                                   PlanCampaignId = pcpt.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
                                   PlanProgramId = pcpt.ImprovementPlanProgramId,
                                   OwnerId = pcpt.CreatedBy,
-                                  //BusinessUnitId = pcpt.BusinessUnitId,
                                   Cost = pcpt.Cost,
                                   StartDate = pcpt.EffectiveDate,
                                   IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
@@ -7554,26 +7531,6 @@ namespace RevenuePlanner.Controllers
             }
 
             return returnValue;
-        }
-
-        /// <summary>
-        /// Return Business Unit Title
-        /// Added by Viral Kadiya on 12/10/2014 for PL ticket #1011
-        /// </summary>
-        /// <param name="businessUnitId"></param>
-        /// <returns></returns>
-        public string GetBusinessUnitTitleByID(Guid businessUnitId)
-        {
-            string strBusinessUnitTitle = string.Empty;
-
-            //// Get BusinessUnit Title from BusinessUnits table by GUID.
-            var businessunittitle = (from busUnit in db.BusinessUnits
-                                     where busUnit.BusinessUnitId == businessUnitId && busUnit.IsDeleted == false
-                                     select busUnit.Title).FirstOrDefault();
-            if (businessunittitle != null)
-                strBusinessUnitTitle = businessunittitle.ToString();
-
-            return strBusinessUnitTitle;
         }
         #endregion
     }

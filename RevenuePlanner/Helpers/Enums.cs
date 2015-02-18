@@ -784,16 +784,6 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
-        /// Enum for CustomLabel Code
-        /// Added By Dharmraj, 26-8-2014
-        /// #738 Custom label for audience tab
-        /// </summary>
-        public enum CustomLabelCode
-        {
-            Audience
-        }
-
-        /// <summary>
         /// Enum for custom field type
         /// Added By : Mitesh Vaishnav for PL ticket #718
         /// </summary>
@@ -963,9 +953,6 @@ namespace RevenuePlanner.Helpers
         public const string ActivityProgram = "program";
         public const string ActivityTactic = "tactic";
         public const string ActivityLineItem = "lineitem";
-        public const string ActivityAudience = "audience";
-        public const string ActivityGeography = "geography";
-        public const string ActivityVertical = "vertical";
         public const string ActivityCustomField = "customfield";
     }
 
@@ -979,19 +966,11 @@ namespace RevenuePlanner.Helpers
     public static class ReportTabType
     {
         public const string Plan = "Plan";
-        public const string Audience = "Audience";
-        public const string BusinessUnit = "BusinessUnit";
-        public const string Geography = "Geography";
-        public const string Vertical = "Vertical";
     }
 
     public static class ReportTabTypeText
     {
         public const string Plan = "Plan";
-        public const string Audience = "Audience";
-        public const string BusinessUnit = "Business Unit";
-        public const string Geography = "Geography";
-        public const string Vertical = "Vertical";
     }
 
 

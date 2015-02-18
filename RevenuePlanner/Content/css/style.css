@@ -9092,7 +9092,7 @@ div.sub {
     float: left;
 }
 
-.businessUnit, #divViewBy {
+#divViewBy {
     float: left;
 }
 
@@ -9103,7 +9103,7 @@ div.sub {
     padding-left: 25px;
 }
 
-    .businessUnit label, #divViewBy label {
+    #divViewBy label {
         display: inline-block;
         line-height: 28px;
         padding-right: 7px;
@@ -9144,7 +9144,7 @@ div.sub {
     cursor: pointer;
 }
 
-.content-row .verticalIdSelectBox {
+.content-row .simpleSelectBox {
     position: relative !important;
     top: 3px !important;
 }
@@ -9246,7 +9246,7 @@ div.sub {
         padding-right: 0px !important;
     }
 
-    .tblFieldMapping .verticalIdSelectBox .sbHolder {
+    .tblFieldMapping .simpleSelectBox .sbHolder {
         top: 9px !important;
     }
 

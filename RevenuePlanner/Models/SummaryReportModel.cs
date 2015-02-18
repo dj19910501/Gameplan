@@ -30,8 +30,6 @@ namespace RevenuePlanner.Models
 
         /* To resolve Bug 312: Report plan selector needs to be moved */
         
-        //For BusinessUnit Selector / Plans selector
-        public List<SelectListItem> lstBusinessUnit { get; set; }
         public List<SelectListItem> lstAllPlans { get; set; }
 
         /* To resolve Bug 312: Report plan selector needs to be moved */
@@ -46,10 +44,7 @@ namespace RevenuePlanner.Models
 
     public class FilterDropdownValues
     {
-        //For BusinessUnit Selector / Plans selector
-        public List<SelectListItem> lstBusinessUnit { get; set; }
         public List<SelectListItem> lstAllPlans { get; set; }
-
     }
 
     /// <summary>

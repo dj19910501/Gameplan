@@ -67,7 +67,7 @@
                                     @Html.DisplayFor(x => x[i].DisplayFieldName)
                                 </td>
                                 <td style="text-align: left;">
-                                  <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldList"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide", id =i.ToString() })</span>  @* Modified by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once. *@
+                                  <span class="simpleSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldList"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide", id =i.ToString() })</span>  @* Modified by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once. *@
                                 </td>
                             </tr>
                         }
@@ -89,7 +89,7 @@
     });
     $(document).ready(function () {
 
-        $(".verticalIdSelectBox select").selectbox();
+        $(".simpleSelectBox select").selectbox();
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
         if ($('#spanMessageSuccess').html() == '') {
             $("#successMessage").slideUp(100);

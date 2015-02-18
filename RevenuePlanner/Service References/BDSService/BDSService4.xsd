@@ -4,13 +4,11 @@
   <xs:complexType name="User">
     <xs:sequence>
       <xs:element minOccurs="0" name="Answer" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="BusinessUnitId" type="ser:guid" />
       <xs:element minOccurs="0" name="Client" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ClientId" type="ser:guid" />
       <xs:element minOccurs="0" name="DisplayName" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="GeographyId" type="ser:guid" />
       <xs:element minOccurs="0" name="IsClientAdmin" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDirector" type="xs:boolean" />
@@ -207,7 +205,6 @@
       <xs:element minOccurs="0" name="ColorCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="GeographyId" type="ser:guid" />
       <xs:element minOccurs="0" name="JobTitle" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ManagerId" nillable="true" type="ser:guid" />

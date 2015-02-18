@@ -1586,10 +1586,6 @@ namespace Integration.Eloqua
         /// <returns>Returns target key value pair.</returns>
         private IDictionary<string, object> GetTargetKeyValue<T>(object obj, Dictionary<string, string> mappingDataType)
         {
-            //string verticalId = "VerticalId";
-            //string audienceId = "AudienceId";
-            //string businessUnitId = "BusinessUnitId";
-            //string geographyid = "GeographyId";
             string createdBy = "CreatedBy";
             string statDate = "StartDate";
             string endDate = "EndDate";

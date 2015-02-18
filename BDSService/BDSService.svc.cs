@@ -108,10 +108,10 @@ namespace BDSService
             return obj.DeleteUser(userId,applicationId);
         }
 
-        public int CreateUserWithPermission(BDSEntities.User user, Guid applicationId, Guid createdBy, string VerticalIds, string GeographyIds, string BusinessUnitIds)
+        public int CreateUserWithPermission(BDSEntities.User user, Guid applicationId, Guid createdBy)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.CreateUserWithPermission(user, applicationId, createdBy,VerticalIds,GeographyIds,BusinessUnitIds);
+            return obj.CreateUserWithPermission(user, applicationId, createdBy);
         }
 
         public int CreateUser(BDSEntities.User user, Guid applicationId, Guid createdBy)

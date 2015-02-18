@@ -9,8 +9,6 @@ namespace RevenuePlanner.Models
         {
             public Guid UserId { get; set; }
             public Guid ClientId { get; set; }
-            public Guid BusinessUnitId { get; set; }
-            public Guid GeographyId { get; set; }
             public string Client { get; set; }
             public string DisplayName { get; set; }
             public string FirstName { get; set; }
@@ -44,8 +42,6 @@ namespace RevenuePlanner.Models
             public string RoleTitle { get; set; }
             public string ColorCode { get; set; }
             public string JobTitle { get; set; }
-            public Guid GeographyId { get; set; }
-            public string Geography { get; set; }
             public string Phone { get; set; }
             public Guid? ManagerId { get; set; }
             public IList<UserHierarchyModel> subUsers { get; set; }

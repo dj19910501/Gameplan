@@ -42,7 +42,6 @@
             @Html.TextBox("txtTacticTypeTitle", TacticTypeTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTypeTitle", @readonly = "true", @title=TacticTypeTitle })
             <p>Tactic Planned Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate", id = "txtCost", @readonly = "true", })
-            @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
             <p>Start Date</p>
             @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", @readonly = "true", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat) })
             <p>End Date</p>

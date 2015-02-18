@@ -29,7 +29,7 @@
          width: auto;
          float: left;
      }
-    #divTab .verticalIdSelectBox .sbHolder {
+    #divTab .simpleSelectBox .sbHolder {
             background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
             box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
             margin-bottom: 0;
@@ -81,7 +81,6 @@
     @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
     @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
     @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
-    @Html.HiddenFor(model => model.BusinessUnitId, new { id = "hdnBusinessUnitId" })
     @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
      
@@ -96,7 +95,7 @@
         </div>
         <div class="span3" id="inspect-modal-left-column2">
             <p>Tactic Type <span class="required-asterisk">*</span></p>
-            <span class="verticalIdSelectBox">
+            <span class="simpleSelectBox">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
             <p class="margin-top-10">Tactic Planned Cost</p>
@@ -224,7 +223,7 @@
           });
           ImageTipsy('#diffrentStageIcon'); // Added by Vira Kadiya on 11/18/2014 to resolve PL ticket #964.
           $(this).scrollTop(0);
-          $(".verticalIdSelectBox select").selectbox();
+          $(".simpleSelectBox select").selectbox();
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
           $('#divTacticSaveCancel').css('display', 'block');
@@ -849,43 +848,6 @@
 
     /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
     var tacticId = $('#hdnPlanTacticId').val();
-    if (tacticId != '' && parseInt(tacticId) > 0) {
-        $('#VerticalId').change(function () {
-            fillOwnerList();
-        });
-        $('#GeographyId').change(function () {
-            fillOwnerList();
-        });
-    }
-
-    function fillOwnerList() {
-        var uId = $(window).attr('name');
-        $.ajax({
-            type: 'GET',
-            cache: false,
-            url: '@Url.Content("~/Inspect/fillOwner/")',
-            data: { UserId: uId },
-            success: function (data) {
-                if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                }
-                else {
-                    if (data != null) {
-                        if (data.isSuccess) {
-                            var preservedOwner = $("#ddlOwner").val();
-                            $("#ddlOwner").empty();
-                            $("#ddlOwner").append("<option value='0'>Please Select</option>");
-                            $.each(data.lstOwner, function (index, optionData) {
-                                $("#ddlOwner").append("<option value='" + optionData.UserId + "'>" + optionData.DisplayName + "</option>");
-                            });
-                            $('#ddlOwner').val(preservedOwner);
-                            $('#ddlOwner').multiselect("refresh");
-                        }
-                    }
-                }
-            }
-        });
-    }
 
     $('.sbHolder').click(function () {
         $('#multipleselect_ddlOwner').css('display', 'none');

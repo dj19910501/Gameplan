@@ -60,7 +60,6 @@
                                 var hdnEmailId = "hdnEmail" + userId;
                                 var hdnPhoneId = "hdnPhone" + userId;
                                 var hdnJobTitleId = "hdnJobTitle" + userId;
-                                var hdnGeographyId = "hdnGeography" + userId;
                                 var stringClass = string.Empty;
                                 if (UserHierarchy[i].subUsers.Count == 0)
                                 {
@@ -87,8 +86,6 @@
                                 <input type="hidden" id="@hdnEmailId" value="@UserHierarchy[i].Email" />
                                 <input type="hidden" id="@hdnPhoneId" value="@UserHierarchy[i].Phone" />
                                 <input type="hidden" id="@hdnJobTitleId" value="@UserHierarchy[i].JobTitle" />
-                                <input type="hidden" id="@hdnGeographyId" value="@UserHierarchy[i].Geography" />
-
                                 @{
                                 if (UserHierarchy[i].subUsers.Count > 0)
                                 {
@@ -146,10 +143,8 @@
         });
 
     function showContactDetail(userId) {
-
         $("#lblUserName").html($("#spnUserName" + userId).html());
-        var geography = $("#hdnGeography" + userId).val();
-        $("#lblJobDetail").html($("#hdnJobTitle" + userId).val() + (geography == '' ? '' : (' - ' + geography)));
+        $("#lblJobDetail").html($("#hdnJobTitle" + userId).val());
         $("#lblEmail").attr("href", "mailto:" + $("#hdnEmail" + userId).val());
         $("#lblEmail").html($("#hdnEmail" + userId).val());
         $("#lblPhone").html("<strong>Phone: </strong>" + $("#hdnPhone" + userId).val());

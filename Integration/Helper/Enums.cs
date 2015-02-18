@@ -103,14 +103,10 @@ namespace Integration.Helper
         /// </summary>
         public enum CustomNamingTables
         {
-            Audience,
-            BusinessUnit,
             CustomField,
-            Geography,
             Plan_Campaign,
             Plan_Campaign_Program,
             Plan_Campaign_Program_Tactic,
-            Vertical,
             TacticType
         }
 

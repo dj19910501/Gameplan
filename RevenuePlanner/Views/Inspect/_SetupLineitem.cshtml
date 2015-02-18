@@ -36,7 +36,7 @@
              <p>@Html.Raw("Parent Tactic")</p>
              @Html.TextBox("txtTacticTitle",tacticTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTitle", @readonly = "true" })
             <p id="lblType">Type <span class="required-asterisk">*</span></p>
-            <span class="verticalIdSelectBox" style="margin-left: -2px;" id="ddlTypeArea">
+            <span class="simpleSelectBox" style="margin-left: -2px;" id="ddlTypeArea">
                 @Html.TextBox("txtLineItemTypeId", lineItemType, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTitle", @readonly = "true" })
             </span>
              
@@ -59,7 +59,7 @@
       function () {
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
-          $(".verticalIdSelectBox select").selectbox();
+          $(".simpleSelectBox select").selectbox();
           
           $('form').find(".sbSelector").each(function () {
               $(this).unbind("click");

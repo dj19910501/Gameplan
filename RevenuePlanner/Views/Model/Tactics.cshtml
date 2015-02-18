@@ -13,7 +13,6 @@
                                                   bool IsModelIntegrated = ViewBag.IsModelIntegrated;
 
     // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-    string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
     
     @Html.Hidden("IsModelIntegrated", IsModelIntegrated);
     string TargetStageNotAssociatedWithModelMsg = Convert.ToString(ViewBag.TargetStageNotAssociatedWithModelMsg);   // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
@@ -206,7 +205,7 @@
                         type: "GET",
                         cache: false,
                         url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-                        data: { Title: titleName, BusinessUnitId: '@BusinessUnitId' },
+                        data: { Title: titleName },
                         dataType: "json",
                         success: function (data) {
                     if (data == 'exist') {

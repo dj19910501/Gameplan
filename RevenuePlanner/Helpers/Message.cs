@@ -1717,18 +1717,6 @@ namespace RevenuePlanner.Helpers
                 _EmailAvailable = value;
             }
         }
-        private string _BusinessunitRequired;
-        public string BusinessunitRequired
-        {
-            get
-            {
-                return _BusinessunitRequired;
-            }
-            set
-            {
-                _BusinessunitRequired = value;
-            }
-        }
         private string _RegionRequired;
         public string RegionRequired
         {
@@ -1934,21 +1922,6 @@ namespace RevenuePlanner.Helpers
             }
         }
         // End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65
-
-        // Start - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
-        private string _CannotCreateQuickTacticMessage;
-        public string CannotCreateQuickTacticMessage
-        {
-            get
-            {
-                return _CannotCreateQuickTacticMessage;
-            }
-            set
-            {
-                _CannotCreateQuickTacticMessage = value;
-            }
-        }
-        // End - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
         // Start -Added By Mitesh Vaishnav on 21/07/2014 for functional review point 65
         private string _ValidateStartDate;
         public string ValidateStartDate
@@ -2862,9 +2835,6 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                         case "EmailAvailable":
                                             _EmailAvailable = strMsgValue;
                                             break;
-                                        case "BusinessunitRequired":
-                                            _BusinessunitRequired = strMsgValue;
-                                            break;
                                         case "RegionRequired":
                                             _RegionRequired = strMsgValue;
                                             break;
@@ -2914,11 +2884,6 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _ConfirmationForDeleteImprovementTactic = strMsgValue;
                                             break;
                                         // End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65
-                                        // Start - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
-                                        case "CannotCreateQuickTacticMessage":
-                                            _CannotCreateQuickTacticMessage = strMsgValue;
-                                            break;
-                                        // End - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
                                         // Start -Added By Mitesh Vaishnav on 21/07/2014 for functional review point 65
                                         case "ValidateStartDate":
                                             _ValidateStartDate = strMsgValue;

@@ -117,8 +117,7 @@
     }
     $(document).ready(function () {
           @* changed by Nirav for Custom Dropdown - 388*@
-        var id = $('#ddlBusinessUnit').val();
-        $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=' + id);
+        $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")');
         onClickActivity();
 
         //// Start - Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
@@ -228,24 +227,6 @@
 <div class="light-blue-chart cf">
     @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
-@* changed by Nirav for Custom Dropdown - 388*@
-
-@*@{
-    if (showBid == true)
-    {
-        //Modified By : Kalpesh Sharma #859 Different Business Unit Drop Down List on Plan Pages
-    <span class="selectBox" id="dropdown-business-unit" style="width: 158px;">
-        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
-        {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", @RevenuePlanner.Helpers.Sessions.BusinessUnitId), new { @class = "hide" })
-        }
-        else
-        {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"), new { @class = "hide" })
-        }
-    </span>
-    }
-}*@
 <script>
     var pid = $('#PlanId').val();
     var CurrentPlanId = pid;
@@ -324,11 +305,6 @@
 <script type="text/javascript">
     // Added by Nirav for Custom Dropdown - 388
     $(".selectBox select").selectbox();
-    $('#ddlBusinessUnit').change(function () {
-        var id = $('#ddlBusinessUnit').val();
-        var pid = $('#PlanId').val();
-        $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=' + id);
-    });
     /*end Nirav*/
     //// Global variable to hold quarter or year.
     var isQuater = Currenttime;// false;

@@ -14,11 +14,6 @@ namespace RevenuePlanner.Models
     
     public partial class CustomField_Entity
     {
-        public CustomField_Entity()
-        {
-            this.CustomField_Entity_StageWeight = new HashSet<CustomField_Entity_StageWeight>();
-        }
-    
         public int CustomFieldEntityId { get; set; }
         public int EntityId { get; set; }
         public int CustomFieldId { get; set; }
@@ -29,6 +24,5 @@ namespace RevenuePlanner.Models
         public Nullable<byte> CostWeightage { get; set; }
     
         public virtual CustomField CustomField { get; set; }
-        public virtual ICollection<CustomField_Entity_StageWeight> CustomField_Entity_StageWeight { get; set; }
     }
 }

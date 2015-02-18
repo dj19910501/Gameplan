@@ -67,7 +67,7 @@ namespace BDSService
         int CreateUser(BDSEntities.User user, Guid applicationId, Guid createdBy);
 
         [OperationContract]
-        int CreateUserWithPermission(BDSEntities.User user, Guid applicationId, Guid createdBy, string VerticalIds, string GeographyIds, string BusinessUnitIds);
+        int CreateUserWithPermission(BDSEntities.User user, Guid applicationId, Guid createdBy);
 
         [OperationContract]
         int UpdateUser(BDSEntities.User user, Guid applicationId, Guid modifiedBy);

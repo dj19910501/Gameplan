@@ -46,13 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Audience.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\BestInClass.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\BusinessUnit.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CampaignNameConvention.cs">
@@ -82,9 +76,6 @@
     <Compile Include="Models\CustomField_Entity.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CustomField_Entity_StageWeight.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\CustomLabel.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -104,9 +95,6 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\GameplanDataTypePull.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Geography.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ImprovementTacticType.cs">
@@ -266,9 +254,6 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User_Notification.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Vertical.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

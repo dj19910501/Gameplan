@@ -444,7 +444,6 @@ namespace RevenuePlanner.Controllers
             if (!String.IsNullOrWhiteSpace(clientId))
             {
                 Guid userClientId = Guid.Parse(clientId);
-                ViewData["BusinessUnits"] = db.BusinessUnits.Where(busUnit => busUnit.ClientId == userClientId && busUnit.IsDeleted == false).OrderBy(busUnit => busUnit.Title).ToList();
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 if (IsUserAdminAuthorized)
                 {
@@ -452,10 +451,6 @@ namespace RevenuePlanner.Controllers
                     ViewData["ManagerList"] = GetManagersList(Guid.Empty, userClientId);
                 }
                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-            }
-            else
-            {
-                ViewData["BusinessUnits"] = null;
             }
 
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
@@ -549,19 +544,9 @@ namespace RevenuePlanner.Controllers
                     }
 
                     objUser.ManagerId = form.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-                    //PL Ticket#892 - Set Custom Restriction Permissions to View/Edit
-                    List<Guid> lstBU = db.BusinessUnits.Where(busUnit => busUnit.ClientId == Sessions.User.ClientId && busUnit.IsDeleted == false).Select(busUnit => busUnit.BusinessUnitId).ToList();
-                    string strBUIds = string.Join(",", lstBU);
-
-                    List<int> lstVertical = db.Verticals.Where(vert => vert.ClientId == Sessions.User.ClientId && vert.IsDeleted == false).Select(vert => vert.VerticalId).ToList();
-                    string strVerticalIds = string.Join(",", lstVertical);
-
-                    List<Guid> lstGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId && geo.IsDeleted == false).Select(geo => geo.GeographyId).ToList();
-                    string strGeographyIds = string.Join(",", lstGeography);
 
                     //// Create User with default Permissions.
-                    int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.UserId,strVerticalIds,strGeographyIds,strBUIds);
-                    //PL Ticket#892 - Set Custom Restriction Permissions to View/Edit
+                    int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.UserId);
                     if (retVal == 1)
                     {
                         UserCreatedMail(objUser, password);
@@ -669,10 +654,6 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         private void LoadEditModeComponents(Guid clientId, string src)
         {
-            if (clientId != null)
-            {
-                ViewData["BusinessUnits"] = db.BusinessUnits.Where(busUnit => busUnit.ClientId == clientId && busUnit.IsDeleted == false).OrderBy(busUnit => busUnit.Title).ToList();
-            }
             if (!string.IsNullOrWhiteSpace(src))
             {
                 ViewBag.SourceValue = src;
@@ -1231,34 +1212,6 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Get list of business units for selected client. 
-        /// </summary>
-        /// <param name="id">clientId</param>
-        /// <returns>Return BusinessUnit list in Json format</returns>
-        [AcceptVerbs(HttpVerbs.Get)]
-        public JsonResult GetBusinessUnit(string id = null)
-        {
-            Guid clientId = new Guid();
-            if (id != null)
-            {
-                Guid.TryParse(id, out clientId);
-            }
-
-            //// Get businessUnitList by ClientId.
-            var businessUnitList = (from bu in db.BusinessUnits
-                                    where bu.ClientId == clientId && bu.IsDeleted == false
-                                    select new { bu.BusinessUnitId, bu.Title }).ToList();
-
-            var businessUnitData = businessUnitList.Select(q => new SelectListItem()
-            {
-                Text = q.Title,
-                Value = Convert.ToString(q.BusinessUnitId),
-            }).OrderBy(t => t.Text);
-
-            return Json(businessUnitData, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
         /// Get list of managers for selected client. 
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
@@ -1274,7 +1227,6 @@ namespace RevenuePlanner.Controllers
             {
                 Guid.TryParse(id, out clientId);
             }
-
             List<UserModel> managerList = new List<UserModel>();
             if (UserId != null)
             {

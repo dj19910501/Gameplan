@@ -34,7 +34,7 @@
                                             @Html.DisplayFor(x => x[i].DisplayFieldName)
                                         </td>
                                         <td class="width60">
-                                            <span class="verticalIdSelectBox" style="  margin-left: -2px;">
+                                            <span class="simpleSelectBox" style="  margin-left: -2px;">
                                             @*Modified by Arpita Soni on 01/15/2015 for Ticket #1105*@
                                                 @if(ViewData["ExternalFieldListPulling"]!=null)
                                                 {
@@ -90,7 +90,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        $(".verticalIdSelectBox select").selectbox();
+        $(".simpleSelectBox select").selectbox();
         $('#frmRevenueDataMapping .ddlStyle').each(function () {
             if ($(this).next('.sbHolder').hasClass("error")) {
                 $(this).next('.sbHolder').removeClass("error");

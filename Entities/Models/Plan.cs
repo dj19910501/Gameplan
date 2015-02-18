@@ -17,9 +17,9 @@ namespace RevenuePlanner.Models
         public Plan()
         {
             this.Plan_Budget = new HashSet<Plan_Budget>();
-            this.Plan_Campaign = new HashSet<Plan_Campaign>();
             this.Plan_Team = new HashSet<Plan_Team>();
             this.Plan_Improvement_Campaign = new HashSet<Plan_Improvement_Campaign>();
+            this.Plan_Campaign = new HashSet<Plan_Campaign>();
         }
     
         public int PlanId { get; set; }
@@ -43,8 +43,8 @@ namespace RevenuePlanner.Models
     
         public virtual Model Model { get; set; }
         public virtual ICollection<Plan_Budget> Plan_Budget { get; set; }
-        public virtual ICollection<Plan_Campaign> Plan_Campaign { get; set; }
         public virtual ICollection<Plan_Team> Plan_Team { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
+        public virtual ICollection<Plan_Campaign> Plan_Campaign { get; set; }
     }
 }

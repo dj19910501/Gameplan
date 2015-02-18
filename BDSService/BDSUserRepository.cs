@@ -572,7 +572,7 @@ namespace BDSService
 
         #region Add User
 
-        public int CreateUserWithPermission(BDSEntities.User user, Guid applicationId, Guid createdBy, string VerticalIds, string GeographyIds, string BusinessUnitIds)
+        public int CreateUserWithPermission(BDSEntities.User user, Guid applicationId, Guid createdBy)
         {
             int retVal = 0;
             try
@@ -652,71 +652,6 @@ namespace BDSService
                             }
                         }
                         // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-
-                        if (!string.IsNullOrEmpty(VerticalIds))
-                        {
-                            string[] arr = VerticalIds.Split(',');
-                            foreach (string CustomFieldId in arr)
-                            {
-                                if (!string.IsNullOrEmpty(CustomFieldId))
-                                {
-                                    CustomRestriction objCF = new CustomRestriction();
-                                    objCF.UserId = NewUserId;
-                                    objCF.CustomFieldId = CustomFieldId;
-                                    objCF.CustomField = "Verticals";
-                                    objCF.Permission = 2;
-                                    objCF.CreatedDate = System.DateTime.Now;
-                                    objCF.CreatedBy = createdBy;
-                                    objCF.ApplicationId = applicationId;
-                                    db.Entry(objCF).State = EntityState.Added;
-                                    db.CustomRestrictions.Add(objCF);
-                                    db.SaveChanges();
-                                }
-                            }
-                        }
-                        if (!string.IsNullOrEmpty(GeographyIds))
-                        {
-                            string[] arr = GeographyIds.Split(',');
-                            foreach (string CustomFieldId in arr)
-                            {
-                                if (!string.IsNullOrEmpty(CustomFieldId))
-                                {
-                                    CustomRestriction objCF = new CustomRestriction();
-                                    objCF.UserId = NewUserId;
-                                    objCF.CustomFieldId = CustomFieldId;
-                                    objCF.CustomField = "Geography";
-                                    objCF.Permission = 2;
-                                    objCF.CreatedDate = System.DateTime.Now;
-                                    objCF.CreatedBy = createdBy;
-                                    objCF.ApplicationId = applicationId;
-                                    db.Entry(objCF).State = EntityState.Added;
-                                    db.CustomRestrictions.Add(objCF);
-                                    db.SaveChanges();
-                                }
-                            }
-                        }
-                        if (!string.IsNullOrEmpty(BusinessUnitIds))
-                        {
-                            string[] arr = BusinessUnitIds.Split(',');
-                            foreach (string CustomFieldId in arr)
-                            {
-                                if (!string.IsNullOrEmpty(CustomFieldId))
-                                {
-                                    CustomRestriction objCF = new CustomRestriction();
-                                    objCF.UserId = NewUserId;
-                                    objCF.CustomFieldId = CustomFieldId;
-                                    objCF.CustomField = "BusinessUnit";
-                                    objCF.Permission = 2;
-                                    objCF.CreatedDate = System.DateTime.Now;
-                                    objCF.CreatedBy = createdBy;
-                                    objCF.ApplicationId = applicationId;
-                                    db.Entry(objCF).State = EntityState.Added;
-                                    db.CustomRestrictions.Add(objCF);
-                                    db.SaveChanges();
-                                }
-                            }
-                        }
-
                         if (res > 0)
                             retVal = 1;
                     }
@@ -2687,7 +2622,7 @@ namespace BDSService
 
         #region Get List of Users with Custom Restriction ViewOnly and ViewEdit Rights
         /// <summary>
-        /// Rerurns list of user who have viewOnly and viewEdit rights for Vertical, BU and Geography.
+        /// Rerurns list of user who have viewOnly and viewEdit rights custom fields.
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>14/11/2014</CreatedDate>

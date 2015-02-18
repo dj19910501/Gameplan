@@ -44,12 +44,6 @@ namespace RevenuePlanner.Models
         public List<CustomField_Entity> CustomFieldEntities { get; set; }
         public int Weightage { get; set; }
         public string CustomFieldType { get; set; }
-        //public int AudienceId { get; set; }
-        //public string AudienceTitle { get; set; }
-        //public Guid GeographyId { get; set; }
-        //public string GeographyTitle { get; set; }
-        //public int VerticalId { get; set; }
-        //public string VerticalTitle { get; set; }
     }
 
     public class BudgetModelReport

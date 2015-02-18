@@ -77,18 +77,6 @@ namespace RevenuePlanner.Models
         [MaxLength(50, ErrorMessage = "Job Title cannot contain more than 50 characters.")]
         public string JobTitle { get; set; }
 
-        [Display(Name = "Business Unit")]
-        public Guid BusinessUnitId { get; set; }
-
-        [Display(Name = "Business Unit")]
-        public string BusinessUnit { get; set; }
-
-        [Display(Name = "Region")]
-        public Guid GeographyId { get; set; }
-
-        [Display(Name = "Region")]
-        public string Geography { get; set; }
-
         public bool IsSystemAdmin { get; set; }
 
         public bool IsClientAdmin { get; set; }

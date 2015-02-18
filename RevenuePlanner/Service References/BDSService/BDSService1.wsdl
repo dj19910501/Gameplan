@@ -14,6 +14,12 @@
   <wsdl:message name="IBDSService_ValidateUser_OutputMessage">
     <wsdl:part name="parameters" element="tns:ValidateUserResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_ValidateUserByClient_InputMessage">
+    <wsdl:part name="parameters" element="tns:ValidateUserByClient" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_ValidateUserByClient_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ValidateUserByClientResponse" />
+  </wsdl:message>
   <wsdl:message name="IBDSService_GetTeamMemberDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:GetTeamMemberDetails" />
   </wsdl:message>
@@ -242,6 +248,12 @@
   <wsdl:message name="IBDSService_CreateRole_OutputMessage">
     <wsdl:part name="parameters" element="tns:CreateRoleResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_CreateRoleWithoutPermission_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateRoleWithoutPermission" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_CreateRoleWithoutPermission_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateRoleWithoutPermissionResponse" />
+  </wsdl:message>
   <wsdl:message name="IBDSService_CopyRole_InputMessage">
     <wsdl:part name="parameters" element="tns:CopyRole" />
   </wsdl:message>
@@ -290,6 +302,18 @@
   <wsdl:message name="IBDSService_resetToRoleDefault_OutputMessage">
     <wsdl:part name="parameters" element="tns:resetToRoleDefaultResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_CopyRoleWithoutPermission_InputMessage">
+    <wsdl:part name="parameters" element="tns:CopyRoleWithoutPermission" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_CopyRoleWithoutPermission_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CopyRoleWithoutPermissionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetRoleIdFromUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetRoleIdFromUser" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetRoleIdFromUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetRoleIdFromUserResponse" />
+  </wsdl:message>
   <wsdl:message name="IBDSService_GetUserHierarchy_InputMessage">
     <wsdl:part name="parameters" element="tns:GetUserHierarchy" />
   </wsdl:message>
@@ -336,6 +360,10 @@
     <wsdl:operation name="ValidateUser">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/ValidateUser" message="tns:IBDSService_ValidateUser_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/ValidateUserResponse" message="tns:IBDSService_ValidateUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateUserByClient">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/ValidateUserByClient" message="tns:IBDSService_ValidateUserByClient_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/ValidateUserByClientResponse" message="tns:IBDSService_ValidateUserByClient_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetTeamMemberDetails">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetTeamMemberDetails" message="tns:IBDSService_GetTeamMemberDetails_InputMessage" />
@@ -489,6 +517,10 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CreateRole" message="tns:IBDSService_CreateRole_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CreateRoleResponse" message="tns:IBDSService_CreateRole_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="CreateRoleWithoutPermission">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CreateRoleWithoutPermission" message="tns:IBDSService_CreateRoleWithoutPermission_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CreateRoleWithoutPermissionResponse" message="tns:IBDSService_CreateRoleWithoutPermission_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="CopyRole">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CopyRole" message="tns:IBDSService_CopyRole_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CopyRoleResponse" message="tns:IBDSService_CopyRole_OutputMessage" />
@@ -520,6 +552,14 @@
     <wsdl:operation name="resetToRoleDefault">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/resetToRoleDefault" message="tns:IBDSService_resetToRoleDefault_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/resetToRoleDefaultResponse" message="tns:IBDSService_resetToRoleDefault_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CopyRoleWithoutPermission">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CopyRoleWithoutPermission" message="tns:IBDSService_CopyRoleWithoutPermission_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CopyRoleWithoutPermissionResponse" message="tns:IBDSService_CopyRoleWithoutPermission_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRoleIdFromUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetRoleIdFromUser" message="tns:IBDSService_GetRoleIdFromUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetRoleIdFromUserResponse" message="tns:IBDSService_GetRoleIdFromUser_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetUserHierarchy">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetUserHierarchy" message="tns:IBDSService_GetUserHierarchy_InputMessage" />
@@ -554,6 +594,15 @@
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="ValidateUser">
       <soap:operation soapAction="http://tempuri.org/IBDSService/ValidateUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateUserByClient">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/ValidateUserByClient" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -903,6 +952,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="CreateRoleWithoutPermission">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/CreateRoleWithoutPermission" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="CopyRole">
       <soap:operation soapAction="http://tempuri.org/IBDSService/CopyRole" style="document" />
       <wsdl:input>
@@ -968,6 +1026,24 @@
     </wsdl:operation>
     <wsdl:operation name="resetToRoleDefault">
       <soap:operation soapAction="http://tempuri.org/IBDSService/resetToRoleDefault" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CopyRoleWithoutPermission">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/CopyRoleWithoutPermission" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRoleIdFromUser">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetRoleIdFromUser" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

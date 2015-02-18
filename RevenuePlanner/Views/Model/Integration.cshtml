@@ -14,7 +14,6 @@
     int LatestModelID = Convert.ToInt32(ViewBag.LatestModelID);
 
     // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-    string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
     string PublishedMsg = ViewBag.ModelPublishComfirmation;
     @Html.Hidden("PublishedMsg", PublishedMsg);
                                               bool PublisheStatus = ViewBag.Flag;
@@ -186,7 +185,7 @@
                     type: "GET",
                     cache: false,
                     url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-                        data: { Title: titleName, BusinessUnitId: '@BusinessUnitId' },
+                        data: { Title: titleName},
                         dataType: "json",
                         success: function (data) {
                             if (data == 'exist') {

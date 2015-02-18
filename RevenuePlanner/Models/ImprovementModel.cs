@@ -11,9 +11,6 @@ namespace RevenuePlanner.Models
         public int ImprovePlanId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int? VerticalId { get; set; }
-        public int? AudienceId { get; set; }
-        public Guid? GeographyId { get; set; }
         public DateTime EffectiveDate { get; set; }
         public double? Cost { get; set; }
     }
@@ -25,10 +22,6 @@ namespace RevenuePlanner.Models
         public int ImprovementTacticTypeId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int VerticalId { get; set; }
-        public int AudienceId { get; set; }
-        public Guid GeographyId { get; set; }
-        public Guid BusinessUnitId { get; set; }
         public DateTime EffectiveDate { get; set; }
         public double Cost { get; set; }
         public string Status { get; set; }

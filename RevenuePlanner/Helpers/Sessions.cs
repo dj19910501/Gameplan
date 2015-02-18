@@ -193,7 +193,6 @@ namespace RevenuePlanner.Helpers
             HttpContext.Current.Session["PlanId"] = 0;
             HttpContext.Current.Session["PublishedPlanId"] = 0;
             Sessions.ModelId = 0;
-            Sessions.BusinessUnitId = Guid.Empty;
             Sessions.ReportPlanId = 0;
         }
 
@@ -259,30 +258,6 @@ namespace RevenuePlanner.Helpers
             set
             {
                 HttpContext.Current.Session["RedirectToChangePassword"] = value;
-            }
-        }
-
-        /// <summary>
-        /// Added By: Juned Katariya.
-        /// Date: 24/02/2014
-        /// Store Business Unit Id.
-        /// </summary>
-        public static Guid BusinessUnitId
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Current.Session["BusinessUnitId"])))
-                {
-                    return Guid.Parse(Convert.ToString(HttpContext.Current.Session["BusinessUnitId"]));
-                }
-                else
-                {
-                    return Guid.Empty;
-                }
-            }
-            set
-            {
-                HttpContext.Current.Session["BusinessUnitId"] = value;
             }
         }
 
@@ -356,27 +331,6 @@ namespace RevenuePlanner.Helpers
             set
             {
                 HttpContext.Current.Session["ReportPlanIds"] = value;
-            }
-        }
-
-        /// <summary>
-        /// Added By: Mitesh Vaishnav for PL ticket #846
-        /// Date: 08/10/2014
-        /// Store multiple selected Business Unit's Ids 
-        /// </summary>
-        public static List<Guid> ReportBusinessUnitIds
-        {
-            get
-            {
-                if (HttpContext.Current.Session["ReportBusinessUnitIds"] != null)
-                {
-                    return (List<Guid>)HttpContext.Current.Session["ReportBusinessUnitIds"];
-                }
-                return null;
-            }
-            set
-            {
-                HttpContext.Current.Session["ReportBusinessUnitIds"] = value;
             }
         }
 

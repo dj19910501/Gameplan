@@ -3527,7 +3527,6 @@ namespace RevenuePlanner.Controllers
         /// <param name="planTacticId">planTacticId from query string parameter of shared link</param>
         /// <param name="isImprovement">isImprovement flag from query string parameter of shared link</param>
         /// <param name="lstUserCustomRestriction">list of custom restrictions for current logged in user</param>
-        /// <param name="lstAllowedGeographyIds">list of GeographyIds allowed to current logged in user</param>
         /// <param name="ViewOnlyPermission">ViewOnlyPermission flag in form of int</param>
         /// <param name="ViewEditPermission">ViewEditPermission flag in form of int</param>
         /// <returns>returns flag for custom restriction as per custom restriction</returns>

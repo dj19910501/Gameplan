@@ -106,21 +106,11 @@ namespace RevenuePlanner.Helpers
         public const string Plan = "Plan";
         public const string Trend = "Trend";
 
-        // Constants for Parent tab
-        public const string BusinessUnit = "Business Unit";
-        public const string Audience = "Audience";
-        public const string Geography = "Geography";
-        public const string Vertical = "Vertical";
-
         /*-------------#region ReportRevenue---------------*/
-        public static string RevenueBusinessUnit = "Business Unit";
-        public static string RevenueGeography = "Geography";
         public static string RevenuePlans = "Plans";
         public static string RevenueCampaign = "Campaign";
         public static string RevenueProgram = "Program";
         public static string RevenueTactic = "Tactic";
-        public static string RevenueAudience = "Audience";
-        public static string RevenueVertical = "Vertical";
         public static string RevenueOrganization = "Organization";
 
         public static string SourcePerformanceActual = "Actual";
@@ -1308,7 +1298,7 @@ namespace RevenuePlanner.Helpers
                     {
                         if (System.Web.HttpContext.Current.Cache[userId + "_photo"] != null)
                         {
-                            var userData = new { imageBytes = System.Web.HttpContext.Current.Cache[userId + "_photo"], name = System.Web.HttpContext.Current.Cache[userId + "_name"], businessUnit = System.Web.HttpContext.Current.Cache[userId + "_bu"], jobTitle = System.Web.HttpContext.Current.Cache[userId + "_jtitle"] }; //uday #416
+                            var userData = new { imageBytes = System.Web.HttpContext.Current.Cache[userId + "_photo"], name = System.Web.HttpContext.Current.Cache[userId + "_name"], jobTitle = System.Web.HttpContext.Current.Cache[userId + "_jtitle"] }; //uday #416
                             data.Add(userData);
                         }
                         else
@@ -1321,9 +1311,6 @@ namespace RevenuePlanner.Helpers
                 byte[] imageBytesUserImageNotFound = Common.ReadFile(HttpContext.Current.Server.MapPath("~") + "/content/images/user_image_not_found.png");
                 BDSServiceClient objBDSUserRepository = new BDSServiceClient();
                 List<User> users = objBDSUserRepository.GetMultipleTeamMemberDetails(string.Join(",", newCollaboratorId), Sessions.ApplicationId);
-
-                //////var userlist = users.Select(u => u.BusinessUnitId).ToList();
-                //////var businesslist = db.BusinessUnits.Where(bui => userlist.Contains(bui.BusinessUnitId)).ToList();//#416
 
                 foreach (User user in users)
                 {
@@ -1351,13 +1338,12 @@ namespace RevenuePlanner.Helpers
                         }
                     }
 
-                    //////var busititle = businesslist.Single(bui => bui.BusinessUnitId == user.BusinessUnitId).Title;//#416
                     string imageBytesBase64String = Convert.ToBase64String(imageBytes);
                     System.Web.HttpContext.Current.Cache[user.UserId + "_photo"] = imageBytesBase64String;
                     System.Web.HttpContext.Current.Cache[user.UserId + "_name"] = user.FirstName + " " + user.LastName;
                     //////System.Web.HttpContext.Current.Cache[user.UserId + "_bu"] = busititle;//uday #416
                     System.Web.HttpContext.Current.Cache[user.UserId + "_jtitle"] = user.JobTitle;//uday #416
-                    var userData = new { imageBytes = imageBytesBase64String, name = user.FirstName + " " + user.LastName, businessUnit = "", jobTitle = user.JobTitle };//added by uday buid & title #416 };
+                    var userData = new { imageBytes = imageBytesBase64String, name = user.FirstName + " " + user.LastName, jobTitle = user.JobTitle };//added by uday buid & title #416 };
                     data.Add(userData);
                 }
                 jsonResult.Data = data;
@@ -2605,7 +2591,7 @@ namespace RevenuePlanner.Helpers
             List<TacticCustomFieldStageWeightage> lstMapTacticStageWeightage = new List<TacticCustomFieldStageWeightage>();
             List<CustomField_Entity> lstTacticCustomFieldEntity = new List<CustomField_Entity>();
             List<CustomField_Entity> tblCustomFieldEntities = dbStage.CustomField_Entity.ToList().Where(CustEnt => tlist.Select(tac => tac.PlanTacticId).Contains(CustEnt.EntityId) && CustEnt.CustomField.EntityType.Equals(EntTacticType)).ToList();
-            List<CustomField_Entity_StageWeight> tblStageWeightage = dbStage.CustomField_Entity_StageWeight.ToList().Where(_stage => tblCustomFieldEntities.Select(CustEnt => CustEnt.CustomFieldEntityId).Contains(_stage.CustomFieldEntityId)).ToList();
+           // List<CustomField_Entity_StageWeight> tblStageWeightage = dbStage.CustomField_Entity_StageWeight.ToList().Where(_stage => tblCustomFieldEntities.Select(CustEnt => CustEnt.CustomFieldEntityId).Contains(_stage.CustomFieldEntityId)).ToList();
             
             //Ittrate the Plan_Campaign_Program_Tactic list and Assign it to TacticStageValue 
             foreach (Plan_Campaign_Program_Tactic tactic in tlist)
@@ -2637,7 +2623,7 @@ namespace RevenuePlanner.Helpers
                 #region "Get Tactic Stage-Weightage"
                 lstTacticCustomFieldEntity = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).ToList();
                 TacticCustomFieldStageWeightage objStageWeightage = null;
-                List<CustomField_Entity_StageWeight> lstTacticStageWeightage = new List<CustomField_Entity_StageWeight>();
+                //List<CustomField_Entity_StageWeight> lstTacticStageWeightage = new List<CustomField_Entity_StageWeight>();
                 string MQLStageCode = Enums.Stage.MQL.ToString();
                 string CWStageCode = Enums.Stage.CW.ToString();
                 string INQStageCode = Enums.InspectStage.ProjectedStageValue.ToString();
@@ -4154,19 +4140,6 @@ namespace RevenuePlanner.Helpers
             items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thismonth.ToString()].ToString(), Value = Enums.UpcomingActivities.thismonth.ToString(), Selected = false });
             return items;
         }
-
-        public static List<SelectListItem> GetBussinessUnitIds(Guid ClientId)
-        {
-            MRPEntities db = new MRPEntities();
-            var list = db.BusinessUnits.Where(s => s.ClientId == ClientId && s.IsDeleted == false).ToList().Select(u => new SelectListItem
-            {
-                Text = u.Title,
-                Value = u.BusinessUnitId.ToString()
-            });
-            List<SelectListItem> items = new List<SelectListItem>(list);
-            return items;
-        }
-
         /// <summary>
         /// Added property to get Debug/Release mode: Manoj Started Bug 203:Performance issue - Home screen taking too long to load
         /// </summary>
@@ -4356,37 +4329,6 @@ namespace RevenuePlanner.Helpers
             }
             return returnValue;
         }
-
-        /// <summary>
-        /// Helper of Custom label client wise
-        /// Added by Dharmraj, 26-8-2014
-        /// #738 Custom label for audience tab
-        /// </summary>
-        /// <param name="helper"></param>
-        /// <param name="customLabelCode">customLabelCode enum</param>
-        /// <returns></returns>
-        public static string CustomLabelFor(Enums.CustomLabelCode customLabelCode)
-        {
-            MRPEntities db = new MRPEntities();
-            string code = customLabelCode.ToString();
-            try
-            {
-                var objCustomLabel = db.CustomLabels.FirstOrDefault(l => l.Code == code && l.ClientId == Sessions.User.ClientId);
-                if (objCustomLabel == null)
-                {
-                    return customLabelCode.ToString();
-                }
-                else
-                {
-                    return objCustomLabel.Title;
-                }
-            }
-            catch (Exception ex)
-            {
-                return customLabelCode.ToString();
-            }
-        }
-
 
         /// <summary>
         /// Function to generate message for modification of tactic.

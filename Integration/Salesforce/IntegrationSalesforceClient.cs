@@ -2540,10 +2540,6 @@ namespace Integration.Salesforce
         private Dictionary<string, object> GetTargetKeyValue<T>(object obj, Dictionary<string, string> mappingDataType)
         {
             string status = "Status";
-            //string verticalId = "VerticalId";
-            //string audienceId = "AudienceId";
-            //string businessUnitId = "BusinessUnitId";
-            //string geographyid = "GeographyId";
             string createdBy = "CreatedBy";
             string statDate = "StartDate";
             string endDate = "EndDate";
