@@ -1693,7 +1693,7 @@ namespace RevenuePlanner.Controllers
                 ProjectedCW = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.CW, IsTacticCustomField),
                 ProjectedRevenue = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Revenue, IsTacticCustomField),
                 ProjectedADS = p.planTacticList.Any() ? db.Model_Funnel.Where(mf => mf.Funnel.Title == marketing && (db.Plan_Campaign_Program_Tactic.Where(t => p.planTacticList.Contains(t.PlanTacticId)).Select(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Distinct()).Contains(mf.ModelId)).Sum(mf => mf.AverageDealSize) : 0
-            }).Distinct().OrderBy(p => p.Title);
+            }).Distinct().OrderBy(p => p.Title , new AlphaNumericComparer());
 
             return Json(new { data = DataListFinal }, JsonRequestBehavior.AllowGet);
         }
@@ -2022,7 +2022,7 @@ namespace RevenuePlanner.Controllers
                     key = pcptj.Key,
                     ActualValue = pcptj.Sum(pt => pt.ActualValue)
                 }).Select(pcptj => pcptj),
-            }).Select(p => p).Distinct().OrderBy(p => p.id);
+            }).Select(p => p).Distinct().OrderBy(p => p.id).OrderBy(p=>p.title , new AlphaNumericComparer());
 
             return Json(campaignList, JsonRequestBehavior.AllowGet);
         }

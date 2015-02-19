@@ -50,7 +50,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 //// Get TeamMembers list by Client,Application & User Id.
-                lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).OrderBy(teamlist => teamlist.FirstName,new AlphaNumericComparer()).ToList();
                 if (lstUser.Count() > 0)
                 {
                     foreach (var user in lstUser)
@@ -75,7 +75,7 @@ namespace RevenuePlanner.Controllers
                 /* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
                 //// If user is Admin then Get Other Application Users list for Suggestion.
                 if ((bool)ViewBag.IsUserAdminAuthorized)
-                    lstOtherUser = objBDSServiceClient.GetOtherApplicationUsers(Sessions.User.ClientId, Sessions.ApplicationId);
+                    lstOtherUser = objBDSServiceClient.GetOtherApplicationUsers(Sessions.User.ClientId, Sessions.ApplicationId).OrderBy(userlist => userlist.FirstName, new AlphaNumericComparer()).ToList();
             }
             catch (Exception e)
             {
@@ -96,12 +96,12 @@ namespace RevenuePlanner.Controllers
             if (lstOtherUser != null && lstOtherUser.Count > 0)
                 {
                     lstOtherUser.ForEach(a => a.DisplayName = a.FirstName + a.LastName);
-                    ViewBag.OtherUsers = lstOtherUser.OrderBy(a => a.DisplayName).ToList();
+                    ViewBag.OtherUsers = lstOtherUser.OrderBy(a => a.DisplayName , new AlphaNumericComparer()).ToList();
 
                     try
                     {
                     //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                    ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
+                    ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId).OrderBy(role=>role.Title , new AlphaNumericComparer());
                     }
                     catch (Exception e)
                     {
@@ -454,7 +454,7 @@ namespace RevenuePlanner.Controllers
             }
 
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
+            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId).OrderBy(role => role.Title, new AlphaNumericComparer() );
             ViewBag.CurrClientId = Sessions.User.ClientId;
             ViewBag.CurrClient = Sessions.User.Client;
 
@@ -1259,7 +1259,7 @@ namespace RevenuePlanner.Controllers
             {
                 var UserList = objBDSServiceClient.GetManagerList(ClientId, Sessions.ApplicationId, UserId);
                 var ManagerList = UserList.Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.ManagerName }).ToList();
-                return ManagerList.OrderBy(a => a.ManagerName).ToList();
+                return ManagerList.OrderBy(a => a.ManagerName , new AlphaNumericComparer()).ToList();
             }
             return null;
         }

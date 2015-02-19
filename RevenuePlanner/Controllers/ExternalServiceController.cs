@@ -53,7 +53,7 @@ namespace RevenuePlanner.Controllers
             {
                 var dbList = db.IntegrationTypes.Where(it => it.IsDeleted.Equals(false)).Select(it => it).ToList();
                 IntegrationList = dbList.Select(it => new SelectListItem() { Text = it.Title, Value = it.IntegrationTypeId.ToString(), Selected = false })
-                                .OrderBy(it => it.Text).ToList();
+                                .OrderBy(it => it.Text , new AlphaNumericComparer()).ToList();
             }
             catch (Exception e)
             {
@@ -84,7 +84,7 @@ namespace RevenuePlanner.Controllers
                 Provider = (intgrtn.IntegrationType.Title == null || intgrtn.IntegrationType.Title.ToString() == "null") ? "" : intgrtn.IntegrationType.Title.ToString(),
                 LastSyncStatus = string.IsNullOrWhiteSpace(intgrtn.LastSyncStatus) ? Common.TextForModelIntegrationInstanceTypeOrLastSyncNull : intgrtn.LastSyncStatus.ToString(),
                 LastSyncDate = (intgrtn.LastSyncDate.HasValue ? Convert.ToDateTime(intgrtn.LastSyncDate).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull),
-            }).OrderByDescending(intgrtn => intgrtn.Instance).ToList();
+            }).OrderByDescending(intgrtn => intgrtn.Instance,new AlphaNumericComparer()).ToList();
 
             return Json(returnList, JsonRequestBehavior.AllowGet);
         }
@@ -1252,7 +1252,7 @@ namespace RevenuePlanner.Controllers
                 {
                     ExternalFields = new List<string>();
                 }
-                ViewData["ExternalFieldList"] = ExternalFields;
+                ViewData["ExternalFieldList"] = ExternalFields.OrderBy(list => list, new AlphaNumericComparer());
             }
             catch
             {
@@ -1284,7 +1284,7 @@ namespace RevenuePlanner.Controllers
                 {
                     ExternalFieldsCloseDeal = new List<string>();
                 }
-                ViewData["ExternalFieldListPull"] = ExternalFieldsCloseDeal;
+                ViewData["ExternalFieldListPull"] = ExternalFieldsCloseDeal.OrderBy(list => list, new AlphaNumericComparer());
             }
             catch
             {
@@ -1318,7 +1318,7 @@ namespace RevenuePlanner.Controllers
                 {
                     List<string> lstExternalFieldsPulling = new List<string>();
                     lstExternalFieldsPulling = objEx.GetTargetDataMemberPulling();
-                    ViewData["ExternalFieldListPulling"] = lstExternalFieldsPulling;
+                    ViewData["ExternalFieldListPulling"] = lstExternalFieldsPulling.OrderBy(list => list, new AlphaNumericComparer());
                 }
                 else if (integrationType.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
                 {

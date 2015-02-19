@@ -3317,7 +3317,7 @@ namespace RevenuePlanner.Controllers
             var tactics = from _tacType in db.TacticTypes
                           join plan in db.Plans on _tacType.ModelId equals plan.ModelId
                           where plan.PlanId == Sessions.PlanId && (_tacType.IsDeleted == null || _tacType.IsDeleted == false) && _tacType.IsDeployedToModel == true //// Modified by Sohel Pathan on 17/07/2014 for PL ticket #594
-                          orderby _tacType.Title
+                          orderby _tacType.Title , new AlphaNumericComparer()
                           select _tacType;
             foreach (var item in tactics)
             {
@@ -4304,7 +4304,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.Tactics = from _imprvTactic in db.ImprovementTacticTypes
                                   where _imprvTactic.ClientId == Sessions.User.ClientId && _imprvTactic.IsDeployed == true && !impTacticList.Contains(_imprvTactic.ImprovementTacticTypeId)
                                   && _imprvTactic.IsDeleted == false
-                                  orderby _imprvTactic.Title
+                                  orderby _imprvTactic.Title,new AlphaNumericComparer()
                                   select _imprvTactic;
                 ViewBag.IsCreated = true;
 
@@ -5665,7 +5665,7 @@ namespace RevenuePlanner.Controllers
             /// Get LineItemTypes List by ModelId for current PlanId.
             var lineItemTypes = from lit in db.LineItemTypes
                                 where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
-                                orderby lit.Title
+                                orderby lit.Title,new AlphaNumericComparer()
                                 select lit;
             foreach (var item in lineItemTypes)
             {

@@ -1027,7 +1027,7 @@ namespace RevenuePlanner.Controllers
                     //// Modified by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
                     isOwner = (Sessions.User.UserId == model.CreatedBy) ? 0 : 1, //// added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model and -	Delete option will be available for owner or director or system admin or client Admin
                     effectiveDate = model.EffectiveDate.HasValue == true ? model.EffectiveDate.Value.Date.ToString("M/d/yy") : "",  //// Added by Sohel on 08/04/2014 for PL #424 to show Effective Date Column
-                }).OrderBy(model => model.title);
+                }).OrderBy(model => model.title , new AlphaNumericComparer());
 
                 return Json(lstModel, JsonRequestBehavior.AllowGet);
             }
@@ -1611,7 +1611,7 @@ namespace RevenuePlanner.Controllers
                 IsDeployedToIntegration = tacticType.IsDeployedToIntegration,
                 IsTargetStageOfModel = (tacticType.StageId == null) ? true : stagesList.Contains(Convert.ToInt32(tacticType.StageId)),     //// Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                 IsDeployedToModel = tacticType.IsDeployedToModel //// added by dharmraj for #592 : Tactic type data model
-            }).Select(tacticType => tacticType).Distinct().OrderBy(tacticType => tacticType.title);
+            }).Select(tacticType => tacticType).Distinct().OrderBy(tacticType => tacticType.title , new AlphaNumericComparer());
 
             return Json(allTacticTypes, JsonRequestBehavior.AllowGet);
         }
@@ -1647,7 +1647,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.Stages = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.Model_Funnel.ModelId == ModelId &&
                                                                   modelFunnelStage.AllowedTargetStage == true &&
                                                                   modelFunnelStage.StageType == StageType &&
-                                                                  modelFunnelStage.Model_Funnel.Funnel.Title == Marketing)
+                                                                  modelFunnelStage.Model_Funnel.Funnel.Title == Marketing).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level)
                                                       .Select(modelFunnelStage => new { modelFunnelStage.StageId, modelFunnelStage.Stage.Title }).Distinct().ToList();
                 ViewBag.IsCreated = false;
                 TacticType objTacticType = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.TacticTypeId.Equals(id)).FirstOrDefault();
@@ -3020,7 +3020,8 @@ namespace RevenuePlanner.Controllers
                 InstanceId = instance.IntegrationInstanceId,
                 Type = instance.IntegrationType.Title,
                 Code = instance.IntegrationType.Code
-            });
+            }).ToList().OrderBy(ins => ins.InstanceName, new AlphaNumericComparer());
+
 
             ViewData["IntegrationInstances"] = lstInstance;
             string insType = Enums.IntegrationInstanceType.Salesforce.ToString();

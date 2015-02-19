@@ -202,7 +202,7 @@ namespace RevenuePlanner.Controllers
                                          }).Select(ittmobj => ittmobj),
                 IsDeployedToIntegration = itt.IsDeployedToIntegration
             }).Select(itt => itt);
-            return Json(ImprovementTacticList.OrderBy(_imprvTac => _imprvTac.Title).ToList(), JsonRequestBehavior.AllowGet); // Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 to provide sorting for Listings
+            return Json(ImprovementTacticList.OrderBy(_imprvTac => _imprvTac.Title,new AlphaNumericComparer()).ToList(), JsonRequestBehavior.AllowGet); // Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 to provide sorting for Listings
         }
 
         /// <summary>

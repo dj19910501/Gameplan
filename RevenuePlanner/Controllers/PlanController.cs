@@ -746,7 +746,7 @@ namespace RevenuePlanner.Controllers
                     lstPlanModel.Add(objPlanModel);
                 }
             }
-            return lstPlanModel.OrderBy(mdl => mdl.ModelTitle).ToList();
+            return lstPlanModel.OrderBy(mdl => mdl.ModelTitle,new AlphaNumericComparer()).ToList();
         }
         #endregion
 
@@ -1844,10 +1844,10 @@ namespace RevenuePlanner.Controllers
                             type = pcptlj.LineItemTypeId,
                             title = pcptlj.Title,
                             cost = pcptlj.Cost
-                        }).Select(pcptlj => pcptlj).Distinct().OrderByDescending(pcptlj => pcptlj.type)
-                    }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id)
-                }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
-            }).Select(p => p).Distinct().OrderBy(p => p.id);
+                        }).Select(pcptlj => pcptlj).Distinct().OrderByDescending(pcptlj => pcptlj.type).OrderBy(pc => pc.title, new AlphaNumericComparer())
+                    }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id).OrderBy(pc => pc.title, new AlphaNumericComparer())
+                }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id).OrderBy(pc => pc.title, new AlphaNumericComparer())
+            }).Select(p => p).Distinct().OrderBy(p => p.id).OrderBy(pc => pc.title, new AlphaNumericComparer());
 
             //Start : Check isOwner flag for program and campaign based on tactics custom restrictions, Ticket #577, By Dharmraj
             var lstCampaignTmp = campaignobj.Select(c => new
