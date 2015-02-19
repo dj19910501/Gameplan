@@ -1,4 +1,12 @@
 ---- Execute this script on MRP database
+IF OBJECT_ID('tempdb..#IntegrationType') IS NOT NULL DROP TABLE #IntegrationType
+GO
+Create TABLE #IntegrationType
+    (
+		ID int IDENTITY(1, 1) primary key,
+		IntegrationTypeId int
+    )
+
 Declare @varSalesForce varchar(50) ='Salesforce'
 Declare @RawCnt int =0
 Declare @rawId int =1
@@ -7,11 +15,7 @@ Declare	@ActualFieldName varchar(50)='ResponseDate'
 Declare	@DisplayFieldName varchar(50)='Response Date'
 Declare @Type varchar(10)='CW'
 Declare @IsDeleted bit = 0
-Create TABLE #IntegrationType
-    (
-		ID int IDENTITY(1, 1) primary key,
-		IntegrationTypeId int
-    )
+
 Insert Into #IntegrationType Select IntegrationTypeId from IntegrationType where Code =@varSalesForce
 Select @RawCnt = Count(ID) from #IntegrationType
 While(@rawId <= @RawCnt)

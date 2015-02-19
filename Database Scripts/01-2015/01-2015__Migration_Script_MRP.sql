@@ -78,7 +78,7 @@ BEGIN
 			CreatedDate,
 			CreatedBy,
 			'Gameplan : Sync Integration Summary'
-		FROM Notification 
+		FROM [Notification] 
 		WHERE IsDeleted = 0
 
 	END
@@ -246,12 +246,16 @@ Go
 /* Execute this script on MRP database */
 
 /* Create Temporary Client & Attributes table */
+IF OBJECT_ID('tempdb..#Client') IS NOT NULL DROP TABLE #Client
+GO
 Create TABLE #Client 
     (
 		ID int IDENTITY(1, 1) primary key,
 		ClientId uniqueidentifier
     )
 
+IF OBJECT_ID('tempdb..#Attributes') IS NOT NULL DROP TABLE #Attributes
+GO
 Create TABLE #Attributes
     (
 		ID int IDENTITY(1, 1) primary key,
@@ -283,6 +287,8 @@ Declare @EntityType varchar(500)='Tactic'
 Declare @IsDeleted bit='0'
 Declare @CreatedBy uniqueidentifier='A7B9744A-CDC4-4CEA-BF21-2E992EEF5055'
 Declare @IsDisplayforFilter bit ='1'
+Declare @AbbriviationForMulti varchar(10)='MULTI'
+Declare @customIsDefault bit =0
 /* End - Declare local variables */
 
 BEGIN
@@ -321,18 +327,34 @@ BEGIN
 		/* Insert Distinct ClientId from Vertical table to Temporary table */
 		Insert Into #Client(ClientId) Select Distinct ClientId from [Geography] Group by ClientId
 	 END
-
+	 
 	/* Insert CustomField & Values to CustomFieldOption table based on ClientId */
 	Select @totalrows = COUNT(*) from #Client
 	While(@Cntr <= @totalrows)
 	Begin
 		/* Get ClientId from temp table */
 		Select @ClientId = ClientId from #Client where ID = @Cntr
-	
+		
+		/* Check whether Customfield exist or not in CustomField Table */
+		Declare @IsCustomFieldExist int = 0
+		IF(@CustomFieldName = @lblBusinessUnit)
+		BEGIN
+			IF Not Exists(Select 1 from CustomField where Name IN (@CustomFieldName,'Business Unit') and CustomFieldTypeId=@CustomFieldType and EntityType=@EntityType and ClientId = @ClientId)
+			BEGIN
+				SET @IsCustomFieldExist = 1
+			END
+		END
+		ELSE
+		BEGIN
+			IF Not Exists(Select 1 from CustomField where Name = @CustomFieldName and CustomFieldTypeId=@CustomFieldType and EntityType=@EntityType and ClientId = @ClientId)
+			BEGIN
+				SET @IsCustomFieldExist = 1
+			END
+		END	
 		/* Add new record to CustomField table If record does not exist in table*/
-		IF Not Exists(Select 1 from CustomField where Name=@CustomFieldName and CustomFieldTypeId=@CustomFieldType and EntityType=@EntityType and ClientId = @ClientId)
+		IF (@IsCustomFieldExist > 0)
 		Begin
-			Insert Into CustomField values(@CustomFieldName,@CustomFieldType,@Description,@IsRequired,@EntityType,@ClientId,@IsDeleted,GetDate(),CONVERT(uniqueidentifier,@CreatedBy),Null,Null,@IsDisplayforFilter)
+			Insert Into CustomField values(@CustomFieldName,@CustomFieldType,@Description,@IsRequired,@EntityType,@ClientId,@IsDeleted,GetDate(),CONVERT(uniqueidentifier,@CreatedBy),Null,Null,@IsDisplayforFilter,@AbbriviationForMulti,@customIsDefault)
 			
 			/* Retrieve last inserted CustomFieldId on CustomField table*/
 			Set @CustomFieldID = @@IDENTITY
@@ -376,6 +398,8 @@ BEGIN
 	END
 END
 
+DROP TABLE #Client
+DROP TABLE #Attributes
 Go
 
 /* Execute this script on MRP database */
@@ -431,11 +455,12 @@ BEGIN
 	   Select @Audience_Title=Title,@Aud_ClientID=ClientID from Audience where AudienceId=@Tac_AudienceId and IsDeleted='0'
 	   Select @BusinessUnit_Title=Title,@Bus_ClientID=ClientID from BusinessUnit where BusinessUnitId=@Tac_BusinessUnitId and IsDeleted='0'
 	   Select @Geography_Title=Title,@Geo_ClientID=ClientID from [Geography] where GeographyId=@Tac_GeographyId and IsDeleted='0'
-
+	   
+	   
 	   /* Get CustomFieldID from CustomField Master table based on ClientId,EntityType,CustomFieldTypeId */
 	   Select Top 1 @Ver_CustomFieldID=CustomFieldID from CustomField where Name =@lblVertical and ClientID = @Ver_ClientID and IsDeleted ='0' and EntityType=@Tac_EntityType and CustomFieldTypeId = @Drpdwn_CustomFieldTypeID
 	   Select Top 1 @Aud_CustomFieldID=CustomFieldID from CustomField where Name =@lblAudience and ClientID = @Aud_ClientID and IsDeleted ='0' and EntityType=@Tac_EntityType and CustomFieldTypeId = @Drpdwn_CustomFieldTypeID
-	   Select Top 1 @Bus_CustomFieldID=CustomFieldID from CustomField where  Name =@lblBusinessUnit and ClientID = @Bus_ClientID and IsDeleted ='0' and EntityType=@Tac_EntityType and CustomFieldTypeId = @Drpdwn_CustomFieldTypeID
+	   Select Top 1 @Bus_CustomFieldID=CustomFieldID from CustomField where Name =@lblBusinessUnit and ClientID = @Bus_ClientID and IsDeleted ='0' and EntityType=@Tac_EntityType and CustomFieldTypeId = @Drpdwn_CustomFieldTypeID
 	   Select Top 1 @Geo_CustomFieldID=CustomFieldID from CustomField where Name =@lblGeography and ClientID = @Geo_ClientID and IsDeleted ='0' and EntityType=@Tac_EntityType and CustomFieldTypeId = @Drpdwn_CustomFieldTypeID
 	   
 	   /* Get CustomFieldOptionID from CustomFieldOption Master table based on CustomFieldId,Value */
@@ -444,20 +469,21 @@ BEGIN
 	   Select Top 1 @Bus_CustomFieldOptionID = CustomFieldOptionID from CustomFieldOption where CustomFieldId=@Bus_CustomFieldID and Value=@BusinessUnit_Title
 	   Select Top 1 @Geo_CustomFieldOptionID = CustomFieldOptionID from CustomFieldOption where CustomFieldId=@Geo_CustomFieldID and Value=@Geography_Title
 
+
 	   /* If CustomFieldEntity record does not exist then added to table. */
-	   IF NOT Exists(Select 1 from CustomField_Entity where EntityId=@PlanTacticId and CustomFieldId=@Ver_CustomFieldID and Value = convert(nvarchar(256),@Ver_CustomFieldOptionID))
+	   IF NOT Exists(Select 1 from CustomField_Entity where EntityId=@PlanTacticId and CustomFieldId=@Ver_CustomFieldID and Value = convert(nvarchar(256),@Ver_CustomFieldOptionID)) AND (@Ver_CustomFieldID > 0)
 	   Begin
 		Insert Into CustomField_Entity(EntityId,CustomFieldId,Value,CreatedDate,CreatedBy,Weightage) Values(@PlanTacticId,@Ver_CustomFieldID,convert(nvarchar(256),@Ver_CustomFieldOptionID),@Tac_CreatedDate,@Tac_CreatedBy,100)
 	   End
-	   IF NOT Exists(Select 1 from CustomField_Entity where EntityId=@PlanTacticId and CustomFieldId=@Aud_CustomFieldID and Value = convert(nvarchar(256),@Aud_CustomFieldOptionID))
+	   IF NOT Exists(Select 1 from CustomField_Entity where EntityId=@PlanTacticId and CustomFieldId=@Aud_CustomFieldID and Value = convert(nvarchar(256),@Aud_CustomFieldOptionID)) AND (@Aud_CustomFieldID > 0)
 	   Begin
 		Insert Into CustomField_Entity(EntityId,CustomFieldId,Value,CreatedDate,CreatedBy,Weightage) Values(@PlanTacticId,@Aud_CustomFieldID,convert(nvarchar(256),@Aud_CustomFieldOptionID),@Tac_CreatedDate,@Tac_CreatedBy,100)
 	   End
-	   IF NOT Exists(Select 1 from CustomField_Entity where EntityId=@PlanTacticId and CustomFieldId=@Bus_CustomFieldID and Value = convert(nvarchar(256),@Bus_CustomFieldOptionID))
+	   IF NOT Exists(Select 1 from CustomField_Entity where EntityId=@PlanTacticId and CustomFieldId=@Bus_CustomFieldID and Value = convert(nvarchar(256),@Bus_CustomFieldOptionID)) AND (@Bus_CustomFieldID > 0)
 	   Begin
 		Insert Into CustomField_Entity(EntityId,CustomFieldId,Value,CreatedDate,CreatedBy,Weightage) Values(@PlanTacticId,@Bus_CustomFieldID,convert(nvarchar(256),@Bus_CustomFieldOptionID),@Tac_CreatedDate,@Tac_CreatedBy,100)
 	   End
-	   IF NOT Exists(Select 1 from CustomField_Entity where EntityId=@PlanTacticId and CustomFieldId=@Geo_CustomFieldID and Value = convert(nvarchar(256),@Geo_CustomFieldOptionID))
+	   IF NOT Exists(Select 1 from CustomField_Entity where EntityId=@PlanTacticId and CustomFieldId=@Geo_CustomFieldID and Value = convert(nvarchar(256),@Geo_CustomFieldOptionID)) AND (@Geo_CustomFieldID > 0)
 	   Begin
 		Insert Into CustomField_Entity(EntityId,CustomFieldId,Value,CreatedDate,CreatedBy,Weightage) Values(@PlanTacticId,@Geo_CustomFieldID,convert(nvarchar(256),@Geo_CustomFieldOptionID),@Tac_CreatedDate,@Tac_CreatedBy,100)
 	   End
@@ -469,6 +495,7 @@ CLOSE CursorTactic
 DEALLOCATE CursorTactic
 
 GO
+
 
 /* Execute this script on MRP database */
 
@@ -565,7 +592,7 @@ GO
 IF EXISTS(SELECT * FROM sys.columns WHERE [name] = 'BusinessUnitId' AND [object_id] = OBJECT_ID(N'Model'))
 BEGIN
     -- Column Exists
-	UPDATE dbo.Model SET ClientId=bu.ClientId FROM dbo.BusinessUnit AS bu WHERE dbo.Model.BusinessUnitId=bu.BusinessUnitId 
+	EXECUTE('UPDATE dbo.Model SET ClientId=bu.ClientId FROM dbo.BusinessUnit AS bu WHERE dbo.Model.BusinessUnitId=bu.BusinessUnitId') 
 END
 GO
 ALTER TABLE dbo.Model ALTER COLUMN ClientId UNIQUEIDENTIFIER NOT NULL
@@ -732,10 +759,8 @@ BEGIN
 	BEGIN TRY
 	
 	BEGIN TRANSACTION Vertical
-	PRINT(1)		
 	IF EXISTS (SELECT GameplanDataTypeId FROM GameplanDataType WHERE IsDeleted = 0 AND TableName = 'Plan_Campaign_Program_Tactic' AND ActualFieldName IN ('VerticalId'))
 	BEGIN
-		PRINT(2)		
 		UPDATE IIM SET IIM.CustomFieldId = C.CustomFieldId, IIM.GameplanDataTypeId = NULL
 		--SELECT IIM.*, II.ClientId, C.CustomFieldId 
 		FROM IntegrationInstanceDataTypeMapping IIM
@@ -771,10 +796,8 @@ BEGIN
 	BEGIN TRY
 	
 	BEGIN TRANSACTION Audience
-	PRINT(1)		
 	IF EXISTS (SELECT GameplanDataTypeId FROM GameplanDataType WHERE IsDeleted = 0 AND TableName = 'Plan_Campaign_Program_Tactic' AND ActualFieldName IN ('AudienceId'))
 	BEGIN
-		PRINT(2)		
 		UPDATE IIM SET IIM.CustomFieldId = C.CustomFieldId, IIM.GameplanDataTypeId = NULL
 		--SELECT IIM.*, II.ClientId, C.CustomFieldId 
 		FROM IntegrationInstanceDataTypeMapping IIM
@@ -810,10 +833,8 @@ BEGIN
 	BEGIN TRY
 	
 	BEGIN TRANSACTION Geo
-	PRINT(1)		
 	IF EXISTS (SELECT GameplanDataTypeId FROM GameplanDataType WHERE IsDeleted = 0 AND TableName = 'Plan_Campaign_Program_Tactic' AND ActualFieldName IN ('GeographyId'))
 	BEGIN
-		PRINT(2)		
 		UPDATE IIM SET IIM.CustomFieldId = C.CustomFieldId, IIM.GameplanDataTypeId = NULL
 		--SELECT IIM.*, II.ClientId, C.CustomFieldId 
 		FROM IntegrationInstanceDataTypeMapping IIM
@@ -849,10 +870,8 @@ BEGIN
 	BEGIN TRY
 	
 	BEGIN TRANSACTION BusinessUnit
-	PRINT(1)		
 	IF EXISTS (SELECT GameplanDataTypeId FROM GameplanDataType WHERE IsDeleted = 0 AND TableName = 'Plan_Campaign_Program_Tactic' AND ActualFieldName IN ('BusinessUnitId'))
 	BEGIN
-		PRINT(2)		
 		UPDATE IIM SET IIM.CustomFieldId = C.CustomFieldId, IIM.GameplanDataTypeId = NULL
 		--SELECT IIM.*, II.ClientId, C.CustomFieldId 
 		FROM IntegrationInstanceDataTypeMapping IIM
