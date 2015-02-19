@@ -1401,13 +1401,19 @@
                               ChartCustomField3: data.ChartCustomField3
                           }
                           if (data.CustomField1 != null) {
-                              $('#customField1').text(JSON.stringify(data.CustomField1).replace(/"/g, "") + " (Top 5)");
+                              $('#customField1').text(JSON.stringify(data.CustomField1).replace(/"/g, ""));
+                              NumberFormatterTipsyTitle($('#customField1'), 20);
+                              $('#customField1').text($('#customField1').text().concat(" (Top 5)"));
                           }
                           if (data.CustomField2 != null) {
-                              $('#customField2').text(JSON.stringify(data.CustomField2).replace(/"/g, "") + " (Top 5)");
+                              $('#customField2').text(JSON.stringify(data.CustomField2).replace(/"/g, ""));
+                              NumberFormatterTipsyTitle($('#customField2'), 20);
+                              $('#customField2').text($('#customField2').text().concat(" (Top 5)"));
                           }
                           if (data.CustomField3 != null) {
-                              $('#customField3').text(JSON.stringify(data.CustomField3).replace(/"/g, "") + " (Top 5)");
+                              $('#customField3').text(JSON.stringify(data.CustomField3).replace(/"/g, ""));
+                              NumberFormatterTipsyTitle($('#customField3'), 20);
+                              $('#customField3').text($('#customField3').text().concat(" (Top 5)"));
                           }
 
                           //// Hidden field to store chart data that is consumed while generating PDF report.

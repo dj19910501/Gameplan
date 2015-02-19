@@ -9931,7 +9931,7 @@ footer {
     .sidebar-section span {
         font-size: 24px;
         padding-bottom: 20px;
-        display: block;
+        /*display: block;*/
     }
 
     .sidebar-section p {
@@ -9939,6 +9939,15 @@ footer {
     }
     /*.sidebar-section.first{border-bottom:2px solid #cecece;}*/
     .sidebar-section h2 {
+        font-size: 14px;
+        line-height: 34px;
+        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
+        height: 34px;
+        margin: 0;
+        padding: 0 !important;
+        font-weight: normal;
+    }
+    .sidebar-section .sidebar_label {
         font-size: 14px;
         line-height: 34px;
         font-family: 'source_sans_prosemibold', Arial, "sans-serif";

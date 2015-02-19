@@ -157,7 +157,8 @@
         GenerateCustomizeMultiselect('ddlParentConversionPerformance', false, false, false);
         parentSummaryTab = $('#ddlParentConversionSummery').val();
         $("#ActivityName").html($("#ddlParentConversionSummery option[value='" + parentSummaryTab + "']").text());
-       
+        NumberFormatterTipsyTitle($("#ActivityName"), 80);
+
         // conversion plan change event
         $('#ddlParentConversionPlan').bind('change', function () {
             var selectedOption = $(this).val();
@@ -170,6 +171,7 @@
         $('#ddlParentConversionSummery').bind('change', function () {
             parentSummaryTab = $(this).val();
             $("#ActivityName").html($("#ddlParentConversionSummery option[value='" + parentSummaryTab + "']").text());
+            NumberFormatterTipsyTitle($("#ActivityName"), 80);
             LoadConversionSummaryData();
         });
 
@@ -290,6 +292,7 @@
                 success: function (r) {
                     var reportTableInfo = r;
                     fillReportTable(reportTableInfo);
+                    NumberFormatterTipsyTitle(".tipsyclassTitle", 60);
                 }
             });
         }
@@ -377,7 +380,7 @@
                 $tableReports.find("tr").remove();
             }
             $tableReports.append('<tr><td></td>' +
-                                '<td class="border-r">' + _title + '</td>' +
+                                '<td class="border-r tipsyclassTitle">' + _title + '</td>' +
                                 '<td class="border-r large-bold-text">' + FormatWithRoundValue(_Inq) + '</td>' +
                                 '<td class="border-r large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
                                 '<td class="border-r large-bold-text">' + FormatWithRoundValue(_actualcw) + '</td>' +
@@ -567,13 +570,19 @@
                              
                          }
                      if (data.CustomField1 != null) {
-                         $('#customField1').text(JSON.stringify(data.CustomField1).replace(/"/g, "") + " (Top 5)");
+                         $('#customField1').text(JSON.stringify(data.CustomField1).replace(/"/g, ""));
+                         NumberFormatterTipsyTitle($('#customField1'), 20);
+                         $('#customField1').text($('#customField1').text().concat(" (Top 5)"));
                      }
             if (data.CustomField2 != null) {
-                $('#customField2').text(JSON.stringify(data.CustomField2).replace(/"/g, "") + " (Top 5)");
+                $('#customField2').text(JSON.stringify(data.CustomField2).replace(/"/g, ""));
+                NumberFormatterTipsyTitle($('#customField2'), 20);
+                $('#customField2').text($('#customField2').text().concat(" (Top 5)"));
             }
             if (data.CustomField3 != null) {
-                $('#customField3').text(JSON.stringify(data.CustomField3).replace(/"/g, "") + " (Top 5)");
+                $('#customField3').text(JSON.stringify(data.CustomField3).replace(/"/g, ""));
+                NumberFormatterTipsyTitle($('#customField3'), 20);
+                $('#customField3').text($('#customField3').text().concat(" (Top 5)"));
             }
 
             //// Hidden field to store chart data that is consumed while generating PDF report.

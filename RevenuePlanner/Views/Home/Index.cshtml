@@ -875,7 +875,7 @@
                    html += '<div id="accordion-' + customFieldId + '" class="dropdown-section accordion">';
                    html += '<div class="accordion-group">';
                    html += '<div class="accordion-heading">';
-                   html += '<h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-' + customFieldId + '" href="#accordion-element-' + customFieldId + '">' + customFieldName + '<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>';
+                   html += '<h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-' + customFieldId + '" href="#accordion-element-' + customFieldId + '"><span class="sidebar_label tipsyclassTitle">' + customFieldName + '</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2> ';
                    html += '</div>'
                    html += '<div id="accordion-element-' + customFieldId + '" class="accordion-body collapse">';
                    html += '<ul class="scroll-list" id="ulSelected' + customFieldId + '">';
@@ -1164,6 +1164,7 @@
         BindOtherAttributes();
         GetOwnerListForFilter(PlanIdsCustom);
         $('#hdnSelectedPlanIds').val(PlanIdsCustom);
+        NumberFormatterTipsyTitle(".tipsyclassTitle", 20);
     });
 
     var appendtag = '';//uday
