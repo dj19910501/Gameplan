@@ -758,8 +758,9 @@ namespace Integration.Salesforce
                             if (OpportunityMemberListInitial.Count > 0)
                             {
                                 // Get Primary contact for opportunity
-                                string opportunitysids = String.Join("','", (from opp in OpportunityMemberListInitial select opp.OpportunityId));
-                                List<ContactRoleMember> ContactRoleListInitial = new List<ContactRoleMember>(_client.Query<ContactRoleMember>("SELECT ContactId,IsPrimary,OpportunityId FROM OpportunityContactRole WHERE OpportunityId IN ('" + opportunitysids + "')"));
+                                List<string> opportunitysids = (from opp in OpportunityMemberListInitial select opp.OpportunityId).ToList();
+                                List<ContactRoleMember> ContactRoleListInitial = new List<ContactRoleMember>(_client.Query<ContactRoleMember>("SELECT ContactId,IsPrimary,OpportunityId FROM OpportunityContactRole WHERE OpportunityId IN (SELECT Id FROM Opportunity WHERE " + StageName + "= '" + Common.ClosedWon + "')"));
+                                ContactRoleListInitial = ContactRoleListInitial.Where(crl => opportunitysids.Contains(crl.OpportunityId)).ToList();
                                 List<ContactRoleMember> ContactRoleList = new List<ContactRoleMember>();
                                 ContactRoleList = ContactRoleListInitial.Where(cr => cr.IsPrimary).GroupBy(cr => new { cr.ContactId, cr.OpportunityId }).Select(cr => new ContactRoleMember { ContactId = cr.Key.ContactId, OpportunityId = cr.Key.OpportunityId }).ToList();
 
@@ -770,10 +771,10 @@ namespace Integration.Salesforce
                                 ContactRoleListInitial.Where(cr => !opportunityprimaryid.Contains(cr.OpportunityId) && !cr.IsPrimary && opportunityidssinglecontact.Contains(cr.OpportunityId)).ToList().ForEach(crl => ContactRoleList.Add(crl));
 
                                 // Get campaign member from contact based on responded
-                                string contactid = String.Join("','", (from contact in ContactRoleList select contact.ContactId));
+                                List<string> contactid = (from contact in ContactRoleList select contact.ContactId).ToList();
                                 //" + CampaignId + " IN ('" + AllIntegrationTacticIds + "') AND 
 
-                                var Contactmemberlist = _client.Query<object>("SELECT " + CampaignId + "," + ResponseDate + ",ContactId FROM CampaignMember WHERE ContactId IN ('" + contactid + "') AND HasResponded = True ORDER BY " + ResponseDate + " DESC");
+                                var Contactmemberlist = _client.Query<object>("SELECT " + CampaignId + "," + ResponseDate + ",ContactId FROM CampaignMember WHERE ContactId IN (SELECT ContactId FROM OpportunityContactRole) AND HasResponded = True ORDER BY " + ResponseDate + " DESC");
                                 List<ContactCampaignMember> ContactCampaignMemberList = new List<ContactCampaignMember>();
                                 foreach (var resultin in Contactmemberlist)
                                 {
@@ -783,6 +784,8 @@ namespace Integration.Salesforce
                                     int _PlanTacticId = 0;
                                     try
                                     {
+                                        if (contactid.Contains(Convert.ToString(jobj["ContactId"])))
+                                        {
                                         if (jobj[ResponseDate] != null)
                                         {
                                             string campaignid = Convert.ToString(jobj[CampaignId]);
@@ -790,6 +793,7 @@ namespace Integration.Salesforce
                                         objCampaign.ContactId = Convert.ToString(jobj["ContactId"]);
                                             objCampaign.RespondedDate = Convert.ToDateTime(jobj[ResponseDate]);
                                         ContactCampaignMemberList.Add(objCampaign);
+                                    }
                                     }
                                     }
                                     catch (SalesforceException e)
