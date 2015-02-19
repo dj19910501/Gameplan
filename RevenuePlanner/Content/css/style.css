@@ -11374,7 +11374,7 @@ float:left;
 
 /*Start-Added by Mitesh Vaishnav for PL ticket #1073*/
 .dropdown-wrapper {	display:none;/*width:145px;*/	width:auto;background-color: #fff;position: absolute;z-index: 1; padding-bottom: 10px;/*23*/}
-.drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding: 0 10px;max-height: 363px;overflow: auto;width:100%;background-color:#fff;}
+.drop-down_header {border: 1px solid #dfdfdf; border-radius: 6px;padding-left:10px;max-height: 363px;overflow: auto;/*width:100%;*/width:97%;background-color:#fff;/*margin-right:10px;*/margin-right:0;}
 .dropdown-block {min-width:260px !important;/*max-width:662px !important;*/width:auto;}
 .dropdown_new_btn {
     background: url("../images/drpdown.png") no-repeat scroll right -1% top 55% #dff0f8;
@@ -11434,7 +11434,7 @@ float:left;
  
 .text_ellipsis{ /*display: inline;*/ margin-bottom:-3px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;max-width:200px; /*width: 76px;*/ margin:-21px -8px 0px 18px; padding-right: 5px; min-width: 85px; }
 .top_head_attribute > tr, .table_drpdwn tbody{ display:block;}
-.table_drpdwn tbody { height: auto;overflow: auto;max-height:200px;}
+.table_drpdwn tbody { height: auto;overflow-x:hidden;overflow-y:auto; max-height:200px;}
 .value_header { height: 40px; padding: 0 31px 0 30px;}/* padding 0 35 0 30  */
 .value_header_view { height: 40px; padding: 0 31px 0 30px;}/* padding 0 35 0 30  */
 .weight_header {padding-right:29px;}
