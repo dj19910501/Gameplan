@@ -687,7 +687,7 @@ namespace Integration.Salesforce
                         {
                             StageName = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Stage.ToString()).TargetDataType;
                         }
-                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Stage.ToString()).Any())
+                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullCWActualField.ResponseDate.ToString()).Any())
                         {
                             ResponseDate = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.ResponseDate.ToString()).TargetDataType;
                         }
