@@ -2753,6 +2753,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
+                lstPlanSelector = lstPlanSelector.OrderBy(planlist => planlist.PlanTitle, new AlphaNumericComparer()).ToList();
                 return Json(new { lstPlanSelector }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
