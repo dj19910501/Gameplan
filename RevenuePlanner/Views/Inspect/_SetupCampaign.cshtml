@@ -74,12 +74,12 @@
     </div>
     
     //Start - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section
-      <ul class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
+      <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
         <li class="pull-left">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border">
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(campaign.PlanCampaignId, Enums.EntityType.Campaign.ToString(),0)
     </div>     
     //End - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section    
@@ -104,4 +104,19 @@
               $(this).prev().removeAttr("href");
           });
       });
+
+    // Modified by Komal Rawal for ticket #1196
+    function isEmpty(el) {
+        return !$.trim(el.html())
+    }
+
+    if (isEmpty($('#CustomHtmlHelperfield'))) {
+        $('#CustomHtmlHelperfield').hide();
+        $('#CustomAttributeheading').hide();
+    }
+    else {
+        $('#CustomHtmlHelperfield').show();
+        $('#CustomAttributeheading').show();
+
+    }
 </script>
