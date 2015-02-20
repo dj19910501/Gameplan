@@ -4473,7 +4473,7 @@ namespace RevenuePlanner.Helpers
                 ////Checking if created by is empty then system generated modification
                 if (Guid.Parse(createdBy) == Guid.Empty)
                 {
-                    lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
+                    lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd,yyyy"), GameplanIntegrationService);
                     return lastModifiedMessage;
                 }
                 else
@@ -4484,7 +4484,7 @@ namespace RevenuePlanner.Helpers
                         User user = userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault();
                         if (user != null)
                         {
-                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().FirstName, userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().LastName);
+                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd,yyyy"), userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().FirstName, userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().LastName);
                             return lastModifiedMessage;
                         }
                         else
@@ -4501,7 +4501,7 @@ namespace RevenuePlanner.Helpers
                     {
                         BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
                         User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
-                        lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), objUser.FirstName, objUser.LastName);
+                        lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd,yyyy"), objUser.FirstName, objUser.LastName);
                         return lastModifiedMessage;
                     }
                 }

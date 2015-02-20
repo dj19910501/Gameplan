@@ -115,11 +115,11 @@
                          <p class="clear-section">Deployed to Integration</p>
                           if (Model.IsDeployedToIntegration)
                           {
-                                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Synced to integration" maxlength="18" readonly />
+                                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
                           }
                           else
                           {    
-                                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not synced to integration" maxlength="18" readonly />
+                                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Don't sync to integration" maxlength="18" readonly />
                           }
                       }
                       
@@ -251,13 +251,13 @@
         $("#t_integration_status").click(function () {
             if (isOwner == 'True') {
                 if ($(this).hasClass("icon-check-blue")) {
-                    $(this).val("Not synced to integration");
+                    $(this).val("Don't sync to integration");
                     $(this).addClass("icon-check-gray");
                     $(this).removeClass("icon-check-blue");
                     $("#hdnIsDeployedToIntegration").val(false);
                 }
                 else {
-                    $(this).val("Synced to integration");
+                    $(this).val("Sync to integration");
                     $(this).addClass("icon-check-blue");
                     $(this).removeClass("icon-check-gray");
                     $("#hdnIsDeployedToIntegration").val(true);
