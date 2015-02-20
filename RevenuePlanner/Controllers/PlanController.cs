@@ -2940,7 +2940,7 @@ namespace RevenuePlanner.Controllers
                 cost = _tac.Cost,
                 ImprovementProgramId = _tac.ImprovementPlanProgramId,
                 isOwner = Sessions.User.UserId == _tac.CreatedBy ? 0 : 1,
-            }).Select(_tac => _tac).Distinct().OrderBy(_tac => _tac.id);
+            }).Select(_tac => _tac).Distinct().OrderBy(_tac => _tac.id).OrderBy(tac=>tac.title,new AlphaNumericComparer());
 
             return Json(tacticobj, JsonRequestBehavior.AllowGet);
         }

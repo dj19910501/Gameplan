@@ -99,12 +99,14 @@
     
    if ((bool)ViewBag.IsOwner && (bool)ViewBag.IsAllowCustomRestriction)
    {
-    <div class="wraper-btns cf border-top-div-LineItemPopUp" id="SaveLineItemBudgetSection">
-        <div class="span2 btn-save"  style="width: 80px">
-            <button id="save_LineItem" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+    
+    
+    <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div " id="SaveLineItemBudgetSection">
+        <div class="span2 btn-save" style="width: 80px;">
+            <button  id="save_LineItem" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save </button>
         </div>
         <div class="span2">
-            <button id="cancelLineItemBudget" class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+            <button id="cancelLineItemBudget" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
         </div>
     </div>   
    }
