@@ -211,38 +211,54 @@
 
             // filter what user type (only numbers and functional keys)
             function key_check(e) {
-                var obj = $(this);          // Added by Arpita Soni on 01/12/2015 for ticket #1071
-                var code = (e.keyCode ? e.keyCode : e.which);
-                var typed = String.fromCharCode(code);
-                var functional = false;
-                var str = obj.val();
-                var newValue = price_format(str + typed);
-                var issecondTime = false;
-                if (str.indexOf('.') > -1) {
-                    if ((code == 190 || code == 110)) {
-                        issecondTime = true;
+                //Start modified by Mtesh vaishnav for PL ticket #1071 issue
+                // Allow: backspace, delete, tab, escape, enter and .
+                if ($.inArray(e.keyCode, [8, 9, 27, 13, 46, 110]) !== -1 ||
+                    //        // Allow: Ctrl+A
+                   (e.keyCode == 65 && e.ctrlKey === true) ||
+                    //        // Allow: home, end, left, right
+                   (e.keyCode >= 35 && e.keyCode <= 39)) {
+                    //        // let it happen, don't do anything
+                    return;
+
+                    var obj = $(this);          // Added by Arpita Soni on 01/12/2015 for ticket #1071
+                    var code = (e.keyCode ? e.keyCode : e.which);
+                    var typed = String.fromCharCode(code);
+                    var functional = false;
+                    var str = obj.val();
+                    var newValue = price_format(str + typed);
+                    var issecondTime = false;
+                    if (str.indexOf('.') > -1) {
+                        if ((code == 190 || code == 110)) {
+                            issecondTime = true;
+                        }
+                    }
+                    // allow key numbers, 0 to 9
+                    if ((code >= 48 && code <= 57) || (code >= 96 && code <= 105)) functional = true;
+
+                    // check Backspace, Tab, Enter, Delete, and left/right arrows
+                    if (code == 8) functional = true;
+                    if (code == 9) functional = true;
+                    if (code == 13) functional = true;
+                    if (code == 46) functional = true;
+                    if (code == 37) functional = true;
+                    if (code == 39) functional = true;
+
+                    // Minus Sign, Plus Sign
+                    if (allowNegative && (code == 189 || code == 109)) functional = true;
+                    if (insertPlusSign && (code == 187 || code == 107)) functional = true;
+                    if (!issecondTime && isDouble && (code == 190 || code == 110)) functional = true;
+                    if (!functional) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (str != newValue) obj.val(newValue);
                     }
                 }
-                // allow key numbers, 0 to 9
-                if ((code >= 48 && code <= 57) || (code >= 96 && code <= 105)) functional = true;
-
-                // check Backspace, Tab, Enter, Delete, and left/right arrows
-                if (code == 8) functional = true;
-                if (code == 9) functional = true;
-                if (code == 13) functional = true;
-                if (code == 46) functional = true;
-                if (code == 37) functional = true;
-                if (code == 39) functional = true;
-
-                // Minus Sign, Plus Sign
-                if (allowNegative && (code == 189 || code == 109)) functional = true;
-                if (insertPlusSign && (code == 187 || code == 107)) functional = true;
-                if (!issecondTime && isDouble && (code == 190 || code == 110)) functional = true;
-                if (!functional) {
+                //    // Ensure that it is a number and stop the keypress
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
                     e.preventDefault();
-                    e.stopPropagation();
-                    if (str != newValue) obj.val(newValue);
                 }
+                //End Modified by Mitesh Vaishnav for PL ticket #1071
 
             }
 
@@ -318,8 +334,8 @@
             // bind the actions
             $(this).bind('keydown.price_format', key_check);
             // Start - Modified by Arpita Soni on 01/17/2015 for Ticket #1071
-            $(this).bind('keypress.price_format', key_check_keypress);
-            $(this).bind('keyup.price_format', set_keyup_flag);
+            //$(this).bind('keypress.price_format', key_check_keypress);
+            // $(this).bind('keyup.price_format', set_keyup_flag);
             $(this).bind('focusout.price_format', set_focusout_flag);
             // End - Modified by Arpita Soni on 01/17/2015 for Ticket #1071
 

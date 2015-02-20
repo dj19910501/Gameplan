@@ -707,7 +707,7 @@
             });
         }
     }
-    $("#TacticCost").keyup(function () {
+    $("#TacticCost").focusout(function () {
         var tacticBudgetValue = ReplaceCC($("#TacticCost").val());
         if (tacticBudgetValue == '' || typeof tacticBudgetValue == 'undefined') {
             $("#TacticCost").val('$0')

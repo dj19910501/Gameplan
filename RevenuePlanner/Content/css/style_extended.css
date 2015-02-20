@@ -2935,6 +2935,9 @@ label {
         margin: 0;
         width: 235px;
         cursor: text;
+        overflow: hidden;
+       text-overflow: ellipsis;
+       white-space: nowrap;
     }
 
     .user-permissions .radioGrp .check_signup {
