@@ -110,18 +110,18 @@
         {
             if (INQLastSync != null)
             {
-            <span style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 11px;">@Html.LabelForINQ("INQ") synced at @INQLastSync.ToString("hh:mm tt,MM/dd/yy").ToLower()</span>           
+            <span style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 11px;">@Html.LabelForINQ("INQ") synced on @INQLastSync.ToString("MMM dd,yyyy hh:mm tt").ToLower()</span>           
             <br />
            }
            if (MQLLastSync != null)
            {
-        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced at @MQLLastSync.ToString("hh:mm tt,MM/dd/yy").ToLower()</span>
+        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced on @MQLLastSync.ToString("MMM dd,yyyy hh:mm tt").ToLower()</span>
         <br />
            }
            if (CWLastSync != null)
            {
             
-        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced at @CWLastSync.ToString("hh:mm tt,MM/dd/yy").ToLower()</span>
+        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced on @CWLastSync.ToString("MMM dd,yyyy hh:mm tt").ToLower()</span>
            }
 
        }
