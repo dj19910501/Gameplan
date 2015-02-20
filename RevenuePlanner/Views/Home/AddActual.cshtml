@@ -85,7 +85,7 @@
                     <div id="accordion-@CustomField.CustomFieldId" class="dropdown-section accordion CustomFieldAccordian">
                         <div class="accordion-group">
                             <div class="accordion-heading">
-                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-@CustomField.CustomFieldId" href="#accordion-element-@CustomField.CustomFieldId">@CustomField.Title<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-@CustomField.CustomFieldId" href="#accordion-element-@CustomField.CustomFieldId"><span class="sidebar_label tipsyclassTitle">@CustomField.Title</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                             </div>
                             <div id="accordion-element-@CustomField.CustomFieldId" class="accordion-body collapse">
                                 @{ var currentCustomFieldOptions = Model.lstCustomFieldOptions.Where(option => option.CustomFieldId == CustomField.CustomFieldId).ToList(); }
@@ -246,7 +246,7 @@
             displayconfirm('@Url.Action("Assortment", "Plan")');
         });
         //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
-
+        NumberFormatterTipsyTitle(".tipsyclassTitle", 20);
     });//document ready
 
 
