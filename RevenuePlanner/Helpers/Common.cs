@@ -1496,7 +1496,7 @@ namespace RevenuePlanner.Helpers
                         List<Model_Funnel_Stage> modelFunnelStageList = objDbMrpEntities.Model_Funnel_Stage.Where(modelfunnelstage => modelfunnelids.Contains(modelfunnelstage.ModelFunnelId) && modelfunnelstage.StageType == CR).ToList();
 
 
-                        double ADSValue = objDbMrpEntities.Model_Funnel.Single(mf => mf.ModelId == objPlan.ModelId && mf.Funnel.Title == marketing).AverageDealSize;
+                        double ADSValue = modelFunnelList.Select(modelfunnel => modelfunnel.AverageDealSize).FirstOrDefault();
                         List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
                         objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(modelfunnelids, objPlan.GoalType, objPlan.GoalValue.ToString(), ADSValue, stageList, modelFunnelStageList);
                     }
@@ -2530,7 +2530,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="tlist">List collection of tactics</param>
         /// <param name="isIncludeImprovement">boolean flag that indicate tactic included imporvement sections</param>
         /// <returns>returns list tactic stage values</returns>
-        public static List<TacticStageValue> GetTacticStageRelation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true)
+        public static List<TacticStageValue> GetTacticStageRelation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true,bool IsReport = false)
         {
             MRPEntities objDbMRPEntities = new MRPEntities();
             //// Compute the tactic relation list
@@ -2538,7 +2538,7 @@ namespace RevenuePlanner.Helpers
             List<Stage> stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
             //// Fetch the tactic stages and it's value
             //// Return finalized TacticStageValue list to the Parent method 
-            return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, false); ;
+            return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, false,IsReport); ;
         }
 
         /// <summary>
@@ -2549,16 +2549,16 @@ namespace RevenuePlanner.Helpers
         /// <param name="tlist">List collection of tactics</param>
         /// <param name="isIncludeImprovement">boolean flag that indicate tactic included imporvement sections</param>
         /// <returns></returns>
-        public static List<TacticStageValue> GetTacticStageRelationForSinglePlan(List<Plan_Campaign_Program_Tactic> tlist, List<StageRelation> bestInClassStageRelation, List<StageList> stageListType, List<ModelStageRelationList> modleStageRelationList, List<ImprovementTacticType_Metric> improvementTacticTypeMetric, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, List<ModelDateList> modelDateList, int ModelId, List<Stage> stageList, bool isIncludeImprovement = true)
+        public static List<TacticStageValue> GetTacticStageRelationForSinglePlan(List<Plan_Campaign_Program_Tactic> tlist, List<StageRelation> bestInClassStageRelation, List<StageList> stageListType, List<ModelStageRelationList> modleStageRelationList, List<ImprovementTacticType_Metric> improvementTacticTypeMetric, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, List<ModelDateList> modelDateList, int ModelId, List<Stage> stageList, bool isIncludeImprovement = true, bool IsReport = false)
         {
             //Compute the tactic relation list
             List<TacticStageValueRelation> tacticValueRelationList = GetCalculationForSinglePlan(tlist, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, ModelId, isIncludeImprovement);
             //fetch the tactic stages and it's value
             //Return finalized TacticStageValue list to the Parent method 
-            return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, true);
+            return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, true, IsReport);
         }
 
-        public static List<TacticStageValue> GetTacticStageValueList(List<Plan_Campaign_Program_Tactic> tlist, List<TacticStageValueRelation> tacticValueRelationList, List<Stage> stageList, bool isSinglePlan = false)
+        public static List<TacticStageValue> GetTacticStageValueList(List<Plan_Campaign_Program_Tactic> tlist, List<TacticStageValueRelation> tacticValueRelationList, List<Stage> stageList, bool isSinglePlan = false, bool IsReport=false)
         {
             MRPEntities dbStage = new MRPEntities();
             List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
@@ -2587,12 +2587,6 @@ namespace RevenuePlanner.Helpers
                 actualTacticList = dbStage.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
             }
 
-            string EntTacticType = Enums.EntityType.Tactic.ToString();
-            List<TacticCustomFieldStageWeightage> lstMapTacticStageWeightage = new List<TacticCustomFieldStageWeightage>();
-            List<CustomField_Entity> lstTacticCustomFieldEntity = new List<CustomField_Entity>();
-            List<CustomField_Entity> tblCustomFieldEntities = dbStage.CustomField_Entity.ToList().Where(CustEnt => tlist.Select(tac => tac.PlanTacticId).Contains(CustEnt.EntityId) && CustEnt.CustomField.EntityType.Equals(EntTacticType)).ToList();
-           // List<CustomField_Entity_StageWeight> tblStageWeightage = dbStage.CustomField_Entity_StageWeight.ToList().Where(_stage => tblCustomFieldEntities.Select(CustEnt => CustEnt.CustomFieldEntityId).Contains(_stage.CustomFieldEntityId)).ToList();
-            
             //Ittrate the Plan_Campaign_Program_Tactic list and Assign it to TacticStageValue 
             foreach (Plan_Campaign_Program_Tactic tactic in tlist)
             {
@@ -2620,10 +2614,20 @@ namespace RevenuePlanner.Helpers
                     tacticStageValueObj.ActualTacticList = actualTacticList.Where(a => a.PlanTacticId == tactic.PlanTacticId).ToList();
                 }
 
+                //// If Page request called from Report page then set Stage weightages.
+                if (IsReport)
+                {
+
                 #region "Get Tactic Stage-Weightage"
+                    string EntTacticType = Enums.EntityType.Tactic.ToString();
+                    List<TacticCustomFieldStageWeightage> lstMapTacticStageWeightage = new List<TacticCustomFieldStageWeightage>();
+                    List<CustomField_Entity> lstTacticCustomFieldEntity = new List<CustomField_Entity>();
+                    List<CustomField_Entity> tblCustomFieldEntities = dbStage.CustomField_Entity.ToList().Where(CustEnt => tlist.Select(tac => tac.PlanTacticId).Contains(CustEnt.EntityId) && CustEnt.CustomField.EntityType.Equals(EntTacticType)).ToList();
+                    //List<CustomField_Entity_StageWeight> tblStageWeightage = dbStage.CustomField_Entity_StageWeight.ToList().Where(_stage => tblCustomFieldEntities.Select(CustEnt => CustEnt.CustomFieldEntityId).Contains(_stage.CustomFieldEntityId)).ToList();
+                    
                 lstTacticCustomFieldEntity = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).ToList();
                 TacticCustomFieldStageWeightage objStageWeightage = null;
-                //List<CustomField_Entity_StageWeight> lstTacticStageWeightage = new List<CustomField_Entity_StageWeight>();
+                
                 string MQLStageCode = Enums.Stage.MQL.ToString();
                 string CWStageCode = Enums.Stage.CW.ToString();
                 string INQStageCode = Enums.InspectStage.ProjectedStageValue.ToString();
@@ -2638,9 +2642,9 @@ namespace RevenuePlanner.Helpers
                     objStageWeightage.CVRWeightage = objCustmEnt.Weightage != null && objCustmEnt.Weightage.Value != null ? objCustmEnt.Weightage.Value : 0;
                     lstMapTacticStageWeightage.Add(objStageWeightage);
                 }
-
-                #endregion
                 tacticStageValueObj.TacticStageWeightages = lstMapTacticStageWeightage;
+                    #endregion
+                }
                 tacticStageList.Add(tacticStageValueObj);
             }
             //Return finalized TacticStageValue list to the Parent method 
@@ -3141,7 +3145,7 @@ namespace RevenuePlanner.Helpers
             List<StageList> stageListType = GetStageList();
             int? ModelId = objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId;
             List<ModelDateList> modelDateList = new List<ModelDateList>();
-            var ModelList = db.Models.Where(m => m.IsDeleted == false);
+            List<Model> ModelList = db.Models.Where(m => m.IsDeleted == false).ToList();
             int MainModelId = (int)ModelId;
             while (ModelId != null)
             {
