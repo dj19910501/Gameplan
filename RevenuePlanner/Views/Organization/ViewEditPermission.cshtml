@@ -73,7 +73,7 @@
                                 @foreach (var item in Model.Where(act => act.ParentId == headerItem.ApplicationActivityId))
                                 {
                                     <div class="dd-row">
-                                        <label>@Html.Raw(item.Title)</label>
+                                        <label title="@Html.Raw(item.Title)">@Html.Raw(item.Title)</label>
                                         <span>@item.Permission</span>
                                     </div>
                                 }
@@ -90,7 +90,7 @@
                                 @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == customField.CustomFieldId.ToString()))
                                 {
                                     <div class="dd-row">
-                                        <label>@item.Title</label>
+                                        <label title="@item.Title">@item.Title</label>
                                         <span>@item.permissiontext</span>
                                     </div>
                                 }
@@ -136,7 +136,7 @@ else
                                 @foreach (var item in Model.Where(act => act.ParentId == headerItem.ApplicationActivityId))
                                 {
                                     <div class="dd-row">
-                                        <label>@Html.Raw(item.Title)</label>
+                                        <label title="@Html.Raw(item.Title)">@Html.Raw(item.Title)</label>
                                         @if (item.Permission == "Yes")
                                         {
                                             <span class="radioGrp">
@@ -178,7 +178,7 @@ else
                                 @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == customField.CustomFieldId.ToString()))
                                 {
                                     <div class="dd-row">
-                                        <label>@item.Title</label>
+                                        <label title="@item.Title">@item.Title</label>
                                         <span class="radioGrp">
                                             <span class="check_signup">
                                             @if (@item.Permission == 0)
