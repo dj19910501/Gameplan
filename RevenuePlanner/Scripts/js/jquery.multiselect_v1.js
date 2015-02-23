@@ -239,9 +239,9 @@
                 }
 
                 // add the title and close everything off
-                html += ' /><span>' + description + '</span></label></li>';
+                html += ' /><span class="tipsyTitle" title="'+ description + '">' + description + '</span></label></li>';
             });
-
+            
             // insert into the DOM
             checkboxContainer.html(html);
 
