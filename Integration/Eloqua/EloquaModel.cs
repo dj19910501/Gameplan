@@ -80,13 +80,6 @@ namespace Integration.Eloqua
         public List<string> membershipDeletions { get; set; }
     }
 
-    public class ContactListContactModel
-    {
-        public List<elements> elements { get; set; }
-        public string page { get; set; }
-        public string pageSize { get; set; }
-        public string total { get; set; }
-    }
 
     public class elements
     {

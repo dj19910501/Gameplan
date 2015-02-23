@@ -53,7 +53,7 @@ namespace RevenuePlanner.Controllers
             {
                 var dbList = db.IntegrationTypes.Where(it => it.IsDeleted.Equals(false)).Select(it => it).ToList();
                 IntegrationList = dbList.Select(it => new SelectListItem() { Text = it.Title, Value = it.IntegrationTypeId.ToString(), Selected = false })
-                                .OrderBy(it => it.Text , new AlphaNumericComparer()).ToList();
+                                .OrderBy(it => it.Text, new AlphaNumericComparer()).ToList();
             }
             catch (Exception e)
             {
@@ -84,40 +84,9 @@ namespace RevenuePlanner.Controllers
                 Provider = (intgrtn.IntegrationType.Title == null || intgrtn.IntegrationType.Title.ToString() == "null") ? "" : intgrtn.IntegrationType.Title.ToString(),
                 LastSyncStatus = string.IsNullOrWhiteSpace(intgrtn.LastSyncStatus) ? Common.TextForModelIntegrationInstanceTypeOrLastSyncNull : intgrtn.LastSyncStatus.ToString(),
                 LastSyncDate = (intgrtn.LastSyncDate.HasValue ? Convert.ToDateTime(intgrtn.LastSyncDate).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull),
-            }).OrderByDescending(intgrtn => intgrtn.Instance,new AlphaNumericComparer()).ToList();
+            }).OrderByDescending(intgrtn => intgrtn.Instance, new AlphaNumericComparer()).ToList();
 
             return Json(returnList, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Get IntegrationType List to fill IntegrationType Combo
-        /// </summary>
-        /// <returns></returns>
-        public JsonResult GetIntegrationTypeList()
-        {
-            IList<SelectListItem> IntegrationList = new List<SelectListItem>();
-            try
-            {
-                //// Get IntegrationTypes list.
-                var dbList = db.IntegrationTypes.Where(it => it.IsDeleted.Equals(false)).Select(it => it).ToList();
-                IntegrationList = dbList.Select(it => new SelectListItem() { Text = it.Title, Value = it.IntegrationTypeId.ToString(), Selected = false })
-                                .OrderBy(it => it.Text).ToList();
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
-
-            if (IntegrationList != null)
-            {
-                SelectListItem objDefaultEntry = new SelectListItem();
-                objDefaultEntry.Value = "0";
-                objDefaultEntry.Text = "Add New Integration";
-                objDefaultEntry.Selected = true;
-                IntegrationList.Insert(0, objDefaultEntry);
-            }
-
-            return Json(IntegrationList, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -191,13 +160,7 @@ namespace RevenuePlanner.Controllers
                     //// Set permission for the plan on bases of BU permission
                     foreach (var item in objIntegrationPlanList)
                     {
-                    //    foreach (var list in lstUserCustomRestriction)
-                    //    {
-                    //        if (item.BUId.ToString() == list.CustomFieldId)
-                    //        {
-                                item.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                    //        }
-                    //    }
+                        item.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                     }
                 }
             }
@@ -682,7 +645,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.integrationTypeId = IntegrationTypeId;
 
             //// Flag to check whether MQL field show or not at Edit or View mode based on clientID.
-            ViewBag.IsMQLShow = IsMQLShow;              
+            ViewBag.IsMQLShow = IsMQLShow;
 
             populateSyncFreqData();
             if (id > 0)

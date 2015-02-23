@@ -280,25 +280,29 @@ namespace Integration.Salesforce
 
             //// Get list of EloquaIntegrationInstanceTacticID(EloquaId).
             List<EloquaIntegrationInstanceTactic_Model_Mapping> lstEloquaIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => lstEloquaPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IntegrationInstanceTacticId != null).Select(_tac => new EloquaIntegrationInstanceTactic_Model_Mapping
-                                                                                                                                                                                                                                                                                     { EloquaIntegrationInstanceTacticId=_tac.IntegrationInstanceTacticId,
+                                                                                                                                                                                                                                                                                     {
+                                                                                                                                                                                                                                                                                         EloquaIntegrationInstanceTacticId = _tac.IntegrationInstanceTacticId,
                                                                                                                                                                                                                                                                                        ModelIntegrationInstanceId = _tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId.Value
                                                                                                                                                                                                                                                                                      }).ToList();
 
             if (lstEloquaIntegrationInstanceTacticIds == null)
                 lstEloquaIntegrationInstanceTacticIds = new List<EloquaIntegrationInstanceTactic_Model_Mapping>();
 
+            //// Add IntegrationEloquaClient object to Mapping list for distinct ModelIntegrationInstanceId.
             //// Get Mapping List of SalesForceIntegrationInstanceTactic Ids(CRMIds) based on EloquaIntegrationInstanceTacticID(EloquaId).
             List<CRM_EloquaMapping> lstSalesForceIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
-            foreach (EloquaIntegrationInstanceTactic_Model_Mapping _EloquaTac in lstEloquaIntegrationInstanceTacticIds)
-            {
-                if (!string.IsNullOrEmpty(_EloquaTac.EloquaIntegrationInstanceTacticId))
+            foreach (int _ModelIntegrationInstanceId in lstEloquaIntegrationInstanceTacticIds.Select(tac => tac.ModelIntegrationInstanceId).Distinct())
                 {
                     try
                     {
+                    Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(_ModelIntegrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+                    foreach (EloquaIntegrationInstanceTactic_Model_Mapping _EloquaTac in lstEloquaIntegrationInstanceTacticIds.Where(_eloqua => _eloqua.ModelIntegrationInstanceId.Equals(_ModelIntegrationInstanceId)))
+                    {
+                        //objEloqua.IntegrationEloquaClient = integrationEloquaClient;
+                        if (!string.IsNullOrEmpty(_EloquaTac.EloquaIntegrationInstanceTacticId))
+                        {
+
                     Integration.Eloqua.EloquaCampaign objEloqua = new Integration.Eloqua.EloquaCampaign();
-                    
-                    //// Initialize eloqua integration instance
-                    Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(Convert.ToInt32(_EloquaTac.ModelIntegrationInstanceId), 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
                     
                     ////Get SalesForceIntegrationTacticId based on EloquaIntegrationTacticId.
                     objEloqua = integrationEloquaClient.GetEloquaCampaign(_EloquaTac.EloquaIntegrationInstanceTacticId);
@@ -315,10 +319,11 @@ namespace Integration.Salesforce
                                                                   });
                         }
                     }
+                    }
+                }
                     catch (Exception)
                     {
                         continue;
-                    }
                 }
             }
 
@@ -608,18 +613,20 @@ namespace Integration.Salesforce
             if (lstEloquaIntegrationInstanceTacticIds == null)
                 lstEloquaIntegrationInstanceTacticIds = new List<EloquaIntegrationInstanceTactic_Model_Mapping>();
 
+            //// Add IntegrationEloquaClient object to Mapping list for distinct ModelIntegrationInstanceId.
             //// Get Mapping List of SalesForceIntegrationInstanceTactic Ids(CRMIds) based on EloquaIntegrationInstanceTacticID(EloquaId).
             List<CRM_EloquaMapping> lstSalesForceIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
-            foreach (EloquaIntegrationInstanceTactic_Model_Mapping _EloquaTac in lstEloquaIntegrationInstanceTacticIds)
-            {
-                if (!string.IsNullOrEmpty(_EloquaTac.EloquaIntegrationInstanceTacticId))
+            foreach (int _ModelIntegrationInstanceId in lstEloquaIntegrationInstanceTacticIds.Select(tac => tac.ModelIntegrationInstanceId).Distinct())
                 {
                     try
                     {
-                    Integration.Eloqua.EloquaCampaign objEloqua = new Integration.Eloqua.EloquaCampaign();
+                    Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(_ModelIntegrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+                    foreach (EloquaIntegrationInstanceTactic_Model_Mapping _EloquaTac in lstEloquaIntegrationInstanceTacticIds.Where(_eloqua => _eloqua.ModelIntegrationInstanceId.Equals(_ModelIntegrationInstanceId)))
+                    {
+                        if (!string.IsNullOrEmpty(_EloquaTac.EloquaIntegrationInstanceTacticId))
+                        {
 
-                    //// Initialize eloqua integration instance
-                    Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(Convert.ToInt32(_EloquaTac.ModelIntegrationInstanceId), 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+                    Integration.Eloqua.EloquaCampaign objEloqua = new Integration.Eloqua.EloquaCampaign();
 
                     ////Get SalesForceIntegrationTacticId based on EloquaIntegrationTacticId.
                     objEloqua = integrationEloquaClient.GetEloquaCampaign(_EloquaTac.EloquaIntegrationInstanceTacticId);
@@ -636,10 +643,11 @@ namespace Integration.Salesforce
                                                                   });
                     }
                 }
+                    }
+                }
                     catch (Exception)
                     {
                         continue;
-                    }
                 }
             }
 
@@ -1005,161 +1013,6 @@ namespace Integration.Salesforce
             public double actualCost { get; set; }
         }
 
-        //private void GetDataForTacticandUpdate()
-        //{
-        //    // Insert log into IntegrationInstanceSection, Dharmraj PL#684
-        //    int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.ImportActual.ToString(), DateTime.Now, _userId);
-
-        //    string actualCost = "CostActual";
-
-        //    var fieldname = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId) && mapping.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
-        //                                                                    mapping.GameplanDataType.ActualFieldName == actualCost).Select(mapping => mapping.TargetDataType).FirstOrDefault();
-        //    if (fieldname != null)
-        //    {
-        //        // Change id for in which it get actual value
-        //        List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
-        //        Guid ClientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
-        //        // Get List of status after Approved Status
-        //        List<string> statusList = Common.GetStatusListAfterApproved();
-        //        List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && statusList.Contains(t.Status) && t.IsDeployedToIntegration && t.IntegrationInstanceTacticId != null).ToList();
-        //        string integrationTacticIds = String.Join("','", (from tactic in tacticList select tactic.IntegrationInstanceTacticId));
-        //        if (integrationTacticIds != string.Empty)
-        //        {
-        //            try
-        //            {
-        //                bool ErrorFlag = false;
-        //                List<ImportCostMember> ImportCostMemberList = new List<ImportCostMember>();
-        //                var ActualCostList = _client.Query<object>("SELECT " + fieldname + "," + ColumnId + " FROM " + this.objectName + " WHERE " + ColumnId + " in ('" + integrationTacticIds + "')");
-
-        //                foreach (var resultin in ActualCostList)
-        //                {
-        //                    string TacticResult = resultin.ToString();
-        //                    JObject jobj = JObject.Parse(TacticResult);
-        //                    ImportCostMember objImport = new ImportCostMember();
-        //                    try
-        //                    {
-        //                        objImport.CampaignId = Convert.ToString(jobj[ColumnId]);
-        //                        objImport.actualCost = Convert.ToDouble(jobj[fieldname]);
-        //                    }
-        //                    catch (Exception ex)
-        //                    {
-        //                        ErrorFlag = true;
-        //                        string TacticId =Convert.ToString(jobj[ColumnId]);
-        //                        var tactic = tacticList.SingleOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
-        //                        IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-        //                        instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-        //                        instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-        //                        instanceTactic.EntityId = tactic.PlanTacticId;
-        //                        instanceTactic.EntityType = EntityType.Tactic.ToString();
-        //                        instanceTactic.Status = StatusResult.Error.ToString();
-        //                        instanceTactic.Operation = Operation.Import_Cost.ToString();
-        //                        instanceTactic.SyncTimeStamp = DateTime.Now;
-        //                        instanceTactic.CreatedDate = DateTime.Now;
-        //                        instanceTactic.ErrorDescription = ex.Message;
-        //                        instanceTactic.CreatedBy = _userId;
-        //                        db.Entry(instanceTactic).State = EntityState.Added;
-        //                    }
-        //                    ImportCostMemberList.Add(objImport);
-        //                }
-        //                db.SaveChanges();
-
-        //                if (ImportCostMemberList.Count > 0)
-        //                {
-        //                    List<string> IntegrationTacticIdList = ImportCostMemberList.Select(import => import.CampaignId).Distinct().ToList();
-        //                    List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => IntegrationTacticIdList.Contains(t.IntegrationInstanceTacticId)).ToList();
-
-        //                    //Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
-        //                    List<Plan_Campaign_Program_Tactic_Actual> actualTacicList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => IntegrationTacticIdList.Contains(ta.Plan_Campaign_Program_Tactic.IntegrationInstanceTacticId) && ta.StageTitle == Common.StageCost).ToList();
-        //                    actualTacicList.ForEach(t => db.Entry(t).State = EntityState.Deleted);
-        //                    db.SaveChanges();
-
-        //                    foreach (var tactic in innerTacticList)
-        //                    {
-        //                        // Start Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
-        //                        //tactic.CostActual = ImportCostMemberList.SingleOrDefault(import => import.CampaignId == tactic.IntegrationInstanceTacticId).actualCost;
-        //                        double actualValue = ImportCostMemberList.SingleOrDefault(import => import.CampaignId == tactic.IntegrationInstanceTacticId).actualCost;
-        //                        int totalMonth = 0;
-        //                        if (tactic.StartDate.Month == tactic.EndDate.Month)
-        //                        {
-        //                            totalMonth = 1;
-        //                        }
-        //                        else
-        //                        {
-        //                            totalMonth = tactic.EndDate.Month - tactic.StartDate.Month + 1;
-        //                        }
-
-        //                        double actualValueTotalTemp = 0;
-        //                        for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
-        //                        {
-        //                            double actualValueMonthWise = Math.Round(actualValue / totalMonth);
-        //                            actualValueTotalTemp += actualValueMonthWise;
-        //                            if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
-        //                            {
-        //                                actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
-        //                            }
-
-        //                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-        //                            actualTactic.Actualvalue = actualValueMonthWise;
-        //                            actualTactic.PlanTacticId = tactic.PlanTacticId;
-        //                            actualTactic.Period = "Y" + iMonth;
-        //                            actualTactic.StageTitle = Common.StageCost;
-        //                            //change date & created by
-        //                            actualTactic.CreatedDate = DateTime.Now;
-        //                            actualTactic.CreatedBy = _userId;
-        //                            db.Entry(actualTactic).State = EntityState.Added;
-        //                        }
-
-        //                        // End Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
-
-        //                        tactic.ModifiedBy = _userId;
-        //                        tactic.ModifiedDate = DateTime.Now;
-        //                        tactic.LastSyncDate = DateTime.Now;
-
-        //                        IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-        //                        instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-        //                        instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-        //                        instanceTactic.EntityId = tactic.PlanTacticId;
-        //                        instanceTactic.EntityType = EntityType.Tactic.ToString();
-        //                        instanceTactic.Status = StatusResult.Success.ToString();
-        //                        instanceTactic.Operation = Operation.Import_Cost.ToString();
-        //                        instanceTactic.SyncTimeStamp = DateTime.Now;
-        //                        instanceTactic.CreatedDate = DateTime.Now;
-        //                        instanceTactic.CreatedBy = _userId;
-        //                        db.Entry(instanceTactic).State = EntityState.Added;
-        //                    }
-        //                    db.SaveChanges();
-        //                }
-
-        //                if (ErrorFlag)
-        //                {
-        //                    // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-        //                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Empty);
-        //                }
-        //                else
-        //                {
-        //                    // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-        //                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
-        //                }
-        //            }
-        //            catch (SalesforceException e)
-        //            {
-        //                string msg = GetErrorMessage(e);                       
-        //                // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-        //                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-        //            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-        //        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, Common.msgMappingFieldsNotFound);
-        //    }
-        //}
 
         /// <summary>
         /// Function to set mapping details.

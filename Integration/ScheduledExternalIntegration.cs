@@ -27,12 +27,9 @@ namespace Integration
         }
         public void ScheduledSync()
         {
-            //string dayWeek = DateTime.Now.DayOfWeek.ToString();
-            //TimeSpan ts = new TimeSpan(DateTime.Now.Hour, 0, 0);
             DateTime currentDate = DateTime.Now;
             int todaysDay = currentDate.Day;
             int currentHour = currentDate.Hour;
-            //Guid applicationId=
             var lstIntegrationInstanceId = db.SyncFrequencies.Where(varS => varS.NextSyncDate.Value.Day == todaysDay &&
                                                                             varS.NextSyncDate.Value.Hour == currentHour &&
                                                                             varS.IntegrationInstance.IsDeleted == false)////Modified by Mitesh Vaishnav For PL ticket #743 -Actuals Inspect: User Name for Scheduler Integration (Add condition for checking isDeleted flag)
@@ -45,21 +42,6 @@ namespace Integration
                 ExternalIntegration objInt = new ExternalIntegration(id,_applicationId);
                 objInt.Sync();
             }
-
-            //foreach (var id in lstIntegrationInstanceId)
-            //{
-            //    //var t = Task.Factory.StartNew(() => UpdateNextSyncDate(id),TaskCreationOptions.LongRunning);
-            //    UpdateNextSyncDate(id);
-            //    //ExternalIntegration objInt = new ExternalIntegration(id);
-            //    var t = Task.Factory.StartNew(() => new ExternalIntegration(id).Sync(), TaskCreationOptions.LongRunning);
-            //}
-
-            //Parallel.ForEach(lstIntegrationInstanceId, id =>
-            //{
-            //    UpdateNextSyncDate(id);
-            //    ExternalIntegration objInt = new ExternalIntegration(id);
-            //    objInt.Sync();
-            //});
 
         }
 

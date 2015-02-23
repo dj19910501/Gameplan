@@ -24,7 +24,6 @@ namespace Integration.Helper
         public static string ClosedWon = "Closed Won";
         public static string StageCW = "CW";
         public static string StageRevenue = "Revenue";
-        public static string StageCost = "Cost";
 
         public static string StageMQL = "MQL";
         public static string MQLStageValue = "MQL";
@@ -45,7 +44,6 @@ namespace Integration.Helper
         public static string msgNotConnectToExternalServer = "Error: Could not connect to Integration Instance External Server";
         public static string msgRequiredColumnNotExistEloquaPullResponse = "Error: Response doesn't contains EloquaCampaignID or ExternalCampaignID or ResponseDateTime columns";
         public static string msgFileNotFound = "File not found";
-        public static string msgMappingFieldsNotFound = "Mapping fields not found";
         public static string msgMappingNotFoundForSalesforcePullResponse = "Error: Mapping not found for CampaignId or FirstRespondedDate or Status";
         public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping not found for CampaignId or CloseDate or Amount or StageName or Response Date";
         public static string msgMappingNotFoundForEloquaPullMQL = "Error: Mapping not found for CampaignId or MQLDateId or ViewId or ListId";
