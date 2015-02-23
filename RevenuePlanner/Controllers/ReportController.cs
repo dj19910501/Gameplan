@@ -4461,7 +4461,7 @@ namespace RevenuePlanner.Controllers
 
                         if (objTacticStageWeightage != null)
                         {
-                            weightage = objTacticStageWeightage.CVRWeightage;
+                            weightage = objTacticStageWeightage.CostWeightage;
                         }
                     }
                     else
