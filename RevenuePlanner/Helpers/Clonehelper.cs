@@ -98,11 +98,15 @@ namespace RevenuePlanner.Helpers
                             t.CreatedDate = DateTime.Now;
                             t.Status = TacticStatus;
                             t.Plan_Campaign_Program_Tactic_Comment = null;
-                            t.Tactic_Share = null;                           
+                            t.Tactic_Share = null;
                             //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                             t.ModifiedDate = null;
                             t.ModifiedBy = null;
                             //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
+                            ////Start- Added by Mitesh Vaishnav for PL ticket #1129
+                            t.IntegrationInstanceCampaignId = null;
+                            t.LastSyncDate = null;
+                            ////End- Added by Mitesh Vaishnav for PL ticket #1129
                             //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                             t.StartDate = t.StartDate.AddYears(DateTime.Now.Year - t.StartDate.Year);
                             t.EndDate = t.EndDate.AddYears(DateTime.Now.Year - t.EndDate.Year);
@@ -111,13 +115,17 @@ namespace RevenuePlanner.Helpers
                             t.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(pcp =>
                             {
                                 pcp.Plan_Campaign_Program_Tactic_Comment = null;
-                                pcp.Tactic_Share = null;                                
+                                pcp.Tactic_Share = null;
                                 pcp.Status = TacticStatus;
                                 //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                 pcp.CreatedDate = DateTime.Now;
                                 pcp.ModifiedDate = null;
                                 pcp.ModifiedBy = null;
                                 //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
+                                ////Start- Added by Mitesh Vaishnav for PL ticket #1129
+                                pcp.IntegrationInstanceProgramId = null;
+                                pcp.LastSyncDate = null;
+                                ////End- Added by Mitesh Vaishnav for PL ticket #1129
                                 //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                 pcp.StartDate = pcp.StartDate.AddYears(DateTime.Now.Year - pcp.StartDate.Year);
                                 pcp.EndDate = pcp.EndDate.AddYears(DateTime.Now.Year - pcp.EndDate.Year);
@@ -127,7 +135,7 @@ namespace RevenuePlanner.Helpers
                                 {
                                     pcpt.Plan_Campaign_Program_Tactic_Actual = null;
                                     pcpt.Plan_Campaign_Program_Tactic_Comment = null;
-                                    pcpt.Tactic_Share = null;                                    
+                                    pcpt.Tactic_Share = null;
                                     pcpt.Plan_Campaign_Program_Tactic1 = null;
                                     pcpt.Plan_Campaign_Program_Tactic2 = null;
                                     pcpt.Stage = null;
@@ -139,6 +147,10 @@ namespace RevenuePlanner.Helpers
                                     pcpt.ModifiedBy = null;
                                     pcpt.TacticCustomName = null;
                                     //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
+                                    ////Start- Added by Mitesh Vaishnav for PL ticket #1129
+                                    pcpt.IntegrationInstanceTacticId = null;
+                                    pcpt.LastSyncDate = null;
+                                    ////End- Added by Mitesh Vaishnav for PL ticket #1129
                                     //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                     pcpt.StartDate = pcpt.StartDate.AddYears(DateTime.Now.Year - pcpt.StartDate.Year);
                                     pcpt.EndDate = pcpt.EndDate.AddYears(DateTime.Now.Year - pcpt.EndDate.Year);
@@ -251,31 +263,38 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.CreatedDate = DateTime.Now;
                     objPlanCampaign.Title = (objPlanCampaign.Title + Suffix);
                     objPlanCampaign.Plan_Campaign_Program_Tactic_Comment = null;
-                    objPlanCampaign.Plan = null;                    
+                    objPlanCampaign.Plan = null;
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaign.ModifiedDate = null;
                     objPlanCampaign.ModifiedBy = null;
                     //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
-                    objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();                    
+                    objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
                     objPlanCampaign.Status = TacticStatus;
                     objPlanCampaign.IntegrationInstanceCampaignId = null;
+                    ////Start- Added by Mitesh Vaishnav for PL ticket #1129
+                    objPlanCampaign.LastSyncDate = null;
+                    ////End- Added by Mitesh Vaishnav for PL ticket #1129
                     objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
                         {
                             t.Tactic_Share = null;
                             t.Plan_Campaign_Program_Tactic_Comment = null;
                             t.CreatedDate = DateTime.Now;
-                            t.Status = TacticStatus;                           
+                            t.Status = TacticStatus;
                             //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             t.ModifiedDate = null;
                             t.ModifiedBy = null;
                             //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                            ////Start- Added by Mitesh Vaishnav for PL ticket #1129
+                            t.IntegrationInstanceProgramId = null;
+                            t.LastSyncDate = null;
+                            ////End- Added by Mitesh Vaishnav for PL ticket #1129
                             t.Plan_Campaign_Program_Budget = t.Plan_Campaign_Program_Budget;
                             t.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
                             {
                                 pcpt.Plan_Campaign_Program_Tactic_Actual = null;
                                 pcpt.Plan_Campaign_Program_Tactic_Comment = null;
-                                pcpt.Tactic_Share = null;                               
+                                pcpt.Tactic_Share = null;
                                 pcpt.Plan_Campaign_Program_Tactic1 = null;
                                 pcpt.Plan_Campaign_Program_Tactic2 = null;
                                 pcpt.Stage = null;
@@ -286,6 +305,10 @@ namespace RevenuePlanner.Helpers
                                 pcpt.ModifiedBy = null;
                                 pcpt.TacticCustomName = null;
                                 //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                                ////Start- Added by Mitesh Vaishnav for PL ticket #1129
+                                pcpt.IntegrationInstanceTacticId = null;
+                                pcpt.LastSyncDate = null;
+                                ////End- Added by Mitesh Vaishnav for PL ticket #1129
                                 pcpt.Status = TacticStatus;
                                 pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
@@ -378,10 +401,13 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignPrograms.CreatedDate = DateTime.Now;
                     objPlanCampaignPrograms.Title = (objPlanCampaignPrograms.Title + Suffix);
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic_Comment = null;
-                    objPlanCampaignPrograms.Plan_Campaign = null;                   
-                    objPlanCampaignPrograms.Tactic_Share = null;                    
+                    objPlanCampaignPrograms.Plan_Campaign = null;
+                    objPlanCampaignPrograms.Tactic_Share = null;
                     objPlanCampaignPrograms.Status = TacticStatus;
                     objPlanCampaignPrograms.IntegrationInstanceProgramId = null;
+                    ////Start- Added by Mitesh Vaishnav for PL ticket #1129
+                    objPlanCampaignPrograms.LastSyncDate = null;
+                    ////End- Added by Mitesh Vaishnav for PL ticket #1129
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignPrograms.ModifiedDate = null;
                     objPlanCampaignPrograms.ModifiedBy = null;
@@ -392,18 +418,22 @@ namespace RevenuePlanner.Helpers
                         {
                             t.CreatedDate = DateTime.Now;
                             t.Plan_Campaign_Program_Tactic_Comment = null;
-                            t.Plan_Campaign_Program_Tactic_Actual = null;                            
+                            t.Plan_Campaign_Program_Tactic_Actual = null;
                             t.Plan_Campaign_Program_Tactic1 = null;
                             t.Plan_Campaign_Program_Tactic2 = null;
                             t.Stage = null;
                             t.Tactic_Share = null;
-                            t.TacticType = null;                            
+                            t.TacticType = null;
                             t.Status = TacticStatus;
                             //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             t.ModifiedDate = null;
                             t.ModifiedBy = null;
                             t.TacticCustomName = null;
                             //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                            ////Start- Added by Mitesh Vaishnav for PL ticket #1129
+                            t.IntegrationInstanceTacticId = null;
+                            t.LastSyncDate = null;
+                            ////End- Added by Mitesh Vaishnav for PL ticket #1129
                             t.Plan_Campaign_Program_Tactic_Cost = t.Plan_Campaign_Program_Tactic_Cost.ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
@@ -489,6 +519,10 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.Tactic_Share = null;
                     objPlanCampaignProgramTactic.TacticCustomName = null;
                     objPlanCampaignProgramTactic.IntegrationInstanceTacticId = null;
+                    ////Start- Added by Mitesh Vaishnav for PL ticket #1129
+                    objPlanCampaignProgramTactic.LastSyncDate = null;
+                    ////End- Added by Mitesh Vaishnav for PL ticket #1129
+
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignProgramTactic.ModifiedDate = null;
                     objPlanCampaignProgramTactic.ModifiedBy = null;
