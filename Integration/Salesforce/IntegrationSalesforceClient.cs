@@ -716,11 +716,6 @@ namespace Integration.Salesforce
                                     if (jobj[Amount] != null && jobj[CloseDate] != null)
                                 {
                                     string campaignid = Convert.ToString(jobj[CampaignId]);
-                                    // Remove from here and add at last
-                                    //if (!AllIntegrationTacticIds.Contains(campaignid))
-                                    //{
-                                    //    campaignid = campaignid.Substring(0, 15);
-                                    //}
                                     objOpp.CampaignId = campaignid;
                                     objOpp.OpportunityId = Convert.ToString(jobj["Id"]);
                                     objOpp.CloseDate = Convert.ToDateTime(jobj[CloseDate]);
@@ -780,7 +775,6 @@ namespace Integration.Salesforce
 
                                 // Get campaign member from contact based on responded
                                 List<string> contactid = (from contact in ContactRoleList select contact.ContactId).ToList();
-                                //" + CampaignId + " IN ('" + AllIntegrationTacticIds + "') AND 
 
                                 var Contactmemberlist = _client.Query<object>("SELECT " + CampaignId + "," + ResponseDate + ",ContactId FROM CampaignMember WHERE ContactId IN (SELECT ContactId FROM OpportunityContactRole) AND HasResponded = True ORDER BY " + ResponseDate + " DESC");
                                 List<ContactCampaignMember> ContactCampaignMemberList = new List<ContactCampaignMember>();
