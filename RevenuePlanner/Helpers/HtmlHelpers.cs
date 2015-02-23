@@ -3711,7 +3711,7 @@ namespace RevenuePlanner.Helpers
                                     {
                                         string enableCheck = string.Empty;
                                         string inputcolorcss = "class=\"multiselect-input-text-color-grey\"";
-                                        if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
+                                        if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count==1 && item.isRequired))
                                         {
                                             name += objOption.value + ", ";
                                             enableCheck = "checked=\"checked\"";
@@ -3749,7 +3749,7 @@ namespace RevenuePlanner.Helpers
                                 {
                                     string enableCheck = string.Empty;
                                     
-                                    if (item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString()))
+                                    if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count==1 && item.isRequired))
                                     {
                                         name += objOption.value + ", ";
                                         enableCheck = "checked=\"checked\"";

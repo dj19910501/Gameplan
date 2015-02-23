@@ -2037,12 +2037,12 @@ namespace RevenuePlanner.Controllers
              Add number of stages for advance/Basic attributes waightage related to tacticType*/
             string entityType = Enums.Section.Tactic.ToString();
             /*Get existing value of Advance/Basic waightage of tactic's attributes*/
-            string customFieldType=Enums.CustomFieldType.DropDownList.ToString();
+            string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
             var customFieldEntity = (from customentity in db.CustomField_Entity
-                     where customentity.EntityId == id && 
-                     customentity.CustomField.EntityType == entityType &&
-                     customentity.CustomField.CustomFieldType.Name == customFieldType
-                     select customentity).ToList();
+                                     where customentity.EntityId == id &&
+                                     customentity.CustomField.EntityType == entityType &&
+                                     customentity.CustomField.CustomFieldType.Name == customFieldType
+                                     select customentity).ToList();
             var customfieldids = customFieldEntity.Select(customentity => customentity.CustomFieldId).ToList();
             var customOptionFieldList = db.CustomFieldOptions.Where(option => customfieldids.Contains(option.CustomFieldId)).ToList().Select(option => option.CustomFieldOptionId.ToString()).ToList();
 
@@ -2052,7 +2052,7 @@ namespace RevenuePlanner.Controllers
                 CostWeight = cfs.CostWeightage,
                 Weight = cfs.Weightage
             }).ToList();
-                ViewBag.customFieldWeightage = JsonConvert.SerializeObject(customFeildsWeightage);
+            ViewBag.customFieldWeightage = JsonConvert.SerializeObject(customFeildsWeightage);
             /*End : Added by Mitesh Vaishnav for PL ticket #1143*/
 
             //// if Mode is "View" or "undefined" then load ReadOnly mode of Setup tab for Tactic Inspect
@@ -2806,8 +2806,8 @@ namespace RevenuePlanner.Controllers
                     tnewList.Remove(tSameExist);
                 tnewList.Add(tobj);
             }
-
-            ViewBag.Tactics = tnewList.OrderBy(t => t.Title);
+           
+                ViewBag.Tactics = tnewList.OrderBy(t => t.Title);
             ViewBag.Year = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
             ippctm.TacticCost = pcpt.Cost;
             ippctm.AllocatedBy = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
@@ -2992,7 +2992,7 @@ namespace RevenuePlanner.Controllers
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                            objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
                                         objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
                                     }
@@ -3262,7 +3262,7 @@ namespace RevenuePlanner.Controllers
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
-                                            objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
                                         objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
                                         db.CustomField_Entity.Add(objcustomFieldEntity);
                                     }
@@ -3317,14 +3317,14 @@ namespace RevenuePlanner.Controllers
             var tactics = from _tacType in db.TacticTypes
                           join plan in db.Plans on _tacType.ModelId equals plan.ModelId
                           where plan.PlanId == Sessions.PlanId && (_tacType.IsDeleted == null || _tacType.IsDeleted == false) && _tacType.IsDeployedToModel == true //// Modified by Sohel Pathan on 17/07/2014 for PL ticket #594
-                          orderby _tacType.Title , new AlphaNumericComparer()
+                          orderby _tacType.Title, new AlphaNumericComparer()
                           select _tacType;
             foreach (var item in tactics)
             {
                 item.Title = HttpUtility.HtmlDecode(item.Title);
             }
-
-            ViewBag.Tactics = tactics;
+            
+                ViewBag.Tactics = tactics;
             ViewBag.IsCreated = true;
 
             var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == Sessions.PlanId);
@@ -3384,6 +3384,11 @@ namespace RevenuePlanner.Controllers
 
             pcptm.Owner = (userName.FirstName + " " + userName.LastName).ToString();
             #endregion
+
+            if (tactics.ToList().Count == 1)
+            {
+                pcptm.TacticTypeId = tactics.FirstOrDefault().TacticTypeId;
+            }
 
             return PartialView("SetupEditAdd", pcptm);
         }
@@ -4304,7 +4309,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.Tactics = from _imprvTactic in db.ImprovementTacticTypes
                                   where _imprvTactic.ClientId == Sessions.User.ClientId && _imprvTactic.IsDeployed == true && !impTacticList.Contains(_imprvTactic.ImprovementTacticTypeId)
                                   && _imprvTactic.IsDeleted == false
-                                  orderby _imprvTactic.Title,new AlphaNumericComparer()
+                                  orderby _imprvTactic.Title, new AlphaNumericComparer()
                                   select _imprvTactic;
                 ViewBag.IsCreated = true;
 
@@ -5665,7 +5670,7 @@ namespace RevenuePlanner.Controllers
             /// Get LineItemTypes List by ModelId for current PlanId.
             var lineItemTypes = from lit in db.LineItemTypes
                                 where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
-                                orderby lit.Title,new AlphaNumericComparer()
+                                orderby lit.Title, new AlphaNumericComparer()
                                 select lit;
             foreach (var item in lineItemTypes)
             {
