@@ -3641,7 +3641,7 @@ namespace RevenuePlanner.Helpers
                     {
                         if (mode == Enums.InspectPopupMode.Edit.ToString() && editableOptions == true)
                         {
-                            string DropDownStyle = "";
+                            string DropDownStyle = " style=\"";
                             string divPosition = "";
                             string require = "";
                             string name = "";
@@ -3653,7 +3653,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (fieldCounter % 4 == 3)
                             {
-                                DropDownStyle = " style=\"top:0px;margin-top:40px;\"";
+                                DropDownStyle += "top:0px;margin-top:40px;";
                                 divPosition = "style=\"position:relative;\"";
                             }
 
@@ -3688,7 +3688,7 @@ namespace RevenuePlanner.Helpers
                             {
                                
                                 sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn " + addResubmissionClass + "\"" + require + "  label=\"" + item.name + "\"><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
-                                sb.Append("<div class=\"dropdown-wrapper paddingBottom20px editdropdown\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\" style=\"display:none;\"><tr><td scope=\"col\" class=\"value_header top-head-attribute-header2\" style=\"display:none;\"><span>Value</span></td><td scope=\"col\" class=\"revenue_header top-head-attribute-cvr\" code=\"cvr\" title=\"CVR(%)\">CVR(%)</td><td scope=\"col\" class=\"cost_header top-head-attribute-cost\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
+                                sb.Append("<div class=\"dropdown-wrapper paddingBottom20px editdropdown\"" + DropDownStyle + "\"><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\" style=\"display:none;\"><tr><td scope=\"col\" class=\"value_header top-head-attribute-header2\" style=\"display:none;\"><span>Value</span></td><td scope=\"col\" class=\"revenue_header top-head-attribute-cvr\" code=\"cvr\" title=\"CVR(%)\">CVR(%)</td><td scope=\"col\" class=\"cost_header top-head-attribute-cost\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
                                 
                                 foreach (var objOption in item.option)
                                 {
@@ -3743,7 +3743,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 
                                 sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn\"" + require + "  label=\"" + item.name + "\"><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
-                                sb.Append("<div class=\"dropdown-wrapper editdropdown paddingBottom20px\"" + DropDownStyle + "><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"><tbody class=\"tbodycampaignprogram\">");
+                                sb.Append("<div class=\"dropdown-wrapper editdropdown paddingBottom20px\"" + DropDownStyle + "min-width:150px !important;\"><div class=\"drop-down_header\"><table border=\"0\" class=\"table_drpdwn\"><tbody class=\"tbodycampaignprogram\">");
                                
                                 foreach (var objOption in item.option)
                                 {
