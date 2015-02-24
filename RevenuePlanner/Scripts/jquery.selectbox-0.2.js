@@ -295,7 +295,7 @@
                             if (text.indexOf(cur_check) == 0) {
                                 $next = jQuery(this);
                                 selectbox_keys = cur_check;
-                                return 0;
+                                return false;
                             }
                         });
 
