@@ -23,7 +23,8 @@ namespace Integration.Helper
             Timestamp,
             CampaignID,
             Amount,
-            ResponseDate
+            ResponseDate,
+            LastModifiedDate
         }
 
         public enum PullResponseActualField
