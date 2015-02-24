@@ -1251,8 +1251,10 @@ namespace RevenuePlanner.Controllers
             }
             //// Calculate MQL & INQ data.
             string inq = Enums.Stage.INQ.ToString();
+            string mql = Enums.Stage.MQL.ToString();
             string CustomfieldType = string.Empty;
             int INQStageId = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == inq && stage.IsDeleted == false).StageId;
+            string strINQStage = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
             if (Tacticdata.Count() > 0)
             {
                 CustomfieldType = db.CustomFields.Where(customfield =>customfield.CustomFieldId.Equals(customfieldId)).Select(customfield => customfield.CustomFieldType.Name).FirstOrDefault();
@@ -1263,8 +1265,8 @@ namespace RevenuePlanner.Controllers
 
                 List<TacticMonthValue> ProjectedMQLDataTable = GetProjectedDatabyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.MQL, Tacticdata, IsTacticCustomField);
                 List<TacticMonthValue> ProjectedINQDataTable = GetProjectedDatabyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.INQ, Tacticdata, IsTacticCustomField);
-                List<ActualDataTable> ActualINQDataTable = GetActualTacticDataTablebyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.INQ, planTacticActual.Where(act => act.StageTitle.Equals(Enums.InspectStage.INQ)).ToList(), Tacticdata, IsTacticCustomField);
-                List<ActualDataTable> ActualMQLDataTable = GetActualTacticDataTablebyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.MQL, planTacticActual.Where(act => act.StageTitle.Equals(Enums.InspectStage.MQL)).ToList(), Tacticdata, IsTacticCustomField);
+                List<ActualDataTable> ActualINQDataTable = GetActualTacticDataTablebyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.INQ, planTacticActual.Where(act => act.StageTitle.Equals(strINQStage)).ToList(), Tacticdata, IsTacticCustomField);
+                List<ActualDataTable> ActualMQLDataTable = GetActualTacticDataTablebyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.MQL, planTacticActual.Where(act => act.StageTitle.Equals(mql)).ToList(), Tacticdata, IsTacticCustomField);
                 var rdata = new[] { new { 
                 INQGoal = ProjectedINQDataTable.Where(tactictable => includeMonth.Contains(tactictable.Month)).GroupBy(tactictable => tactictable.Month).Select(tactictable => new
                 {
