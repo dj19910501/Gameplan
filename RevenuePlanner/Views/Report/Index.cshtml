@@ -138,7 +138,7 @@
             @foreach (CustomField custField in ViewCustomFields)
             {
                 string name = "ddlView" + custField.CustomFieldId;
-                var list1 = custField.CustomFieldOptions.ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Value, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
+                var list1 = custField.CustomFieldOptions.OrderBy(custfieldoptions=>custfieldoptions.Value).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Value, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
                 @Html.DropDownList(name, new MultiSelectList((System.Collections.IEnumerable)list1, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = name, noneselectedvalue = custField.Name, style = "display:none" })
             }
             <!--End - Modified by Arpita Soni on 01/19/2015 for Ticket #1148*-->

@@ -325,7 +325,7 @@ namespace RevenuePlanner.Helpers
         public static MvcHtmlString ActivityCampaign(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "1")
         {
             StringBuilder sb = new StringBuilder();
-            foreach (BudgetModel c in model.Where(p => p.ActivityType == Helpers.ActivityType.ActivityCampaign && p.ParentActivityId == ParentActivityId).ToList())
+            foreach (BudgetModel c in model.Where(p => p.ActivityType == Helpers.ActivityType.ActivityCampaign && p.ParentActivityId == ParentActivityId).OrderBy(p=>p.ActivityName).ToList())
             {
                 TagBuilder tr = new TagBuilder("tr");
                 //tr.AddCssClass("displayRow");
@@ -408,7 +408,7 @@ namespace RevenuePlanner.Helpers
             {
                 needAccrodian = false;
             }
-            List<BudgetModel> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList();
+            List<BudgetModel> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).OrderBy(p=>p.ActivityName).ToList();
             if (lst.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
