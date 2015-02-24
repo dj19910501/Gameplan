@@ -11731,3 +11731,10 @@ white-space:nowrap;
 {
     cursor:pointer;
 }
+.minimum-width215 {
+min-width:215px;
+}
+.minmax-width200 {
+min-width:198px !important;
+max-width:198px !important;
+}

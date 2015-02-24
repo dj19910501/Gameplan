@@ -30,7 +30,8 @@
                 });
                 $(this).find('.advance_a').on('click', function () {
                     if ($(this).attr('mode').toString() == singleMode) {
-                        menu.toggleClass('dropdown-block');
+                        menu.toggleClass('dropdown-block,minimum-width215');
+                        menu.find('.text_ellipsis').toggleClass('minmax-width200');
                         menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
                         $(this).text("< Single-selection");
                         $(this).attr('mode', multiMode);
@@ -70,7 +71,8 @@
                                     if ($(this).attr('label').toString() == label) {
                                         $('#' + errorDivId).slideUp(400);
                                         var menu = $(this).parent().find('.dropdown-wrapper');
-                                        menu.toggleClass('dropdown-block');
+                                        menu.toggleClass('dropdown-block,minimum-width215');
+                                        menu.find('.text_ellipsis').toggleClass('minmax-width200');
                                         menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
                                         menu.find('input[type=checkbox]').toggle();
                                         menu.find('.advance_a').text("> Multi-selection");
@@ -87,7 +89,8 @@
                         }
                         else {
                             
-                            menu.toggleClass('dropdown-block');
+                            menu.toggleClass('dropdown-block,minimum-width215');
+                            menu.find('.text_ellipsis').toggleClass('minmax-width200');
                             menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
                             menu.find('input[type=checkbox]').toggle();
                             $(this).text("> Multi-selection");

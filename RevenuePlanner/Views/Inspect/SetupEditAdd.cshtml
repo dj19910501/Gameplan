@@ -418,7 +418,8 @@
               var chekcedCount = $(this).find('input:checked').length;
               if (chekcedCount > 1) {
                   var menu = $(this).parents('.dropdown-wrapper');
-                  menu.toggleClass('dropdown-block');
+                  menu.toggleClass('dropdown-block,minimum-width215');
+                  menu.find('.text_ellipsis').toggleClass('minmax-width200');
                   menu.find(".first_hide,.revenue_header,.cost_header,.top_head_attribute,.value_header").toggle();
                   menu.find('.advance_a').text("< Single-selection");
                   menu.find('.advance_a').attr('mode', 'Multi');
@@ -905,7 +906,8 @@
         $('.dropdown_new_btn').each(function () {
             if ($(this).attr('label').toString() == label) {
                 var menu = $(this).parent().find('.dropdown-wrapper');
-                menu.toggleClass('dropdown-block');
+                menu.toggleClass('dropdown-block,minimum-width215');
+                menu.find('.text_ellipsis').toggleClass('minmax-width200');
                 menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
                 menu.find('input[type=checkbox]').toggle();
                 menu.find('.advance_a').text("> Multi-selection");
