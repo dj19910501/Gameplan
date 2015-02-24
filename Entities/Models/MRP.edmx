@@ -640,6 +640,7 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="CustomNamingPermission" Type="bit" Nullable="false" />
+          <Property Name="IsFirstPullCW" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -2930,6 +2931,7 @@
           <NavigationProperty Name="Models2" Relationship="MRPModel.FK_Model_IntegrationInstanceINQ" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="Models3" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
+          <Property Type="Boolean" Name="IsFirstPullCW" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -4917,6 +4919,7 @@
           <EntitySetMapping Name="IntegrationInstances">
             <EntityTypeMapping TypeName="MRPModel.IntegrationInstance">
               <MappingFragment StoreEntitySet="IntegrationInstance">
+                <ScalarProperty Name="IsFirstPullCW" ColumnName="IsFirstPullCW" />
                 <ScalarProperty Name="CustomNamingPermission" ColumnName="CustomNamingPermission" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
