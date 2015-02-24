@@ -178,9 +178,16 @@
 		    // Addded by Bhavesh Dobariya
 		    // Set Input value
 		    // Date: 28-3-2014
-			this.getinput.setAttribute('value', changeValue);
+			var IsEditable = this.elOriginal.getAttribute('isedit');
+			if (IsEditable != null && IsEditable != 'undefined' && IsEditable != '' && IsEditable.toLowerCase() == "true") {
+			    this.getinput.setAttribute('value', changeValue);
+			}
+			else {
+			    this.getinput.setAttribute('value', '');
+			}
 
 			this.getinput.setAttribute('onblur', 'getblurvalue(this);');
+			this.getinput.setAttribute('onfocus', 'OnNLTextFocus(this);');
             //Added By Bhavesh
 			this.getinput.setAttribute('class', getFormatType);
 

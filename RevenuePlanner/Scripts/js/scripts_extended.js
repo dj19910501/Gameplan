@@ -237,8 +237,18 @@ function SetPriceValue(idName) {
 }
 
 function getblurvalue(sender) {
-
+    $(sender).attr('placeholder', $(sender).data('placeholder'));
+    var IsEditable = $(sender).attr('isedit');
+    var TextValue = $(sender).val();
+    if (IsEditable != null && IsEditable != 'undefined' && IsEditable != '' && IsEditable.toLowerCase() == "true") {
+        $(sender).attr('value', TextValue);
+    }
     $(".nl-field-go").click();
+}
+
+function OnNLTextFocus(sender) {
+    $(sender).data('placeholder', $(sender).attr('placeholder'));
+    $(sender).attr('placeholder', '');
 }
 
 function CheckDateYear(sdate, hdnYear, msg) {

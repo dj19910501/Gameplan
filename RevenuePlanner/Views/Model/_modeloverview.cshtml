@@ -20,7 +20,7 @@ else
 {
     <div id="nl-form" class="nl-form">
         @Html.Raw("I'm creating a model called")
-        @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datadefault = "Title", datasubline = "For example: <em>SMB Baseline</em>" }).
+        @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datadefault = "Title", datasubline = "For example: <em>SMB Baseline</em>" , isedit = false}).
         <div class="nl-overlay"></div>
     </div>
     @Html.Hidden("hdnmoelexist", ""); // hidden field added to check if model exist or not
@@ -46,6 +46,7 @@ else
     // function added to handle the blur event of NaturalLanguageForm textbox to check for duplicate model
     function getblurvalue(sender) {
         var aHrefElement = $("a")
+        
         if ($(sender).parent().parent().parent().find(aHrefElement).attr("id") == "lnkTitle") {
             $("#lnkTitle").html($(sender).val());
             $.ajax(
@@ -64,7 +65,13 @@ else
                    }
                }
            });
-       }
+        }
+        $(sender).attr('placeholder', $(sender).data('placeholder'));
+        var IsEditable = $(sender).attr('isedit');
+        var TextValue = $(sender).val();
+        if (IsEditable != null && IsEditable != 'undefined' && IsEditable != '' && IsEditable.toLowerCase() == "true") {
+            $(sender).attr('value', TextValue);
+        }
        $(".nl-field-go").click();
    }
 

@@ -17,6 +17,11 @@
     {
         isPlanDefinationDisable = ViewBag.IsPlanDefinationDisable;
     }
+    bool isPlanEdit = false;
+    if (!string.IsNullOrEmpty(strPlanId) && strPlanId != "0")
+    {
+        isPlanEdit = true;
+    }
 }
 
 @section nlFormContent{
@@ -68,7 +73,7 @@
     }
                         }
                             model to create a plan called						
-						@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })
+						@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue", isedit = isPlanEdit })
                             in
                         @{
     if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
@@ -94,9 +99,9 @@
                         }
                             goal of
                         <span id="revenueSign">$ </span>
-                            @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })
+                            @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat", isedit = isPlanEdit  })
                             and a budget of
-                        @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat" })
+                        @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit  })
                             allocated by
                         @{
     if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
@@ -1334,7 +1339,14 @@ function GetAllocatedBudgetForPlan(planId) {
     $('.ErrCampaignBudgetAllocation').click(function () {
         isErrorShown = true;
     });
-
+    function getblurvalue(sender) {
+        $(sender).attr('placeholder', $(sender).data('placeholder'));
+        var IsEditable = $(sender).attr('isedit');
+        var TextValue = $(sender).val();
+        if (IsEditable != null && IsEditable != 'undefined' && IsEditable != '' && IsEditable.toLowerCase() == "true") {
+            $(sender).attr('value', TextValue);
+        }
+    }
 </script>
 <script src="~/Scripts/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
