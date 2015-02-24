@@ -76,9 +76,6 @@
     <Compile Include="Models\CustomField_Entity.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CustomLabel.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\CustomRestriction.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

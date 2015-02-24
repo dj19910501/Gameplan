@@ -16,7 +16,6 @@
           <EntitySet Name="CustomField_Entity" EntityType="MRPModel.Store.CustomField_Entity" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomFieldOption" EntityType="MRPModel.Store.CustomFieldOption" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomFieldType" EntityType="MRPModel.Store.CustomFieldType" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="CustomLabel" EntityType="MRPModel.Store.CustomLabel" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomRestriction" EntityType="MRPModel.Store.CustomRestriction" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Field" EntityType="MRPModel.Store.Field" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Funnel" EntityType="MRPModel.Store.Funnel" store:Type="Tables" Schema="dbo" />
@@ -516,19 +515,6 @@
           <Property Name="CustomFieldTypeId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
           <Property Name="Description" Type="nvarchar" />
-        </EntityType>
-        <EntityType Name="CustomLabel">
-          <Key>
-            <PropertyRef Name="CustomLabelId" />
-          </Key>
-          <Property Name="CustomLabelId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="50" />
-          <Property Name="Code" Type="nvarchar" Nullable="false" MaxLength="50" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="CustomRestriction">
           <Key>
@@ -2278,7 +2264,6 @@
           <EntitySet Name="CustomField_Entity" EntityType="MRPModel.CustomField_Entity" />
           <EntitySet Name="CustomFieldOptions" EntityType="MRPModel.CustomFieldOption" />
           <EntitySet Name="CustomFieldTypes" EntityType="MRPModel.CustomFieldType" />
-          <EntitySet Name="CustomLabels" EntityType="MRPModel.CustomLabel" />
           <EntitySet Name="CustomRestrictions" EntityType="MRPModel.CustomRestriction" />
           <EntitySet Name="Fields" EntityType="MRPModel.Field" />
           <EntitySet Name="Funnels" EntityType="MRPModel.Funnel" />
@@ -2791,19 +2776,6 @@
           <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="CustomFields" Relationship="MRPModel.FK_CustomField_CustomFieldType" FromRole="CustomFieldType" ToRole="CustomField" />
-        </EntityType>
-        <EntityType Name="CustomLabel">
-          <Key>
-            <PropertyRef Name="CustomLabelId" />
-          </Key>
-          <Property Type="Int32" Name="CustomLabelId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Guid" Name="ClientId" Nullable="false" />
-          <Property Type="String" Name="Title" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Code" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
         </EntityType>
         <EntityType Name="CustomRestriction">
           <Key>
@@ -4829,20 +4801,6 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="CustomFieldTypeId" ColumnName="CustomFieldTypeId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="CustomLabels">
-            <EntityTypeMapping TypeName="MRPModel.CustomLabel">
-              <MappingFragment StoreEntitySet="CustomLabel">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Code" ColumnName="Code" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
-                <ScalarProperty Name="CustomLabelId" ColumnName="CustomLabelId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

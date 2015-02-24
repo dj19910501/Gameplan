@@ -35,7 +35,6 @@ namespace RevenuePlanner.Models
         public DbSet<CustomField_Entity> CustomField_Entity { get; set; }
         public DbSet<CustomFieldOption> CustomFieldOptions { get; set; }
         public DbSet<CustomFieldType> CustomFieldTypes { get; set; }
-        public DbSet<CustomLabel> CustomLabels { get; set; }
         public DbSet<CustomRestriction> CustomRestrictions { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<Funnel> Funnels { get; set; }

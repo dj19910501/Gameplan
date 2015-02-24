@@ -15,7 +15,6 @@
         <EntityTypeShape EntityType="MRPModel.CustomField_Entity" Width="1.5" PointX="10.341451455997978" PointY="2.1205051104167967" />
         <EntityTypeShape EntityType="MRPModel.CustomFieldOption" Width="1.5" PointX="5.7174091049085414" PointY="12.205839445910343" />
         <EntityTypeShape EntityType="MRPModel.CustomFieldType" Width="1.5" PointX="4.6048546603903429" PointY="21.594944263619812" />
-        <EntityTypeShape EntityType="MRPModel.CustomLabel" Width="1.5" PointX="2.526969519689199" PointY="13.028796574579923" />
         <EntityTypeShape EntityType="MRPModel.CustomRestriction" Width="1.5" PointX="7.7355711458882181" PointY="29.851543440414382" />
         <EntityTypeShape EntityType="MRPModel.Field" Width="1.5" PointX="11.500829139491929" PointY="24.810764413704522" />
         <EntityTypeShape EntityType="MRPModel.Funnel" Width="1.5" PointX="5.5766797836761359" PointY="9.0720274788662927" />
