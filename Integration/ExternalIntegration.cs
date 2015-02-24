@@ -257,14 +257,17 @@ namespace Integration
                 }
 
                 int integrationinstanceId = Convert.ToInt32(_integrationInstanceId);
-                IntegrationInstance integrationInstance = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationinstanceId);
+                using (MRPEntities dbouter = new MRPEntities())
+                {
+                    IntegrationInstance integrationInstance = new IntegrationInstance();
+                    integrationInstance = dbouter.IntegrationInstances.SingleOrDefault(instance => instance.IntegrationInstanceId == integrationinstanceId);
                 if (_isResultError)
                 {
                     instanceLogEnd.Status = StatusResult.Error.ToString();
                     integrationInstance.LastSyncStatus = StatusResult.Error.ToString();
                     if (!IsAuthenticationError)
                     {
-                        string errorSections = string.Join(", ", db.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == instanceLogEnd.IntegrationInstanceLogId && integrationSection.Status == "Error").Select(integrationSection => integrationSection.SectionName).ToList());
+                            string errorSections = string.Join(", ", dbouter.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == instanceLogEnd.IntegrationInstanceLogId && integrationSection.Status == "Error").Select(integrationSection => integrationSection.SectionName).ToList());
                         instanceLogEnd.ErrorDescription = "Error in section(s): " + errorSections;
                     }
                 }
@@ -273,11 +276,13 @@ namespace Integration
                     instanceLogEnd.Status = StatusResult.Success.ToString();
                     integrationInstance.LastSyncStatus = StatusResult.Success.ToString();
                 }
+                    integrationInstance.LastSyncDate = DateTime.Now;
+                    dbouter.Entry(integrationInstance).State = EntityState.Modified;
+                    dbouter.SaveChanges();
+                }
 
                 instanceLogStart.SyncEnd = DateTime.Now;
-                integrationInstance.LastSyncDate = DateTime.Now;
                 db.Entry(instanceLogStart).State = EntityState.Modified;
-                db.Entry(integrationInstance).State = EntityState.Modified;
                 db.SaveChanges();
 
                 //// Start - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
