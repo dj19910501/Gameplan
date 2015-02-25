@@ -31,7 +31,6 @@
 }
 
 @Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
-
 @section Sidebar
 {
     @Html.Partial("~/Views/Plan/_plan.cshtml")
@@ -390,6 +389,18 @@
                   if ($(this).next().attr('datadefault') == "Title") {
                       var tValue = $(this).children('a').text();
 
+                      //// Validate Plan Title blank or not.
+                      var modeldata = $("form[name=SavePlanForm]").serialize();
+                      if (modeldata != null && modeldata != 'undefined') {
+                          var _splictData = modeldata.split("&");
+                          if (_splictData == null || _splictData == 'undefined' || _splictData[1] == null || _splictData[1] == 'undefined' || _splictData[1].split("=")[1] == 'undefined' || _splictData[1].split("=")[1] == '') {
+                              tValue = '';
+                          }
+                      }
+                      else {
+                          tValue = '';
+                      }
+                      
                       if (tValue == '' || tValue == "Plan Title") {
                           $(this).children('a').addClass("error-form");
                           isError = true;
