@@ -1,3 +1,5 @@
+
+Go
 ---- Execute this script on MRP database
 Declare @varSalesForce varchar(50) ='Salesforce'
 Declare @RawCnt int =0
@@ -25,3 +27,5 @@ BEGIN
 END
 
 DROP TABLE #IntegrationType
+
+GO
