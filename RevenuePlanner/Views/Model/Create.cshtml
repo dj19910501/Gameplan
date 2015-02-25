@@ -7,7 +7,7 @@
     string strValidateForEmptyField = Common.objCached.ValidateForValidField;
     string strErrorOccured = Common.objCached.ErrorOccured;
     string ModelId = Convert.ToString(ViewBag.ModelId);
-    bool IsBenchmarked = ViewBag.IsBenchmarked;
+    bool IsBenchmarked = false;//ViewBag.IsBenchmarked;
     string errormsg = Convert.ToString(TempData["StageNotExist"]);
     /*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*/
     string ModelPublishEdit = ViewBag.ModelPublishEdit;
@@ -125,21 +125,22 @@
                 <h2 class="sub-title-forms source-sans-proregular">@Html.Raw("2. Average Deal Size")</h2>
                 <div id="divcontactInquiry"></div>
                 <a name="Rates"></a>
-                <ul id="sub_nav_tabs" class="nav nav-tabs">
+                <h2 class="sub-title-forms source-sans-proregular">3. Conversion Rates</h2>
+                @*<ul id="sub_nav_tabs" class="nav nav-tabs">
                     <li class="title-header source-sans-proregular">
 
                         <h2>3. Conversion Rates</h2>
 
                     </li>
-                    <li id="benchmarked-option" class="pull-right">
+                    <li id="benchmarked-option" class="pull-right" >
                         <a>Benchmarked</a>
                     </li>
                     <li id="advanced-option" class="active pull-right">
                         <a>Advanced</a>
                     </li>
-                </ul>
+                </ul>*@
                 <div class="tab-content">
-                    <div class="tab-pane" id="benchmarked">
+                    <div class="tab-pane" id="benchmarked" style="display:none;">
                         <p>
                             @Html.Raw("  Click continue to populate your baseline model with benchmarked values for conversion and stage velocity. Select Advanced to add your organization's custom conversion rates.")
 
