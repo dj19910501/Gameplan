@@ -1478,7 +1478,7 @@
                             BindViewSelections(data.ViewById, type);
                         }
                         getViewByList = false;
-                        $('#ddlTabViewBy').val(data.ViewBy.toString());
+                            // $('#ddlTabViewBy').val(data.ViewBy.toString());
                         if (parseInt(data.requestCount) > 0) {
                             $('.request-icons').find('.counter').css("display", "block");
                             $('.request-icons').find('.counter').html(data.requestCount);
@@ -1553,6 +1553,9 @@
                       $(".shadow-scroll-gantt").show();
                       $("#table_activities").show();
                       FillTacticTableForRequest(data);
+                      $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");
+                      $("#ddlTabViewBy").multiselect('refresh');
+                      $('#multipleselect_ddlTabViewBy').find('input[value=@PlanGanttTypes.Request.ToString()]').parents('li').hide();
                   }
                   else {
                       $("#table_activities").hide();
@@ -1596,6 +1599,7 @@ function BindViewSelections(data, type) {
     }
     $dropdown.append($html);
     $("#ddlTabViewBy").multiselect('refresh');
+    $('#multipleselect_ddlTabViewBy').find('input[value=@PlanGanttTypes.Request.ToString()]').parents('li').hide();
 }
 
 //Function to get current plan edit permission, PL #538

@@ -25,6 +25,7 @@
     <li style="padding-top:5px;">
         <div class="request-icons hide">
 		     <div class="request-icon-block"><a href="#" class="request">Requests</a><span class="counter hide"></span></div>
+            <div class="request-icon-block"><a href="#" class="new-btn-plan request-btn-active">Plan</a></div>
 	    </div>
     </li>
     
@@ -55,6 +56,7 @@
             CustomProgramName: "@Common.ProgramCustomTitle",
             CustomTacticName: "@Common.TacticCustomTitle",
         });
+        $('#multipleselect_ddlTabViewBy').find('input[value=@PlanGanttTypes.Request.ToString()]').parents('li').hide();
         var Currenttime = $('#ddlUpComingActivites').val();
         isQuater = Currenttime;
         onClickPlanTitle();
@@ -77,8 +79,17 @@
     $("#ddlTabViewBy").change(function () {
         RefreshCurrentTab();
     });
-
-    $('.request-icons').click(function () {
+    $('.new-btn-plan').click(function () {
+        $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");
+        $("#ddlTabViewBy").multiselect('refresh');
+        $('#multipleselect_ddlTabViewBy').find('input[value=@PlanGanttTypes.Request.ToString()]').parents('li').hide();
+        $("#ddlTabViewBy").trigger('change');
+        $(this).addClass('request-btn-active');
+        $('.request').removeClass('request-btn-active');
+    });
+    $('.request').click(function () {
+        $(this).addClass('request-btn-active');
+        $('.new-btn-plan').removeClass('request-btn-active');
         $('#ddlTabViewBy').val('@PlanGanttTypes.Request.ToString()');
         getViewByList = true;
         RefreshCurrentTab();

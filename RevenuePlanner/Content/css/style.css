@@ -8246,8 +8246,8 @@ input.icon-check-blue {
 
 
     .nav-tabs li a:hover {
-        color: #555555 !important;
-    }
+    color: #a3a3a3 !important;
+}
 /*uday #585*/
 
 .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
@@ -10682,38 +10682,53 @@ li.close-list {
 
 .request-icon-block {
     float: left;
-    margin-left: 10px;
+    margin-left: 0;
     position: relative;
     top: -5px;
 }
 
-    .request-icon-block .request {
-        background: url("../../images/icon-2.png") no-repeat scroll left center #2384b8;
-        border-radius: 5px;
-        color: #ffffff !important;
-        height: 32px;
-        padding: 6px 6px 6px 30px;
-        line-height: 33px;
-        text-decoration: none;
-    }
+   .request-icon-block .request {
+    background: none no-repeat scroll left center #efefef;
+    border: 1px solid #c6c6c6;
+    border-radius: 5px 0 0 5px;
+    color: #6d6d6d !important;
+    font-family: source_sans_proregular;
+    font-size: 13px;
+    height: 32px;
+    line-height: 33px;
+    padding: 6px 32px 4px 6px;
+    text-decoration: none;
+}
+   .request.request-btn-active:hover {
+    color: #fff !important;
+}
+   .new-btn-plan.request-btn-active:hover {
+    color: #fff !important;
+}
+   .new-btn-plan:hover {
+    color: #808080 !important;
+}
+
 
 .counter {
-    background: #ff931e;
-    height: 18px;
-    width: 21px;
-    font-size: 12px;
-    color: #fff;
-    position: absolute;
-    top: -8px;
-    right: -9px;
+   background:#ff931e;
     border-radius: 10px;
-    text-align: center;
-    padding-top: 1px;
+    color: #fff;
+    font-size: 12px;
+    height: 18px;
+    line-height: 16px;
+    padding: 1px 6px 0 5px;
+    position: absolute;
+    right: 6px;
+    top: 7px;
+    width: 8px;
 }
-
-.request-icon-block .request:hover {
+.new-btn-plan.plan-new-req {
+    color: #fff !important;
+}
+/*.request-icon-block .request:hover {
     color: #ffffff !important;
-}
+}*/
 /* End - Added By : Sohel Pathan on 20/10/2014 for PL ticket #885 */
 
 /*Added By Kalpesh*/
@@ -11737,4 +11752,27 @@ min-width:215px;
 .minmax-width200 {
 min-width:198px !important;
 max-width:198px !important;
+}
+.new-btn-plan {
+background:/*no-repeat scroll left center #2384b8;*/no-repeat scroll left center #efefef;
+border:1px solid #c6c6c6;
+border-radius:0 5px 5px 0;
+color: /*#fff !important;*/ color: #6d6d6d !important;
+font-family:source_sans_proregular;
+font-size:13px;
+height:32px;
+line-height:33px;
+padding:6px 25px 4px 26px;
+}
+.new-btn-plan.request-btn-active {
+    background-color:#2384b8 !important;
+    border: 1px solid #2d6e91;
+    color: #fff !important;
+}
+.request.request-btn-active {
+    background-color:#2384b8 !important;
+    border: 1px solid #2d6e91;
+    color: #fff !important;
+
+
 }
