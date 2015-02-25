@@ -2530,7 +2530,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="tlist">List collection of tactics</param>
         /// <param name="isIncludeImprovement">boolean flag that indicate tactic included imporvement sections</param>
         /// <returns>returns list tactic stage values</returns>
-        public static List<TacticStageValue> GetTacticStageRelation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true,bool IsReport = false)
+        public static List<TacticStageValue> GetTacticStageRelation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true, bool IsReport = false)
         {
             MRPEntities objDbMRPEntities = new MRPEntities();
             //// Compute the tactic relation list
@@ -2538,7 +2538,7 @@ namespace RevenuePlanner.Helpers
             List<Stage> stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
             //// Fetch the tactic stages and it's value
             //// Return finalized TacticStageValue list to the Parent method 
-            return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, false,IsReport); ;
+            return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, false, IsReport); ;
         }
 
         /// <summary>
@@ -2558,7 +2558,7 @@ namespace RevenuePlanner.Helpers
             return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, true, IsReport);
         }
 
-        public static List<TacticStageValue> GetTacticStageValueList(List<Plan_Campaign_Program_Tactic> tlist, List<TacticStageValueRelation> tacticValueRelationList, List<Stage> stageList, bool isSinglePlan = false, bool IsReport=false)
+        public static List<TacticStageValue> GetTacticStageValueList(List<Plan_Campaign_Program_Tactic> tlist, List<TacticStageValueRelation> tacticValueRelationList, List<Stage> stageList, bool isSinglePlan = false, bool IsReport = false)
         {
             MRPEntities dbStage = new MRPEntities();
             List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
@@ -2618,31 +2618,31 @@ namespace RevenuePlanner.Helpers
                 if (IsReport)
                 {
 
-                #region "Get Tactic Stage-Weightage"
+                    #region "Get Tactic Stage-Weightage"
                     string EntTacticType = Enums.EntityType.Tactic.ToString();
                     List<TacticCustomFieldStageWeightage> lstMapTacticStageWeightage = new List<TacticCustomFieldStageWeightage>();
                     List<CustomField_Entity> lstTacticCustomFieldEntity = new List<CustomField_Entity>();
                     List<CustomField_Entity> tblCustomFieldEntities = dbStage.CustomField_Entity.ToList().Where(CustEnt => tlist.Select(tac => tac.PlanTacticId).Contains(CustEnt.EntityId) && CustEnt.CustomField.EntityType.Equals(EntTacticType)).ToList();
                     //List<CustomField_Entity_StageWeight> tblStageWeightage = dbStage.CustomField_Entity_StageWeight.ToList().Where(_stage => tblCustomFieldEntities.Select(CustEnt => CustEnt.CustomFieldEntityId).Contains(_stage.CustomFieldEntityId)).ToList();
-                    
-                lstTacticCustomFieldEntity = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).ToList();
-                TacticCustomFieldStageWeightage objStageWeightage = null;
-                
-                string MQLStageCode = Enums.Stage.MQL.ToString();
-                string CWStageCode = Enums.Stage.CW.ToString();
-                string INQStageCode = Enums.InspectStage.ProjectedStageValue.ToString();
-                lstMapTacticStageWeightage = new List<TacticCustomFieldStageWeightage>();
-                foreach (CustomField_Entity objCustmEnt in lstTacticCustomFieldEntity)
-                {
-                    objStageWeightage = new TacticCustomFieldStageWeightage();
 
-                    objStageWeightage.CustomFieldId = objCustmEnt.CustomFieldId;
-                    objStageWeightage.Value = objCustmEnt.Value;
-                    objStageWeightage.CostWeightage = objCustmEnt.CostWeightage != null && objCustmEnt.CostWeightage.Value != null ? objCustmEnt.CostWeightage.Value : 0;
-                    objStageWeightage.CVRWeightage = objCustmEnt.Weightage != null && objCustmEnt.Weightage.Value != null ? objCustmEnt.Weightage.Value : 0;
-                    lstMapTacticStageWeightage.Add(objStageWeightage);
-                }
-                tacticStageValueObj.TacticStageWeightages = lstMapTacticStageWeightage;
+                    lstTacticCustomFieldEntity = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).ToList();
+                    TacticCustomFieldStageWeightage objStageWeightage = null;
+
+                    string MQLStageCode = Enums.Stage.MQL.ToString();
+                    string CWStageCode = Enums.Stage.CW.ToString();
+                    string INQStageCode = Enums.InspectStage.ProjectedStageValue.ToString();
+                    lstMapTacticStageWeightage = new List<TacticCustomFieldStageWeightage>();
+                    foreach (CustomField_Entity objCustmEnt in lstTacticCustomFieldEntity)
+                    {
+                        objStageWeightage = new TacticCustomFieldStageWeightage();
+
+                        objStageWeightage.CustomFieldId = objCustmEnt.CustomFieldId;
+                        objStageWeightage.Value = objCustmEnt.Value;
+                        objStageWeightage.CostWeightage = objCustmEnt.CostWeightage != null && objCustmEnt.CostWeightage.Value != null ? objCustmEnt.CostWeightage.Value : 0;
+                        objStageWeightage.CVRWeightage = objCustmEnt.Weightage != null && objCustmEnt.Weightage.Value != null ? objCustmEnt.Weightage.Value : 0;
+                        lstMapTacticStageWeightage.Add(objStageWeightage);
+                    }
+                    tacticStageValueObj.TacticStageWeightages = lstMapTacticStageWeightage;
                     #endregion
                 }
                 tacticStageList.Add(tacticStageValueObj);
@@ -5027,7 +5027,7 @@ namespace RevenuePlanner.Helpers
             {
                 using (MRPEntities objDbMrpEntities = new MRPEntities())
                 {
-                    if (lstTactic.Count() > 0)
+                    if (lstTactic.Count() > 0 && Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), clientId))
                     {
                         //// Get list customFieldEntity List for given tactic list
                         string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
@@ -5086,7 +5086,7 @@ namespace RevenuePlanner.Helpers
                                                                                                     .Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
 
                                             //// Check for currentField tactic is viewable or not
-                                            bool isViewable = currentTacticEntities.Where(entity => entity.CustomFieldId == currentCustomField && 
+                                            bool isViewable = currentTacticEntities.Where(entity => entity.CustomFieldId == currentCustomField &&
                                                                                         (AllowedRightsForCurrentCustomField.Contains(entity.Value) || lstAllCustomFieldOptionIds.Contains(int.Parse(entity.Value)))
                                                                                         && !lstRestrictedCustomFieldOptionIds.Contains(int.Parse(entity.Value))).Any();
                                             if (isViewable == false)
@@ -5121,6 +5121,10 @@ namespace RevenuePlanner.Helpers
                                 }
                             }
                         }
+                    }
+                    else
+                    {
+                        return lstTactic;
                     }
                 }
             }
@@ -5214,7 +5218,7 @@ namespace RevenuePlanner.Helpers
             {
                 using (MRPEntities objDbMrpEntities = new MRPEntities())
                 {
-                    if (lstTactic.Count() > 0)
+                    if (lstTactic.Count() > 0 && Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), clientId))
                     {
                         //// Get list customFieldEntity List for given tactic list
                         string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
@@ -5284,6 +5288,10 @@ namespace RevenuePlanner.Helpers
                             }
                         }
                     }
+                    else
+                    {
+                        return lstTactic;
+                    }
                 }
             }
             catch (Exception ex)
@@ -5292,6 +5300,21 @@ namespace RevenuePlanner.Helpers
             }
 
             return lstEditableEntityIds;
+        }
+
+        /// <summary>
+        /// Function to check that custom field exist for particular entity type.
+        /// </summary>
+        /// <param name="entityType">string entitytype e.g. Tactic,Program</param>
+        /// <param name="clientId">Guid client Id</param>
+        /// <returns></returns>
+        public static bool IsCustomFeildExist(string entityType, Guid clientId)
+        {
+            using (MRPEntities objDbMrpEntities = new MRPEntities())
+            {
+                bool isCustomFeildExist = objDbMrpEntities.CustomFields.Where(c => c.IsDeleted.Equals(false) && c.ClientId == clientId).Any();
+                return isCustomFeildExist;
+            }
         }
         #endregion
 
@@ -5302,7 +5325,7 @@ namespace RevenuePlanner.Helpers
         public static List<int> GetTacticBYCustomFieldFilter(List<CustomFieldFilter> lstCustomFieldFilter, List<int> tacticIds)
         {
             MRPEntities db = new MRPEntities();
-           
+
             if (lstCustomFieldFilter.Count() > 0)
             {
                 List<int> lstCustomFieldIds = new List<int>();
@@ -5317,8 +5340,8 @@ namespace RevenuePlanner.Helpers
                 {
                     string optionvalue = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).FirstOrDefault();
                     if (optionvalue != "" && optionvalue != string.Empty)
-                        {
-                            optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).ToList();
+                    {
+                        optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).ToList();
 
                         if (isListExits)
                         {
