@@ -76,21 +76,18 @@
     });
 
     $("#ddlTabViewBy").change(function () {
-        $('.new-btn-plan').addClass('request-btn-active');
-        $('.request').removeClass('request-btn-active');
+        requestPlanActiveTab(false);
         RefreshCurrentTab();
     });
     $('.new-btn-plan').click(function () {
         $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");
         $("#ddlTabViewBy").multiselect('refresh');
         $("#ddlTabViewBy").trigger('change');
-        $(this).addClass('request-btn-active');
-        $('.request').removeClass('request-btn-active');
+        requestPlanActiveTab(false);
     });
     $('.request').click(function () {
-        $(this).addClass('request-btn-active');
-        $('.new-btn-plan').removeClass('request-btn-active');
         isRequest = true;
+        requestPlanActiveTab(isRequest);
         getViewByList = true;
         RefreshCurrentTab();
     });
@@ -121,6 +118,15 @@
         $('#ddlTabViewBy').multiselect("close");
     });
     // End - Added by Sohel Pathan on 06/11/2014 for PL ticket #934
-
+    function requestPlanActiveTab(isRequestTab) {
+        if (isRequestTab) {
+            $('.new-btn-plan').removeClass('request-btn-active');
+            $('.request').addClass('request-btn-active');
+        }
+        else {
+            $('.new-btn-plan').addClass('request-btn-active');
+            $('.request').removeClass('request-btn-active');
+        }
+    }
 </script>
 
