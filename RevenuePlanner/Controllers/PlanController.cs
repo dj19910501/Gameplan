@@ -1771,8 +1771,9 @@ namespace RevenuePlanner.Controllers
             List<int> TacticIds = TacticList.Select(pcpt => pcpt.PlanTacticId).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => TacticIds.Contains(pcptl.PlanTacticId) && pcptl.IsDeleted.Equals(false)).Select(pcptl => pcptl).ToList();
             List<int> LineItemIds = LineItemList.Select(pcptl => pcptl.PlanLineItemId).ToList();
-
-
+            bool IsTacticExist =false;
+            if(TacticList != null && TacticList.Count > 0)
+                IsTacticExist = true;
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTactic => _imprvTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && _imprvTactic.IsDeleted == false).Select(_imprvTactic => _imprvTactic).ToList();
             //Added By Bhavesh For Performance Issue #955
             List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
@@ -1878,7 +1879,8 @@ namespace RevenuePlanner.Controllers
                 cost = campgn.cost,
                 mqls = campgn.mqls,
                 isOwner = campgn.isOwner == 0 ? (campgn.programs.Any(p => p.isOwner == 1) ? 1 : 0) : 1,
-                programs = campgn.programs
+                programs = campgn.programs,
+                istacticexist = IsTacticExist
             });
 
             return Json(lstCampaign, JsonRequestBehavior.AllowGet);

@@ -189,12 +189,11 @@
     var isConversion = true;
     var isLoadSuggestion = false;
     var isImprovementTacticExits = false;
-    var isMarketingTacticExits = false;
     var mqlTotal = 0;
     var costTotal = 0;
     var programTotal = 0;
     var isApply = false;
-
+    var isTacticExist = false;
     // Added By Bhavesh
     // PL Ticket 289,377,378
     var globledataid = 0;
@@ -917,7 +916,7 @@
 
         //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $(document).on("click", "#divimpTactic #divPanelImp", function (e) {
-            if (!isMarketingTacticExits) {
+            if (!isTacticExist) {
                 ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
                 hdnisError = 'True';
                 Showmsg();
@@ -1113,7 +1112,6 @@
                     var pid = _programs[i].id;
                     if (typeof _programs[i].tactics != 'undefined') {
                         if (_programs[i].tactics.length > 0) {
-                            isMarketingTacticExits = true;
                             for (k in _programs[i].tactics) {
                                 $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-header">';
                                 if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
@@ -1571,11 +1569,15 @@ function getCampaign(planCampaignId, planProgramId, planTacticId) {
                 ProgramID = planProgramId;
                 TacticID = planTacticId;
                 campaign = r;
+                if(campaign.length){
+                    isTacticExist = campaign[0].istacticexist;
+                }
                 fillCampaignsTable();
                 // call load improvement tactic beacuase it execute after campaign activity process over.
                 LoadImprovementTactic();
                 NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
                 Showmsg();
+
             }
         }
     });
@@ -1673,7 +1675,7 @@ function FillFullContainer(dataid) {
     isLoadSuggestion = false;
     globledataid = dataid;
     if (dataid == 1) {
-        if (!isMarketingTacticExits) {
+        if (!isTacticExist) {
             $("#suggested-tactics").empty();
             $("#suggested-tactics").html('<h2 class="source-sans-probold">No marketing activities exist.</h2>');
         }
