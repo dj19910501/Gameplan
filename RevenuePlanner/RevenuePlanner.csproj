@@ -335,6 +335,7 @@
     <Content Include="Content\images\btn-login.jpg" />
     <Content Include="Content\images\bulldog-logo-old.png" />
     <Content Include="Content\images\bulldog-logo.png" />
+    <Content Include="Content\images\bulldog-logo_2502.png" />
     <Content Include="Content\images\bullhorn-bg-disabled.png" />
     <Content Include="Content\images\bullhorn-bg.png" />
     <Content Include="Content\images\bullhorn-blue.png" />
@@ -912,7 +913,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>58996</DevelopmentServerPort>
+          <DevelopmentServerPort>57725</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

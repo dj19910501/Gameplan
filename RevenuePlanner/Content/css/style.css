@@ -122,7 +122,7 @@ body {
 #header .title {
     color: #ffffff;
     font-size: 30px;
-    line-height: 89px;
+    line-height: 78px; /*Old value: 89px*/
 }
 
 .min-width { /*min-width: 1200px*/
@@ -1889,10 +1889,10 @@ input.error {
           login-header
 -----------------------------*/
 .bulldog-logo {
-    background-image: url("../images/bulldog-logo.png");
-    margin-top: 12px;
-    width: 215px;
-    height: 62px;
+    background-image: url("../images/bulldog-logo_2502.png");
+    margin-top: 14px;
+     width: 171px;
+    height: 44px;
     float: left;
     margin-right: 35px;
     margin-left: 30px;
