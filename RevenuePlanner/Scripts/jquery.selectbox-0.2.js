@@ -225,6 +225,9 @@
             //sbHolder.data("uid", inst.uid).bind("keydown.sb", function (e) {
             //sbHolder.data("uid", inst.uid).keydown(function (e) { alert('down'); });
             //sbHolder.data("uid", inst.uid).keyup(function (e) { alert('up'); });
+            var $prevtext = '';
+            var $nextdata = -1;
+            var $_prevdata = -1;
             sbHolder.data("uid", inst.uid).keypress(function (e) {
                 var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0,
                     $this = $(this),
@@ -288,27 +291,78 @@
                         break;
                     default:
                         var theChar = String.fromCharCode(key);
-                        var cur_check = selectbox_keys + theChar.toLowerCase();
-                        $next = -1;
+                        var cur_check = '';
+                        cur_check = selectbox_keys + theChar.toLowerCase();
                         $this.find("ul").find("a").each(function () {
                             var text = jQuery(this).text().toLowerCase();
-                            if (text.indexOf(cur_check) == 0) {
-                                $next = jQuery(this);
-                                selectbox_keys = cur_check;
-                                return false;
+                            if ($prevtext == '' || cur_check.length > 1) {
+                                if (text.indexOf(cur_check) == 0) {
+                                    $prevtext = text;
+                                    if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
+                                        $($_prevdata).parent().removeClass('setFocusli');
+                                    }
+                                    $_prevdata = jQuery(this);
+                                    $nextdata = jQuery(this);
+                                    $nextdata.parent().addClass('setFocusli');
+                                    selectbox_keys = cur_check;
+                                    return false;
+                                }
+                            }
+                            else {
+                                /// find search_text from current li to downward direction in dropdown list.
+                                var _nextdatas = '';
+                                _nextdatas = $('.setFocusli').nextAll("li");    // get next all "li" list from current "li".
+                                var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
+                                $.each(_nextdatas, function (key, value) {
+                                    var _anchor = $(value).find('a');
+                                    var _atext = $(_anchor).text().toLowerCase();
+
+                                    //// Compare current "li" anchor text is with previous selected anchor text.
+                                    if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
+                                        $prevtext = _atext; // set previous text variable with selected text.
+                                        $($_prevdata).parent().removeClass('setFocusli');   // remove class 'setFocusli' from previously selected list object. 
+                                        $_prevdata = _anchor;
+                                        $nextdata = _anchor;
+                                        $($nextdata).parent().addClass('setFocusli');   // add class 'setFocusli' to currently selected list object. 
+                                        selectbox_keys = cur_check;
+                                        cntr = cntr + 1;
+                                        return false;
+                                    }
+                                });
+
+                                /// find search_text from start of the dropdown list.
+                                if (cntr == 0) {
+                                    _nextdatas = $(this).parent().nextAll("li");
+                                    $.each(_nextdatas, function (key, value) {
+                                        var _anchor = $(value).find('a');
+                                        var _atext = $(_anchor).text().toLowerCase();
+
+                                        //// Compare current "li" anchor text is with previous selected anchor text.
+                                        if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
+                                            $prevtext = _atext;
+                                            $($_prevdata).parent().removeClass('setFocusli');   // remove class 'setFocusli' from previously selected list object.
+                                            $_prevdata = _anchor;
+                                            $nextdata = _anchor;
+                                            $($nextdata).parent().addClass('setFocusli');   // add class 'setFocusli' to currently selected list object. 
+                                            selectbox_keys = cur_check;
+                                            return false;
+                                        }
+                                    });
+                                }
+                                if (cur_check.length <= 1) {
+                                    return false;
+                                }
                             }
                         });
-
-                        if ($next != -1) {
+                        if ($nextdata != -1) {
                             $("a", $this).removeClass(inst.settings.classFocus);
-                            $next.addClass(inst.settings.classFocus).focus();
-                            $("#sbSelector_" + uid).text($next.text());
+                            $nextdata.addClass(inst.settings.classFocus).focus();
+                            $("#sbSelector_" + uid).text($nextdata.text());
                         }
-
                         clearTimeout(selectbox_keys_timeout);
                         var selectbox_keys_timeout = setTimeout(function () {
                             selectbox_keys = "";
-                        }, 1500);
+                        }, 400);
                         break;
                 }
                 e.stopPropagation();
