@@ -355,7 +355,7 @@ BEGIN
 		/* Add new record to CustomField table If record does not exist in table*/
 		IF (@IsCustomFieldExist > 0)
 		Begin
-			Insert Into CustomField ([Name],[CustomFieldTypeId],[Description],[IsRequired],[EntityType],[ClientId],[IsDeleted],[CreatedDate],[CreatedBy],[ModifiedDate],[ModifiedBy],[IsDisplayForFilter],[AbbreviationForMulti]) values(@CustomFieldName,@CustomFieldType,@Description,@IsRequired,@EntityType,@ClientId,@IsDeleted,GetDate(),CONVERT(uniqueidentifier,@CreatedBy),Null,Null,@IsDisplayforFilter,@AbbriviationForMulti)
+			Insert Into CustomField ([Name],[CustomFieldTypeId],[Description],[IsRequired],[EntityType],[ClientId],[IsDeleted],[CreatedDate],[CreatedBy],[ModifiedDate],[ModifiedBy],[IsDisplayForFilter]) values(@CustomFieldName,@CustomFieldType,@Description,@IsRequired,@EntityType,@ClientId,@IsDeleted,GetDate(),CONVERT(uniqueidentifier,@CreatedBy),Null,Null,@IsDisplayforFilter)
 			
 			/* Retrieve last inserted CustomFieldId on CustomField table*/
 			Set @CustomFieldID = @@IDENTITY
