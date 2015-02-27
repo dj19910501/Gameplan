@@ -261,6 +261,7 @@ Create TABLE #Attributes
 		ID int IDENTITY(1, 1) primary key,
 		Attribute varchar(50)
     )
+Go
 Declare @lblVertical varchar(50) = 'Vertical'
 Declare @lblAudience varchar(50) = 'Audience'
 Declare @lblBusinessUnit varchar(50) = 'BusinessUnit'
@@ -354,7 +355,7 @@ BEGIN
 		/* Add new record to CustomField table If record does not exist in table*/
 		IF (@IsCustomFieldExist > 0)
 		Begin
-			Insert Into CustomField values(@CustomFieldName,@CustomFieldType,@Description,@IsRequired,@EntityType,@ClientId,@IsDeleted,GetDate(),CONVERT(uniqueidentifier,@CreatedBy),Null,Null,@IsDisplayforFilter,@AbbriviationForMulti,@customIsDefault)
+			Insert Into CustomField ([Name],[CustomFieldTypeId],[Description],[IsRequired],[EntityType],[ClientId],[IsDeleted],[CreatedDate],[CreatedBy],[ModifiedDate],[ModifiedBy],[IsDisplayForFilter],[AbbreviationForMulti]) values(@CustomFieldName,@CustomFieldType,@Description,@IsRequired,@EntityType,@ClientId,@IsDeleted,GetDate(),CONVERT(uniqueidentifier,@CreatedBy),Null,Null,@IsDisplayforFilter,@AbbriviationForMulti)
 			
 			/* Retrieve last inserted CustomFieldId on CustomField table*/
 			Set @CustomFieldID = @@IDENTITY
