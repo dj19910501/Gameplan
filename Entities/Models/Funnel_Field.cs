@@ -14,11 +14,6 @@ namespace RevenuePlanner.Models
     
     public partial class Funnel_Field
     {
-        public Funnel_Field()
-        {
-            this.ModelReviews = new HashSet<ModelReview>();
-        }
-    
         public int FunnelFieldId { get; set; }
         public int FunnelId { get; set; }
         public int FieldId { get; set; }
@@ -29,6 +24,5 @@ namespace RevenuePlanner.Models
     
         public virtual Field Field { get; set; }
         public virtual Funnel Funnel { get; set; }
-        public virtual ICollection<ModelReview> ModelReviews { get; set; }
     }
 }

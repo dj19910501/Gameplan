@@ -278,7 +278,6 @@ namespace RevenuePlanner.Controllers
                             {
                                 objModel.Version = "1.0";
                                 objModel.Year = DateTime.Now.Year;
-                                objModel.AddressableContacts = 0;   //// Modified by Mitesh Vaishnav for PL Ticket #534
                                 objModel.Status = Enums.ModelStatusValues.Single(modelStatus => modelStatus.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
                                 objModel.ClientId = Sessions.User.ClientId;
                                 objModel.IsActive = true;
@@ -339,7 +338,6 @@ namespace RevenuePlanner.Controllers
                                 isBenchmarkDb = objExistingModel.IsBenchmarked;
                                 if (objModel != null)
                                 {
-                                    objExistingModel.AddressableContacts = 0;   //// Modified By Mitesh Vaishnav for PL ticket #534
                                     objExistingModel.ClientId = Sessions.User.ClientId;
                                     objExistingModel.ModifiedDate = DateTime.Now;
                                     objExistingModel.ModifiedBy = Sessions.User.UserId;
@@ -449,8 +447,6 @@ namespace RevenuePlanner.Controllers
                         }
 
                         Sessions.ModelId = intModelid;
-                        int intAddressableContacts = 0;
-                        TempData["AddressableContacts"] = intAddressableContacts;
                         TempData["SuccessMessage"] = string.Format(Common.objCached.ModelSaveSuccess, objModel.Title);
 
                         if (mode == "version")
@@ -486,15 +482,6 @@ namespace RevenuePlanner.Controllers
                             string Status = objDbMrpEntities.Models.Where(model => model.ModelId == Sessions.ModelId).Select(model => model.Status).FirstOrDefault();
                             redirectModelZero = "Tactics";
                             scope.Complete();
-                        }
-                        //// Save Model Calculations
-                        try
-                        {
-                            CalculateModelResults(intModelid);
-                        }
-                        catch (Exception objException)
-                        {
-                            ErrorSignal.FromCurrentContext().Raise(objException);
                         }
                     }
                 }
@@ -909,7 +896,7 @@ namespace RevenuePlanner.Controllers
             int modelId = id;
             if (modelId != 0)
             {
-                var lstModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId).Select(model => new { model.ModelId, model.ClientId, model.Title, model.Version, model.Year, model.AddressableContacts, model.Status, model.IsActive, model.IsDeleted }).ToList();
+                var lstModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId).Select(model => new { model.ModelId, model.ClientId, model.Title, model.Version, model.Year, model.Status, model.IsActive, model.IsDeleted }).ToList();
                 var lstModelFunnel = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId && modelFunnel.Funnel.Title.ToLower() == "marketing").OrderBy(modelFunnel => modelFunnel.ModelFunnelId).Select(modelFunnel => modelFunnel.ModelFunnelId).ToList();
                 var lstModelFunnelAll = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId).OrderBy(modelFunnel => modelFunnel.ModelFunnelId).Select(modelFunnel => new { modelFunnel.ModelFunnelId, modelFunnel.ModelId, modelFunnel.FunnelId, modelFunnel.ExpectedLeadCount, modelFunnel.AverageDealSize }).ToList();
                 var lstModelFunnelStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => lstModelFunnel.Contains(modelFunnelStage.ModelFunnelId)).OrderBy(modelFunnelStage => modelFunnelStage.ModelFunnelStageId).Select(modelFunnelStage => new { modelFunnelStage.ModelFunnelStageId, modelFunnelStage.ModelFunnelId, modelFunnelStage.StageId, modelFunnelStage.StageType, modelFunnelStage.Value, modelFunnelStage.AllowedTargetStage }).ToList();
@@ -1091,13 +1078,12 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns LoadContactInquiry view</returns>
         //// modified datatype of MSize,TSize and SSize from int to double
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult LoadContactInquiry(int AC, int MLeads, double MSize, int TLeads, double TSize, int SLeads, double SSize)
+        public ActionResult LoadContactInquiry(int MLeads, double MSize, int TLeads, double TSize, int SLeads, double SSize)
         {
             var FunnelList = objDbMrpEntities.Funnels.Where(funnel => funnel.IsDeleted == false && funnel.Title == "Marketing").ToDictionary(funnel => funnel.FunnelId, funnel => funnel.Description);
             TempData["FunnelList"] = FunnelList;
 
             ContactInquiry objContactInquiry = new ContactInquiry();
-            objContactInquiry.AddressableContract = AC;
             objContactInquiry.MarketingDealSize = MSize;
             objContactInquiry.MarketingLeads = MLeads;
             objContactInquiry.TeleprospectingDealSize = TSize;
@@ -1195,289 +1181,6 @@ namespace RevenuePlanner.Controllers
                 return Json(new { errorMsg = objException.Message.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
-        #endregion
-
-        #region Save Model Calculations
-
-        /// <summary>
-        /// Added By: Kuber Joshi
-        /// Function to calculate & save Model Results.
-        /// </summary>
-        /// <param name="modelId">model id</param>
-        private void CalculateModelResults(int modelId)
-        {
-            if (modelId > 0)
-            {
-                #region Funnel
-                string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
-                string Teleprospecting = Convert.ToString(Enums.Funnel.Teleprospecting).ToLower();
-                string Sales = Convert.ToString(Enums.Funnel.Sales).ToLower();
-                #endregion
-
-                #region Funnel Field
-                string FF_DatabaseSize = Convert.ToString(Enums.FunnelField.DatabaseSize).ToLower();
-                string ConversionGate_SUS = Convert.ToString(Enums.FunnelField.ConversionGate_SUS).ToLower();
-                string FF_OutboundGeneratedInquiries = Convert.ToString(Enums.FunnelField.OutboundGeneratedInquiries).ToLower();
-                string FF_InboundInquiries = Convert.ToString(Enums.FunnelField.InboundInquiries).ToLower();
-                string FF_TotalInquiries = Convert.ToString(Enums.FunnelField.TotalInquiries).ToLower();
-                string ConversionGate_INQ = Convert.ToString(Enums.FunnelField.ConversionGate_INQ).ToLower();
-                string FF_AQL = Convert.ToString(Enums.FunnelField.AQL).ToLower();
-                string ConversionGate_AQL = Convert.ToString(Enums.FunnelField.ConversionGate_AQL).ToLower();
-                string BlendedFunnelCR_Times = Convert.ToString(Enums.FunnelField.BlendedFunnelCR_Times).ToLower();
-                string FF_AverageDealsSize = Convert.ToString(Enums.FunnelField.AverageDealsSize).ToLower();
-                string ExpectedRevenue = Convert.ToString(Enums.FunnelField.ExpectedRevenue).ToLower();
-                #endregion
-
-                int FunnelFieldId, Marketing_ModelFunnelId, Teleprospecting_ModelFunnelId, Sales_ModelFunnelId;
-                ModelCalculation objModelCalculation = new ModelCalculation();
-                objModelCalculation.ModelId = modelId;
-
-                try
-                {
-                    //// Marketing Funnel
-                    Marketing_ModelFunnelId = Convert.ToInt32(objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId && modelFunnel.Funnel.Title == Marketing).Select(modelFunnel => modelFunnel.ModelFunnelId).FirstOrDefault());
-                    //// Teleprospecting Funnel
-                    Teleprospecting_ModelFunnelId = Convert.ToInt32(objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId && modelFunnel.Funnel.Title == Teleprospecting).Select(modelFunnel => modelFunnel.ModelFunnelId).FirstOrDefault());
-                    //// Sales Funnel
-                    Sales_ModelFunnelId = Convert.ToInt32(objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId && modelFunnel.Funnel.Title == Sales).Select(modelFunnel => modelFunnel.ModelFunnelId).FirstOrDefault());
-
-                    //// Clear existing review data for all Funnels
-                    var lstModelReview = objDbMrpEntities.ModelReviews.Where(modelReview => modelReview.ModelFunnelId == Marketing_ModelFunnelId).ToList();
-                    foreach (var objModelReview in lstModelReview)
-                    {
-                        objDbMrpEntities.ModelReviews.Remove(objModelReview);
-                    }
-                    var lstModelReviewTeleprospecting = objDbMrpEntities.ModelReviews.Where(modelReview => modelReview.ModelFunnelId == Teleprospecting_ModelFunnelId).ToList();
-                    foreach (var objModelReview in lstModelReviewTeleprospecting)
-                    {
-                        objDbMrpEntities.ModelReviews.Remove(objModelReview);
-                    }
-                    var lstModelReviewSales = objDbMrpEntities.ModelReviews.Where(modelReview => modelReview.ModelFunnelId == Sales_ModelFunnelId).ToList();
-                    foreach (var objModelReview in lstModelReviewSales)
-                    {
-                        objDbMrpEntities.ModelReviews.Remove(objModelReview);
-                    }
-                    objDbMrpEntities.SaveChanges();
-
-                    #region Marketing Funnel
-
-                    //// Database Size
-                    double DBSIZEPST = Math.Round(objModelCalculation.GetDBSIZEPST(modelId), 2);
-                    double DBACQPST = Math.Round(objModelCalculation.GetDBACQPST(modelId), 2);
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_DatabaseSize).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Mkt_DatabaseSize = objModelCalculation.MarketingSourced_Mkt_DatabaseSize(false, DBSIZEPST, DBACQPST);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Mkt_DatabaseSize, 0, 0, 0, 0, 0);
-
-                    //// Conversion Gate 1 (SUS)
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == ConversionGate_SUS).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Mkt_SUS_ConversionGate = objModelCalculation.MarketingSourced_Mkt_SUS_ConversionGate(false);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Mkt_SUS_ConversionGate, 0, 0, 0, 0, 0);
-
-                    //// Outbound Generated Inquiries
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_OutboundGeneratedInquiries).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Mkt_OutboundGeneratedInquiries = objModelCalculation.MarketingSourced_Mkt_OutboundGeneratedInquiries();
-                    double MarketingStageDays_Mkt_OutboundGeneratedInquiries = objModelCalculation.MarketingStageDays_Mkt_OutboundGeneratedInquiries(false);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Mkt_OutboundGeneratedInquiries, MarketingStageDays_Mkt_OutboundGeneratedInquiries, 0, 0, 0, 0);
-
-                    //// Inbound Inquiries
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_InboundInquiries).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Mkt_InboundInquiries = objModelCalculation.MarketingSourced_Mkt_InboundInquiries(false);
-                    double MarketingStageDays_Mkt_InboundInquiries = objModelCalculation.MarketingStageDays_Mkt_InboundInquiries(false);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Mkt_InboundInquiries, MarketingStageDays_Mkt_InboundInquiries, 0, 0, 0, 0);
-
-                    //// Total Inquiries
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_TotalInquiries).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Mkt_TotalInquiries = objModelCalculation.MarketingSourced_Mkt_TotalInquiries();
-                    double MarketingStageDays_Mkt_TotalInquiries = objModelCalculation.MarketingStageDays_Mkt_TotalInquiries(MarketingSourced_Mkt_TotalInquiries);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Mkt_TotalInquiries, MarketingStageDays_Mkt_TotalInquiries, 0, 0, 0, 0);
-
-                    //// Conversion Gate 2 (INQ)
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == ConversionGate_INQ).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Mkt_INQ_ConversionGate = objModelCalculation.MarketingSourced_Mkt_INQ_ConversionGate(false);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Mkt_INQ_ConversionGate, 0, 0, 0, 0, 0);
-
-                    //// AQL
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_AQL).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Mkt_AQL = objModelCalculation.MarketingSourced_Mkt_AQL();
-                    double MarketingStageDays_Mkt_AQL = objModelCalculation.MarketingStageDays_Mkt_AQL(false);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Mkt_AQL, MarketingStageDays_Mkt_AQL, 0, 0, 0, 0);
-
-                    //// Conversion Gate 3 (AQL)
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == ConversionGate_AQL).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Mkt_AQL_ConversionGate = objModelCalculation.MarketingSourced_Mkt_AQL_ConversionGate(false);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Mkt_AQL_ConversionGate, 0, 0, 0, 0, 0);
-
-                    #endregion
-
-                    //// BLENDED FUNNEL CONVERSION RATE AND TIMES
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == BlendedFunnelCR_Times).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingStageDays_BlendedFull = objModelCalculation.MarketingStageDays_BlendedFull();
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, 0, MarketingStageDays_BlendedFull, 0, 0, 0, 0);
-
-                    //// Average Deals Size
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_AverageDealsSize).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Average_Deal_Size = objModelCalculation.MarketingSourced_Average_Deal_Size(false);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Average_Deal_Size, 0, 0, 0, 0, 0);
-
-                    //// Expected Revenue From Model
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == ExpectedRevenue).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Expected_Revenue = objModelCalculation.MarketingSourced_Expected_Revenue();
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Expected_Revenue, 0, 0, 0, 0, 0);
-
-                    #region Blended
-
-                    //// Database Size - Kunal
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_DatabaseSize).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Mkt_DatabaseSize = objModelCalculation.BlendedTotal_Mkt_DatabaseSize();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Mkt_DatabaseSize, 0);
-
-                    //// Conversion Gate 1 (SUS)
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == ConversionGate_SUS).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Mkt_SUS_ConversionGate = objModelCalculation.BlendedTotal_Mkt_SUS_ConversionGate();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Mkt_SUS_ConversionGate, 0);
-
-                    //// Outbound Generated Inquiries
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_OutboundGeneratedInquiries).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Mkt_OutboundGeneratedInquiries = objModelCalculation.BlendedTotal_Mkt_OutboundGeneratedInquiries();
-                    double BlendedTotalDays_Mkt_OutboundGeneratedInquiries = objModelCalculation.BlendedTotalDays_Mkt_OutboundGeneratedInquiries();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Mkt_OutboundGeneratedInquiries, BlendedTotalDays_Mkt_OutboundGeneratedInquiries);
-
-                    //// Inbound Inquiries
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_InboundInquiries).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Mkt_InboundInquiries = objModelCalculation.BlendedTotal_Mkt_InboundInquiries();
-                    double BlendedTotalDays_Mkt_InboundInquiries = objModelCalculation.BlendedTotalDays_Mkt_InboundInquiries();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Mkt_InboundInquiries, BlendedTotalDays_Mkt_InboundInquiries);
-
-                    //// Total Inquiries
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_TotalInquiries).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Mkt_TotalInquiries = objModelCalculation.BlendedTotal_Mkt_TotalInquiries();
-                    double BlendedTotalDays_Mkt_TotalInquiries = objModelCalculation.BlendedTotalDays_Mkt_TotalInquiries();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Mkt_TotalInquiries, BlendedTotalDays_Mkt_TotalInquiries);
-
-                    //// Conversion Gate 2 (INQ)
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == ConversionGate_INQ).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Mkt_INQ_ConversionGate = objModelCalculation.BlendedTotal_Mkt_INQ_ConversionGate();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Mkt_INQ_ConversionGate, 0);
-
-                    //// AQL
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_AQL).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Mkt_AQL = objModelCalculation.BlendedTotal_Mkt_AQL();
-                    double BlendedTotalDays_Mkt_AQL = objModelCalculation.BlendedTotalDays_Mkt_AQL();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Mkt_AQL, BlendedTotalDays_Mkt_AQL);
-
-                    //// Conversion Gate 3 (AQL)
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == ConversionGate_AQL).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Mkt_AQL_ConversionGate = objModelCalculation.BlendedTotal_Mkt_AQL_ConversionGate();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Mkt_AQL_ConversionGate, 0);
-
-                    #endregion
-
-                    //// BLENDED FUNNEL CONVERSION RATE AND TIMES
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == BlendedFunnelCR_Times).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_BlendedFull = objModelCalculation.BlendedTotal_BlendedFull();
-                    double BlendedTotalDays_BlendedFull = objModelCalculation.BlendedTotalDays_BlendedFull(); //Check
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_BlendedFull, BlendedTotalDays_BlendedFull);
-
-                    //// Expected Revenue From Model
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == ExpectedRevenue).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Expected_Revenue = objModelCalculation.BlendedTotal_Expected_Revenue();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Expected_Revenue, 0);
-
-                    //// Average Deals Size
-                    FunnelFieldId = Convert.ToInt32(objDbMrpEntities.Funnel_Field.Where(funnelField => funnelField.Funnel.Title == Marketing && funnelField.Field.Title == FF_AverageDealsSize).Select(funnelField => funnelField.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_AverageDealSize = objModelCalculation.BlendedTotal_AverageDealSize();
-                    UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_AverageDealSize, 0);
-                }
-                catch (Exception objException)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(objException);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Function to save model calculations
-        /// </summary>
-        /// <param name="modelFunnelId">model funnel id</param>
-        /// <param name="funnelFieldId">funnel field id</param>
-        /// <param name="marketingSourced">marketing sourced value</param>
-        /// <param name="marketingDays">no. of marketing days</param>
-        /// <param name="prospectingSourced">prospecting sourced value</param>
-        /// <param name="prospectingDays">no. of prospecting days</param>
-        /// <param name="salesSourced">sales sourced value</param>
-        /// <param name="salesDays">no. of sales days</param>
-        private void SaveModelCalculations(int modelFunnelId, int funnelFieldId, double marketingSourced, double marketingDays, double prospectingSourced, double prospectingDays, double salesSourced, double salesDays)
-        {
-            try
-            {
-                double defBlendedTotal = 0;
-                double defBlendedDays = 0;
-
-                marketingSourced = double.IsNaN(marketingSourced) ? 0 : marketingSourced;
-                marketingDays = double.IsNaN(marketingDays) ? 0 : marketingDays;
-                prospectingSourced = double.IsNaN(prospectingSourced) ? 0 : prospectingSourced;
-                prospectingDays = double.IsNaN(prospectingDays) ? 0 : prospectingDays;
-                salesSourced = double.IsNaN(salesSourced) ? 0 : salesSourced;
-                salesDays = double.IsNaN(salesDays) ? 0 : salesDays;
-
-                var objDuplicateCheck = objDbMrpEntities.ModelReviews.Where(modelReview => modelReview.ModelFunnelId == modelFunnelId && modelReview.ModelFunnelId == funnelFieldId).FirstOrDefault();
-                if (objDuplicateCheck == null)
-                {
-                    //// Insert ModelReview data
-                    ModelReview objModelReview = new ModelReview();
-                    objModelReview.ModelFunnelId = modelFunnelId;
-                    objModelReview.FunnelFieldId = funnelFieldId;
-                    objModelReview.MarketingSourced = marketingSourced;
-                    objModelReview.MarketingDays = marketingDays;
-                    objModelReview.ProspectingSourced = prospectingSourced;
-                    objModelReview.ProspectingDays = prospectingDays;
-                    objModelReview.SalesSourced = salesSourced;
-                    objModelReview.SalesDays = salesDays;
-                    objModelReview.BlendedTotal = defBlendedTotal;
-                    objModelReview.BlendedDays = defBlendedDays;
-                    objModelReview.IsBaseline = false;
-                    objModelReview.CreatedDate = DateTime.Now;
-                    objModelReview.CreatedBy = Sessions.User.UserId;
-                    objDbMrpEntities.Entry(objModelReview).State = EntityState.Added;
-                    objDbMrpEntities.ModelReviews.Add(objModelReview);
-                    objDbMrpEntities.SaveChanges();
-                }
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-            }
-        }
-
-        /// <summary>
-        /// Function to update model calculations
-        /// </summary>
-        /// <param name="modelFunnelId">model funnel id</param>
-        /// <param name="funnelFieldId">funnel field id</param>
-        /// <param name="blendedTotal">blended total value</param>
-        /// <param name="blendedDays">no. of blended days</param>
-        private void UpdateModelCalculations(int modelFunnelId, int funnelFieldId, double blendedTotal, double blendedDays)
-        {
-            try
-            {
-                blendedTotal = double.IsNaN(blendedTotal) ? 0 : blendedTotal;
-                blendedDays = double.IsNaN(blendedDays) ? 0 : blendedDays;
-
-                var objModelReview = objDbMrpEntities.ModelReviews.Where(modelReview => modelReview.ModelFunnelId == modelFunnelId && modelReview.FunnelFieldId == funnelFieldId).FirstOrDefault();
-                if (objModelReview != null)
-                {
-                    objModelReview.BlendedTotal = blendedTotal;
-                    objModelReview.BlendedDays = blendedDays;
-                    objDbMrpEntities.Entry(objModelReview).State = EntityState.Modified;
-                    objDbMrpEntities.SaveChanges();
-                }
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-            }
-        }
-
         #endregion
 
         #region Tactic Selection
@@ -2689,7 +2392,6 @@ namespace RevenuePlanner.Controllers
                         newModel.IsActive = true;
                         newModel.IsDeleted = false;
                         newModel.Year = DateTime.Now.Year;
-                        newModel.AddressableContacts = 0;   //// Modified by Mitesh Vaishnav for PL Ticket #534
                         newModel.IsBenchmarked = IsBenchmarked;
                         //// Added by Mitesh Vaishnav for PL ticket #659 
                         var oldModel = objMrpEntities.Models.Where(model => model.ModelId == OldModelID && model.IsDeleted.Equals(false)).FirstOrDefault();

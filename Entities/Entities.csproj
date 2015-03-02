@@ -139,18 +139,6 @@
     <Compile Include="Models\Model.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ModelReview.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model_Audience_Event.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model_Audience_Inbound.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model_Audience_Outbound.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Model_Funnel.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

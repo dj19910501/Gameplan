@@ -12,8 +12,6 @@ namespace RevenuePlanner.Models
         public int ModelId { get; set; }
         public string Title { get; set; }
         public int Year { get; set; }
-
-        public int AddressableContract { get; set; }
         public int MarketingLeads { get; set; }
         public int MarketingDealSize { get; set; }
         public int TeleprospectingLeads { get; set; }
@@ -34,7 +32,6 @@ namespace RevenuePlanner.Models
     }
     public class ContactInquiry
     {
-        public int AddressableContract { get; set; }
         public int MarketingLeads { get; set; }
         public double MarketingDealSize { get; set; } //change the datatype from int to double
         public int TeleprospectingLeads { get; set; }

@@ -56,12 +56,8 @@ namespace RevenuePlanner.Models
         public DbSet<LineItemType> LineItemTypes { get; set; }
         public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
         public DbSet<Model> Models { get; set; }
-        public DbSet<Model_Audience_Event> Model_Audience_Event { get; set; }
-        public DbSet<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }
-        public DbSet<Model_Audience_Outbound> Model_Audience_Outbound { get; set; }
         public DbSet<Model_Funnel> Model_Funnel { get; set; }
         public DbSet<Model_Funnel_Stage> Model_Funnel_Stage { get; set; }
-        public DbSet<ModelReview> ModelReviews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Plan> Plans { get; set; }
         public DbSet<Plan_Budget> Plan_Budget { get; set; }

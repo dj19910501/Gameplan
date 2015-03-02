@@ -214,7 +214,6 @@
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\HtmlHelpers.cs" />
     <Compile Include="Helpers\Message.cs" />
-    <Compile Include="Helpers\ModelCalculation.cs" />
     <Compile Include="Helpers\Sessions.cs" />
     <Compile Include="Models\AudiencePlanModel.cs" />
     <Compile Include="Models\BaselineModel.cs" />

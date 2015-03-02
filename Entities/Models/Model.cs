@@ -17,9 +17,6 @@ namespace RevenuePlanner.Models
         public Model()
         {
             this.LineItemTypes = new HashSet<LineItemType>();
-            this.Model_Audience_Event = new HashSet<Model_Audience_Event>();
-            this.Model_Audience_Inbound = new HashSet<Model_Audience_Inbound>();
-            this.Model_Audience_Outbound = new HashSet<Model_Audience_Outbound>();
             this.Model_Funnel = new HashSet<Model_Funnel>();
             this.Model1 = new HashSet<Model>();
             this.Plans = new HashSet<Plan>();
@@ -30,7 +27,6 @@ namespace RevenuePlanner.Models
         public string Title { get; set; }
         public string Version { get; set; }
         public int Year { get; set; }
-        public long AddressableContacts { get; set; }
         public string Status { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
@@ -52,9 +48,6 @@ namespace RevenuePlanner.Models
         public virtual IntegrationInstance IntegrationInstance2 { get; set; }
         public virtual IntegrationInstance IntegrationInstance3 { get; set; }
         public virtual ICollection<LineItemType> LineItemTypes { get; set; }
-        public virtual ICollection<Model_Audience_Event> Model_Audience_Event { get; set; }
-        public virtual ICollection<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }
-        public virtual ICollection<Model_Audience_Outbound> Model_Audience_Outbound { get; set; }
         public virtual ICollection<Model_Funnel> Model_Funnel { get; set; }
         public virtual ICollection<Model> Model1 { get; set; }
         public virtual Model Model2 { get; set; }

@@ -17,7 +17,6 @@ namespace RevenuePlanner.Models
         public Model_Funnel()
         {
             this.Model_Funnel_Stage = new HashSet<Model_Funnel_Stage>();
-            this.ModelReviews = new HashSet<ModelReview>();
         }
     
         public int ModelFunnelId { get; set; }
@@ -33,6 +32,5 @@ namespace RevenuePlanner.Models
         public virtual Funnel Funnel { get; set; }
         public virtual Model Model { get; set; }
         public virtual ICollection<Model_Funnel_Stage> Model_Funnel_Stage { get; set; }
-        public virtual ICollection<ModelReview> ModelReviews { get; set; }
     }
 }

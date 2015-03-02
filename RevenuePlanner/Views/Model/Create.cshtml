@@ -258,7 +258,6 @@
 }
 <script type="text/javascript">
     var lastModelId;
-    var _AddressableContract;
     var modelStatus;/* changed by Nirav shah for TFS Point :252 editing a published model*/
 
     if ($("#Errormsg").val() != undefined && $("#Errormsg").val() != "") {
@@ -561,7 +560,6 @@ function LoadModelData(modelId, bool) {
      $.each(data.lstmodellist, function (index, obj) {
          $("#lblTitle").html(obj.Title + '<span class="gray source-sans-prolight">' + obj.Status + '</span>');
          modelStatus = obj.Status;/* changed by Nirav shah for TFS Point :252 editing a published model*/
-         _AddressableContract = obj.AddressableContacts;
          if (modelId == $("#latestModelId").val()) {
              if (obj.Status.toString().toLocaleLowerCase() == 'draft' && ( $('#IsOwner').val().toLowerCase() == 'true')) {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                  $("#publishModelDisabled").hide();
@@ -625,11 +623,8 @@ function LoadModelData(modelId, bool) {
      if (SAverageDealSize == null || SAverageDealSize == 'undefined') {
          SAverageDealSize = 0;
      }
-     if (_AddressableContract == null || _AddressableContract == 'undefined') {
-         _AddressableContract = 0;
-     }
      $("#divcontactInquiry").html('');
-     $("#divcontactInquiry").load('LoadContactInquiry' + '?AC=' + _AddressableContract + '&MLeads=' + MExpectedLeadCount + "&MSize=" + MAverageDealSize + "&TLeads=" + TExpectedLeadCount + "&TSize=" + TAverageDealSize + "&SLeads=" + SExpectedLeadCount + "&SSize=" + SAverageDealSize);
+     $("#divcontactInquiry").load('LoadContactInquiry' + '?MLeads=' + MExpectedLeadCount + "&MSize=" + MAverageDealSize + "&TLeads=" + TExpectedLeadCount + "&TSize=" + TAverageDealSize + "&SLeads=" + SExpectedLeadCount + "&SSize=" + SAverageDealSize);
  }
 
  function fillfunnelstage(data) {
@@ -807,24 +802,6 @@ function LoadModelData(modelId, bool) {
                      $(this).children('a').removeClass("error-form");
                  }
                  if ($("#Title").val() == '' || $("#Title").val() == "Baseline Model") {
-                     $(this).children('a').addClass("error-form");
-                     needAlert = true;
-                 }
-                 else {
-                     $(this).children('a').removeClass("error-form");
-                 }
-             }
-             else if ($(this).next().attr('datadefault') == "AddressableContract") {
-                 var tValue = $(this).children('a').text();
-                 if (tValue == '' || tValue == '0') {
-                     $(this).children('a').addClass("error-form");
-                     needAlert = true;
-                 }
-                 else {
-                     $(this).children('a').removeClass("error-form");
-                 }
-                 //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-                 if ($("#AddressableContract").val() == '' || $("#AddressableContract").val() == "0") {
                      $(this).children('a').addClass("error-form");
                      needAlert = true;
                  }

@@ -36,12 +36,8 @@
         <EntityTypeShape EntityType="MRPModel.LineItemType" Width="1.5" PointX="8.4950062914262556" PointY="21.182726065247657" />
         <EntityTypeShape EntityType="MRPModel.MasterTacticType" Width="1.5" PointX="9.2000513175502654" PointY="31.394018009022819" />
         <EntityTypeShape EntityType="MRPModel.Model" Width="1.5" PointX="10.307611779453051" PointY="9.26908548607914" />
-        <EntityTypeShape EntityType="MRPModel.Model_Audience_Event" Width="1.5" PointX="10.253322075239067" PointY="31.05867946104085" />
-        <EntityTypeShape EntityType="MRPModel.Model_Audience_Inbound" Width="1.5" PointX="10.693058268489809" PointY="27.878118364083637" />
-        <EntityTypeShape EntityType="MRPModel.Model_Audience_Outbound" Width="1.5" PointX="3.4889128094021755" PointY="9.6008334055546829" />
         <EntityTypeShape EntityType="MRPModel.Model_Funnel" Width="1.5" PointX="3.541094107339668" PointY="10.120387871805759" />
         <EntityTypeShape EntityType="MRPModel.Model_Funnel_Stage" Width="1.5" PointX="6.7144972843651178" PointY="11.800008227955553" />
-        <EntityTypeShape EntityType="MRPModel.ModelReview" Width="1.5" PointX="1.7553278141447006" PointY="11.824326103471371" />
         <EntityTypeShape EntityType="MRPModel.Notification" Width="1.5" PointX="2.719548422246961" PointY="27.82676978214959" />
         <EntityTypeShape EntityType="MRPModel.Plan" Width="1.5" PointX="0.2550451086159074" PointY="10.762929295544945" />
         <EntityTypeShape EntityType="MRPModel.Plan_Budget" Width="1.5" PointX="11.051116441865972" PointY="24.036689918505349" />
@@ -77,7 +73,6 @@
         <AssociationConnector Association="MRPModel.FK_Funnel_Field_Field" />
         <AssociationConnector Association="MRPModel.FK_Funnel_Field_Funnel" />
         <AssociationConnector Association="MRPModel.FK_Model_Funnel_Funnel" />
-        <AssociationConnector Association="MRPModel.FK_ModelReview_Funnel_Field" />
         <AssociationConnector Association="MRPModel.FK_GameplanDataType_IntegrationType" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType" />
         <AssociationConnector Association="MRPModel.FK_GameplanDataTypePull_IntegrationType" />
@@ -103,15 +98,11 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" />
         <AssociationConnector Association="MRPModel.FK_LineItemType_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" />
-        <AssociationConnector Association="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" />
-        <AssociationConnector Association="MRPModel.FK_Model_Audience_Inbound_Model" />
-        <AssociationConnector Association="MRPModel.FK_Model_Audience_Outbound_Model" />
         <AssociationConnector Association="MRPModel.FK_Model_Funnel_Model" />
         <AssociationConnector Association="MRPModel.FK_Model_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Plan" />
         <AssociationConnector Association="MRPModel.fk_TacticType_Model" />
         <AssociationConnector Association="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" />
-        <AssociationConnector Association="MRPModel.FK_ModelReview_Model_Funnel" />
         <AssociationConnector Association="MRPModel.FK_Model_Category_Stage_Stage" />
         <AssociationConnector Association="MRPModel.FK_User_Notification_Notification" />
         <AssociationConnector Association="MRPModel.FK_Plan_Budget_Plan" />

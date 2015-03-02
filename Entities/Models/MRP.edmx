@@ -37,12 +37,8 @@
           <EntitySet Name="LineItemType" EntityType="MRPModel.Store.LineItemType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="MasterTacticType" EntityType="MRPModel.Store.MasterTacticType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model" EntityType="MRPModel.Store.Model" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Model_Audience_Event" EntityType="MRPModel.Store.Model_Audience_Event" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Model_Audience_Inbound" EntityType="MRPModel.Store.Model_Audience_Inbound" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Model_Audience_Outbound" EntityType="MRPModel.Store.Model_Audience_Outbound" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model_Funnel" EntityType="MRPModel.Store.Model_Funnel" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model_Funnel_Stage" EntityType="MRPModel.Store.Model_Funnel_Stage" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ModelReview" EntityType="MRPModel.Store.ModelReview" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Notification" EntityType="MRPModel.Store.Notification" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan" EntityType="MRPModel.Store.Plan" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Budget" EntityType="MRPModel.Store.Plan_Budget" store:Type="Tables" Schema="dbo" />
@@ -206,18 +202,6 @@
             <End Role="Model" EntitySet="Model" />
             <End Role="LineItemType" EntitySet="LineItemType" />
           </AssociationSet>
-          <AssociationSet Name="FK_Model_Audience_Event_Model_Audience_Event" Association="MRPModel.Store.FK_Model_Audience_Event_Model_Audience_Event">
-            <End Role="Model" EntitySet="Model" />
-            <End Role="Model_Audience_Event" EntitySet="Model_Audience_Event" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Audience_Inbound_Model" Association="MRPModel.Store.FK_Model_Audience_Inbound_Model">
-            <End Role="Model" EntitySet="Model" />
-            <End Role="Model_Audience_Inbound" EntitySet="Model_Audience_Inbound" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Audience_Outbound_Model" Association="MRPModel.Store.FK_Model_Audience_Outbound_Model">
-            <End Role="Model" EntitySet="Model" />
-            <End Role="Model_Audience_Outbound" EntitySet="Model_Audience_Outbound" />
-          </AssociationSet>
           <AssociationSet Name="FK_Model_Category_Stage_Stage" Association="MRPModel.Store.FK_Model_Category_Stage_Stage">
             <End Role="Stage" EntitySet="Stage" />
             <End Role="Model_Funnel_Stage" EntitySet="Model_Funnel_Stage" />
@@ -253,14 +237,6 @@
           <AssociationSet Name="FK_Model_Model" Association="MRPModel.Store.FK_Model_Model">
             <End Role="Model" EntitySet="Model" />
             <End Role="Model1" EntitySet="Model" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ModelReview_Funnel_Field" Association="MRPModel.Store.FK_ModelReview_Funnel_Field">
-            <End Role="Funnel_Field" EntitySet="Funnel_Field" />
-            <End Role="ModelReview" EntitySet="ModelReview" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ModelReview_Model_Funnel" Association="MRPModel.Store.FK_ModelReview_Model_Funnel">
-            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
-            <End Role="ModelReview" EntitySet="ModelReview" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Budget_Plan" Association="MRPModel.Store.FK_Plan_Budget_Plan">
             <End Role="Plan" EntitySet="Plan" />
@@ -792,7 +768,6 @@
           <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="Version" Type="nvarchar" Nullable="false" MaxLength="50" />
           <Property Name="Year" Type="int" Nullable="false" />
-          <Property Name="AddressableContacts" Type="bigint" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
@@ -808,73 +783,6 @@
           <Property Name="IntegrationInstanceIdMQL" Type="int" />
           <Property Name="IntegrationInstanceIdCW" Type="int" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Model_Audience_Event">
-          <Key>
-            <PropertyRef Name="ModelAudienceEventId" />
-          </Key>
-          <Property Name="ModelAudienceEventId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="ModelId" Type="int" Nullable="false" />
-          <Property Name="Quarter" Type="nvarchar" Nullable="false" MaxLength="50" />
-          <Property Name="NumberofContacts" Type="bigint" />
-          <Property Name="ContactToInquiryConversion" Type="float" />
-          <Property Name="EventsBudget" Type="float" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
-        </EntityType>
-        <EntityType Name="Model_Audience_Inbound">
-          <Key>
-            <PropertyRef Name="ModelAudienceInboundId" />
-          </Key>
-          <Property Name="ModelAudienceInboundId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="ModelId" Type="int" Nullable="false" />
-          <Property Name="Quarter" Type="nvarchar" Nullable="false" MaxLength="50" />
-          <Property Name="Impressions" Type="int" />
-          <Property Name="ClickThroughRate" Type="float" />
-          <Property Name="Visits" Type="int" />
-          <Property Name="RegistrationRate" Type="float" />
-          <Property Name="PPC_ClickThroughs" Type="int" />
-          <Property Name="PPC_CostperClickThrough" Type="float" />
-          <Property Name="PPC_RegistrationRate" Type="float" />
-          <Property Name="GC_GuaranteedCPLBudget" Type="int" />
-          <Property Name="GC_CostperLead" Type="float" />
-          <Property Name="CSC_NonGuaranteedCPLBudget" Type="int" />
-          <Property Name="CSC_CostperLead" Type="float" />
-          <Property Name="TDM_DigitalMediaBudget" Type="int" />
-          <Property Name="TDM_CostperLead" Type="float" />
-          <Property Name="TP_PrintMediaBudget" Type="int" />
-          <Property Name="TP_CostperLead" Type="float" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
-        </EntityType>
-        <EntityType Name="Model_Audience_Outbound">
-          <Key>
-            <PropertyRef Name="ModelAudienceOutboundId" />
-          </Key>
-          <Property Name="ModelAudienceOutboundId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="ModelId" Type="int" Nullable="false" />
-          <Property Name="NormalErosion" Type="float" />
-          <Property Name="UnsubscribeRate" Type="float" />
-          <Property Name="NumberofTouches" Type="int" />
-          <Property Name="CTRDelivered" Type="float" />
-          <Property Name="RegistrationRate" Type="float" />
-          <Property Name="Quarter" Type="nvarchar" Nullable="false" MaxLength="50" />
-          <Property Name="ListAcquisitions" Type="int" />
-          <Property Name="Acquisition_CostperContact" Type="float" />
-          <Property Name="Acquisition_NumberofTouches" Type="int" />
-          <Property Name="Acquisition_RegistrationRate" Type="float" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
-          <Property Name="ListAcquisitionsNormalErosion" Type="float" />
-          <Property Name="ListAcquisitionsUnsubscribeRate" Type="float" />
-          <Property Name="ListAcquisitionsCTRDelivered" Type="float" />
-          <Property Name="IsBenchmarked" Type="bit" />
         </EntityType>
         <EntityType Name="Model_Funnel">
           <Key>
@@ -904,27 +812,7 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="AllowedTargetStage" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="ModelReview">
-          <Key>
-            <PropertyRef Name="ModelReviewId" />
-          </Key>
-          <Property Name="ModelReviewId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="ModelFunnelId" Type="int" Nullable="false" />
-          <Property Name="FunnelFieldId" Type="int" Nullable="false" />
-          <Property Name="MarketingSourced" Type="float" />
-          <Property Name="MarketingDays" Type="float" />
-          <Property Name="ProspectingSourced" Type="float" />
-          <Property Name="ProspectingDays" Type="float" />
-          <Property Name="SalesSourced" Type="float" />
-          <Property Name="SalesDays" Type="float" />
-          <Property Name="BlendedTotal" Type="float" />
-          <Property Name="BlendedDays" Type="float" />
-          <Property Name="IsBaseline" Type="bit" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="ModelId" Type="int" />
         </EntityType>
         <EntityType Name="Notification">
           <Key>
@@ -1734,42 +1622,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Model_Audience_Event_Model_Audience_Event">
-          <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="1" />
-          <End Role="Model_Audience_Event" Type="MRPModel.Store.Model_Audience_Event" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Audience_Event">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Audience_Inbound_Model">
-          <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="1" />
-          <End Role="Model_Audience_Inbound" Type="MRPModel.Store.Model_Audience_Inbound" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Audience_Inbound">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Audience_Outbound_Model">
-          <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="1" />
-          <End Role="Model_Audience_Outbound" Type="MRPModel.Store.Model_Audience_Outbound" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Audience_Outbound">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Model_Category_Stage_Stage">
           <End Role="Stage" Type="MRPModel.Store.Stage" Multiplicity="1" />
           <End Role="Model_Funnel_Stage" Type="MRPModel.Store.Model_Funnel_Stage" Multiplicity="*" />
@@ -1875,30 +1727,6 @@
             </Principal>
             <Dependent Role="Model1">
               <PropertyRef Name="ParentModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ModelReview_Funnel_Field">
-          <End Role="Funnel_Field" Type="MRPModel.Store.Funnel_Field" Multiplicity="1" />
-          <End Role="ModelReview" Type="MRPModel.Store.ModelReview" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Funnel_Field">
-              <PropertyRef Name="FunnelFieldId" />
-            </Principal>
-            <Dependent Role="ModelReview">
-              <PropertyRef Name="FunnelFieldId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ModelReview_Model_Funnel">
-          <End Role="Model_Funnel" Type="MRPModel.Store.Model_Funnel" Multiplicity="1" />
-          <End Role="ModelReview" Type="MRPModel.Store.ModelReview" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model_Funnel">
-              <PropertyRef Name="ModelFunnelId" />
-            </Principal>
-            <Dependent Role="ModelReview">
-              <PropertyRef Name="ModelFunnelId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2286,12 +2114,8 @@
           <EntitySet Name="LineItemTypes" EntityType="MRPModel.LineItemType" />
           <EntitySet Name="MasterTacticTypes" EntityType="MRPModel.MasterTacticType" />
           <EntitySet Name="Models" EntityType="MRPModel.Model" />
-          <EntitySet Name="Model_Audience_Event" EntityType="MRPModel.Model_Audience_Event" />
-          <EntitySet Name="Model_Audience_Inbound" EntityType="MRPModel.Model_Audience_Inbound" />
-          <EntitySet Name="Model_Audience_Outbound" EntityType="MRPModel.Model_Audience_Outbound" />
           <EntitySet Name="Model_Funnel" EntityType="MRPModel.Model_Funnel" />
           <EntitySet Name="Model_Funnel_Stage" EntityType="MRPModel.Model_Funnel_Stage" />
-          <EntitySet Name="ModelReviews" EntityType="MRPModel.ModelReview" />
           <EntitySet Name="Notifications" EntityType="MRPModel.Notification" />
           <EntitySet Name="Plans" EntityType="MRPModel.Plan" />
           <EntitySet Name="Plan_Budget" EntityType="MRPModel.Plan_Budget" />
@@ -2362,10 +2186,6 @@
           <AssociationSet Name="FK_Model_Funnel_Funnel" Association="MRPModel.FK_Model_Funnel_Funnel">
             <End Role="Funnel" EntitySet="Funnels" />
             <End Role="Model_Funnel" EntitySet="Model_Funnel" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ModelReview_Funnel_Field" Association="MRPModel.FK_ModelReview_Funnel_Field">
-            <End Role="Funnel_Field" EntitySet="Funnel_Field" />
-            <End Role="ModelReview" EntitySet="ModelReviews" />
           </AssociationSet>
           <AssociationSet Name="FK_GameplanDataType_IntegrationType" Association="MRPModel.FK_GameplanDataType_IntegrationType">
             <End Role="IntegrationType" EntitySet="IntegrationTypes" />
@@ -2467,18 +2287,6 @@
             <End Role="LineItemType" EntitySet="LineItemTypes" />
             <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
           </AssociationSet>
-          <AssociationSet Name="FK_Model_Audience_Event_Model_Audience_Event" Association="MRPModel.FK_Model_Audience_Event_Model_Audience_Event">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Model_Audience_Event" EntitySet="Model_Audience_Event" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Audience_Inbound_Model" Association="MRPModel.FK_Model_Audience_Inbound_Model">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Model_Audience_Inbound" EntitySet="Model_Audience_Inbound" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Audience_Outbound_Model" Association="MRPModel.FK_Model_Audience_Outbound_Model">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Model_Audience_Outbound" EntitySet="Model_Audience_Outbound" />
-          </AssociationSet>
           <AssociationSet Name="FK_Model_Funnel_Model" Association="MRPModel.FK_Model_Funnel_Model">
             <End Role="Model" EntitySet="Models" />
             <End Role="Model_Funnel" EntitySet="Model_Funnel" />
@@ -2498,10 +2306,6 @@
           <AssociationSet Name="FK_Model_Funnel_Stage_Model_Funnel" Association="MRPModel.FK_Model_Funnel_Stage_Model_Funnel">
             <End Role="Model_Funnel" EntitySet="Model_Funnel" />
             <End Role="Model_Funnel_Stage" EntitySet="Model_Funnel_Stage" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ModelReview_Model_Funnel" Association="MRPModel.FK_ModelReview_Model_Funnel">
-            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
-            <End Role="ModelReview" EntitySet="ModelReviews" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_Category_Stage_Stage" Association="MRPModel.FK_Model_Category_Stage_Stage">
             <End Role="Stage" EntitySet="Stages" />
@@ -2833,7 +2637,6 @@
           <Property Type="Guid" Name="ModifiedBy" />
           <NavigationProperty Name="Field" Relationship="MRPModel.FK_Funnel_Field_Field" FromRole="Funnel_Field" ToRole="Field" />
           <NavigationProperty Name="Funnel" Relationship="MRPModel.FK_Funnel_Field_Funnel" FromRole="Funnel_Field" ToRole="Funnel" />
-          <NavigationProperty Name="ModelReviews" Relationship="MRPModel.FK_ModelReview_Funnel_Field" FromRole="Funnel_Field" ToRole="ModelReview" />
         </EntityType>
         <EntityType Name="GameplanDataType">
           <Key>
@@ -3107,7 +2910,6 @@
           <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Version" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="Year" Nullable="false" />
-          <Property Type="Int64" Name="AddressableContacts" Nullable="false" />
           <Property Type="String" Name="Status" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="Boolean" Name="IsActive" Nullable="false" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
@@ -3128,84 +2930,11 @@
           <NavigationProperty Name="IntegrationInstance2" Relationship="MRPModel.FK_Model_IntegrationInstanceINQ" FromRole="Model" ToRole="IntegrationInstance" />
           <NavigationProperty Name="IntegrationInstance3" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="Model" ToRole="IntegrationInstance" />
           <NavigationProperty Name="LineItemTypes" Relationship="MRPModel.FK_LineItemType_Model" FromRole="Model" ToRole="LineItemType" />
-          <NavigationProperty Name="Model_Audience_Event" Relationship="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" FromRole="Model" ToRole="Model_Audience_Event" />
-          <NavigationProperty Name="Model_Audience_Inbound" Relationship="MRPModel.FK_Model_Audience_Inbound_Model" FromRole="Model" ToRole="Model_Audience_Inbound" />
-          <NavigationProperty Name="Model_Audience_Outbound" Relationship="MRPModel.FK_Model_Audience_Outbound_Model" FromRole="Model" ToRole="Model_Audience_Outbound" />
           <NavigationProperty Name="Model_Funnel" Relationship="MRPModel.FK_Model_Funnel_Model" FromRole="Model" ToRole="Model_Funnel" />
           <NavigationProperty Name="Model1" Relationship="MRPModel.FK_Model_Model" FromRole="Model" ToRole="Model1" />
           <NavigationProperty Name="Model2" Relationship="MRPModel.FK_Model_Model" FromRole="Model1" ToRole="Model" />
           <NavigationProperty Name="Plans" Relationship="MRPModel.FK_Plan_Plan" FromRole="Model" ToRole="Plan" />
           <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Model" FromRole="Model" ToRole="TacticType" />
-        </EntityType>
-        <EntityType Name="Model_Audience_Event">
-          <Key>
-            <PropertyRef Name="ModelAudienceEventId" />
-          </Key>
-          <Property Type="Int32" Name="ModelAudienceEventId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="ModelId" Nullable="false" />
-          <Property Type="String" Name="Quarter" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Int64" Name="NumberofContacts" />
-          <Property Type="Double" Name="ContactToInquiryConversion" />
-          <Property Type="Double" Name="EventsBudget" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Model" Relationship="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" FromRole="Model_Audience_Event" ToRole="Model" />
-        </EntityType>
-        <EntityType Name="Model_Audience_Inbound">
-          <Key>
-            <PropertyRef Name="ModelAudienceInboundId" />
-          </Key>
-          <Property Type="Int32" Name="ModelAudienceInboundId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="ModelId" Nullable="false" />
-          <Property Type="String" Name="Quarter" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="Impressions" />
-          <Property Type="Double" Name="ClickThroughRate" />
-          <Property Type="Int32" Name="Visits" />
-          <Property Type="Double" Name="RegistrationRate" />
-          <Property Type="Int32" Name="PPC_ClickThroughs" />
-          <Property Type="Double" Name="PPC_CostperClickThrough" />
-          <Property Type="Double" Name="PPC_RegistrationRate" />
-          <Property Type="Int32" Name="GC_GuaranteedCPLBudget" />
-          <Property Type="Double" Name="GC_CostperLead" />
-          <Property Type="Int32" Name="CSC_NonGuaranteedCPLBudget" />
-          <Property Type="Double" Name="CSC_CostperLead" />
-          <Property Type="Int32" Name="TDM_DigitalMediaBudget" />
-          <Property Type="Double" Name="TDM_CostperLead" />
-          <Property Type="Int32" Name="TP_PrintMediaBudget" />
-          <Property Type="Double" Name="TP_CostperLead" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Model" Relationship="MRPModel.FK_Model_Audience_Inbound_Model" FromRole="Model_Audience_Inbound" ToRole="Model" />
-        </EntityType>
-        <EntityType Name="Model_Audience_Outbound">
-          <Key>
-            <PropertyRef Name="ModelAudienceOutboundId" />
-          </Key>
-          <Property Type="Int32" Name="ModelAudienceOutboundId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="ModelId" Nullable="false" />
-          <Property Type="Double" Name="NormalErosion" />
-          <Property Type="Double" Name="UnsubscribeRate" />
-          <Property Type="Int32" Name="NumberofTouches" />
-          <Property Type="Double" Name="CTRDelivered" />
-          <Property Type="Double" Name="RegistrationRate" />
-          <Property Type="String" Name="Quarter" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="ListAcquisitions" />
-          <Property Type="Double" Name="Acquisition_CostperContact" />
-          <Property Type="Int32" Name="Acquisition_NumberofTouches" />
-          <Property Type="Double" Name="Acquisition_RegistrationRate" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <Property Type="Double" Name="ListAcquisitionsNormalErosion" />
-          <Property Type="Double" Name="ListAcquisitionsUnsubscribeRate" />
-          <Property Type="Double" Name="ListAcquisitionsCTRDelivered" />
-          <Property Type="Boolean" Name="IsBenchmarked" />
-          <NavigationProperty Name="Model" Relationship="MRPModel.FK_Model_Audience_Outbound_Model" FromRole="Model_Audience_Outbound" ToRole="Model" />
         </EntityType>
         <EntityType Name="Model_Funnel">
           <Key>
@@ -3223,7 +2952,6 @@
           <NavigationProperty Name="Funnel" Relationship="MRPModel.FK_Model_Funnel_Funnel" FromRole="Model_Funnel" ToRole="Funnel" />
           <NavigationProperty Name="Model" Relationship="MRPModel.FK_Model_Funnel_Model" FromRole="Model_Funnel" ToRole="Model" />
           <NavigationProperty Name="Model_Funnel_Stage" Relationship="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" FromRole="Model_Funnel" ToRole="Model_Funnel_Stage" />
-          <NavigationProperty Name="ModelReviews" Relationship="MRPModel.FK_ModelReview_Model_Funnel" FromRole="Model_Funnel" ToRole="ModelReview" />
         </EntityType>
         <EntityType Name="Model_Funnel_Stage">
           <Key>
@@ -3241,29 +2969,7 @@
           <Property Type="Boolean" Name="AllowedTargetStage" Nullable="false" />
           <NavigationProperty Name="Model_Funnel" Relationship="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" FromRole="Model_Funnel_Stage" ToRole="Model_Funnel" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.FK_Model_Category_Stage_Stage" FromRole="Model_Funnel_Stage" ToRole="Stage" />
-        </EntityType>
-        <EntityType Name="ModelReview">
-          <Key>
-            <PropertyRef Name="ModelReviewId" />
-          </Key>
-          <Property Type="Int32" Name="ModelReviewId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="ModelFunnelId" Nullable="false" />
-          <Property Type="Int32" Name="FunnelFieldId" Nullable="false" />
-          <Property Type="Double" Name="MarketingSourced" />
-          <Property Type="Double" Name="MarketingDays" />
-          <Property Type="Double" Name="ProspectingSourced" />
-          <Property Type="Double" Name="ProspectingDays" />
-          <Property Type="Double" Name="SalesSourced" />
-          <Property Type="Double" Name="SalesDays" />
-          <Property Type="Double" Name="BlendedTotal" />
-          <Property Type="Double" Name="BlendedDays" />
-          <Property Type="Boolean" Name="IsBaseline" Nullable="false" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Funnel_Field" Relationship="MRPModel.FK_ModelReview_Funnel_Field" FromRole="ModelReview" ToRole="Funnel_Field" />
-          <NavigationProperty Name="Model_Funnel" Relationship="MRPModel.FK_ModelReview_Model_Funnel" FromRole="ModelReview" ToRole="Model_Funnel" />
+          <Property Type="Int32" Name="ModelId" />
         </EntityType>
         <EntityType Name="Notification">
           <Key>
@@ -3758,18 +3464,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ModelReview_Funnel_Field">
-          <End Type="MRPModel.Funnel_Field" Role="Funnel_Field" Multiplicity="1" />
-          <End Type="MRPModel.ModelReview" Role="ModelReview" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Funnel_Field">
-              <PropertyRef Name="FunnelFieldId" />
-            </Principal>
-            <Dependent Role="ModelReview">
-              <PropertyRef Name="FunnelFieldId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_GameplanDataType_IntegrationType">
           <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
           <End Type="MRPModel.GameplanDataType" Role="GameplanDataType" Multiplicity="*" />
@@ -4070,42 +3764,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Model_Audience_Event_Model_Audience_Event">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.Model_Audience_Event" Role="Model_Audience_Event" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Audience_Event">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Audience_Inbound_Model">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.Model_Audience_Inbound" Role="Model_Audience_Inbound" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Audience_Inbound">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Audience_Outbound_Model">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.Model_Audience_Outbound" Role="Model_Audience_Outbound" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Audience_Outbound">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Model_Funnel_Model">
           <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
           <End Type="MRPModel.Model_Funnel" Role="Model_Funnel" Multiplicity="*" />
@@ -4162,18 +3820,6 @@
               <PropertyRef Name="ModelFunnelId" />
             </Principal>
             <Dependent Role="Model_Funnel_Stage">
-              <PropertyRef Name="ModelFunnelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ModelReview_Model_Funnel">
-          <End Type="MRPModel.Model_Funnel" Role="Model_Funnel" Multiplicity="1" />
-          <End Type="MRPModel.ModelReview" Role="ModelReview" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model_Funnel">
-              <PropertyRef Name="ModelFunnelId" />
-            </Principal>
-            <Dependent Role="ModelReview">
               <PropertyRef Name="ModelFunnelId" />
             </Dependent>
           </ReferentialConstraint>
@@ -5109,81 +4755,10 @@
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="AddressableContacts" ColumnName="AddressableContacts" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="Version" ColumnName="Version" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="ModelId" ColumnName="ModelId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Model_Audience_Event">
-            <EntityTypeMapping TypeName="MRPModel.Model_Audience_Event">
-              <MappingFragment StoreEntitySet="Model_Audience_Event">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="EventsBudget" ColumnName="EventsBudget" />
-                <ScalarProperty Name="ContactToInquiryConversion" ColumnName="ContactToInquiryConversion" />
-                <ScalarProperty Name="NumberofContacts" ColumnName="NumberofContacts" />
-                <ScalarProperty Name="Quarter" ColumnName="Quarter" />
-                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
-                <ScalarProperty Name="ModelAudienceEventId" ColumnName="ModelAudienceEventId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Model_Audience_Inbound">
-            <EntityTypeMapping TypeName="MRPModel.Model_Audience_Inbound">
-              <MappingFragment StoreEntitySet="Model_Audience_Inbound">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="TP_CostperLead" ColumnName="TP_CostperLead" />
-                <ScalarProperty Name="TP_PrintMediaBudget" ColumnName="TP_PrintMediaBudget" />
-                <ScalarProperty Name="TDM_CostperLead" ColumnName="TDM_CostperLead" />
-                <ScalarProperty Name="TDM_DigitalMediaBudget" ColumnName="TDM_DigitalMediaBudget" />
-                <ScalarProperty Name="CSC_CostperLead" ColumnName="CSC_CostperLead" />
-                <ScalarProperty Name="CSC_NonGuaranteedCPLBudget" ColumnName="CSC_NonGuaranteedCPLBudget" />
-                <ScalarProperty Name="GC_CostperLead" ColumnName="GC_CostperLead" />
-                <ScalarProperty Name="GC_GuaranteedCPLBudget" ColumnName="GC_GuaranteedCPLBudget" />
-                <ScalarProperty Name="PPC_RegistrationRate" ColumnName="PPC_RegistrationRate" />
-                <ScalarProperty Name="PPC_CostperClickThrough" ColumnName="PPC_CostperClickThrough" />
-                <ScalarProperty Name="PPC_ClickThroughs" ColumnName="PPC_ClickThroughs" />
-                <ScalarProperty Name="RegistrationRate" ColumnName="RegistrationRate" />
-                <ScalarProperty Name="Visits" ColumnName="Visits" />
-                <ScalarProperty Name="ClickThroughRate" ColumnName="ClickThroughRate" />
-                <ScalarProperty Name="Impressions" ColumnName="Impressions" />
-                <ScalarProperty Name="Quarter" ColumnName="Quarter" />
-                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
-                <ScalarProperty Name="ModelAudienceInboundId" ColumnName="ModelAudienceInboundId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Model_Audience_Outbound">
-            <EntityTypeMapping TypeName="MRPModel.Model_Audience_Outbound">
-              <MappingFragment StoreEntitySet="Model_Audience_Outbound">
-                <ScalarProperty Name="IsBenchmarked" ColumnName="IsBenchmarked" />
-                <ScalarProperty Name="ListAcquisitionsCTRDelivered" ColumnName="ListAcquisitionsCTRDelivered" />
-                <ScalarProperty Name="ListAcquisitionsUnsubscribeRate" ColumnName="ListAcquisitionsUnsubscribeRate" />
-                <ScalarProperty Name="ListAcquisitionsNormalErosion" ColumnName="ListAcquisitionsNormalErosion" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Acquisition_RegistrationRate" ColumnName="Acquisition_RegistrationRate" />
-                <ScalarProperty Name="Acquisition_NumberofTouches" ColumnName="Acquisition_NumberofTouches" />
-                <ScalarProperty Name="Acquisition_CostperContact" ColumnName="Acquisition_CostperContact" />
-                <ScalarProperty Name="ListAcquisitions" ColumnName="ListAcquisitions" />
-                <ScalarProperty Name="Quarter" ColumnName="Quarter" />
-                <ScalarProperty Name="RegistrationRate" ColumnName="RegistrationRate" />
-                <ScalarProperty Name="CTRDelivered" ColumnName="CTRDelivered" />
-                <ScalarProperty Name="NumberofTouches" ColumnName="NumberofTouches" />
-                <ScalarProperty Name="UnsubscribeRate" ColumnName="UnsubscribeRate" />
-                <ScalarProperty Name="NormalErosion" ColumnName="NormalErosion" />
-                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
-                <ScalarProperty Name="ModelAudienceOutboundId" ColumnName="ModelAudienceOutboundId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -5205,6 +4780,7 @@
           <EntitySetMapping Name="Model_Funnel_Stage">
             <EntityTypeMapping TypeName="MRPModel.Model_Funnel_Stage">
               <MappingFragment StoreEntitySet="Model_Funnel_Stage">
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
                 <ScalarProperty Name="AllowedTargetStage" ColumnName="AllowedTargetStage" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
@@ -5215,28 +4791,6 @@
                 <ScalarProperty Name="StageId" ColumnName="StageId" />
                 <ScalarProperty Name="ModelFunnelId" ColumnName="ModelFunnelId" />
                 <ScalarProperty Name="ModelFunnelStageId" ColumnName="ModelFunnelStageId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ModelReviews">
-            <EntityTypeMapping TypeName="MRPModel.ModelReview">
-              <MappingFragment StoreEntitySet="ModelReview">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="IsBaseline" ColumnName="IsBaseline" />
-                <ScalarProperty Name="BlendedDays" ColumnName="BlendedDays" />
-                <ScalarProperty Name="BlendedTotal" ColumnName="BlendedTotal" />
-                <ScalarProperty Name="SalesDays" ColumnName="SalesDays" />
-                <ScalarProperty Name="SalesSourced" ColumnName="SalesSourced" />
-                <ScalarProperty Name="ProspectingDays" ColumnName="ProspectingDays" />
-                <ScalarProperty Name="ProspectingSourced" ColumnName="ProspectingSourced" />
-                <ScalarProperty Name="MarketingDays" ColumnName="MarketingDays" />
-                <ScalarProperty Name="MarketingSourced" ColumnName="MarketingSourced" />
-                <ScalarProperty Name="FunnelFieldId" ColumnName="FunnelFieldId" />
-                <ScalarProperty Name="ModelFunnelId" ColumnName="ModelFunnelId" />
-                <ScalarProperty Name="ModelReviewId" ColumnName="ModelReviewId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
