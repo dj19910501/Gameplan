@@ -258,13 +258,14 @@ namespace RevenuePlanner.Controllers
             var stageFilterSV = lstStages;//modified by Mitesh Vaishnav on 13/06/2014 to address #500 Customized Target stage - Boost Improvement Tactic 
             
             //// Add MetricModel data to list except CW Stage Type data.
+            MetricModel Metricsobj = null;
             foreach (var itemCR in stageFilterCR.Where(stage => stage.Level != null && stage.Code != StageTypeCW).OrderBy(stage => stage.Level).ToList())
             {
                 foreach (var itemSV in stageFilterSV.Where(stage => stage.Level != null && stage.Code != StageTypeCW).OrderBy(stage => stage.Level).ToList())
                 {
                     if (itemCR.Level == itemSV.Level)
                     {
-                        MetricModel Metricsobj = new MetricModel();
+                        Metricsobj = new MetricModel();
                         Metricsobj.MetricType = StageType_CR;
                         Metricsobj.MetricName = Common.GetReplacedString(itemCR.ConversionTitle);
                         weight = db.ImprovementTacticType_Metric.Where(itm => itm.StageId == itemCR.StageId && itm.ImprovementTacticTypeId == id && itm.StageType == StageType_CR).Select(v => v.Weight).FirstOrDefault();
@@ -281,7 +282,7 @@ namespace RevenuePlanner.Controllers
             //// Add null Stage Type MetricModel data to list.
             foreach (var item in lstStages.Where(stage => stage.Level == null))
             {
-                MetricModel Metricsobj = new MetricModel();
+                Metricsobj = new MetricModel();
                 Metricsobj.MetricID_Size = item.StageId;
                 //start: Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 73
                 var stageTypeList = item.ImprovementTacticType_Metric.Where(ittm => ittm.StageId == item.StageId).FirstOrDefault();
@@ -372,8 +373,8 @@ namespace RevenuePlanner.Controllers
                         objIt.CreatedBy = Sessions.User.UserId;
                         objIt.IsDeleted = false;
                         objIt.CreatedDate = System.DateTime.Now;
-                        int intRandomColorNumber = rnd.Next(colorcodeList.Count);
-                        objIt.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
+                        int intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
+                        objIt.ColorCode = Convert.ToString(Common.ColorcodeList[intRandomColorNumber]);
                         objIt.IsDeployedToIntegration = deployToIntegrationStatus;
 
                         db.ImprovementTacticTypes.Attach(objIt);
@@ -393,25 +394,28 @@ namespace RevenuePlanner.Controllers
                 /*add into improvementType_metric table based on improvementId*/
                 improvementDetails = improvementDetails.Replace(@"\", "");
                 var stageValueList = JsonConvert.DeserializeObject<List<StageDetails>>(improvementDetails);
+                ImprovementTacticType_Metric objItm = null;
+                int MetricId = 0;
+                double Weight = 0.0;
+                MRPEntities dbAdd = null;
                 foreach (var item in stageValueList)
                 {
-                    ImprovementTacticType_Metric objItm = new ImprovementTacticType_Metric();
-                    int MetricId = 0;
+                    objItm = new ImprovementTacticType_Metric();
+                    Weight = 0.0;
+                    MetricId = 0;
                     int.TryParse(item.StageId, out MetricId);
                     objItm.StageId = MetricId;
-                    double Weight = 0.0;
                     double.TryParse(item.Value, out Weight);
                     objItm.Weight = Weight;
                     objItm.ImprovementTacticTypeId = improvementId;
                     objItm.CreatedDate = System.DateTime.Now;
                     objItm.CreatedBy = Sessions.User.UserId;
                     objItm.StageType = item.StageType;
-                    MRPEntities dbAdd = new MRPEntities();
+                    dbAdd = new MRPEntities();
                     dbAdd.ImprovementTacticType_Metric.Attach(objItm);
                     dbAdd.Entry(objItm).State = EntityState.Added;
-                    int result = dbAdd.SaveChanges();
+                    dbAdd.SaveChanges();
                     dbAdd.Dispose();
-
                 }
                 TempData["SuccessMessage"] = successMessage;
             }
@@ -596,7 +600,6 @@ namespace RevenuePlanner.Controllers
             return active;
         }
         
-        List<string> colorcodeList = new List<string> { "27a4e5", "6ae11f", "bbb748", "bf6a4b", "ca3cce", "7c4bbf", "1af3c9", "f1eb13", "c7893b", "e42233", "a636d6", "2940e2", "0b3d58", "244c0a", "414018", "472519", "4b134d", "2c1947", "055e4d", "555305", "452f14", "520a10", "3e1152", "0c1556", "73c4ee", "9ceb6a", "d2cf86", "d59e89", "dc80df", "a989d5", "6bf7dc", "f6f263", "dab17d", "eb6e7a", "c57de4", "7483ec", "1472a3", "479714", "7f7c2f", "86472f", "8e2590", "542f86", "09af8f", "a6a10a", "875c26", "9e1320", "741f98", "1627a0" };
         public class StageDetails
         {
             public string StageId { get; set; }

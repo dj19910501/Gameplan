@@ -31,13 +31,6 @@ namespace RevenuePlanner.Controllers
         const string SV = "SV";
         const string ModelPublished = "published";
         static Random rnd = new Random();
-
-        /// <summary>
-        /// Added By: Nirav Shah.
-        /// Color code list for get random color .
-        /// </summary>
-        List<string> colorcodeList = new List<string> { "27a4e5", "6ae11f", "bbb748", "bf6a4b", "ca3cce", "7c4bbf", "1af3c9", "f1eb13", "c7893b", "e42233", "a636d6", "2940e2", "0b3d58", "244c0a", "414018", "472519", "4b134d", "2c1947", "055e4d", "555305", "452f14", "520a10", "3e1152", "0c1556", "73c4ee", "9ceb6a", "d2cf86", "d59e89", "dc80df", "a989d5", "6bf7dc", "f6f263", "dab17d", "eb6e7a", "c57de4", "7483ec", "1472a3", "479714", "7f7c2f", "86472f", "8e2590", "542f86", "09af8f", "a6a10a", "875c26", "9e1320", "741f98", "1627a0" };
-
         #endregion
 
         #region Create/Edit/Version Model Input
@@ -1529,8 +1522,8 @@ namespace RevenuePlanner.Controllers
                 objtactic.ProjectedRevenue = ProjectedRevenue;
                 //// changed by Nirav Shah on 2 APR 2013
                 objtactic.StageId = StageId;
-                int intRandomColorNumber = rnd.Next(colorcodeList.Count);
-                objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
+                int intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
+                objtactic.ColorCode = Convert.ToString(Common.ColorcodeList[intRandomColorNumber]);
                 objtactic.CreatedDate = System.DateTime.Now;
                 objtactic.CreatedBy = Sessions.User.UserId;
                 //// Start Manoj Limbachiya PL # 486
@@ -1738,8 +1731,8 @@ namespace RevenuePlanner.Controllers
                                     return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
                                 }
                                 objtactic.StageId = (obj.StageId == null) ? objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().Select(modelFunnelStage => modelFunnelStage.StageId).FirstOrDefault() : obj.StageId;   //// Line uncommented by Sohel Pathan on 16/06/2014 for PL ticket #528.
-                                int intRandomColorNumber = rnd.Next(colorcodeList.Count);
-                                objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
+                                int intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
+                                objtactic.ColorCode = Convert.ToString(Common.ColorcodeList[intRandomColorNumber]);
                                 objtactic.CreatedDate = DateTime.Now;
                                 objtactic.CreatedBy = Sessions.User.UserId;
                                 objtactic.ModelId = ModelId;

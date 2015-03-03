@@ -15,6 +15,7 @@ using System.Transactions;
 using System.Web.Mvc;
 using Integration.Salesforce;
 using Integration.Eloqua;
+using System.Configuration;
 
 #endregion
 
@@ -42,24 +43,25 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Index()
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
-            ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
 
             //-- Get list of IntegrationTypes
             IList<SelectListItem> IntegrationList = new List<SelectListItem>();
             try
             {
+                // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
+                ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
+                ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
                 var dbList = db.IntegrationTypes.Where(it => it.IsDeleted.Equals(false)).Select(it => it).ToList();
                 IntegrationList = dbList.Select(it => new SelectListItem() { Text = it.Title, Value = it.IntegrationTypeId.ToString(), Selected = false })
                                 .OrderBy(it => it.Text, new AlphaNumericComparer()).ToList();
+            TempData["ExternalFieldList"] = new SelectList(IntegrationList, "Value", "Text", IntegrationList.First());
             }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
-            TempData["ExternalFieldList"] = new SelectList(IntegrationList, "Value", "Text", IntegrationList.First());
 
             return View();
         }
@@ -99,11 +101,10 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult GetIntegrationFolder(int TypeId, int id = 0)
         {
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
-
             try
             {
+                ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+                string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
                 ViewBag.IntegrationInstanceId = id;
                 ViewBag.IntegrationTypeId = TypeId;
 
@@ -189,9 +190,11 @@ namespace RevenuePlanner.Controllers
                         if (IntegrationPlanList.Count > 0)
                         {
                             //// Iterate Integration model list and save it to database.
+                            Plan objPlan = null;
                             foreach (var item in IntegrationPlanList)
                             {
-                                Plan objPlan = db.Plans.Where(_pln => _pln.PlanId == item.PlanId).FirstOrDefault();
+                                objPlan = new Plan();
+                                objPlan = db.Plans.Where(_pln => _pln.PlanId == item.PlanId).FirstOrDefault();
                                 objPlan.EloquaFolderPath = item.FolderPath;
                                 db.Entry(objPlan).State = EntityState.Modified;
                                 db.SaveChanges();
@@ -223,26 +226,33 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult create(int integrationTypeId)
         {
-            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-
-            ViewBag.integrationTypeId = integrationTypeId;
             IntegrationModel objModelToView = new IntegrationModel();
+            try
+            {
+                // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+                ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
-            //// Add IntegrationTypeAttributes to IntegrationModel.
-            objModelToView.IntegrationTypeAttributes = GetIntegrationTypeAttributesModelById(integrationTypeId);
+                ViewBag.integrationTypeId = integrationTypeId;
 
-            //// Add IntegrationTypeModel data to Integration Model.
-            IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            IntegrationType integrationTypeObj = GetIntegrationTypeById(integrationTypeId);
-            objIntegrationTypeModel.Title = integrationTypeObj.Title;
-            objIntegrationTypeModel.Code = integrationTypeObj.Code;
+                //// Add IntegrationTypeAttributes to IntegrationModel.
+                objModelToView.IntegrationTypeAttributes = GetIntegrationTypeAttributesModelById(integrationTypeId);
 
-            objModelToView.IntegrationType = objIntegrationTypeModel;
-            objModelToView.IntegrationTypeId = integrationTypeId;
+                //// Add IntegrationTypeModel data to Integration Model.
+                IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
+                IntegrationType integrationTypeObj = GetIntegrationTypeById(integrationTypeId);
+                objIntegrationTypeModel.Title = integrationTypeObj.Title;
+                objIntegrationTypeModel.Code = integrationTypeObj.Code;
 
-            populateSyncFreqData();
-            objModelToView.ExternalServer = GetExternalServer(0);
+                objModelToView.IntegrationType = objIntegrationTypeModel;
+                objModelToView.IntegrationTypeId = integrationTypeId;
+
+                populateSyncFreqData();
+                objModelToView.ExternalServer = GetExternalServerModelByInstanceId(0);
+            }
+            catch (Exception ex)
+            {   
+                throw ex;
+            }
             return View(objModelToView);
         }
 
@@ -301,11 +311,11 @@ namespace RevenuePlanner.Controllers
                     objSyncFrequency.CreatedBy = Sessions.User.UserId;
                     objSyncFrequency.CreatedDate = DateTime.Now;
                     objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
-                    if (form.SyncFrequency.Frequency == "Weekly")
+                    if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly.ToString())
                         objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
-                    else if (form.SyncFrequency.Frequency == "Monthly")
+                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly.ToString())
                         objSyncFrequency.Day = form.SyncFrequency.Day;
-                    if (form.SyncFrequency.Frequency != "Hourly")
+                    if (form.SyncFrequency.Frequency != SyncFrequencys.Hourly.ToString())
                     {
                         if (form.SyncFrequency.Time.Length == 8)
                         {
@@ -317,24 +327,24 @@ namespace RevenuePlanner.Controllers
                     }
 
                     //// Set NextSyncDate to SyncFrequency list.
-                    if (form.SyncFrequency.Frequency == "Hourly")
+                    if (form.SyncFrequency.Frequency == SyncFrequencys.Hourly.ToString())
                     {
                         DateTime currentDateTime = DateTime.Now.AddHours(1);
                         objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
                     }
-                    else if (form.SyncFrequency.Frequency == "Daily")
+                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Daily.ToString())
                     {
                         DateTime currentDateTime = DateTime.Now.AddDays(1);
                         TimeSpan time = (TimeSpan)objSyncFrequency.Time;
                         objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
                     }
-                    else if (form.SyncFrequency.Frequency == "Weekly")
+                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly.ToString())
                     {
                         DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
                         TimeSpan time = (TimeSpan)objSyncFrequency.Time;
                         objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                     }
-                    else if (form.SyncFrequency.Frequency == "Monthly")
+                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly.ToString())
                     {
                         DateTime currentDateTime = DateTime.Now;
                         if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
@@ -352,9 +362,10 @@ namespace RevenuePlanner.Controllers
                     //// Handle IntegrationTypeAttributes.
                     if (form.IntegrationTypeAttributes != null)
                     {
+                        IntegrationInstance_Attribute objIntegrationInstance_Attribute = null;
                         foreach (var item in form.IntegrationTypeAttributes)
                         {
-                            IntegrationInstance_Attribute objIntegrationInstance_Attribute = new IntegrationInstance_Attribute();
+                            objIntegrationInstance_Attribute = new IntegrationInstance_Attribute();
                             objIntegrationInstance_Attribute.CreatedBy = Sessions.User.UserId;
                             objIntegrationInstance_Attribute.CreatedDate = DateTime.Now;
                             objIntegrationInstance_Attribute.IntegrationInstanceId = objIntegrationInstance.IntegrationInstanceId;
@@ -396,13 +407,11 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public static DateTime GetNextDateForDay(DateTime startDate, DayOfWeek desiredDay)
         {
-            // (There has to be a better way to do this, perhaps mathematically.)
-            // Traverse this week
-            DateTime nextDate = startDate;
-            while (nextDate.DayOfWeek != desiredDay)
-                nextDate = nextDate.AddDays(1D);
-
-            return nextDate;
+            int start = (int)startDate.DayOfWeek;
+            int target = (int)desiredDay;
+            if (target <= start)
+                target += 7;
+            return startDate.AddDays(target - start);
         }
 
         #endregion
@@ -414,59 +423,45 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public void populateSyncFreqData()
         {
+            #region " Bind Sync Frequency Dropdown List " 
             List<SelectListItem> lstSyncFreq = new List<SelectListItem>();
 
             //// Add Static fields to Frequency List.
             SelectListItem objItem1 = new SelectListItem();
-            objItem1.Text = "Hourly";
-            objItem1.Value = "Hourly";
+            objItem1.Text = SyncFrequencys.Hourly.ToString();
+            objItem1.Value = SyncFrequencys.Hourly.ToString();
             lstSyncFreq.Add(objItem1);
 
             SelectListItem objItem2 = new SelectListItem();
-            objItem2.Text = "Daily";
-            objItem2.Value = "Daily";
+            objItem2.Text = SyncFrequencys.Daily.ToString();
+            objItem2.Value = SyncFrequencys.Daily.ToString();
             lstSyncFreq.Add(objItem2);
 
             SelectListItem objItem3 = new SelectListItem();
-            objItem3.Text = "Weekly";
-            objItem3.Value = "Weekly";
+            objItem3.Text = SyncFrequencys.Weekly.ToString();
+            objItem3.Value = SyncFrequencys.Weekly.ToString();
             lstSyncFreq.Add(objItem3);
 
             SelectListItem objItem4 = new SelectListItem();
-            objItem4.Text = "Monthly";
-            objItem4.Value = "Monthly";
+            objItem4.Text = SyncFrequencys.Monthly.ToString();
+            objItem4.Value = SyncFrequencys.Monthly.ToString();
             lstSyncFreq.Add(objItem4);
 
-            TempData["lstSyncFreq"] = new SelectList(lstSyncFreq, "Value", "Text", lstSyncFreq.First());
+            TempData["lstSyncFreq"] = new SelectList(lstSyncFreq, "Value", "Text", lstSyncFreq.First()); 
+            #endregion
 
-            List<SelectListItem> lst24Hours = new List<SelectListItem>();
-            DateTime dtToday = DateTime.Today;
-            DateTime dtTomorrow = DateTime.Today.AddDays(1);
+            #region " Bind Hours Dropdown List "
+            List<SelectListItem> lst24Hours = GetHoursList();
+            TempData["lst24Hours"] = new SelectList(lst24Hours, "Value", "Text", lst24Hours.First()); 
+            #endregion
 
-            while (dtToday < dtTomorrow)
-            {
-                SelectListItem objTime = new SelectListItem();
-                objTime.Text = dtToday.ToString("hh:00 tt");
-                objTime.Value = dtToday.ToString("hh:00 tt");
-                lst24Hours.Add(objTime);
-                dtToday = dtToday.AddHours(1);
-            }
+            #region " Bind WeekDays Dropdown List "
+            List<SelectListItem> lstWeekdays = GetWeekDaysList();
+            TempData["lstWeekdays"] = new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First()); 
+            #endregion
 
-            TempData["lst24Hours"] = new SelectList(lst24Hours, "Value", "Text", lst24Hours.First());
-
-            List<SelectListItem> lstWeekdays = new List<SelectListItem>();
-            foreach (var item in Enum.GetValues(typeof(DayOfWeek)))
-            {
-                SelectListItem objTime = new SelectListItem();
-                objTime.Text = item.ToString();
-                objTime.Value = item.ToString();
-                lstWeekdays.Add(objTime);
-            }
-
-            TempData["lstWeekdays"] = new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First());
-
+            #region " Bind Delete Dropdown list "
             List<SelectListItem> lstDelete = new List<SelectListItem>();
-
             SelectListItem Item1 = new SelectListItem();
             Item1.Text = "No";
             Item1.Value = "false";
@@ -477,7 +472,8 @@ namespace RevenuePlanner.Controllers
             Item2.Value = "true";
             lstDelete.Add(Item2);
 
-            TempData["lstDelete"] = new SelectList(lstDelete, "Value", "Text", lstDelete.First());
+            TempData["lstDelete"] = new SelectList(lstDelete, "Value", "Text", lstDelete.First()); 
+            #endregion
 
             TempData["DeleteConfirmationMsg"] = Common.objCached.IntegrationDeleteConfirmationMsg;
             TempData["InActiveConfirmationMsg"] = Common.objCached.IntegrationInActiveConfirmationMsg;
@@ -490,6 +486,44 @@ namespace RevenuePlanner.Controllers
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult populateTimeOptions()
         {
+            List<SelectListItem> lst24Hours = GetHoursList();
+            return Json(new SelectList(lst24Hours, "Value", "Text", lst24Hours.First()), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Populate Weekdays combo
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult populateWeekDayOptions()
+        {
+            List<SelectListItem> lstWeekdays = GetWeekDaysList();
+            return Json(new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First()), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Weekdays list
+        /// </summary>
+        /// <returns></returns>
+        public List<SelectListItem> GetWeekDaysList()
+        {
+            List<SelectListItem> lstWeekdays = new List<SelectListItem>();
+            foreach (var item in Enum.GetValues(typeof(DayOfWeek)))
+            {
+                SelectListItem objTime = new SelectListItem();
+                objTime.Text = item.ToString();
+                objTime.Value = item.ToString();
+                lstWeekdays.Add(objTime);
+            }
+            return lstWeekdays;
+        }
+
+        /// <summary>
+        /// Get Hours list
+        /// </summary>
+        /// <returns></returns>
+        public List<SelectListItem> GetHoursList()
+        {
             List<SelectListItem> lst24Hours = new List<SelectListItem>();
             DateTime dtToday = DateTime.Today;
             DateTime dtTomorrow = DateTime.Today.AddDays(1);
@@ -502,28 +536,9 @@ namespace RevenuePlanner.Controllers
                 lst24Hours.Add(objTime);
                 dtToday = dtToday.AddHours(1);
             }
-
-            return Json(new SelectList(lst24Hours, "Value", "Text", lst24Hours.First()), JsonRequestBehavior.AllowGet);
+            return lst24Hours;
         }
 
-        /// <summary>
-        /// Populate Weekdays combo
-        /// </summary>
-        /// <returns></returns>
-        [AcceptVerbs(HttpVerbs.Get)]
-        public JsonResult populateWeekDayOptions()
-        {
-            List<SelectListItem> lstWeekdays = new List<SelectListItem>();
-            foreach (var item in Enum.GetValues(typeof(DayOfWeek)))
-            {
-                SelectListItem objTime = new SelectListItem();
-                objTime.Text = item.ToString();
-                objTime.Value = item.ToString();
-                lstWeekdays.Add(objTime);
-            }
-
-            return Json(new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First()), JsonRequestBehavior.AllowGet);
-        }
 
         /// <summary>
         /// Generate view from passed "form".
@@ -594,12 +609,12 @@ namespace RevenuePlanner.Controllers
                 SyncFrequencyModel objSync = new SyncFrequencyModel();
                 if (recordSync != null)
                 {
-                    if (recordSync.Day != null)
-                        objSync.Day = recordSync.Day;
-                    if (recordSync.DayofWeek != null)
-                        objSync.DayofWeek = recordSync.DayofWeek;
+                    objSync.Day = !string.IsNullOrEmpty(recordSync.Day) ? recordSync.Day : string.Empty;
+                    objSync.DayofWeek = !string.IsNullOrEmpty(recordSync.DayofWeek) ? recordSync.DayofWeek : string.Empty;  
                     objSync.Frequency = recordSync.Frequency;
-                    if (recordSync.Time.HasValue == true)
+
+                    // Set Time data to SyncFrequencyModel Object.
+                    if (recordSync.Time.HasValue)
                     {
                         if (recordSync.Time.Value.Hours > 12)
                             objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "PM";
@@ -651,7 +666,7 @@ namespace RevenuePlanner.Controllers
             if (id > 0)
             {
                 objView.GameplanDataTypeModelList = GetGameplanDataTypeList(id);   // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
-                objView.ExternalServer = GetExternalServer(id);
+                objView.ExternalServer = GetExternalServerModelByInstanceId(id);
 
                 // Dharmraj Start : #658: Integration - UI - Pulling Revenue - Salesforce.com
                 objView.GameplanDataTypePullModelList = GetGameplanDataTypePullListClosedDeal(id);
@@ -682,9 +697,6 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult edit(IntegrationModel form)
         {
-            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            ViewBag.integrationTypeId = form.IntegrationTypeId;
 
             if (!TestIntegrationCredentialsWithForm(form))
             {
@@ -694,6 +706,10 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
+                // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+                ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+                ViewBag.integrationTypeId = form.IntegrationTypeId;
+
                 var isDuplicate = db.IntegrationInstances.Where(_intgrt => _intgrt.Instance == form.Instance && _intgrt.ClientId == Sessions.User.ClientId && _intgrt.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
                     && _intgrt.IntegrationInstanceId != form.IntegrationInstanceId).Any();
 
@@ -715,18 +731,12 @@ namespace RevenuePlanner.Controllers
 
                     if (objIntegrationInstance != null)
                     {
+                        //// Update IntergrationInstance data to Table.
                         objIntegrationInstance.ClientId = Sessions.User.ClientId;
                         objIntegrationInstance.ModifiedBy = Sessions.User.UserId;
                         objIntegrationInstance.ModifiedDate = DateTime.Now;
                         objIntegrationInstance.Instance = form.Instance;
-                        if (Convert.ToString(form.IsDeleted).ToLower() == "true")
-                        {
-                            objIntegrationInstance.IsDeleted = true;
-                        }
-                        else
-                        {
-                            objIntegrationInstance.IsDeleted = false;
-                        }
+                        objIntegrationInstance.IsDeleted = form.IsDeleted;
                         objIntegrationInstance.IsImportActuals = form.IsImportActuals;
                         objIntegrationInstance.IsActive = form.IsActive;
                         objIntegrationInstance.Password = Common.Encrypt(form.Password);
@@ -740,69 +750,63 @@ namespace RevenuePlanner.Controllers
                         {
                             //// Handle Time,DayofWeek,Day fields to Form based on Frequency.
                             objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
-                            if (form.SyncFrequency.Frequency == "Hourly")
+                            if (form.SyncFrequency.Frequency == SyncFrequencys.Hourly.ToString())
                             {
                                 objSyncFrequency.Time = null;
                                 objSyncFrequency.DayofWeek = null;
                                 objSyncFrequency.Day = null;
+
+                            //// Handle NextSyncDate based on Frequency.
+                                DateTime currentDateTime = DateTime.Now.AddHours(1);
+                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
                             }
-                            else if (form.SyncFrequency.Frequency == "Daily")
+                            else if (form.SyncFrequency.Frequency == SyncFrequencys.Daily.ToString())
                             {
                                 if (form.SyncFrequency.Time.Length == 8)
                                 {
                                     int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                    if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                    if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM.ToString() && hour != 12)
                                         hour = hour + 12;
                                     objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                 }
                                 objSyncFrequency.DayofWeek = null;
                                 objSyncFrequency.Day = null;
+
+                                //// Handle NextSyncDate based on Frequency.
+                                DateTime currentDateTime = DateTime.Now.AddDays(1);
+                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
                             }
-                            else if (form.SyncFrequency.Frequency == "Weekly")
+                            else if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly.ToString())
                             {
                                 if (form.SyncFrequency.Time.Length == 8)
                                 {
                                     int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                    if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                    if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM.ToString() && hour != 12)
                                         hour = hour + 12;
                                     objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                 }
                                 objSyncFrequency.Day = null;
                                 objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
+
+                                //// Handle NextSyncDate based on Frequency.
+                                DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
+                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                             }
-                            else if (form.SyncFrequency.Frequency == "Monthly")
+                            else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly.ToString())
                             {
                                 if (form.SyncFrequency.Time.Length == 8)
                                 {
                                     int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                    if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                    if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM.ToString() && hour != 12)
                                         hour = hour + 12;
                                     objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                 }
                                 objSyncFrequency.DayofWeek = null;
                                 objSyncFrequency.Day = form.SyncFrequency.Day;
-                            }
 
-                            //// Handle NextSyncDate based on Frequency.
-                            if (form.SyncFrequency.Frequency == "Hourly")
-                            {
-                                DateTime currentDateTime = DateTime.Now.AddHours(1);
-                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
-                            }
-                            else if (form.SyncFrequency.Frequency == "Daily")
-                            {
-                                DateTime currentDateTime = DateTime.Now.AddDays(1);
-                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
-                            }
-                            else if (form.SyncFrequency.Frequency == "Weekly")
-                            {
-                                DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
-                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
-                            }
-                            else if (form.SyncFrequency.Frequency == "Monthly")
-                            {
+                                //// Handle NextSyncDate based on Frequency.
                                 DateTime currentDateTime = DateTime.Now;
                                 if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
                                 {
@@ -819,9 +823,10 @@ namespace RevenuePlanner.Controllers
                         //// Add Integration Type Attributes.
                         if (form.IntegrationTypeAttributes != null)
                         {
+                            IntegrationInstance_Attribute objIntegrationInstance_Attribute = null;
                             foreach (var item in form.IntegrationTypeAttributes)
                             {
-                                IntegrationInstance_Attribute objIntegrationInstance_Attribute = db.IntegrationInstance_Attribute.Where(_attr => _attr.IntegrationInstanceId == form.IntegrationInstanceId
+                                objIntegrationInstance_Attribute = db.IntegrationInstance_Attribute.Where(_attr => _attr.IntegrationInstanceId == form.IntegrationInstanceId
                                         && _attr.IntegrationTypeAttributeId == item.IntegrationTypeAttributeId && _attr.IntegrationInstance.IntegrationTypeId == form.IntegrationTypeId).FirstOrDefault();
 
                                 if (objIntegrationInstance_Attribute != null)
@@ -842,7 +847,6 @@ namespace RevenuePlanner.Controllers
                     if (form.IsActiveStatuChanged == true && form.IsActive == false)
                     {
                         // Remove association of Integrartion from Plan
-
                         var objModelList = db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceId == form.IntegrationInstanceId).ToList();
 
                         if (objModelList != null)
@@ -1083,23 +1087,7 @@ namespace RevenuePlanner.Controllers
 
                 //// Get GamePlanDataType Stage One data.
                 List<GameplanDataTypeModel> listGameplanDataTypeStageOne = new List<GameplanDataTypeModel>();
-                listGameplanDataTypeStageOne = (from intgrtn in db.IntegrationInstances
-                                                join gmpln in db.GameplanDataTypes on intgrtn.IntegrationTypeId equals gmpln.IntegrationTypeId
-                                                join intMap in db.IntegrationInstanceDataTypeMappings on gmpln.GameplanDataTypeId equals intMap.GameplanDataTypeId into mapping
-                                                from _map in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                where intgrtn.IntegrationInstanceId == id && gmpln.IsDeleted == false && listStageCode.Contains(gmpln.ActualFieldName)
-                                                select new GameplanDataTypeModel
-                                                {
-                                                    GameplanDataTypeId = gmpln.GameplanDataTypeId,
-                                                    IntegrationTypeId = gmpln.IntegrationTypeId,
-                                                    TableName = gmpln.TableName,
-                                                    ActualFieldName = gmpln.ActualFieldName,
-                                                    DisplayFieldName = gmpln.DisplayFieldName,
-                                                    IsGet = gmpln.IsGet,
-                                                    IntegrationInstanceDataTypeMappingId = _map.IntegrationInstanceDataTypeMappingId,
-                                                    IntegrationInstanceId = intgrtn.IntegrationInstanceId,
-                                                    TargetDataType = _map.TargetDataType
-                                                }).ToList();
+                listGameplanDataTypeStageOne = listGameplanDataTypeStageZero.Where(gpDataType => listStageCode.Contains(gpDataType.ActualFieldName)).ToList();
 
                 foreach (var item in listGameplanDataTypeStageOne)
                 {
@@ -1203,12 +1191,11 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns list of gameplan data type model</returns>
         public IList<GameplanDataTypeModel> GetGameplanDataTypeList(int id)
         {
-            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
-
             try
             {
+                // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+                ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
                 ExternalIntegration objEx = new ExternalIntegration(id, Sessions.ApplicationId);
                 List<string> ExternalFields = objEx.GetTargetDataMember();
                 if (ExternalFields == null)
@@ -1549,16 +1536,18 @@ namespace RevenuePlanner.Controllers
                         }
 
                         //// Add new record to IntegrationInstanceDataTypeMapping table.
+                        IntegrationInstanceDataTypeMapping objMapping = null;
+                        int instanceId;
                         foreach (GameplanDataTypeModel obj in form)
                         {
+                            objMapping = new IntegrationInstanceDataTypeMapping();
+                            instanceId = 0;
                             if (!string.IsNullOrEmpty(obj.TargetDataType))
                             {
-                                IntegrationInstanceDataTypeMapping objMapping = new IntegrationInstanceDataTypeMapping();
-                                int instanceId;
                                 int.TryParse(Convert.ToString(obj.IntegrationInstanceId), out instanceId);
                                 objMapping.IntegrationInstanceId = instanceId;
                                 //// Start - Modified by :- Sohel Pathan on 03/12/2014 for PL #993
-                                if (obj.IsCustomField.Equals(true))
+                                if (obj.IsCustomField)
                                 {
                                     objMapping.CustomFieldId = obj.GameplanDataTypeId;      // For Custom Fields CustomFieldId is GameplanDataType Id in Mapping
                                 }
@@ -1936,6 +1925,10 @@ namespace RevenuePlanner.Controllers
                                         objSyncFrequency.Time = null;
                                         objSyncFrequency.DayofWeek = null;
                                         objSyncFrequency.Day = null;
+                                        
+                                        //// Handle NextSyncDate
+                                        DateTime currentDateTime = DateTime.Now.AddHours(1);
+                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
                                     }
                                     else if (form.SyncFrequency.Frequency == SyncFrequencys.Daily)
                                     {
@@ -1948,6 +1941,11 @@ namespace RevenuePlanner.Controllers
                                         }
                                         objSyncFrequency.DayofWeek = null;
                                         objSyncFrequency.Day = null;
+                                        
+                                        //// Handle NextSyncDate
+                                        DateTime currentDateTime = DateTime.Now.AddDays(1);
+                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
                                     }
                                     else if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly)
                                     {
@@ -1960,6 +1958,11 @@ namespace RevenuePlanner.Controllers
                                         }
                                         objSyncFrequency.Day = null;
                                         objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
+
+                                        //// Handle NextSyncDate
+                                        DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
+                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                        objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                                     }
                                     else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly)
                                     {
@@ -1972,27 +1975,8 @@ namespace RevenuePlanner.Controllers
                                         }
                                         objSyncFrequency.DayofWeek = null;
                                         objSyncFrequency.Day = form.SyncFrequency.Day;
-                                    }
 
-                                    if (form.SyncFrequency.Frequency == SyncFrequencys.Hourly)
-                                    {
-                                        DateTime currentDateTime = DateTime.Now.AddHours(1);
-                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
-                                    }
-                                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Daily)
-                                    {
-                                        DateTime currentDateTime = DateTime.Now.AddDays(1);
-                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
-                                    }
-                                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly)
-                                    {
-                                        DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
-                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
-                                        objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
-                                    }
-                                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly)
-                                    {
+                                        //// Handle NextSyncDate
                                         DateTime currentDateTime = DateTime.Now;
                                         if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
                                         {
@@ -2020,9 +2004,9 @@ namespace RevenuePlanner.Controllers
                             //// Add Integration Type Attributes to IntegrationInstance_Attribute table.
                             if (form.IntegrationTypeAttributes != null)
                             {
+                                IntegrationInstance_Attribute objIntegrationInstance_Attribute;
                                 foreach (var item in form.IntegrationTypeAttributes)
-                                {
-                                    IntegrationInstance_Attribute objIntegrationInstance_Attribute;
+                                {   
                                     if (IsAddOperation)
                                     {
                                         objIntegrationInstance_Attribute = new IntegrationInstance_Attribute();
@@ -2044,7 +2028,6 @@ namespace RevenuePlanner.Controllers
                                         db.IntegrationInstance_Attribute.Add(objIntegrationInstance_Attribute);
                                     }
                                 }
-
                                 db.SaveChanges();
                             }
 
@@ -2211,7 +2194,7 @@ namespace RevenuePlanner.Controllers
                 int Port = 0;
                 int.TryParse(Convert.ToString(frm.SFTPPort), out Port);
                 if (Port == 0)
-                    Port = 22;
+                    Port = int.Parse(ConfigurationManager.AppSettings["SFTPDefaultPort"].ToString());
                 return er.AuthenticateSFTP(frm.SFTPServerName, frm.SFTPUserName, frm.SFTPPassword, Port);
             }
             catch (Exception)
@@ -2238,7 +2221,7 @@ namespace RevenuePlanner.Controllers
                 obj.SFTPPassword = Common.Encrypt(frm.SFTPPassword);
                 if (string.IsNullOrEmpty(frm.SFTPPort))
                 {
-                    obj.SFTPPort = "22";
+                    obj.SFTPPort = ConfigurationManager.AppSettings["SFTPDefaultPort"].ToString();
                 }
                 else
                 {
@@ -2263,7 +2246,7 @@ namespace RevenuePlanner.Controllers
                     obj.SFTPPassword = Common.Encrypt(frm.SFTPPassword);
                     if (string.IsNullOrEmpty(frm.SFTPPort))
                     {
-                        obj.SFTPPort = "22";
+                        obj.SFTPPort = ConfigurationManager.AppSettings["SFTPDefaultPort"].ToString();
                     }
                     else
                     {
@@ -2303,7 +2286,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="IntegrationInstanceId"></param>
         /// <returns>Return IntegrationInstanceExternalServerModel data.</returns>
-        private IntegrationInstanceExternalServerModel GetExternalServer(int IntegrationInstanceId)
+        private IntegrationInstanceExternalServerModel GetExternalServerModelByInstanceId(int IntegrationInstanceId)
         {
             IntegrationInstanceExternalServerModel model = new IntegrationInstanceExternalServerModel();
             model.IntegrationInstanceId = IntegrationInstanceId;
