@@ -232,24 +232,35 @@ namespace Integration.Helper
         }
 
         /// <summary>
-        /// Created By : Sohel Pathan
-        /// Created Date : 11/09/2014
-        /// Desciption : Calculate the ActualCost of the tactic
+        /// Created By : Viral Kadiya
+        /// Created Date : 27/02/2014
+        /// Desciption : Calculate the ActualCost of the tactic list
         /// </summary>
         /// <param name="PlanTacticId"></param>
         /// <returns>Actual cost of a Tactic</returns>
-        public static string CalculateActualCost(int PlanTacticId)
+        public static Dictionary<int,string> CalculateActualCostTacticslist(List<int> PlanTacticIds)
         {
             string cost = "Cost";
             string strActualCost = "0";
+            Dictionary<int, string> dicTactic_ActualCost = new Dictionary<int, string>();
+            List<int> lstLineItems = new List<int>();
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstLineItemActuals = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+            List<Plan_Campaign_Program_Tactic_Actual> lstPlanTacticsActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
             try
             {
                 using (MRPEntities db = new MRPEntities())
                 {
-                    var lstLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => li.PlanTacticId.Equals(PlanTacticId) && li.IsDeleted.Equals(false)).ToList().Select(li => li.PlanLineItemId).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem> tblLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => PlanTacticIds.Contains(li.PlanTacticId) && li.IsDeleted.Equals(false)).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lia => tblLineItems.Select(line => line.PlanLineItemId).Contains(lia.PlanLineItemId)).ToList();
+                    List<Plan_Campaign_Program_Tactic_Actual> tblPlanTacticsActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pta => PlanTacticIds.Contains(pta.PlanTacticId) && pta.StageTitle.Equals(cost)).ToList();
+                    foreach (int keyTactic in PlanTacticIds)
+                    {
+                        lstLineItems = new List<int>();
+                        lstLineItems = tblLineItems.Where(line => line.PlanTacticId.Equals(keyTactic)).Select(li => li.PlanLineItemId).ToList();
                     if (lstLineItems.Count > 0)
                     {
-                        var lstLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lia => lstLineItems.Contains(lia.PlanLineItemId)).ToList();
+                            lstLineItemActuals = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                            lstLineItemActuals = tblLineItemActuals.Where(lia => lstLineItems.Contains(lia.PlanLineItemId)).ToList();
                         if (lstLineItemActuals.Count > 0)
                         {
                             var actualCostSum = lstLineItemActuals.Sum(lia => lia.Value);
@@ -258,19 +269,22 @@ namespace Integration.Helper
                     }
                     else
                     {
-                        var lstPlanTacticsActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pta => pta.PlanTacticId.Equals(PlanTacticId) && pta.StageTitle.Equals(cost)).ToList();
+                            lstPlanTacticsActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
+                            lstPlanTacticsActuals = tblPlanTacticsActuals.Where(pta => pta.PlanTacticId.Equals(keyTactic)).ToList();
                         if (lstPlanTacticsActuals.Count > 0)
                         {
                             var actualCostSum = lstPlanTacticsActuals.Sum(pta => pta.Actualvalue);
                             strActualCost = actualCostSum.ToString();
                         }
                     }
+                        dicTactic_ActualCost.Add(keyTactic, strActualCost);
+                    }
                 }
-                return strActualCost;
+                return dicTactic_ActualCost;
             }
             catch
             {
-                return strActualCost;
+                return dicTactic_ActualCost;
             }
         }
 

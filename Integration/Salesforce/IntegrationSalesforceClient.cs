@@ -69,6 +69,7 @@ namespace Integration.Salesforce
         private bool IsClientAllowedForCustomNaming = false;
         Guid _applicationId = Guid.Empty;
         //End - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
+        private Dictionary<int, string> _mappingTactic_ActualCost { get; set; }
 
         public bool IsAuthenticated
         {
@@ -103,7 +104,7 @@ namespace Integration.Salesforce
             string ConsumerSecret = "ConsumerSecret";
             string SecurityToken = "SecurityToken";
 
-            IntegrationInstance integrationInstance = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).SingleOrDefault();
+            IntegrationInstance integrationInstance = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
             _CustomNamingPermissionForInstance = integrationInstance.CustomNamingPermission;
             Dictionary<string, string> attributeKeyPair = db.IntegrationInstance_Attribute.Where(attribute => attribute.IntegrationInstanceId == _integrationInstanceId).Select(attribute => new { attribute.IntegrationTypeAttribute.Attribute, attribute.Value }).ToDictionary(attribute => attribute.Attribute, attribute => attribute.Value);
             //// Get integration instance and set below properties using integrationInstanceId property.
@@ -166,9 +167,10 @@ namespace Integration.Salesforce
             {
                 if (EntityType.Tactic.Equals(_entityType))
                 {
-                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).SingleOrDefault();
+                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).FirstOrDefault();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
+                    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
                     _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     planTactic = SyncTacticData(planTactic);
@@ -176,7 +178,7 @@ namespace Integration.Salesforce
                 }
                 else if (EntityType.Program.Equals(_entityType))
                 {
-                    Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id).SingleOrDefault();
+                    Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id).FirstOrDefault();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
                     _mappingCustomFields = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
@@ -186,7 +188,7 @@ namespace Integration.Salesforce
                 }
                 else if (EntityType.Campaign.Equals(_entityType))
                 {
-                    Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id).SingleOrDefault();
+                    Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id).FirstOrDefault();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> campaignIdList = new List<int>() { planCampaign.PlanCampaignId };
                     _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
@@ -196,7 +198,7 @@ namespace Integration.Salesforce
                 }
                 else if (EntityType.ImprovementTactic.Equals(_entityType))
                 {
-                    Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id).SingleOrDefault();
+                    Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id).FirstOrDefault();
                     planImprovementTactic = SyncImprovementData(planImprovementTactic);
                     db.SaveChanges();
                 }
@@ -226,7 +228,7 @@ namespace Integration.Salesforce
             if (IsInstanceSync)
             {
                 bool isImport = false;
-                isImport = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IsImportActuals;
+                isImport = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IsImportActuals;
                 if (isImport)
                 {
                     //GetDataForTacticandUpdate();  // Commented by Sohel Pathan on 12/09/2014 for PL ticket #773
@@ -268,7 +270,7 @@ namespace Integration.Salesforce
             //// Get SalesForce PlanIds.
             List<int> lstSalesForceplanIds = lstPlans.Where(objplan => !lstEloquaPlanIds.Contains(objplan.PlanId)).Select(plan => plan.PlanId).ToList();
 
-            int INQStageId = db.Stages.SingleOrDefault(s => s.ClientId == ClientId && s.Code == Common.StageINQ).StageId;
+            int INQStageId = db.Stages.FirstOrDefault(s => s.ClientId == ClientId && s.Code == Common.StageINQ).StageId;
             // Get List of status after Approved Status
             List<string> statusList = Common.GetStatusListAfterApproved();
             
@@ -576,7 +578,7 @@ namespace Integration.Salesforce
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), DateTime.Now, _userId);
 
             List<Plan> lstPlans = db.Plans.Where(p => p.Model.IntegrationInstanceIdCW == _integrationInstanceId && p.Model.Status.Equals("Published")).ToList();
-            Guid ClientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+            Guid ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
             //// Get Eloqua integration type Id.
             var eloquaIntegrationType = db.IntegrationTypes.Where(type => type.Code == "Eloqua" && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
@@ -839,7 +841,7 @@ namespace Integration.Salesforce
                                         {
                                             
                                             //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
-                                            var tactic = lstSalesForceTactic.SingleOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
+                                            var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
                                             if (tactic != null)
                                                 _PlanTacticId = tactic.PlanTacticId;
                                             else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
@@ -872,7 +874,7 @@ namespace Integration.Salesforce
                                         {
                                            
                                             //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
-                                            var tactic = lstSalesForceTactic.SingleOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
+                                            var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
                                             if (tactic != null)
                                                 _PlanTacticId = tactic.PlanTacticId;
                                             else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
@@ -1037,12 +1039,12 @@ namespace Integration.Salesforce
                                 {
                                     using (MRPEntities dbinner = new MRPEntities())
                                     {
-                                        IntegrationInstance integrationinstancecw = dbinner.IntegrationInstances.SingleOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId);
+                                        IntegrationInstance integrationinstancecw = dbinner.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId);
                                         integrationinstancecw.IsFirstPullCW = true;
                                         dbinner.Entry(integrationinstancecw).State = EntityState.Modified;
                                         dbinner.SaveChanges();
                                         IntegrationInstance integrationInstance = new IntegrationInstance();
-                                        integrationInstance = dbinner.IntegrationInstances.SingleOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId);
+                                        integrationInstance = dbinner.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId);
                                     }
                                     
                                 }
@@ -1146,7 +1148,7 @@ namespace Integration.Salesforce
                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
             // End - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
 
-            _clientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+            _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
@@ -2189,6 +2191,7 @@ namespace Integration.Salesforce
                     List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
+                    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
                     _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     for (int index = 0; index < tacticList.Count; index++)
@@ -2498,7 +2501,7 @@ namespace Integration.Salesforce
                     // Start - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
                     else if (mapping.Key == costActual)
                     {
-                        value = Common.CalculateActualCost(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
+                        value = GetActualCostbyPlanTacticId(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
                     }
                     // End - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
                     //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
@@ -2648,6 +2651,27 @@ namespace Integration.Salesforce
             }
 
             return CustomFieldsList;
+        }
+
+        /// <summary>
+        /// Created By : Viral Kadiya
+        /// Created Date : 27/02/2015
+        /// Desciption : Get ActualCost based on PlanTacticId
+        /// </summary>
+        /// <param name="PlanTacticId"></param>
+        /// <returns>Actual cost of a Tactic</returns>
+        public string GetActualCostbyPlanTacticId(int PlanTacticId)
+        {
+            string strActualCost = "0";
+            try
+            {
+                strActualCost = _mappingTactic_ActualCost.ToList().Where(tac => tac.Key.Equals(PlanTacticId)).Select(tac => tac.Value).FirstOrDefault();
+                return strActualCost;
+            }
+            catch
+            {
+                return strActualCost;
+            }
         }
     }
 }
