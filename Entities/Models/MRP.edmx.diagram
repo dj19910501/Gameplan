@@ -36,8 +36,7 @@
         <EntityTypeShape EntityType="MRPModel.LineItemType" Width="1.5" PointX="8.4950062914262556" PointY="21.182726065247657" />
         <EntityTypeShape EntityType="MRPModel.MasterTacticType" Width="1.5" PointX="9.2000513175502654" PointY="31.394018009022819" />
         <EntityTypeShape EntityType="MRPModel.Model" Width="1.5" PointX="10.307611779453051" PointY="9.26908548607914" />
-        <EntityTypeShape EntityType="MRPModel.Model_Funnel" Width="1.5" PointX="3.541094107339668" PointY="10.120387871805759" />
-        <EntityTypeShape EntityType="MRPModel.Model_Funnel_Stage" Width="1.5" PointX="6.7144972843651178" PointY="11.800008227955553" />
+        <EntityTypeShape EntityType="MRPModel.Model_Funnel" Width="1.5" PointX="11.125" PointY="7.25" />
         <EntityTypeShape EntityType="MRPModel.Notification" Width="1.5" PointX="2.719548422246961" PointY="27.82676978214959" />
         <EntityTypeShape EntityType="MRPModel.Plan" Width="1.5" PointX="0.2550451086159074" PointY="10.762929295544945" />
         <EntityTypeShape EntityType="MRPModel.Plan_Budget" Width="1.5" PointX="11.051116441865972" PointY="24.036689918505349" />
@@ -102,8 +101,6 @@
         <AssociationConnector Association="MRPModel.FK_Model_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Plan" />
         <AssociationConnector Association="MRPModel.fk_TacticType_Model" />
-        <AssociationConnector Association="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" />
-        <AssociationConnector Association="MRPModel.FK_Model_Category_Stage_Stage" />
         <AssociationConnector Association="MRPModel.FK_User_Notification_Notification" />
         <AssociationConnector Association="MRPModel.FK_Plan_Budget_Plan" />
         <AssociationConnector Association="MRPModel.FK_Plan_Collaborator_Plan" />
@@ -137,6 +134,9 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" />
+        <EntityTypeShape EntityType="MRPModel.Model_Funnel_Stage" Width="1.5" PointX="3.1140290997522087" PointY="29.599678917601555" />
+        <AssociationConnector Association="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" />
+        <AssociationConnector Association="MRPModel.FK_Model_Category_Stage_Stage" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

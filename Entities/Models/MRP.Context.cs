@@ -57,7 +57,6 @@ namespace RevenuePlanner.Models
         public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
         public DbSet<Model> Models { get; set; }
         public DbSet<Model_Funnel> Model_Funnel { get; set; }
-        public DbSet<Model_Funnel_Stage> Model_Funnel_Stage { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Plan> Plans { get; set; }
         public DbSet<Plan_Budget> Plan_Budget { get; set; }
@@ -85,5 +84,6 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
+        public DbSet<Model_Funnel_Stage> Model_Funnel_Stage { get; set; }
     }
 }
