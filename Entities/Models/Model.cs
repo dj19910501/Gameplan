@@ -42,6 +42,7 @@ namespace RevenuePlanner.Models
         public Nullable<int> IntegrationInstanceIdMQL { get; set; }
         public Nullable<int> IntegrationInstanceIdCW { get; set; }
         public System.Guid ClientId { get; set; }
+        public long AddressableContacts { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstance IntegrationInstance1 { get; set; }
