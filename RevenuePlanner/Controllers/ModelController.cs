@@ -24,13 +24,10 @@ namespace RevenuePlanner.Controllers
     /// </summary>
     public class ModelController : CommonController
     {
-        #region Global Variables for ModelController
-
+        #region Local Variables for ModelController
         private MRPEntities objDbMrpEntities = new MRPEntities();
-        const string CR = "CR";
-        const string SV = "SV";
-        const string ModelPublished = "published";
         static Random rnd = new Random();
+        string strVersion = "version";
         #endregion
 
         #region Create/Edit/Version Model Input
@@ -260,7 +257,7 @@ namespace RevenuePlanner.Controllers
                     {
                         Model objModel = new Model();
                         objModel.Title = Convert.ToString(collection["Title"]);
-                        if (mode == "version")
+                        if (mode == strVersion)
                         {
                             OtherModelEntries(currentModelId, true, Convert.ToString(collection["Title"]), IsBenchmarked, ref intModelid);
                         }
@@ -289,9 +286,10 @@ namespace RevenuePlanner.Controllers
                                 {
                                     if (lstClientTacticType.Count > 0)
                                     {
+                                        TacticType objTacticType;
                                         foreach (var clientTacticType in lstClientTacticType)
                                         {
-                                            TacticType objTacticType = new TacticType();
+                                            objTacticType = new TacticType();
                                             objTacticType.ColorCode = clientTacticType.ColorCode;
                                             objTacticType.CreatedBy = Sessions.User.UserId;
                                             objTacticType.CreatedDate = DateTime.Now;
@@ -346,22 +344,19 @@ namespace RevenuePlanner.Controllers
                         objModel_Funnel.FunnelId = Convert.ToInt32(Request.Form["hdn_FunnelMarketing"]);
 
                         string[] strtxtMarketing = txtMarketing.ToArray();
-                        if (strtxtMarketing.Length > 0)
+                        if (strtxtMarketing.Length == 1)
                         {
-                            if (strtxtMarketing.Length == 1)
-                            {
-                                long intValue = 0;
-                                double doubleValue = 0.0;
-                                double.TryParse(Convert.ToString(strtxtMarketing[0]).Replace(",", "").Replace("$", ""), out doubleValue);   //// Modified by Mitesh Vaishnav for PL Ticket #534
+                           long intValue = 0;
+                           double doubleValue = 0.0;
+                           double.TryParse(Convert.ToString(strtxtMarketing[0]).Replace(",", "").Replace("$", ""), out doubleValue);   //// Modified by Mitesh Vaishnav for PL Ticket #534
 
-                                objModel_Funnel.ExpectedLeadCount = intValue;
-                                TempData["MarketingLeads"] = intValue;
-                                objModel_Funnel.AverageDealSize = doubleValue;
-                            }
+                           objModel_Funnel.ExpectedLeadCount = intValue;
+                           TempData["MarketingLeads"] = intValue;
+                           objModel_Funnel.AverageDealSize = doubleValue;
                         }
-
-                        Model_Funnel objModelFunnel = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == objModel_Funnel.ModelId && modelFunnel.FunnelId == objModel_Funnel.FunnelId).FirstOrDefault();
-                        Model_Funnel objEditModelFunnel = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == objModel_Funnel.ModelId && modelFunnel.FunnelId == objModel_Funnel.FunnelId && modelFunnel.AverageDealSize == objModel_Funnel.AverageDealSize).FirstOrDefault();
+                        List<Model_Funnel> tblModelFunnel = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == objModel_Funnel.ModelId && modelFunnel.FunnelId == objModel_Funnel.FunnelId).ToList();
+                        Model_Funnel objModelFunnel = tblModelFunnel.FirstOrDefault();
+                        Model_Funnel objEditModelFunnel = tblModelFunnel.Where(modelFunnel => modelFunnel.AverageDealSize == objModel_Funnel.AverageDealSize).FirstOrDefault();
                         ViewBag.EditFlag = false;
                         if (objEditModelFunnel == null)
                         {
@@ -442,7 +437,7 @@ namespace RevenuePlanner.Controllers
                         Sessions.ModelId = intModelid;
                         TempData["SuccessMessage"] = string.Format(Common.objCached.ModelSaveSuccess, objModel.Title);
 
-                        if (mode == "version")
+                        if (mode == strVersion)
                         {
                             ObjectParameter returnValue = new ObjectParameter("ReturnValue", 0);
                         }
@@ -791,21 +786,21 @@ namespace RevenuePlanner.Controllers
                 stageCode = element.Attributes["code"].Value;
                 StageId = GetStageIdByStageCode(stageCode);
             }
-            if (element.HasAttribute("cr"))
+            if (element.HasAttribute(Enums.StageType.CR.ToString().ToLower()))
             {
-                double.TryParse(element.Attributes["cr"].Value, out cr);
+                double.TryParse(element.Attributes[Enums.StageType.CR.ToString().ToLower()].Value, out cr);
             }
-            if (element.HasAttribute("sv"))
+            if (element.HasAttribute(Enums.StageType.SV.ToString().ToLower()))
             {
-                double.TryParse(element.Attributes["sv"].Value, out sv);
+                double.TryParse(element.Attributes[Enums.StageType.SV.ToString().ToLower()].Value, out sv);
             }
             if (element.HasAttribute("targetstage"))
             {
                 bool.TryParse(element.Attributes["targetstage"].Value, out targetStage);
             }
 
-            SaveModelfunnelStageBenchmarkData(intFunnelMarketing, StageId, "CR", cr, targetStage);
-            SaveModelfunnelStageBenchmarkData(intFunnelMarketing, StageId, "SV", sv, false);
+            SaveModelfunnelStageBenchmarkData(intFunnelMarketing, StageId, Enums.StageType.CR.ToString(), cr, targetStage);
+            SaveModelfunnelStageBenchmarkData(intFunnelMarketing, StageId, Enums.StageType.SV.ToString().ToLower(), sv, false);
         }
 
         /// <summary>
@@ -994,7 +989,7 @@ namespace RevenuePlanner.Controllers
                     }
                     if (listType.Equals("active", StringComparison.OrdinalIgnoreCase))
                     {
-                        objModelList = objModelList.Where(model => model.Status.ToLower() == ModelPublished).ToList();
+                        objModelList = objModelList.Where(model => model.Status.ToLower() == Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower()).ToList();
                     }
                 }
 
@@ -1457,7 +1452,7 @@ namespace RevenuePlanner.Controllers
                 Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                 if (objModel != null)
                 {
-                    if (objModel.Status.ToLower() == ModelPublished)
+                    if (objModel.Status.ToLower() == Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower())
                     {
                         List<TacticType> lstTactictTypes = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == ModelId && tacticType.IsDeployedToModel == true && (tacticType.IsDeleted == null || tacticType.IsDeleted == false)).ToList();
                         if (lstTactictTypes.Count == 1)
@@ -1535,7 +1530,7 @@ namespace RevenuePlanner.Controllers
                     Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                     if (objModel != null)
                     {
-                        if (objModel.Status.ToLower() == ModelPublished)
+                        if (objModel.Status.ToLower() == Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower())
                         {
                             List<TacticType> lstTactictTypes = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == ModelId && tacticType.IsDeployedToModel == true && (tacticType.IsDeleted == null || tacticType.IsDeleted == false)).ToList();
                             if (lstTactictTypes.Count == 1)
@@ -1660,7 +1655,7 @@ namespace RevenuePlanner.Controllers
                 rejid = rejid.Distinct().ToArray();
                 bool msgshow = false;
                 Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
-                if (ids == "" && objModel.Status.ToLower() == ModelPublished)
+                if (ids == "" && objModel.Status.ToLower() == Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower())
                 {
                     msgshow = true;
                     errorMessage = string.Format(Common.objCached.TacticReqForPublishedModel);
@@ -1702,24 +1697,35 @@ namespace RevenuePlanner.Controllers
 
                     if (id.Length > 0)
                     {
+                        #region "local variables"
+                        int tacticId = 0, tid = 0, intRandomColorNumber = 0;
+                        string[] strArr;
+                        bool IsDeployToIntegration;
+                        TacticType tacticType;
+                        string StageType = Enums.StageType.CR.ToString();
+                        Model_Funnel_Stage objStage;
+                        MRPEntities dbedit; 
+                        #endregion
+                        
                         for (int i = 0; i < id.Length; i++)
                         {
-                            int tacticId;
-                            string[] strArr = id[i].Replace("rej", "").Split('_');
+                            strArr = id[i].Replace("rej", "").Split('_');
                             int.TryParse(strArr[0], out tacticId);
                             if (tacticId != 0)
                             {
-                                bool IsDeployToIntegration = Convert.ToBoolean(strArr[1]);
-                                int tid = Convert.ToInt32(Convert.ToString(strArr[0]));
-                                var obj = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.TacticTypeId == tid).FirstOrDefault();
-                                objtactic.Title = obj.Title;
-                                objtactic.Description = obj.Description;
+                                IsDeployToIntegration = Convert.ToBoolean(strArr[1]);
+                                tid = Convert.ToInt32(Convert.ToString(strArr[0]));
+                                tacticType = new TacticType();
+                                tacticType = objDbMrpEntities.TacticTypes.Where(tacType => tacType.TacticTypeId == tid).FirstOrDefault();
+                                objtactic.Title = tacticType.Title;
+                                objtactic.Description = tacticType.Description;
                                 //// changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
-                                objtactic.ProjectedStageValue = obj.ProjectedStageValue;
-                                objtactic.ProjectedRevenue = obj.ProjectedRevenue;
-                                objtactic.Abbreviation = obj.Abbreviation;
-                                string StageType = Enums.StageType.CR.ToString();
-                                Model_Funnel_Stage objStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().FirstOrDefault();
+                                objtactic.ProjectedStageValue = tacticType.ProjectedStageValue;
+                                objtactic.ProjectedRevenue = tacticType.ProjectedRevenue;
+                                objtactic.Abbreviation = tacticType.Abbreviation;
+
+                                objStage = new Model_Funnel_Stage();
+                                objStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().FirstOrDefault();
                                 if (objStage != null)
                                 {
                                     objtactic.StageId = objStage.StageId;
@@ -1730,21 +1736,21 @@ namespace RevenuePlanner.Controllers
                                     errorMessage = string.Format(Common.objCached.StageNotExist);
                                     return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
                                 }
-                                objtactic.StageId = (obj.StageId == null) ? objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().Select(modelFunnelStage => modelFunnelStage.StageId).FirstOrDefault() : obj.StageId;   //// Line uncommented by Sohel Pathan on 16/06/2014 for PL ticket #528.
-                                int intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
+                                objtactic.StageId = (tacticType.StageId == null) ? objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().Select(modelFunnelStage => modelFunnelStage.StageId).FirstOrDefault() : tacticType.StageId;   //// Line uncommented by Sohel Pathan on 16/06/2014 for PL ticket #528.
+                                intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
                                 objtactic.ColorCode = Convert.ToString(Common.ColorcodeList[intRandomColorNumber]);
                                 objtactic.CreatedDate = DateTime.Now;
                                 objtactic.CreatedBy = Sessions.User.UserId;
                                 objtactic.ModelId = ModelId;
-                                objtactic.PreviousTacticTypeId = obj.PreviousTacticTypeId;
+                                objtactic.PreviousTacticTypeId = tacticType.PreviousTacticTypeId;
 
                                 //// Added by dharmraj for ticket #433 Integration - Model Screen Tactic List
                                 objtactic.IsDeployedToIntegration = IsDeployToIntegration;
                                 objtactic.IsDeployedToModel = true;
-                                objtactic.TacticTypeId = obj.TacticTypeId;
+                                objtactic.TacticTypeId = tacticType.TacticTypeId;
                                 objtactic.IsDeleted = false;
 
-                                MRPEntities dbedit = new MRPEntities();
+                                dbedit = new MRPEntities();
                                 dbedit.Entry(objtactic).State = EntityState.Modified;
                                 result = dbedit.SaveChanges();
                                 dbedit.Dispose();
@@ -1764,7 +1770,6 @@ namespace RevenuePlanner.Controllers
                 if (isModelPublished)
                 {
                     bool isTacticTypeExist = false;
-
                     bool isPublished = PublishModel(ModelId, EffectiveDate, out isTacticTypeExist);
                     if (isPublished.Equals(true))
                     {
@@ -2387,7 +2392,8 @@ namespace RevenuePlanner.Controllers
                         newModel.Year = DateTime.Now.Year;
                         newModel.IsBenchmarked = IsBenchmarked;
                         //// Added by Mitesh Vaishnav for PL ticket #659 
-                        var oldModel = objMrpEntities.Models.Where(model => model.ModelId == OldModelID && model.IsDeleted.Equals(false)).FirstOrDefault();
+                        List<Model> tblModels = objMrpEntities.Models.Where(model => model.IsDeleted.Equals(false)).ToList();
+                        var oldModel = tblModels.Where(model => model.ModelId == OldModelID).FirstOrDefault();
                         newModel.IntegrationInstanceId = oldModel.IntegrationInstanceId;
                         newModel.IntegrationInstanceIdCW = oldModel.IntegrationInstanceIdCW;
                         newModel.IntegrationInstanceIdINQ = oldModel.IntegrationInstanceIdINQ;
@@ -2395,8 +2401,8 @@ namespace RevenuePlanner.Controllers
                         newModel.ClientId = oldModel.ClientId;
                         ////End :Added by Mitesh Vaishnav for PL ticket #659 
                         //// title condition added by uday for review point on 5-6-2014 bcoz version clashes when two users are creating version of same buisiness unit.
-                        
-                        var version = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ClientId.Equals(Sessions.User.ClientId) && model.Title == Title).OrderByDescending(model => model.CreatedDate).Select(model => model.Version).FirstOrDefault();
+
+                        var version = tblModels.Where(model => model.ClientId.Equals(Sessions.User.ClientId) && model.Title == Title).OrderByDescending(model => model.CreatedDate).Select(model => model.Version).FirstOrDefault();
                         if (version != null && version != "")
                         {
                             newModel.Version = Convert.ToString((Convert.ToDouble(version) + 0.1));
@@ -2408,7 +2414,7 @@ namespace RevenuePlanner.Controllers
                     }
 
                     newModel.Title = Title;
-                    newModel.Status = Enums.ModelStatusValues.Single(modelStatus => modelStatus.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
+                    newModel.Status = Enums.ModelStatusValues.FirstOrDefault(modelStatus => modelStatus.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
                     newModel.CreatedDate = DateTime.Now;
                     newModel.CreatedBy = Sessions.User.UserId;
                     newModel.ModifiedBy = null;
@@ -2442,9 +2448,10 @@ namespace RevenuePlanner.Controllers
                     {
                         if (oldTacticTypes.Count > 0)
                         {
+                            TacticType newTacticTypes;
                             foreach (var tacticType in oldTacticTypes)
                             {
-                                TacticType newTacticTypes = new TacticType();
+                                newTacticTypes = new TacticType();
                                 newTacticTypes = tacticType;
                                 newTacticTypes.ModelId = newModelId;
                                 //// Start - Added by Sohel Pathan on 20/08/2014 for PL ticket #713

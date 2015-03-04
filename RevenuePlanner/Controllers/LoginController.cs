@@ -57,26 +57,6 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Index(string returnUrl = "")
         {
-            //Start Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
-            //HttpCookie authCookie = System.Web.HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName.ToString()];
-            //if (authCookie != null)
-            //{
-            //    FormsAuthenticationTicket authTicket = FormsAuthentication.Decdecrypt(authCookie.Value);
-            //    if (authTicket != null & !authTicket.Expired)
-            //    {
-            //        string cookieValue = authTicket.Name;
-            //        int userID = 0;
-            //        int.TryParse(cookieValue,out userID);
-            //        var obj = db.Users.Where(u => u.UserId == userID && u.IsDeleted == false).FirstOrDefault();
-            //        if (obj != null)
-            //        {
-            //            Sessions.User = obj;
-            //            return RedirectToAction("Index", "Home");
-            //        }
-            //    }
-            //}
-            //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
-
             /* Bug 25:Unavailability of BDSService leads to no error shown to user */
 
             bool isErrorMessageAddedToModel = false;
@@ -147,157 +127,113 @@ namespace RevenuePlanner.Controllers
                     BDSService.User obj = new BDSService.User();
                     Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
                     string singlehash = Common.ComputeSingleHash(form.Password.ToString().Trim());
-
                     obj = objBDSServiceClient.ValidateUser(applicationId, form.UserEmail.Trim(), singlehash);
-
-                    //var obj = db.Users.Where(u => u.Email.Trim().ToLower() == form.UserEmail.Trim().ToLower() && u.Password.Trim().ToLower() == form.Password.Trim().ToLower() &&  u.IsDeleted == false).FirstOrDefault();
-                    if (obj != null)
+                    if (obj == null)
+                        ModelState.AddModelError("", Common.objCached.InvalidLogin);
+                    
+                    //Start  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
+                    System.Web.Security.FormsAuthentication.SetAuthCookie(obj.UserId.ToString(), false);
+                    //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
+                    Sessions.User = obj;
+                    
+                    //Start Manoj Limbachiya : 11/23/2013 - Menu filling and Role Permission
+                    if (Sessions.AppMenus == null)
                     {
-                        ////Start Manoj PL #490 Date:27May2014
-                        //LoginSession l = new LoginSession();
-                        //if (l.AddSession(Session.SessionID, obj.UserId.ToString()))
-                        //{
-                        //    TempData["ErrorMessage"] = "Another user already logged-in with the same session";
-                        //    return RedirectToAction("Index", "Login");
-                        //}
-                        ////End Manoj PL #490 Date:27May2014
-                        //Start  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
-                        System.Web.Security.FormsAuthentication.SetAuthCookie(obj.UserId.ToString(), false);
-                        //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
-                        Sessions.User = obj;
+                        Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
+                    }
 
-                        //Start Maninder Singh Wadhva : 11/27/2013 - Setting role flag.
-                        //Sessions.IsSystemAdmin = Sessions.IsClientAdmin = Sessions.IsDirector = Sessions.IsPlanner = false;
+                    if (Sessions.RolePermission == null)
+                    {
+                        Sessions.RolePermission = objBDSServiceClient.GetPermission(Sessions.ApplicationId, Sessions.User.RoleId);
+                    }
+                    //End Manoj Limbachiya : 11/23/2013 - Menu filling  and Role Permission
 
-                        //Enums.Role role = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
-                        //switch (role)
-                        //{
-                        //    case Enums.Role.SystemAdmin:
-                        //        Sessions.IsSystemAdmin = true;
-                        //        break;
-                        //    case Enums.Role.ClientAdmin:
-                        //        Sessions.IsClientAdmin = true;
-                        //        break;
-                        //    case Enums.Role.Director:
-                        //        Sessions.IsDirector = true;
-                        //        break;
-                        //    case Enums.Role.Planner:
-                        //        Sessions.IsPlanner = true;
-                        //        break;
-                        //    default:
-                        //        break;
-                        //}
-                        //End Maninder Singh Wadhva : 11/27/2013 - Setting role flag.
-                        //Start Manoj Limbachiya : 11/23/2013 - Menu filling and Role Permission
-                        if (Sessions.AppMenus == null)
+                    //// Set user activity permission session.
+                    SetUserActivityPermission();
+
+                    // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+                    if (Sessions.AppMenus != null)
+                    {
+                        var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+                        var item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Model.ToString().ToUpper());
+                        if (item != null && !isAuthorized)
                         {
-                            Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
+                            Sessions.AppMenus.Remove(item);
                         }
 
-                        if (Sessions.RolePermission == null)
+                        isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit) ||
+                            AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit));
+                        item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Boost.ToString().ToUpper());
+                        if (item != null && !isAuthorized)
                         {
-                            Sessions.RolePermission = objBDSServiceClient.GetPermission(Sessions.ApplicationId, Sessions.User.RoleId);
-                        }
-                        //End Manoj Limbachiya : 11/23/2013 - Menu filling  and Role Permission
-
-                        //// Set user activity permission session.
-                        SetUserActivityPermission();
-
-                        // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-                        if (Sessions.AppMenus != null)
-                        {
-                            var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
-                            var item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Model.ToString().ToUpper());
-                            if (item != null && !isAuthorized)
-                            {
-                                Sessions.AppMenus.Remove(item);
-                            }
-
-                            isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit) ||
-                                AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit));
-                            item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Boost.ToString().ToUpper());
-                            if (item != null && !isAuthorized)
-                            {
-                                Sessions.AppMenus.Remove(item);
-                            }
-
-                            isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
-                            item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper());
-                            if (item != null && !isAuthorized)
-                            {
-                                Sessions.AppMenus.Remove(item);
-                            }
-                        }
-                        // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-
-                        // Added by bhavesh Dobariya @Date: 26/11/2014
-                        Sessions.IsDisplayDataInconsistencyMsg = false;
-                        Guid ClientId = obj.ClientId;
-                        List<int> deletedStageId = db.Stages.Where(s => s.ClientId == ClientId && s.IsDeleted == true).Select(s => s.StageId).ToList();
-                        if (deletedStageId.Count > 0)
-                        {
-                            var tacticlist = db.Plan_Campaign_Program_Tactic.Where(t => deletedStageId.Contains(t.StageId) && t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == ClientId && t.IsDeleted == false).ToList();
-                            if (tacticlist.Count > 0)
-                            {
-                                Common.SetCookie("DataClientId" + ClientId.ToString().ToLower(), ClientId.ToString().ToLower(), true);
-                                Sessions.IsDisplayDataInconsistencyMsg = true;
-                            }
-                            else
-                            {
-                                Common.RemoveCookie("DataClientId" + ClientId.ToString().ToLower());
-                            }
+                            Sessions.AppMenus.Remove(item);
                         }
 
-
-                        //End Bhavesh
-
-
-                        //Redirect users logging in for the first time to the change password module
-                        if (obj.LastLoginDate == null)
+                        isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
+                        item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper());
+                        if (item != null && !isAuthorized)
                         {
-                            Sessions.RedirectToChangePassword = true;
-                            return RedirectToAction("ChangePassword", "User");
+                            Sessions.AppMenus.Remove(item);
                         }
-                        if (obj.SecurityQuestionId == null)
+                    }
+                    // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
+                    // Added by bhavesh Dobariya @Date: 26/11/2014
+                    Sessions.IsDisplayDataInconsistencyMsg = false;
+                    Guid ClientId = obj.ClientId;
+                    List<int> deletedStageId = db.Stages.Where(s => s.ClientId == ClientId && s.IsDeleted == true).Select(s => s.StageId).ToList();
+                    if (deletedStageId.Count > 0)
+                    {
+                        var tacticlist = db.Plan_Campaign_Program_Tactic.Where(t => deletedStageId.Contains(t.StageId) && t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == ClientId && t.IsDeleted == false).ToList();
+                        if (tacticlist.Count > 0)
                         {
-                            Sessions.RedirectToSetSecurityQuestion = true;
-                            return RedirectToAction("SetSecurityQuestion", "Login");
+                            Common.SetCookie("DataClientId" + ClientId.ToString().ToLower(), ClientId.ToString().ToLower(), true);
+                            Sessions.IsDisplayDataInconsistencyMsg = true;
                         }
                         else
                         {
-                            Sessions.RedirectToSetSecurityQuestion = false;
+                            Common.RemoveCookie("DataClientId" + ClientId.ToString().ToLower());
                         }
+                    }
+                    //End Bhavesh
 
-                        //Update last login date for user
-                        objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
-
-                        if ((!string.IsNullOrWhiteSpace(returnUrl)) && IsLocalUrl(returnUrl))
-                        {
-                            return RedirectLocal(returnUrl);
-                        }
-                        else
-                        {
-                            MVCUrl defaultURL = Common.DefaultRedirectURL(Enums.ActiveMenu.None);
-                            if (defaultURL != null)
-                            {
-                                if (!string.IsNullOrEmpty(defaultURL.queryString))
-                                {
-                                    return RedirectToAction(defaultURL.actionName, defaultURL.controllerName, new { activeMenu = defaultURL.queryString });
-                                }
-                                else
-                                {
-                                    return RedirectToAction(defaultURL.actionName, defaultURL.controllerName);
-                                }
-                            }
-                            else
-                            {
-                                return RedirectToAction("Index", "Home");
-                            }
-                        }
+                    //Redirect users logging in for the first time to the change password module
+                    if (obj.LastLoginDate == null)
+                    {
+                        Sessions.RedirectToChangePassword = true;
+                        return RedirectToAction("ChangePassword", "User");
+                    }
+                    if (obj.SecurityQuestionId == null)
+                    {
+                        Sessions.RedirectToSetSecurityQuestion = true;
+                        return RedirectToAction("SetSecurityQuestion", "Login");
                     }
                     else
                     {
-                        ModelState.AddModelError("", Common.objCached.InvalidLogin);
+                        Sessions.RedirectToSetSecurityQuestion = false;
+                    }
+
+                    //Update last login date for user
+                    objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
+
+                    if ((!string.IsNullOrWhiteSpace(returnUrl)) && IsLocalUrl(returnUrl))
+                    {
+                        return RedirectLocal(returnUrl);
+                    }
+                    else
+                    {
+                        MVCUrl defaultURL = Common.DefaultRedirectURL(Enums.ActiveMenu.None);
+                        if (defaultURL == null)
+                            return RedirectToAction("Index", "Home");
+                        
+                        if (!string.IsNullOrEmpty(defaultURL.queryString))
+                        {
+                            return RedirectToAction(defaultURL.actionName, defaultURL.controllerName, new { activeMenu = defaultURL.queryString });
+                        }
+                        else
+                        {
+                            return RedirectToAction(defaultURL.actionName, defaultURL.controllerName);
+                        }
                     }
                 }
                 else

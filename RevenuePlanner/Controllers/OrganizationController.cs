@@ -267,9 +267,11 @@ namespace RevenuePlanner.Controllers
                 var activity_CodeList = activitylist.Where(activity => idsList.Contains(activity.ApplicationActivityId)).ToList();
 
                 //// Get list of Users using User_Role mapping list.
+                List<string> user_activity_mapping;
                 foreach (var user_role_map in user_role_mapping)
                 {
-                    List<string> user_activity_mapping = objBDSServiceClient.GetUserActivityPermission(user_role_map.UserId, Sessions.ApplicationId);
+                    user_activity_mapping = new List<string>();
+                    user_activity_mapping = objBDSServiceClient.GetUserActivityPermission(user_role_map.UserId, Sessions.ApplicationId);
                     if (activity_CodeList.Where(activity => user_activity_mapping.Contains(activity.Code)).ToList().Count() > 0)
                     {
                         user_list.Add(user_role_map);
@@ -611,10 +613,11 @@ namespace RevenuePlanner.Controllers
                     var allActivity = objBDSServiceClient.GetUserApplicationactivitylist(Sessions.ApplicationId);
                     var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
 
+                    UserActivityPermissionModel uapobj;
                     foreach (var item in allActivity)
                     {
                         //// Set data to User_Activity_Permission model.
-                        UserActivityPermissionModel uapobj = new UserActivityPermissionModel();
+                        uapobj = new UserActivityPermissionModel();
                         uapobj.ApplicationActivityId = item.ApplicationActivityId;
                         uapobj.ApplicationId = item.ApplicationId;
                         uapobj.CreatedDate = item.CreatedDate;
@@ -677,9 +680,10 @@ namespace RevenuePlanner.Controllers
                         //// Sort custom field option list by custom field id and value
                         lstCustomFieldOption = lstCustomFieldOption.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Value).ToList();
 
+                        CustomRestrictionModel objCustomRestrictionModel;
                         foreach (var item in lstCustomFieldOption)
                         {
-                            CustomRestrictionModel objCustomRestrictionModel = new CustomRestrictionModel();
+                            objCustomRestrictionModel = new CustomRestrictionModel();
                             objCustomRestrictionModel.Title = item.Value;
                             objCustomRestrictionModel.CustomField = item.CustomFieldId.ToString();
                             objCustomRestrictionModel.CustomFieldId = item.CustomFieldOptionId.ToString();
@@ -891,11 +895,12 @@ namespace RevenuePlanner.Controllers
                     {
                         returnValue = 1;
                     }
-
+                    string[] splitpermissions;
+                    Models.CustomRestriction objCustomRestriction;
                     foreach (var permission in customFieldPermissions)
                     {
-                        string[] splitpermissions = permission.Split('_');
-                        Models.CustomRestriction objCustomRestriction = new Models.CustomRestriction();
+                        splitpermissions = permission.Split('_');
+                        objCustomRestriction = new Models.CustomRestriction();
                         objCustomRestriction.UserId = userId;
                         objCustomRestriction.Permission = Convert.ToInt16(splitpermissions[0]);
                         objCustomRestriction.CustomFieldId = Convert.ToInt32(splitpermissions[1]);
