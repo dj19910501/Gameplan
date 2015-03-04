@@ -2587,13 +2587,14 @@ function DeclineTactic(e, task) {
     }
     function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam) {
         var newUrl = '';
+        var isMultiple = false;
+        newUrl = '@Url.Action("GetNumberOfActivityPerMonth", "Home")';
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-            newUrl = '@Url.Action("GetNumberOfActivityPerMonthByMultiplePlanId", "Home")';
+            isMultiple = true;
         }
         else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             if (CurrentPlanId > 0) {
-                newUrl = '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")';
-                selectedPlanIds = parseInt(CurrentPlanId);
+                selectedPlanIds = CurrentPlanId.toString();
             }
         }
     $.ajax(
@@ -2603,7 +2604,8 @@ function DeclineTactic(e, task) {
         url: newUrl,
         data: {
             planid: selectedPlanIds,
-            strparam: strParam
+            strparam: strParam,
+            isMultiplePlan: isMultiple
         },
         dataType: "json",
         success: function (data) {

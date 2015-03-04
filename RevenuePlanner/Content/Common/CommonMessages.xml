@@ -892,4 +892,14 @@
 		<value>The weights(%) for {0} should sum up to 100! Please rectify and proceed.</value>
 	</Field>
 	<!--End Added by Mitesh Vaishnav for PL ticket #1124-->
+  <!--start Added by Mitesh Vaishnav for PL ticket #1124-->
+  <Field>
+    <Name>PlanSaved</Name>
+    <value>Plan Saved Successfully.</value>
+  </Field>
+  <Field>
+    <Name>LastSynced</Name>
+    <value>Last synced with integration {0}.</value>
+  </Field>
+  <!--End Added by Mitesh Vaishnav for PL ticket #1124-->
 </Messages>
