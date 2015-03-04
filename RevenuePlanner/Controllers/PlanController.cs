@@ -478,7 +478,7 @@ namespace RevenuePlanner.Controllers
 
                     if (RedirectType.ToLower() == "budgeting")
                     {
-                        TempData["SuccessMessage"] = "Plan Saved Successfully";
+                        TempData["SuccessMessage"] = Common.objCached.PlanSaved;
                         return Json(new { id = Sessions.PlanId, redirect = Url.Action("Budgeting") });
                     }
                     else

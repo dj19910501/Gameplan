@@ -2331,6 +2331,33 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _ValidateAttributeWeightSum = value; }
         }
         ////End - Added by Mitesh Vaishnav for PL ticket #1124
+
+        ////Start - Added by Viral Kadiya for Internal Review Point
+        private string _PlanSaved;
+        public string PlanSaved
+        {
+            get
+            {
+                return _PlanSaved;
+            }
+            set
+            {
+                _PlanSaved = value;
+            }
+        }
+        private string _LastSynced;
+        public string LastSynced
+        {
+            get
+            {
+                return _LastSynced;
+            }
+            set
+            {
+                _LastSynced = value;
+            }
+        }
+        ////End - Added by Viral Kadiya for Internal Review Point
         #endregion
 
         #region  Functions
@@ -3063,6 +3090,14 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _ValidateAttributeWeightSum = strMsgValue;
                                             break;
                                         ////End - Added by Mitesh Vaishnav for PL ticket #1124
+                                        ////Start - Added by Viral Kadiya for Internal Review Point
+                                        case "PlanSaved":
+                                            _PlanSaved = strMsgValue;
+                                            break;
+                                        case "LastSynced":
+                                            _LastSynced = strMsgValue;
+                                            break;
+                                        ////End - Added by Viral Kadiya for Internal Review Point
                                     }
                                 }
                                 i = i + 1;

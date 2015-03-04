@@ -631,10 +631,11 @@
         {
             type: "GET",
             cache: false,
-            url: '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")',
+            url: '@Url.Action("GetNumberOfActivityPerMonth", "Home")',
             data: {
-                planid: intplanid,
-                strparam: strParam
+                planid: intplanid.toString(),
+                strparam: strParam,
+                isMultiplePlan: false
             },
             dataType: "json",
             success: function (data) {
