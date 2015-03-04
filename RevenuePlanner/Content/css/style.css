@@ -8374,7 +8374,7 @@ input.icon-check-blue {
 }
 
 .budget-section {
-    padding: 14px 17px 10px 0;
+    padding: 0px 17px 10px 0;
     float: left;
     clear: both;
     width: 100%;
@@ -8611,7 +8611,7 @@ a:hover, a:focus {
 }
 
 .budget-section {
-    padding: 14px 17px 10px 0;
+    padding: 0px 17px 10px 0;
     float: left;
     clear: both;
     width: 100%;

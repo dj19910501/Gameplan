@@ -31,7 +31,7 @@ namespace Integration.Eloqua
         private RestClient _client;
         public string _username { get; set; }
         public string _password { get; set; }
-        public string _instance { get; set; }
+        public string _companyName { get; set; }
         public string _apiURL { get; set; }
         public string _apiVersion { get; set; }
         private bool _isAuthenticated { get; set; }
@@ -140,9 +140,12 @@ namespace Integration.Eloqua
         /// </summary>
         private void SetIntegrationInstanceDetail()
         {
+			//Modified by Komal Rawal for ticket #1118
+            string Companyname = "Company Name";
             IntegrationInstance integrationInstance = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
             _CustomNamingPermissionForInstance = integrationInstance.CustomNamingPermission;
-            this._instance = integrationInstance.Instance;
+            Dictionary<string, string> attributeKeyPair = db.IntegrationInstance_Attribute.Where(attribute => attribute.IntegrationInstanceId == _integrationInstanceId).Select(attribute => new { attribute.IntegrationTypeAttribute.Attribute, attribute.Value }).ToDictionary(attribute => attribute.Attribute, attribute => attribute.Value);
+            this._companyName = attributeKeyPair[Companyname];
             this._username = integrationInstance.Username;
             this._password = Common.Decrypt(integrationInstance.Password);
             this._apiURL = integrationInstance.IntegrationType.APIURL;
@@ -1604,7 +1607,7 @@ namespace Integration.Eloqua
         {
             return new RestClient(_apiURL)
             {
-                Authenticator = new HttpBasicAuthenticator(_instance + "\\" + _username, _password)
+                Authenticator = new HttpBasicAuthenticator(_companyName + "\\" + _username, _password)
             };
         }
 
