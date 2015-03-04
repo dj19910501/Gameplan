@@ -310,7 +310,7 @@
             }
             else {
                 url = '@Url.Content("~/Inspect/LoadSetup/")';
-                $("#divTab").load(url + '?id=' + id + '&Mode=' + ProgramOpt, function (response, status, xhr) {
+                $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
                     if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                         //// Call function to redirect on service unavailibility.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.

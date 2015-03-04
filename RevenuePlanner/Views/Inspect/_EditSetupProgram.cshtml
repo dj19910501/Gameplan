@@ -2,6 +2,7 @@
 @using RevenuePlanner.Helpers
 
 @{
+    var IsProgramEdit = ViewBag.IsProgramEdit != null ? (bool)ViewBag.IsProgramEdit : false;
     bool ExtIntService = (bool)ViewBag.ExtIntService;
     string CalledFromBudget = ViewBag.CalledFromBudget;
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
@@ -93,7 +94,17 @@
                </div>
                 <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
                     <p>@Html.Raw("Owner")</p>
+
+                @if (IsProgramEdit)
+                {
+                    <span style="min-width: 100%; position: relative;">
+                        @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                    </span>
+                }
+                else
+                {
                     @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true"})
+                }
                     <p>Start Date</p>
                      <span style="position:relative;">
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
@@ -199,6 +210,16 @@
     }
 
     $(document).ready(function () {
+
+        $('#ddlOwner').multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+            CustomName: '@Common.CustomTitle'
+        }).multiselectfilter();
+
+        $('#ddlOwner').next().css('width', '95%');
+        $('#ddlOwner').next().css('min-height', '30px');
 
         /*Added by Mitesh Vaishnav for PL ticket #1136
        Register events of new multiselect dropdown customfields*/

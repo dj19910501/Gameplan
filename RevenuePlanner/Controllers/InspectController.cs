@@ -724,6 +724,10 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsDeployedToIntegration = pcm.IsDeployedToIntegration;
             pcm.StartDate = pc.StartDate;
             pcm.EndDate = pc.EndDate;
+            pcm.OwnerId = pc.CreatedBy;
+         
+           
+          
 
             var programs = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == id && program.IsDeleted.Equals(false)).ToList();
             var tactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.Plan_Campaign_Program.PlanCampaignId == id && _tactic.IsDeleted.Equals(false)).ToList();
@@ -773,6 +777,49 @@ namespace RevenuePlanner.Controllers
             }
             /*Modified By : Kalpesh Sharma :: Optimize the code and performance of application*/
             ViewBag.Year = pc.Plan.Year;
+            //Added by Komal Rawal for #711
+            ViewBag.IsCampaignEdit = true;
+            try
+            {
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId);
+                if (lstClientUsers.Count() > 0)
+                {
+                   
+                    ViewBag.IsServiceUnavailable = false;
+                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
+                    string strUserList = string.Join(",", lstClientUsers);
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        ViewBag.OwnerList = lstPreparedOwners;
+                    }
+                    else
+                    {
+                        ViewBag.OwnerList = new List<User>();
+                    }
+                }
+                else
+                {
+                    ViewBag.OwnerList = new List<User>();
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                   
+                    ViewBag.IsServiceUnavailable = true;
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            
             return PartialView("_EditSetupCampaign", pcm);
         }
 
@@ -1263,6 +1310,7 @@ namespace RevenuePlanner.Controllers
             pcpm.PlanCampaignId = pcp.PlanCampaignId;
             pcpm.Title = HttpUtility.HtmlDecode(pcp.Title);
             pcpm.Description = HttpUtility.HtmlDecode(pcp.Description);
+            pcpm.OwnerId = pcp.CreatedBy;
             pcpm.StartDate = pcp.StartDate;
             pcpm.EndDate = pcp.EndDate;
             pcpm.CStartDate = pcp.Plan_Campaign.StartDate;
@@ -1306,12 +1354,37 @@ namespace RevenuePlanner.Controllers
             var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
             double lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList().Sum(c => c.ProgramBudget);
             ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - lstSelectedProgram);
-
+            //Added by Komal Rawal for #711
+            ViewBag.IsProgramEdit = true;
             try
             {
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId);
+                if (lstClientUsers.Count() > 0)
+                {
+
                 ViewBag.IsServiceUnavailable = false;
                 ViewBag.OwnerName = Common.GetUserName(pcp.CreatedBy.ToString());
+                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
+                    string strUserList = string.Join(",", lstClientUsers);
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        ViewBag.OwnerList = lstPreparedOwners;
+                    }
+                    else
+                    {
+                        ViewBag.OwnerList = new List<User>();
+                    }
+                }
+                else
+                {
+                    ViewBag.OwnerList = new List<User>();
+                }
             }
+         
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
@@ -1323,8 +1396,12 @@ namespace RevenuePlanner.Controllers
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
                     //// Ticket: 942 Exception handeling in Gameplan.
                     ViewBag.IsServiceUnavailable = true;
+                   
                 }
             }
+
+           
+            
 
             return PartialView("_EditSetupProgram", pcpm);
         }
@@ -1999,7 +2076,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Tactic Id.</param>
         /// <param name="Mode"></param>
         /// <returns>Returns Partial View Of Setup Tab.</returns>
-        public ActionResult LoadSetup(int id, string Mode = "View")
+        public ActionResult LoadSetup(int id)
         {
             InspectModel _inspetmodel;
 
@@ -2054,18 +2131,7 @@ namespace RevenuePlanner.Controllers
             }).ToList();
             ViewBag.customFieldWeightage = JsonConvert.SerializeObject(customFeildsWeightage);
             /*End : Added by Mitesh Vaishnav for PL ticket #1143*/
-
-            //// if Mode is "View" or "undefined" then load ReadOnly mode of Setup tab for Tactic Inspect
-            if (Mode.ToLower() == "view" || Mode.ToLower() == "undefined")
-            {
-                ViewBag.IsTackticAddEdit = false;
                 return PartialView("SetUp", _inspetmodel);
-            }
-            else
-            {
-                ViewBag.IsTackticAddEdit = true;
-                return PartialView("SetupEditAdd", _inspetmodel);
-            }
         }
 
         /// <summary>
