@@ -178,8 +178,6 @@ namespace RevenuePlanner.Controllers
         /// <returns>retuns BaselineModel object</returns>
         public BaselineModel FillInitialData(int ModelId)
         {
-            var FunnelList = objDbMrpEntities.Funnels.Where(funnel => funnel.IsDeleted == false).ToDictionary(funnel => funnel.FunnelId, funnel => funnel.Description);
-            TempData["FunnelList"] = FunnelList;
 
             BaselineModel objBaselineModel = new BaselineModel();
             //// Retrieve all version of selected model
@@ -339,48 +337,6 @@ namespace RevenuePlanner.Controllers
                             }
                         }
 
-                        Model_Funnel objModel_Funnel = new Model_Funnel();
-                        objModel_Funnel.ModelId = intModelid;
-                        objModel_Funnel.FunnelId = Convert.ToInt32(Request.Form["hdn_FunnelMarketing"]);
-
-                        string[] strtxtMarketing = txtMarketing.ToArray();
-                        if (strtxtMarketing.Length == 1)
-                        {
-                           long intValue = 0;
-                           double doubleValue = 0.0;
-                           double.TryParse(Convert.ToString(strtxtMarketing[0]).Replace(",", "").Replace("$", ""), out doubleValue);   //// Modified by Mitesh Vaishnav for PL Ticket #534
-
-                           objModel_Funnel.ExpectedLeadCount = intValue;
-                           TempData["MarketingLeads"] = intValue;
-                           objModel_Funnel.AverageDealSize = doubleValue;
-                        }
-                        List<Model_Funnel> tblModelFunnel = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == objModel_Funnel.ModelId && modelFunnel.FunnelId == objModel_Funnel.FunnelId).ToList();
-                        Model_Funnel objModelFunnel = tblModelFunnel.FirstOrDefault();
-                        Model_Funnel objEditModelFunnel = tblModelFunnel.Where(modelFunnel => modelFunnel.AverageDealSize == objModel_Funnel.AverageDealSize).FirstOrDefault();
-                        ViewBag.EditFlag = false;
-                        if (objEditModelFunnel == null)
-                        {
-                            ViewBag.EditFlag = true;
-                        }
-                        if (objModelFunnel == null)
-                        {
-                            objModel_Funnel.CreatedBy = Sessions.User.UserId;
-                            objModel_Funnel.CreatedDate = DateTime.Now;
-                            objDbMrpEntities.Model_Funnel.Add(objModel_Funnel);
-                            int resModel_FunnelMarketing = objDbMrpEntities.SaveChanges();
-                            intFunnelMarketing = objModel_Funnel.ModelFunnelId;
-                        }
-                        else
-                        {
-                            objModelFunnel.ModifiedBy = Sessions.User.UserId;
-                            objModelFunnel.ModifiedDate = DateTime.Now;
-                            objModelFunnel.ExpectedLeadCount = objModel_Funnel.ExpectedLeadCount;
-                            objModelFunnel.AverageDealSize = objModel_Funnel.AverageDealSize;
-                            objDbMrpEntities.Entry(objModelFunnel).State = EntityState.Modified;
-                            int resModel_FunnelMarketing = objDbMrpEntities.SaveChanges();
-                            intFunnelMarketing = objModelFunnel.ModelFunnelId;
-                        }
-
                         if (IsBenchmarked == false)
                         {
                             //// changed by Nirav Shah on 2 APR 2013
@@ -390,12 +346,12 @@ namespace RevenuePlanner.Controllers
                             if (txtStageId != null && txtMCR != null)
                             {
                                 string[] strtxtMCR = txtMCR.ToArray();
-                                SaveModelFunnelStageInputs(strhdnSTAGEId, strtxtMCR, strtxtTargetStage, intFunnelMarketing, Enums.StageType.CR.ToString());
+                                SaveModelFunnelStageInputs(strhdnSTAGEId, strtxtMCR, strtxtTargetStage, intModelid, Enums.StageType.CR.ToString());
                             }
                             if (txtStageId != null && txtMSV != null)
                             {
                                 string[] strtxtMSV = txtMSV.ToArray();
-                                SaveModelFunnelStageInputs(strhdnSTAGEId, strtxtMSV, strtxtTargetStage, intFunnelMarketing, Enums.StageType.SV.ToString());
+                                SaveModelFunnelStageInputs(strhdnSTAGEId, strtxtMSV, strtxtTargetStage, intModelid, Enums.StageType.SV.ToString());
                             }
                         }
                         else
@@ -403,7 +359,7 @@ namespace RevenuePlanner.Controllers
                             try
                             {
                                 //// Read bench mark inputs from benchmark xml file and insert it into db.
-                                XMLRead(intFunnelMarketing, intFunnelTeleprospecting, intFunnelSales);
+                                XMLRead(intModelid, intFunnelTeleprospecting, intFunnelSales);
                             }
                             catch (Exception objException)
                             {
@@ -546,9 +502,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="funnelId">Funnel Id.</param>
         /// <param name="stageType">Stage Type: CR/ SV.</param>
         /// <returns>returns flag as per db operation status</returns>
-        private bool SaveModelFunnelStageInputs(string[] itemIds, string[] itemLabels, string[] strtxtTargetStage, int funnelId, string stageType)
+        private bool SaveModelFunnelStageInputs(string[] itemIds, string[] itemLabels, string[] strtxtTargetStage, int modelId, string stageType)
         {
-            if (itemIds.Length > 0 && itemLabels.Length > 0 && funnelId > 0 && !string.IsNullOrWhiteSpace(stageType))
+            if (itemIds.Length > 0 && itemLabels.Length > 0 && modelId > 0 && !string.IsNullOrWhiteSpace(stageType))
             {
                 for (int item = 0; item < itemIds.Length; item++)
                 {
@@ -558,14 +514,14 @@ namespace RevenuePlanner.Controllers
                     bool boolValue = false;
                     bool.TryParse(strtxtTargetStage[item], out boolValue);
 
-                    Model_Funnel_Stage objModel_Funnel_Stage = new Model_Funnel_Stage();
-                    objModel_Funnel_Stage.ModelFunnelId = funnelId;
+                    Model_Stage objModel_Funnel_Stage = new Model_Stage();
+                    objModel_Funnel_Stage.ModelId = modelId;
                     objModel_Funnel_Stage.StageId = Convert.ToInt32(itemIds[item]);
                     objModel_Funnel_Stage.StageType = stageType;
                     objModel_Funnel_Stage.Value = doubleValue;
                     objModel_Funnel_Stage.AllowedTargetStage = boolValue;
-                    Model_Funnel_Stage existingModelFunnelStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType).FirstOrDefault();
-                    Model_Funnel_Stage checkEditModelFunnelStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType && modelFunnelStage.Value == objModel_Funnel_Stage.Value && modelFunnelStage.AllowedTargetStage == objModel_Funnel_Stage.AllowedTargetStage).FirstOrDefault();
+                    Model_Stage existingModelFunnelStage = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == objModel_Funnel_Stage.ModelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType).FirstOrDefault();
+                    Model_Stage checkEditModelFunnelStage = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == objModel_Funnel_Stage.ModelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType && modelFunnelStage.Value == objModel_Funnel_Stage.Value && modelFunnelStage.AllowedTargetStage == objModel_Funnel_Stage.AllowedTargetStage).FirstOrDefault();
                     if (checkEditModelFunnelStage == null && ViewBag.EditFlag == false)
                     {
                         ViewBag.EditFlag = true;
@@ -574,7 +530,7 @@ namespace RevenuePlanner.Controllers
                     {
                         objModel_Funnel_Stage.CreatedDate = DateTime.Now;
                         objModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
-                        objDbMrpEntities.Model_Funnel_Stage.Add(objModel_Funnel_Stage);
+                        objDbMrpEntities.Model_Stage.Add(objModel_Funnel_Stage);
                         objDbMrpEntities.SaveChanges();
                     }
                     else
@@ -727,7 +683,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="intFunnelTeleprospecting">Funnel teleprospecting value</param>
         /// <param name="intFunnelSales">Funnel sales value</param>
         /// <returns></returns>
-        public void XMLRead(int intFunnelMarketing, int intFunnelTeleprospecting, int intFunnelSales)
+        public void XMLRead(int intModelid, int intFunnelTeleprospecting, int intFunnelSales)
         {
             if (System.IO.File.Exists(Common.xmlBenchmarkFilePath))
             {
@@ -750,7 +706,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 foreach (XmlElement element in element1.SelectNodes(@"stage"))
                                 {
-                                    readdata(element, intFunnelMarketing);
+                                    readdata(element, intModelid);
                                 }
 
                                 isClientDataExists = true;
@@ -762,7 +718,7 @@ namespace RevenuePlanner.Controllers
                     {
                         foreach (XmlElement element in _class.SelectNodes(@"stage"))
                         {
-                            readdata(element, intFunnelMarketing);
+                            readdata(element, intModelid);
                         }
                     }
                 }
@@ -774,7 +730,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="element">xml node element</param>
         /// <param name="intFunnelMarketing">funnel marketing value</param>
-        public void readdata(XmlElement element, int intFunnelMarketing)
+        public void readdata(XmlElement element, int intModelid)
         {
             string stageCode = string.Empty;
             double cr = 0;
@@ -799,8 +755,8 @@ namespace RevenuePlanner.Controllers
                 bool.TryParse(element.Attributes["targetstage"].Value, out targetStage);
             }
 
-            SaveModelfunnelStageBenchmarkData(intFunnelMarketing, StageId, Enums.StageType.CR.ToString(), cr, targetStage);
-            SaveModelfunnelStageBenchmarkData(intFunnelMarketing, StageId, Enums.StageType.SV.ToString().ToLower(), sv, false);
+            SaveModelfunnelStageBenchmarkData(intModelid, StageId, Enums.StageType.CR.ToString(), cr, targetStage);
+            SaveModelfunnelStageBenchmarkData(intModelid, StageId, Enums.StageType.SV.ToString().ToLower(), sv, false);
         }
 
         /// <summary>
@@ -823,23 +779,23 @@ namespace RevenuePlanner.Controllers
         /// <param name="Value">stage value</param>
         /// <param name="stageValue">flag to indicate stage value</param>
         /// <returns>returns flag as per DB operation status</returns>
-        public int SaveModelfunnelStageBenchmarkData(int ModelFunnelId, int StageId, string StageType, double Value, bool stageValue)
+        public int SaveModelfunnelStageBenchmarkData(int intModelid, int StageId, string StageType, double Value, bool stageValue)
         {
             int result = 0;
 
-            Model_Funnel_Stage objModel_Funnel_Stage = new Model_Funnel_Stage();
-            objModel_Funnel_Stage.ModelFunnelId = ModelFunnelId;
+            Model_Stage objModel_Funnel_Stage = new Model_Stage();
+            objModel_Funnel_Stage. ModelId = intModelid;
             objModel_Funnel_Stage.StageId = StageId;
             objModel_Funnel_Stage.StageType = StageType;
             objModel_Funnel_Stage.Value = Value;
 
-            Model_Funnel_Stage tsvModel_Funnel_Stage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType).FirstOrDefault();
+            Model_Stage tsvModel_Funnel_Stage = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == objModel_Funnel_Stage.ModelId && modelFunnelStage.StageId == objModel_Funnel_Stage.StageId && modelFunnelStage.StageType == objModel_Funnel_Stage.StageType).FirstOrDefault();
             if (tsvModel_Funnel_Stage == null)
             {
                 objModel_Funnel_Stage.AllowedTargetStage = stageValue;
                 objModel_Funnel_Stage.CreatedDate = DateTime.Now;
                 objModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
-                objDbMrpEntities.Model_Funnel_Stage.Add(objModel_Funnel_Stage);
+                objDbMrpEntities.Model_Stage.Add(objModel_Funnel_Stage);
             }
             else
             {
@@ -884,16 +840,13 @@ namespace RevenuePlanner.Controllers
             int modelId = id;
             if (modelId != 0)
             {
-                var lstModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId).Select(model => new { model.ModelId, model.ClientId, model.Title, model.Version, model.Year, model.Status, model.IsActive, model.IsDeleted }).ToList();
-                var lstModelFunnel = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId && modelFunnel.Funnel.Title.ToLower() == "marketing").OrderBy(modelFunnel => modelFunnel.ModelFunnelId).Select(modelFunnel => modelFunnel.ModelFunnelId).ToList();
-                var lstModelFunnelAll = objDbMrpEntities.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId).OrderBy(modelFunnel => modelFunnel.ModelFunnelId).Select(modelFunnel => new { modelFunnel.ModelFunnelId, modelFunnel.ModelId, modelFunnel.FunnelId, modelFunnel.ExpectedLeadCount, modelFunnel.AverageDealSize }).ToList();
-                var lstModelFunnelStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => lstModelFunnel.Contains(modelFunnelStage.ModelFunnelId)).OrderBy(modelFunnelStage => modelFunnelStage.ModelFunnelStageId).Select(modelFunnelStage => new { modelFunnelStage.ModelFunnelStageId, modelFunnelStage.ModelFunnelId, modelFunnelStage.StageId, modelFunnelStage.StageType, modelFunnelStage.Value, modelFunnelStage.AllowedTargetStage }).ToList();
+                var lstModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId).Select(model => new { model.ModelId, model.ClientId, model.Title, model.Version, model.Year, model.Status, model.IsActive, model.IsDeleted,model.AverageDealSize }).ToList();
+                var lstModelFunnelStage = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == modelId).OrderBy(modelFunnelStage => modelFunnelStage.ModelStageId).Select(modelFunnelStage => new { modelFunnelStage.ModelStageId, modelFunnelStage.StageId, modelFunnelStage.StageType, modelFunnelStage.Value, modelFunnelStage.AllowedTargetStage }).ToList();
 
                 JsonConvert.SerializeObject(lstModel, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-                JsonConvert.SerializeObject(lstModelFunnelAll, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                 JsonConvert.SerializeObject(lstModelFunnelStage, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-                return Json(new { lstmodellist = lstModel, lstmodelfunnelist = lstModelFunnelAll, lstmodelfunnelstagelist = lstModelFunnelStage }, JsonRequestBehavior.AllowGet);
+                return Json(new { lstmodellist = lstModel, lstmodelfunnelstagelist = lstModelFunnelStage }, JsonRequestBehavior.AllowGet);
             }
 
             return Json(new { }, JsonRequestBehavior.AllowGet);
@@ -1066,20 +1019,11 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns LoadContactInquiry view</returns>
         //// modified datatype of MSize,TSize and SSize from int to double
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult LoadContactInquiry(int MLeads, double MSize, int TLeads, double TSize, int SLeads, double SSize)
+        public ActionResult LoadContactInquiry( double MSize)
         {
-            var FunnelList = objDbMrpEntities.Funnels.Where(funnel => funnel.IsDeleted == false && funnel.Title == "Marketing").ToDictionary(funnel => funnel.FunnelId, funnel => funnel.Description);
-            TempData["FunnelList"] = FunnelList;
+            ViewBag.MarketingDealSize = MSize;
 
-            ContactInquiry objContactInquiry = new ContactInquiry();
-            objContactInquiry.MarketingDealSize = MSize;
-            objContactInquiry.MarketingLeads = MLeads;
-            objContactInquiry.TeleprospectingDealSize = TSize;
-            objContactInquiry.TeleprospectingLeads = TLeads;
-            objContactInquiry.SalesDealSize = SSize;
-            objContactInquiry.SalesLeads = SLeads;
-
-            return PartialView("_contactinquiry", objContactInquiry);
+            return PartialView("_contactinquiry");
         }
 
         /// <summary>
@@ -1222,8 +1166,7 @@ namespace RevenuePlanner.Controllers
             }
             string StageType = Enums.StageType.CR.ToString();
             string ModelTitle = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ModelId == Modelid).Select(model => model.Title).FirstOrDefault();
-            string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
-            Model_Funnel_Stage objStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.ModelId == Modelid && modelFunnelStage.AllowedTargetStage == true && modelFunnelStage.Model_Funnel.Funnel.Title == Marketing).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().FirstOrDefault();
+            Model_Stage objStage = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.ModelId == Modelid && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().FirstOrDefault();
             if (objStage == null)
             {
                 TempData["ErrorMessage"] = string.Format(Common.objCached.StageNotExist);
@@ -1283,9 +1226,8 @@ namespace RevenuePlanner.Controllers
             var objTacticList = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == id && tacticType.IsDeleted == false).ToList();
 
             //// Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
-            string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
             string StageType = Enums.StageType.CR.ToString();
-            var stagesList = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.Model_Funnel.ModelId == id && modelFunnelStage.AllowedTargetStage == true && modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.Funnel.Title == Marketing)
+            var stagesList = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == id && modelFunnelStage.AllowedTargetStage == true && modelFunnelStage.StageType == StageType)
                                                                 .Select(modelFunnelStage => modelFunnelStage.StageId).Distinct().ToList();
             //// End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
 
@@ -1332,13 +1274,11 @@ namespace RevenuePlanner.Controllers
                 //// End :Modified by Mitesh Vaishnav on 06/08/2014 for PL ticket #683
 
                 //// changed by Nirav Shah on 2 APR 2013
-                string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
                 string StageType = Enums.StageType.CR.ToString();
                 //// Changed by dharmraj for ticket #475
-                ViewBag.Stages = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.Model_Funnel.ModelId == ModelId &&
+                ViewBag.Stages = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == ModelId &&
                                                                   modelFunnelStage.AllowedTargetStage == true &&
-                                                                  modelFunnelStage.StageType == StageType &&
-                                                                  modelFunnelStage.Model_Funnel.Funnel.Title == Marketing).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level)
+                                                                  modelFunnelStage.StageType == StageType).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level)
                                                       .Select(modelFunnelStage => new { modelFunnelStage.StageId, modelFunnelStage.Stage.Title }).Distinct().ToList();
                 ViewBag.IsCreated = false;
                 TacticType objTacticType = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.TacticTypeId.Equals(id)).FirstOrDefault();
@@ -1403,8 +1343,7 @@ namespace RevenuePlanner.Controllers
 
             //// changed by Nirav Shah on 2 APR 2013
             string StageType = Enums.StageType.CR.ToString();
-            string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
-            ViewBag.Stages = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.Model_Funnel.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true && modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.Funnel.Title == Marketing).Select(modelFunnelStage => new { modelFunnelStage.StageId, modelFunnelStage.Stage.Title }).Distinct().ToList();
+            ViewBag.Stages = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true && modelFunnelStage.StageType == StageType).Select(modelFunnelStage => new { modelFunnelStage.StageId, modelFunnelStage.Stage.Title }).Distinct().ToList();
             ViewBag.IsCreated = true;
             Tactic_TypeModel objTacticType = new Tactic_TypeModel();
             //// changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014
@@ -1703,7 +1642,7 @@ namespace RevenuePlanner.Controllers
                         bool IsDeployToIntegration;
                         TacticType tacticType;
                         string StageType = Enums.StageType.CR.ToString();
-                        Model_Funnel_Stage objStage;
+                        Model_Stage objStage;
                         MRPEntities dbedit; 
                         #endregion
                         
@@ -1724,8 +1663,8 @@ namespace RevenuePlanner.Controllers
                                 objtactic.ProjectedRevenue = tacticType.ProjectedRevenue;
                                 objtactic.Abbreviation = tacticType.Abbreviation;
 
-                                objStage = new Model_Funnel_Stage();
-                                objStage = objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().FirstOrDefault();
+                                objStage = new Model_Stage();
+                                objStage = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().FirstOrDefault();
                                 if (objStage != null)
                                 {
                                     objtactic.StageId = objStage.StageId;
@@ -1736,7 +1675,7 @@ namespace RevenuePlanner.Controllers
                                     errorMessage = string.Format(Common.objCached.StageNotExist);
                                     return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
                                 }
-                                objtactic.StageId = (tacticType.StageId == null) ? objDbMrpEntities.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.Model_Funnel.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().Select(modelFunnelStage => modelFunnelStage.StageId).FirstOrDefault() : tacticType.StageId;   //// Line uncommented by Sohel Pathan on 16/06/2014 for PL ticket #528.
+                                objtactic.StageId = (tacticType.StageId == null) ? objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().Select(modelFunnelStage => modelFunnelStage.StageId).FirstOrDefault() : tacticType.StageId;   //// Line uncommented by Sohel Pathan on 16/06/2014 for PL ticket #528.
                                 intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
                                 objtactic.ColorCode = Convert.ToString(Common.ColorcodeList[intRandomColorNumber]);
                                 objtactic.CreatedDate = DateTime.Now;
@@ -2207,54 +2146,30 @@ namespace RevenuePlanner.Controllers
                             //// Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
                             OtherModelEntries(modelId, false, title, false, ref NewModelID);
 
-                            #region Clone Model_Funnel table entries
-
-                            var oldModel_Funnel = mrp.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId).ToList();
-                            if (oldModel_Funnel != null)
-                            {
-                                if (oldModel_Funnel.Count > 0)
-                                {
-                                    foreach (var objModel_Funnel in oldModel_Funnel)
-                                    {
-                                        int oldModelFunnelId = objModel_Funnel.ModelFunnelId;
-
-                                        Model_Funnel newModel_Funnel = new Model_Funnel();
-                                        newModel_Funnel = objModel_Funnel;
-                                        newModel_Funnel.ModelId = NewModelID;
-                                        newModel_Funnel.CreatedDate = DateTime.Now;
-                                        newModel_Funnel.CreatedBy = Sessions.User.UserId;
-                                        newModel_Funnel.ModifiedBy = null;
-                                        newModel_Funnel.ModifiedDate = null;
-                                        mrp.Model_Funnel.Add(newModel_Funnel);
-                                        mrp.SaveChanges();
 
                                         #region Clone Model_Funnel_Stage table entries
 
-                                        var oldModel_Funnel_Stage = mrp.Model_Funnel_Stage.Where(modelFunnelStage => modelFunnelStage.ModelFunnelId == oldModelFunnelId).ToList();
+                            var oldModel_Funnel_Stage = mrp.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == modelId).ToList();
                                         if (oldModel_Funnel_Stage != null)
                                         {
                                             if (oldModel_Funnel_Stage.Count > 0)
                                             {
                                                 foreach (var objModel_Funnel_Stage in oldModel_Funnel_Stage)
                                                 {
-                                                    Model_Funnel_Stage newModel_Funnel_Stage = new Model_Funnel_Stage();
+                                                    Model_Stage newModel_Funnel_Stage = new Model_Stage();
 
                                                     newModel_Funnel_Stage = objModel_Funnel_Stage;
-                                                    newModel_Funnel_Stage.ModelFunnelId = newModel_Funnel.ModelFunnelId;
                                                     newModel_Funnel_Stage.CreatedDate = DateTime.Now;
                                                     newModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
                                                     newModel_Funnel_Stage.ModifiedBy = null;
                                                     newModel_Funnel_Stage.ModifiedDate = null;
-                                                    mrp.Model_Funnel_Stage.Add(newModel_Funnel_Stage);
+                                                    newModel_Funnel_Stage.ModelId = NewModelID;
+                                                    mrp.Model_Stage.Add(newModel_Funnel_Stage);
                                                 }
 
                                                 //// Added By Kalpesh Sharma Functional and code review #560 07-16-2014   
                                                 mrp.SaveChanges();
 
-                                            }
-                                        }
-                                        #endregion
-                                    }
                                 }
                             }
                             #endregion

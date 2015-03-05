@@ -17,10 +17,10 @@ namespace RevenuePlanner.Models
         public Model()
         {
             this.LineItemTypes = new HashSet<LineItemType>();
-            this.Model_Funnel = new HashSet<Model_Funnel>();
             this.Model1 = new HashSet<Model>();
             this.Plans = new HashSet<Plan>();
             this.TacticTypes = new HashSet<TacticType>();
+            this.Model_Stage = new HashSet<Model_Stage>();
         }
     
         public int ModelId { get; set; }
@@ -42,17 +42,17 @@ namespace RevenuePlanner.Models
         public Nullable<int> IntegrationInstanceIdMQL { get; set; }
         public Nullable<int> IntegrationInstanceIdCW { get; set; }
         public System.Guid ClientId { get; set; }
-        public long AddressableContacts { get; set; }
+        public double AverageDealSize { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstance IntegrationInstance1 { get; set; }
         public virtual IntegrationInstance IntegrationInstance2 { get; set; }
         public virtual IntegrationInstance IntegrationInstance3 { get; set; }
         public virtual ICollection<LineItemType> LineItemTypes { get; set; }
-        public virtual ICollection<Model_Funnel> Model_Funnel { get; set; }
         public virtual ICollection<Model> Model1 { get; set; }
         public virtual Model Model2 { get; set; }
         public virtual ICollection<Plan> Plans { get; set; }
         public virtual ICollection<TacticType> TacticTypes { get; set; }
+        public virtual ICollection<Model_Stage> Model_Stage { get; set; }
     }
 }

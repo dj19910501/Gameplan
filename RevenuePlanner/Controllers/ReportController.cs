@@ -1673,7 +1673,6 @@ namespace RevenuePlanner.Controllers
             string stageTitleMQL = Enums.InspectStage.MQL.ToString();
             string stageTitleCW = Enums.InspectStage.CW.ToString();
             string stageTitleRevenue = Enums.InspectStage.Revenue.ToString();
-            string marketing = Enums.Funnel.Marketing.ToString();
             
             List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
             Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => planTacticActual.Add(a)));
@@ -1691,7 +1690,7 @@ namespace RevenuePlanner.Controllers
                 ActualADS = CalculateActualADS(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), Tacticdata, IsTacticCustomField),
                 ProjectedCW = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.CW, IsTacticCustomField),
                 ProjectedRevenue = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Revenue, IsTacticCustomField),
-                ProjectedADS = p.planTacticList.Any() ? db.Model_Funnel.Where(mf => mf.Funnel.Title == marketing && (db.Plan_Campaign_Program_Tactic.Where(t => p.planTacticList.Contains(t.PlanTacticId)).Select(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Distinct()).Contains(mf.ModelId)).Sum(mf => mf.AverageDealSize) : 0
+                ProjectedADS = p.planTacticList.Any() ? db.Models.Where(m => (db.Plan_Campaign_Program_Tactic.Where(t => p.planTacticList.Contains(t.PlanTacticId)).Select(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Distinct()).Contains(m.ModelId)).Sum(mf => mf.AverageDealSize) : 0
             }).Distinct().OrderBy(p => p.Title , new AlphaNumericComparer());
 
             return Json(new { data = DataListFinal }, JsonRequestBehavior.AllowGet);
@@ -1759,19 +1758,6 @@ namespace RevenuePlanner.Controllers
             return ads;
         }
 
-        /// <summary>
-        /// Returns the list of child tab for selected Master tab
-        /// </summary>
-        /// <returns></returns>
-        public JsonResult GetChildTabForConversionSummary()
-        {
-            var returnData = db.Funnels.Where(fu => fu.IsDeleted == false).ToList().Select(funl => new
-            {
-                id = funl.FunnelId,
-                title = funl.Title
-            }).Select(funl => funl).Distinct().OrderBy(funl => funl.id);
-            return Json(returnData, JsonRequestBehavior.AllowGet);
-        }
 
 
         /// <summary>

@@ -400,19 +400,6 @@ namespace RevenuePlanner.Helpers
         }
         #endregion
 
-        #region Funnel
-        /// <summary>
-        /// Added By: Kuber Joshi
-        /// Date: 12/30/2013
-        /// Enum for Funnel.
-        /// </summary>
-        public enum Funnel
-        {
-            Marketing,
-            Teleprospecting,
-            Sales
-        }
-        #endregion
 
         #region Funnel Field
         /// <summary>

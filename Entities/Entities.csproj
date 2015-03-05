@@ -79,15 +79,6 @@
     <Compile Include="Models\CustomRestriction.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Field.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Funnel.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Funnel_Field.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\GameplanDataType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -139,10 +130,7 @@
     <Compile Include="Models\Model.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Model_Funnel.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model_Funnel_Stage.cs">
+    <Compile Include="Models\Model_Stage.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\MRP.Context.cs">

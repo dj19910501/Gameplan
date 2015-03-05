@@ -1,15 +1,11 @@
-﻿@model RevenuePlanner.Models.ContactInquiry
-@using RevenuePlanner.Helpers
+﻿@using RevenuePlanner.Helpers
 <div id="nl-form2" class="nl-form">
     @{
-        Dictionary<int, string> FunnelList = new Dictionary<int, string>();
-        FunnelList = (Dictionary<int, string>)TempData["FunnelList"];
-        @Html.GenerateFunnel(FunnelList, @Model.MarketingLeads, @Model.MarketingDealSize, @Model.TeleprospectingLeads, @Model.TeleprospectingDealSize, @Model.SalesLeads, @Model.SalesDealSize, false)
+        int MarketingDealSize=(int)ViewBag.MarketingDealSize;
+        @Html.GenerateFunnel( MarketingDealSize)
     }
     <div class="nl-overlay"></div>
 </div>
-@Html.GenerateFunnel(FunnelList, @Model.MarketingLeads, @Model.MarketingDealSize, @Model.TeleprospectingLeads, @Model.TeleprospectingDealSize, @Model.SalesLeads, @Model.SalesDealSize, true)
-
 <script>
     var nlform2 = new NLForm(document.getElementById('nl-form2'));
 </script>

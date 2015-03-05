@@ -17,9 +17,6 @@
           <EntitySet Name="CustomFieldOption" EntityType="MRPModel.Store.CustomFieldOption" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomFieldType" EntityType="MRPModel.Store.CustomFieldType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomRestriction" EntityType="MRPModel.Store.CustomRestriction" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Field" EntityType="MRPModel.Store.Field" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Funnel" EntityType="MRPModel.Store.Funnel" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Funnel_Field" EntityType="MRPModel.Store.Funnel_Field" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="GameplanDataType" EntityType="MRPModel.Store.GameplanDataType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="GameplanDataTypePull" EntityType="MRPModel.Store.GameplanDataTypePull" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ImprovementTacticType" EntityType="MRPModel.Store.ImprovementTacticType" store:Type="Tables" Schema="dbo" />
@@ -37,8 +34,7 @@
           <EntitySet Name="LineItemType" EntityType="MRPModel.Store.LineItemType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="MasterTacticType" EntityType="MRPModel.Store.MasterTacticType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model" EntityType="MRPModel.Store.Model" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Model_Funnel" EntityType="MRPModel.Store.Model_Funnel" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Model_Funnel_Stage" EntityType="MRPModel.Store.Model_Funnel_Stage" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Model_Stage" EntityType="MRPModel.Store.Model_Stage" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Notification" EntityType="MRPModel.Store.Notification" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan" EntityType="MRPModel.Store.Plan" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Budget" EntityType="MRPModel.Store.Plan_Budget" store:Type="Tables" Schema="dbo" />
@@ -113,14 +109,6 @@
           <AssociationSet Name="FK_CustomRestriction_CustomFieldOption" Association="MRPModel.Store.FK_CustomRestriction_CustomFieldOption">
             <End Role="CustomFieldOption" EntitySet="CustomFieldOption" />
             <End Role="CustomRestriction" EntitySet="CustomRestriction" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Funnel_Field_Field" Association="MRPModel.Store.FK_Funnel_Field_Field">
-            <End Role="Field" EntitySet="Field" />
-            <End Role="Funnel_Field" EntitySet="Funnel_Field" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Funnel_Field_Funnel" Association="MRPModel.Store.FK_Funnel_Field_Funnel">
-            <End Role="Funnel" EntitySet="Funnel" />
-            <End Role="Funnel_Field" EntitySet="Funnel_Field" />
           </AssociationSet>
           <AssociationSet Name="FK_GameplanDataType_IntegrationType" Association="MRPModel.Store.FK_GameplanDataType_IntegrationType">
             <End Role="IntegrationType" EntitySet="IntegrationType" />
@@ -204,19 +192,7 @@
           </AssociationSet>
           <AssociationSet Name="FK_Model_Category_Stage_Stage" Association="MRPModel.Store.FK_Model_Category_Stage_Stage">
             <End Role="Stage" EntitySet="Stage" />
-            <End Role="Model_Funnel_Stage" EntitySet="Model_Funnel_Stage" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Funnel_Funnel" Association="MRPModel.Store.FK_Model_Funnel_Funnel">
-            <End Role="Funnel" EntitySet="Funnel" />
-            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Funnel_Model" Association="MRPModel.Store.FK_Model_Funnel_Model">
-            <End Role="Model" EntitySet="Model" />
-            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Funnel_Stage_Model_Funnel" Association="MRPModel.Store.FK_Model_Funnel_Stage_Model_Funnel">
-            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
-            <End Role="Model_Funnel_Stage" EntitySet="Model_Funnel_Stage" />
+            <End Role="Model_Stage" EntitySet="Model_Stage" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_IntegrationInstance" Association="MRPModel.Store.FK_Model_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
@@ -237,6 +213,10 @@
           <AssociationSet Name="FK_Model_Model" Association="MRPModel.Store.FK_Model_Model">
             <End Role="Model" EntitySet="Model" />
             <End Role="Model1" EntitySet="Model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_Stage_Model" Association="MRPModel.Store.FK_Model_Stage_Model">
+            <End Role="Model" EntitySet="Model" />
+            <End Role="Model_Stage" EntitySet="Model_Stage" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Budget_Plan" Association="MRPModel.Store.FK_Plan_Budget_Plan">
             <End Role="Plan" EntitySet="Plan" />
@@ -504,43 +484,6 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
-        <EntityType Name="Field">
-          <Key>
-            <PropertyRef Name="FieldId" />
-          </Key>
-          <Property Name="FieldId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="varchar" Nullable="false" MaxLength="255" />
-          <Property Name="Description" Type="nvarchar" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
-        </EntityType>
-        <EntityType Name="Funnel">
-          <Key>
-            <PropertyRef Name="FunnelId" />
-          </Key>
-          <Property Name="FunnelId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
-          <Property Name="Description" Type="nvarchar" />
-          <Property Name="IsDeleted" Type="bit" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
-        </EntityType>
-        <EntityType Name="Funnel_Field">
-          <Key>
-            <PropertyRef Name="FunnelFieldId" />
-          </Key>
-          <Property Name="FunnelFieldId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="FunnelId" Type="int" Nullable="false" />
-          <Property Name="FieldId" Type="int" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
-        </EntityType>
         <EntityType Name="GameplanDataType">
           <Key>
             <PropertyRef Name="GameplanDataTypeId" />
@@ -768,7 +711,6 @@
           <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="Version" Type="nvarchar" Nullable="false" MaxLength="50" />
           <Property Name="Year" Type="int" Nullable="false" />
-          <Property Name="AddressableContacts" Type="bigint" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
@@ -784,27 +726,13 @@
           <Property Name="IntegrationInstanceIdMQL" Type="int" />
           <Property Name="IntegrationInstanceIdCW" Type="int" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Model_Funnel">
-          <Key>
-            <PropertyRef Name="ModelFunnelId" />
-          </Key>
-          <Property Name="ModelFunnelId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="ModelId" Type="int" Nullable="false" />
-          <Property Name="FunnelId" Type="int" Nullable="false" />
-          <Property Name="ExpectedLeadCount" Type="bigint" Nullable="false" />
           <Property Name="AverageDealSize" Type="float" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
         </EntityType>
-        <EntityType Name="Model_Funnel_Stage">
+        <EntityType Name="Model_Stage">
           <Key>
-            <PropertyRef Name="ModelFunnelStageId" />
+            <PropertyRef Name="ModelStageId" />
           </Key>
-          <Property Name="ModelFunnelStageId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="ModelFunnelId" Type="int" Nullable="false" />
+          <Property Name="ModelStageId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="StageId" Type="int" Nullable="false" />
           <Property Name="StageType" Type="nvarchar" Nullable="false" MaxLength="10" />
           <Property Name="Value" Type="float" Nullable="false" />
@@ -813,6 +741,7 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="AllowedTargetStage" Type="bit" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Notification">
           <Key>
@@ -1358,30 +1287,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Funnel_Field_Field">
-          <End Role="Field" Type="MRPModel.Store.Field" Multiplicity="1" />
-          <End Role="Funnel_Field" Type="MRPModel.Store.Funnel_Field" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Field">
-              <PropertyRef Name="FieldId" />
-            </Principal>
-            <Dependent Role="Funnel_Field">
-              <PropertyRef Name="FieldId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Funnel_Field_Funnel">
-          <End Role="Funnel" Type="MRPModel.Store.Funnel" Multiplicity="1" />
-          <End Role="Funnel_Field" Type="MRPModel.Store.Funnel_Field" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Funnel">
-              <PropertyRef Name="FunnelId" />
-            </Principal>
-            <Dependent Role="Funnel_Field">
-              <PropertyRef Name="FunnelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_GameplanDataType_IntegrationType">
           <End Role="IntegrationType" Type="MRPModel.Store.IntegrationType" Multiplicity="1" />
           <End Role="GameplanDataType" Type="MRPModel.Store.GameplanDataType" Multiplicity="*" />
@@ -1624,49 +1529,13 @@
         </Association>
         <Association Name="FK_Model_Category_Stage_Stage">
           <End Role="Stage" Type="MRPModel.Store.Stage" Multiplicity="1" />
-          <End Role="Model_Funnel_Stage" Type="MRPModel.Store.Model_Funnel_Stage" Multiplicity="*" />
+          <End Role="Model_Stage" Type="MRPModel.Store.Model_Stage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Stage">
               <PropertyRef Name="StageId" />
             </Principal>
-            <Dependent Role="Model_Funnel_Stage">
+            <Dependent Role="Model_Stage">
               <PropertyRef Name="StageId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Funnel_Funnel">
-          <End Role="Funnel" Type="MRPModel.Store.Funnel" Multiplicity="1" />
-          <End Role="Model_Funnel" Type="MRPModel.Store.Model_Funnel" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Funnel">
-              <PropertyRef Name="FunnelId" />
-            </Principal>
-            <Dependent Role="Model_Funnel">
-              <PropertyRef Name="FunnelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Funnel_Model">
-          <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="1" />
-          <End Role="Model_Funnel" Type="MRPModel.Store.Model_Funnel" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Funnel">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Funnel_Stage_Model_Funnel">
-          <End Role="Model_Funnel" Type="MRPModel.Store.Model_Funnel" Multiplicity="1" />
-          <End Role="Model_Funnel_Stage" Type="MRPModel.Store.Model_Funnel_Stage" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model_Funnel">
-              <PropertyRef Name="ModelFunnelId" />
-            </Principal>
-            <Dependent Role="Model_Funnel_Stage">
-              <PropertyRef Name="ModelFunnelId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1727,6 +1596,18 @@
             </Principal>
             <Dependent Role="Model1">
               <PropertyRef Name="ParentModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_Stage_Model">
+          <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="1" />
+          <End Role="Model_Stage" Type="MRPModel.Store.Model_Stage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="Model_Stage">
+              <PropertyRef Name="ModelId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2094,9 +1975,6 @@
           <EntitySet Name="CustomFieldOptions" EntityType="MRPModel.CustomFieldOption" />
           <EntitySet Name="CustomFieldTypes" EntityType="MRPModel.CustomFieldType" />
           <EntitySet Name="CustomRestrictions" EntityType="MRPModel.CustomRestriction" />
-          <EntitySet Name="Fields" EntityType="MRPModel.Field" />
-          <EntitySet Name="Funnels" EntityType="MRPModel.Funnel" />
-          <EntitySet Name="Funnel_Field" EntityType="MRPModel.Funnel_Field" />
           <EntitySet Name="GameplanDataTypes" EntityType="MRPModel.GameplanDataType" />
           <EntitySet Name="GameplanDataTypePulls" EntityType="MRPModel.GameplanDataTypePull" />
           <EntitySet Name="ImprovementTacticTypes" EntityType="MRPModel.ImprovementTacticType" />
@@ -2114,7 +1992,6 @@
           <EntitySet Name="LineItemTypes" EntityType="MRPModel.LineItemType" />
           <EntitySet Name="MasterTacticTypes" EntityType="MRPModel.MasterTacticType" />
           <EntitySet Name="Models" EntityType="MRPModel.Model" />
-          <EntitySet Name="Model_Funnel" EntityType="MRPModel.Model_Funnel" />
           <EntitySet Name="Notifications" EntityType="MRPModel.Notification" />
           <EntitySet Name="Plans" EntityType="MRPModel.Plan" />
           <EntitySet Name="Plan_Budget" EntityType="MRPModel.Plan_Budget" />
@@ -2173,18 +2050,6 @@
           <AssociationSet Name="FK_CustomRestriction_CustomFieldOption" Association="MRPModel.FK_CustomRestriction_CustomFieldOption">
             <End Role="CustomFieldOption" EntitySet="CustomFieldOptions" />
             <End Role="CustomRestriction" EntitySet="CustomRestrictions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Funnel_Field_Field" Association="MRPModel.FK_Funnel_Field_Field">
-            <End Role="Field" EntitySet="Fields" />
-            <End Role="Funnel_Field" EntitySet="Funnel_Field" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Funnel_Field_Funnel" Association="MRPModel.FK_Funnel_Field_Funnel">
-            <End Role="Funnel" EntitySet="Funnels" />
-            <End Role="Funnel_Field" EntitySet="Funnel_Field" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Funnel_Funnel" Association="MRPModel.FK_Model_Funnel_Funnel">
-            <End Role="Funnel" EntitySet="Funnels" />
-            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
           </AssociationSet>
           <AssociationSet Name="FK_GameplanDataType_IntegrationType" Association="MRPModel.FK_GameplanDataType_IntegrationType">
             <End Role="IntegrationType" EntitySet="IntegrationTypes" />
@@ -2285,10 +2150,6 @@
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType">
             <End Role="LineItemType" EntitySet="LineItemTypes" />
             <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Funnel_Model" Association="MRPModel.FK_Model_Funnel_Model">
-            <End Role="Model" EntitySet="Models" />
-            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_Model" Association="MRPModel.FK_Model_Model">
             <End Role="Model" EntitySet="Models" />
@@ -2422,14 +2283,14 @@
             <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
             <End Role="Plan_Improvement_Campaign_Program_Tactic_Share" EntitySet="Plan_Improvement_Campaign_Program_Tactic_Share" />
           </AssociationSet>
-          <EntitySet Name="Model_Funnel_Stage" EntityType="MRPModel.Model_Funnel_Stage" />
-          <AssociationSet Name="FK_Model_Funnel_Stage_Model_Funnel" Association="MRPModel.FK_Model_Funnel_Stage_Model_Funnel">
-            <End Role="Model_Funnel" EntitySet="Model_Funnel" />
-            <End Role="Model_Funnel_Stage" EntitySet="Model_Funnel_Stage" />
+          <EntitySet Name="Model_Stage" EntityType="MRPModel.Model_Stage" />
+          <AssociationSet Name="FK_Model_Stage_Model" Association="MRPModel.FK_Model_Stage_Model">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="Model_Stage" EntitySet="Model_Stage" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_Category_Stage_Stage" Association="MRPModel.FK_Model_Category_Stage_Stage">
             <End Role="Stage" EntitySet="Stages" />
-            <End Role="Model_Funnel_Stage" EntitySet="Model_Funnel_Stage" />
+            <End Role="Model_Stage" EntitySet="Model_Stage" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="BestInClass">
@@ -2595,48 +2456,6 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CustomRestriction_CustomField" FromRole="CustomRestriction" ToRole="CustomField" />
           <NavigationProperty Name="CustomFieldOption" Relationship="MRPModel.FK_CustomRestriction_CustomFieldOption" FromRole="CustomRestriction" ToRole="CustomFieldOption" />
-        </EntityType>
-        <EntityType Name="Field">
-          <Key>
-            <PropertyRef Name="FieldId" />
-          </Key>
-          <Property Type="Int32" Name="FieldId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Funnel_Field" Relationship="MRPModel.FK_Funnel_Field_Field" FromRole="Field" ToRole="Funnel_Field" />
-        </EntityType>
-        <EntityType Name="Funnel">
-          <Key>
-            <PropertyRef Name="FunnelId" />
-          </Key>
-          <Property Type="Int32" Name="FunnelId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Funnel_Field" Relationship="MRPModel.FK_Funnel_Field_Funnel" FromRole="Funnel" ToRole="Funnel_Field" />
-          <NavigationProperty Name="Model_Funnel" Relationship="MRPModel.FK_Model_Funnel_Funnel" FromRole="Funnel" ToRole="Model_Funnel" />
-        </EntityType>
-        <EntityType Name="Funnel_Field">
-          <Key>
-            <PropertyRef Name="FunnelFieldId" />
-          </Key>
-          <Property Type="Int32" Name="FunnelFieldId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="FunnelId" Nullable="false" />
-          <Property Type="Int32" Name="FieldId" Nullable="false" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Field" Relationship="MRPModel.FK_Funnel_Field_Field" FromRole="Funnel_Field" ToRole="Field" />
-          <NavigationProperty Name="Funnel" Relationship="MRPModel.FK_Funnel_Field_Funnel" FromRole="Funnel_Field" ToRole="Funnel" />
         </EntityType>
         <EntityType Name="GameplanDataType">
           <Key>
@@ -2930,29 +2749,12 @@
           <NavigationProperty Name="IntegrationInstance2" Relationship="MRPModel.FK_Model_IntegrationInstanceINQ" FromRole="Model" ToRole="IntegrationInstance" />
           <NavigationProperty Name="IntegrationInstance3" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="Model" ToRole="IntegrationInstance" />
           <NavigationProperty Name="LineItemTypes" Relationship="MRPModel.FK_LineItemType_Model" FromRole="Model" ToRole="LineItemType" />
-          <NavigationProperty Name="Model_Funnel" Relationship="MRPModel.FK_Model_Funnel_Model" FromRole="Model" ToRole="Model_Funnel" />
           <NavigationProperty Name="Model1" Relationship="MRPModel.FK_Model_Model" FromRole="Model" ToRole="Model1" />
           <NavigationProperty Name="Model2" Relationship="MRPModel.FK_Model_Model" FromRole="Model1" ToRole="Model" />
           <NavigationProperty Name="Plans" Relationship="MRPModel.FK_Plan_Plan" FromRole="Model" ToRole="Plan" />
           <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Model" FromRole="Model" ToRole="TacticType" />
-          <Property Type="Int64" Name="AddressableContacts" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Model_Funnel">
-          <Key>
-            <PropertyRef Name="ModelFunnelId" />
-          </Key>
-          <Property Type="Int32" Name="ModelFunnelId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="ModelId" Nullable="false" />
-          <Property Type="Int32" Name="FunnelId" Nullable="false" />
-          <Property Type="Int64" Name="ExpectedLeadCount" Nullable="false" />
           <Property Type="Double" Name="AverageDealSize" Nullable="false" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Funnel" Relationship="MRPModel.FK_Model_Funnel_Funnel" FromRole="Model_Funnel" ToRole="Funnel" />
-          <NavigationProperty Name="Model" Relationship="MRPModel.FK_Model_Funnel_Model" FromRole="Model_Funnel" ToRole="Model" />
-          <NavigationProperty Name="Model_Funnel_Stage" Relationship="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" FromRole="Model_Funnel" ToRole="Model_Funnel_Stage" />
+          <NavigationProperty Name="Model_Stage" Relationship="MRPModel.FK_Model_Stage_Model" FromRole="Model" ToRole="Model_Stage" />
         </EntityType>
         <EntityType Name="Notification">
           <Key>
@@ -3224,7 +3026,7 @@
           <NavigationProperty Name="ImprovementTacticType_Metric" Relationship="MRPModel.FK_ImprovementTacticType_Metric_Stage" FromRole="Stage" ToRole="ImprovementTacticType_Metric" />
           <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Stage" FromRole="Stage" ToRole="TacticType" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" FromRole="Stage" ToRole="Plan_Campaign_Program_Tactic" />
-          <NavigationProperty Name="Model_Funnel_Stage" Relationship="MRPModel.FK_Model_Category_Stage_Stage" FromRole="Stage" ToRole="Model_Funnel_Stage" />
+          <NavigationProperty Name="Model_Stage" Relationship="MRPModel.FK_Model_Category_Stage_Stage" FromRole="Stage" ToRole="Model_Stage" />
         </EntityType>
         <EntityType Name="SyncFrequency">
           <Key>
@@ -3408,42 +3210,6 @@
             </Principal>
             <Dependent Role="CustomRestriction">
               <PropertyRef Name="CustomFieldOptionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Funnel_Field_Field">
-          <End Type="MRPModel.Field" Role="Field" Multiplicity="1" />
-          <End Type="MRPModel.Funnel_Field" Role="Funnel_Field" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Field">
-              <PropertyRef Name="FieldId" />
-            </Principal>
-            <Dependent Role="Funnel_Field">
-              <PropertyRef Name="FieldId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Funnel_Field_Funnel">
-          <End Type="MRPModel.Funnel" Role="Funnel" Multiplicity="1" />
-          <End Type="MRPModel.Funnel_Field" Role="Funnel_Field" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Funnel">
-              <PropertyRef Name="FunnelId" />
-            </Principal>
-            <Dependent Role="Funnel_Field">
-              <PropertyRef Name="FunnelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Funnel_Funnel">
-          <End Type="MRPModel.Funnel" Role="Funnel" Multiplicity="1" />
-          <End Type="MRPModel.Model_Funnel" Role="Model_Funnel" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Funnel">
-              <PropertyRef Name="FunnelId" />
-            </Principal>
-            <Dependent Role="Model_Funnel">
-              <PropertyRef Name="FunnelId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3744,18 +3510,6 @@
             </Principal>
             <Dependent Role="Plan_Campaign_Program_Tactic_LineItem">
               <PropertyRef Name="LineItemTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_Funnel_Model">
-          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
-          <End Type="MRPModel.Model_Funnel" Role="Model_Funnel" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Funnel">
-              <PropertyRef Name="ModelId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4258,12 +4012,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Model_Funnel_Stage">
+        <EntityType Name="Model_Stage">
           <Key>
-            <PropertyRef Name="ModelFunnelStageId" />
+            <PropertyRef Name="ModelStageId" />
           </Key>
-          <Property Type="Int32" Name="ModelFunnelStageId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="ModelFunnelId" Nullable="false" />
+          <Property Type="Int32" Name="ModelStageId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="Int32" Name="StageId" Nullable="false" />
           <Property Type="String" Name="StageType" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Type="Double" Name="Value" Nullable="false" />
@@ -4272,29 +4025,30 @@
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
           <Property Type="Boolean" Name="AllowedTargetStage" Nullable="false" />
-          <NavigationProperty Name="Model_Funnel" Relationship="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" FromRole="Model_Funnel_Stage" ToRole="Model_Funnel" />
-          <NavigationProperty Name="Stage" Relationship="MRPModel.FK_Model_Category_Stage_Stage" FromRole="Model_Funnel_Stage" ToRole="Stage" />
+          <Property Type="Int32" Name="ModelId" Nullable="false" />
+          <NavigationProperty Name="Model" Relationship="MRPModel.FK_Model_Stage_Model" FromRole="Model_Stage" ToRole="Model" />
+          <NavigationProperty Name="Stage" Relationship="MRPModel.FK_Model_Category_Stage_Stage" FromRole="Model_Stage" ToRole="Stage" />
         </EntityType>
-        <Association Name="FK_Model_Funnel_Stage_Model_Funnel">
-          <End Type="MRPModel.Model_Funnel" Role="Model_Funnel" Multiplicity="1" />
-          <End Type="MRPModel.Model_Funnel_Stage" Role="Model_Funnel_Stage" Multiplicity="*" />
+        <Association Name="FK_Model_Stage_Model">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
+          <End Type="MRPModel.Model_Stage" Role="Model_Stage" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Model_Funnel">
-              <PropertyRef Name="ModelFunnelId" />
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
             </Principal>
-            <Dependent Role="Model_Funnel_Stage">
-              <PropertyRef Name="ModelFunnelId" />
+            <Dependent Role="Model_Stage">
+              <PropertyRef Name="ModelId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Model_Category_Stage_Stage">
           <End Type="MRPModel.Stage" Role="Stage" Multiplicity="1" />
-          <End Type="MRPModel.Model_Funnel_Stage" Role="Model_Funnel_Stage" Multiplicity="*" />
+          <End Type="MRPModel.Model_Stage" Role="Model_Stage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Stage">
               <PropertyRef Name="StageId" />
             </Principal>
-            <Dependent Role="Model_Funnel_Stage">
+            <Dependent Role="Model_Stage">
               <PropertyRef Name="StageId" />
             </Dependent>
           </ReferentialConstraint>
@@ -4462,46 +4216,6 @@
                 <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="CustomRestrictionId" ColumnName="CustomRestrictionId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Fields">
-            <EntityTypeMapping TypeName="MRPModel.Field">
-              <MappingFragment StoreEntitySet="Field">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="FieldId" ColumnName="FieldId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Funnels">
-            <EntityTypeMapping TypeName="MRPModel.Funnel">
-              <MappingFragment StoreEntitySet="Funnel">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="FunnelId" ColumnName="FunnelId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Funnel_Field">
-            <EntityTypeMapping TypeName="MRPModel.Funnel_Field">
-              <MappingFragment StoreEntitySet="Funnel_Field">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="FieldId" ColumnName="FieldId" />
-                <ScalarProperty Name="FunnelId" ColumnName="FunnelId" />
-                <ScalarProperty Name="FunnelFieldId" ColumnName="FunnelFieldId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -4740,7 +4454,7 @@
           <EntitySetMapping Name="Models">
             <EntityTypeMapping TypeName="MRPModel.Model">
               <MappingFragment StoreEntitySet="Model">
-                <ScalarProperty Name="AddressableContacts" ColumnName="AddressableContacts" />
+                <ScalarProperty Name="AverageDealSize" ColumnName="AverageDealSize" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="IntegrationInstanceIdCW" ColumnName="IntegrationInstanceIdCW" />
                 <ScalarProperty Name="IntegrationInstanceIdMQL" ColumnName="IntegrationInstanceIdMQL" />
@@ -4760,21 +4474,6 @@
                 <ScalarProperty Name="Version" ColumnName="Version" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="ModelId" ColumnName="ModelId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Model_Funnel">
-            <EntityTypeMapping TypeName="MRPModel.Model_Funnel">
-              <MappingFragment StoreEntitySet="Model_Funnel">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="AverageDealSize" ColumnName="AverageDealSize" />
-                <ScalarProperty Name="ExpectedLeadCount" ColumnName="ExpectedLeadCount" />
-                <ScalarProperty Name="FunnelId" ColumnName="FunnelId" />
-                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
-                <ScalarProperty Name="ModelFunnelId" ColumnName="ModelFunnelId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -5200,9 +4899,10 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Model_Funnel_Stage">
-            <EntityTypeMapping TypeName="MRPModel.Model_Funnel_Stage">
-              <MappingFragment StoreEntitySet="Model_Funnel_Stage">
+          <EntitySetMapping Name="Model_Stage">
+            <EntityTypeMapping TypeName="MRPModel.Model_Stage">
+              <MappingFragment StoreEntitySet="Model_Stage">
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
                 <ScalarProperty Name="AllowedTargetStage" ColumnName="AllowedTargetStage" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
@@ -5211,8 +4911,7 @@
                 <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="StageType" ColumnName="StageType" />
                 <ScalarProperty Name="StageId" ColumnName="StageId" />
-                <ScalarProperty Name="ModelFunnelId" ColumnName="ModelFunnelId" />
-                <ScalarProperty Name="ModelFunnelStageId" ColumnName="ModelFunnelStageId" />
+                <ScalarProperty Name="ModelStageId" ColumnName="ModelStageId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

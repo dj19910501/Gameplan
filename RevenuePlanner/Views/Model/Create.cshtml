@@ -581,50 +581,16 @@ function LoadModelData(modelId, bool) {
          $("#divModelOverview").load('LoadModelOverview' + '?title=' + encodeURIComponent(obj.Title) + '&ModelId=' + obj.ModelId);
      });
  }
- function fillmodelfunnel(data) {
-     var cnt = 1;
-     var MExpectedLeadCount;
+ function fillmodelfunnel(data) {     
      var MAverageDealSize;
-     var TExpectedLeadCount;
-     var TAverageDealSize;
-     var SExpectedLeadCount;
-     var SAverageDealSize;
-
-     $.each(data.lstmodelfunnelist, function (index, obj) {
-         if (cnt == 1) {
-             MExpectedLeadCount = obj.ExpectedLeadCount;
+     $.each(data.lstmodellist, function (index, obj) {
              MAverageDealSize = obj.AverageDealSize;
-         }
-         else if (cnt == 2) {
-             TExpectedLeadCount = obj.ExpectedLeadCount;
-             TAverageDealSize = obj.AverageDealSize;
-         }
-         else if (cnt == 3) {
-             SExpectedLeadCount = obj.ExpectedLeadCount;
-             SAverageDealSize = obj.AverageDealSize;
-         }
-         cnt = cnt + 1;
      });
-     if (MExpectedLeadCount == null || MExpectedLeadCount == 'undefined') {
-         MExpectedLeadCount = 0;
-     }
      if (MAverageDealSize == null || MAverageDealSize == 'undefined') {
          MAverageDealSize = 0;
      }
-     if (TExpectedLeadCount == null || TExpectedLeadCount == 'undefined') {
-         TExpectedLeadCount = 0;
-     }
-     if (TAverageDealSize == null || TAverageDealSize == 'undefined') {
-         TAverageDealSize = 0;
-     }
-     if (SExpectedLeadCount == null || SExpectedLeadCount == 'undefined') {
-         SExpectedLeadCount = 0;
-     }
-     if (SAverageDealSize == null || SAverageDealSize == 'undefined') {
-         SAverageDealSize = 0;
-     }
      $("#divcontactInquiry").html('');
-     $("#divcontactInquiry").load('LoadContactInquiry' + '?MLeads=' + MExpectedLeadCount + "&MSize=" + MAverageDealSize + "&TLeads=" + TExpectedLeadCount + "&TSize=" + TAverageDealSize + "&SLeads=" + SExpectedLeadCount + "&SSize=" + SAverageDealSize);
+     $("#divcontactInquiry").load('LoadContactInquiry' + '?MSize=' + MAverageDealSize) ;
  }
 
  function fillfunnelstage(data) {

@@ -36,9 +36,6 @@ namespace RevenuePlanner.Models
         public DbSet<CustomFieldOption> CustomFieldOptions { get; set; }
         public DbSet<CustomFieldType> CustomFieldTypes { get; set; }
         public DbSet<CustomRestriction> CustomRestrictions { get; set; }
-        public DbSet<Field> Fields { get; set; }
-        public DbSet<Funnel> Funnels { get; set; }
-        public DbSet<Funnel_Field> Funnel_Field { get; set; }
         public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
         public DbSet<GameplanDataTypePull> GameplanDataTypePulls { get; set; }
         public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
@@ -56,7 +53,6 @@ namespace RevenuePlanner.Models
         public DbSet<LineItemType> LineItemTypes { get; set; }
         public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
         public DbSet<Model> Models { get; set; }
-        public DbSet<Model_Funnel> Model_Funnel { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Plan> Plans { get; set; }
         public DbSet<Plan_Budget> Plan_Budget { get; set; }
@@ -84,6 +80,6 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
-        public DbSet<Model_Funnel_Stage> Model_Funnel_Stage { get; set; }
+        public DbSet<Model_Stage> Model_Stage { get; set; }
     }
 }

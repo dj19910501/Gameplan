@@ -2358,6 +2358,14 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             }
         }
         ////End - Added by Viral Kadiya for Internal Review Point
+        ////Start - Added by Mitesh Vaishnav for PL ticket #1215
+        private string _MarketingDealDescription;
+        public string MarketingDealDescription
+        {
+            get { return _MarketingDealDescription; }
+            set { _MarketingDealDescription = value; }
+        }
+        ////End - Added by Mitesh Vaishnav for PL ticket #1215
         #endregion
 
         #region  Functions
@@ -3098,6 +3106,11 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _LastSynced = strMsgValue;
                                             break;
                                         ////End - Added by Viral Kadiya for Internal Review Point
+                                        ////Start - Added by Mitesh Vaishnav for PL ticket #1215
+                                        case "MarketingDealDescription":
+                                            _MarketingDealDescription = strMsgValue;
+                                            break;
+                                        ////End - Added by Mitesh Vaishnav for PL ticket #1215
                                     }
                                 }
                                 i = i + 1;

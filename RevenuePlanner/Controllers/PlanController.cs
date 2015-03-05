@@ -514,8 +514,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (modelId != 0)
                 {
-                    string marketing = Enums.Funnel.Marketing.ToString();
-                    double ADSValue = db.Model_Funnel.FirstOrDefault(mdlFunnel => mdlFunnel.ModelId == modelId && mdlFunnel.Funnel.Title == marketing).AverageDealSize;
+                    double ADSValue = db.Models.FirstOrDefault(m => m.ModelId == modelId).AverageDealSize;
                     ADS = ADSValue;
                 }
 
@@ -2697,12 +2696,12 @@ namespace RevenuePlanner.Controllers
                     bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
 
                     var modelids = objPlan.Where(plan => plan.GoalType.ToLower() != Enums.PlanGoalType.MQL.ToString().ToLower()).Select(plan => plan.ModelId).ToList();
-                    string marketing = Enums.Funnel.Marketing.ToString();
-                    int modelfunnelmarketingid = db.Funnels.Where(funnel => funnel.Title == marketing).Select(funnel => funnel.FunnelId).FirstOrDefault();
-                    var modelFunnelList = db.Model_Funnel.Where(modelfunnel => modelids.Contains(modelfunnel.ModelId) && modelfunnel.FunnelId == modelfunnelmarketingid).ToList();
-                    var modelfunnelids = modelFunnelList.Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
+                    
+                    //int modelfunnelmarketingid = db.Funnels.Where(funnel => funnel.Title == marketing).Select(funnel => funnel.FunnelId).FirstOrDefault();
+                    //var modelFunnelList = db.Model_Funnel.Where(modelfunnel => modelids.Contains(modelfunnel.ModelId) && modelfunnel.FunnelId == modelfunnelmarketingid).ToList();
+                    //var modelfunnelids = modelFunnelList.Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
                     string CR = Enums.StageType.CR.ToString();
-                    List<Model_Funnel_Stage> modelFunnelStageList = db.Model_Funnel_Stage.Where(modelfunnelstage => modelfunnelids.Contains(modelfunnelstage.ModelFunnelId) && modelfunnelstage.StageType == CR).ToList();
+                    List<Model_Stage> modelFunnelStageList = db.Model_Stage.Where(modelfunnelstage => modelids.Contains(modelfunnelstage.ModelId) && modelfunnelstage.StageType == CR).ToList();
                     foreach (var item in objPlan)
                     {
                         var LastUpdated = !string.IsNullOrEmpty(Convert.ToString(item.ModifiedDate)) ? item.ModifiedDate : item.CreatedDate;
@@ -2720,9 +2719,9 @@ namespace RevenuePlanner.Controllers
                         {
                             // Get ADS value
 
-                            double ADSValue = modelFunnelList.Where(modelfunnel => modelfunnel.ModelId == item.ModelId).Select(modelfunnel => modelfunnel.AverageDealSize).FirstOrDefault();
-                            List<int> funnelids = modelFunnelList.Where(modelfunnel => modelfunnel.ModelId == item.ModelId).Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
-                            objPlanSelector.MQLS = Common.CalculateMQLOnly(funnelids, item.GoalType, item.GoalValue.ToString(), ADSValue, stageList, modelFunnelStageList).ToString("#,##0"); ;
+                            double ADSValue = item.Model.AverageDealSize;
+                           // List<int> funnelids = modelFunnelList.Where(modelfunnel => modelfunnel.ModelId == item.ModelId).Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
+                            objPlanSelector.MQLS = Common.CalculateMQLOnly(item.ModelId, item.GoalType, item.GoalValue.ToString(), ADSValue, stageList, modelFunnelStageList).ToString("#,##0"); ;
                         }
                         // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
                         objPlanSelector.Budget = (item.Budget).ToString("#,##0");
@@ -3026,9 +3025,9 @@ namespace RevenuePlanner.Controllers
             //// Get Model id based on effective Date.
             ModelId = Common.GetModelId(EffectiveDate, ModelId);
 
-            //// Get Funnelid for Marketing Funnel.
-            string Marketing = Enums.Funnel.Marketing.ToString();
-            int funnelId = db.Funnels.Where(_funl => _funl.Title == Marketing).Select(_funl => _funl.FunnelId).FirstOrDefault();
+            ////// Get Funnelid for Marketing Funnel.
+            //string Marketing = Enums.Funnel.Marketing.ToString();
+            //int funnelId = db.Funnels.Where(_funl => _funl.Title == Marketing).Select(_funl => _funl.FunnelId).FirstOrDefault();
 
             //// Loop Execute for Each Stage/Metric.
             foreach (var im in ImprovementMetric)
@@ -3037,11 +3036,11 @@ namespace RevenuePlanner.Controllers
                 double modelvalue = 0;
                 if (im.StageType == Enums.StageType.Size.ToString())
                 {
-                    modelvalue = db.Model_Funnel.Where(mf => mf.ModelId == ModelId && mf.FunnelId == funnelId).Select(mf => mf.AverageDealSize).FirstOrDefault();
+                    modelvalue = db.Models.Where(m => m.ModelId == ModelId).Select(m => m.AverageDealSize).FirstOrDefault();
                 }
                 else
                 {
-                    modelvalue = db.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == ModelId && mfs.Model_Funnel.FunnelId == funnelId && mfs.StageId == im.StageId && mfs.StageType == im.StageType).Select(mfs => mfs.Value).FirstOrDefault();
+                    modelvalue = db.Model_Stage.Where(mfs => mfs.ModelId == ModelId && mfs.StageId == im.StageId && mfs.StageType == im.StageType).Select(mfs => mfs.Value).FirstOrDefault();
                     if (im.StageType == Enums.StageType.CR.ToString())
                     {
                         modelvalue = modelvalue / 100;
