@@ -448,23 +448,6 @@
            }
        }
 
-       function DuplicatePlan() {
-           $.ajax({
-               type: 'POST',
-               url: '@Url.Content("~/Plan/DuplicatePlan/")',
-               dataType: "json",
-               success: function (data) {
-                   if (data.isSuccess == true) {
-                       var url = '@Url.Content("~/Plan/ApplyToCalendar")';
-                       window.location.href = url;
-                   }
-                   else {
-                       alert('Error');
-                   }
-               }
-           });
-       }
-
        function RefreshCalendar() {
            SetGantt();
            GetTactics();

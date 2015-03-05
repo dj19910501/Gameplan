@@ -1065,23 +1065,7 @@
     //// Default load tactics in view control.
     var activeMenu = $('#ActiveMenu').val().toLowerCase();
     var getViewByList = false;  //// Added by Sohel Pathan on 28/10/2014 for PL ticket #885.
-    function DuplicatePlan() {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/DuplicatePlan/")',
-            dataType: "json",
-            success: function (data) {
-                if (data.isSuccess == true) {
-                    var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
-                    window.location.href = url;
-                }
-                else {
-                    alert('Error');
-                }
-            }
-        });
-    }
-
+    
     function SetPlanButtons() {
 
         //Added : By Kalpesh Sharma Ticket #638 Cloning icon for plans, campaigns, programs and tactics

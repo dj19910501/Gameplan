@@ -157,6 +157,24 @@ namespace RevenuePlanner.Helpers
         public static string Campaign_InspectPopup_Flag_Color = "C6EBF3";
         public static string Plan_InspectPopup_Flag_Color = "C6EBF3";
         public static string Program_InspectPopup_Flag_Color = "3DB9D3";
+
+        public static List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
+        public static string[] quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
+
+        #region Constant Month declaration 
+        public const string Jan = "Y1";
+        public const string Feb = "Y2";
+        public const string Mar = "Y3";
+        public const string Apr = "Y4";
+        public const string May = "Y5";
+        public const string Jun = "Y6";
+        public const string Jul = "Y7";
+        public const string Aug = "Y8";
+        public const string Sep = "Y9";
+        public const string Oct = "Y10";
+        public const string Nov = "Y11";
+        public const string Dec = "Y12";
+        #endregion
         #endregion
 
         #region Functions for File and IO Handling

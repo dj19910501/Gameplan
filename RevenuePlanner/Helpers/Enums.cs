@@ -888,6 +888,28 @@ namespace RevenuePlanner.Helpers
         {
             MQL
         }
+
+        /// <summary>
+        /// Get BudgetTab
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>05/03/2015</CreatedDate>
+        public enum BudgetTab
+        {
+            Allocated = 0,
+            Planned = 1,
+            Actual = 2
+        }
+
+        /// <summary>
+        /// Get ViewBya
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>05/03/2015</CreatedDate>
+        public enum ViewBy
+        {
+            Campaign = 0
+        }
     }
 
     #region Authorization

@@ -3216,20 +3216,7 @@ namespace RevenuePlanner.Controllers
 
         #region Budget
 
-        #region Constant variable declaration those needs to move to common
-        public const string Jan = "Y1";
-        public const string Feb = "Y2";
-        public const string Mar = "Y3";
-        public const string Apr = "Y4";
-        public const string May = "Y5";
-        public const string Jun = "Y6";
-        public const string Jul = "Y7";
-        public const string Aug = "Y8";
-        public const string Sep = "Y9";
-        public const string Oct = "Y10";
-        public const string Nov = "Y11";
-        public const string Dec = "Y12";
-        #endregion
+        
 
         /// <summary>
         /// View Budget 
@@ -4048,18 +4035,18 @@ namespace RevenuePlanner.Controllers
         {
             //// Get monthly budget values.
             BudgetMonth month = new BudgetMonth();
-            month.Jan = lst.Where(budgt => budgt.Period.ToUpper() == Jan).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Feb = lst.Where(budgt => budgt.Period.ToUpper() == Feb).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Mar = lst.Where(budgt => budgt.Period.ToUpper() == Mar).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Apr = lst.Where(budgt => budgt.Period.ToUpper() == Apr).Select(budgt => budgt.Value).FirstOrDefault();
-            month.May = lst.Where(budgt => budgt.Period.ToUpper() == May).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Jun = lst.Where(budgt => budgt.Period.ToUpper() == Jun).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Jul = lst.Where(budgt => budgt.Period.ToUpper() == Jul).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Aug = lst.Where(budgt => budgt.Period.ToUpper() == Aug).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Sep = lst.Where(budgt => budgt.Period.ToUpper() == Sep).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Oct = lst.Where(budgt => budgt.Period.ToUpper() == Oct).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Nov = lst.Where(budgt => budgt.Period.ToUpper() == Nov).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Dec = lst.Where(budgt => budgt.Period.ToUpper() == Dec).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Jan = lst.Where(budgt => budgt.Period.ToUpper() == Common.Jan).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Feb = lst.Where(budgt => budgt.Period.ToUpper() == Common.Feb).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Mar = lst.Where(budgt => budgt.Period.ToUpper() == Common.Mar).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Apr = lst.Where(budgt => budgt.Period.ToUpper() == Common.Apr).Select(budgt => budgt.Value).FirstOrDefault();
+            month.May = lst.Where(budgt => budgt.Period.ToUpper() == Common.May).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Jun = lst.Where(budgt => budgt.Period.ToUpper() == Common.Jun).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Jul = lst.Where(budgt => budgt.Period.ToUpper() == Common.Jul).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Aug = lst.Where(budgt => budgt.Period.ToUpper() == Common.Aug).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Sep = lst.Where(budgt => budgt.Period.ToUpper() == Common.Sep).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Oct = lst.Where(budgt => budgt.Period.ToUpper() == Common.Oct).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Nov = lst.Where(budgt => budgt.Period.ToUpper() == Common.Nov).Select(budgt => budgt.Value).FirstOrDefault();
+            month.Dec = lst.Where(budgt => budgt.Period.ToUpper() == Common.Dec).Select(budgt => budgt.Value).FirstOrDefault();
 
             if (columnType.ToString() == ReportColumnType.Planned.ToString())
             {

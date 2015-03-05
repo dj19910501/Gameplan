@@ -257,23 +257,6 @@
         $(this).closest(".alert").slideUp(300);/*SlideUp value change 1200 to 300 by Mitesh Vaishnav on 07 july 2014*/
     });
 
-    function DuplicatePlan() {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/DuplicatePlan/")',
-            dataType: "json",
-            success: function (data) {
-                if (data.isSuccess == true) {
-                    var url = '@Url.Content("~/Plan/Assortment")';
-                    window.location.href = url;
-                }
-                else {
-                    alert('Error');
-                }
-            }
-        });
-    }
-
     $(document).ready(function () {
 
         function DuplicateOpt(id, title, duplicateModule) {
