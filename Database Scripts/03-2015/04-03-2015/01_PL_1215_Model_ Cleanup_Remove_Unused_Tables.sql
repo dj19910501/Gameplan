@@ -112,7 +112,7 @@ END CATCH
 Go
 IF EXISTS(SELECT * FROM sys.columns WHERE [name] = N'ModelId' AND [object_id] = OBJECT_ID(N'Model_Funnel_Stage')) AND EXISTS(SELECT * FROM sys.columns WHERE [name] = N'AverageDealSize' AND [object_id] = OBJECT_ID(N'Model'))
 BEGIN
-IF (SELECT COUNT(ModelId) FROM dbo.Model_Stage WHERE ModelId IS NOT NULL) > 0 AND (SELECT COUNT(AverageDealSize) FROM dbo.Model WHERE AverageDealSize IS NOT NULL) > 0
+IF (SELECT COUNT(ModelId) FROM dbo.Model_Funnel_Stage WHERE ModelId IS NOT NULL) > 0 AND (SELECT COUNT(AverageDealSize) FROM dbo.Model WHERE AverageDealSize IS NOT NULL) > 0
 BEGIN
 BEGIN TRY
 BEGIN TRANSACTION
@@ -161,7 +161,7 @@ END
 Go
 IF EXISTS(SELECT * FROM sys.columns WHERE [name] = N'ModelId' AND [object_id] = OBJECT_ID(N'Model_Funnel_Stage')) AND EXISTS(SELECT * FROM sys.columns WHERE [name] = N'AverageDealSize' AND [object_id] = OBJECT_ID(N'Model'))
 BEGIN
-IF (SELECT COUNT(ModelId) FROM dbo.Model_Stage WHERE ModelId IS NOT NULL) > 0 AND (SELECT COUNT(AverageDealSize) FROM dbo.Model WHERE AverageDealSize IS NOT NULL) > 0
+IF (SELECT COUNT(ModelId) FROM dbo.Model_Funnel_Stage WHERE ModelId IS NOT NULL) > 0 AND (SELECT COUNT(AverageDealSize) FROM dbo.Model WHERE AverageDealSize IS NOT NULL) > 0
 BEGIN
 IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='Model')
 BEGIN
@@ -184,7 +184,7 @@ END
 Go
 IF EXISTS(SELECT * FROM sys.columns WHERE [name] = N'ModelId' AND [object_id] = OBJECT_ID(N'Model_Funnel_Stage')) AND EXISTS(SELECT * FROM sys.columns WHERE [name] = N'AverageDealSize' AND [object_id] = OBJECT_ID(N'Model'))
 BEGIN
-IF (SELECT COUNT(ModelId) FROM dbo.Model_Stage WHERE ModelId IS NOT NULL) > 0 AND (SELECT COUNT(AverageDealSize) FROM dbo.Model WHERE AverageDealSize IS NOT NULL) > 0
+IF (SELECT COUNT(ModelId) FROM dbo.Model_Funnel_Stage WHERE ModelId IS NOT NULL) > 0 AND (SELECT COUNT(AverageDealSize) FROM dbo.Model WHERE AverageDealSize IS NOT NULL) > 0
 BEGIN
 IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='Model_Funnel_Stage')
 BEGIN
@@ -205,7 +205,7 @@ END
 GO
 IF EXISTS(SELECT * FROM sys.columns WHERE [name] = N'ModelId' AND [object_id] = OBJECT_ID(N'Model_Funnel_Stage')) AND EXISTS(SELECT * FROM sys.columns WHERE [name] = N'AverageDealSize' AND [object_id] = OBJECT_ID(N'Model'))
 BEGIN
-IF (SELECT COUNT(ModelId) FROM dbo.Model_Stage WHERE ModelId IS NOT NULL) > 0 AND (SELECT COUNT(AverageDealSize) FROM dbo.Model WHERE AverageDealSize IS NOT NULL) > 0
+IF (SELECT COUNT(ModelId) FROM dbo.Model_Funnel_Stage WHERE ModelId IS NOT NULL) > 0 AND (SELECT COUNT(AverageDealSize) FROM dbo.Model WHERE AverageDealSize IS NOT NULL) > 0
 BEGIN
 IF NOT EXISTS (SELECT * 
   FROM sys.foreign_keys 
