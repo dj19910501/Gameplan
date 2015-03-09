@@ -100,7 +100,6 @@
    
     $(document).ready(function () {
         SetHeader();
-        AddTipsy();
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
@@ -153,17 +152,6 @@
             }
         }
     });
-    function AddTipsy() {
-        $("div[allocated]").each(function () {
-            var num = $(this).attr('allocated');
-            if (parseInt(num) < 0) {
-                bootstrapetitle($(this), 'Remaining: ' + num.replace('-', '-$'), "tipsy-innerWhite");
-            }
-            else {
-                bootstrapetitle($(this), 'Remaining: $' + num, "tipsy-innerWhite");
-            }
-        });
-    }
     function SetHeader() {
         $('#divViewBy').hide();
         if ('@AllocatedBy' != '@strDefault') {

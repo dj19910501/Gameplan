@@ -127,7 +127,6 @@
 
     $(document).ready(function () {
         SetHeader();
-        AddTipsy();
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
@@ -179,15 +178,6 @@
         }
 
     });
-
-   
-
-    function AddTipsy() {
-        $("div[allocated]").each(function () {
-            bootstrapetitle($(this), 'Allocated : $' + $(this).attr('allocated'), "tipsy-innerWhite");
-        });
-    }
-
     function SetHeader() {
         $('#divViewBy').show();
         if ('@AllocatedBy' != '@strDefault') {
