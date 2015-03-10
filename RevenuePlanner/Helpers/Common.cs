@@ -2561,7 +2561,7 @@ namespace RevenuePlanner.Helpers
             List<Stage> stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
             //// Fetch the tactic stages and it's value
             //// Return finalized TacticStageValue list to the Parent method 
-            return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, false, IsReport); ;
+            return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, false, IsReport);
         }
 
         /// <summary>
@@ -2605,15 +2605,18 @@ namespace RevenuePlanner.Helpers
             string Size = Enums.StageType.Size.ToString();
             List<Plan_Campaign_Program_Tactic_Actual> actualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             List<int> TacticIds = new List<int>();
+            List<CustomField_Entity> tblCustomFieldEntities = new List<CustomField_Entity>();
+            TacticIds = tlist.Select(t => t.PlanTacticId).ToList();
             if (!isSinglePlan)
             {
-                TacticIds = tlist.Select(t => t.PlanTacticId).ToList();
                 actualTacticList = dbStage.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
             }
-
-            string EntTacticType = Enums.EntityType.Tactic.ToString();
-            List<CustomField_Entity> tblCustomFieldEntities = dbStage.CustomField_Entity.Where(CustEnt => TacticIds.Contains(CustEnt.EntityId) && CustEnt.CustomField.EntityType.Equals(EntTacticType)).ToList();
-
+            
+            if (IsReport)
+            {
+                string EntTacticType = Enums.EntityType.Tactic.ToString();
+                tblCustomFieldEntities = dbStage.CustomField_Entity.Where(CustEnt => TacticIds.Contains(CustEnt.EntityId) && CustEnt.CustomField.EntityType.Equals(EntTacticType)).ToList();
+            }
             //Ittrate the Plan_Campaign_Program_Tactic list and Assign it to TacticStageValue 
             foreach (Plan_Campaign_Program_Tactic tactic in tlist)
             {
@@ -2645,12 +2648,7 @@ namespace RevenuePlanner.Helpers
                 if (IsReport)
                 {
                     #region "Get Tactic Stage-Weightage"
-                    
-                    List<TacticCustomFieldStageWeightage> lstMapTacticStageWeightage = new List<TacticCustomFieldStageWeightage>();
-                    List<CustomField_Entity> lstTacticCustomFieldEntity = new List<CustomField_Entity>();
-                    lstTacticCustomFieldEntity = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).ToList();
-                   
-                    tacticStageValueObj.TacticStageWeightages = lstTacticCustomFieldEntity.Select(_customfield => 
+                    tacticStageValueObj.TacticStageWeightages = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).Select(_customfield => 
                                                                                                   new TacticCustomFieldStageWeightage() 
                                                                                                   { 
                                                                                                     CustomFieldId = _customfield.CustomFieldId, 
