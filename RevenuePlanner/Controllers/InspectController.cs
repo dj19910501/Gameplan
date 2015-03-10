@@ -943,6 +943,7 @@ namespace RevenuePlanner.Controllers
                                 pcobj.ModifiedBy = Sessions.User.UserId;
                                 pcobj.ModifiedDate = DateTime.Now;
                                 pcobj.CampaignBudget = form.CampaignBudget;
+                                pcobj.CreatedBy = form.OwnerId;
                                 db.Entry(pcobj).State = EntityState.Modified;
                                 #endregion
 
@@ -1564,6 +1565,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.ModifiedBy = Sessions.User.UserId;
                                 pcpobj.ModifiedDate = DateTime.Now;
                                 pcpobj.ProgramBudget = form.ProgramBudget;
+                                pcpobj.CreatedBy = form.OwnerId;
                                 db.Entry(pcpobj).State = EntityState.Modified;
                                 #endregion
 

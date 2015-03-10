@@ -61,6 +61,12 @@
         margin-bottom:10px !important;
     }
     @*End - Added by Viral Kadiya on 11/24/2014 for PL ticket #980.*@
+    @* Added by bhavesh #711 *@
+     #multipleselect_ddlOwner {
+        left: 0 !important;
+        top: 20px !important;
+    }
+
 </style>
 
 <div id="frm_campaigns" name="frm_campaigns">
@@ -220,7 +226,8 @@
 
         $('#ddlOwner').next().css('width', '95%');
         $('#ddlOwner').next().css('min-height', '30px');
-
+        var spanOwner = $('#multipleselect_ddlOwner');
+        $('#btnMultiselect_ddlOwner').after(spanOwner);
         /*Added by Mitesh Vaishnav for PL ticket #1136
        Register events of new multiselect dropdown customfields*/
         $('.dropdown_new_btn').each(function () {
@@ -378,6 +385,19 @@
             if (title == '') {
                 iserror = true;
             }
+
+            /* Start - Added by bhavesh on 10/03/2015 for PL ticket #711 */
+            //// RequireField validation for Owner Dropdown
+            if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+                var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
+                if (OwnerValue == "Please Select") {
+                    $('#btnMultiselect_ddlOwner').addClass("error");
+                }
+                else {
+                    $('#btnMultiselect_ddlOwner').removeClass("error");
+                }
+            }
+            /* End - Added by bhavesh on 10/03/2015 for PL ticket #711 */
 
             if (iserror) {
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");

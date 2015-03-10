@@ -130,6 +130,7 @@
         fillIntegrationServiceList();
 
         $(document).on('click', '#table_baseline tbody tr', function (e) {
+            delete localStorage.Message;
             var id = $(this).attr("id");
             var index = $(this).attr("index");
             if (id != null) {
