@@ -231,7 +231,7 @@ namespace RevenuePlanner.Controllers
         //// changed by Nirav Shah on 2 APR 2013
         //// Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult Create(FormCollection collection, ICollection<string> txtStageId, ICollection<string> txtTargetStage, ICollection<string> txtMCR, ICollection<string> txtMSV, ICollection<string> txtMarketing, ICollection<string> txtTeleprospecting, ICollection<string> txtSales)
+        public ActionResult Create(FormCollection collection, ICollection<string> txtStageId, ICollection<string> txtTargetStage, ICollection<string> txtMCR, ICollection<string> txtMSV)
         {
             int intFunnelMarketing = 0;
             int intFunnelTeleprospecting = 0;
@@ -246,7 +246,13 @@ namespace RevenuePlanner.Controllers
             bool? isBenchmarkDb = null;
             int.TryParse(Convert.ToString(Request.Form["CurrentModelId"]), out currentModelId);
             string redirectModelZero = string.Empty;
-
+            double averageDealSize = 0;
+            if (collection["txtMarketing"] != null)
+            {
+                double doubleValue = 0.0;
+                double.TryParse(Convert.ToString(collection["txtMarketing"].ToString().Replace(",","").Replace("$","")), out doubleValue);
+                averageDealSize = doubleValue;
+            }
             try
             {
                 using (MRPEntities objDbMrpEntities = new MRPEntities())
@@ -273,6 +279,7 @@ namespace RevenuePlanner.Controllers
                                 objModel.CreatedDate = DateTime.Now;
                                 objModel.CreatedBy = Sessions.User.UserId;
                                 objModel.IsBenchmarked = IsBenchmarked;
+                                objModel.AverageDealSize = averageDealSize;
                                 objDbMrpEntities.Models.Add(objModel);
                                 int resModel = objDbMrpEntities.SaveChanges();
                                 intModelid = objModel.ModelId;
@@ -331,6 +338,7 @@ namespace RevenuePlanner.Controllers
                                     objExistingModel.ModifiedDate = DateTime.Now;
                                     objExistingModel.ModifiedBy = Sessions.User.UserId;
                                     objExistingModel.IsBenchmarked = IsBenchmarked;
+                                    objExistingModel.AverageDealSize = averageDealSize;
                                     objDbMrpEntities.Entry(objExistingModel).State = EntityState.Modified;
                                     objDbMrpEntities.SaveChanges();
                                 }
