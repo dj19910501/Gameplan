@@ -2604,11 +2604,15 @@ namespace RevenuePlanner.Helpers
             string SV = Enums.StageType.SV.ToString();
             string Size = Enums.StageType.Size.ToString();
             List<Plan_Campaign_Program_Tactic_Actual> actualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+            List<int> TacticIds = new List<int>();
             if (!isSinglePlan)
             {
-                List<int> TacticIds = tlist.Select(t => t.PlanTacticId).ToList();
+                TacticIds = tlist.Select(t => t.PlanTacticId).ToList();
                 actualTacticList = dbStage.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
             }
+
+            string EntTacticType = Enums.EntityType.Tactic.ToString();
+            List<CustomField_Entity> tblCustomFieldEntities = dbStage.CustomField_Entity.Where(CustEnt => TacticIds.Contains(CustEnt.EntityId) && CustEnt.CustomField.EntityType.Equals(EntTacticType)).ToList();
 
             //Ittrate the Plan_Campaign_Program_Tactic list and Assign it to TacticStageValue 
             foreach (Plan_Campaign_Program_Tactic tactic in tlist)
@@ -2640,32 +2644,20 @@ namespace RevenuePlanner.Helpers
                 //// If Page request called from Report page then set Stage weightages.
                 if (IsReport)
                 {
-
                     #region "Get Tactic Stage-Weightage"
-                    string EntTacticType = Enums.EntityType.Tactic.ToString();
+                    
                     List<TacticCustomFieldStageWeightage> lstMapTacticStageWeightage = new List<TacticCustomFieldStageWeightage>();
                     List<CustomField_Entity> lstTacticCustomFieldEntity = new List<CustomField_Entity>();
-                    List<CustomField_Entity> tblCustomFieldEntities = dbStage.CustomField_Entity.ToList().Where(CustEnt => tlist.Select(tac => tac.PlanTacticId).Contains(CustEnt.EntityId) && CustEnt.CustomField.EntityType.Equals(EntTacticType)).ToList();
-                    //List<CustomField_Entity_StageWeight> tblStageWeightage = dbStage.CustomField_Entity_StageWeight.ToList().Where(_stage => tblCustomFieldEntities.Select(CustEnt => CustEnt.CustomFieldEntityId).Contains(_stage.CustomFieldEntityId)).ToList();
-
                     lstTacticCustomFieldEntity = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).ToList();
-                    TacticCustomFieldStageWeightage objStageWeightage = null;
-
-                    string MQLStageCode = Enums.Stage.MQL.ToString();
-                    string CWStageCode = Enums.Stage.CW.ToString();
-                    string INQStageCode = Enums.InspectStage.ProjectedStageValue.ToString();
-                    lstMapTacticStageWeightage = new List<TacticCustomFieldStageWeightage>();
-                    foreach (CustomField_Entity objCustmEnt in lstTacticCustomFieldEntity)
-                    {
-                        objStageWeightage = new TacticCustomFieldStageWeightage();
-
-                        objStageWeightage.CustomFieldId = objCustmEnt.CustomFieldId;
-                        objStageWeightage.Value = objCustmEnt.Value;
-                        objStageWeightage.CostWeightage = objCustmEnt.CostWeightage != null && objCustmEnt.CostWeightage.Value != null ? objCustmEnt.CostWeightage.Value : 0;
-                        objStageWeightage.CVRWeightage = objCustmEnt.Weightage != null && objCustmEnt.Weightage.Value != null ? objCustmEnt.Weightage.Value : 0;
-                        lstMapTacticStageWeightage.Add(objStageWeightage);
-                    }
-                    tacticStageValueObj.TacticStageWeightages = lstMapTacticStageWeightage;
+                   
+                    tacticStageValueObj.TacticStageWeightages = lstTacticCustomFieldEntity.Select(_customfield => 
+                                                                                                  new TacticCustomFieldStageWeightage() 
+                                                                                                  { 
+                                                                                                    CustomFieldId = _customfield.CustomFieldId, 
+                                                                                                    Value = _customfield.Value, 
+                                                                                                    CostWeightage = _customfield.CostWeightage != null && _customfield.CostWeightage.Value != null ? _customfield.CostWeightage.Value : 0,
+                                                                                                    CVRWeightage = _customfield.Weightage != null && _customfield.Weightage.Value != null ? _customfield.Weightage.Value : 0 
+                                                                                                  }).ToList();
                     #endregion
                 }
                 tacticStageList.Add(tacticStageValueObj);
