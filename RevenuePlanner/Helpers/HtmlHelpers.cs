@@ -58,16 +58,8 @@ namespace RevenuePlanner.Helpers
             }
             textboxMarketingDealSize.Attributes.Add("formatType", "currency_dollar");
             textboxMarketingDealSize.Attributes.Add("maxlength", Common.maxLengthDollar);
-
-                sb.Append(Common.objCached.MarketingDealDescription + "<br>");
-                
-              
-              
-           
-
-
-
-         
+            textboxMarketingDealSize.Attributes.Add("isedit", "true");
+            sb.Append(Common.objCached.MarketingDealDescription + "<br>");
             sb.Replace("#MarketingDealSize", textboxMarketingDealSize.ToString());
 
             return new MvcHtmlString(sb.ToString());
