@@ -224,6 +224,8 @@
     });
 
         $(document).on("click", "a[name='versionId']", function (e) {
+            $('#successMessage').slideUp();
+            $('#errorMessage').slideUp();
             var latest = $("#latestModelId").val();
             var id = $(this).attr("id");
             if (id == latest) {

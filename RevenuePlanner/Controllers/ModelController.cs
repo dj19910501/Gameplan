@@ -2325,6 +2325,7 @@ namespace RevenuePlanner.Controllers
                         newModel.IntegrationInstanceIdINQ = oldModel.IntegrationInstanceIdINQ;
                         newModel.IntegrationInstanceIdMQL = oldModel.IntegrationInstanceIdMQL;
                         newModel.ClientId = oldModel.ClientId;
+                        newModel.AverageDealSize = oldModel.AverageDealSize;
                         ////End :Added by Mitesh Vaishnav for PL ticket #659 
                         //// title condition added by uday for review point on 5-6-2014 bcoz version clashes when two users are creating version of same buisiness unit.
 

@@ -31,14 +31,7 @@ namespace RevenuePlanner.Helpers
         /// function to generate model funnel block
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="lst"></param>
-        /// <param name="MLeads"></param>
         /// <param name="MSize"></param>
-        /// <param name="TLeads"></param>
-        /// <param name="TSize"></param>
-        /// <param name="SLeads"></param>
-        /// <param name="SSize"></param>
-        /// <param name="bln"></param>
         /// <returns>MvcHtmlString</returns>
         /// datatype of MSize,TSize and SSize is modified from int to double
         public static MvcHtmlString GenerateFunnel(this HtmlHelper helper, double MSize)
