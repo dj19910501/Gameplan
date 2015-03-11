@@ -1172,6 +1172,9 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsOwner = true; //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
             }
+
+            ViewBag.IsAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+
             string StageType = Enums.StageType.CR.ToString();
             string ModelTitle = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ModelId == Modelid).Select(model => model.Title).FirstOrDefault();
             Model_Stage objStage = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.ModelId == Modelid && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().FirstOrDefault();
