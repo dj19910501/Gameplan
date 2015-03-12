@@ -583,8 +583,18 @@ namespace RevenuePlanner.Helpers
             {
                 string emailBody = "";
                 MRPEntities db = new MRPEntities();
-                string TacticOwnerChanged = Enums.Custom_Notification.TacticOwnerChanged.ToString();
-                Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(TacticOwnerChanged));
+                string OwnerChanged = Enums.Custom_Notification.TacticOwnerChanged.ToString();
+
+                if (Enums.Section.Program.ToString().ToLower() == Section)
+                {
+                    OwnerChanged = Enums.Custom_Notification.ProgramOwnerChanged.ToString();
+                }
+                else if (Enums.Section.Campaign.ToString().ToLower() == Section)
+                {
+                    OwnerChanged = Enums.Custom_Notification.CampaignOwnerChanged.ToString();
+                }
+
+                Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(OwnerChanged));
                 emailBody = notification.EmailContent;
                 emailBody = emailBody.Replace("[NameToBeReplaced]", NewOwnerName);
                 emailBody = emailBody.Replace("[ModifierName]", ModifierName);

@@ -382,7 +382,9 @@ namespace RevenuePlanner.Helpers
             ShareImprovementTactic,
             ResetPasswordLink, // Added by : Dharmraj Mangukiya
             TacticOwnerChanged,  // Added by : Sohel Pathan on 14/11/2014 for PL ticket #708
-            SyncIntegrationError    //// Added by : Sohel Pathan on 02/01/2015 for PL ticket #1068
+            SyncIntegrationError,    //// Added by : Sohel Pathan on 02/01/2015 for PL ticket #1068
+            ProgramOwnerChanged,  // Added by : Pratik on 03/03/2014 for PL ticket #711
+            CampaignOwnerChanged  // Added by : Pratik on 03/03/2014 for PL ticket #711
         }
         #endregion
 
