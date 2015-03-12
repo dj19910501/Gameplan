@@ -4008,7 +4008,7 @@ namespace RevenuePlanner.Controllers
                             }
 
                             //Added by Komal Rawal for #1217
-                            if (!isvalueempty)
+                            if (!isvalueempty && pcpobj.Cost > 0)
                             {
                                 Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
                                 obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
