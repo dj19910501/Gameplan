@@ -3042,7 +3042,19 @@ namespace RevenuePlanner.Controllers
                                     objNewLineitem.CreatedBy = Sessions.User.UserId;
                                     objNewLineitem.CreatedDate = DateTime.Now;
                                     db.Entry(objNewLineitem).State = EntityState.Added;
+                                    
+
+                                    //Added by Komal Rawal for #1217
+                                    int startmonth = pcpobj.StartDate.Month;
+                                    Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                    obPlanCampaignProgramTacticCost.PlanTacticId = tacticId;
+                                    obPlanCampaignProgramTacticCost.Period = PeriodChar + startmonth;
+                                    obPlanCampaignProgramTacticCost.Value = pcpobj.Cost;
+                                    obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
+                                    obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
+                                    db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
                                     db.SaveChanges();
+                                    //end
                                 }
 
                                 #region "Update Start & End Date for planCampaignProgramDetails table"
@@ -3671,6 +3683,10 @@ namespace RevenuePlanner.Controllers
             try
             {
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
+                //Added by Komal Rawal for #1217
+                string budgetvalue = BudgetInputValues.Replace(',',' ').Trim();
+                bool isvalueempty = budgetvalue != string.Empty ? true : false;
+                //end
                 using (MRPEntities mrp = new MRPEntities())
                 {
                     using (var scope = new TransactionScope())
@@ -3697,6 +3713,7 @@ namespace RevenuePlanner.Controllers
                             pcpobj.Cost = UpdateBugdetAllocationCost(arrBudgetInputValues, form.TacticCost);
                             pcpobj.ModifiedBy = Sessions.User.UserId;
                             pcpobj.ModifiedDate = DateTime.Now;
+                            int startmonth = pcpobj.StartDate.Month;
 
                             //Start by Kalpesh Sharma #605: Cost allocation for Tactic
                             List<Plan_Campaign_Program_Tactic_Cost> PrevAllocationList = db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).Select(_tacCost => _tacCost).ToList();  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
@@ -3752,6 +3769,24 @@ namespace RevenuePlanner.Controllers
                             }
                             else if (arrBudgetInputValues.Length == 4)
                             {
+                                //Added by Komal Rawal for #1217
+                                if (startmonth >= 10)
+                                {
+                                    startmonth = 10;
+                                }
+                                else if (startmonth >= 7)
+                                {
+                                    startmonth = 7;
+                                }
+                                else if (startmonth >= 4)
+                                {
+                                    startmonth = 4;
+                                }
+                                else
+                                {
+                                    startmonth = 1;
+                                }
+                                //End
                                 int BudgetInputValuesCounter = 1, j = 1;
                                 bool isExists;
                                 List<Plan_Campaign_Program_Tactic_Cost> thisQuartersMonthList;
@@ -3836,6 +3871,19 @@ namespace RevenuePlanner.Controllers
                                     BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
                                 }
                             }
+
+                            //Added by Komal Rawal for #1217
+                            if (!isvalueempty)
+                            {
+                                Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
+                                obPlanCampaignProgramTacticCost.Period = PeriodChar + startmonth;
+                                obPlanCampaignProgramTacticCost.Value = pcpobj.Cost;
+                                obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
+                                obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
+                                db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
+                            }
+                            //End
 
                             db.Entry(pcpobj).State = EntityState.Modified;
                             int result;

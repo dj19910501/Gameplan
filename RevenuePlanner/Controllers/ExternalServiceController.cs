@@ -1071,7 +1071,7 @@ namespace RevenuePlanner.Controllers
                 {
                     ExternalFields = new List<string>();
                 }
-                ViewData["ExternalFieldList"] = ExternalFields;
+                ViewData["ExternalFieldList"] = ExternalFields.OrderBy(list=>list , new AlphaNumericComparer());
                 ViewBag.IntegrationInstanceId = id;
 
                 //// Get IntegrationTypeName based on IntegrationInstanceId
@@ -1298,7 +1298,7 @@ namespace RevenuePlanner.Controllers
                 {
                     List<SelectListItem> lstExternalFieldsPulling = new List<SelectListItem>();
                     lstExternalFieldsPulling = Common.GetEloquaContactTargetDataMemberSelectList(id);
-                    ViewData["ExternalFieldListPulling"] = lstExternalFieldsPulling;
+                    ViewData["ExternalFieldListPulling"] = lstExternalFieldsPulling.OrderBy(list=>list.Text, new AlphaNumericComparer());
                 }
             }
             catch

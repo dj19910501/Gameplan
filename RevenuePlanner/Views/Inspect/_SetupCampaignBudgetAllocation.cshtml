@@ -10,8 +10,7 @@
 }
 
 <style type="text/css">
-    #cancelCampaignBudget
-    {
+    #cancelCampaignBudget {
         color: gray;
         margin-top: 6px;
     }
@@ -300,6 +299,11 @@
                             if (parseInt(remainingMonthlyBudget) < 0) {
                                 $("#" + r[i].periodTitle).addClass('error-text');
                             }
+
+                            if (parseFloat($("#" + r[i].periodTitle).attr('ov')) < parseFloat(r[i].programMonthlyBudget)) {
+                                $("#" + r[i].periodTitle).addClass('error-text');
+                            }
+
                         }
                     }
                 }
@@ -430,7 +434,7 @@
             return false;
         }
 
-        if ($("#hdnIsBudgetAllocated").val() == "True") {
+        @* if ($("#hdnIsBudgetAllocated").val() == "True") {
             var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text-BudgetPopUp');
             if (lstAllocInputs.length > 0) {
                 var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
@@ -463,7 +467,7 @@
 
                  ShowError(errorMsg);
                  return false;
-             }
+             }*@
 
             if (SaveCampaignFlag) {
                 var lstAllocInputs = $(".budget-section input.low-budgeted").not('.unallocated-text-BudgetPopUp');
@@ -501,7 +505,7 @@
                     }
              }
 
-             if ($("#lblTotalAllocated").hasClass('error-text')) {
+             @*if ($("#lblTotalAllocated").hasClass('error-text')) {
                  ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted");
                     return false;
                 }
@@ -515,13 +519,13 @@
                     ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
                     return false;
                 }
-            }
-            else {
+            }*@
+           @* else {
                 if ($("#txtRemainingBudget").hasClass('error-text')) {
                     ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
                     return false;
                 }
-            }
+            }*@
 
         ////Start added by Kalpesh  #608: Budget allocation for Program
         var allocationValue = [];

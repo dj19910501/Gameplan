@@ -69,9 +69,9 @@
             </div>
             <div></div>
         </div>
-        <div  id="CommentSection" class="padding-top10" style="display:none">
-            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-blue-background" })
-            <img id="btnComment" src="~/Content/images/chat-button.png" alt="" style="float: right;" />
+         <div class="padding-top10" id="commentsection">
+            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-gray-background" })
+            <img id="btnComment" src="~/Content/images/chat-button-gray.png"  alt="" style="float: right;" />
         </div>
 @* Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
     }
@@ -266,9 +266,18 @@
         
           NumberFormatterTipsyTitle("#campaign-title", 33);
           
+          //Added by Komal Rawal for ticket #1158
           if ($('#hdnIsPlanEditable').val().toString().toLowerCase() == 'true') {
-              $('#CommentSection').css('display', 'block');
+
+              $('#commentsection img').attr('src', '@Url.Content("~/Content/images/chat-button.png")');
+              $('#txtAreaComment').removeClass('light-gray-background');
+              $('#txtAreaComment').addClass('light-blue-background');
+
           }
+          else {
+              $('#txtAreaComment').attr("disabled", "disabled");
+          }
+          //End
 
           $("#BtnShareTactic").click(function () {
               $("#DivPartialShareTactic").empty();
@@ -335,6 +344,7 @@
           $("#divComment").scrollTop(divheight);
 
           // On Comment Button Save Commnet
+          if ($('#hdnIsPlanEditable').val().toString().toLowerCase() == 'true') {
           $("#btnComment").click(function () {
               $("#successMessage").css("display", "none");
               $("#errorMessage").css("display", "none");
@@ -391,6 +401,7 @@
                   }
               });
           });
+          }
 
           // Click on Approved Button Save Comment & Change Status
           $("#btnApproved").click(function () {

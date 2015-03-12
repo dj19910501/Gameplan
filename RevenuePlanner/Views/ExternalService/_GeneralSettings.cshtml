@@ -369,12 +369,13 @@
                 type: 'POST',
                 url: '@Url.Content("~/ExternalService/SaveGeneralSetting")',
                 data: $("form").serialize(),
+                //Modified for #1118
                 success: function (data) {
                     if (data != null) {
                         if (data.status > 0) {
                             if (data.status == 1) {
                                 localStorage.Message = data.SuccessMessage.toString();
-                                var url = '@Url.Content("~/ExternalService/GetIntegrationFolder")';
+                                var url = '@Url.Content("~/ExternalService/editIntegration/")';
                                 var queryStringArr = [];
                                 queryStringArr.push({
                                     key: 'id',

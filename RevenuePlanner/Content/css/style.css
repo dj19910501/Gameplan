@@ -3634,6 +3634,10 @@ input.icon-check-blue {
     background-color: #DFF0F8 !important;
 }
 
+.light-gray-background {
+    background-color: #ebebeb !important;
+}
+
 .move-light-blue-box {
     padding-top: 5px;
     margin-left: -34px;
@@ -10914,12 +10918,12 @@ li.close-list {
 }
 
 .ProgramBudgetSection .budget-month input[readonly] {
-    color: #666666 !important;
+    color: #666666 ;
     cursor: not-allowed;
 }
 
 .CampaignBudgetSection .budget-month input[readonly] {
-    color: #666666 !important;
+    color: #666666 ;
     cursor: not-allowed;
 }
 
