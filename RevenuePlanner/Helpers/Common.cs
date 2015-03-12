@@ -577,7 +577,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ProgramName">Program name of tactic for which owner has been changed</param>
         /// <param name="CampaignName">Campaign name of tactic for which owner has been changed</param>
         /// <param name="PlanName">Plan name of tactic for which owner has been changed</param>
-        public static void SendNotificationMailForTacticOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName, string URL = "")
+        public static void SendNotificationMailForOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName, string Section, string URL = "")
         {
             for (int i = 0; i <= EmailIds.Count - 1; i++)
             {
@@ -588,11 +588,19 @@ namespace RevenuePlanner.Helpers
                 emailBody = notification.EmailContent;
                 emailBody = emailBody.Replace("[NameToBeReplaced]", NewOwnerName);
                 emailBody = emailBody.Replace("[ModifierName]", ModifierName);
-                emailBody = emailBody.Replace("[tacticname]", TacticName);
-                emailBody = emailBody.Replace("[programname]", ProgramName);
                 emailBody = emailBody.Replace("[campaignname]", CampaignName);
                 emailBody = emailBody.Replace("[planname]", PlanName);
                 emailBody = emailBody.Replace("[URL]", URL);
+
+                if (Enums.Section.Program.ToString().ToLower() == Section || Enums.Section.Tactic.ToString().ToLower() == Section)
+                {
+                    emailBody = emailBody.Replace("[programname]", ProgramName);    
+                }
+
+                if (Enums.Section.Tactic.ToString().ToLower() == Section)
+                {
+                    emailBody = emailBody.Replace("[tacticname]", TacticName);
+                }
 
                 string email = EmailIds.ElementAt(i);
                 ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };

@@ -776,6 +776,20 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsOwner = false;
             }
+
+            //Verify that existing user has created activity or it has subordinate permission and activity owner is subordinate of existing user
+            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            List<Guid> lstSubordinatesIds = new List<Guid>();
+            if (IsTacticAllowForSubordinates)
+            {
+                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+            }
+
+            if (lstSubordinatesIds.Contains(pc.CreatedBy))
+            {
+                ViewBag.IsAuthorized = true;
+            }
+
             /*Modified By : Kalpesh Sharma :: Optimize the code and performance of application*/
             ViewBag.Year = pc.Plan.Year;
             //Added by Komal Rawal for #711
@@ -936,6 +950,7 @@ namespace RevenuePlanner.Controllers
                                 #region "Update record into Plan_Campaign table"
                                 Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(form.PlanCampaignId) && pcobjw.IsDeleted.Equals(false)).FirstOrDefault();
                                 pcobj.Title = title;
+                                Guid oldOwnerId = pcobj.CreatedBy;
                                 pcobj.Description = form.Description;
                                 pcobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcobj.StartDate = form.StartDate;
@@ -970,7 +985,62 @@ namespace RevenuePlanner.Controllers
 
                                     }
                                 }
-                                db.SaveChanges();
+                                
+                                int result = db.SaveChanges();
+                                #endregion
+
+                                #region "Send Email Notification For Owner changed"
+                                                                
+                                // Start - Added by Pratik on 11/03/2014 for PL ticket #711
+                                if (result > 0)
+                                {
+                                    //Send Email Notification For Owner changed.
+                                    if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                    {
+                                        if (Sessions.User != null)
+                                        {
+                                            List<string> lstRecepientEmail = new List<string>();
+                                            List<User> UsersDetails = new List<BDSService.User>();
+                                            var csv = string.Concat(form.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+
+                                            try
+                                            {
+                                                UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                ErrorSignal.FromCurrentContext().Raise(e);
+
+                                                //To handle unavailability of BDSService
+                                                if (e is System.ServiceModel.EndpointNotFoundException)
+                                                {
+                                                    //// Flag to indicate unavailability of web service.
+                                                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                                                }
+                                            }
+
+                                            var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
+                                            var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                                            if (NewOwner.Email != string.Empty)
+                                            {
+                                                lstRecepientEmail.Add(NewOwner.Email);
+                                            }
+                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                            string PlanTitle = pcobj.Plan.Title.ToString();
+                                            string CampaignTitle = pcobj.Title.ToString();
+                                            string ProgramTitle = pcobj.Title.ToString();
+                                            if (lstRecepientEmail.Count > 0)
+                                            {
+                                                string strURL = GetNotificationURLbyStatus(pcobj.PlanId, form.PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
+                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                // End - Added by Pratik on 11/03/2014 for PL ticket #711
+                                
                                 #endregion
 
                                 scope.Complete();
@@ -1363,6 +1433,19 @@ namespace RevenuePlanner.Controllers
             ViewBag.Campaign = HttpUtility.HtmlDecode(pcp.Plan_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             ViewBag.Year = objPlan.Year;
 
+            //Verify that existing user has created activity or it has subordinate permission and activity owner is subordinate of existing user
+            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            List<Guid> lstSubordinatesIds = new List<Guid>();
+            if (IsTacticAllowForSubordinates)
+            {
+                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+            }
+
+            if (lstSubordinatesIds.Contains(pcp.CreatedBy))
+            {
+                ViewBag.IsAuthorized = true;
+            }
+
             var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
             double lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList().Sum(c => c.ProgramBudget);
             ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - lstSelectedProgram);
@@ -1550,6 +1633,7 @@ namespace RevenuePlanner.Controllers
                                 #region "Update record to Plan_Campaign_Program table"
                                 Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).FirstOrDefault();
                                 pcpobj.Title = title;
+                                Guid oldOwnerId = pcpobj.CreatedBy;
                                 pcpobj.Description = form.Description;
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcpobj.StartDate = form.StartDate;
@@ -1569,8 +1653,8 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(pcpobj).State = EntityState.Modified;
                                 #endregion
 
-                                #region "Save Customfields to CustomField_Entity table"
-                                //// Delete previous customfields values.
+                                #region "Save Custom fields to CustomField_Entity table"
+                                //// Delete previous custom fields values.
                                 string entityTypeProgram = Enums.EntityType.Program.ToString();
                                 var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == form.PlanProgramId && c.CustomField.EntityType == entityTypeProgram).ToList();
                                 prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
@@ -1592,6 +1676,57 @@ namespace RevenuePlanner.Controllers
                                 #endregion
 
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                                // Start - Added by Pratik on 11/03/2014 for PL ticket #711
+                                if (result > 0)
+                                {
+                                    //Send Email Notification For Owner changed.
+                                    if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                    {
+                                        if (Sessions.User != null)
+                                        {
+                                            List<string> lstRecepientEmail = new List<string>();
+                                            List<User> UsersDetails = new List<BDSService.User>();
+                                            var csv = string.Concat(form.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+
+                                            try
+                                            {
+                                                UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                ErrorSignal.FromCurrentContext().Raise(e);
+
+                                                //To handle unavailability of BDSService
+                                                if (e is System.ServiceModel.EndpointNotFoundException)
+                                                {
+                                                    //// Flag to indicate unavailability of web service.
+                                                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                                    //// Ticket: 942 Exception handeling in Gameplan.
+                                                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                                                }
+                                            }
+
+                                            var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
+                                            var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                                            if (NewOwner.Email != string.Empty)
+                                            {
+                                                lstRecepientEmail.Add(NewOwner.Email);
+                                            }
+                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                            string PlanTitle = pcpobj.Plan_Campaign.Plan.Title.ToString();
+                                            string CampaignTitle = pcpobj.Plan_Campaign.Title.ToString();
+                                            string ProgramTitle = pcpobj.Title.ToString();
+                                            if (lstRecepientEmail.Count > 0)
+                                            {
+                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign.PlanId, form.PlanProgramId, Enums.Section.Program.ToString().ToLower());
+                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle,Enums.Section.Program.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                            }
+                                        }
+                                    }
+                                }
+                                // End - Added by Pratik on 11/03/2014 for PL ticket #711
 
                                 if (result >= 1)
                                 {
@@ -3295,7 +3430,7 @@ namespace RevenuePlanner.Controllers
                                             if (lstRecepientEmail.Count > 0)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
-                                                Common.SendNotificationMailForTacticOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle,Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                             }
                                         }
                                     }
@@ -5960,21 +6095,22 @@ namespace RevenuePlanner.Controllers
                 if (Convert.ToString(section) != "")
                 {
                     DateTime todaydate = DateTime.Now;
+
+                    //Verify that existing user has created activity or it has subordinate permission and activity owner is subordinate of existing user
+                    bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                    List<Guid> lstSubordinatesIds = new List<Guid>();
+                    if (IsTacticAllowForSubordinates)
+                    {
+                        lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+                    }
+
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
                         ViewBag.PlanId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
-                        //Start - Added by Mitesh Vaishnav for PL ticket 746 - Edit Own and Subordinates Tactics Doesnt work
-                        //Verify that existing user has created tactic or it has subordinate permission and tactic owner is subordinate of existing user
-                        bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                        List<Guid> lstSubordinatesIds = new List<Guid>();
-                        if (IsTacticAllowForSubordinates)
-                        {
-                            lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
-                        }
-                        //End - Added by Mitesh Vaishnav for PL ticket 746 - Edit Own and Subordinates Tactics Doesnt work
+
                         //Modify by Mitesh Vaishnav for PL ticket 746
-                        if ((objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy)))
+                        if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
                         {
                             IsPlanEditable = true;
                         }
@@ -6002,7 +6138,7 @@ namespace RevenuePlanner.Controllers
                     {
                         objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
                         ViewBag.PlanId = objPlan_Campaign_Program.Plan_Campaign.PlanId;
-                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId))
+                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
                         {
                             IsPlanEditable = true;
                         }
@@ -6028,7 +6164,7 @@ namespace RevenuePlanner.Controllers
                         objPlan_Campaign = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
                         ViewBag.PlanId = objPlan_Campaign.PlanId;
 
-                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId))
+                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
                         {
                             IsPlanEditable = true;
                         }
