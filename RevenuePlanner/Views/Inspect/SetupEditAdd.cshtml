@@ -427,7 +427,7 @@
               }
           });
 
-          $('#ddlTacticType').trigger('change');
+         // $('#ddlTacticType').trigger('change');
 
       });
 
@@ -784,7 +784,7 @@
         }
 
         $('#ddlTacticType').next().find('.sbSelector').focus();
-    }).trigger('change');
+    });//.trigger('change');
 
     function FormatRemainingBudget() {
         if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
