@@ -427,6 +427,8 @@
               }
           });
 
+          $('#ddlTacticType').trigger('change');
+
       });
 
     $("#btnUploadResult").on("click", function (e) {
@@ -782,7 +784,7 @@
         }
 
         $('#ddlTacticType').next().find('.sbSelector').focus();
-    });
+    }).trigger('change');
 
     function FormatRemainingBudget() {
         if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {

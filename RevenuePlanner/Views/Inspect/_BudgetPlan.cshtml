@@ -118,6 +118,20 @@
         $(".budget-month").last().find('input').prop('disabled', 'disabled');
     });
 
+    //Added byKomal Rawal
+    $("#txtPlanBudget").keyup(function () {
+        var PlanBudgetValue = ReplaceCC($("#txtPlanBudget").val());
+        if (PlanBudgetValue == '' || typeof PlanBudgetValue == 'undefined') {
+            PlanBudgetValue = '0';
+            $("#txtPlanBudget").val('$0')
+        }
+        $("#lblTotalBudget").html(FormatCommasBudget(PlanBudgetValue, false, true));
+        if ($("#hdnIsBudgetAllocated").val() == "True") {
+            calculateUnallocatedBudget();
+        }
+    });
+    //End
+
     function fillBudgetAllocationData() {
         var hdnPlanId = $("#hdnPlanId").val();
         $.ajax({

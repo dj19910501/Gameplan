@@ -1249,15 +1249,15 @@
     function AddMarketingActivities(colorCode, parentTitle, parentId, filteredData) {
         var accordionDiv = $('#DivAccordionMarketingActivities');
         accordionDiv.append("<div class='accordion-heading'>\
-                                    <a href='#accordion-element-" + parentId + "' data-toggle='collapse' class='accordion-toggle item-" + colorCode + " collapsed chevron-right'>\
+                                    <a href='#accordion-element-marketing-" + parentId + "' data-toggle='collapse' class='accordion-toggle item-" + colorCode + " collapsed chevron-right'>\
                                         <div class='cf'>" + parentTitle + "<span class='pull-right'><span id='spn_" + parentId + "'>0</span>/" + filteredData.length + "</span></div>\
                                     </a>\
                                 </div>\
-                                <div class='accordion-body collapse' id='accordion-element-" + parentId + "'>\
+                                <div class='accordion-body collapse' id='accordion-element-marketing-" + parentId + "'>\
                                 </div>");
 
         $.each(filteredData, function (index2, objfilteredData) {
-            $("#accordion-element-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' class='accordion-inner item-" + colorCode + " cursor-pointer'>" + objfilteredData.Title + "</a>")
+            $("#accordion-element-marketing-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' class='accordion-inner item-" + colorCode + " cursor-pointer'>" + objfilteredData.Title + "</a>")
             $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
                 GanttOpenBranch($(this).attr('taskid'));
             });
@@ -1941,7 +1941,7 @@ function CountTacticForRenderChart(leftNavTaskID, CampaignID) {
         $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index0) {
             var tid = this.id.substring(this.id.indexOf('_') + 1);
             cnt = 0;
-            $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index1) {
+            $("#accordion-element-marketing-" + tid).find('a[class^="accordion-inner"]').each(function (index1) {
                 var taskid = $(this).attr('taskid');
                 //#840 : Undefined error on home when all BU and all Plans are selected : Kalpesh Sharma
                 //Check that task is exists or not before we render it.
@@ -2661,7 +2661,7 @@ function iterateMarketingActivitesOnExpand(id) {
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
                 var cnt = 0;
                 var a = gantt.getChildren(id);
-                $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index1) {
+                $("#accordion-element-marketing-" + tid).find('a[class^="accordion-inner"]').each(function (index1) {
                     var taskid = $(this).attr('taskid');
                     var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
                     // Start - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
@@ -2695,7 +2695,7 @@ function iterateMarketingActivitesOnExpand(id) {
                         if (typeof childVisible != undefined) {
                             if (childVisible == true) {
                                 var child = gantt.getChildren(value1);
-                                $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                $("#accordion-element-marketing-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                                     var taskid = $(this).attr('taskid');
                                     var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
                                     if (typeof taskVisible != 'undefined') {
@@ -2759,7 +2759,7 @@ function iterateMarketingActivitesOnExpand(id) {
                                                 if (typeof childVisible != undefined) {
                                                     if (childVisible == true && value4.indexOf("M") <= 0) {
                                                         var child = gantt.getChildren(value4);
-                                                        $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                                        $("#accordion-element-marketing-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                                                             var taskid = $(this).attr('taskid');
                                                             var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
                                                             if (child.length > 0) {
@@ -2808,7 +2808,7 @@ function iterateMarketingActivitesOnExpand(id) {
                                     if (typeof childVisible != undefined) {
                                         if (childVisible == true && value4.indexOf("M") <= 0) {
                                             var child = gantt.getChildren(value4);
-                                            $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                            $("#accordion-element-marketing-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                                                 var taskid = $(this).attr('taskid');
                                                 var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
                                                 if (child.length > 0) {
@@ -2968,7 +2968,7 @@ function iterateMarketingActivitesOnCollapse(id) {
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
                 var cnt = 0;
                 var a = gantt.getChildren(id);
-                $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                $("#accordion-element-marketing-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                     var taskid = $(this).attr('taskid');
                     $.each(a, function (index, value) {
                         if (taskid == value) {
@@ -2993,7 +2993,7 @@ function iterateMarketingActivitesOnCollapse(id) {
                         if (typeof childVisible != undefined) {
                             if (childVisible == true) {
                                 var child = gantt.getChildren(value1);
-                                $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                $("#accordion-element-marketing-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                                     var taskid = $(this).attr('taskid');
                                     $.each(child, function (index3, value3) {
                                         if (taskid == value3) {
@@ -3054,7 +3054,7 @@ function iterateMarketingActivitesOnCollapse(id) {
                                                 if (typeof childVisible != undefined) {
                                                     if (childVisible == true && value4.indexOf("M") <= 0) {
                                                         var child = gantt.getChildren(value4);
-                                                        $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                                        $("#accordion-element-marketing-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                                                             var taskid = $(this).attr('taskid');
                                                             if (child.length > 0) {
                                                                 $.each(child, function (index3, value3) {
@@ -3100,7 +3100,7 @@ function iterateMarketingActivitesOnCollapse(id) {
                                     if (typeof childVisible != undefined) {
                                         if (childVisible == true && value4.indexOf("M") <= 0) {
                                             var child = gantt.getChildren(value4);
-                                            $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                            $("#accordion-element-marketing-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                                                 var taskid = $(this).attr('taskid');
                                                 if (child.length > 0) {
                                                     $.each(child, function (index3, value3) {

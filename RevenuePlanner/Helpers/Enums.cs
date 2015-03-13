@@ -939,7 +939,8 @@ namespace RevenuePlanner.Helpers
     {
         Tactic,
         Request,
-        Custom
+        Custom,
+        Stage
     }
 
     #endregion
