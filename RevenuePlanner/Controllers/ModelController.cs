@@ -89,6 +89,9 @@ namespace RevenuePlanner.Controllers
                 //// For create mode
                 ViewBag.IsOwner = true;
             }
+
+            ViewBag.IsAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+
             return View("Create", objBaselineModel);
         }
 

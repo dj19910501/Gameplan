@@ -231,8 +231,8 @@
                     @{ 
         if (Model.lstmodelstage.Count() > 0)
         {
-            if (Convert.ToString(ViewBag.IsOwner) == "True" )  // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            {
+             if (Convert.ToString(ViewBag.IsAuthorized) == "True") // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+             {
                         <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
                         <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
             }
@@ -501,7 +501,6 @@ function LoadModelData(modelId, bool) {
 
     if (modelId == $("#latestModelId").val()) {
         $("#button-save").show();
-        if ($('#IsOwner').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             $("#btnsave").show();
         MakeEditable();
         $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
@@ -510,7 +509,6 @@ function LoadModelData(modelId, bool) {
     }
     else {
         $("#button-save").hide();
-        if ($('#IsOwner').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             $("#btnsave").hide();
         MakeViewOnly();//Bug 17:Should not be able to edit a published model
         $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
@@ -918,7 +916,6 @@ $("#publishModel").click(function () {
                 }
     }
     $('#isPublishButton').val('publish');
-    if ( $('#IsOwner').val().toLowerCase() == 'true')     // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
         $('#btnsave').click();
     $('#isPublishButton').val('');
 });
