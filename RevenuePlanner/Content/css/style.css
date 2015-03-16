@@ -12007,3 +12007,26 @@ li.close-list {
     color: #fff !important;
 }
 
+/* Report Header Tabs - Start */
+.report-heder-tab > ul {font-family: source_sans_probold; font-size: 16px; list-style-type: none; margin: 0; padding: 0;border-bottom: 1px solid #c9c9c9;}
+  .report-heder-tab li {border-right: 1px solid #c9c9c9; display: inline-block;line-height: 38px;margin-right: -3.3px;padding: 0.5% 6%; width: 12.96%; }
+  .report-heder-tab li:last-child {border-right: medium none;}
+  .report-heder-tab .overview,.report-heder-tab .revenue, .report-heder-tab .conversion, .report-heder-tab .budget { color: #908d88 !important; cursor: pointer;} 
+  .report-heder-tab .active {background-color: #dff0f8;}
+  .report-heder-tab .active .overview{ color: #3f3f3f !important;}
+  .report-heder-tab .active .revenue{ color: #3f3f3f !important;}
+  .report-heder-tab .active .conversion{ color: #3f3f3f !important;}
+  .report-heder-tab .active .budget{ color: #3f3f3f !important ;}
+   .report-heder-tab .active .overview > span {background-position:-29px 0 !important;}
+  .report-heder-tab .active .revenue > span {background-position: -29px -31px !important;}
+  .report-heder-tab .active .conversion > span {background-position: -29px -61px !important;}
+  .report-heder-tab .active .budget > span {background-position: -29px -92px !important}
+  .overview > span {background-position:0px 0 !important;}
+  .revenue > span {background-position: 0 -31px !important;}
+  .conversion > span {background-position: 0 -61px !important;}
+  .budget > span { background-position: 0 -92px !important;}
+     
+   
+  .report-heder-tab > li > a {background: none repeat scroll 0 0 #dddddd; border-top: 1px solid #c7c7c7;color: #908d88 ; font-size: 16px; height: 40px; line-height: 40px;  padding: 3px 15px}
+  .report-heder-tab li a span {background: url("../images/icons-nav-black-reports.png") no-repeat ; width: 30px !important; height: 30px !important;display: block;float: left;  margin: 4px 20px 0 0;}
+    /* Report Header Tabs - End */

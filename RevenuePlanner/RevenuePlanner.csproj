@@ -405,6 +405,7 @@
     <Content Include="Content\images\icon-filter-search.gif" />
     <Content Include="Content\images\icon-return-to-sign-in-blue.png" />
     <Content Include="Content\images\icons-accept-reject.png" />
+    <Content Include="Content\images\icons-nav-black-reports.png" />
     <Content Include="Content\images\icons-nav-blue-model-long.png" />
     <Content Include="Content\images\icons-nav-blue-model.png" />
     <Content Include="Content\images\icons-nav-blue-reports.png" />

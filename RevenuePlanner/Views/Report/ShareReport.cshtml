@@ -198,6 +198,10 @@
 
             $html.find('.multiselection-area').remove();
             $html.find('.budgetReportFilter-area-right').remove();
+            $html.find('div[class="report-heder-tab"]').empty();
+            $html.find('div').removeClass("report-heder-tab");
+            $html.find('div[class="budgetReportFilter-area clearfix"]').empty();
+            $html.find('div').removeClass("budgetReportFilter-area clearfix");
             $html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
@@ -292,6 +296,10 @@
             $html.find('div[id="chartDiv4"]').empty();
             $html.find('div[id="chartDiv5"]').empty();
             $html.find('div[id="chartDiv6"]').empty();
+            $html.find('div[class="report-heder-tab"]').empty();
+            $html.find('div').removeClass("report-heder-tab");
+            $html.find('div[class="budgetReportFilter-area clearfix"]').empty();
+            $html.find('div').removeClass("budgetReportFilter-area clearfix");
             $html.find('.multiselection-area').remove();
             $html.find('.budgetReportFilter-area-right').remove();
             $html.find('div').removeClass("budgetReportFilter-area-left");
@@ -395,15 +403,18 @@
             html += '<div style="margin-left: 100px;"></br>' + filterHTML + '</div>';
             var $html = $(html);
             $html.find('div[id="chartDiv"]').empty();
+            $html.find('div[class="report-heder-tab"]').empty();
+            $html.find('div').removeClass("report-heder-tab");
+            $html.find('div[class="budgetReportFilter-area clearfix"]').empty();
+            $html.find('div').removeClass("budgetReportFilter-area clearfix");
             $html.find('#AViewDetailReportRevenue').remove();
             $html.find('#AViewDetailReportConversion').remove();
-
             $html.find('.multiselection-area').remove();
             $html.find('.budgetReportFilter-area-right').remove();
             $html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
-
+            //alert($html.html());
             html = $html.html();
             return escape(html);
         }

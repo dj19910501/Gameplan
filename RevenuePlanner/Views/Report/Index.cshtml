@@ -30,7 +30,14 @@
     .ui-multiselect {
     max-width:120px !important;
     }
+    .chkbxfilter {
+        float: right;
+        margin: 7px -3px 0 0 !important;
+    }
     
+    .singleselect li {
+        cursor:pointer;
+    }
 </style>
 
 @section Sidebar
@@ -52,21 +59,182 @@
             </div>
         </div>
     </div>
-    <ul class="nav nav-list nav-gray-reports" id="ulLeftPane">
-        <li class="item active" id="liSummary">
-            <a class="source-sans-probold summary"><span></span>SUMMARY</a>
-        </li>
-        <li class="item" id="liRevenue">
-            <a class="source-sans-probold revenue"><span></span>REVENUE</a>
-        </li>
-        <li class="item" id="liConversion">
-            <a class="source-sans-probold conversion"><span></span>CONVERSION</a>
-        </li>
-         <li class="item" id="liBudgetreport">
-            <a class="source-sans-probold budget"><span></span>BUDGET</a>
-        </li>
+     <!-- Sidebar Block Starts -->
+    <div id="sidebar" class="span2 sidebar">
+        <div class="WelcomeMessageBorder"></div>
+        <div class="sidebar-section scroll-section">
+            <div style="width: 100%;">
+                <div class="width50 float-left ">
+                    <span class="filter-header">Filters</span>
+                </div>
+                <div class="width50 float-left">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="updatedata" name="updatedata" >
+                        Update Results
+                    </button>
+                </div>
+            </div>
+            <div style="clear: both;"></div>
+            
+            <div id="accordion-Year" class="dropdown-section accordion">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year"><span class="sidebarliwidth" id="spYearText">Year</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                    </div>
+                    <div id="accordion-element-Year" class="accordion-body collapse">
+                        <ul class="scroll-list singleselect" id="ulSelectedYear">
+                         @{
+                             string ddlYearId,YearText;
+                             ddlYearId = YearText = string.Empty;
+                             foreach (SelectListItem item in (System.Collections.IEnumerable)ViewBag.ViewYear)
+                             {
+                                 ddlYearId = "liYear" + item.Value;
+                                 YearText = item.Text;
+                                 if (item.Value == RevenuePlanner.Helpers.Common.GetCurrentYear())
+                                 {
+                                     YearText = YearText + " (this year)";
+                                 }
+                                 
+                                 if (item.Value == SelectedYear)
+                                 {
+                                    <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" onclick="OnYearChange(this);" yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span></li>
+                                 }
+                                 else
+                                 {
+                                     <li class="accordion-inner" title="@YearText" id="@ddlYearId" onclick="OnYearChange(this);" yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span></li>
+                                 }
+                             }
+                          }
     </ul>
+                        <div class="list-tab">
+                          @if ((System.Collections.IEnumerable)ViewBag.ViewPlan == null)
+                          {
+                          <div id="NoOwnerFound" class="NoDataFoundFilter">No Year Found</div>
+                          }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="accordion-quart" class="dropdown-section accordion" style="display:none;">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-quart" href="#accordion-element-quart">Quarterly<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                    </div>
+                    <div id="accordion-element-quart" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulSelectedQuart">
+                            <li class="accordion-inner close-list" title="Monthly" id="liMonthly"><span class="sidebarliwidth">Monthly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Monthly" /></li>
+                            <li class="accordion-inner close-list" title="Quarterly" id="liQuarterly"><span class="sidebarliwidth">Quarterly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Quarterly" /></li>
+                        </ul>
+                        <div class="list-tab">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="accordion-2" class="dropdown-section accordion">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                    </div>
+                    <div id="accordion-element-Plan" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulSelectedPlans">
+                         @{
+                             string ddlId = string.Empty;
+                             foreach (SelectListItem item in (System.Collections.IEnumerable)ViewBag.ViewPlan)
+                             {
+                                 ddlId = "liPlan" + item.Value;
+                                 if (item.Selected)
+                                 {
+                                    <li class="accordion-inner close-list" title="@item.Text" id="@ddlId"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" checked="checked" planTitle="@item.Text" id="@item.Value"></input></li>
+                                 }
+                                 else
+                                 {
+                                     <li class="accordion-inner" title="@item.Text" id="@ddlId"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" planTitle="@item.Text" id="@item.Value"></input></li>
+                                 }
+
+                             }
+                          }
+                        </ul>
+                        <div class="list-tab">
+                           @if ((System.Collections.IEnumerable)ViewBag.ViewPlan != null)
+                           {
+                            <ul id="PlanAllModule">
+                                <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
+                            </ul>
+                           }
+                           else
+                           {
+                            <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
+                           }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div id="divCustomFieldsFilter"></div>*@
+            @{
+                string acordionId, acordionParentId, acordionElementId, acordionElementHref,liCustom,ulCustom,allCustom,noCustom;
+                acordionId = acordionParentId = acordionElementId = acordionElementHref =liCustom =ulCustom = allCustom = noCustom =string.Empty;
+                List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
+                foreach (CustomField custField in ViewCustomFields)
+                {
+                    lstCutomFieldOptions = custField.CustomFieldOptions.OrderBy(custfieldoptions => custfieldoptions.Value).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Value, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
+                    acordionId = "accordion" + custField.CustomFieldId;
+                    acordionParentId = "#" + acordionId;
+                    acordionElementId = "accordion-element-Plan" + custField.CustomFieldId;
+                    acordionElementHref = "#" + acordionElementId;
+                    ulCustom = "ul" + custField.CustomFieldId;
+                    allCustom = "all" + custField.CustomFieldId;
+                    noCustom = "no" + custField.CustomFieldId;
+                    <div id="@acordionId" class="dropdown-section accordion">
+                        <div class="accordion-group">
+                           <div class="accordion-heading">
+                               <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref">@custField.Name<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                           </div>
+                           <div id="@acordionElementId" class="accordion-body collapse">
+                               <ul class="scroll-list" id="@ulCustom">
+                                @{
+                                   foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
+                                   {
+                                       liCustom = "liCustom" + item.Value;
+                                       <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" cutomTitle="@item.Text" class="chkbxfilter" id="@item.Value"></input></li>
+                                   }
+                                 }
+                               </ul>
+                               <div class="list-tab">
+                                  @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
+                                  {
+                                   <ul id="@allCustom">
+                                       <li><a onclick="BulkCustomFieldOperation(true,'@ulCustom')">select all</a></li>
+                                       <li>|</li>
+                                       <li><a onclick="BulkCustomFieldOperation(false,'@ulCustom')">deselect all</a></li>
+                                   </ul>
+                                  }
+                                  else
+                                  {
+                                   <div id="@noCustom" class="NoDataFoundFilter">No Plan Found</div>
+                                  }
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                }
+             }
+        </div>
+    </div>
+    <!--End sidebar-->
 }
+
+<div class="report-heder-tab">
+   <ul id="ulLeftPane">
+       <li class="active" id="liSummary"><a class="overview"><span></span>OVERVIEW</a></li>
+       <li id="liRevenue"><a class="revenue" ><span></span>REVENUE</a></li>
+       <li id="liConversion"><a class="conversion" ><span></span>CONVERISON</a></li>
+       <li id="liBudgetreport"><a class="budget" ><span></span>BUDGET</a></li>
+   </ul>
+</div>
+
 <div id="budgetHeader" class="budgetColums budgetReporting" style="display: none">
     <div class="plannedCost">
         <h3 class="source-sans-proregular h3budget h3padding ">You've spent <span id="SpanTotalSpend">$2.5M</span> out of <span id="SpanTotalBudgeted">$4.8M</span>.</h3>
@@ -128,23 +296,6 @@
 <div class="budgetReportFilter-area clearfix">
     <div class="budgetReportFilter-area-left">
 
-        <!--Start modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
-        <div class="multiselection-area">
-            <span class="selectBox" id="ddlYearSpan" style="width: 115px; line-height: 2.5; padding-right: 7px;">
-                @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text", SelectedYear), new { @class = "ddlStyleReport" })
-            </span>
-            @Html.DropDownList("ddlPlan", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text", ViewPlanSelectedValue.Where(p => p.Selected).Select(p => p.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans", style = "display:none" })
-             <!--Start - Modified by Arpita Soni on 01/19/2015 for Ticket #1148-->
-            @foreach (CustomField custField in ViewCustomFields)
-            {
-                string name = "ddlView" + custField.CustomFieldId;
-                var list1 = custField.CustomFieldOptions.OrderBy(custfieldoptions=>custfieldoptions.Value).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Value, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
-                @Html.DropDownList(name, new MultiSelectList((System.Collections.IEnumerable)list1, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = name, noneselectedvalue = custField.Name, style = "display:none" })
-            }
-            <!--End - Modified by Arpita Soni on 01/19/2015 for Ticket #1148*-->
-        </div>
-        <!--End modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
-
         <div class="filter-detail">
             <label>Time Frame:</label>
             <div class="details" id="yeardetail"></div>
@@ -158,13 +309,9 @@
                     <label id="@lblid">@custField.Name:</label>
                     <div class="details" id="@detailid">None</div>
             }
-
-           
         </div>
     </div>
-    <div class="budgetReportFilter-area-right">
-        <button id="updatedata" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" name="updatedata">Update</button>
-    </div>
+    
 </div>
 <!-- Budget Reporting Filter area -->
 
@@ -176,9 +323,9 @@
 
     var SelectedBUId, SelectedPlanId;
     var IsCallFromYearDropdown = true;
-    var OptionMain = $('#ddlYear').val();;
+    var OptionMain = '';
     var isAllowClick = true;
-    var multiselectPlanId = "ddlPlan";
+    var multiselectPlanId = "ulSelectedPlans";
     var filterPlanid = "#plandetail";
     var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
 
@@ -198,29 +345,22 @@
         $(".sbSelector").css("color", "#6D6D6D");
         $(".sbToggle").css("border-top-color", "#6D6D6D");
 
-        $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
-
-       @* @foreach (var custField in ViewCustomFields)
-        {
-            string multiselectid = string.Concat("ddlView", custField.Name);
-            string filterid = string.Concat("#", custField.Name.ToLower(), "detail");
-            @: LoadCheckBoxValue('@multiselectid', '@filterid');
-        }*@
+        OptionMain = getYearSelectedValue(true);
 
         // Load Multiselect Dropdown list i.e. Bind with new design
-        LoadCheckBoxValue(multiselectPlanId, filterPlanid);
+        SetSelectedFilterText(multiselectPlanId, filterPlanid);
         LoadYearDropdown();
         loadBasedOnPlan();
         $("#DivShareReport").hide();
         GetFilterIdForPlan(multiselectPlanId);
-
-        $(document).mouseup(function (e) {
-            var BUcontainer = $('#multipleselect_ddlPlan');
-            var BUbutton = $('#btnMultiselect_ddlPlan');
-            if (!BUcontainer.is(e.target) && BUcontainer.has(e.target).length === 0 && BUcontainer.css('display') == 'block' && !BUbutton.is(e.target) && BUbutton.has(e.target).length === 0) {
-                $('#ddlPlan').multiselect('close');
+        function toggleChevron(e) {
+            $(e.target)
+				.prev('.accordion-heading')
+				.find("i.indicator")
+				.toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
             }
-    });
+        $('.accordion').on('hidden.bs.collapse', toggleChevron);
+        $('.accordion').on('shown.bs.collapse', toggleChevron);
     });
 
     // <--- End document.ready Event --->
@@ -230,6 +370,27 @@
         var finalValue = "";
         var isAll = true;
         $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+            if (this.checked) {
+                finalValue += $(this).parent().find('span').eq(0).html() + ",  ";
+            }
+            else {
+                isAll = false;
+            }
+        });
+        finalValue = finalValue.slice(0, -3);
+        if (finalValue == '') {
+            finalValue = 'None';
+        }
+        if (isAll) {
+            finalValue = 'All';
+        }
+        $(filterid).html(finalValue);
+    }
+
+    function SetSelectedFilterText(multiselect_ul_Id, filterid) {
+        var finalValue = "";
+        var isAll = true;
+        $('#' + multiselect_ul_Id).find("input[type='checkbox']").each(function () {
             if (this.checked) {
                 finalValue += $(this).parent().find('span').eq(0).html() + ",  ";
             }
@@ -259,10 +420,64 @@
                 data: {
                     Year: strYear
                 },
-                success: function (r) {
-                    populatePlan(r, "ddlPlan");
-                }
+            success: function (data) {
+                $('#' + multiselectPlanId).html('');
+                if (data != 'undefined' && data != null) {
+                    PlanCount = data.length;
+                    if (PlanCount > 0) {
+                        $("#PlanAllModule").css("display", "block");
+                        $("#NoPlanFound").hide();
+                        $.each(data, function (index, item) {
+                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Text + '" id="' + item.Value + '"></input></li>');
             });
+                    }
+                    else {
+                        $("#PlanAllModule").css("display", "none");
+                        $("#NoPlanFound").show();
+                    }
+                }
+                else {
+                    $("#PlanAllModule").css("display", "none");
+                    $("#NoPlanFound").show();
+                }
+            }
+        });
+    }
+
+    function BulkPlanOperation(selection) {
+        var ulPlanli = "#" + multiselectPlanId +" li";
+        if (selection) {
+            $(ulPlanli).each(function (i) {
+                $(this).addClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).attr("checked", "checked");
+            });
+        }
+        else {
+            $(ulPlanli).each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+        }
+    }
+
+    function BulkCustomFieldOperation(selection,ulCutomFieldId) {
+        var ul_lis = "#" + ulCutomFieldId + " li";
+        if (selection) {
+            $(ul_lis).each(function (i) {
+                $(this).addClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).attr("checked", "checked");
+            });
+        }
+        else {
+            $(ul_lis).each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+        }
         }
 
         //// Remove actiave class from left sidebar menu li
@@ -272,16 +487,6 @@
                     $(this).removeClass('active');
                 }
             });
-        }
-
-        //// Load respective data based on selected option
-        function LoadRespectiveData() {
-            if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
-                LoadRevenueData();
-            }
-            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
-                LoadConversionData();
-            }
         }
 
     //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
@@ -357,7 +562,6 @@
         $('#budgetHeader').css('display', 'none');
         $('#UlPlanHeader').css('display', 'block');
         $('#formSideFilter').css('display', 'block');
-        //$("#divAddActual").css("display", "block");
         $("#BtnShareReport").show();
         $('#divMainReportPart').empty();
 
@@ -373,7 +577,6 @@
         $('#budgetHeader').css('display', 'none');
         $('#UlPlanHeader').css('display', 'block');
         $('#formSideFilter').css('display', 'block');
-        //$("#divAddActual").css("display", "block");
         $("#BtnShareReport").show();
         $('#divMainReportPart').empty();
         var url = '@Url.Content("~/Report/GetConversionData/")';
@@ -386,7 +589,6 @@
         //// Load Budget View
         function LoadBudgetView() {
             $("#BtnShareReport").hide(); //Added by Arpita Soni on 01/08/2015 for ticket #1108
-        //    ShowFilters();
             $('#budgetHeader').css('display', 'block');
             $('#conversionHeader').css('display', 'none');
             $('#revenueHeader').css('display', 'none');
@@ -396,18 +598,17 @@
             var url = '@Url.Content("~/Report/GetBudget/")';
             $('#divMainReportPart').load(url, function () {
                 isAllowClick = true;
-                //myApp.hidePleaseWait();
             });
         }
 
         //// Get Plan Ids from multiselect list
-        function GetFilterIdForPlan(multiselectId) {
+    function GetFilterIdForPlan(ulPlanId) {
             var finalValue = "";
             var isShowAddActual = 0;
-            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+        $('#' + ulPlanId).find("input[type='checkbox']").each(function () {
                 if (this.checked) {
                     isShowAddActual++;
-                    var splitvalue = $(this).val().split("_");
+                var splitvalue = $(this).attr('id').split("_");
                     finalValue += splitvalue[0] + ",";
                 }
             });
@@ -428,11 +629,11 @@
         }
 
         //// Get id from multiselect
-        function GetFilterId(multiselectId) {
+    function GetCustomFilterIds(ulCustomId) {
             var finalValue = "";
-            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+        $('#' + ulCustomId).find("input[type='checkbox']").each(function () {
                 if (this.checked) {
-                    finalValue += $(this).val() + ",";
+                finalValue += $(this).attr('id') + ",";
                 }
             });
 
@@ -441,7 +642,6 @@
                 finalValue = '';
             }
             return finalValue;
-
         }
 
         //// Load Budget Data
@@ -453,28 +653,6 @@
                 });
 
             }
-        }
-
-        //// Load plan in multiselect 
-        function populatePlan(items, id) {
-            var $dropdown = $("#" + id);
-            $dropdown.empty();
-            var $html = '';
-            if (items.length > 0) {
-
-                $.each(items, function (index, planobj) {
-                    if (planobj.Selected) {
-                        $html += '<option value="' + planobj.Value + '" selected>' + planobj.Text + '</option>';
-                    } else {
-                        $html += '<option value="' + planobj.Value + '">' + planobj.Text + '</option>';
-                    }
-                });
-            }
-            // alert($html);
-            $dropdown.append($html);
-            $("#multipleselect_ddlPlan").find("input[type='search']").val('');
-            $('#ddlPlan').multiselect("refresh");
-            LoadCheckBoxValue(multiselectPlanId, filterPlanid);
         }
 
         //// Load Share report section
@@ -500,24 +678,24 @@
                 $(this).multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu 
             });
 
-        OptionMain = $('#ddlYear').val();
+            OptionMain = getYearSelectedValue(true);
         $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
 	
         //// load active filter based on selected value in multiselect
-        LoadCheckBoxValue(multiselectPlanId, filterPlanid);
+        SetSelectedFilterText(multiselectPlanId, filterPlanid);
 
         @foreach (var custField in ViewCustomFields)
         {
             string multiselectid = string.Concat("ddlView", custField.CustomFieldId);
             string filterid = string.Concat("#", custField.CustomFieldId, "detail");
-            @: LoadCheckBoxValue('@multiselectid', '@filterid');
+            @: SetSelectedFilterText('@multiselectid', '@filterid');
          }
             
             
         @foreach (var custField in ViewCustomFields)
         {
-            string multiselectid = string.Concat("ddlView", custField.CustomFieldId);
-            @: var filterIds = GetFilterId('@multiselectid');
+            string multiselectid = string.Concat("ul", custField.CustomFieldId);
+            @: var filterIds = GetCustomFilterIds('@multiselectid');
             @: var arrFilterId = filterIds.split(',');
             @: if(arrFilterId != "")
             @: {
@@ -561,19 +739,28 @@
         });
     });
 
-//// Year dropdown change event
-$("#ddlYear").change(function () {
-    OptionMain = $('#ddlYear').val();
+function OnYearChange(_yearli) {
+    $(_yearli).siblings().each(function () {
+        $(this).removeClass('close-list');
+    });
+    $(_yearli).addClass('close-list');
+    OptionMain = $(_yearli).attr('yearValue');
     if (IsCallFromYearDropdown) {
         LoadPlanData();
     }
-});
+    var _yearText = $(_yearli).attr('title');
+    $("#spYearText").html(_yearText);
+    $("#aYear").click();
+}
 
 function LoadYearDropdown() {
     var isClick = false;
-    $("#ddlYear").next().find('ul li a').each(function () {
-        var selectedvalue = $(this).attr('rel');
-        if (selectedvalue == 'thisquarter') {
+    var ul_lis = "#ulSelectedYear li";
+    $(ul_lis).each(function (i) {
+        var _yearValue = $(this).attr('yearValue');
+
+        /* Hide 'thisquarter' item from dropdown for Summary & Budget tab.*/
+        if (_yearValue == 'thisquarter') {
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
                 isClick = true;
             }
@@ -588,25 +775,42 @@ function LoadYearDropdown() {
             }
 
     if (isClick == true) {
-        $(this).parent().css('display', 'none');
+        $(this).css('display', 'none');
     }
     else {
-        $(this).parent().css('display', 'block');
+        $(this).css('display', 'block');
     }
 }
     });
-    $("#ddlYear").next().find('ul li a').each(function () {
-        var selectedValue = $("#ddlYear").val();
+    var selectedValue = getYearSelectedValue(false);
+    $(ul_lis).each(function (i) {
         if (isClick == true && selectedValue == 'thisquarter') {
-            var selectedvalue = $(this).attr('rel');
-            if (selectedvalue == '@RevenuePlanner.Helpers.Common.GetCurrentYear()') {
+            var _currentliValue = $(this).attr('yearValue');
+            if (_currentliValue == '@RevenuePlanner.Helpers.Common.GetCurrentYear()') {
                 IsCallFromYearDropdown = false;
                 $(this).click();
                 IsCallFromYearDropdown = true;
-                $("#yeardetail").html($("#ddlYear option[value='" + selectedvalue + "']").text());
+                $("#yeardetail").html($(this).find('span').eq(0).html());
             }
         }
     });
+}
+
+function getYearSelectedValue(isYearDetail) {
+    var _selecteditem = '';
+    $('#ulSelectedYear li').each(function () {
+        if ($(this).hasClass('close-list')) {
+            _selecteditem = $(this);
+        }
+    });
+    var _selectedYear = $(_selecteditem[0]).attr('yearValue');
+    if (isYearDetail) {
+        var _YearText=$(_selecteditem).find('span').eq(0).html();
+        $("#yeardetail").html(_YearText);
+        $("#spYearText").html(_YearText);
+    }
+
+    return _selectedYear;
 }
 
 //// summary click event
