@@ -3,9 +3,10 @@
 @{
     string SelectedYear = ViewBag.SelectedYear;
     var ViewPlanSelectedValue = (List<SelectListItem>)ViewBag.ViewPlan;
-    
+    var ViewYearList = (List<SelectListItem>)ViewBag.ViewYear;
     // Start - Added by Arpita Soni on 01/19/2015 for Ticket #1148 
     var ViewCustomFields = (List<RevenuePlanner.Models.CustomField>)ViewBag.ViewCustomFields;
+    var ViewCustomFieldOptions = (List<RevenuePlanner.Models.CustomFieldOption>)ViewBag.ViewCustomFieldOptions;
     // End - Added by Arpita Soni on 01/19/2015 for Ticket #1148 
     
     ViewBag.Title = "Summary";
@@ -85,13 +86,13 @@
                          @{
                              string ddlYearId,YearText;
                              ddlYearId = YearText = string.Empty;
-                             foreach (SelectListItem item in (System.Collections.IEnumerable)ViewBag.ViewYear)
+                             foreach (SelectListItem item in ViewYearList)
                              {
                                  ddlYearId = "liYear" + item.Value;
                                  YearText = item.Text;
                                  if (item.Value == RevenuePlanner.Helpers.Common.GetCurrentYear())
                                  {
-                                     YearText = YearText + " (this year)";
+                                     YearText = YearText + " " + RevenuePlanner.Helpers.Common.labelThisYear;
                                  }
                                  
                                  if (item.Value == SelectedYear)
@@ -106,9 +107,9 @@
                           }
     </ul>
                         <div class="list-tab">
-                          @if ((System.Collections.IEnumerable)ViewBag.ViewPlan == null)
+                          @if (ViewYearList == null)
                           {
-                          <div id="NoOwnerFound" class="NoDataFoundFilter">No Year Found</div>
+                          <div id="NoYearFound" class="NoDataFoundFilter">No Year Found</div>
                           }
                         </div>
                     </div>
@@ -140,23 +141,23 @@
                         <ul class="scroll-list" id="ulSelectedPlans">
                          @{
                              string ddlId = string.Empty;
-                             foreach (SelectListItem item in (System.Collections.IEnumerable)ViewBag.ViewPlan)
+                             foreach (SelectListItem item in ViewPlanSelectedValue)
                              {
                                  ddlId = "liPlan" + item.Value;
                                  if (item.Selected)
                                  {
-                                    <li class="accordion-inner close-list" title="@item.Text" id="@ddlId"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" checked="checked" planTitle="@item.Text" id="@item.Value"></input></li>
+                                    <li class="accordion-inner close-list" title="@item.Text" id="@ddlId"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" checked="checked" planTitle="@item.Text" id="@item.Value" onchange="OnPlanchange(this);"></input></li>
                                  }
                                  else
                                  {
-                                     <li class="accordion-inner" title="@item.Text" id="@ddlId"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" planTitle="@item.Text" id="@item.Value"></input></li>
+                                     <li class="accordion-inner" title="@item.Text" id="@ddlId"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" planTitle="@item.Text" id="@item.Value" onchange="OnPlanchange(this);"></input></li>
                                  }
 
                              }
                           }
                         </ul>
                         <div class="list-tab">
-                           @if ((System.Collections.IEnumerable)ViewBag.ViewPlan != null)
+                           @if (ViewPlanSelectedValue != null)
                            {
                             <ul id="PlanAllModule">
                                 <li><a onclick="BulkPlanOperation(true)">select all</a></li>
@@ -177,9 +178,10 @@
                 string acordionId, acordionParentId, acordionElementId, acordionElementHref,liCustom,ulCustom,allCustom,noCustom;
                 acordionId = acordionParentId = acordionElementId = acordionElementHref =liCustom =ulCustom = allCustom = noCustom =string.Empty;
                 List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
+                List<CustomFieldOption> tblCustomFieldOption = ViewCustomFieldOptions;
                 foreach (CustomField custField in ViewCustomFields)
                 {
-                    lstCutomFieldOptions = custField.CustomFieldOptions.OrderBy(custfieldoptions => custfieldoptions.Value).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Value, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
+                    lstCutomFieldOptions = tblCustomFieldOption.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Value).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Value, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
                     acordionId = "accordion" + custField.CustomFieldId;
                     acordionParentId = "#" + acordionId;
                     acordionElementId = "accordion-element-Plan" + custField.CustomFieldId;
@@ -198,7 +200,7 @@
                                    foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
                                    {
                                        liCustom = "liCustom" + item.Value;
-                                       <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" cutomTitle="@item.Text" class="chkbxfilter" id="@item.Value"></input></li>
+                                       <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" cutomTitle="@item.Text" class="chkbxfilter" id="@item.Value" onchange="OnMultiselectchange(this);"></input></li>
                                    }
                                  }
                                </ul>
@@ -237,7 +239,7 @@
 
 <div id="budgetHeader" class="budgetColums budgetReporting" style="display: none">
     <div class="plannedCost">
-        <h3 class="source-sans-proregular h3budget h3padding ">You've spent <span id="SpanTotalSpend">$2.5M</span> out of <span id="SpanTotalBudgeted">$4.8M</span>.</h3>
+        <h3 class="source-sans-proregular h3budget h3padding ">You've spent <span id="SpanTotalSpend"></span> out of <span id="SpanTotalBudgeted"></span>.</h3>
         <div style="clear: both;"></div>
     </div>
     <div class="budgetCompare monthContainerBudget">
@@ -364,6 +366,28 @@
     });
 
     // <--- End document.ready Event --->
+    function OnPlanchange(_plancheckbox) {
+        var _checked = $(_plancheckbox).attr('checked');
+        var _val = $(_plancheckbox).attr('id');
+        var _planliId = "liPlan" + _val;
+        OnCheckboxChange(_planliId, _checked);
+    }
+
+    function OnMultiselectchange(_checkbox) {
+        var _checked = $(_checkbox).attr('checked');
+        var _val = $(_checkbox).attr('id');
+        var _parentliId = "liCustom" + _val;
+        OnCheckboxChange(_parentliId, _checked);
+    }
+
+    function OnCheckboxChange(_parentliId, _checked) {
+        if (_checked != null && _checked != 'undefined' && _checked === 'checked') {
+            $("#" + _parentliId).addClass('close-list');
+        }
+        else {
+            $("#" + _parentliId).removeClass('close-list');
+        }
+    }
 
     //// Load Check value in multiselect dropdown - common for all dropdown
     function LoadCheckBoxValue(multiselectId, filterid) {

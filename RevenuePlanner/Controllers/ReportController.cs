@@ -63,8 +63,8 @@ namespace RevenuePlanner.Controllers
 
             //// List of Allocated Value
             List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
-            lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
-            lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = Enums.ViewByAllocated.Monthly.ToString(), Value = Enums.PlanAllocatedBy.months.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = Enums.ViewByAllocated.Quarterly.ToString(), Value = Enums.PlanAllocatedBy.quarters.ToString() });
             lstViewByAllocated = lstViewByAllocated.Where(sort => !string.IsNullOrEmpty(sort.Text)).ToList();
             ViewBag.ViewByAllocated = lstViewByAllocated;
 
@@ -75,7 +75,7 @@ namespace RevenuePlanner.Controllers
 
             // Get Custom Field Type Id
             string customFieldType = Enums.CustomFieldType.DropDownList.ToString();
-            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).First();
+            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).Select(type => type.CustomFieldTypeId).FirstOrDefault();
 
             lstCustomFields = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId &&
                 customfield.EntityType == tactic &&
@@ -86,16 +86,19 @@ namespace RevenuePlanner.Controllers
 
             lstCustomFields = lstCustomFields.Where(sort => !string.IsNullOrEmpty(sort.Name)).OrderBy(sort => sort.Name, new AlphaNumericComparer()).ToList();
 
+            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList();
             //// Filter Custom Fields having no options
-            var lstCustomFieldIds = db.CustomFieldOptions.Select(customfieldid => customfieldid.CustomFieldId).Distinct();
+            var lstCustomFieldIds = tblCustomFieldOption.Select(customfieldid => customfieldid.CustomFieldId).Distinct();
             lstCustomFields = lstCustomFields.Where(c => lstCustomFieldIds.Contains(c.CustomFieldId)).ToList();
 
             ViewBag.ViewCustomFields = lstCustomFields;
+            ViewBag.ViewCustomFieldOptions = tblCustomFieldOption.Where(_option => lstCustomFieldIds.Contains(_option.CustomFieldId)).ToList();
             //// End - Added by Arpita Soni for Ticket #1148 on 01/23/2015			
 
             //// Get Plan List
             List<SelectListItem> lstYear = new List<SelectListItem>();
-            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId && plan.Model.IsDeleted == false && plan.IsActive == true).ToList();
+            List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false).ToList();
+            var lstPlan = tblPlan.Where(plan => plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId && plan.Model.IsDeleted == false && plan.IsActive == true).ToList();
             if (lstPlan.Count == 0)
             {
                 TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
@@ -107,14 +110,14 @@ namespace RevenuePlanner.Controllers
 
             // Start - Added by Arpita Soni for Ticket #1148 on 02/02/2015
             // to make default selected plan from session planId
-            var selectedYear = db.Plans.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Year).FirstOrDefault();
+            var selectedYear = tblPlan.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Year).FirstOrDefault();
             lstPlanList = lstPlan.Where(plan => plan.Year == selectedYear).Select(plan => new SelectListItem { Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (plan.PlanId == Sessions.PlanId ? true : false) }).ToList();
             ViewBag.SelectedYear = selectedYear;
             // End - Added by Arpita Soni for Ticket #1148 on 02/02/2015
 
             var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
             yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year, Selected = year == selectedYear ? true : false }));
-            SelectListItem thisQuarter = new SelectListItem { Text = "this quarter", Value = "thisquarter" };
+            SelectListItem thisQuarter = new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString()};
             lstYear.Add(thisQuarter);
 
 

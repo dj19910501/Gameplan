@@ -942,6 +942,16 @@ namespace RevenuePlanner.Helpers
         {
             Campaign = 0
         }
+        /// <summary>
+        /// ViewBy Frequencies
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>05/03/2015</CreatedDate>
+        public enum ViewByAllocated
+        {
+            Monthly,
+            Quarterly
+        }
     }
 
     #region Authorization
