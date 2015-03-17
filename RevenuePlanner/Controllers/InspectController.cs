@@ -7712,17 +7712,16 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (IsProgram)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget, expand = "campaign" + cid.ToString() }) });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "program" + cid.ToString() });
                                 }
                                 else if (IsTactic)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget, expand = "program" + pid.ToString() }) });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "tactic" + pid.ToString() });
                                 }
                                 else if (IsLineItem)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget, expand = "tactic" + tid.ToString() }) });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "lineitem" + tid.ToString() });
                                 }
-
                             }
                             else if (IsIndex)
                             {

@@ -164,12 +164,26 @@
 
                 strExpandId = strExpand.replace(strExpandType, '');
                 if ($.isNumeric(strExpandId)) {
+                    var currObj, tacticDP, programDP, campaignDP;
                     if (strExpandType == 'lineitem') {
-                            var currObj = $('#' + strExpandId).parent();
-                            var tacticDP = $(currObj).parent().attr('data-parent'); //tactic
-                            var programDP = $(currObj).parent().parent().attr('data-parent'); //program
-                            var campaignDP = $(currObj).parent().parent().parent().attr('data-parent'); //campaign
-                    
+                        if ($("#hdnBudgetingIsDelete").val() != "true") {
+                            currObj = $('#' + strExpandId).parent();
+                            tacticDP = $(currObj).parent().attr('data-parent'); //tactic
+                            programDP = $(currObj).parent().parent().attr('data-parent'); //program
+                            campaignDP = $(currObj).parent().parent().parent().attr('data-parent'); //campaign
+                        }
+                        else {
+                            if (currentTab != 'aAllocated') {
+                                strExpandId = "#tacticcpt_" + strExpandId;
+                            }                            
+
+                            currObj = $(strExpandId).next();
+                            tacticDP = $(currObj).attr('data-parent'); //tactic
+                            programDP = $(currObj).parent().attr('data-parent'); //program
+                            campaignDP = $(currObj).parent().parent().attr('data-parent'); //campaign
+                            $("#hdnBudgetingIsDelete").val("false");
+                        }
+
                         $('#' + campaignDP).css('display', 'block');
                         $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
                         $('#' + campaignDP + ' a:first-child').addClass('collapse');
@@ -189,9 +203,25 @@
 
                     }
                     else if (strExpandType == 'tactic') {
-                            var currObj = $('#' + strExpandId).parent();
-                            var programDP = $(currObj).parent().attr('data-parent'); //program
-                            var campaignDP = $(currObj).parent().parent().attr('data-parent'); //campaign
+                        if ($("#hdnBudgetingIsDelete").val() != "true") {
+                            currObj = $('#' + strExpandId).parent();
+                            programDP = $(currObj).parent().attr('data-parent'); //program
+                            campaignDP = $(currObj).parent().parent().attr('data-parent'); //campaign
+                        }
+                        else {
+
+                            if (currentTab != 'aAllocated') {
+                                strExpandId = "#programcp_" + strExpandId;
+                            }
+                            else {
+                                strExpandId = "#program" + strExpandId;
+                            }
+
+                            currObj = $(strExpandId).next();
+                            programDP = $(currObj).attr('data-parent'); //program
+                            campaignDP = $(currObj).parent().attr('data-parent'); //campaign
+                            $("#hdnBudgetingIsDelete").val("false");
+                        }
 
                         $('#' + campaignDP).css('display', 'block');
                         $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
@@ -211,11 +241,26 @@
                         // Added By : Kalpesh Sharma #907
                         // When a user makes any change to the inspection window then the tree collapses on its own. The system should maintain the context. 
                         var ProgramExpand = "#" + strExpandId;
-                        if (currentTab == 'aPlanned') {
+                        if (currentTab != 'aAllocated') {
                             ProgramExpand = "#cp_" + strExpandId;
-                         }
-                        var currObj = $(ProgramExpand).parent();
-                            var campaignDP = $(currObj).parent().attr('data-parent'); //campaign
+                        }
+                      
+                        if ($("#hdnBudgetingIsDelete").val() != "true") {
+                            currObj = $(ProgramExpand).parent();
+                            campaignDP = $(currObj).parent().attr('data-parent'); //campaign
+                        }
+                        else {
+                            if (currentTab != 'aAllocated') {
+                                strExpandId = "#campaignc_" + strExpandId;
+                            }
+                            else {
+                                strExpandId = "#campaign" + strExpandId;
+                            }
+                           
+                            currObj = $(strExpandId).next();
+                            campaignDP = $(currObj).attr('data-parent');
+                            $("#hdnBudgetingIsDelete").val("false");
+                        }
 
                         $('#' + campaignDP).css('display', 'block');
                         $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');

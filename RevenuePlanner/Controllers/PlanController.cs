@@ -7,7 +7,6 @@ using System.Data;
 using System.Linq;
 using System.Web.Mvc;
 using System.Transactions;
-using Newtonsoft.Json;
 
 /*
  * Added By :
@@ -1691,9 +1690,10 @@ namespace RevenuePlanner.Controllers
 
             //// Set ActiveMenu,CampaignId,ProgramId,TacticId values to ViewBag.
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
-            ViewBag.CampaignID = campaignId;
-            ViewBag.ProgramID = programId;
-            ViewBag.TacticID = tacticId;
+            ViewBag.CampaignID = (campaignId <= 0) ? Session["CampaignID"] : campaignId;
+            ViewBag.ProgramID = (programId <= 0) ? Session["ProgramID"] : programId;
+            ViewBag.TacticID = (tacticId <= 0) ? Session["TacticID"] : tacticId;
+            Session["CampaignID"] = Session["ProgramID"] = Session["TacticID"] = 0;
 
             if (TempData["SuccessMessageDuplicatePlan"] != null)
             {
@@ -1713,7 +1713,7 @@ namespace RevenuePlanner.Controllers
                     isError = true;
                 }
             }
-            ViewBag.TacticId = tacticId;
+           
             ViewBag.EditOjbect = EditObject;
             ViewBag.Msg = ismsg;
             ViewBag.isError = isError;
@@ -2543,6 +2543,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
+                        ViewBag.CampaignID = Session["CampaignID"];
                         TempData["SuccessMessageDeletedPlan"] = strMessage;
                         return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId, Id = rtResult, msg = strMessage });
                     }

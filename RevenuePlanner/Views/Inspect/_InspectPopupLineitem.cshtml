@@ -427,7 +427,16 @@ $("#deleteLineItem").click(function () {
                                  $('body').removeClass('bodyOverflow');
                              }
                              else {
-                                 window.location.href = data.redirect;
+                                 if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == data.opt) {
+                                     $("#hdnBudgetingExpandId").val(data.expand);
+                                     $("#hdnBudgetingIsSave").val("true");
+                                     $("#hdnBudgetingIsDelete").val("true");
+                                     $(".close-x-big-icon").trigger("click");
+                                 }
+                                 else {
+                                     window.location.href = data.redirect;
+                                 }
+
                                  return;
                              }
                          }

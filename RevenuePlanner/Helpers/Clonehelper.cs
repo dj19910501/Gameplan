@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Objects.DataClasses;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -397,6 +395,7 @@ namespace RevenuePlanner.Helpers
                 if (objPlanCampaignPrograms != null)
                 {
                     planId = objPlanCampaignPrograms.Plan_Campaign.PlanId;
+                    HttpContext.Current.Session["CampaignID"] = objPlanCampaignPrograms.Plan_Campaign.PlanCampaignId;
                     objPlanCampaignPrograms.CreatedBy = UserId;
                     objPlanCampaignPrograms.CreatedDate = DateTime.Now;
                     objPlanCampaignPrograms.Title = (objPlanCampaignPrograms.Title + Suffix);
@@ -507,6 +506,8 @@ namespace RevenuePlanner.Helpers
                 if (objPlanCampaignProgramTactic != null)
                 {
                     planid = objPlanCampaignProgramTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                    HttpContext.Current.Session["ProgramID"] = objPlanCampaignProgramTactic.Plan_Campaign_Program.PlanProgramId;
+                    HttpContext.Current.Session["CampaignID"] = objPlanCampaignProgramTactic.Plan_Campaign_Program.PlanCampaignId;
                     objPlanCampaignProgramTactic.Stage = null;
                     objPlanCampaignProgramTactic.Status = TacticStatus;
                     objPlanCampaignProgramTactic.CreatedBy = UserId;
@@ -587,6 +588,9 @@ namespace RevenuePlanner.Helpers
                 {
                     planid = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                     int TacticId = objPlanCampaignProgramTacticLineItem.PlanTacticId;
+                    HttpContext.Current.Session["ProgramID"] = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId;
+                    HttpContext.Current.Session["CampaignID"] = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
+                    HttpContext.Current.Session["TacticID"] = TacticId;
                     objPlanCampaignProgramTacticLineItem.CreatedBy = UserId;
                     objPlanCampaignProgramTacticLineItem.CreatedDate = DateTime.Now;
                     objPlanCampaignProgramTacticLineItem.Title = (objPlanCampaignProgramTacticLineItem.Title + Suffix);
