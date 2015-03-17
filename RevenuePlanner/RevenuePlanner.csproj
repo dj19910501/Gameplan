@@ -345,6 +345,7 @@
     <Content Include="Content\images\chat-button.png" />
     <Content Include="Content\images\check-green.png" />
     <Content Include="Content\images\check-red.png" />
+    <Content Include="Content\images\check.png" />
     <Content Include="Content\images\check_signup.png" />
     <Content Include="Content\images\check_signup_checkbox.png" />
     <Content Include="Content\images\circle-check-icon-blue.png" />
@@ -357,6 +358,8 @@
     <Content Include="Content\images\close-x.png" />
     <Content Include="Content\images\comment_icon.png" />
     <Content Include="Content\images\copy.png" />
+    <Content Include="Content\images\cross.png" />
+    <Content Include="Content\images\d.png" />
     <Content Include="Content\images\deal-icon-active.png" />
     <Content Include="Content\images\deal-icon-blue.png" />
     <Content Include="Content\images\deal-icon.png" />
@@ -415,6 +418,7 @@
     <Content Include="Content\images\info-icon.png" />
     <Content Include="Content\images\integration-white-small.png" />
     <Content Include="Content\images\integration.png" />
+    <Content Include="Content\images\l.png" />
     <Content Include="Content\images\left-double-arrow.png" />
     <Content Include="Content\images\left-nav-border.png" />
     <Content Include="Content\images\magnifying_glass.png" />
@@ -431,6 +435,7 @@
     <Content Include="Content\images\photo-user2.jpg" />
     <Content Include="Content\images\photo-user3.jpg" />
     <Content Include="Content\images\plan-icon.png" />
+    <Content Include="Content\images\r.png" />
     <Content Include="Content\images\red-arrow-down.png" />
     <Content Include="Content\images\red-row.png" />
     <Content Include="Content\images\requests-logo.png" />
@@ -461,6 +466,7 @@
     <Content Include="Content\images\treeview-ver-line-solid.gif" />
     <Content Include="Content\images\treeview-ver-line.gif" />
     <Content Include="Content\images\trophy-02.png" />
+    <Content Include="Content\images\u.png" />
     <Content Include="Content\images\user_image_not_found.png" />
     <Content Include="Content\images\vertical.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -621,6 +627,7 @@
     </None>
     <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Scripts\dhtmlxchart.js" />
+    <Content Include="Scripts\jquery.cluetip.js" />
     <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\jquery.form.js" />
     <Content Include="Scripts\jquery.form.min.js" />

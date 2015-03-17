@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Web.Mvc;
 using System.Transactions;
+using Newtonsoft.Json;
 
 /*
  * Added By :
@@ -4251,6 +4252,52 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
+        /// <summary>
+        /// save plan/campaign/program/tactic's monthly/yearly budget values
+        /// </summary>
+        /// <param name="entityId">plan/campaign/program/tactic id</param>
+        /// <param name="section">plan/campaign/program/tactic</param>
+        /// <param name="month">month of budget</param>
+        /// <param name="inputs">values of budget for month/year</param>
+        /// <returns>json flag for success or failure</returns>
+        public JsonResult SaveBudgetCell(string entityId, string section,string month, string inputs)
+        {
+            Dictionary<string, string> monthList = new Dictionary<string, string>() { 
+                {Enums.Months.January.ToString(), "Y1" },
+                {Enums.Months.February.ToString(), "Y2" },
+                {Enums.Months.March.ToString(), "Y3" },
+                {Enums.Months.April.ToString(), "Y4" },
+                {Enums.Months.May.ToString(), "Y5" },
+                {Enums.Months.June.ToString(), "Y6" },
+                {Enums.Months.July.ToString(), "Y7" },
+                {Enums.Months.August.ToString(), "Y8" },
+                {Enums.Months.September.ToString(), "Y9" },
+                {Enums.Months.October.ToString(), "Y10" },
+                {Enums.Months.November.ToString(), "Y11" },
+                {Enums.Months.December.ToString(), "Y12" },
+                {"Quarter 1", "Y1" },
+                {"Quarter 2", "Y4" },
+                {"Quarter 3", "Y7" },
+                {"Quarter 4", "Y10" }
+                };
+            var popupValues = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(inputs);
+            if (popupValues != null && popupValues.Count > 0)
+            {
+                if (string.Compare(section,Enums.Section.Plan.ToString(),true)==0)
+                {
+                }
+                else if (string.Compare(section, Enums.Section.Campaign.ToString(), true) == 0)
+                {
+                }
+                else if (string.Compare(section, Enums.Section.Program.ToString(), true) == 0)
+                {
+                }
+                else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
+                {
+                }
+            }
+            return null;
+        }
 
         #endregion
 
@@ -4321,7 +4368,17 @@ namespace RevenuePlanner.Controllers
                     description = pcpj.Description,
                     Budgeted = pcpj.ProgramBudget,
                     Budget = pcpj.Plan_Campaign_Program_Budget.Select(_budgt => new BudgetedValue { Period = _budgt.Period, Value = _budgt.Value }).ToList(),
-                    isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1
+                    isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
+                    tactics = (db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
+                    {
+                        id = pcptj.PlanTacticId,
+                        title = pcptj.Title,
+                        description = pcptj.Description,
+                        Cost = pcptj.Cost,
+                        Budget = pcptj.Plan_Campaign_Program_Tactic_Cost.Select(t => new BudgetedValue { Period = t.Period, Value = t.Value }).ToList(),
+                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 0 : 1
+
+                    }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id)
 
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
             }).Select(_campgn => _campgn).Distinct().OrderBy(_campgn => _campgn.id);
@@ -4341,7 +4398,16 @@ namespace RevenuePlanner.Controllers
                     description = _prgrm.description,
                     Budgeted = _prgrm.Budgeted,
                     Budget = _prgrm.Budget,
-                    isOwner = _prgrm.isOwner
+                    isOwner = _prgrm.isOwner,
+                    tactics = _prgrm.tactics.Select(_tactic => new
+                    {
+                        id = _tactic.id,
+                        title = _tactic.title,
+                        description = _tactic.description,
+                        Budgeted = _tactic.Cost,
+                        Budget = _tactic.Budget,
+                        isOwner = _tactic.isOwner
+                    })
                 })
             });
 
@@ -4353,14 +4419,23 @@ namespace RevenuePlanner.Controllers
                 Budget = _camgn.Budget,
                 Budgeted = _camgn.Budgeted,
                 isOwner = _camgn.isOwner == 0 ? (_camgn.programs.Any(_prgrm => _prgrm.isOwner == 1) ? 1 : 0) : 1,
-                programs = _camgn.programs
+                programs = _camgn.programs.Select(_prgm => new
+                {
+                    id = _prgm.id,
+                    title = _prgm.title,
+                    description = _prgm.description,
+                    Budget = _prgm.Budget,
+                    Budgeted = _prgm.Budgeted,
+                    isOwner = _prgm.isOwner == 0 ? (_prgm.tactics.Any(_tactic => _tactic.isOwner == 1) ? 1 : 0) : 1,
+                    tactics = _prgm.tactics
+                })
             });
 
             string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
             List<BudgetModel> model = new List<BudgetModel>();
             BudgetModel obj;
             Plan objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId.Equals(PlanId));
-            string parentPlanId = "0", parentCampaignId = "0";
+            string parentPlanId = "0", parentCampaignId = "0", parentProgramId = "0";
             if (objPlan != null)
             {
                 AllocatedBy = objPlan.AllocatedBy;
@@ -4406,6 +4481,20 @@ namespace RevenuePlanner.Controllers
                         obj = GetMonthWiseData(obj, p.Budget);
                         obj.Budgeted = p.Budgeted;
                         model.Add(obj);
+                        parentProgramId = p.id.ToString();
+                        foreach (var t in p.tactics)
+                        {
+                            //// Insert Tactic data to Model.
+                            obj = new BudgetModel();
+                            obj.ActivityId = t.id.ToString();
+                            obj.ActivityName = t.title;
+                            obj.ActivityType = ActivityType.ActivityTactic;
+                            obj.ParentActivityId = parentProgramId;
+                            obj.IsOwner = Convert.ToBoolean(t.isOwner);
+                            obj = GetMonthWiseData(obj, t.Budget);
+                            obj.Budgeted = t.Budgeted;
+                            model.Add(obj);
+                        }
                     }
                 }
             }
@@ -4515,8 +4604,6 @@ namespace RevenuePlanner.Controllers
                 plan.SumMonth = plan.Month;
                 List<BudgetModel> campaigns = model.Where(_mdl => _mdl.ActivityType == ActivityType.ActivityCampaign && _mdl.ParentActivityId == plan.ActivityId).ToList();
                 BudgetMonth SumCampaign = new BudgetMonth();
-                List<BudgetModel> programs;
-                BudgetMonth SumProgram;
                 foreach (BudgetModel c in campaigns)
                 {
                     //// Set Campaign monthly data.
@@ -4535,9 +4622,8 @@ namespace RevenuePlanner.Controllers
                     SumCampaign.Dec += c.Month.Dec;
                     c.SumMonth = SumCampaign;
                     c.ParentMonth = new BudgetMonth();
-                    programs = new List<BudgetModel>();
-                    programs = model.Where(p => p.ActivityType == ActivityType.ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
-                    SumProgram = new BudgetMonth();
+                    List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityType.ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
+                    BudgetMonth SumProgram = new BudgetMonth();
                     foreach (BudgetModel p in programs)
                     {
                         //// Set Program monthly data.
@@ -4556,6 +4642,26 @@ namespace RevenuePlanner.Controllers
                         SumProgram.Dec += p.Month.Dec;
                         p.SumMonth = SumProgram;
                         p.ParentMonth = new BudgetMonth();
+                        List<BudgetModel> tactics = model.Where(t => t.ActivityType == ActivityType.ActivityTactic && t.ParentActivityId == p.ActivityId).ToList();
+                        BudgetMonth SumTactic = new BudgetMonth();
+                        foreach (BudgetModel t in tactics)
+                        {
+                            t.Allocated = t.Budgeted;
+                            SumTactic.Jan += p.Month.Jan;
+                            SumTactic.Feb += p.Month.Feb;
+                            SumTactic.Mar += p.Month.Mar;
+                            SumTactic.Apr += p.Month.Apr;
+                            SumTactic.May += p.Month.May;
+                            SumTactic.Jun += p.Month.Jun;
+                            SumTactic.Jul += p.Month.Jul;
+                            SumTactic.Aug += p.Month.Aug;
+                            SumTactic.Sep += p.Month.Sep;
+                            SumTactic.Oct += p.Month.Oct;
+                            SumTactic.Nov += p.Month.Nov;
+                            SumTactic.Dec += p.Month.Dec;
+                            t.SumMonth = SumTactic;
+                            t.ParentMonth = new BudgetMonth();
+                        }
                     }
                 }
                 //finding remaining
@@ -4577,9 +4683,8 @@ namespace RevenuePlanner.Controllers
                     c.ParentMonth.Nov = plan.Month.Nov - c.SumMonth.Nov;
                     c.ParentMonth.Dec = plan.Month.Dec - c.SumMonth.Dec;
 
-                    programs = new List<BudgetModel>();
-                    programs = model.Where(p => p.ActivityType == ActivityType.ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
-                    SumProgram = new BudgetMonth();
+                    List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityType.ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
+                    BudgetMonth SumProgram = new BudgetMonth();
                     foreach (BudgetModel p in programs)
                     {
                         //// Set Campaign monthly parent data.
@@ -4595,6 +4700,23 @@ namespace RevenuePlanner.Controllers
                         p.ParentMonth.Oct = c.Month.Oct - p.SumMonth.Oct;
                         p.ParentMonth.Nov = c.Month.Nov - p.SumMonth.Nov;
                         p.ParentMonth.Dec = c.Month.Dec - p.SumMonth.Dec;
+                        List<BudgetModel> tactics = model.Where(t => t.ActivityType == ActivityType.ActivityTactic && t.ParentActivityId == p.ActivityId).ToList();
+                        BudgetMonth SumTactic = new BudgetMonth();
+                        foreach (BudgetModel t in tactics)
+                        {
+                            t.ParentMonth.Jan = p.Month.Jan - t.SumMonth.Jan;
+                            t.ParentMonth.Feb = p.Month.Feb - t.SumMonth.Feb;
+                            t.ParentMonth.Mar = p.Month.Mar - t.SumMonth.Mar;
+                            t.ParentMonth.Apr = p.Month.Apr - t.SumMonth.Apr;
+                            t.ParentMonth.May = p.Month.May - t.SumMonth.May;
+                            t.ParentMonth.Jun = p.Month.Jun - t.SumMonth.Jun;
+                            t.ParentMonth.Jul = p.Month.Jul - t.SumMonth.Jul;
+                            t.ParentMonth.Aug = p.Month.Aug - t.SumMonth.Aug;
+                            t.ParentMonth.Sep = p.Month.Sep - t.SumMonth.Sep;
+                            t.ParentMonth.Oct = p.Month.Oct - t.SumMonth.Oct;
+                            t.ParentMonth.Nov = p.Month.Nov - t.SumMonth.Nov;
+                            t.ParentMonth.Dec = p.Month.Dec - t.SumMonth.Dec;
+                        }
                     }
                 }
             }

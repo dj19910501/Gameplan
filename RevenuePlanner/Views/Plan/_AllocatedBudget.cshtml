@@ -34,21 +34,27 @@
                             </tr>
                             @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, "0")
                         </tbody>
+                          <tbody class="column4">
+                            <tr>
+                                <td>
+                                    <div>Budget</div>
+                                </td>
+                            </tr>
+                            @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, "0")
+                        </tbody>
                         <tbody class="column2">
-                            @Html.AllocatedPlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy)
+                            @Html.AllocatedPlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy,Model)
                             @Html.AllocatedCampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy)
                         </tbody>
                         <tbody class="column3">
                             <tr>
                                 <td>
-                                    <div>Allocated</div>
-                                </td>
-                                <td>
-                                    <div>Budgeted</div>
+                                    <div>Unallocated</div>
                                 </td>
                             </tr>
                             @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, "0")
                         </tbody>
+                       
                     </table>
                     <div style="clear: both;"></div>
                 </div>
@@ -56,6 +62,13 @@
         </div>
     </div>
 </div>
+<div id="loadme" class="loadme-true" style="display:none;">
+   	<h3></h3>
+   	<div class="tooltip-field">
+    	
+    </div>
+    <p class="button-grp-tooltip"> <button class="btn btn-blue text-shadow-blue source-sans-proregular tooltip-button" id="btnClueTip">Save</button> </p>
+   </div>
  <div class="container-fluid all-height" id="modalMainContainer">
     <div class="row-fluid calc-height">
         <div class="container-fluid">
@@ -100,6 +113,7 @@
    
     $(document).ready(function () {
         SetHeader();
+       // AddTipsy();
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
@@ -108,8 +122,9 @@
         var mainTableWidth = $('.budget-table').width();
         var columnWidth1 = $('.column1').width();
         var columnWidth3 = $('.column3').width();
-        $('.column2').width(mainTableWidth - columnWidth1 - columnWidth3 - 24);
-
+        var columnWidth4 = $('.column4').width();
+        $('.column2').width(mainTableWidth - columnWidth1 - columnWidth3 - columnWidth4 - 24);
+        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true });
         $('.accordionClick').on('click', function () {
             var accordionId = $(this).parent().attr('id');
             $('table').find(".sub[data-parent='" + accordionId + "']").fadeToggle(100);
@@ -152,6 +167,17 @@
             }
         }
     });
+    //function AddTipsy() {
+    //    $("div[allocated]").each(function () {
+    //        var num = $(this).attr('allocated');
+    //        if (parseInt(num) < 0) {
+    //            bootstrapetitle($(this), 'Remaining: ' + num.replace('-', '-$'), "tipsy-innerWhite");
+    //        }
+    //        else {
+    //            bootstrapetitle($(this), 'Remaining: $' + num, "tipsy-innerWhite");
+    //        }
+    //    });
+    //}
     function SetHeader() {
         $('#divViewBy').hide();
         if ('@AllocatedBy' != '@strDefault') {
@@ -415,5 +441,39 @@ else {
     $("[linktype=program]").click(function (e) {
         var id = $(this).attr('id');       
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    });
+    $("[linktype=tactic]").click(function (e) {
+        var id = $(this).attr('id');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    });
+    $('#btnClueTip').click(function () {
+        var entityId = $('#entityDetails').val();
+        var section = $('#entityDetails').attr('section').toString();
+        var month = $('#entityDetails').attr('mnth').toString();
+        var inputArr = [];
+        $('.tooltip-field').find('input[type=text]').not('[disabled=disabled]').each(function () {
+            debugger;
+            inputArr.push({
+                key: $(this).attr('id'),
+                Value: $(this).val()
+            });
+        });
+        debugger;
+        var jsonInputs = JSON.stringify(inputArr);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/SaveBudgetCell/")',
+            dataType: "json",
+            data: 'entityId=' + entityId + '&section=' + section + '&month='+month+'&inputs=' + jsonInputs,
+                  success: function (data) {
+                    @*  if (data.isSuccess == true) {
+                          var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
+                          window.location.href = url;
+                      }
+                      else {
+                          alert('Error');
+                      }*@
+                  }
+           });
     });
 </script>

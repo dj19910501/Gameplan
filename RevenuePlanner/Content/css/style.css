@@ -8918,7 +8918,7 @@ tbody.column1 {
     width: 20%;
     max-width: 20%;
     overflow-x: auto;
-    border-right: 1px solid #808080;
+    /*border-right: 1px solid #808080;modified by mitesh vaishnav for PL ticket #1228*/
     border-left: 1px solid #CCC;
 }
 
@@ -8936,14 +8936,21 @@ tbody.column2 {
     border-right: 1px solid #808080;
     max-width: 59%;
 }
-
+/*Start modified by Mitesh vaishnav for PL ticket #1228*/
 tbody.column3 {
-    max-width: 20%;
-    width: 20%;
+    max-width: 10%;
+    width: 10%;
     border-right: none;
 }
+tbody.column4 {
+    max-width: 10%;
+    width: 10%;
+    border-left: 1px solid #ccc;
+     border-right: 1px solid #808080;
+}
+/*End modified by Mitesh vaishnav for PL ticket #1228*/
 
-.column1 div, .column2 div, .column3 div {
+.column1 div, .column2 div, .column3 div, .column4 div {
     min-height: 24px;
     line-height: 24px;
     text-align: center;
@@ -8953,7 +8960,7 @@ tbody.column3 {
     font-size: 14px;
 }
 
-.column2 div, .column3 div {
+.column2 div, .column3 div,.column4 div {
     min-width: 88px;
 }
 
@@ -11514,6 +11521,17 @@ li.close-list {
     text-align: center;
 }
 
+/*Start added by Mitesh vaishnav for PL ticket #1228*/
+.tooltip-field > input {
+    background: #DFF0F8;
+}
+
+
+    .tooltip-field > input[disabled] {
+        background-color:#f3f3f3;
+    }
+
+/*end added by Mitesh vaishnav for PL ticket #1228*/
 .first_show, .first_hide {
     padding: 5px;
     font-size: 14px;
@@ -12030,3 +12048,93 @@ li.close-list {
   .report-heder-tab > li > a {background: none repeat scroll 0 0 #dddddd; border-top: 1px solid #c7c7c7;color: #908d88 ; font-size: 16px; height: 40px; line-height: 40px;  padding: 3px 15px}
   .report-heder-tab li a span {background: url("../images/icons-nav-black-reports.png") no-repeat ; width: 30px !important; height: 30px !important;display: block;float: left;  margin: 4px 20px 0 0;}
     /* Report Header Tabs - End */
+		 
+/*Clue tip*/
+#loadmetrue > h3  { margin:0; border-bottom: 1px solid #b3b3b3;font-size:14px;border-radius: 8px 8px 0 0;padding: 8px 10px 10px; font-family: Myriad Pro; }
+/* edited force fully*/.cluetip-title.ui-widget-header.ui-cluetip-header { display: none !important;}
+.ui-cluetip-header {  font-size: 1em; margin: 0;  overflow: hidden;}
+.cluetip-title .cluetip-close { float: right;  position: relative;}
+.cluetip-close img {  border: 0;  display:none !important;}
+.cluetip-close{display:none !important;}
+.cluetip-arrows {  background-position: 0 0;background-repeat: no-repeat;border-width: 0;display: none;height: 22px;left: -11px;position: absolute;top: 0;width: 11px; margin-top: 8px;}
+.cluetip-extra {  display: none;}
+.cluetip-default,.cluetip-default .cluetip-outer {  background-color: #fff;}
+.cluetip-default .ui-cluetip-header {  background-color: #87876a;}
+.ui-cluetip-header {display:none;}
+/* default arrows */
+div.cluetip-default .cluetip-arrows {border-width: 0; background-image: url("../images/l.png"); margin-left: 1px;}
+div.clue-left-default .cluetip-arrows {background-image: url("../images/r.png");  left: 100%;  margin-right: -11px;}
+div.clue-top-default .cluetip-arrows {  background-image: url("../images/d.ong");  top: 95%;  left: 50%;  margin-left: -11px;  width: 22px;  height: 11px;}
+div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.png");  top: -19px;  left: 50%;  margin-left: -11px;width: 22px;  height: 11px;}
+.cluetip-rounded {  -webkit-border-radius: 6px;  -moz-border-radius: 6px;  border-radius: 6px;  background-color: #fff;  border: 1px solid #ccc;}
+.cluetip-rounded .cluetip-outer {  -webkit-border-radius: 6px;  -moz-border-radius: 6px;  border-radius: 6px;  background-color: #fff;}
+.cluetip-rounded  .cluetip-arrows {  border-color: #fefefe;}
+.cluetip-inner.ui-widget-content.ui-cluetip-content { width: 100%; border: 1px solid #808080; border-radius: 8px;}
+#loadmetrue > ul { margin-top: 10px;    padding: 2px; margin-bottom:10px; margin-left:0; margin-right:0px;}
+#loadmetrue input { border: 1px solid #ccc;    border-radius: 3px;    color: #808080;    font-size: 12px;    height: 22px;    margin-left: 6px;    margin-right: 9px;    padding-left: 4px;    width: 144px;}
+
+.tooltip-tactic-cost {border-top: 1px solid #e6e6e6;margin-bottom: 10px; margin-left: 7px; width: 93%;}
+.tactic-cost {    color: #808080;    font-size: 14px;    margin-bottom: 8px;    margin-top: 11px;}
+.variaion-budget{ color: #808080;    font-size: 14px;}
+.variaion-budget > span{  color:#000;   padding-left: 6px;}
+.tactic-cost > span {color: #ff565b;  padding-left: 6px;}
+#loadmetrue li {display: inline-block;}
+/*Clue tip*/
+/*Clue tip 09-03-2015*/
+.cluetip-default { width: 397px !important;}
+.tooltip-field {    padding: 10px 0 10px 20px;}
+.cluetip-close { position: absolute;    right: 9px;    top: 13px;	display:block !important;}
+.loadme-true{ border:0px solid #808080; border-radius:8px; }
+.label-toooltip {    display: inline-block;    margin-bottom: 16px;    margin-right: 15px;    text-align: right;    width: 177px;  font-family: source_sans_proregular;}
+.tooltip-field {    border-bottom: 1px solid #b3b3b3;    padding: 10px 0 10px 20px;}
+#loadmetrue > h3  { margin:0; border-bottom: 1px solid #b3b3b3;font-size:14px;border-radius: 8px 8px 0 0;/*background-color: #e6e6e6;*/padding: 0px 10px 0px; font-family: source_sans_prolight; font-weight:bold; }
+.button-grp-tooltip {    margin-right: 21px;    text-align: right;}
+
+.cluetip-close > a {
+    font-weight: bold;
+    font-family: source_sans_probold;
+    font-size: 22px;
+    color: #808080;
+}
+.button-grp-tooltip {
+    margin-bottom: 10px;
+    margin-left: 328px;
+    margin-top: 10px;
+}
+.tooltip-button {
+    margin: 0;
+}
+
+.clickme {
+    color: #000 !important;
+    cursor: pointer;
+}
+.orange-corner-budget {
+    border-right: 13px solid #FF931E;
+    border-bottom: 13px solid transparent;
+    height: 0px;
+    width: 0px;
+    position: absolute;
+    top: 0px; 
+    right: 0px;
+}
+.blue-corner-budget {
+    border-right: 13px solid #3FA9F5;
+    border-bottom: 13px solid transparent;
+    height: 0px;
+    width: 0px;
+    position: absolute;
+    top: 0px; 
+    right: 0px;
+}
+/*Clue tip 09-03-2015*/
+
+/*Temporary class*/
+.width20percent {
+width:20% !important;
+max-width:20% !important;
+}
+.columnBorder {
+    border-right: 1px solid #808080 !important;
+}
+/*End Temporary class*/

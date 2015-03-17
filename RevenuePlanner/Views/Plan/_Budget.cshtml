@@ -20,7 +20,7 @@
             <div class="cf all-height lenght-div">
                 <div class="budget-table source-sans-proregular">
                     <table cellpadding="0" cellspacing="0" border="0" class="budget-table">
-                        <tbody class="column1">
+                        <tbody class="column1 columnBorder">
                             <tr>
                                 <td>
                                     <div id="div2PlanDetails">&nbsp;</div>
@@ -53,7 +53,7 @@
                             @Html.CampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy,strTab)
                             }
                         </tbody>
-                        <tbody class="column3">
+                        <tbody class="column3 width20percent">
                             <tr>
                                 <td>
                                     @if(strTab == "2")
@@ -75,7 +75,7 @@
                             }
                             else
                             {
-                            @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
+                            @Html.TempCampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
                             }
                         </tbody>
                     </table>
@@ -85,6 +85,12 @@
         </div>
     </div>
 </div>
+<div id="loadme" class="loadme-true" style="display:none">
+   	<h3></h3>
+   	<div class="tooltip-field">
+    </div>
+    <p class="button-grp-tooltip"> <button class="btn btn-blue text-shadow-blue source-sans-proregular tooltip-button">Save</button> </p>
+   </div>
  <div class="container-fluid all-height" id="modalMainContainer">
     <div class="row-fluid calc-height">
         <div class="container-fluid">
@@ -127,10 +133,11 @@
 
     $(document).ready(function () {
         SetHeader();
+        //AddTipsy();
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
-
+        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true });
         // Budget Table
         var mainTableWidth = $('.budget-table').width();
         var columnWidth1 = $('.column1').width();
@@ -178,6 +185,15 @@
         }
 
     });
+
+   
+
+    //function AddTipsy() {
+    //    $("div[allocated]").each(function () {
+    //        bootstrapetitle($(this), 'Allocated : $' + $(this).attr('allocated'), "tipsy-innerWhite");
+    //    });
+    //}
+
     function SetHeader() {
         $('#divViewBy').show();
         if ('@AllocatedBy' != '@strDefault') {

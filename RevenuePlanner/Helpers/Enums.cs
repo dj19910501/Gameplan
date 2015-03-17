@@ -892,10 +892,40 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
-        /// Get BudgetTab
+        /// 12 months enum for get full name of month in budgeting
+        /// <CreatedBy>Mitesh Vaishnav</CreatedBy>
+        /// <CreatedDate>10/03/2015</CreatedDate>
         /// </summary>
-        /// <CreatedBy>Viral Kadiya</CreatedBy>
-        /// <CreatedDate>05/03/2015</CreatedDate>
+        public enum Months
+        {
+            January,
+            February,
+            March,
+            April,
+            May,
+            June,
+            July,
+            August,
+            September,
+            October,
+            November,
+            December
+        }
+        public enum QuarterWithSpace
+        {
+
+            Quarter1,
+            Quarter2,
+            Quarter3,
+            Quarter4,
+        }
+        public static Dictionary<string, string> Quarters = new Dictionary<string, string>()
+       {
+           {Enums.QuarterWithSpace.Quarter1.ToString(),"Quarter 1"},
+           {Enums.QuarterWithSpace.Quarter2.ToString(),"Quarter 2"},
+           {Enums.QuarterWithSpace.Quarter3.ToString(),"Quarter 3"},
+           {Enums.QuarterWithSpace.Quarter4.ToString(),"Quarter 4"}
+       };
         public enum BudgetTab
         {
             Allocated = 0,
