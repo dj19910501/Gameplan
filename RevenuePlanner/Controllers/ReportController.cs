@@ -85,8 +85,8 @@ namespace RevenuePlanner.Controllers
                 customfield.IsDeleted == false).ToList();
 
             lstCustomFields = lstCustomFields.Where(sort => !string.IsNullOrEmpty(sort.Name)).OrderBy(sort => sort.Name, new AlphaNumericComparer()).ToList();
-
-            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList();
+            List<int> ids = lstCustomFields.Select(c => c.CustomFieldId).ToList();
+            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.Where(_option => ids.Contains(_option.CustomFieldId)).ToList();
             //// Filter Custom Fields having no options
             var lstCustomFieldIds = tblCustomFieldOption.Select(customfieldid => customfieldid.CustomFieldId).Distinct();
             lstCustomFields = lstCustomFields.Where(c => lstCustomFieldIds.Contains(c.CustomFieldId)).ToList();
@@ -116,7 +116,22 @@ namespace RevenuePlanner.Controllers
             // End - Added by Arpita Soni for Ticket #1148 on 02/02/2015
 
             var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
-            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year, Selected = year == selectedYear ? true : false }));
+            SelectListItem objYear = new SelectListItem();
+            foreach (string year in yearlist)
+	        {
+                objYear = new SelectListItem();
+                if (year == Common.GetCurrentYear())
+                {
+                    objYear.Text = "FY " + year + Common.labelThisYear;
+                }
+                else
+                {
+                    objYear.Text = "FY " + year;
+                }
+                objYear.Value = year;
+                objYear.Selected = year == selectedYear ? true : false;
+                lstYear.Add(objYear);
+	        }
             SelectListItem thisQuarter = new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString()};
             lstYear.Add(thisQuarter);
 

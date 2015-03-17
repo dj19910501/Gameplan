@@ -90,10 +90,6 @@
                              {
                                  ddlYearId = "liYear" + item.Value;
                                  YearText = item.Text;
-                                 if (item.Value == RevenuePlanner.Helpers.Common.GetCurrentYear())
-                                 {
-                                     YearText = YearText + " " + RevenuePlanner.Helpers.Common.labelThisYear;
-                                 }
                                  
                                  if (item.Value == SelectedYear)
                                  {
@@ -123,8 +119,8 @@
                     </div>
                     <div id="accordion-element-quart" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulSelectedQuart">
-                            <li class="accordion-inner close-list" title="Monthly" id="liMonthly"><span class="sidebarliwidth">Monthly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Monthly" /></li>
-                            <li class="accordion-inner close-list" title="Quarterly" id="liQuarterly"><span class="sidebarliwidth">Quarterly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Quarterly" /></li>
+                            <li class="accordion-inner close-list" title="Monthly" id="liMonthly"><span class="sidebarliwidth">@RevenuePlanner.Helpers.Enums.ViewByAllocated.Monthly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Monthly" /></li>
+                            <li class="accordion-inner close-list" title="Quarterly" id="liQuarterly"><span class="sidebarliwidth">@RevenuePlanner.Helpers.Enums.ViewByAllocated.Quarterly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Quarterly" /></li>
                         </ul>
                         <div class="list-tab">
                         </div>
