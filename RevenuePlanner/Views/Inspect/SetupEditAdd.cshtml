@@ -201,6 +201,11 @@
         }
     }
 
+    var txtCampaignValue = '';
+    var txtProgramValue = '';
+    var txtTacticValue = '';
+    var txtDescriptionValue = '';
+
     $(document).ready(
       function () {
           /*Added by Mitesh Vaishnav for PL ticket #1073
@@ -427,7 +432,7 @@
               }
           });
 
-         // $('#ddlTacticType').trigger('change');
+          $('#ddlTacticType').trigger('change');
 
       });
 
@@ -784,7 +789,7 @@
         }
 
         $('#ddlTacticType').next().find('.sbSelector').focus();
-    });//.trigger('change');
+    }).trigger('change');
 
     function FormatRemainingBudget() {
         if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
@@ -795,10 +800,7 @@
         }
     }
 
-    var txtCampaignValue = '';
-    var txtProgramValue = '';
-    var txtTacticValue = '';
-    var txtDescriptionValue = '';
+   
 
     $("#txtProjectedStageValue").focusout(function () {
         txtCampaignValue = $("#txtCampaign").val();

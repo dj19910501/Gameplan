@@ -566,11 +566,25 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
 
-            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-            ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
-            if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
-                ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
-            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Modified by komal Rawal for #1158
+            bool IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
+
+            if (IsCommentsViewEditAuthorized)
+            {
+                List<int> lstAllowedPermissionids = new List<int>();
+                List<int> planTacticIds = new List<int>();
+                planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && tactic.Plan_Campaign_Program.PlanCampaignId == id)
+                                                                                     .Select(tactic => tactic.PlanTacticId).ToList();
+                lstAllowedPermissionids = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                if (lstAllowedPermissionids.Count != planTacticIds.Count)
+                {
+                    IsCommentsViewEditAuthorized = false;
+                }
+               
+            }
+            ViewBag.IsCommentsViewEditAuthorized = IsCommentsViewEditAuthorized;
+            // End
+          
 
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
@@ -1861,11 +1875,26 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
 
-            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-            ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
-            if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
-                ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
-            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Modified by komal Rawal for #1158
+            bool IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
+
+            if (IsCommentsViewEditAuthorized)
+            {
+                
+
+                List<int> lstAllowedPermissionids = new List<int>();
+                List<int> planTacticIds = new List<int>();
+                planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && tactic.Plan_Campaign_Program.PlanProgramId == id)
+                                                                                  .Select(tactic => tactic.PlanTacticId).ToList();
+                lstAllowedPermissionids = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                if (lstAllowedPermissionids.Count != planTacticIds.Count)
+                {
+                    IsCommentsViewEditAuthorized = false;
+                }
+               
+            }
+            ViewBag.IsCommentsViewEditAuthorized = IsCommentsViewEditAuthorized;
+            // End
 
             #endregion
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
@@ -2425,11 +2454,24 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
 
-            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-            ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
-            if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
-                ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
-            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Modified by komal Rawal for #1158
+           bool IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
+            
+            if (IsCommentsViewEditAuthorized)
+            {
+                List<int> lstAllowedPermissionids = new List<int>();
+                List<int> planTacticIds = new List<int>();
+                planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == id).Select(tactic=>tactic.PlanTacticId).ToList();
+                lstAllowedPermissionids = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                if (lstAllowedPermissionids.Count != planTacticIds.Count)
+                {
+                    IsCommentsViewEditAuthorized = false;
+                }
+               
+            }
+            ViewBag.IsCommentsViewEditAuthorized = IsCommentsViewEditAuthorized;
+
+            // End
 
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
@@ -4831,11 +4873,11 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
 
-            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-            ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
-            if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
-                ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
-            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+           
+            //Modified By komal Rawal for #1158
+            bool IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
+            ViewBag.IsCommentsViewEditAuthorized = IsCommentsViewEditAuthorized;
+            // End 
 
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
@@ -6244,7 +6286,11 @@ namespace RevenuePlanner.Controllers
                                     planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programIds.Contains(tactic.Plan_Campaign_Program.PlanProgramId))
                                                                                     .Select(tactic => tactic.PlanTacticId).ToList();
                                     lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                                    planTacticIds.ForEach(tactic => { if (!lstAllowedEntityIds.Contains(tactic)) { IsPlanEditable = false; } });
+                                    if (lstAllowedEntityIds.Count != planTacticIds.Count)
+                                    {
+                                        IsPlanEditable = false;
+                                    }
+                                   
                                 }
                             }
                         }
@@ -6254,7 +6300,11 @@ namespace RevenuePlanner.Controllers
                             {
                                 planTacticIds = objPlan_Campaign_Program.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false)).Select(tactic => tactic.PlanTacticId).ToList();
                                 lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                                planTacticIds.ForEach(tactic => { if (!lstAllowedEntityIds.Contains(tactic)) { IsPlanEditable = false; } });
+                                if (lstAllowedEntityIds.Count != planTacticIds.Count)
+                                {
+                                    IsPlanEditable = false;
+                                }
+                                
                             }
                         }
                         else if (section.ToString().Equals(Enums.Section.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic != null)

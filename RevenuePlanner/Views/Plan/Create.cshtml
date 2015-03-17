@@ -747,6 +747,30 @@
 
 </script>
 <script type="text/javascript">
+    // Added By komal rawal
+    $('#BtnGroup').click(function (e) {
+        
+                if ($(this).html().toLowerCase() == "duplicate") {
+                    
+                    if (isDataChanged()) {
+                        $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                        $("#errorMessageDuplicatePlan").slideDown(400);
+                        $("#btnConfirmOK").click(function () {
+                            $('#cErrorDuplicatePlan').html("");
+                            $("#errorMessageDuplicatePlan").hide();
+                            clonePlan();
+                        });
+                    }
+                    else {
+                        clonePlan();
+                    }
+                   
+                }
+                else {
+                    displayconfirm('@Url.Content("~/Plan/Create")');
+                }
+    });
+    //End
     var isErrorShown = true;
     //Manoj Start 28Jan2014 : Bug-12 (User can lose data via navigation in application)
     //function to check myValue attribute values and input values that any changes made?

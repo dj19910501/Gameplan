@@ -134,8 +134,7 @@
 </div>
 
 <div class="span2 right-col-tab" id="inspect-modal-left-column2">
-    @if ((bool)ViewBag.IsCommentsViewEditAuthorized)    // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-    {
+
     <div class="inspect-bolder-label">Notes</div>
      
     <div id="divComment" class="chat-div" style="overflow: auto;height: 290px !important;">
@@ -158,20 +157,22 @@
         </div>
         <div></div>
     </div>
+
+    @if ((bool)ViewBag.IsCommentsViewEditAuthorized)    //Modified By komal Rawal for #1158
+    {
       <div class="padding-top10" id="commentsection">
-            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-gray-background" })
-            <img id="btnComment" src="~/Content/images/chat-button-gray.png"  alt="" style="float: right;" />
-    </div>
-    @* Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
+            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-blue-background" })
+            <img id="btnComment" src="~/Content/images/chat-button.png" alt="" style="float: right;" />
+        </div>
     }
     else
     {
-        <div class="unauthorized-comment-section">
-            <span>@Html.Raw(HttpUtility.HtmlDecode((string)ViewBag.UnauthorizedCommentSection))</span>
-        </div>
+        <div class="padding-top10" >
+            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-gray-background" })
+            <img  src="~/Content/images/chat-button-gray.png" alt="" style="float: right;" />
+    </div>
     }
-    @* End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
-
+   
 </div>
 
 <div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
@@ -368,15 +369,14 @@
         //Added by Komal Rawal for ticket #1158
         if ($('#hdnIsPlanEditable').val().toString().toLowerCase() == 'true') {
 
-            $('#commentsection img').attr('src', '@Url.Content("~/Content/images/chat-button.png")');
-              $('#txtAreaComment').removeClass('light-gray-background');
-              $('#txtAreaComment').addClass('light-blue-background');
+        
             $('#divDeployToIntegration').css('display', 'block');
 
           }
-          else {
-              $('#txtAreaComment').attr("disabled", "disabled");
-          }
+          
+		  if ($('#txtAreaComment').hasClass('light-gray-background')) {
+            $('#txtAreaComment').attr("disabled", "disabled");
+        }
         //End
 
         $("#BtnShareTactic").click(function () {
@@ -443,7 +443,7 @@
         $("#divComment").scrollTop(divheight);
 
         // On Comment Button Save Commnet
-        if ($('#hdnIsPlanEditable').val().toString().toLowerCase() == 'true') {
+       
         $("#btnComment").click(function () {
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
@@ -505,7 +505,7 @@
                 }
             });
         });
-        }
+
 
         // Click on Approved Button Save Comment & Change Status
         $("#btnApproved").click(function () {

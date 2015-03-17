@@ -421,17 +421,7 @@
             }
         });
     }
-    $(document).ready(
-       function () {
-           $('#BtnGroup').click(function (e) {
-               if ($(this).html().toLowerCase() == "duplicate") {
-               }
-               else {
-                   //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
-                   displayconfirm('@Url.Content("~/Plan/Create/0")');
-               }
-           });
-       });
+   
 
        function displayConfirmCommon(functionName) {
            if (isDataChanged()) {
