@@ -34,7 +34,7 @@
                         <a href="#">Create New</a>
                     </li>
                     @* Show Duplicate option only in Edit mode and only for latest version of model. *@
-                    @if (Convert.ToString(modelId) != "" && Convert.ToString(modelId) != "0" && (Convert.ToString(ViewBag.IsOwner) == "True")) // && isViewOnly != "true")
+                    @if (Convert.ToString(modelId) != "" && Convert.ToString(modelId) != "0" && (Convert.ToString(ViewBag.IsAuthorized) == "True")) // && isViewOnly != "true")
                     {
                         if (ViewBag.PageTitle == "Create")
                         {

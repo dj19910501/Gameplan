@@ -126,7 +126,7 @@
             $('#dp_start').datepicker('show');
         });
 
-        if ('@ModelStatus' == "Draft" && ('@IsOwner.ToString().ToLower()' == 'true')) {
+        if ('@ModelStatus' == "Draft" && ('@IsOwner.ToString().ToLower()' == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true"))) {
             $("#publish").removeClass('btn-blue-disable');
             $("#publish").addClass('btn-blue');
         }

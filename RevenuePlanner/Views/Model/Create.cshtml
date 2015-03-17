@@ -362,7 +362,7 @@
 
     $(".targetStageclick").click(function () {
         // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        if ( $('#IsOwner').val().toLowerCase() == 'false') {
+        if ($('#IsOwner').val().toLowerCase() == 'false' && ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "false")) {
             return false;
         }
         // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
@@ -416,7 +416,7 @@
 
 $(document).ready(function () {
     // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-    if ( $('#IsOwner').val().toLowerCase() == 'false') {
+    if ($('#IsOwner').val().toLowerCase() == 'false' && ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == 'false')) {
         $('#form1 :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
                 $(this).attr('readonly', 'readonly');
@@ -559,7 +559,7 @@ function LoadModelData(modelId, bool) {
          $("#lblTitle").html(obj.Title + '<span class="gray source-sans-prolight">' + obj.Status + '</span>');
          modelStatus = obj.Status;/* changed by Nirav shah for TFS Point :252 editing a published model*/
          if (modelId == $("#latestModelId").val()) {
-             if (obj.Status.toString().toLocaleLowerCase() == 'draft' && ( $('#IsOwner').val().toLowerCase() == 'true')) {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+             if (obj.Status.toString().toLocaleLowerCase() == 'draft' && ('@ViewBag.IsAuthorized'.toLowerCase() == 'true')) {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                  $("#publishModelDisabled").hide();
                  $("#publishModel").show();
                  $("#publishModel").attr('ModelId', obj.ModelId);

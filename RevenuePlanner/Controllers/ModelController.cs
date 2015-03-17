@@ -957,6 +957,8 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
+                var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+
                 var lstModel = objModelList.Select(model => new
                 {
                     id = model.ModelId,
@@ -964,7 +966,7 @@ namespace RevenuePlanner.Controllers
                     version = model.Version,
                     status = model.Status,
                     //// Modified by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
-                    isOwner = (Sessions.User.UserId == model.CreatedBy) ? 0 : 1, //// added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model and -	Delete option will be available for owner or director or system admin or client Admin
+                    isOwner = (isAuthorized == true) ? 0 : 1, //// added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model and -	Delete option will be available for owner or director or system admin or client Admin
                     effectiveDate = model.EffectiveDate.HasValue == true ? model.EffectiveDate.Value.Date.ToString("M/d/yy") : "",  //// Added by Sohel on 08/04/2014 for PL #424 to show Effective Date Column
                 }).OrderBy(model => model.title , new AlphaNumericComparer());
 
@@ -2589,6 +2591,8 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
+            ViewBag.IsAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+            
             return View(lstIntegrationOverview);
         }
 
@@ -2671,6 +2675,8 @@ namespace RevenuePlanner.Controllers
             else
                 ViewData["MQLFilteredEloquaIntegrationInstances"] = Enumerable.Empty<entIntegrationInstance>();
             #endregion
+
+            ViewBag.IsAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
 
             return View(objBaselineModel);
         }
