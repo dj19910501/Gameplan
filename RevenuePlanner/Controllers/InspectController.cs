@@ -3196,7 +3196,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.Title = form.TacticTitle;
                                 pcpobj.TacticTypeId = form.TacticTypeId;
                                 pcpobj.Description = form.Description;
-                                //pcpobj.Cost = form.Cost;
+                                pcpobj.Cost = form.Cost;
                                 pcpobj.StartDate = form.StartDate;
                                 pcpobj.EndDate = form.EndDate;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
@@ -3226,6 +3226,14 @@ namespace RevenuePlanner.Controllers
 
                                     //Added by Komal Rawal for #1217
                                     int startmonth = pcpobj.StartDate.Month;
+                                    Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+                                    obPlanCampaignProgramTacticBudget.PlanTacticId = tacticId;
+                                    obPlanCampaignProgramTacticBudget.Period = PeriodChar + startmonth;
+                                    obPlanCampaignProgramTacticBudget.Value = pcpobj.TacticBudget; //modified for 1229
+                                    obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
+                                    obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
+                                    db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
+
                                     Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
                                     obPlanCampaignProgramTacticCost.PlanTacticId = tacticId;
                                     obPlanCampaignProgramTacticCost.Period = PeriodChar + startmonth;
@@ -3233,6 +3241,7 @@ namespace RevenuePlanner.Controllers
                                     obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
                                     obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
                                     db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
+
                                     db.SaveChanges();
                                     //end
                                 }
