@@ -175,7 +175,9 @@ namespace RevenuePlanner.Helpers
         public const string Nov = "Y11";
         public const string Dec = "Y12";
         #endregion
-        public static string labelThisYear = "(this year)";
+        public static string labelThisYear = "(this year)";	 
+        public const string MonthlyBudgetForEntity = "BudgetMonth";
+        public const string YearlyBudgetForEntity = "BudgetYear";
         #endregion
 
         #region Functions for File and IO Handling

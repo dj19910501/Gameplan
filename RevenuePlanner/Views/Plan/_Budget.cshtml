@@ -41,6 +41,14 @@
                                 @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, strTab)
                             }
                         </tbody>
+                         <tbody class="column4">
+                            <tr>
+                                <td>
+                                    <div>FY Cost</div>
+                                </td>
+                            </tr>
+                            @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy,strTab)
+                        </tbody>
                         <tbody class="column2">
                             @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy,strTab)
                             
@@ -53,7 +61,7 @@
                             @Html.CampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy,strTab)
                             }
                         </tbody>
-                        <tbody class="column3 width20percent">
+                        <tbody class="column3">
                             <tr>
                                 <td>
                                     @if(strTab == "2")
@@ -62,12 +70,12 @@
                                     }
                                     else 
                                     {
-                                    <div>Planned</div>
+                                    <div>Planned Cost</div>
                                     }
                                 </td>
-                                <td>
+                               @* <td>
                                     <div>Allocated</div>
-                                </td>
+                                </td>*@
                             </tr>
                             @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
                             {
@@ -75,7 +83,7 @@
                             }
                             else
                             {
-                            @Html.TempCampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
+                            @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
                             }
                         </tbody>
                     </table>

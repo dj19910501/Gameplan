@@ -344,26 +344,26 @@ namespace RevenuePlanner.Controllers
                                     isExists = false;
                                     if (PrevPlanBudgetAllocationList != null && PrevPlanBudgetAllocationList.Count > 0)
                                     {
-                                       updatePlanBudget = new Plan_Budget();
-                                       updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
-                                            if (updatePlanBudget != null)
+                                        updatePlanBudget = new Plan_Budget();
+                                        updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
+                                        if (updatePlanBudget != null)
+                                        {
+                                            if (arrBudgetInputValues[i] != "")
                                             {
-                                                if (arrBudgetInputValues[i] != "")
+                                                newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                if (updatePlanBudget.Value != newValue)
                                                 {
-                                               newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                    if (updatePlanBudget.Value != newValue)
-                                                    {
-                                                        updatePlanBudget.Value = newValue;
-                                                        db.Entry(updatePlanBudget).State = EntityState.Modified;
-                                                    }
+                                                    updatePlanBudget.Value = newValue;
+                                                    db.Entry(updatePlanBudget).State = EntityState.Modified;
                                                 }
-                                                else
-                                                {
-                                                    db.Entry(updatePlanBudget).State = EntityState.Deleted;
-                                                }
-                                                isExists = true;
                                             }
+                                            else
+                                            {
+                                                db.Entry(updatePlanBudget).State = EntityState.Deleted;
+                                            }
+                                            isExists = true;
                                         }
+                                    }
                                     if (!isExists && arrBudgetInputValues[i] != "")
                                     {
                                         // End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
@@ -395,55 +395,55 @@ namespace RevenuePlanner.Controllers
                                         thisQuartersMonthList = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt)) || pb.Period == (PeriodChar + (QuarterCnt + 1)) || pb.Period == (PeriodChar + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
                                         thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
 
-                                            if (thisQuarterFirstMonthBudget != null)
+                                        if (thisQuarterFirstMonthBudget != null)
+                                        {
+                                            if (arrBudgetInputValues[i] != "")
                                             {
-                                                if (arrBudgetInputValues[i] != "")
-                                                {
                                                 thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
                                                 thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
                                                 newValue = Convert.ToDouble(arrBudgetInputValues[i]);
 
-                                                    if (thisQuarterTotalBudget != newValue)
-                                                    {
+                                                if (thisQuarterTotalBudget != newValue)
+                                                {
                                                     BudgetDiff = newValue - thisQuarterTotalBudget;
-                                                        if (BudgetDiff > 0)
-                                                        {
-                                                            thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-                                                            db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                        }
-                                                        else
-                                                        {
+                                                    if (BudgetDiff > 0)
+                                                    {
+                                                        thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+                                                        db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+                                                    }
+                                                    else
+                                                    {
                                                         j = 1;
-                                                            while (BudgetDiff < 0)
+                                                        while (BudgetDiff < 0)
+                                                        {
+                                                            if (thisQuarterFirstMonthBudget != null)
                                                             {
-                                                                if (thisQuarterFirstMonthBudget != null)
-                                                                {
-                                                                    BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+                                                                BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
 
-                                                                    if (BudgetDiff <= 0)
-                                                                        thisQuarterFirstMonthBudget.Value = 0;
-                                                                    else
-                                                                        thisQuarterFirstMonthBudget.Value = BudgetDiff;
+                                                                if (BudgetDiff <= 0)
+                                                                    thisQuarterFirstMonthBudget.Value = 0;
+                                                                else
+                                                                    thisQuarterFirstMonthBudget.Value = BudgetDiff;
 
-                                                                    db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                }
-                                                                if ((QuarterCnt + j) <= (QuarterCnt + 2))
-                                                                {
-                                                                    thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt + j))).FirstOrDefault();
-                                                                }
-
-                                                                j = j + 1;
+                                                                db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
                                                             }
+                                                            if ((QuarterCnt + j) <= (QuarterCnt + 2))
+                                                            {
+                                                                thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt + j))).FirstOrDefault();
+                                                            }
+
+                                                            j = j + 1;
                                                         }
                                                     }
                                                 }
-                                                else
-                                                {
-                                                    thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                                }
-                                                isExists = true;
                                             }
+                                            else
+                                            {
+                                                thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                            }
+                                            isExists = true;
                                         }
+                                    }
                                     if (!isExists && arrBudgetInputValues[i] != "")
                                     {
                                         // End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
@@ -750,7 +750,7 @@ namespace RevenuePlanner.Controllers
                     lstPlanModel.Add(objPlanModel);
                 }
             }
-            return lstPlanModel.OrderBy(mdl => mdl.ModelTitle,new AlphaNumericComparer()).ToList();
+            return lstPlanModel.OrderBy(mdl => mdl.ModelTitle, new AlphaNumericComparer()).ToList();
         }
         #endregion
 
@@ -920,36 +920,36 @@ namespace RevenuePlanner.Controllers
         {
             HomePlan objHomePlan = new HomePlan();
             List<SelectListItem> planList;
-                    /*changed by Nirav for plan consistency on 14 apr 2014*/
-                Guid bId = Sessions.User.ClientId;
-                planList = Common.GetPlan().Where(_plan => _plan.Model.ClientId == bId).Select(_plan => new SelectListItem() { Text = _plan.Title, Value = _plan.PlanId.ToString() }).OrderBy(_plan => _plan.Text).ToList();
-                if (planList.Count > 0)
+            /*changed by Nirav for plan consistency on 14 apr 2014*/
+            Guid bId = Sessions.User.ClientId;
+            planList = Common.GetPlan().Where(_plan => _plan.Model.ClientId == bId).Select(_plan => new SelectListItem() { Text = _plan.Title, Value = _plan.PlanId.ToString() }).OrderBy(_plan => _plan.Text).ToList();
+            if (planList.Count > 0)
+            {
+                var objexists = planList.Where(_plan => _plan.Value == Sessions.PlanId.ToString()).ToList();
+                if (objexists.Count != 0)
                 {
-                    var objexists = planList.Where(_plan => _plan.Value == Sessions.PlanId.ToString()).ToList();
-                    if (objexists.Count != 0)
-                    {
-                        planList.FirstOrDefault(_plan => _plan.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
-                    }
-                    else
-                    {
-                        planList.FirstOrDefault().Selected = true;
-                        int planID = 0;
-                        int.TryParse(planList.Select(_plan => _plan.Value).FirstOrDefault(), out planID);
-                        Sessions.PlanId = planID;
+                    planList.FirstOrDefault(_plan => _plan.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
+                }
+                else
+                {
+                    planList.FirstOrDefault().Selected = true;
+                    int planID = 0;
+                    int.TryParse(planList.Select(_plan => _plan.Value).FirstOrDefault(), out planID);
+                    Sessions.PlanId = planID;
 
-                        //// if plan published then set planId to Session.
-                        if (!Common.IsPlanPublished(Sessions.PlanId))
-                        {
-                            string planPublishedStatus = Enums.PlanStatus.Published.ToString();
-                            var activeplan = db.Plans.Where(_plan => _plan.PlanId == Sessions.PlanId && _plan.IsDeleted == false && _plan.Status == planPublishedStatus).ToList();
-                            if (activeplan.Count > 0)
-                                Sessions.PublishedPlanId = planID;
-                            else
-                                Sessions.PublishedPlanId = 0;
-                        }
+                    //// if plan published then set planId to Session.
+                    if (!Common.IsPlanPublished(Sessions.PlanId))
+                    {
+                        string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+                        var activeplan = db.Plans.Where(_plan => _plan.PlanId == Sessions.PlanId && _plan.IsDeleted == false && _plan.Status == planPublishedStatus).ToList();
+                        if (activeplan.Count > 0)
+                            Sessions.PublishedPlanId = planID;
+                        else
+                            Sessions.PublishedPlanId = 0;
                     }
                 }
-            
+            }
+
             objHomePlan.plans = planList;
 
             return PartialView("_ApplytoCalendarPlanList", objHomePlan);
@@ -1383,7 +1383,7 @@ namespace RevenuePlanner.Controllers
 
                         if (daysDifference > 0) // If no. of days are more then zero then it will return progress
                         {
-                            result= (daysDifference / campaignDuration);
+                            result = (daysDifference / campaignDuration);
                         }
                         else
                         {
@@ -1714,7 +1714,7 @@ namespace RevenuePlanner.Controllers
                     isError = true;
                 }
             }
-           
+
             ViewBag.EditOjbect = EditObject;
             ViewBag.Msg = ismsg;
             ViewBag.isError = isError;
@@ -1754,8 +1754,8 @@ namespace RevenuePlanner.Controllers
             List<int> TacticIds = TacticList.Select(pcpt => pcpt.PlanTacticId).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => TacticIds.Contains(pcptl.PlanTacticId) && pcptl.IsDeleted.Equals(false)).Select(pcptl => pcptl).ToList();
             List<int> LineItemIds = LineItemList.Select(pcptl => pcptl.PlanLineItemId).ToList();
-            bool IsTacticExist =false;
-            if(TacticList != null && TacticList.Count > 0)
+            bool IsTacticExist = false;
+            if (TacticList != null && TacticList.Count > 0)
                 IsTacticExist = true;
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTactic => _imprvTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && _imprvTactic.IsDeleted == false).Select(_imprvTactic => _imprvTactic).ToList();
             //Added By Bhavesh For Performance Issue #955
@@ -2228,7 +2228,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult LoadTacticTypeValue(int tacticTypeId)
         {
             TacticType tt = db.TacticTypes.Where(tacType => tacType.TacticTypeId == tacticTypeId).FirstOrDefault();
-           
+
             return Json(new
             {
                 revenue = tt.ProjectedRevenue == null ? 0 : tt.ProjectedRevenue,
@@ -2637,7 +2637,7 @@ namespace RevenuePlanner.Controllers
                     bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
 
                     var modelids = objPlan.Where(plan => plan.GoalType.ToLower() != Enums.PlanGoalType.MQL.ToString().ToLower()).Select(plan => plan.ModelId).ToList();
-                    
+
                     //int modelfunnelmarketingid = db.Funnels.Where(funnel => funnel.Title == marketing).Select(funnel => funnel.FunnelId).FirstOrDefault();
                     //var modelFunnelList = db.Model_Funnel.Where(modelfunnel => modelids.Contains(modelfunnel.ModelId) && modelfunnel.FunnelId == modelfunnelmarketingid).ToList();
                     //var modelfunnelids = modelFunnelList.Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
@@ -2661,7 +2661,7 @@ namespace RevenuePlanner.Controllers
                             // Get ADS value
 
                             double ADSValue = item.Model.AverageDealSize;
-                           // List<int> funnelids = modelFunnelList.Where(modelfunnel => modelfunnel.ModelId == item.ModelId).Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
+                            // List<int> funnelids = modelFunnelList.Where(modelfunnel => modelfunnel.ModelId == item.ModelId).Select(modelfunnel => modelfunnel.ModelFunnelId).ToList();
                             objPlanSelector.MQLS = Common.CalculateMQLOnly(item.ModelId, item.GoalType, item.GoalValue.ToString(), ADSValue, stageList, modelFunnelStageList).ToString("#,##0"); ;
                         }
                         // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
@@ -2882,7 +2882,7 @@ namespace RevenuePlanner.Controllers
                 cost = _tac.Cost,
                 ImprovementProgramId = _tac.ImprovementPlanProgramId,
                 isOwner = Sessions.User.UserId == _tac.CreatedBy ? 0 : 1,
-            }).Select(_tac => _tac).Distinct().OrderBy(_tac => _tac.id).OrderBy(tac=>tac.title,new AlphaNumericComparer());
+            }).Select(_tac => _tac).Distinct().OrderBy(_tac => _tac.id).OrderBy(tac => tac.title, new AlphaNumericComparer());
 
             return Json(tacticobj, JsonRequestBehavior.AllowGet);
         }
@@ -2976,7 +2976,7 @@ namespace RevenuePlanner.Controllers
             foreach (var im in ImprovementMetric)
             {
                 //// Get Baseline value based on SatgeType.
-                
+
                 if (im.StageType == Enums.StageType.Size.ToString())
                 {
                     modelvalue = db.Models.Where(m => m.ModelId == ModelId).Select(m => m.AverageDealSize).FirstOrDefault();
@@ -3303,7 +3303,7 @@ namespace RevenuePlanner.Controllers
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesWithType, impExits;
             Plan_Improvement_Campaign_Program_Tactic ptcpt;
             List<TacticStageValue> tacticStageValueInnerList;
-            double improvedAverageDealSizeForProjectedRevenue = 0, improvedValue = 0, projectedRevenueWithoutTacticTemp = 0, tempValue = 0; 
+            double improvedAverageDealSizeForProjectedRevenue = 0, improvedValue = 0, projectedRevenueWithoutTacticTemp = 0, tempValue = 0;
             foreach (var imptactic in improvementTacticList)
             {
                 suggestedImprovement = new SuggestedImprovementActivities();
@@ -3748,7 +3748,7 @@ namespace RevenuePlanner.Controllers
             List<ImprovedMetricWeight> imList;
             ImprovedMetricWeight _imprvdMetric;
             List<ImprovementTacticType_Metric> weightValue;
-            bool impExits; 
+            bool impExits;
             #endregion
             foreach (var imptactic in improvementActivities)
             {
@@ -3764,10 +3764,10 @@ namespace RevenuePlanner.Controllers
                     _imprvdMetric.MetricId = m.StageId;
                     _imprvdMetric.Level = m.Level;
                     weightValue = new List<ImprovementTacticType_Metric>();
-                     weightValue = improvedMetrcList.Where(iml => iml.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId
-                        && iml.StageId == m.StageId
-                        && iml.StageType == StageType
-                        ).ToList();
+                    weightValue = improvedMetrcList.Where(iml => iml.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId
+                       && iml.StageId == m.StageId
+                       && iml.StageType == StageType
+                       ).ToList();
                     if (weightValue.Count > 0)
                     {
                         _imprvdMetric.Value = weightValue.Sum(imp => imp.Weight);
@@ -3943,27 +3943,27 @@ namespace RevenuePlanner.Controllers
                                     isExists = false;
                                     if (PrevPlanBudgetAllocationList != null && PrevPlanBudgetAllocationList.Count > 0)
                                     {
-                                       updatePlanBudget = new Plan_Budget();
-                                       updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
-                                            if (updatePlanBudget != null)
+                                        updatePlanBudget = new Plan_Budget();
+                                        updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
+                                        if (updatePlanBudget != null)
+                                        {
+                                            // Added by Dharmraj to handle case were user update empty or zero allocation value.
+                                            if (inputValues[i] == "")
                                             {
-                                                // Added by Dharmraj to handle case were user update empty or zero allocation value.
-                                                if (inputValues[i] == "")
+                                                db.Entry(updatePlanBudget).State = EntityState.Deleted;
+                                                isDBSaveChanges = true;
+                                            }
+                                            else
+                                            {
+                                                newValue = Convert.ToInt64(inputValues[i]);
+                                                if (updatePlanBudget.Value != newValue)
                                                 {
-                                                    db.Entry(updatePlanBudget).State = EntityState.Deleted;
+                                                    updatePlanBudget.Value = newValue;
+                                                    db.Entry(updatePlanBudget).State = EntityState.Modified;
                                                     isDBSaveChanges = true;
                                                 }
-                                                else
-                                                {
-                                               newValue = Convert.ToInt64(inputValues[i]);
-                                                    if (updatePlanBudget.Value != newValue)
-                                                    {
-                                                        updatePlanBudget.Value = newValue;
-                                                        db.Entry(updatePlanBudget).State = EntityState.Modified;
-                                                        isDBSaveChanges = true;
-                                                    }
-                                                }
-                                                isExists = true;
+                                            }
+                                            isExists = true;
                                         }
                                     }
                                     //// If record not exist then Inser new Record.
@@ -3983,11 +3983,11 @@ namespace RevenuePlanner.Controllers
                             else if (inputValues.Length == 4)
                             {
                                 //-- Quarterly Budget Allocation
-                                int QuarterCnt = 1, j = 1; 
+                                int QuarterCnt = 1, j = 1;
                                 bool isExists;
                                 List<Plan_Budget> thisQuartersMonthList;
                                 Plan_Budget thisQuarterFirstMonthBudget, objPlan_Budget;
-                                double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0,BudgetDiff = 0;
+                                double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
                                 for (int i = 0; i < inputValues.Length; i++)
                                 {
                                     isExists = false;
@@ -4262,7 +4262,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="month">month of budget</param>
         /// <param name="inputs">values of budget for month/year</param>
         /// <returns>json flag for success or failure</returns>
-        public JsonResult SaveBudgetCell(string entityId, string section,string month, string inputs)
+        public JsonResult SaveBudgetCell(string entityId, string section, string month, string inputs)
         {
             Dictionary<string, string> monthList = new Dictionary<string, string>() { 
                 {Enums.Months.January.ToString(), "Y1" },
@@ -4282,23 +4282,106 @@ namespace RevenuePlanner.Controllers
                 {"Quarter 3", "Y7" },
                 {"Quarter 4", "Y10" }
                 };
-            var popupValues = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(inputs);
-            if (popupValues != null && popupValues.Count > 0)
+            try
             {
-                if (string.Compare(section,Enums.Section.Plan.ToString(),true)==0)
+                int EntityId = Convert.ToInt32(entityId);
+                var popupValues = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(inputs);
+                string period = monthList[month].ToString();
+                double monthlyBudget = popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).Any() && popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).FirstOrDefault().Value != "" ? Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).FirstOrDefault().Value) : popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).FirstOrDefault().Value == "" ? 0 : -1;
+                double yearlyBudget = popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).Any() && popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).FirstOrDefault().Value != "" ? Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).FirstOrDefault().Value) : popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).FirstOrDefault().Value == "" ? 0 : -1;
+                if (monthlyBudget >= 0 && yearlyBudget >= 0)
                 {
-                }
-                else if (string.Compare(section, Enums.Section.Campaign.ToString(), true) == 0)
-                {
-                }
-                else if (string.Compare(section, Enums.Section.Program.ToString(), true) == 0)
-                {
-                }
-                else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
-                {
+                    if (string.Compare(section, Enums.Section.Plan.ToString(), true) == 0)
+                    {
+                        var objPlan = db.Plans.Where(p => p.PlanId == EntityId && p.IsDeleted.Equals(false)).FirstOrDefault();
+                        objPlan.Budget = yearlyBudget;
+                        if (objPlan.Plan_Budget.Where(pb => pb.Period == period).Any())
+                        {
+                            objPlan.Plan_Budget.Where(pb => pb.Period == period).FirstOrDefault().Value = monthlyBudget;
+                        }
+                        else
+                        {
+                            Plan_Budget objPlanBudget = new Plan_Budget();
+                            objPlanBudget.PlanId = EntityId;
+                            objPlanBudget.Period = period;
+                            objPlanBudget.Value = monthlyBudget;
+                            objPlanBudget.CreatedBy = Sessions.User.UserId;
+                            objPlanBudget.CreatedDate = DateTime.Now;
+                            db.Entry(objPlanBudget).State = EntityState.Added;
+                        }
+                        db.Entry(objPlan).State = EntityState.Modified;
+
+                    }
+                    else if (string.Compare(section, Enums.Section.Campaign.ToString(), true) == 0)
+                    {
+                        var objCampaign = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == EntityId && pc.IsDeleted.Equals(false)).FirstOrDefault();
+                        objCampaign.CampaignBudget = yearlyBudget;
+                        if (objCampaign.Plan_Campaign_Budget.Where(pcb => pcb.Period == period).Any())
+                        {
+                            objCampaign.Plan_Campaign_Budget.Where(pcb => pcb.Period == period).FirstOrDefault().Value = monthlyBudget;
+                        }
+                        else
+                        {
+                            Plan_Campaign_Budget objCampaignBudget = new Plan_Campaign_Budget();
+                            objCampaignBudget.PlanCampaignId = EntityId;
+                            objCampaignBudget.Period = period;
+                            objCampaignBudget.Value = monthlyBudget;
+                            objCampaignBudget.CreatedBy = Sessions.User.UserId;
+                            objCampaignBudget.CreatedDate = DateTime.Now;
+                            db.Entry(objCampaignBudget).State = EntityState.Added;
+                        }
+                        db.Entry(objCampaign).State = EntityState.Modified;
+                    }
+                    else if (string.Compare(section, Enums.Section.Program.ToString(), true) == 0)
+                    {
+                        var objProgram = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == EntityId && pcp.IsDeleted.Equals(false)).FirstOrDefault();
+                        objProgram.ProgramBudget = yearlyBudget;
+                        if (objProgram.Plan_Campaign_Program_Budget.Where(pcpb => pcpb.Period == period).Any())
+                        {
+                            objProgram.Plan_Campaign_Program_Budget.Where(pcpb => pcpb.Period == period).FirstOrDefault().Value = monthlyBudget;
+                        }
+                        else
+                        {
+                            Plan_Campaign_Program_Budget objProgramBudget = new Plan_Campaign_Program_Budget();
+                            objProgramBudget.PlanProgramId = EntityId;
+                            objProgramBudget.Period = period;
+                            objProgramBudget.Value = monthlyBudget;
+                            objProgramBudget.CreatedBy = Sessions.User.UserId;
+                            objProgramBudget.CreatedDate = DateTime.Now;
+                            db.Entry(objProgramBudget).State = EntityState.Modified;
+                        }
+                        db.Entry(objProgram).State = EntityState.Modified;
+
+                    }
+                    else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
+                    {
+                        var objTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == EntityId && pcpt.IsDeleted.Equals(false)).FirstOrDefault();
+                        objTactic.TacticBudget = yearlyBudget;
+                        if (objTactic.Plan_Campaign_Program_Tactic_Budget.Where(pcptc => pcptc.Period == period).Any())
+                        {
+                            objTactic.Plan_Campaign_Program_Tactic_Budget.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = monthlyBudget;
+                        }
+                        else
+                        {
+                            Plan_Campaign_Program_Tactic_Budget objTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+                            objTacticBudget.PlanTacticId = EntityId;
+                            objTacticBudget.Period = period;
+                            objTacticBudget.Value = monthlyBudget;
+                            objTacticBudget.CreatedBy = Sessions.User.UserId;
+                            objTacticBudget.CreatedDate = DateTime.Now;
+                            db.Entry(objTacticBudget).State = EntityState.Added;
+                        }
+                        db.Entry(objTactic).State = EntityState.Modified;
+                    }
+                    db.SaveChanges();
+                    return Json(new { budgetMonth = monthlyBudget, budgetYear = yearlyBudget, isSuccess = true });
                 }
             }
-            return null;
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { isSuccess = false });
         }
 
         #endregion
@@ -4376,8 +4459,8 @@ namespace RevenuePlanner.Controllers
                         id = pcptj.PlanTacticId,
                         title = pcptj.Title,
                         description = pcptj.Description,
-                        Cost = pcptj.Cost,
-                        Budget = pcptj.Plan_Campaign_Program_Tactic_Cost.Select(t => new BudgetedValue { Period = t.Period, Value = t.Value }).ToList(),
+                        Cost = pcptj.TacticBudget,
+                        Budget = pcptj.Plan_Campaign_Program_Tactic_Budget.Select(t => new BudgetedValue { Period = t.Period, Value = t.Value }).ToList(),
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 0 : 1
 
                     }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id)
@@ -4649,18 +4732,18 @@ namespace RevenuePlanner.Controllers
                         foreach (BudgetModel t in tactics)
                         {
                             t.Allocated = t.Budgeted;
-                            SumTactic.Jan += p.Month.Jan;
-                            SumTactic.Feb += p.Month.Feb;
-                            SumTactic.Mar += p.Month.Mar;
-                            SumTactic.Apr += p.Month.Apr;
-                            SumTactic.May += p.Month.May;
-                            SumTactic.Jun += p.Month.Jun;
-                            SumTactic.Jul += p.Month.Jul;
-                            SumTactic.Aug += p.Month.Aug;
-                            SumTactic.Sep += p.Month.Sep;
-                            SumTactic.Oct += p.Month.Oct;
-                            SumTactic.Nov += p.Month.Nov;
-                            SumTactic.Dec += p.Month.Dec;
+                            SumTactic.Jan += t.Month.Jan;
+                            SumTactic.Feb += t.Month.Feb;
+                            SumTactic.Mar += t.Month.Mar;
+                            SumTactic.Apr += t.Month.Apr;
+                            SumTactic.May += t.Month.May;
+                            SumTactic.Jun += t.Month.Jun;
+                            SumTactic.Jul += t.Month.Jul;
+                            SumTactic.Aug += t.Month.Aug;
+                            SumTactic.Sep += t.Month.Sep;
+                            SumTactic.Oct += t.Month.Oct;
+                            SumTactic.Nov += t.Month.Nov;
+                            SumTactic.Dec += t.Month.Dec;
                             t.SumMonth = SumTactic;
                             t.ParentMonth = new BudgetMonth();
                         }

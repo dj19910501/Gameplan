@@ -12085,7 +12085,7 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
 .tooltip-field {    padding: 10px 0 10px 20px;}
 .cluetip-close { position: absolute;    right: 9px;    top: 13px;	display:block !important;}
 .loadme-true{ border:0px solid #808080; border-radius:8px; }
-.label-toooltip {    display: inline-block;    margin-bottom: 16px;    margin-right: 15px;    text-align: right;    width: 177px;  font-family: source_sans_proregular;}
+.label-toooltip {    display: inline-block;    margin-bottom: 16px;    margin-right: 15px;    text-align: right;    width: 177px;  font-family: source_sans_proregular;white-space:nowrap;}
 .tooltip-field {    border-bottom: 1px solid #b3b3b3;    padding: 10px 0 10px 20px;}
 #loadmetrue > h3  { margin:0; border-bottom: 1px solid #b3b3b3;font-size:14px;border-radius: 8px 8px 0 0;/*background-color: #e6e6e6;*/padding: 0px 10px 0px; font-family: source_sans_prolight; font-weight:bold; }
 .button-grp-tooltip {    margin-right: 21px;    text-align: right;}

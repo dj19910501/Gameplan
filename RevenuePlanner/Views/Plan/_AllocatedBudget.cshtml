@@ -124,6 +124,7 @@
         var columnWidth3 = $('.column3').width();
         var columnWidth4 = $('.column4').width();
         $('.column2').width(mainTableWidth - columnWidth1 - columnWidth3 - columnWidth4 - 24);
+        $('.cluetip-outer').parent().remove();
         $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true });
         $('.accordionClick').on('click', function () {
             var accordionId = $(this).parent().attr('id');
@@ -452,13 +453,11 @@ else {
         var month = $('#entityDetails').attr('mnth').toString();
         var inputArr = [];
         $('.tooltip-field').find('input[type=text]').not('[disabled=disabled]').each(function () {
-            debugger;
             inputArr.push({
                 key: $(this).attr('id'),
-                Value: $(this).val()
+                Value: $(this).val().replace(/,/g, "")
             });
         });
-        debugger;
         var jsonInputs = JSON.stringify(inputArr);
         $.ajax({
             type: 'POST',
@@ -466,14 +465,249 @@ else {
             dataType: "json",
             data: 'entityId=' + entityId + '&section=' + section + '&month='+month+'&inputs=' + jsonInputs,
                   success: function (data) {
-                    @*  if (data.isSuccess == true) {
-                          var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
-                          window.location.href = url;
+                      if (data.isSuccess == true) {
+                          updatePopupDetails(data, entityId, section, month);
                       }
                       else {
                           alert('Error');
-                      }*@
+                      }
                   }
            });
+    });
+    function updatePopupDetails(data, entityId, section, month) {
+        section = section.toLowerCase();
+        $('.cluetip-outer').parent().css('display', 'none');
+        $('.' + section + 'Level').find('a[mnth="' + month + '"]').each(function () {
+                var newBudget = parseFloat(data.budgetMonth);
+                $(this).text(FormatCommasBudget(data.budgetMonth.toString(), false, false));
+               
+                if (section == 'plan') {
+
+                    //update unallocated Budget for plan and its blue corner
+                    var TotalAllocatedBudget = 0;
+                    $('.column2').find('.' + section + 'Level a').each(function () {
+                        if (!isNaN(parseFloat($(this).text().replace(/,/g, "")))) {
+                            TotalAllocatedBudget += parseFloat($(this).text().replace(/,/g, ""));
+                        }
+                    });
+                    var unallocatedBudget = parseFloat(data.budgetYear) - TotalAllocatedBudget;
+                    $('.column3').find('#' + section + entityId).html(FormatCommasBudget(unallocatedBudget.toString(), false, false)+'<span></span>');
+                    if (unallocatedBudget > 0) {
+                        $('.column3').find('#' + section + entityId + ' span').addClass('blue-corner-budget');
+                    }
+                    //End update unallocated Budget for plan and its blue corner
+
+                    //update monthly Budget of plan's orange corner
+                    var childBudget = 0;
+                    $('.campaignLevel').find('a[mnth="' + month + '"]').each(function () {
+                        childBudget += parseFloat($(this).text().replace(/,/g, ""));
+                    });
+                    if (childBudget > newBudget) {
+                        $(this).parent().find('span').addClass('orange-corner-budget');
+                    }
+                    else {
+                        $(this).parent().find('span').removeClass('orange-corner-budget');
+                    }
+                    //End update monthly Budget of plan's orange corner
+
+                    //update yearly budget for plan and it's orange corner
+                    var newYearBudget = parseFloat(data.budgetYear);
+                    var childYearBudget = 0;
+                    $('.column4').find('.campaignLevel').each(function () {
+                        if (!isNaN(parseFloat($(this).text().replace(/,/g, "")))) {
+                            childYearBudget += parseFloat($(this).text().replace(/,/g, ""));
+                        }
+                    });
+                    $('.column4').find('#' + section + entityId).html(FormatCommasBudget(newYearBudget.toString(), false, false)+'<span></span>');
+                    if (childYearBudget > newYearBudget) {
+                        $('.column4').find('#' + section + entityId + ' span').addClass('orange-corner-budget');
+                    }
+                    else {
+                        $('.Column4').find('#' + section + entityId + ' span').removeClass('orange-corner-budget');
+                    }
+                    //End update yearly budget for plan and it's orange corner
+                }
+                else {
+                    var subLevel = section == 'campaign' ? 'program-lvl' : 'tactic-lvl';
+                    var subChildlvl = section == 'campaign' ? 'programLevel' : 'tacticLevel';
+
+                    //update unAllocated Budget and its blue corner
+                    var totalAllocatedBudget = 0;
+                    $('.column2').find('[id="' + section + entityId + '"]').each(function () {
+                        if (!isNaN(parseFloat($(this).find('a').text().replace(/,/g, "")))) {
+                            totalAllocatedBudget += parseFloat($(this).find('a').text().replace(/,/g, ""));
+                        }
+                    });
+                    var unallocatedBudget = parseFloat(data.budgetYear) - totalAllocatedBudget;
+                    $('.column3').find('#' + section + entityId).html(FormatCommasBudget(unallocatedBudget.toString(), false, false) + '<span></span>');
+                    if (unallocatedBudget > 0) {
+                        $('.column3').find('#' + section + entityId + ' span').addClass('blue-corner-budget');
+                    }
+                    //End update unAllocated Budget and its blue corner
+
+                    //update clicked cell orange corner
+                    var childBudget = 0;
+                    $(this).parents('.campaign-row').find('.' + subLevel + '[data-parent="' + section + entityId + '"]').each(function () {
+                        $(this).find('.' + subChildlvl + ' a').each(function () {
+                            if (!isNaN(parseFloat($(this).text().replace(/,/g, "")))) {
+                                childBudget += parseFloat($(this).text().replace(/,/g, ""));
+                            }
+                        });
+                    });
+                    if (childBudget > newBudget) {
+                        $(this).parent().find('span').addClass('orange-corner-budget');
+                    }
+                    else {
+                        $(this).parent().find('span').removeClass('orange-corner-budget');
+                    }
+                    //End update clicked cell orange corner
+
+                    //update yearly Budget and its orange corner
+                    var newYearBudget = parseFloat(data.budgetYear);
+                    var childYearBudget = 0;
+                    $('.column4').find('.' + subLevel + '[data-parent="' + section + entityId + '"]').each(function () {
+                        $(this).find('.' + subChildlvl).each(function () {
+                            if (!isNaN(parseFloat($(this).text().replace(/,/g, "")))) {
+                                childYearBudget += parseFloat($(this).text().replace(/,/g, ""));
+                            }
+                        });
+                    });
+                    $('.column4').find('#' + section + entityId).html(FormatCommasBudget(newYearBudget.toString(), false, false) + '<span></span>');
+                    if (childYearBudget > newYearBudget) {
+                        $('.column4').find('#' + section + entityId + ' span').addClass('orange-corner-budget');
+                    }
+                    else {
+                        $('.Column4').find('#' + section + entityId + ' span').removeClass('orange-corner-budget');
+                    }
+                    //End update yearly Budget and its orange corner
+
+                    //Update parent budget's orange corner
+                    if (section == 'campaign') {
+                        var parentDiv = $('.column2').find('.planLevel a[mnth="' + month + '"]').parent();
+                        var parentBudget = parseFloat(parentDiv.find('a').text().replace(/,/g, ""));
+                        if (!isNaN(parentBudget)) {
+                            $(this).parent().attr('allocated', (parentBudget - newBudget).toString());
+                            if (parentBudget >= newBudget) {
+                                parentDiv.find('span').removeClass('orange-corner-budget');
+                            }
+                            else {
+                                parentDiv.find('span').addClass('orange-corner-budget');
+                            }
+                        }
+                        var parentId = parentDiv.attr('id').toString();
+                        var parentYearDiv=$('.column4').find('#' + parentId);
+                        var parentYearlyBudget = parseFloat(parentYearDiv.text().replace(/,/g, ""));
+                        if (!isNaN(parentYearlyBudget)) {
+                            if (parentYearlyBudget >= newYearBudget) {
+                                parentYearDiv.find('span').removeClass('orange-corner-budget');
+                            }
+                            else {
+                                parentYearDiv.find('span').addClass('orange-corner-budget');
+                            }
+                        }
+                    }
+                    else {
+                        var parentId = $(this).parents('.sub').attr('data-parent').toString();
+                        if (parent != '' && typeof parentId != 'undefined') {
+                            var parentDiv = $(this).parents('.campaign-row').find('#' + parentId);
+                            var parentBudget = parseFloat(parentDiv.find('a').text().replace(/,/g, ""));
+                            if (!isNaN(parentBudget)) {
+                                $(this).parent().attr('allocated', (parentBudget - newBudget).toString());
+                                if (parentBudget >= newBudget) {
+                                    parentDiv.find('span').removeClass('orange-corner-budget');
+                                }
+                                else {
+                                    parentDiv.find('span').addClass('orange-corner-budget');
+                                }
+                            }
+                            var parentYearDiv = $('.column4').find('#' + parentId);
+                            var parentYearBudget = parseFloat(parentYearDiv.text().replace(/,/g, ""));
+                            if (!isNaN(parentYearBudget)) {
+                                if (parentYearBudget >= newYearBudget) {
+                                    parentYearDiv.find('span').removeClass('orange-corner-budget');
+                                }
+                                else {
+                                    parentYearDiv.find('span').addClass('orange-corner-budget');
+                                }
+                            }
+
+                        }
+                    }
+                    //End Update parent monthly budget's orange corner
+                }
+        });
+
+    }
+    $('.cluetip-outer').click(function (e) {
+        e.stopPropagation();
+    });
+    $(document).click(function () {
+        $('.cluetip').css('display', 'none');
+    });
+    $('.tooltip-field').on('keyup', '#BudgetMonth', function () {
+       
+        var oldBudget = parseFloat($(this).attr('ov').toString());
+        
+        var newBudget = 0;
+        if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
+            newBudget = parseFloat($(this).val().replace(/,/g, ""));
+            $(this).val(newBudget.toString());
+        }
+        var unAllocatedInput=$(this).parent().find('#unAllocatedBudget');
+        var unAllocated = parseFloat(unAllocatedInput.val().replace(/,/g, ""));
+        unAllocated = (unAllocated + oldBudget) - newBudget;
+        unAllocatedInput.val(unAllocated.toString());
+        $(this).attr('ov', newBudget.toString());
+        var remaingBudgetInput = $(this).parent().find('#remainingBudget');
+        if (typeof remaingBudgetInput.val() != 'undefined') {
+            var remainigBudget = parseFloat(remaingBudgetInput.val().replace(/,/g, ""));
+            remaingBudgetInput.val(((remainigBudget - newBudget) + oldBudget).toString());
+        }
+
+    });
+    $('.tooltip-field').on('focusout', '#BudgetMonth', function () {
+        var newBudget = $(this).val().replace(/,/g, "");
+        $(this).val(FormatCommasBudget(newBudget.toString(), false, false));
+        var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
+        unAllocatedInput.val(FormatCommasBudget(unAllocatedInput.val().replace(/,/g, ""), false, false));
+        var remaingBudgetInput = $(this).parent().find('#remainingBudget');
+        if (typeof remaingBudgetInput.val() != 'undefined') {
+            remaingBudgetInput.val(FormatCommasBudget(remaingBudgetInput.val().replace(/,/g,"")));
+        }
+    });
+    $('.tooltip-field').on('keyup', '#BudgetYear', function () {
+
+        var oldYearBudget = parseFloat($(this).attr('ov').toString());
+        var newYearBudget = 0;
+        if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
+            newYearBudget = parseFloat($(this).val().replace(/,/g, ""));
+            $(this).val(newYearBudget.toString());
+        }
+        var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
+        var unAllocated = parseFloat(unAllocatedInput.val().replace(/,/g, ""));
+        unAllocated = (unAllocated + newYearBudget) - oldYearBudget;
+        unAllocatedInput.val(unAllocated.toString());
+        $(this).attr('ov', newYearBudget.toString());
+    });
+    $('.tooltip-field').on('focusout', '#BudgetYear', function () {
+        var newYearBudget = $(this).val().replace(/,/g, "");
+        $(this).val(FormatCommasBudget(newYearBudget.toString(), false, false));
+        var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
+        unAllocatedInput.val(FormatCommasBudget(unAllocatedInput.val().replace(/,/g, ""), false, false));
+    });
+    $('.tooltip-field').on('keydown', '#BudgetMonth,#BudgetYear', function (e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [8, 9, 27, 13, 46, 110]) !== -1 ||
+            // Allow: Ctrl+A
+            (e.keyCode == 65 && e.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
     });
 </script>

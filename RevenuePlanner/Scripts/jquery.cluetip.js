@@ -482,24 +482,24 @@
                     var entityId = $link.parent().attr('id');
                     var entityTitle = $('.column1').find('#' + entityId).text();
                     var entityMonth = $link.attr('mnth').toString();
-                    var unb = $('.column3').find('#' + $link.parent().attr('id').toString()).text().replace(',', '');
-
+                    var unb = $('.column3').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+                    
                     //campaign cell click 
                     if ($link.parent().hasClass('campaignLevel')) {
-                        var cbm = $link.text().replace(',', '');
+                        var cbm = $link.text().replace(/,/g, "");
                         var rpbm = $link.parent().attr('allocated').toString();
-                        var cby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(',', '');
+                        var cby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                         var childPbm = 0;
                         $link.parents('td').find('.programLevel').each(function () {
                             var $program = $(this);
                             if ($link.parent().attr('id') == $program.parent().attr('data-parent')) {
                                 if ($program.text() != '' && typeof $program != 'undefined') {
-                                    childPbm += parseFloat($program.text().replace(',', ''));
+                                    childPbm += parseFloat($program.text().replace(/,/g, ""));
                                 }
                             }
                         });
 
-                        var $loadmeHtml = '<label class="label-toooltip">Campaign Budget(m)  </label><input type="text" id="cbm" value="' + cbm + '" /><label class="label-toooltip" >Remaining Plan Budget(m)  </label><input type="text" disabled="disabled" value="' + rpbm + '" /><label class="label-toooltip" >Child Programs Budget(m)  </label><input type="text" disabled="disabled" value="' + childPbm + '" /><label class="label-toooltip" >Campaign Budget(y)  </label><input type="text" id="cby" value="' + cby + '" /><label class="label-toooltip" >Unallocated Budget(m)  </label><input type="text" disabled="disabled" value="' + unb + '" />';
+                        var $loadmeHtml = '<label class="label-toooltip">Campaign Budget(m)  </label><input type="text" id="BudgetMonth" value="' + FormatCommasBudget(cbm.toString(), false, false) + '" ov="' + cbm + '" /><label class="label-toooltip" >Remaining Plan Budget(m)  </label><input id="remainingBudget" type="text" disabled="disabled" value="' + rpbm + '" /><label class="label-toooltip" >Child Programs Budget(m)  </label><input type="text" disabled="disabled" value="' + FormatCommasBudget(childPbm.toString(), false, false) + '" /><label class="label-toooltip" >Campaign Budget(y)  </label><input type="text" id="BudgetYear" value="' + FormatCommasBudget(cby.toString(), false, false) + '" ov="' + cby + '" /><label class="label-toooltip" >Unallocated Budget(y)  </label><input id="unAllocatedBudget" type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(),false,false) + '" />';
                         $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('campaign', '') + '" section="Campaign" mnth="' + entityMonth + '" />';
                         $localContent.find('.tooltip-field').html($loadmeHtml);
                         $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
@@ -511,38 +511,40 @@
                             var $tactic = $(this);
                             if ($link.parent().attr('id') == $tactic.parent().attr('data-parent')) {
                                 if ($tactic.text() != '' && typeof $tactic != 'undefined') {
-                                    pcm += parseFloat($tactic.text().replace(',', ''));
+                                    pcm += parseFloat($tactic.text().replace(/,/g, ""));
                                 }
                             }
                         });
-                        var pbm = $link.text().replace(',', '');
-                        var pby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(',', '');
-                        var $loadmeHtml = '<label class="label-toooltip">Program Cost(m)  </label><input type="text" disabled="disabled" value="' + pcm + '" /><label class="label-toooltip" >Program Budget(m)  </label><input type="text" id="pbm" value="' + pbm + '" /><label class="label-toooltip" >Program Budget(y)  </label><input type="text" type="text" id="pby" value="' + pby + '" /><label class="label-toooltip" >Unallocated Budget(y)  </label><input type="text" disabled="disabled" value="' + unb + '" />';
+                        var rpbm = $link.parent().attr('allocated').toString();
+                        var pbm = $link.text().replace(/,/g, "");
+                        var pby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+                        var $loadmeHtml = '<label class="label-toooltip" >Program Budget(m)  </label><input type="text" id="BudgetMonth" value="' + FormatCommasBudget(pbm.toString(), false, false) + '" ov="' + pbm + '" /><label class="label-toooltip">Remaining Campaign Budget(m)  </label><input id="remainingBudget" value="'+rpbm+'" disabled="disabled"/><label class="label-toooltip">Child Tactics Budget(m)  </label><input type="text" disabled="disabled" value="' + FormatCommasBudget(pcm.toString(), false, false) + '" /><label class="label-toooltip" >Program Budget(y)  </label><input type="text" type="text" id="BudgetYear" value="' + FormatCommasBudget(pby.toString(), false, false) + '" ov="' + pby + '" /><label class="label-toooltip" >Unallocated Budget(y)  </label><input type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(), false, false) + '" id="unAllocatedBudget" />';
                         $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('program', '') + '" section="Program" mnth="' + entityMonth + '" />';
                         $localContent.find('.tooltip-field').html($loadmeHtml);
                         $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
                     }
                         //Tactic cell click
                     else if ($link.parent().hasClass('tacticLevel')) {
-                        var tbm = $link.text().replace(',', '');
-                        var tby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(',', '');
-                        var $loadmeHtml = '<label class="label-toooltip" >Tactic Budget(m)  </label><input type="text" id="tbm" value="' + tbm + '" /><label class="label-toooltip" >Tactic Cost(y)  </label><input type="text" id="tcy" value="' + tby + '" /><label class="label-toooltip" >Unallocated Budget(y)  </label><input type="text" disabled="disabled" value="' + unb + '" />';
+                        var tbm = $link.text().replace(/,/g, "");
+                        var rpbm = $link.parent().attr('allocated').toString();
+                        var tby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+                        var $loadmeHtml = '<label class="label-toooltip" >Tactic Budget(m)  </label><input type="text" id="BudgetMonth" value="' + FormatCommasBudget(tbm.toString(), false, false) + '" ov="' + tbm + '" /><label class="label-toooltip">Remaining Program Budget(m)  </label><input id="remainingBudget" value="' + rpbm + '" disabled="disabled"/><label class="label-toooltip" >Tactic Budget(y)  </label><input type="text" id="BudgetYear" value="' + FormatCommasBudget(tby.toString(), false, false) + '" ov="' + tby + '" /><label class="label-toooltip" >Unallocated Budget(y)  </label><input type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(), false, false) + '" id="unAllocatedBudget" />';
                         $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('tactic', '') + '" section="Tactic" mnth="' + entityMonth + '" />';
                         $localContent.find('.tooltip-field').html($loadmeHtml);
                         $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
                     }
                         //Plan cell click
                     else if ($link.parent().hasClass('planLevel')) {
-                        var plbm = $link.text().replace(',', '');
+                        var plbm = $link.text().replace(/,/g, "");
                         var childCbm = 0;
-                        var plby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(',', '');
+                        var plby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                         $('.column2').find('.campaignLevel .clickme[mnth="' + entityMonth + '"]').each(function () {
                             var $campaign = $(this);
                             if ($campaign.text() != '' && typeof $campaign != 'undefined') {
-                                childCbm += parseFloat($campaign.text().replace(',', ''));
+                                childCbm += parseFloat($campaign.text().replace(/,/g, ""));
                             }
                         });
-                        var $loadmeHtml = '<label class="label-toooltip">Plan Budget(m)  </label><input type="text" id="tcm" value="' + plbm + '" /><label class="label-toooltip" >Child Campaigns Budget (m)  </label><input type="text" id="tbm" value="' + childCbm + '" disabled="disabled" /><label class="label-toooltip" >Plan Budget(y)  </label><input type="text" id="tcy" value="' + plby + '" /><label class="label-toooltip" >Unallocated Budget(y)  </label><input type="text" disabled="disabled" value="' + unb + '" />';
+                        var $loadmeHtml = '<label class="label-toooltip">Plan Budget(m)  </label><input type="text" id="BudgetMonth" value="' + FormatCommasBudget(plbm.toString(), false, false) + '" ov="' + plbm + '" /><label class="label-toooltip" >Child Campaigns Budget (m)  </label><input type="text" id="tbm" value="' + FormatCommasBudget(childCbm.toString(), false, false) + '" disabled="disabled" /><label class="label-toooltip" >Plan Budget(y)  </label><input type="text" id="BudgetYear" value="' + FormatCommasBudget(plby.toString(), false, false) + '" ov="' + plby + '" /><label class="label-toooltip" >Unallocated Budget(y)  </label><input type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(),false,false) + '" id="unAllocatedBudget" />';
                         $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('plan', '') + '" section="Plan" mnth="'+entityMonth+'" />';
                         $localContent.find('.tooltip-field').html($loadmeHtml);
                         entityTitle = $('#divPlanDetails').text();
