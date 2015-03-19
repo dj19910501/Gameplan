@@ -3820,7 +3820,6 @@ namespace RevenuePlanner.Controllers
 
             string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
-            double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(s => s.PlanTacticId == id).ToList().Sum(s => s.Value);
             //Modified BY komal Rawal
             pcpm.TacticBudget = pcp.TacticBudget;
             //End
@@ -3886,19 +3885,19 @@ namespace RevenuePlanner.Controllers
 
                             Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).FirstOrDefault();
                             pcpobj.Title = title;
-                            pcpobj.TacticBudget = UpdateBugdetAllocationCost(arrBudgetInputValues, form.TacticBudget); // modified for 1229
+                            pcpobj.TacticBudget = form.TacticBudget; // modified for 1229
                             pcpobj.ModifiedBy = Sessions.User.UserId;
                             pcpobj.ModifiedDate = DateTime.Now;
                             int startmonth = pcpobj.StartDate.Month;
 
                             //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-                            List<Plan_Campaign_Program_Tactic_Cost> PrevAllocationList = db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).Select(_tacCost => _tacCost).ToList();  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
+                            List<Plan_Campaign_Program_Tactic_Budget> PrevAllocationList = db.Plan_Campaign_Program_Tactic_Budget.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).Select(_tacCost => _tacCost).ToList();  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
 
                             //// Process for Monthly budget values.
                             if (arrBudgetInputValues.Length == 12)
                             {
                                 bool isExists;
-                                Plan_Campaign_Program_Tactic_Cost updatePlanTacticBudget, obPlanCampaignProgramTacticCost;
+                                Plan_Campaign_Program_Tactic_Budget updatePlanTacticBudget, obPlanCampaignProgramTacticBudget;
                                 double newValue = 0;
                                 for (int i = 0; i < arrBudgetInputValues.Length; i++)
                                 {
@@ -3907,7 +3906,7 @@ namespace RevenuePlanner.Controllers
                                     if (PrevAllocationList != null && PrevAllocationList.Count > 0)
                                     {
                                         //// Get previous campaign budget values by Period.
-                                        updatePlanTacticBudget = new Plan_Campaign_Program_Tactic_Cost();
+                                        updatePlanTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
                                         updatePlanTacticBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
                                         if (updatePlanTacticBudget != null)
                                         {
@@ -3933,13 +3932,13 @@ namespace RevenuePlanner.Controllers
                                     if (!isExists && arrBudgetInputValues[i] != "")
                                     {
                                         // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                        obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                        obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
-                                        obPlanCampaignProgramTacticCost.Period = PeriodChar + (i + 1);
-                                        obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                        obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
-                                        obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
-                                        db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
+                                        obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+                                        obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
+                                        obPlanCampaignProgramTacticBudget.Period = PeriodChar + (i + 1);
+                                        obPlanCampaignProgramTacticBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                        obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
+                                        obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
+                                        db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
                                     }
                                 }
                             }
@@ -3965,8 +3964,8 @@ namespace RevenuePlanner.Controllers
                                 //End
                                 int BudgetInputValuesCounter = 1, j = 1;
                                 bool isExists;
-                                List<Plan_Campaign_Program_Tactic_Cost> thisQuartersMonthList;
-                                Plan_Campaign_Program_Tactic_Cost thisQuarterFirstMonthBudget, obPlanCampaignProgramTacticCost;
+                                List<Plan_Campaign_Program_Tactic_Budget> thisQuartersMonthList;
+                                Plan_Campaign_Program_Tactic_Budget thisQuarterFirstMonthBudget, obPlanCampaignProgramTacticBudget;
                                 double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
                                 for (int i = 0; i < arrBudgetInputValues.Length; i++)
                                 {
@@ -3975,11 +3974,11 @@ namespace RevenuePlanner.Controllers
                                     if (PrevAllocationList != null && PrevAllocationList.Count > 0)
                                     {
                                         //// Get Quarter budget list.
-                                        thisQuartersMonthList = new List<Plan_Campaign_Program_Tactic_Cost>();
+                                        thisQuartersMonthList = new List<Plan_Campaign_Program_Tactic_Budget>();
                                         thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (BudgetInputValuesCounter)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 1)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
 
                                         //// Get First month values from Quarterly budget list.
-                                        thisQuarterFirstMonthBudget = new Plan_Campaign_Program_Tactic_Cost();
+                                        thisQuarterFirstMonthBudget = new Plan_Campaign_Program_Tactic_Budget();
                                         thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
 
                                         if (thisQuarterFirstMonthBudget != null)
@@ -4036,13 +4035,13 @@ namespace RevenuePlanner.Controllers
                                     if (!isExists && arrBudgetInputValues[i] != "")
                                     {
                                         // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                        obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                        obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
-                                        obPlanCampaignProgramTacticCost.Period = PeriodChar + BudgetInputValuesCounter;
-                                        obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                        obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
-                                        obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
-                                        db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
+                                        obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+                                        obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
+                                        obPlanCampaignProgramTacticBudget.Period = PeriodChar + BudgetInputValuesCounter;
+                                        obPlanCampaignProgramTacticBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                        obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
+                                        obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
+                                        db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
                                     }
                                     BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
                                 }
@@ -4051,13 +4050,13 @@ namespace RevenuePlanner.Controllers
                             //Added by Komal Rawal for #1217
                             if (!isvalueempty && pcpobj.TacticBudget > 0)
                             {
-                                Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
-                                obPlanCampaignProgramTacticCost.Period = PeriodChar + startmonth;
-                                obPlanCampaignProgramTacticCost.Value = pcpobj.TacticBudget;
-                                obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
-                                obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
-                                db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
+                                Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+                                obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
+                                obPlanCampaignProgramTacticBudget.Period = PeriodChar + startmonth;
+                                obPlanCampaignProgramTacticBudget.Value = pcpobj.TacticBudget;
+                                obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
+                                obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
+                                db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
                             }
                             //End
 

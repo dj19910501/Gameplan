@@ -5609,7 +5609,7 @@ namespace RevenuePlanner.Controllers
 
                 var CostTacticsBudget = lstTactic.Sum(c => c.Cost); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
 
-                var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => lstPlanProgramTactics.Contains(_tacCost.PlanTacticId)).ToList()
+                var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Budget.Where(_tacCost => lstPlanProgramTactics.Contains(_tacCost.PlanTacticId)).ToList()
                                                                .Select(_tacCost => new
                                                                {
                                                                    _tacCost.PlanTacticBudgetId,
