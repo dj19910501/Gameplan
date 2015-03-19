@@ -5040,7 +5040,7 @@ namespace RevenuePlanner.Helpers
                     {
                         divProgram.InnerHtml = "---";
                     }
-                    else if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                    else if (ActivityType != Helpers.ActivityType.ActivityLineItem)
                     {
                         divProgram.InnerHtml = ActualPlannedValue.ToString(formatThousand);
                         if (isPlanTab)
@@ -5204,7 +5204,7 @@ namespace RevenuePlanner.Helpers
                     {
                         divProgram.InnerHtml = "---";
                     }
-                    else if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                    else if (ActivityType != Helpers.ActivityType.ActivityLineItem)
                     {
                         divProgram.InnerHtml = PlannedValue.ToString(formatThousand);
                         if (isPlanTab)
@@ -5376,9 +5376,9 @@ namespace RevenuePlanner.Helpers
                     }
 
 
-                    if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic && isPlanTab)
+                    if (ActivityType != Helpers.ActivityType.ActivityLineItem  && isPlanTab)
                     {
-                        if (ActivityType != Helpers.ActivityType.ActivityProgram)
+                        if (ActivityType != Helpers.ActivityType.ActivityTactic)
                         {
                             if (AllocatedValue < ChildAllocatedValue)
                             {
@@ -5695,7 +5695,7 @@ namespace RevenuePlanner.Helpers
                             span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                             if (dblProgress > 100)
                             {
-                                if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                                if (ActivityType != Helpers.ActivityType.ActivityLineItem)
                                 {
                                     divProgram.AddCssClass(budgetError);
                                     divProgram.Attributes.Add("OverBudget", Math.Abs(sumMonthAllocated - sumMonthActual).ToString(formatThousand));
@@ -5711,7 +5711,7 @@ namespace RevenuePlanner.Helpers
                                 span.AddCssClass("progressBar");
                             }
 
-                            if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                            if (ActivityType != Helpers.ActivityType.ActivityLineItem)
                             {
                                 divProgram.InnerHtml += span.ToString();
                             }
@@ -5731,7 +5731,7 @@ namespace RevenuePlanner.Helpers
                             span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                             if (dblProgress > 100)
                             {
-                                if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                                if (ActivityType != Helpers.ActivityType.ActivityLineItem)
                                 {
                                     divProgram.AddCssClass(budgetError);
                                     divProgram.Attributes.Add("OverBudget", Math.Abs(sumMonthAllocated - sumMonthPlanned).ToString(formatThousand));
@@ -5748,7 +5748,7 @@ namespace RevenuePlanner.Helpers
                             }
 
 
-                            if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                            if (ActivityType != Helpers.ActivityType.ActivityLineItem)
                             {
                                 divProgram.InnerHtml += span.ToString();
                             }
@@ -5756,9 +5756,9 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
-                        if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic && isPlanTab)
+                        if (ActivityType != Helpers.ActivityType.ActivityLineItem && isPlanTab)
                         {
-                            if (ActivityType != Helpers.ActivityType.ActivityProgram)
+                            if (ActivityType != Helpers.ActivityType.ActivityProgram && ActivityType != Helpers.ActivityType.ActivityTactic)
                             {
                                 double sumMonthChildAllocated = p.ChildMonthAllocated.Jan + p.ChildMonthAllocated.Feb + p.ChildMonthAllocated.Mar + p.ChildMonthAllocated.Apr + p.ChildMonthAllocated.May + p.ChildMonthAllocated.Jun + p.ChildMonthAllocated.Jul + p.ChildMonthAllocated.Aug + p.ChildMonthAllocated.Sep + p.ChildMonthAllocated.Oct + p.ChildMonthAllocated.Nov + p.ChildMonthAllocated.Dec;
 

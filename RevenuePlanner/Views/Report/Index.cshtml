@@ -188,7 +188,7 @@
                     <div id="@acordionId" class="dropdown-section accordion">
                         <div class="accordion-group">
                            <div class="accordion-heading">
-                               <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref">@custField.Name<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                               <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Name</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                            </div>
                            <div id="@acordionElementId" class="accordion-body collapse">
                                <ul class="scroll-list" id="@ulCustom">
@@ -359,6 +359,7 @@
             }
         $('.accordion').on('hidden.bs.collapse', toggleChevron);
         $('.accordion').on('shown.bs.collapse', toggleChevron);
+        NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
     });
 
     // <--- End document.ready Event --->
@@ -699,14 +700,14 @@
             });
 
             OptionMain = getYearSelectedValue(true);
-        $("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
+        //$("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
 	
         //// load active filter based on selected value in multiselect
         SetSelectedFilterText(multiselectPlanId, filterPlanid);
 
         @foreach (var custField in ViewCustomFields)
         {
-            string multiselectid = string.Concat("ddlView", custField.CustomFieldId);
+            string multiselectid = string.Concat("ul", custField.CustomFieldId);
             string filterid = string.Concat("#", custField.CustomFieldId, "detail");
             @: SetSelectedFilterText('@multiselectid', '@filterid');
          }
