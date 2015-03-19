@@ -154,6 +154,7 @@ namespace RevenuePlanner.Helpers
                                     pcpt.EndDate = pcpt.EndDate.AddYears(DateTime.Now.Year - pcpt.EndDate.Year);
                                     //// End - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                     pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
+                                    pcpt.Plan_Campaign_Program_Tactic_Budget = pcpt.Plan_Campaign_Program_Tactic_Budget.ToList();
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                                     {
@@ -309,6 +310,7 @@ namespace RevenuePlanner.Helpers
                                 ////End- Added by Mitesh Vaishnav for PL ticket #1129
                                 pcpt.Status = TacticStatus;
                                 pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
+                                pcpt.Plan_Campaign_Program_Tactic_Budget = pcpt.Plan_Campaign_Program_Tactic_Budget.ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                                 {
@@ -434,6 +436,7 @@ namespace RevenuePlanner.Helpers
                             t.LastSyncDate = null;
                             ////End- Added by Mitesh Vaishnav for PL ticket #1129
                             t.Plan_Campaign_Program_Tactic_Cost = t.Plan_Campaign_Program_Tactic_Cost.ToList();
+                            t.Plan_Campaign_Program_Tactic_Budget = t.Plan_Campaign_Program_Tactic_Budget.ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                             {
@@ -536,6 +539,7 @@ namespace RevenuePlanner.Helpers
                         });
                 }
                 objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
+                objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Budget = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
                 db.Plan_Campaign_Program_Tactic.Add(objPlanCampaignProgramTactic);
                 db.SaveChanges();
 
