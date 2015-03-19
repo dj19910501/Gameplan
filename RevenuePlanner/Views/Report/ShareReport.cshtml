@@ -182,7 +182,7 @@
         /*Modified By Maninder Singh Wadhva on  10/21/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLConversion()
         {
-            var filterHTML = $('.budgetReportFilter-area-left').parent().parent().html();
+            var filterHTML = $('.report-heder-tab').parent().html();
             var html = filterHTML;
             var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div></div></div>');
          //   $html.find('div[id="chartDiv1"]').empty();
@@ -197,12 +197,12 @@
             });
 
             $html.find('.multiselection-area').remove();
-            $html.find('.budgetReportFilter-area-right').remove();
+            //$html.find('.budgetReportFilter-area-right').remove();
             $html.find('div[class="report-heder-tab"]').empty();
             $html.find('div').removeClass("report-heder-tab");
-            $html.find('div[class="budgetReportFilter-area clearfix"]').empty();
-            $html.find('div').removeClass("budgetReportFilter-area clearfix");
-            $html.find('div').removeClass("budgetReportFilter-area-left");
+            //$html.find('div[class="budgetReportFilter-area clearfix"]').empty();
+            //$html.find('div').removeClass("budgetReportFilter-area clearfix");
+            //$html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
 
@@ -274,7 +274,7 @@
         /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLRevenue()
         {
-            var filterHTML = $('.budgetReportFilter-area-left').parent().parent().html();
+            var filterHTML = $('.report-heder-tab').parent().html();
             var html = filterHTML;
             var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
             $html.find("#table_reports4").before('<div style="width:100%;height:20px;"></div>');
@@ -298,11 +298,11 @@
             $html.find('div[id="chartDiv6"]').empty();
             $html.find('div[class="report-heder-tab"]').empty();
             $html.find('div').removeClass("report-heder-tab");
-            $html.find('div[class="budgetReportFilter-area clearfix"]').empty();
-            $html.find('div').removeClass("budgetReportFilter-area clearfix");
+            //$html.find('div[class="budgetReportFilter-area clearfix"]').empty();
+            //$html.find('div').removeClass("budgetReportFilter-area clearfix");
             $html.find('.multiselection-area').remove();
-            $html.find('.budgetReportFilter-area-right').remove();
-            $html.find('div').removeClass("budgetReportFilter-area-left");
+            //$html.find('.budgetReportFilter-area-right').remove();
+            //$html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
 
@@ -398,20 +398,20 @@
 
         /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLSummary(){
-            var filterHTML = $('.budgetReportFilter-area-left').parent().parent().html();
+            var filterHTML = $('.report-heder-tab').parent().html();
             var html  = '';
             html += '<div style="margin-left: 100px;"></br>' + filterHTML + '</div>';
             var $html = $(html);
             $html.find('div[id="chartDiv"]').empty();
             $html.find('div[class="report-heder-tab"]').empty();
             $html.find('div').removeClass("report-heder-tab");
-            $html.find('div[class="budgetReportFilter-area clearfix"]').empty();
-            $html.find('div').removeClass("budgetReportFilter-area clearfix");
+            //$html.find('div[class="budgetReportFilter-area clearfix"]').empty();
+            //$html.find('div').removeClass("budgetReportFilter-area clearfix");
             $html.find('#AViewDetailReportRevenue').remove();
             $html.find('#AViewDetailReportConversion').remove();
             $html.find('.multiselection-area').remove();
-            $html.find('.budgetReportFilter-area-right').remove();
-            $html.find('div').removeClass("budgetReportFilter-area-left");
+            //$html.find('.budgetReportFilter-area-right').remove();
+            //$html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
             //alert($html.html());

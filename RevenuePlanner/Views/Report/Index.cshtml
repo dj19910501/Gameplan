@@ -39,13 +39,15 @@
     .singleselect li {
         cursor:pointer;
     }
+    .margin_top20 {
+        margin-top:20px;
+    }
 </style>
 
 @section Sidebar
 {
     <div class="padding-content padding-bottom0">
         <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
-        <br />
         <div class="wraper-btns cf">
             
                 @if ((bool)ViewBag.TacticActualsAddEdit) // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
@@ -290,30 +292,7 @@
     </div>
 </div>
 
-<!-- Budget Reporting Filter area -->
-<div class="budgetReportFilter-area clearfix">
-    <div class="budgetReportFilter-area-left">
-
-        <div class="filter-detail">
-            <label>Time Frame:</label>
-            <div class="details" id="yeardetail"></div>
-            
-            <label>Plans:</label>
-            <div class="details" id="plandetail"></div>
-            @foreach (var custField in ViewCustomFields)
-            {
-                string lblid = string.Concat("lbl", custField.CustomFieldId);
-                string detailid = string.Concat(custField.CustomFieldId, "detail");
-                    <label id="@lblid">@custField.Name:</label>
-                    <div class="details" id="@detailid">None</div>
-            }
-        </div>
-    </div>
-    
-</div>
-<!-- Budget Reporting Filter area -->
-
-<div id="divMainReportPart">
+<div id="divMainReportPart" class="margin_top20">
 </div>
 <div id="DivShareReport">
 </div>
@@ -324,7 +303,6 @@
     var OptionMain = '';
     var isAllowClick = true;
     var multiselectPlanId = "ulSelectedPlans";
-    var filterPlanid = "#plandetail";
     var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
 
     $(document).ready(function () {
@@ -346,7 +324,6 @@
         OptionMain = getYearSelectedValue(true);
 
         // Load Multiselect Dropdown list i.e. Bind with new design
-        SetSelectedFilterText(multiselectPlanId, filterPlanid);
         LoadYearDropdown();
         loadBasedOnPlan();
         $("#DivShareReport").hide();
@@ -408,26 +385,26 @@
         $(filterid).html(finalValue);
     }
 
-    function SetSelectedFilterText(multiselect_ul_Id, filterid) {
-        var finalValue = "";
-        var isAll = true;
-        $('#' + multiselect_ul_Id).find("input[type='checkbox']").each(function () {
-            if (this.checked) {
-                finalValue += $(this).parent().find('span').eq(0).html() + ",  ";
-            }
-            else {
-                isAll = false;
-            }
-        });
-        finalValue = finalValue.slice(0, -3);
-        if (finalValue == '') {
-            finalValue = 'None';
-        }
-        if (isAll) {
-            finalValue = 'All';
-        }
-        $(filterid).html(finalValue);
-    }
+    //function SetSelectedFilterText(multiselect_ul_Id, filterid) {
+    //    var finalValue = "";
+    //    var isAll = true;
+    //    $('#' + multiselect_ul_Id).find("input[type='checkbox']").each(function () {
+    //        if (this.checked) {
+    //            finalValue += $(this).parent().find('span').eq(0).html() + ",  ";
+    //        }
+    //        else {
+    //            isAll = false;
+    //        }
+    //    });
+    //    finalValue = finalValue.slice(0, -3);
+    //    if (finalValue == '') {
+    //        finalValue = 'None';
+    //    }
+    //    if (isAll) {
+    //        finalValue = 'All';
+    //    }
+    //    $(filterid).html(finalValue);
+    //}
 
     //// Load Plan data based on selected year
     function LoadPlanData() {
@@ -700,18 +677,6 @@
             });
 
             OptionMain = getYearSelectedValue(true);
-        //$("#yeardetail").html($("#ddlYear option[value='" + $('#ddlYear').val() + "']").text());
-	
-        //// load active filter based on selected value in multiselect
-        SetSelectedFilterText(multiselectPlanId, filterPlanid);
-
-        @foreach (var custField in ViewCustomFields)
-        {
-            string multiselectid = string.Concat("ul", custField.CustomFieldId);
-            string filterid = string.Concat("#", custField.CustomFieldId, "detail");
-            @: SetSelectedFilterText('@multiselectid', '@filterid');
-         }
-            
             
         @foreach (var custField in ViewCustomFields)
         {
@@ -811,7 +776,6 @@ function LoadYearDropdown() {
                 IsCallFromYearDropdown = false;
                 $(this).click();
                 IsCallFromYearDropdown = true;
-                $("#yeardetail").html($(this).find('span').eq(0).html());
             }
         }
     });
@@ -827,7 +791,6 @@ function getYearSelectedValue(isYearDetail) {
     var _selectedYear = $(_selecteditem[0]).attr('yearValue');
     if (isYearDetail) {
         var _YearText=$(_selecteditem).find('span').eq(0).html();
-        $("#yeardetail").html(_YearText);
         $("#spYearText").html(_YearText);
     }
 

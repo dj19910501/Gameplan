@@ -12027,7 +12027,7 @@ li.close-list {
 
 /* Report Header Tabs - Start */
 .report-heder-tab > ul {font-family: source_sans_probold; font-size: 16px; list-style-type: none; margin: 0; padding: 0;border-bottom: 1px solid #c9c9c9;}
-  .report-heder-tab li {border-right: 1px solid #c9c9c9; display: inline-block;line-height: 38px;margin-right: -3.3px;padding: 0.5% 6%; width: 12.96%; }
+  .report-heder-tab li {border-right: 1px solid #c9c9c9; display: inline-block;line-height: 38px;margin-right: -3.3px;padding: 0.5% 6%; width: 12.96%; background-color: #f2f2f2;}
   .report-heder-tab li:last-child {border-right: medium none;}
   .report-heder-tab .overview,.report-heder-tab .revenue, .report-heder-tab .conversion, .report-heder-tab .budget { color: #908d88 !important; cursor: pointer;} 
   .report-heder-tab .active {background-color: #dff0f8;}
