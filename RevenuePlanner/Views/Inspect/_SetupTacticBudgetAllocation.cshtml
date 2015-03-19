@@ -3,7 +3,7 @@
 @{
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     bool IsBudgetAllocated = false;
-    string strTacticCost = Model.TacticCost.ToString(); 
+    string strTacticCost = Model.TacticBudget.ToString(); 
     if (Model.AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
     {
         IsBudgetAllocated = true;
@@ -78,8 +78,8 @@
                                     	<span id="lblTotalAllocated" class="source-sans-proregular"></span>
                     </p>
                         <p class="font-size16">
-                            Total Planned Cost:
-                          <span id="lblTotalBudget" class="source-sans-proregular">@Model.TacticCost</span>
+                            Total Budgeted:
+                          <span id="lblTotalBudget" class="source-sans-proregular">@Model.TacticBudget</span>
                         </p>
                     </div>
                 </div>

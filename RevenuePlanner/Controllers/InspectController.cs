@@ -3836,7 +3836,7 @@ namespace RevenuePlanner.Controllers
 
             #region "Calculate Plan remaining budget"
             //Added By : Kalpesh Sharma Functioan and code review #693
-            var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpm.PlanProgramId).ToList().Sum(c => c.Cost);
+            var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpm.PlanProgramId && c.IsDeleted == false).ToList().Sum(c => c.TacticBudget);
             var objPlanCampaignProgram = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == pcpm.PlanProgramId);
             ViewBag.planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
             #endregion

@@ -5690,7 +5690,7 @@ namespace RevenuePlanner.Controllers
                 var lstTactic = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.PlanProgramId == PlanProgramId && _tac.IsDeleted == false).ToList();
                 var lstPlanProgramTactics = lstTactic.Select(_tac => _tac.PlanTacticId).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
 
-                var CostTacticsBudget = lstTactic.Sum(c => c.Cost); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
+                var CostTacticsBudget = lstTactic.Sum(c => c.TacticBudget); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
 
                 var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Budget.Where(_tacCost => lstPlanProgramTactics.Contains(_tacCost.PlanTacticId)).ToList()
                                                                .Select(_tacCost => new
