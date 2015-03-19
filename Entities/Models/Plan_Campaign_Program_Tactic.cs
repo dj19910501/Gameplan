@@ -18,6 +18,7 @@ namespace RevenuePlanner.Models
         {
             this.Plan_Campaign_Program_Tactic_Actual = new HashSet<Plan_Campaign_Program_Tactic_Actual>();
             this.Plan_Campaign_Program_Tactic_Cost = new HashSet<Plan_Campaign_Program_Tactic_Cost>();
+            this.Plan_Campaign_Program_Tactic_Budget = new HashSet<Plan_Campaign_Program_Tactic_Budget>();
             this.Plan_Campaign_Program_Tactic_Comment = new HashSet<Plan_Campaign_Program_Tactic_Comment>();
             this.Plan_Campaign_Program_Tactic_LineItem = new HashSet<Plan_Campaign_Program_Tactic_LineItem>();
             this.Tactic_Share = new HashSet<Tactic_Share>();
@@ -31,7 +32,7 @@ namespace RevenuePlanner.Models
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public double Cost { get; set; }
-        public Nullable<double> CostActual { get; set; }
+        public double TacticBudget { get; set; }
         public string Status { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
@@ -48,6 +49,7 @@ namespace RevenuePlanner.Models
         public virtual Plan_Campaign_Program Plan_Campaign_Program { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost { get; set; }
+        public virtual ICollection<Plan_Campaign_Program_Tactic_Budget> Plan_Campaign_Program_Tactic_Budget { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic1 { get; set; }

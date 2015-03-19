@@ -175,6 +175,9 @@
     <Compile Include="Models\Plan_Campaign_Program_Tactic_Actual.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Plan_Campaign_Program_Tactic_Budget.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Plan_Campaign_Program_Tactic_Comment.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

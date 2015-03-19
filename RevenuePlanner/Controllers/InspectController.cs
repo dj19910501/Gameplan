@@ -6570,7 +6570,7 @@ namespace RevenuePlanner.Controllers
                                     : pcpt.Cost,
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,
-                                  CostActual = pcpt.CostActual == null ? 0 : pcpt.CostActual,
+                                  CostActual = pcpt.TacticBudget == null ? 0 : pcpt.TacticBudget,
                                   IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
                                   LastSyncDate = pcpt.LastSyncDate,
                                   StageId = pcpt.StageId,
