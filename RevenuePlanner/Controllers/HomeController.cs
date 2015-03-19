@@ -2821,7 +2821,7 @@ namespace RevenuePlanner.Controllers
                 //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
                 TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(planTactic => planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
                                                                                 tacticStatus.Contains(planTactic.Status) && planTactic.IsDeleted.Equals(false) &&
-                                                                                planTactic.TacticBudget == null && !planTactic.Plan_Campaign_Program_Tactic_Actual.Any() &&
+                                                                                !planTactic.Plan_Campaign_Program_Tactic_Actual.Any() &&
                                                                                 (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(planTactic.TacticType.TacticTypeId)) &&
                                                                                 (filteredOwner.Count.Equals(0) || filteredOwner.Contains(planTactic.CreatedBy))).ToList();
             }

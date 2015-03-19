@@ -136,6 +136,7 @@ namespace RevenuePlanner.Models
         public double Revenue { get; set; }
         //Added by Mitesh Vaishnav for PL ticket #720
         public MvcHtmlString CustomFieldHtmlContent { get; set; }
+        public double TacticBudget { get; set; }
     }
 
     public class Inspect_Popup_Plan_Campaign_Program_TacticModel

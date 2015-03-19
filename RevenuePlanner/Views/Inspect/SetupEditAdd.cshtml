@@ -432,7 +432,11 @@
               }
           });
 
-          $('#ddlTacticType').trigger('change');
+          @if (!IsTackticAddEdit)
+          {
+             @:loadtacticdata($('#ddlTacticType').val());
+             
+          }
 
       });
 
@@ -721,8 +725,9 @@
             $("#TacticCost").val('$0')
         }
     });
-    $('#ddlTacticType').change(function () {
-        var tacticTypeId = $(this).val();
+
+//Added By Komal Rawal
+    function loadtacticdata(tacticTypeId) {
         var pmql = 0;
         var pcost = 0;
         var projectedStageValue = 0;
@@ -789,7 +794,16 @@
         }
 
         $('#ddlTacticType').next().find('.sbSelector').focus();
-    }).trigger('change');
+    }
+
+
+    $('#ddlTacticType').change(function () {
+        var tacticTypeId = $(this).val();
+        loadtacticdata(tacticTypeId);
+       
+    });
+
+    //End
 
     function FormatRemainingBudget() {
         if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {

@@ -40,8 +40,9 @@
    @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
    
     <div style="width: 30%; float: left;">
-        <label class="padding-left4 inspect-bolder-label" title="Tactic Planned Cost">Tactic Planned Cost</label>
-        @Html.TextBoxFor(model => model.TacticCost, new { @class = "currency_dollar margin-top3px input-budget", placeholder = "Required", require = "true", id = "txtTacticBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+        <label class="padding-left4 inspect-bolder-label" title="Tactic Planned Cost">Tactic Budget</label>
+      
+         @Html.TextBoxFor(model => model.TacticBudget, new { @class = "currency_dollar margin-top3px input-budget", placeholder = "Required", require = "true", id = "txtTacticBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
         <div>
             <label title="Remaining Campaign Budget" class="inspect-bolder-label">Remaining Program Budget</label>
             @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })

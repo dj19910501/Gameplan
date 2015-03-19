@@ -3031,11 +3031,13 @@ namespace RevenuePlanner.Controllers
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
             double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == id).ToList().Sum(_tacCost => _tacCost.Value);
 
-            ippctm.Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpt.PlanTacticId && lineItem.IsDeleted == false)).Count() > 0
-                && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
-                ?
-                (budgetAllocation > 0 ? budgetAllocation : (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
-                : pcpt.Cost;
+            //ippctm.Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpt.PlanTacticId && lineItem.IsDeleted == false)).Count() > 0
+            //    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
+            //    ?
+            //    (budgetAllocation > 0 ? budgetAllocation : (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
+            //    : pcpt.Cost;
+
+            ippctm.Cost = pcpt.Cost; //modified by komal rawal
 
             ippctm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
             ippctm.StageId = Convert.ToInt32(pcpt.StageId);
@@ -3194,7 +3196,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.Title = form.TacticTitle;
                                 pcpobj.TacticTypeId = form.TacticTypeId;
                                 pcpobj.Description = form.Description;
-                                pcpobj.Cost = form.Cost;
+                                //pcpobj.Cost = form.Cost;
                                 pcpobj.StartDate = form.StartDate;
                                 pcpobj.EndDate = form.EndDate;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
@@ -3203,6 +3205,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.ProjectedStageValue = form.ProjectedStageValue;
                                 pcpobj.CreatedBy = Sessions.User.UserId;
                                 pcpobj.CreatedDate = DateTime.Now;
+                                pcpobj.TacticBudget = form.Cost; //modified for 1229
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
                                 #endregion
@@ -3226,7 +3229,7 @@ namespace RevenuePlanner.Controllers
                                     Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
                                     obPlanCampaignProgramTacticCost.PlanTacticId = tacticId;
                                     obPlanCampaignProgramTacticCost.Period = PeriodChar + startmonth;
-                                    obPlanCampaignProgramTacticCost.Value = pcpobj.Cost;
+                                    obPlanCampaignProgramTacticCost.Value = pcpobj.TacticBudget; //modified for 1229
                                     obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
                                     obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
                                     db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
@@ -3818,13 +3821,9 @@ namespace RevenuePlanner.Controllers
             string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
             double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(s => s.PlanTacticId == id).ToList().Sum(s => s.Value);
-
-            pcpm.TacticCost = (pcp.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcp.PlanTacticId && s.IsDeleted == false)).Count() > 0 &&
-                pcp.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcp.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
-                ?
-                (budgetAllocation > 0 ? budgetAllocation : (pcp.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcp.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
-                : pcp.Cost;
-
+            //Modified BY komal Rawal
+            pcpm.TacticBudget = pcp.TacticBudget;
+            //End
             pcpm.AllocatedBy = pcp.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
 
             #region "Calculate Plan remaining budget"
@@ -3887,7 +3886,7 @@ namespace RevenuePlanner.Controllers
 
                             Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).FirstOrDefault();
                             pcpobj.Title = title;
-                            pcpobj.Cost = UpdateBugdetAllocationCost(arrBudgetInputValues, form.TacticCost);
+                            pcpobj.TacticBudget = UpdateBugdetAllocationCost(arrBudgetInputValues, form.TacticBudget); // modified for 1229
                             pcpobj.ModifiedBy = Sessions.User.UserId;
                             pcpobj.ModifiedDate = DateTime.Now;
                             int startmonth = pcpobj.StartDate.Month;
@@ -4050,12 +4049,12 @@ namespace RevenuePlanner.Controllers
                             }
 
                             //Added by Komal Rawal for #1217
-                            if (!isvalueempty && pcpobj.Cost > 0)
+                            if (!isvalueempty && pcpobj.TacticBudget > 0)
                             {
                                 Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
                                 obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
                                 obPlanCampaignProgramTacticCost.Period = PeriodChar + startmonth;
-                                obPlanCampaignProgramTacticCost.Value = pcpobj.Cost;
+                                obPlanCampaignProgramTacticCost.Value = pcpobj.TacticBudget;
                                 obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
                                 obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
                                 db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
@@ -6570,7 +6569,7 @@ namespace RevenuePlanner.Controllers
                                     : pcpt.Cost,
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,
-                                  CostActual = pcpt.TacticBudget == null ? 0 : pcpt.TacticBudget,
+                                  CostActual = 0,
                                   IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
                                   LastSyncDate = pcpt.LastSyncDate,
                                   StageId = pcpt.StageId,
