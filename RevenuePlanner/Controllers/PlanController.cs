@@ -6418,6 +6418,7 @@ namespace RevenuePlanner.Controllers
                                 obj.IsOwner = Convert.ToBoolean(l.isOwner);
                                 obj = GetMonthWiseData(obj, l.Budget);
                                 obj.ParentMonth = obj.Month;
+                                obj.BudgetMonth = new BudgetMonth();
                                 model.Add(obj);
                             }
                         }
@@ -6496,6 +6497,7 @@ namespace RevenuePlanner.Controllers
                         obj.Budgeted = 0;
                         obj.IsOwner = true;
                         obj.Month = new BudgetMonth();
+                        obj.BudgetMonth = new BudgetMonth();
                         modelCustom.Add(obj);
                         #endregion
 
@@ -6826,6 +6828,7 @@ namespace RevenuePlanner.Controllers
             tmp.Month = obj.Month;
             tmp.ParentMonth = obj.ParentMonth;
             tmp.SumMonth = obj.SumMonth;
+            tmp.BudgetMonth = obj.BudgetMonth;
             return tmp;
         }
 

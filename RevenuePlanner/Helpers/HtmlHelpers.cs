@@ -3147,72 +3147,84 @@ namespace RevenuePlanner.Helpers
                             if (i == 1)
                             {
                                 //div.Attributes.Add("allocated", c.ParentMonth.Jan.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Jan.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Jan.ToString(formatThousand);
                                 //className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + budgetError;
                             }
                             else if (i == 2)
                             {
                                 //div.Attributes.Add("allocated", c.ParentMonth.Feb.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Feb.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Feb.ToString(formatThousand);
                                 //className = c.Month.Feb <= c.ParentMonth.Feb ? className : className + budgetError;
                             }
                             else if (i == 3)
                             {
-                                //div.Attributes.Add("allocated", c.ParentMonth.Mar.ToString(formatThousand));
+                                //div.Attributes.Add("allocated", c.ParentMonth.Mar.ToString(formatThousand));\
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Mar.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Mar.ToString(formatThousand);
                                 //className = c.Month.Mar <= c.ParentMonth.Mar ? className : className + budgetError;
                             }
                             else if (i == 4)
                             {
                                 //div.Attributes.Add("allocated", c.ParentMonth.Apr.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Apr.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Apr.ToString(formatThousand);
                                 //className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + budgetError;
                             }
                             else if (i == 5)
                             {
                                 // div.Attributes.Add("allocated", c.ParentMonth.May.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.May.ToString(formatThousand));
                                 div.InnerHtml = c.Month.May.ToString(formatThousand);
                                 // className = c.Month.May <= c.ParentMonth.May ? className : className + budgetError;
                             }
                             else if (i == 6)
                             {
                                 //div.Attributes.Add("allocated", c.ParentMonth.Jun.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Jun.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Jun.ToString(formatThousand);
                                 // className = c.Month.Jun <= c.ParentMonth.Jun ? className : className + budgetError;
                             }
                             else if (i == 7)
                             {
                                 // div.Attributes.Add("allocated", c.ParentMonth.Jul.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Jul.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Jul.ToString(formatThousand);
                                 // className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + budgetError;
                             }
                             else if (i == 8)
                             {
                                 // div.Attributes.Add("allocated", c.ParentMonth.Aug.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Aug.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Aug.ToString(formatThousand);
                                 // className = c.Month.Aug <= c.ParentMonth.Aug ? className : className + budgetError;
                             }
                             else if (i == 9)
                             {
                                 // div.Attributes.Add("allocated", c.ParentMonth.Sep.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Sep.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Sep.ToString(formatThousand);
                                 // className = c.Month.Sep <= c.ParentMonth.Sep ? className : className + budgetError;
                             }
                             else if (i == 10)
                             {
                                 // div.Attributes.Add("allocated", c.ParentMonth.Oct.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Oct.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Oct.ToString(formatThousand);
                                 // className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + budgetError;
                             }
                             else if (i == 11)
                             {
                                 //div.Attributes.Add("allocated", c.ParentMonth.Nov.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Nov.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Nov.ToString(formatThousand);
                                 // className = c.Month.Nov <= c.ParentMonth.Nov ? className : className + budgetError;
                             }
                             else if (i == 12)
                             {
                                 //div.Attributes.Add("allocated", c.ParentMonth.Dec.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Dec.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Dec.ToString(formatThousand);
                                 //className = c.Month.Dec <= c.ParentMonth.Dec ? className : className + budgetError;
                             }
@@ -3237,24 +3249,28 @@ namespace RevenuePlanner.Helpers
                             if (i == 1)
                             {
                                 //div.Attributes.Add("allocated", c.ParentMonth.Jan.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Jan.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Jan.ToString(formatThousand);
                                 //className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + budgetError;
                             }
                             else if (i == 2)
                             {
                                 // div.Attributes.Add("allocated", c.ParentMonth.Apr.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Apr.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Apr.ToString(formatThousand);
                                 // className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + budgetError;
                             }
                             else if (i == 3)
                             {
                                 //div.Attributes.Add("allocated", c.ParentMonth.Jul.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Jul.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Jul.ToString(formatThousand);
                                 //className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + budgetError;
                             }
                             else if (i == 4)
                             {
                                 //div.Attributes.Add("allocated", c.ParentMonth.Oct.ToString(formatThousand));
+                                div.Attributes.Add("mainbudget", c.BudgetMonth.Oct.ToString(formatThousand));
                                 div.InnerHtml = c.Month.Oct.ToString(formatThousand);
                                 //className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + budgetError;
                             }
@@ -3435,6 +3451,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
                                     //className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jan.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ?ClueTipAnchorTag(Enums.Months.January.ToString(), p.Month.Jan.ToString(formatThousand)): p.Month.Jan.ToString(formatThousand);
                             }
 
@@ -3452,6 +3469,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Feb.ToString(formatThousand));
                                     //className = p.Month.Feb <= p.ParentMonth.Feb ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Feb.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.February.ToString(), p.Month.Feb.ToString(formatThousand)) : p.Month.Feb.ToString(formatThousand);
                             }
 
@@ -3470,6 +3488,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Mar.ToString(formatThousand));
                                     //className = p.Month.Mar <= p.ParentMonth.Mar ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Mar.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.March.ToString(), p.Month.Mar.ToString(formatThousand)) : p.Month.Mar.ToString(formatThousand);
                             }
 
@@ -3487,6 +3506,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
                                     //className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Apr.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.April.ToString(), p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
                             }
 
@@ -3504,6 +3524,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.May.ToString(formatThousand));
                                     //className = p.Month.May <= p.ParentMonth.May ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.May.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.May.ToString(), p.Month.May.ToString(formatThousand)) : p.Month.May.ToString(formatThousand);
                             }
 
@@ -3521,6 +3542,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jun.ToString(formatThousand));
                                     //className = p.Month.Jun <= p.ParentMonth.Jun ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jun.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.June.ToString(), p.Month.Jun.ToString(formatThousand)) : p.Month.Jun.ToString(formatThousand);
                             }
 
@@ -3538,6 +3560,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
                                     //className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jul.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.July.ToString(), p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
                             }
 
@@ -3555,6 +3578,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Aug.ToString(formatThousand));
                                     //className = p.Month.Aug <= p.ParentMonth.Aug ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Aug.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.August.ToString(), p.Month.Aug.ToString(formatThousand)) : p.Month.Aug.ToString(formatThousand);
                             }
 
@@ -3572,6 +3596,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Sep.ToString(formatThousand));
                                     //className = p.Month.Sep <= p.ParentMonth.Sep ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Sep.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.September.ToString(), p.Month.Sep.ToString(formatThousand)) : p.Month.Sep.ToString(formatThousand);
                             }
 
@@ -3590,6 +3615,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
                                     //className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Oct.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.October.ToString(), p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString();
                             }
 
@@ -3607,6 +3633,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Nov.ToString(formatThousand));
                                     //className = p.Month.Nov <= p.ParentMonth.Nov ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Nov.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.November.ToString(), p.Month.Nov.ToString(formatThousand)) : p.Month.Nov.ToString(formatThousand);
                             }
                         }
@@ -3623,6 +3650,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Dec.ToString(formatThousand));
                                     //className = p.Month.Dec <= p.ParentMonth.Dec ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Dec.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.December.ToString(), p.Month.Dec.ToString(formatThousand)) : p.Month.Dec.ToString(formatThousand);
                             }
                         }
@@ -3642,6 +3670,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
                                     //className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jan.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()], p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
                             }
 
@@ -3659,6 +3688,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
                                     //className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Apr.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()], p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
                             }
 
@@ -3676,6 +3706,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
                                     //className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jul.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()], p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
                             }
 
@@ -3694,6 +3725,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
                                     //className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + budgetError;
                                 }
+                                divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Aug.ToString(formatThousand));
                                 divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()], p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString(formatThousand);
                             }
 
