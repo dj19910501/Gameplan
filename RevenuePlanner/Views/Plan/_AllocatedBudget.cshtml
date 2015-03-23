@@ -7,6 +7,11 @@
     string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
     string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
     string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
+    bool isquarter = false;
+    if(AllocatedBy.ToLower() == strQuarters)
+    {
+        isquarter = true;
+    }
 }
 @{
     BudgetMonth PercAllocated = ViewBag.PercAllocated;
@@ -125,7 +130,12 @@
         var columnWidth4 = $('.column4').width();
         $('.column2').width(mainTableWidth - columnWidth1 - columnWidth3 - columnWidth4 - 24);
         $('.cluetip-outer').parent().remove();
-        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true });
+
+        var isquarter = false;
+        if ('@isquarter' == 'True') {
+            isquarter = true;
+        }
+        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter });
         $('.accordionClick').on('click', function () {
             var accordionId = $(this).parent().attr('id');
             $('table').find(".sub[data-parent='" + accordionId + "']").fadeToggle(100);
@@ -451,6 +461,10 @@ else {
         var entityId = $('#entityDetails').val();
         var section = $('#entityDetails').attr('section').toString();
         var month = $('#entityDetails').attr('mnth').toString();
+        var isquarter = false;
+        if ('@isquarter' == 'True') {
+            isquarter = true;
+        }
         var inputArr = [];
         $('.tooltip-field').find('input[type=text]').not('[disabled=disabled]').each(function () {
             inputArr.push({
@@ -463,7 +477,7 @@ else {
             type: 'POST',
             url: '@Url.Content("~/Plan/SaveBudgetCell/")',
             dataType: "json",
-            data: 'entityId=' + entityId + '&section=' + section + '&month='+month+'&inputs=' + jsonInputs,
+            data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&isquarter=' + isquarter,
                   success: function (data) {
                       if (data.isSuccess == true) {
                           updatePopupDetails(data, entityId, section, month);

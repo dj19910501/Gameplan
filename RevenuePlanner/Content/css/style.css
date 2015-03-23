@@ -12118,6 +12118,15 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
     top: 0px; 
     right: 0px;
 }
+.red-corner-budget {
+    border-right: 13px solid red;
+    border-bottom: 13px solid transparent;
+    height: 0px;
+    width: 0px;
+    position: absolute;
+    top: 0px; 
+    right: 0px;
+}
 .blue-corner-budget {
     /*border-right: 13px solid #3FA9F5;
     border-bottom: 13px solid transparent;

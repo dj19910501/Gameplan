@@ -36,9 +36,11 @@ namespace RevenuePlanner.Models
         public BudgetMonth Month { get; set; }
         public BudgetMonth SumMonth { get; set; }
         public BudgetMonth ParentMonth { get; set; }
+        public BudgetMonth BudgetMonth { get; set; }
 
         public double Allocated { get; set; }
         public double Budgeted { get; set; }
+        public double MainBudgeted { get; set; }
 
         public string ParentActivityId { get; set; }
         public List<CustomField_Entity> CustomFieldEntities { get; set; }

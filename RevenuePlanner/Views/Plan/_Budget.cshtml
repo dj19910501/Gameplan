@@ -13,6 +13,11 @@
     double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
     planAllocation = (sumMonth == 0 && plan.Allocated == 0) ? 0 : (sumMonth > 0 && plan.Allocated == 0) ? 101 : sumMonth / plan.Allocated * 100;
     string strTab = Convert.ToString(ViewBag.Tab);
+    bool isquarter = false;
+    if (AllocatedBy.ToLower() == strQuarters)
+    {
+        isquarter = true;
+    }
 }
 <div class="tab-content all-height cf">
     <div class="tab-pane active all-height" id="panel-656352">
@@ -50,7 +55,7 @@
                             @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy,strTab)
                         </tbody>
                         <tbody class="column2">
-                            @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy,strTab)
+                            @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth,plan.BudgetMonth, AllocatedBy,strTab)
                             
                             @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
                             {
@@ -97,7 +102,7 @@
    	<h3></h3>
    	<div class="tooltip-field">
     </div>
-    <p class="button-grp-tooltip"> <button class="btn btn-blue text-shadow-blue source-sans-proregular tooltip-button">Save</button> </p>
+    <p class="button-grp-tooltip"> <button class="btn btn-blue text-shadow-blue source-sans-proregular tooltip-button" id="btnClueTip">Save</button> </p>
    </div>
  <div class="container-fluid all-height" id="modalMainContainer">
     <div class="row-fluid calc-height">
@@ -145,7 +150,11 @@
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
-        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true });
+        var isquarter = false;
+        if ('@isquarter' == 'True') {
+             isquarter = true;
+         }
+        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter });
         // Budget Table
         var mainTableWidth = $('.budget-table').width();
         var columnWidth1 = $('.column1').width();
@@ -473,4 +482,92 @@ else {
             advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
         });
     });
+
+
+    $('.cluetip-outer').click(function (e) {
+        e.stopPropagation();
+    });
+    $(document).click(function () {
+        $('.cluetip').css('display', 'none');
+    });
+
+    $('.tooltip-field').on('keyup', '#CostMonth', function () {
+        var oldBudget = parseFloat($(this).attr('ov').toString());
+        var newBudget = 0;
+        if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
+            newBudget = parseFloat($(this).val().replace(/,/g, ""));
+            $(this).val(newBudget.toString());
+        $(this).attr('ov', newBudget.toString());
+    }
+    });
+    $('.tooltip-field').on('focusout', '#CostMonth', function () {
+        //alert(parseFloat($(this).attr('ov').toString()));
+        var newcost = $(this).val().replace(/,/g, "");
+        $(this).val(FormatCommasBudget(newcost.toString(), false, false));
+    });
+
+    $('.tooltip-field').on('keyup', '#CostYear', function () {
+        var oldYearBudget = parseFloat($(this).attr('ov').toString());
+        var newYearBudget = 0;
+        if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
+            newYearBudget = parseFloat($(this).val().replace(/,/g, ""));
+            $(this).val(newYearBudget.toString());
+        }
+        var section = $('#entityDetails').attr('section').toString();
+        if (section == "Tactic") {
+            var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
+            var budgetyear = $(this).parent().find('#BudgetYear');
+            var budgetyearvalue = parseFloat(budgetyear.attr('ov').toString().replace(/,/g, ""));
+            var unAllocated = parseFloat(unAllocatedInput.val().replace(/,/g, ""));
+            var newunAllocated = parseFloat(budgetyearvalue - newYearBudget);
+            unAllocatedInput.val(newunAllocated.toString());
+        }
+        $(this).attr('ov', newYearBudget.toString());
+    });
+    $('.tooltip-field').on('focusout', '#CostYear', function () {
+        var newYearBudget = $(this).val().replace(/,/g, "");
+        $(this).val(FormatCommasBudget(newYearBudget.toString(), false, false));
+        var section = $('#entityDetails').attr('section').toString();
+        if (section == "Tactic") {
+            var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
+            unAllocatedInput.val(FormatCommasBudget(unAllocatedInput.val().replace(/,/g, ""), false, false));
+        }
+    });
+
+    $('#btnClueTip').click(function () {
+        
+        var entityId = $('#entityDetails').val();
+        var section = $('#entityDetails').attr('section').toString();
+        var month = $('#entityDetails').attr('mnth').toString();
+        //tab
+        var tab = $('#entityDetails').attr('tab').toString();
+        var isquarter = false;
+        if ('@isquarter' == 'True') {
+             isquarter = true;
+         }
+        var inputArr = [];
+        $('.tooltip-field').find('input[type=text]').not('[disabled=disabled]').each(function () {
+            inputArr.push({
+                key: $(this).attr('id'),
+                Value: $(this).val().replace(/,/g, "")
+            });
+        });
+        var jsonInputs = JSON.stringify(inputArr);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/SavePlannedCell/")',
+            dataType: "json",
+            data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
+            success: function (data) {
+                if (data.isSuccess == true) {
+                   // updatePopupDetails(data, entityId, section, month);
+                }
+                else {
+                    alert('Error');
+                }
+            }
+        });
+    });
+
+    
 </script>
