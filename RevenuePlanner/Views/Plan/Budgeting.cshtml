@@ -77,6 +77,16 @@
         @Html.Label("View By:", new { id = "lblViewBy", style = "font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px;" })
         @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text", myView), new { @class = "ddlStyleReport hide" })
     </div>
+ <div id="divCostBudget" style="display:none;">
+      <label for="Cost_By:" id="lblCostBudget" style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px; float:left; margin-right:10px; font-weight:bold; top:0px; padding-top:5px;">Cost vs Budget:</label>
+		     <div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aonCost" class="request" style="padding: 6px 27px 4px;">ON</a></div>
+            <div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aoffCost" class="new-btn-plan request-btn-active">OFF</a></div>
+</div>
+ 
+ 
+     
+    
+      
 </div>
 <div id="DivloadPlan"></div>
 <div id="divTabData" style="margin-top: 20px; margin-bottom: 30px;"></div>
@@ -93,6 +103,29 @@
     else if ('@type' == 'actuals') {
         currentTab = 'aActuals';
     }
+
+    $("#aonCost").click(function () {
+        $("#aoffCost").removeClass('request-btn-active');
+        $("#aonCost").addClass('request-btn-active');
+        CallCostVsBudget();
+    });
+    $("#aoffCost").click(function () {
+        $("#aonCost").removeClass('request-btn-active');
+        $("#aoffCost").addClass('request-btn-active');
+        CallCostVsBudget();
+    });
+
+    function CallCostVsBudget() {
+        $('.column2').find('.tacticLevel').each(function () {
+            var mainbudget = parseFloat($(this).attr('mainbudget').toString().replace(/,/g, ""));
+            var maincost = parseFloat($(this).find('a').Text().toString().replace(/,/g, ""))
+            if(maincost > mainbudget)
+            {
+                $(this).find('span').addClass('red-corner-budget');
+            }
+        });
+    }
+
     function ShowChangeLog(CurrentPlanId) {
         $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog/")';

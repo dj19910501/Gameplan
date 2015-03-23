@@ -8969,11 +8969,11 @@ tbody.column4 {
 }
 
 .event-row {
-    background: #e6e6e6;
+    background: #C6EBF3;
 }
 
 .campaign-row {
-    background: #f2f2f2;
+    background: #DFF0F8;
 }
 
 .accordionClick {
@@ -9002,6 +9002,15 @@ div.sub {
 
 .audience .campaignLevel, .programLevel, .tacticLevel, .lineitemLevel {
     background: white;
+}
+.audience .campaignLevel{
+    background: #DFF0F8;
+}
+.programLevel {
+    background: #E4F1E1;
+}
+.lineitemLevel {
+    background: #F2F2F2;
 }
 
 .programLevel {
@@ -12056,9 +12065,9 @@ li.close-list {
 .cluetip-title .cluetip-close { float: right;  position: relative;}
 .cluetip-close img {  border: 0;  display:none !important;}
 .cluetip-close{display:none !important;}
-.cluetip-arrows {  background-position: 0 0;background-repeat: no-repeat;border-width: 0;display: none;height: 22px;left: -11px;position: absolute;top: 0;width: 11px; margin-top: 8px;}
+.cluetip-arrows {  background-position: 0 0;background-repeat: no-repeat;border-width: 0;display: none;height: 22px;left: -14px;position: absolute;top: 0;width: 18px; margin-top: 8px;}/*for ticket #696*/
 .cluetip-extra {  display: none;}
-.cluetip-default,.cluetip-default .cluetip-outer {  background-color: #fff;}
+.cluetip-default,.cluetip-default .cluetip-outer {  background-color: #fff; border-radius:8px;}/*for ticket #696*/
 .cluetip-default .ui-cluetip-header {  background-color: #87876a;}
 .ui-cluetip-header {display:none;}
 /* default arrows */
@@ -12071,7 +12080,8 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
 .cluetip-rounded  .cluetip-arrows {  border-color: #fefefe;}
 .cluetip-inner.ui-widget-content.ui-cluetip-content { width: 100%; border: 1px solid #808080; border-radius: 8px;}
 #loadmetrue > ul { margin-top: 10px;    padding: 2px; margin-bottom:10px; margin-left:0; margin-right:0px;}
-#loadmetrue input { border: 1px solid #ccc;    border-radius: 3px;    color: #808080;    font-size: 12px;    height: 22px;    margin-left: 6px;    margin-right: 9px;    padding-left: 4px;    width: 144px;}
+#loadmetrue input { border: 1px solid #ccc;    border-radius: 3px;    color: #808080;    font-size: 12px;    height: 22px;    margin-left: 6px;    margin-right: 9px;    padding-left: 4px;    width: 115px; margin-bottom:7px;
+}/*for ticket #696*/
 
 .tooltip-tactic-cost {border-top: 1px solid #e6e6e6;margin-bottom: 10px; margin-left: 7px; width: 93%;}
 .tactic-cost {    color: #808080;    font-size: 14px;    margin-bottom: 8px;    margin-top: 11px;}
@@ -12081,24 +12091,26 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
 #loadmetrue li {display: inline-block;}
 /*Clue tip*/
 /*Clue tip 09-03-2015*/
-.cluetip-default { width: 397px !important;}
-.tooltip-field {    padding: 10px 0 10px 20px;}
+.cluetip-default { width:350px !important; border-radius:8px;}/*for ticket #696*/
+.tooltip-field {    padding: 10px 0 10px 0px;}/*for ticket #696*/
 .cluetip-close { position: absolute;    right: 9px;    top: 13px;	display:block !important;}
 .loadme-true{ border:0px solid #808080; border-radius:8px; }
-.label-toooltip {    display: inline-block;    margin-bottom: 16px;    margin-right: 15px;    text-align: right;    width: 177px;  font-family: source_sans_proregular;white-space:nowrap;}
-.tooltip-field {    border-bottom: 1px solid #b3b3b3;    padding: 10px 0 10px 20px;}
+.label-toooltip {    display: inline-block;  margin-right: 15px;    text-align: right;    width: 182px;  font-family: source_sans_proregular;white-space:nowrap;}
+.tooltip-field {    border-bottom: 1px solid #b3b3b3;    padding: 10px 0 10px 0px;}/*for ticket #696*/
 #loadmetrue > h3  { margin:0; border-bottom: 1px solid #b3b3b3;font-size:14px;border-radius: 8px 8px 0 0;/*background-color: #e6e6e6;*/padding: 0px 10px 0px; font-family: source_sans_prolight; font-weight:bold; }
 .button-grp-tooltip {    margin-right: 21px;    text-align: right;}
 
 .cluetip-close > a {
-    font-weight: bold;
+    font-weight: normal;
     font-family: source_sans_probold;
-    font-size: 22px;
+    font-size: 18px;
     color: #808080;
+    background: url(../images/close-icon-list.png) no-repeat center; /*for ticket #696 popover changes*/
+
 }
 .button-grp-tooltip {
     margin-bottom: 10px;
-    margin-left: 328px;
+    margin-left: 273px;/*for ticket #696*/
     margin-top: 10px;
 }
 .tooltip-button {
