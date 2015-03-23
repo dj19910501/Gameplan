@@ -16,10 +16,10 @@
     string sucMsg = Convert.ToString(TempData["SuccessMessage"]);
     TempData["SuccessMessage"] = null;
     string myView = "0";
-    if(TempData["ViewBy"] != null)
+    if (TempData["ViewBy"] != null)
     {
         myView = Convert.ToString(TempData["ViewBy"]);
-        if(string.IsNullOrEmpty(myView))
+        if (string.IsNullOrEmpty(myView))
         {
             myView = "0";
         }
@@ -30,7 +30,7 @@
     @Html.Partial("~/Views/Plan/_plan.cshtml")
 }
 @section nlFormContent{
-       <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
@@ -42,7 +42,7 @@
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.actual.js")"></script>
 <style type="text/css">
     .margin-top-50 {
-    margin-top:50px;
+        margin-top: 50px;
     }
 </style>
 
@@ -56,7 +56,7 @@
     <a class="close">×</a>
     <div id="cErrorDuplicatePlan"></div>
 </div>
-<div class=" budgetColums budgetReporting remove_btm_pdng "> 
+<div class=" budgetColums budgetReporting remove_btm_pdng ">
     <div class="plannedCost budget_allocation ">
         <h3 class="source-sans-proregular" id="planCostTitle" style="padding-top: 0px;"></h3>
         <div class="progressPlanned" style="border-bottom-width: 0px; margin-bottom: 20px;">
@@ -73,13 +73,13 @@
     </div>
 </div>
 <div class="filter-base source-sans-prosemibold">
-  <div id="divViewBy" style="display: none; border-left: none;margin-left: 0;padding-left: 0;">
-      @Html.Label("View By:", new { id = "lblViewBy",style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px;" })
-          @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text" ,myView), new { @class = "ddlStyleReport hide" })
-  </div>
+    <div id="divViewBy" style="display: none; border-left: none; margin-left: 0; padding-left: 0;">
+        @Html.Label("View By:", new { id = "lblViewBy", style = "font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px;" })
+        @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text", myView), new { @class = "ddlStyleReport hide" })
+    </div>
 </div>
 <div id="DivloadPlan"></div>
-<div id="divTabData" style="margin-top: 20px;margin-bottom: 30px;"></div>
+<div id="divTabData" style="margin-top: 20px; margin-bottom: 30px;"></div>
 
 <script>
     var CurrentPlanId = '@CurrentPlanId';
@@ -149,21 +149,21 @@
             var strExpandType = '';
             var strExpandId = 0;
             if (strExpand != '') {
-                    if (strExpand.indexOf('lineitem') >= 0) {
+                if (strExpand.indexOf('lineitem') >= 0) {
                     strExpandType = 'lineitem';
-                    }
-                    else if (strExpand.indexOf('tactic') >= 0) {
+                }
+                else if (strExpand.indexOf('tactic') >= 0) {
                     strExpandType = 'tactic';
-                    }
-                    else if (strExpand.indexOf('program') >= 0) {
+                }
+                else if (strExpand.indexOf('program') >= 0) {
                     strExpandType = 'program';
-                    }
-                    else if (strExpand.indexOf('campaign') >= 0) {
+                }
+                else if (strExpand.indexOf('campaign') >= 0) {
                     strExpandType = 'campaign';
-                    }
+                }
 
                 strExpandId = strExpand.replace(strExpandType, '');
-                if ($.isNumeric(strExpandId)) {
+                //  if ($.isNumeric(strExpandId)) {removed by mitesh vaishnav for make expand functionality working in planned and actual tab
                     var currObj, tacticDP, programDP, campaignDP;
                     if (strExpandType == 'lineitem') {
                         if ($("#hdnBudgetingIsDelete").val() != "true") {
@@ -175,7 +175,7 @@
                         else {
                             if (currentTab != 'aAllocated') {
                                 strExpandId = "#tacticcpt_" + strExpandId;
-                            }                            
+                            }
 
                             currObj = $(strExpandId).next();
                             tacticDP = $(currObj).attr('data-parent'); //tactic
@@ -194,12 +194,12 @@
                         $(".sub[data-parent='" + tacticDP + "']").css('display', 'block');
                         $('#' + tacticDP + ' a:first-child').addClass('collapse');
 
-                            if ('@myView' != "0") {
-                                var mainDP = $(currObj).parent().parent().parent().parent().attr('data-parent'); //audiance
-                                $('#' + mainDP).css('display', 'block');
-                                $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
-                                $('#' + mainDP + ' a:first-child').addClass('collapse');
-                            }
+                        if ('@myView' != "0") {
+                            var mainDP = $(currObj).parent().parent().parent().parent().attr('data-parent'); //audiance
+                            $('#' + mainDP).css('display', 'block');
+                            $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
+                            $('#' + mainDP + ' a:first-child').addClass('collapse');
+                        }
 
                     }
                     else if (strExpandType == 'tactic') {
@@ -230,12 +230,12 @@
                         $(".sub[data-parent='" + programDP + "']").css('display', 'block');
                         $('#' + programDP + ' a:first-child').addClass('collapse');
 
-                            if ('@myView' != "0") {
-                                var mainDP = $(currObj).parent().parent().parent().attr('data-parent'); //audiance
-                                $('#' + mainDP).css('display', 'block');
-                                $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
-                                $('#' + mainDP + ' a:first-child').addClass('collapse');
-                            }
+                        if ('@myView' != "0") {
+                            var mainDP = $(currObj).parent().parent().parent().attr('data-parent'); //audiance
+                            $('#' + mainDP).css('display', 'block');
+                            $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
+                            $('#' + mainDP + ' a:first-child').addClass('collapse');
+                        }
                     }
                     else if (strExpandType == 'program') {
                         // Added By : Kalpesh Sharma #907
@@ -244,7 +244,7 @@
                         if (currentTab != 'aAllocated') {
                             ProgramExpand = "#cp_" + strExpandId;
                         }
-                      
+
                         if ($("#hdnBudgetingIsDelete").val() != "true") {
                             currObj = $(ProgramExpand).parent();
                             campaignDP = $(currObj).parent().attr('data-parent'); //campaign
@@ -256,7 +256,7 @@
                             else {
                                 strExpandId = "#campaign" + strExpandId;
                             }
-                           
+
                             currObj = $(strExpandId).next();
                             campaignDP = $(currObj).attr('data-parent');
                             $("#hdnBudgetingIsDelete").val("false");
@@ -265,50 +265,50 @@
                         $('#' + campaignDP).css('display', 'block');
                         $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
                         $('#' + campaignDP + ' a:first-child').addClass('collapse');
-                        
-                            if ('@myView' != "0") {
-                                var mainDP = $(currObj).parent().parent().attr('data-parent'); //audiance
-                                $('#' + mainDP).css('display', 'block');
-                                $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
-                                $('#' + mainDP + ' a:first-child').addClass('collapse');
-                            }
-                    }
-                }
-            }
-        } catch (e){
 
-        }
-        //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
-        var data = $(".column1").get(0);
-        $(".budget-table .column1 > tr").each(function () {
-            $(this).width(data.scrollWidth);
-        });
+                        if ('@myView' != "0") {
+                            var mainDP = $(currObj).parent().parent().attr('data-parent'); //audiance
+                            $('#' + mainDP).css('display', 'block');
+                            $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
+                            $('#' + mainDP + ' a:first-child').addClass('collapse');
+                        }
+                    }
+       // } removed by mitesh vaishnav for make expand functionality working in planned and actual tab
     }
-        $("#ddlViewBy").change(function () {
-            CurrentView = $('#ddlViewBy').val();
-            var TacCustomTitle = "@Common.TacticCustomTitle";
+} catch (e) {
+
+}
+        //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
+    var data = $(".column1").get(0);
+    $(".budget-table .column1 > tr").each(function () {
+        $(this).width(data.scrollWidth);
+    });
+}
+$("#ddlViewBy").change(function () {
+    CurrentView = $('#ddlViewBy').val();
+    var TacCustomTitle = "@Common.TacticCustomTitle";
             //alert("TacCustomTitle: " + TacCustomTitle + " index: " + CurrentView.indexOf(TacCustomTitle));
             if (CurrentView.length > 0 && CurrentView.indexOf(TacCustomTitle) >= 0) {
-                
-                CurrentView=CurrentView.replace(TacCustomTitle, "");
+
+                CurrentView = CurrentView.replace(TacCustomTitle, "");
             }
             TabLoad(currentTab);
         });
 
-    function TabLoad(sender) {
-        currentTab = sender;
-        $("#hdnBudgetingCurrentTab").val(currentTab);
-        $("#hdnBudgetingCurrentPlanId").val(CurrentPlanId);
-        
-        $('.pull-right').removeClass('active');
-        $('#' + sender).addClass('active');
-        if (CurrentPlanId != 0) {
-            $('.plannedCost').children().show();
-            $('.budgetCompare').children().show();
-            $('#nl-form2').show();
-            
-        if (currentTab == 'aAllocated') {
-            $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function (response, status, xhr) {
+        function TabLoad(sender) {
+            currentTab = sender;
+            $("#hdnBudgetingCurrentTab").val(currentTab);
+            $("#hdnBudgetingCurrentPlanId").val(CurrentPlanId);
+
+            $('.pull-right').removeClass('active');
+            $('#' + sender).addClass('active');
+            if (CurrentPlanId != 0) {
+                $('.plannedCost').children().show();
+                $('.budgetCompare').children().show();
+                $('#nl-form2').show();
+
+                if (currentTab == 'aAllocated') {
+                    $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function (response, status, xhr) {
                 if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                     //// Call function to redirect on service unavailibility.
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -320,8 +320,21 @@
             $("#DivloadPlan").removeClass('margin-top-50');
         }
         else if (currentTab == 'aPlanned') {
-                $('#divViewBy').show();
+            $('#divViewBy').show();
             $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&budgetTab=1&viewBy=' + CurrentView, function (response, status, xhr) {
+                    if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                        //// Call function to redirect on service unavailibility.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+                ExpandItems();
+            });
+            $("#DivloadPlan").addClass('margin-top-50');
+        }
+        else if (sender == 'aActuals') {
+            $('#divViewBy').show();
+            $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&budgetTab=2&viewBy=' + CurrentView, function (response, status, xhr) {
                 if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                     //// Call function to redirect on service unavailibility.
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -332,73 +345,61 @@
             });
             $("#DivloadPlan").addClass('margin-top-50');
         }
-        else if (sender == 'aActuals') {
-            $('#divViewBy').show();
-            $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&budgetTab=2&viewBy=' + CurrentView, function (response, status, xhr) {
-                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-            //// Call function to redirect on service unavailibility.
-            //// Added By: Maninder Singh Wadhva on 11/24/2014.
-            //// Ticket: 942 Exception handeling in Gameplan.
-            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-        }    
-        ExpandItems();
-            });
-            $("#DivloadPlan").addClass('margin-top-50');
-            }
-        }
-        else {
-            $('#nl-form2').hide();
-            $('#divTabData').html('');
-            $('#DivloadPlan').html('<h5 style="padding-left:22px;">No plan exist</h5>');
-            $('.plannedCost').children().hide();
-            $('.budgetCompare').children().hide();
-            $('#divViewBy').hide();
-        }
-        if (hideAllMessages) {
-            $('.datepicker.dropdown-menu').css("display", "none");
-            $("#slidepanel").css("display", "none");
-            $("#slidepanel-container").empty();
-            $("#errorMessageDuplicatePlan").slideUp(300);
-            HideMessages();
-        }
+               
+}
+else {
+    $('#nl-form2').hide();
+    $('#divTabData').html('');
+    $('#DivloadPlan').html('<h5 style="padding-left:22px;">No plan exist</h5>');
+    $('.plannedCost').children().hide();
+    $('.budgetCompare').children().hide();
+    $('#divViewBy').hide();
+}
+    if (hideAllMessages) {
+        $('.datepicker.dropdown-menu').css("display", "none");
+        $("#slidepanel").css("display", "none");
+        $("#slidepanel-container").empty();
+        $("#errorMessageDuplicatePlan").slideUp(300);
+        HideMessages();
+    }
 }
 
 
 function LoadPlan() {
-    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")', function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true;  });
+    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")', function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true; });
 }
 
-    function populateNF(items, id) {
-        var $dropdown = $("#" + id);
-        var $html = '';
-        if (items.length > 0) {
-            $.each(items, function (index, plan) {
-                if (plan.Selected) {
-                    $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
-                    CurrentPlanId = plan.Value;
-                } else {
-                    $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
-                }
-            });
-        } else {
-            $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
-            CurrentPlanId = 0;
-        }
-        $dropdown.append($html);
-    }
-    function onClickPlanTitle() {
-        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            CurrentPlanId = $(this).attr('value');
-            ShowChangeLog(CurrentPlanId);
-            $("#CurrentPlanId").val(CurrentPlanId);
-            TabLoad(currentTab);
-            $('.datepicker.dropdown-menu').css("display", "none");
-            $("#slidepanel").css("display", "none");
-            $("#slidepanel-container").empty();
-            $("#errorMessageDuplicatePlan").slideUp(300);
-            HideMessages();
+function populateNF(items, id) {
+    var $dropdown = $("#" + id);
+    var $html = '';
+    if (items.length > 0) {
+        $.each(items, function (index, plan) {
+            if (plan.Selected) {
+                $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
+                CurrentPlanId = plan.Value;
+            } else {
+                $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
+            }
         });
+    } else {
+        $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
+        CurrentPlanId = 0;
     }
+    $dropdown.append($html);
+}
+function onClickPlanTitle() {
+    $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+        CurrentPlanId = $(this).attr('value');
+        ShowChangeLog(CurrentPlanId);
+        $("#CurrentPlanId").val(CurrentPlanId);
+        TabLoad(currentTab);
+        $('.datepicker.dropdown-menu').css("display", "none");
+        $("#slidepanel").css("display", "none");
+        $("#slidepanel-container").empty();
+        $("#errorMessageDuplicatePlan").slideUp(300);
+        HideMessages();
+    });
+}
 
 $(document).on("click", "#LeftNavInput", function (e) {
     //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs
@@ -434,10 +435,10 @@ $(document).on("click", "#LeftNavAddActivity", function (e) {
 $(document).on("click", "#LeftNavCampaigns", function (e) {
     var queryStringArr = [];
     displayconfirm('@Url.Action("Assortment", "Plan")', queryStringArr);
-    });
+});
 
-    $(document).on("click", "#aApplyToCalender", function (e) {
-        window.location.href = '@Url.Action("ApplyToCalendar", "Plan")';
+$(document).on("click", "#aApplyToCalender", function (e) {
+    window.location.href = '@Url.Action("ApplyToCalendar", "Plan")';
     });
 
     function displayconfirm(strURL, queryStringArr) {
@@ -453,34 +454,34 @@ $(document).on("click", "#LeftNavCampaigns", function (e) {
     function isDataChanged() {
         var changed = false;
 
-    $('#slidepanel-container').find("input[type=text],textarea,select, .priceValue").each(function () {     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
-        if ($(this).is('[readonly]') == false) {
-            var iv = $(this).attr("myValue");
-            if ($(this).attr('id') == 't_startdate' || $(this).attr('id') == 't_enddate') {
-                var strValue = $(this).val();
-                if (strValue != null && strValue != '') {
-                    strValue = strValue.replace(' 12:00:00 AM', '');
-                    $(this).val(strValue);
-                    var newDateObj = new Date($(this).val());
-                    var oldDateObj = new Date(iv);
-                    if (newDateObj.getFullYear() + '-' + newDateObj.getMonth() + '-' + newDateObj.getDate() != oldDateObj.getFullYear() + '-' + oldDateObj.getMonth() + '-' + oldDateObj.getDate()) {
+        $('#slidepanel-container').find("input[type=text],textarea,select, .priceValue").each(function () {     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
+            if ($(this).is('[readonly]') == false) {
+                var iv = $(this).attr("myValue");
+                if ($(this).attr('id') == 't_startdate' || $(this).attr('id') == 't_enddate') {
+                    var strValue = $(this).val();
+                    if (strValue != null && strValue != '') {
+                        strValue = strValue.replace(' 12:00:00 AM', '');
+                        $(this).val(strValue);
+                        var newDateObj = new Date($(this).val());
+                        var oldDateObj = new Date(iv);
+                        if (newDateObj.getFullYear() + '-' + newDateObj.getMonth() + '-' + newDateObj.getDate() != oldDateObj.getFullYear() + '-' + oldDateObj.getMonth() + '-' + oldDateObj.getDate()) {
+                            changed = true;
+                            return false;   // Added by Sohel Pathan on 19/08/2014 for Internal Review Points
+                        }
+                    }
+                }
+                else {
+                    if ($(this).val() != iv) {
                         changed = true;
-                        return false;   // Added by Sohel Pathan on 19/08/2014 for Internal Review Points
+                        return false;   // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                     }
                 }
             }
-            else {
-                if ($(this).val() != iv) {
-                    changed = true;
-                    return false;   // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
-                }
-            }
-        }
-    });
-    return changed;
-}
+        });
+        return changed;
+    }
     // Start - Added by Sohel Pathan on 19/08/2014 for Internal Review Points
-    
+
 
     $("#header a").not("#ContactSupport").click(function () {
         if (isDataChanged()) {

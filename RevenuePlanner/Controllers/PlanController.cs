@@ -6117,6 +6117,7 @@ namespace RevenuePlanner.Controllers
             tmp.ActivityName = obj.ActivityName;
             tmp.ActivityType = obj.ActivityType;
             tmp.Allocated = obj.Allocated;
+            tmp.MainBudgeted = obj.MainBudgeted;
             if (obj.ActivityType.Equals(ActivityType.ActivityTactic))
             {
                 //// if CustomFieldType is Dropdownlist then retrieve weightage from CustomFieldEntity or StageWeight table O/W take default 100% for Textbox type.

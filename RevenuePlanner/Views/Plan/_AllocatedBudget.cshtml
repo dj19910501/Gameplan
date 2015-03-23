@@ -480,7 +480,10 @@ else {
             data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&isquarter=' + isquarter,
                   success: function (data) {
                       if (data.isSuccess == true) {
-                          updatePopupDetails(data, entityId, section, month);
+                          //updatePopupDetails(data, entityId, section, month);
+                          $("#hdnBudgetingExpandId").val(section.toLowerCase() +entityId);
+                          $("#hdnBudgetingIsSave").val("true");
+                          $('#aAllocated').trigger('click');
                       }
                       else {
                           alert('Error');
@@ -491,7 +494,8 @@ else {
     function updatePopupDetails(data, entityId, section, month) {
         section = section.toLowerCase();
         $('.cluetip-outer').parent().css('display', 'none');
-        $('.' + section + 'Level').find('a[mnth="' + month + '"]').each(function () {
+        $('.column2').find('.'+section+'Level[id="'+section+entityId+'"] a[mnth="' + month + '"]').each(function () {
+
                 var newBudget = parseFloat(data.budgetMonth);
                 $(this).text(FormatCommasBudget(data.budgetMonth.toString(), false, false));
                
