@@ -341,6 +341,9 @@
                 }
 
                 $cluetipArrows.css({ zIndex: $link.data('cluetip').zIndex + 1 });
+                if (posX < linkLeft) {
+                    posX = posX - 80;
+                }
                 $cluetip.css({
                     left: posX,
                     zIndex: $link.data('cluetip').zIndex

@@ -12078,7 +12078,7 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
 .cluetip-rounded {  -webkit-border-radius: 6px;  -moz-border-radius: 6px;  border-radius: 6px;  background-color: #fff;  border: 1px solid #ccc;}
 .cluetip-rounded .cluetip-outer {  -webkit-border-radius: 6px;  -moz-border-radius: 6px;  border-radius: 6px;  background-color: #fff;}
 .cluetip-rounded  .cluetip-arrows {  border-color: #fefefe;}
-.cluetip-inner.ui-widget-content.ui-cluetip-content { width: 100%; border: 1px solid #808080; border-radius: 8px;}
+.cluetip-inner.ui-widget-content.ui-cluetip-content { width: 100%; border-radius: 8px;}
 #loadmetrue > ul { margin-top: 10px;    padding: 2px; margin-bottom:10px; margin-left:0; margin-right:0px;}
 #loadmetrue input { border: 1px solid #ccc;    border-radius: 3px;    color: #808080;    font-size: 12px;    height: 22px;    margin-left: 6px;    margin-right: 9px;    padding-left: 4px;    width: 115px; margin-bottom:7px;
 }/*for ticket #696*/
@@ -12091,11 +12091,11 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
 #loadmetrue li {display: inline-block;}
 /*Clue tip*/
 /*Clue tip 09-03-2015*/
-.cluetip-default { width:350px !important; border-radius:8px;}/*for ticket #696*/
+.cluetip-default { width:360px !important; border-radius:8px;border: 1px solid #808080; }/*for ticket #696*/
 .tooltip-field {    padding: 10px 0 10px 0px;}/*for ticket #696*/
 .cluetip-close { position: absolute;    right: 9px;    top: 13px;	display:block !important;}
 .loadme-true{ border:0px solid #808080; border-radius:8px; }
-.label-toooltip {    display: inline-block;  margin-right: 15px;    text-align: right;    width: 182px;  font-family: source_sans_proregular;white-space:nowrap;}
+.label-toooltip {    display: inline-block;  margin-right: 15px;    text-align: right; width: 190px;  font-family: source_sans_proregular;white-space:nowrap; vertical-align: super; padding-left: 10px;}
 .tooltip-field {    border-bottom: 1px solid #b3b3b3;    padding: 10px 0 10px 0px;}/*for ticket #696*/
 #loadmetrue > h3  { margin:0; border-bottom: 1px solid #b3b3b3;font-size:14px;border-radius: 8px 8px 0 0;/*background-color: #e6e6e6;*/padding: 0px 10px 0px; font-family: source_sans_prolight; font-weight:bold; }
 .button-grp-tooltip {    margin-right: 21px;    text-align: right;}
@@ -12110,8 +12110,9 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
 }
 .button-grp-tooltip {
     margin-bottom: 10px;
-    margin-left: 273px;/*for ticket #696*/
+    /*margin-left: 273px;*//*for ticket #696*/
     margin-top: 10px;
+    float:right;
 }
 .tooltip-button {
     margin: 0;
