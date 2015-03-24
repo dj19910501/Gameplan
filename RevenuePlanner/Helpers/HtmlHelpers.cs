@@ -633,6 +633,7 @@ namespace RevenuePlanner.Helpers
                             div.Attributes.Add("allocated", c.ParentMonth.Jan.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jan.ToString(formatThousand);//isPlannedTab ? ClueTipAnchorTag(Enums.Months.January.ToString(), c.Month.Jan.ToString(formatThousand)) :
                             //className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + budgetError;
+                            //double childTotalAllocated=model.Where()
                         }
                         else if (i == 2)
                         {
@@ -1267,11 +1268,11 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Jan <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml =ClueTipAnchorTag(Enums.Months.January.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.January.ToString(), p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
                                 }
 
                             }
@@ -1279,11 +1280,11 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Feb <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.February.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Feb.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.February.ToString(), p.Month.Feb.ToString(formatThousand)) : p.Month.Feb.ToString(formatThousand);
                                 }
 
                             }
@@ -1292,11 +1293,11 @@ namespace RevenuePlanner.Helpers
 
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Mar <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.March.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Mar.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.March.ToString(), p.Month.Mar.ToString(formatThousand)) : p.Month.Mar.ToString(formatThousand);
                                 }
 
                             }
@@ -1304,11 +1305,11 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Apr <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.April.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.April.ToString(), p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
                                 }
 
                             }
@@ -1316,11 +1317,11 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.May <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.May.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.May.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.May.ToString(), p.Month.May.ToString(formatThousand)) : p.Month.May.ToString(formatThousand);
                                 }
 
                             }
@@ -1328,11 +1329,11 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Jun <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.June.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Jun.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.June.ToString(), p.Month.Jun.ToString(formatThousand)) : p.Month.Jun.ToString(formatThousand);
                                 }
 
                             }
@@ -1340,11 +1341,11 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Jul <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.July.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.July.ToString(), p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
                                 }
 
                             }
@@ -1352,11 +1353,11 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Aug <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.August.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Aug.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.August.ToString(), p.Month.Aug.ToString(formatThousand)) : p.Month.Aug.ToString(formatThousand);
                                 }
 
                             }
@@ -1364,11 +1365,11 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Sep <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.September.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Sep.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.September.ToString(), p.Month.Sep.ToString(formatThousand)) : p.Month.Sep.ToString(formatThousand);
                                 }
 
 
@@ -1377,11 +1378,11 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Oct <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.October.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Oct.ToString();
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.October.ToString(), p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString();
                                 }
 
                             }
@@ -1389,22 +1390,22 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Nov <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.November.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Nov.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.November.ToString(), p.Month.Nov.ToString(formatThousand)) : p.Month.Nov.ToString(formatThousand);
                                 }
                             }
                             else if (month == 12)
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Dec <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = ClueTipAnchorTag(Enums.Months.December.ToString(), "---");
                                 }
                                 else
                                 {
-                                    divProgram.InnerHtml = p.Month.Dec.ToString(formatThousand);
+                                    divProgram.InnerHtml = isLineItem ? ClueTipAnchorTag(Enums.Months.December.ToString(), p.Month.Dec.ToString(formatThousand)) : p.Month.Dec.ToString(formatThousand);
                                 }
                             }
                         }
@@ -1485,7 +1486,15 @@ namespace RevenuePlanner.Helpers
                     else
                     {
                         div.AddCssClass("firstLevel");
-                        div.InnerHtml = "---";
+                        if (Tab == "2")
+                        {
+                            double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
+                            div.InnerHtml = sumMonth.ToString(formatThousand);
+                        }
+                        else
+                        {
+                            div.InnerHtml = "---";
+                        }
                     }
                 }
                 if (Tab == "0")
@@ -1541,7 +1550,15 @@ namespace RevenuePlanner.Helpers
                     else
                     {
                         divLast.AddCssClass("firstLevel");
-                        divLast.InnerHtml = "---";
+                        if (Tab == "2")
+                        {
+                            double sumMonth = c.Month.Jan + c.Month.Feb + c.Month.Mar + c.Month.Apr + c.Month.May + c.Month.Jun + c.Month.Jul + c.Month.Aug + c.Month.Sep + c.Month.Oct + c.Month.Nov + c.Month.Dec;
+                            divLast.InnerHtml = sumMonth.ToString(formatThousand);
+                        }
+                        else
+                        {
+                            divLast.InnerHtml = "---";
+                        }
                     }
                 }
                 if (Tab == "0")
@@ -1645,7 +1662,15 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                            divProgram.InnerHtml += "---";
+                            if (Tab == "2")
+                            {
+                                double sumMonth = p.Month.Jan + p.Month.Feb + p.Month.Mar + p.Month.Apr + p.Month.May + p.Month.Jun + p.Month.Jul + p.Month.Aug + p.Month.Sep + p.Month.Oct + p.Month.Nov + p.Month.Dec;
+                                divProgram.InnerHtml = sumMonth.ToString(formatThousand);
+                            }
+                            else
+                            {
+                                divProgram.InnerHtml += "---";
+                            }
                         }
                     }
                     if (Tab == "0")
@@ -1724,6 +1749,10 @@ namespace RevenuePlanner.Helpers
                             //div.AddCssClass("campaignLevel budgetError");
                             span.AddCssClass("blue-corner-budget");
                         }
+                        else if (unallocated < 0)
+                        {
+                            div.AddCssClass("budgetError");
+                        }
                     }
                     else
                     {
@@ -1756,7 +1785,8 @@ namespace RevenuePlanner.Helpers
                     if (Tab == "2")
                     {
                         double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
-                        div.InnerHtml = sumMonth.ToString(formatThousand);
+                        double unAllocated = plan.MainBudgeted - sumMonth;
+                        div.InnerHtml = unAllocated.ToString(formatThousand);
                     }
                     else
                     {
@@ -1818,6 +1848,10 @@ namespace RevenuePlanner.Helpers
                             //div.AddCssClass("campaignLevel budgetError");
                             span.AddCssClass("blue-corner-budget");
                         }
+                        else if (unallocated < 0)
+                        {
+                            div.AddCssClass("budgetError");
+                        }
                     }
                     else
                     {
@@ -1854,7 +1888,8 @@ namespace RevenuePlanner.Helpers
                     if (Tab == "2")
                     {
                         double sumMonth = c.Month.Jan + c.Month.Feb + c.Month.Mar + c.Month.Apr + c.Month.May + c.Month.Jun + c.Month.Jul + c.Month.Aug + c.Month.Sep + c.Month.Oct + c.Month.Nov + c.Month.Dec;
-                        div.InnerHtml += sumMonth.ToString(formatThousand);
+                        double unAllocated = c.MainBudgeted - sumMonth;
+                        div.InnerHtml += unAllocated.ToString(formatThousand);
                     }
                     else
                     {
@@ -1961,10 +1996,14 @@ namespace RevenuePlanner.Helpers
                             {
                                 unAllocated = p.Allocated - sumMonth;
 
-                                if (unAllocated < 0)
+                                if (unAllocated > 0)
                                 {
                                     // divProgram.AddCssClass(innerClass + budgetError);
                                     span.AddCssClass("blue-corner-budget");
+                                }
+                                else if (unAllocated < 0)
+                                {
+                                    divProgram.AddCssClass("budgetError");
                                 }
                             }
                             else
@@ -2009,10 +2048,11 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                            if (Tab == "2")
+                            if (Tab == "2" && ActivityType!=Helpers.ActivityType.ActivityLineItem.ToString())
                             {
                                 double sumMonth = p.Month.Jan + p.Month.Feb + p.Month.Mar + p.Month.Apr + p.Month.May + p.Month.Jun + p.Month.Jul + p.Month.Aug + p.Month.Sep + p.Month.Oct + p.Month.Nov + p.Month.Dec;
-                                divProgram.InnerHtml = sumMonth.ToString(formatThousand);
+                                double unAllocated = p.MainBudgeted - sumMonth;
+                                divProgram.InnerHtml = unAllocated.ToString(formatThousand);
                             }
                             else
                             {
@@ -4171,11 +4211,16 @@ namespace RevenuePlanner.Helpers
                         div.InnerHtml = "---";
                     }
                 }
+                if (Tab == "1")
+                {
+                    div.Attributes.Add("mainbudget", plan.MainBudgeted.ToString());
+                }
                 td.InnerHtml = div.ToString();
                 tr.InnerHtml += td.ToString();
 
                 sb.AppendLine(tr.ToString());
             }
+           
             foreach (BudgetModel c in model.Where(p => p.ActivityType == strViewBy && p.ParentActivityId == ParentActivityId).ToList())
             {
                 if (model.Where(p => p.ActivityType == Helpers.ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId).Count() > 0)
@@ -4254,6 +4299,10 @@ namespace RevenuePlanner.Helpers
                         {
                             divLast.InnerHtml = "---";
                         }
+                    }
+                    if (Tab == "1")
+                    {
+                        divLast.Attributes.Add("mainbudget", c.MainBudgeted.ToString());
                     }
                     tdLast.InnerHtml = divLast.ToString();
                     tdLast.InnerHtml += ChildCostSummary(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model, "last", AllocatedBy, Tab, View).ToString();
@@ -4447,6 +4496,10 @@ namespace RevenuePlanner.Helpers
                         {
                             divProgram.InnerHtml += "---";
                         }
+                    }
+                    if (Tab == "1")
+                    {
+                        divProgram.Attributes.Add("mainbudget", p.MainBudgeted.ToString());
                     }
                     //divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
                     divProgram.AddCssClass(innerClass);

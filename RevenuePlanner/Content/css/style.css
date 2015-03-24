@@ -12138,6 +12138,7 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
     position: absolute;
     top: 0px; 
     right: 0px;
+    /*display:none;*/
 }
 .blue-corner-budget {
     /*border-right: 13px solid #3FA9F5;
@@ -12159,3 +12160,12 @@ max-width:20% !important;
     border-right: 1px solid #808080 !important;
 }
 /*End Temporary class*/
+
+#loadmetrue > h3 {
+    margin-right: 12px;
+    overflow: hidden;
+    padding-right: 10px !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap;
+    width: 85% !important;
+}

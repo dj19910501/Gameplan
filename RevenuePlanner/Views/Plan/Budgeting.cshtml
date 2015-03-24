@@ -107,25 +107,13 @@
     $("#aonCost").click(function () {
         $("#aoffCost").removeClass('request-btn-active');
         $("#aonCost").addClass('request-btn-active');
-        CallCostVsBudget();
+        $('.red-corner-budget').css('display', 'block');
     });
     $("#aoffCost").click(function () {
         $("#aonCost").removeClass('request-btn-active');
         $("#aoffCost").addClass('request-btn-active');
-        CallCostVsBudget();
+        $('.red-corner-budget').css('display', 'none');
     });
-
-    function CallCostVsBudget() {
-        $('.column2').find('.tacticLevel').each(function () {
-            var mainbudget = parseFloat($(this).attr('mainbudget').toString().replace(/,/g, ""));
-            var maincost = parseFloat($(this).find('a').Text().toString().replace(/,/g, ""))
-            if(maincost > mainbudget)
-            {
-                $(this).find('span').addClass('red-corner-budget');
-            }
-        });
-    }
-
     function ShowChangeLog(CurrentPlanId) {
         $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog/")';
