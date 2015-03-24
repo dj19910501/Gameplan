@@ -13,6 +13,7 @@ using System.Web;
 using System.IO;
 using System.Web.Script.Serialization;
 using System.Data.Objects.SqlClient;
+using RevenuePlanner.BDSService;
 
 namespace RevenuePlanner.Controllers
 {
@@ -410,7 +411,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="planIds">Comma separated string which contains plan's Ids</param>
         /// <returns>If success than return status 1 else 0</returns>
-        public JsonResult SetReportData(string planIds, string customIds)
+        public JsonResult SetReportData(string planIds, string customIds, string OwnerIDs,string TactictypeIDs)
         {
             JavaScriptSerializer js = new JavaScriptSerializer();
             CustomFieldFilter[] arrCustomFieldFilter = js.Deserialize<CustomFieldFilter[]>(customIds);
@@ -418,6 +419,8 @@ namespace RevenuePlanner.Controllers
             {
                 //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
                 List<int> lstPlanIds = new List<int>();
+                List<string> lstOwnerIds = new List<string>();
+                List<int> lstTactictypeIds = new List<int>();
                 if (arrCustomFieldFilter.Count() > 0)
                 {
                     Sessions.ReportCustomFieldIds = arrCustomFieldFilter;
@@ -452,6 +455,48 @@ namespace RevenuePlanner.Controllers
                 {
                     Sessions.ReportPlanIds = lstPlanIds;
                 }
+
+                //Added By Komal Rawal
+                if (OwnerIDs != string.Empty)
+                {
+                    string[] arrOwnerIds = OwnerIDs.Split(',');
+                    lstOwnerIds = arrOwnerIds.ToList();
+                   
+                    if (lstOwnerIds.Count > 0)
+                    {
+                        Sessions.ReportOwnerIds = lstOwnerIds;
+                        
+                    }
+
+                }
+                else
+                {
+                    Sessions.ReportOwnerIds = lstOwnerIds;
+                }
+
+                //Tactictype list
+                if (TactictypeIDs != string.Empty)
+                {
+                    string[] arrTactictypeIds = TactictypeIDs.Split(',');
+                    foreach (string TId in arrTactictypeIds)
+                    {
+                        int TacticId;
+                        if (int.TryParse(TId, out TacticId))
+                        {
+                            lstTactictypeIds.Add(TacticId);
+                        }
+                    }
+                    if (lstTactictypeIds.Count > 0)
+                    {
+                        Sessions.ReportTacticTypeIds = lstTactictypeIds;
+                        
+                    }
+                }
+                else
+                {
+                    Sessions.ReportTacticTypeIds = lstTactictypeIds;
+                }
+                //End
                 return Json(new { status = true });
             }
             catch (Exception e)
@@ -538,6 +583,8 @@ namespace RevenuePlanner.Controllers
             //// Getting current year's all published plan for all custom fields of clientid of director.
             List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
             List<int> planIds = new List<int>();
+            List<Guid> ownerIds = new List<Guid>();
+            List<int> TactictypeIds = new List<int>();
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
                 planIds = Sessions.ReportPlanIds;
@@ -559,7 +606,27 @@ namespace RevenuePlanner.Controllers
                                                                   tacticStatus.Contains(tactic.Status) &&
                                                                   planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
                                                                   ).ToList();
+
+
+                //Added by Komal Rawal
+                if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
+                {
+                    ownerIds = Sessions.ReportOwnerIds.Select(owner => new Guid(owner)).ToList();
+                    tacticList = tacticList.Where(tactic => ownerIds.Contains(tactic.CreatedBy)
+                                                                  ).ToList();
+                }
+
+
+                if (Sessions.ReportTacticTypeIds != null && Sessions.ReportTacticTypeIds.Count > 0)
+                {
+                    TactictypeIds = Sessions.ReportTacticTypeIds;
+                    tacticList = tacticList.Where(tactic => TactictypeIds.Contains(tactic.TacticTypeId)
+                                                                  ).ToList();
+
+                }
+                //End
             }
+
             if (Sessions.ReportCustomFieldIds != null && Sessions.ReportCustomFieldIds.Count() > 0)
             {
                 List<int> tacticids = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
@@ -4923,6 +4990,120 @@ namespace RevenuePlanner.Controllers
             }
 
             return Actualtacticdata;
+        }
+        #endregion
+
+        #region Get Owners by planID Method
+        //Added By komal Rawal
+        public JsonResult GetOwnerListForFilter(string PlanId)
+        {
+            try
+            {
+                var lstOwners = GetIndividualsByPlanId(PlanId);
+                var lstAllowedOwners = lstOwners.Select(owner => new
+                {
+                    OwnerId = owner.UserId,
+                    Title = owner.FirstName + " " + owner.LastName,
+                }).Distinct().ToList().OrderBy(owner => owner.Title).ToList();
+
+                lstAllowedOwners = lstAllowedOwners.Where(owner => !string.IsNullOrEmpty(owner.Title)).OrderBy(owner => owner.Title, new AlphaNumericComparer()).ToList();
+
+                return Json(new { isSuccess = true, AllowedOwner = lstAllowedOwners }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
+        }
+
+        private List<User> GetIndividualsByPlanId(string PlanId)
+        {
+            List<int> PlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
+          
+           
+            List<string> status = Common.GetStatusListAfterApproved();
+         
+           
+            //// Select Tactics of selected plans
+            List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
+
+            //// Get Tactic list.
+           
+               tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => status.Contains(tactic.Status) && PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => tactic).Distinct().ToList();
+               if (tacticList.Count > 0)
+               {
+                   List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+                   var lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+
+                   //// Custom Restrictions applied
+                   tacticList = tacticList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+               }
+
+            if (Sessions.ReportCustomFieldIds != null && Sessions.ReportCustomFieldIds.Count() > 0)
+            {
+                List<int> tacticids = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+                List<CustomFieldFilter> lstCustomFieldFilter = Sessions.ReportCustomFieldIds.ToList();
+                tacticids = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, tacticids);
+                tacticList = tacticList.Where(tactic => tacticids.Contains(tactic.PlanTacticId)).ToList();
+            }
+
+                BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
+                string strContatedIndividualList = string.Join(",", tacticList.Select(tactic => tactic.CreatedBy.ToString()));
+                var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+
+                return individuals;
+            
+        }
+        //End
+        #endregion
+
+        #region Tactic type list
+        public JsonResult GetTacticTypeListForFilter(string PlanId)
+        {
+            try
+            {
+                List<int> lstPlanIds = new List<int>();
+                if (PlanId != string.Empty)
+                {
+                    string[] arrPlanIds = PlanId.Split(',');
+                    foreach (string pId in arrPlanIds)
+                    {
+                        int planId;
+                        if (int.TryParse(pId, out planId))
+                        {
+                            lstPlanIds.Add(planId);
+                        }
+                    }
+                }
+             
+                 var objTacticType = (from tactic in db.Plan_Campaign_Program_Tactic
+                                       where lstPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IsDeleted == false
+                                       select new { tactic.TacticType.Title,tactic.TacticTypeId }).Distinct().ToList();
+              
+                return Json(new { isSuccess = true, TacticTypelist = objTacticType }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
         }
         #endregion
     }

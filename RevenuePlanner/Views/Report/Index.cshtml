@@ -171,7 +171,9 @@
                     </div>
                 </div>
             </div>
-            @*<div id="divCustomFieldsFilter"></div>*@
+             
+
+           
             @{
                 string acordionId, acordionParentId, acordionElementId, acordionElementHref,liCustom,ulCustom,allCustom,noCustom;
                 acordionId = acordionParentId = acordionElementId = acordionElementHref =liCustom =ulCustom = allCustom = noCustom =string.Empty;
@@ -221,8 +223,55 @@
                    </div>
                 }
              }
+
+           @* Added By komal Rawal*@
+            <div id="accordion-Owner" class="dropdown-section accordion" style="display:none;"> 
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+        </div>
+                    <div id="accordion-element-Owner" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulSelectedOwner">
+                        </ul>
+                        <div class="list-tab">
+                            <ul id="ulOwnerAllModule">
+                                <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
+                            </ul>
+                            <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
+    </div>
+                    </div>
+                </div>
+            </div>
+
+              <div id="accordion-TacticType" class="dropdown-section accordion" style="display:none;">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                    </div>
+                    <div id="accordion-element-TacticType" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulTacticType">
+                            
+                        </ul>
+                        <div class="list-tab">
+                              <ul id="TacticTypeAllModule">
+                                    <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                    <li>|</li>
+                                    <li><a onclick="BulkTTOperation(false)">deselect all</a></li>
+                                </ul>
+                                <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
+                             
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    
+   
     <!--End sidebar-->
 }
 
@@ -297,7 +346,183 @@
 <div id="DivShareReport">
 </div>
 <script type="text/javascript">
+    //Added By komal Rawal
 
+    var filters = {
+        OwnerIds: [],
+        TacticTypeids: []
+    };
+    function GetOwnerListForFilter(Planids) {
+        $('#ulSelectedOwner').html('');
+        filters.OwnerIds = [];
+        $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
+            type: "GET",
+            async: false,
+            cache: false,
+            url: '@Url.Action("GetOwnerListForFilter", "Report")',
+                data: {
+                    PlanId: Planids.toString(),
+                },
+                dataType: "json",
+                success: function (data) {
+                   
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
+                        if (data.isSuccess == true) {
+                            if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
+                                OwnerCount = data.AllowedOwner.length;
+                                if (OwnerCount > 0) {
+                                    $("#ulOwnerAllModule").css("display", "block");
+                                    $("#NoOwnerFound").hide();
+                                    $.each(data.AllowedOwner, function (i, OwnerItem) {
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"></input></li>');
+                                    });
+                                }
+                                else {
+                                    $("#ulOwnerAllModule").css("display", "none");
+                                    $("#NoOwnerFound").show();
+                                }
+                            }
+                            else {
+                                $("#ulOwnerAllModule").css("display", "none");
+                                $("#NoOwnerFound").show();
+                            }
+                        }
+                    }
+                }
+            });
+    }
+
+
+    function BulkOwnerOperation(selection) {
+        filters.OwnerIds = [];
+        if (selection) {
+            $("#ulSelectedOwner li").each(function (i) {
+                $(this).addClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).attr("checked", "checked");
+                filters.OwnerIds.push(chkid);
+            });
+        }
+        else {
+            $("#ulSelectedOwner li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+        }
+    }
+
+
+    function toggleOwner(obj) {
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#liOwner" + id).addClass("close-list");
+        }
+        else {
+            $("#liOwner" + id).removeClass("close-list");
+        }
+        filters.OwnerIds = [];
+        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.OwnerIds.push(chkid);
+            }
+        });
+    }
+
+    function GetTacticTypelist(Planids) {
+     
+        $('#ulTacticType').html('');
+        filters.TacticTypeids = [];
+        $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
+            type: "GET",
+            async: false,
+            cache: false,
+            url: '@Url.Action("GetTacticTypeListForFilter", "Report")',
+            data: {
+                PlanId: Planids.toString(),
+                },
+              dataType: "json",
+              success: function (data) {
+                  if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                      window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
+                        if (data.isSuccess == true) {
+                            if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+                                TactictypeCount = data.TacticTypelist.length;
+                                if (TactictypeCount > 0) {
+                                    $("#TacticTypeAllModule").css("display", "block");
+                                    $("#NoTTFound").hide();
+                                    $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                                        $('#ulTacticType').append('<li class="accordion-inner" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="' + TactictypeItem.TacticTypeId + '"></input></li>');
+                                    });
+                                }
+                                else {
+                                    $("#TacticTypeAllModule").css("display", "none");
+                                    $("#NoTTFound").show();
+                                }
+                            }
+                            else {
+                                $("#TacticTypeAllModule").css("display", "none");
+                                $("#NoTTFound").show();
+                            }
+                        }
+                    }
+                }
+          });
+
+    }
+
+    function BulkTTOperation(selection) {
+        filters.TacticTypeids = [];
+        if (selection) {
+            $("#ulTacticType li").each(function (i) {
+                $(this).addClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).attr("checked", "checked");
+                filters.TacticTypeids.push(chkid);
+
+            });
+        }
+        else {
+            $("#ulTacticType li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+        }
+
+    }
+
+    function toggleTacticType(obj) {
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#liTT" + id).addClass("close-list");
+        }
+        else {
+            $("#liTT" + id).removeClass("close-list");
+        }
+
+        filters.TacticTypeids = [];
+        $("#ulTacticType li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.TacticTypeids.push(chkid);
+            }
+        });
+    }
+
+    //End
     var SelectedBUId, SelectedPlanId;
     var IsCallFromYearDropdown = true;
     var OptionMain = '';
@@ -326,6 +551,9 @@
         // Load Multiselect Dropdown list i.e. Bind with new design
         LoadYearDropdown();
         loadBasedOnPlan();
+        PlanIds = GetFilterIdForPlan(multiselectPlanId);
+        GetOwnerListForFilter(PlanIds);
+        GetTacticTypelist(PlanIds);
         $("#DivShareReport").hide();
         GetFilterIdForPlan(multiselectPlanId);
         function toggleChevron(e) {
@@ -357,9 +585,15 @@
     function OnCheckboxChange(_parentliId, _checked) {
         if (_checked != null && _checked != 'undefined' && _checked === 'checked') {
             $("#" + _parentliId).addClass('close-list');
+            PlanIds = GetFilterIdForPlan(multiselectPlanId);
+            GetOwnerListForFilter(PlanIds);
+            GetTacticTypelist(PlanIds);
         }
         else {
             $("#" + _parentliId).removeClass('close-list');
+            PlanIds = GetFilterIdForPlan(multiselectPlanId);
+            GetOwnerListForFilter(PlanIds);
+            GetTacticTypelist(PlanIds);
         }
     }
 
@@ -426,7 +660,7 @@
                         $("#PlanAllModule").css("display", "block");
                         $("#NoPlanFound").hide();
                         $.each(data, function (index, item) {
-                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Text + '" id="' + item.Value + '"></input></li>');
+                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Text + '" onchange="OnMultiselectchange(this)" id="' + item.Value + '"></input></li>');
             });
                     }
                     else {
@@ -438,6 +672,10 @@
                     $("#PlanAllModule").css("display", "none");
                     $("#NoPlanFound").show();
                 }
+
+                PlanIds = GetFilterIdForPlan(multiselectPlanId);
+                GetTacticTypelist(PlanIds);
+                GetOwnerListForFilter(PlanIds);
             }
         });
     }
@@ -458,6 +696,10 @@
                 $("#" + chkid).removeAttr("checked");
             });
         }
+
+        PlanIds = GetFilterIdForPlan(multiselectPlanId);
+        GetOwnerListForFilter(PlanIds);
+        GetTacticTypelist(PlanIds);
     }
 
     function BulkCustomFieldOperation(selection,ulCutomFieldId) {
@@ -702,6 +944,8 @@
                 traditional:true,
                 data: {
                     planIds: PlanIds,
+                    OwnerIDs: (filters.OwnerIds).toString(),
+                    TactictypeIDs:(filters.TacticTypeids).toString(),
                     customIds: JSON.stringify(arrOptionIds),
                 },
                 success: function (data) {
@@ -806,6 +1050,8 @@ $('#liSummary').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
+        $("#accordion-Owner").show();
+        $("#accordion-TacticType").show();
         loadBasedOnPlan();
     }
 });
@@ -819,6 +1065,8 @@ $('#liRevenue').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
+        $("#accordion-Owner").show();
+        $("#accordion-TacticType").show();
         LoadRevenueView();
         loadBasedOnPlan();
     }
@@ -833,6 +1081,8 @@ $('#liConversion').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
+        $("#accordion-Owner").show();
+        $("#accordion-TacticType").show();
         LoadConversionView();
         loadBasedOnPlan();
     }
@@ -847,6 +1097,8 @@ $('#liConversion').click(function () {
                 LoadYearDropdown(leftPaneOption);
                 RemoveAllActiveItem();
                 $(this).addClass('active');
+                $("#accordion-Owner").hide();
+                $("#accordion-TacticType").hide();
                 LoadBudgetView();
             }
         });

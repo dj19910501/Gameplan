@@ -333,7 +333,39 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["ReportPlanIds"] = value;
             }
         }
+        //Added By Komal Rawal
+        public static List<string> ReportOwnerIds
+        {
+            get
+            {
+                if (HttpContext.Current.Session["ReportOwnerIds"] != null)
+                {
+                    return (List<string>)HttpContext.Current.Session["ReportOwnerIds"];
+                }
+                return null;
+            }
+            set
+            {
+                HttpContext.Current.Session["ReportOwnerIds"] = value;
+            }
+        }
 
+        public static List<int> ReportTacticTypeIds
+        {
+            get
+            {
+                if (HttpContext.Current.Session["ReportTacticTypeIds"] != null)
+                {
+                    return (List<int>)HttpContext.Current.Session["ReportTacticTypeIds"];
+                }
+                return null;
+            }
+            set
+            {
+                HttpContext.Current.Session["ReportTacticTypeIds"] = value;
+            }
+        }
+        //End
         public static bool IsDisplayDataInconsistencyMsg
         {
             get
