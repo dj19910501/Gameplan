@@ -12059,7 +12059,7 @@ li.close-list {
     /* Report Header Tabs - End */
 		 
 /*Clue tip*/
-#loadmetrue > h3  { margin:0; border-bottom: 1px solid #b3b3b3;font-size:14px;border-radius: 8px 8px 0 0;padding: 8px 10px 10px; font-family: Myriad Pro; }
+#loadmetrue > h3  { margin:0; /*border-bottom: 1px solid #b3b3b3;*/font-size:14px;border-radius: 8px 8px 0 0;/*background-color: #e6e6e6;*/padding: 0px 10px 0px; font-family: source_sans_prolight; font-weight:bold; }
 /* edited force fully*/.cluetip-title.ui-widget-header.ui-cluetip-header { display: none !important;}
 .ui-cluetip-header {  font-size: 1em; margin: 0;  overflow: hidden;}
 .cluetip-title .cluetip-close { float: right;  position: relative;}
@@ -12096,8 +12096,8 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
 .cluetip-close { position: absolute;    right: 9px;    top: 13px;	display:block !important;}
 .loadme-true{ border:0px solid #808080; border-radius:8px; }
 .label-toooltip {    display: inline-block;  margin-right: 15px;    text-align: right; width: 190px;  font-family: source_sans_proregular;white-space:nowrap; vertical-align: super; padding-left: 10px;}
-.tooltip-field {    border-bottom: 1px solid #b3b3b3;    padding: 10px 0 10px 0px;}/*for ticket #696*/
-#loadmetrue > h3  { margin:0; border-bottom: 1px solid #b3b3b3;font-size:14px;border-radius: 8px 8px 0 0;/*background-color: #e6e6e6;*/padding: 0px 10px 0px; font-family: source_sans_prolight; font-weight:bold; }
+.tooltip-field {    border-bottom: 1px solid #b3b3b3; border-top: 1px solid #b3b3b3; padding: 10px 0 10px 0px;}/*for ticket #696*/
+
 .button-grp-tooltip {    margin-right: 21px;    text-align: right;}
 
 .cluetip-close > a {
