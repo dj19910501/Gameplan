@@ -29,6 +29,7 @@ namespace BDSService
         public DbSet<Application_Activity> Application_Activity { get; set; }
         public DbSet<Application_Role> Application_Role { get; set; }
         public DbSet<Client> Clients { get; set; }
+        public DbSet<ClientDatabase> ClientDatabases { get; set; }
         public DbSet<CustomRestriction> CustomRestrictions { get; set; }
         public DbSet<Menu_Application> Menu_Application { get; set; }
         public DbSet<PasswordResetRequest> PasswordResetRequests { get; set; }
@@ -39,5 +40,6 @@ namespace BDSService
         public DbSet<User> Users { get; set; }
         public DbSet<User_Activity_Permission> User_Activity_Permission { get; set; }
         public DbSet<User_Application> User_Application { get; set; }
+        public DbSet<UserClientDatabase> UserClientDatabases { get; set; }
     }
 }

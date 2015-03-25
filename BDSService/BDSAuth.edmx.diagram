@@ -5,20 +5,22 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="6fe9ffeb55d14376a517fcde5c9da303" Name="Diagram1">
-        <EntityTypeShape EntityType="BDSAuthModel.Application" Width="1.5" PointX="8.5134232996559813" PointY="30.611180364438884" />
-        <EntityTypeShape EntityType="BDSAuthModel.Application_Activity" Width="1.5" PointX="10.864314984001366" PointY="23.415818091209893" />
-        <EntityTypeShape EntityType="BDSAuthModel.Application_Role" Width="1.5" PointX="5.5022497854671668" PointY="30.317506089023084" />
-        <EntityTypeShape EntityType="BDSAuthModel.Client" Width="1.5" PointX="5.9587600109906678" PointY="11.151617934532286" />
-        <EntityTypeShape EntityType="BDSAuthModel.CustomRestriction" Width="1.5" PointX="2.6653530144437" PointY="21.055492396026612" />
-        <EntityTypeShape EntityType="BDSAuthModel.Menu_Application" Width="1.5" PointX="4.55194014150274" PointY="2.7334387315127247" />
-        <EntityTypeShape EntityType="BDSAuthModel.PasswordResetRequest" Width="1.5" PointX="11.281601847746224" PointY="21.041628698372108" />
-        <EntityTypeShape EntityType="BDSAuthModel.Role" Width="1.5" PointX="8.222593454747738" PointY="4.7272030733186767" />
-        <EntityTypeShape EntityType="BDSAuthModel.Role_Activity_Permission" Width="1.5" PointX="4.1359543447084519" PointY="23.852531295201057" />
-        <EntityTypeShape EntityType="BDSAuthModel.Role_Permission" Width="1.5" PointX="3.8073273523744788" PointY="17.700566374557358" />
-        <EntityTypeShape EntityType="BDSAuthModel.SecurityQuestion" Width="1.5" PointX="9.7496921316486276" PointY="14.941196433706766" />
-        <EntityTypeShape EntityType="BDSAuthModel.User" Width="1.5" PointX="2.2299653134448292" PointY="7.0007923874076416" />
-        <EntityTypeShape EntityType="BDSAuthModel.User_Activity_Permission" Width="1.5" PointX="6.2412167648976737" PointY="26.759726998749993" />
-        <EntityTypeShape EntityType="BDSAuthModel.User_Application" Width="1.5" PointX="7.7423187120549013" PointY="12.054153477798288" />
+        <EntityTypeShape EntityType="BDSAuthModel.Application" Width="1.5" PointX="7.6098062375606066" PointY="9.4213026656868415" />
+        <EntityTypeShape EntityType="BDSAuthModel.Application_Activity" Width="1.5" PointX="6.9613359006873026" PointY="15.103687665939185" />
+        <EntityTypeShape EntityType="BDSAuthModel.Application_Role" Width="1.5" PointX="5.3037031466624249" PointY="25.577523139108681" />
+        <EntityTypeShape EntityType="BDSAuthModel.Client" Width="1.5" PointX="4.1866492015247463" PointY="0.59335711626026644" />
+        <EntityTypeShape EntityType="BDSAuthModel.ClientDatabase" Width="1.5" PointX="3.8536328356031486" PointY="20.943442667342463" />
+        <EntityTypeShape EntityType="BDSAuthModel.CustomRestriction" Width="1.5" PointX="1.6923661873174671" PointY="11.149705668515388" />
+        <EntityTypeShape EntityType="BDSAuthModel.Menu_Application" Width="1.5" PointX="8.77878631873931" PointY="12.158587580620585" />
+        <EntityTypeShape EntityType="BDSAuthModel.PasswordResetRequest" Width="1.5" PointX="1.2977589486622061" PointY="0.81828850545840737" />
+        <EntityTypeShape EntityType="BDSAuthModel.Role" Width="1.5" PointX="2.455698269631573" PointY="9.3172881497616356" />
+        <EntityTypeShape EntityType="BDSAuthModel.Role_Activity_Permission" Width="1.5" PointX="11.024666804366124" PointY="4.1445257235991422" />
+        <EntityTypeShape EntityType="BDSAuthModel.Role_Permission" Width="1.5" PointX="6.0049672918417336" PointY="21.182058284609607" />
+        <EntityTypeShape EntityType="BDSAuthModel.SecurityQuestion" Width="1.5" PointX="0.61329120426126349" PointY="19.4022035093057" />
+        <EntityTypeShape EntityType="BDSAuthModel.User" Width="1.5" PointX="7.5586868485243475" PointY="24.030320446952395" />
+        <EntityTypeShape EntityType="BDSAuthModel.User_Activity_Permission" Width="1.5" PointX="6.3747779104741182" PointY="7.2179505113595868" />
+        <EntityTypeShape EntityType="BDSAuthModel.User_Application" Width="1.5" PointX="1.7131646674653351" PointY="10.983561863649433" />
+        <EntityTypeShape EntityType="BDSAuthModel.UserClientDatabase" Width="1.5" PointX="4.7429238002481515" PointY="23.607204522754628" />
         <AssociationConnector Association="BDSAuthModel.ApplicationId_fk" />
         <AssociationConnector Association="BDSAuthModel.FK_Application_Role_Application" />
         <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_Application" />
@@ -28,6 +30,7 @@
         <AssociationConnector Association="BDSAuthModel.FK_Application_Role_Role" />
         <AssociationConnector Association="BDSAuthModel.ClientId_fk" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Client" />
+        <AssociationConnector Association="BDSAuthModel.FK_UserClientDatabase_ClientDatabase" />
         <AssociationConnector Association="BDSAuthModel.FK_CustomRestriction_User" />
         <AssociationConnector Association="BDSAuthModel.FK_CustomRestriction_User1" />
         <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_Menu_Application" />

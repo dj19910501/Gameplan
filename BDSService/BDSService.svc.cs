@@ -378,6 +378,17 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.GetClientApplicationactivitylist(applicationid);
         }
+        public List<BDSEntities.ClientDatabase> GetDatabaseList(Guid userid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetDatabaseList(userid);
+        }
+        public int SetDefaultRightsForDababase(Guid userId, Guid clientId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.SetDefaultRightsForDababase(userId, clientId);
+        }
+
     }
 
 }

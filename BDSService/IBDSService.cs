@@ -212,5 +212,10 @@ namespace BDSService
         [OperationContract]
         List<BDSEntities.ApplicationActivity> GetClientApplicationactivitylist(Guid applicationid);
 
+        [OperationContract]
+        List<BDSEntities.ClientDatabase> GetDatabaseList(Guid userid);
+
+        [OperationContract]
+        int SetDefaultRightsForDababase(Guid userId, Guid clientId);
     }
 }

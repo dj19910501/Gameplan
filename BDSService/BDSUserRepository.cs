@@ -44,7 +44,7 @@ namespace BDSService
                 // Modified by Dharmraj to optimize below code, 10-7-2014
                 var lstClient = db.Clients.Where(c => c.IsDeleted == false);
                 var lstUserApplication = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.IsDeleted == false);
-                
+
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                 var lstRole = db.Roles.Where(r => r.IsDeleted == false && r.ClientId == clientId);
 
@@ -549,7 +549,7 @@ namespace BDSService
         /// <param name="userId">user</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
         /// Modified by Mitesh Vaishnav on 09-07-2014 for internal review points # 40.User should be deleted application wise.
-        public int DeleteUser(Guid userId,Guid applicationId)
+        public int DeleteUser(Guid userId, Guid applicationId)
         {
             int retVal = 0;
             try
@@ -726,6 +726,10 @@ namespace BDSService
                         db.Entry(objUser_Application).State = EntityState.Added;
                         db.User_Application.Add(objUser_Application);
                         res = db.SaveChanges();
+
+                        // Added by Arpita Soni for Ticket #139 on 03/24/2015
+                        //Insert in UserClientDatabase
+                        res = SetDefaultRightsForDababase(obj.UserId, obj.ClientId);
 
                         // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                         //-- Insert User_Activity_Permission data
@@ -955,7 +959,7 @@ namespace BDSService
                             //item.ModifiedDate = DateTime.Now;
                             //item.ModifiedBy = modifiedBy;
                             //End Manoj 08Jul2014 PL # 34 (Measure)
-                            db.Entry(item).State = EntityState.Modified;   
+                            db.Entry(item).State = EntityState.Modified;
                         }
                         db.SaveChanges();
                     }
@@ -980,7 +984,7 @@ namespace BDSService
         /// <param name="id">user entity</param>
         /// <param name="applicationId">application</param>
         /// <returns>Returns user role code for specific application.</returns>
-        public string GetUserRole(Guid id, Guid applicationId ,Guid ClientId)
+        public string GetUserRole(Guid id, Guid applicationId, Guid ClientId)
         {
             string userRoleCode = string.Empty;
             if (id != null && applicationId != null)
@@ -1345,7 +1349,7 @@ namespace BDSService
         /// </summary>
         /// added by uday for #513
         /// <returns>Returns roles .</returns>
-        public List<BDSEntities.Role> GetAllRoleList(Guid applicationid , Guid ClientID)
+        public List<BDSEntities.Role> GetAllRoleList(Guid applicationid, Guid ClientID)
         {
             List<BDSEntities.Role> roleList = new List<BDSEntities.Role>();
             List<Role> rolelist = new List<Role>();
@@ -1417,7 +1421,7 @@ namespace BDSService
             List<BDSEntities.ApplicationActivity> ApplicationActivityList = new List<BDSEntities.ApplicationActivity>();
             //List<Application_Activity> ApplicationActivity = new List<Application_Activity>();
             string activityType = Enums.ActivityType.User.ToString();
-            var ApplicationActivity = db.Application_Activity.Where(application => application.ApplicationId == applicationid && application.ActivityType==activityType).ToList();
+            var ApplicationActivity = db.Application_Activity.Where(application => application.ApplicationId == applicationid && application.ActivityType == activityType).ToList();
             //if (ApplicationActivity.Count > 0)
             //{
             //    foreach (var item in ApplicationActivity)
@@ -1479,9 +1483,9 @@ namespace BDSService
         /// <param name="applicationId">application</param>
         /// <param name="createdBy">created by this user</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        
+
         //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-        public int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationid,Guid ClientID)
+        public int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationid, Guid ClientID)
         {
             int retVal = 0;
             try
@@ -1528,7 +1532,7 @@ namespace BDSService
             List<BDSEntities.User> roleMemberList = new List<BDSEntities.User>();
             List<User> lstUser = (from user in db.Users
                                   join ua in db.User_Application on user.UserId equals ua.UserId
-                                  where ua.RoleId == roleid && ua.ApplicationId == applicationId && user.IsDeleted == false && ua.IsDeleted==false
+                                  where ua.RoleId == roleid && ua.ApplicationId == applicationId && user.IsDeleted == false && ua.IsDeleted == false
                                   select user).OrderBy(q => q.FirstName).ToList();
             if (lstUser.Count > 0)
             {
@@ -1563,7 +1567,7 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission , Guid ClientId)
+        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission, Guid ClientId)
         {
             int retVal = 0;
             Guid NewRoleId = Guid.NewGuid();
@@ -1633,7 +1637,7 @@ namespace BDSService
                     if (objdelete.Count > 0)
                     {
                         objdelete.ForEach(objdel => db.Entry(objdel).State = EntityState.Deleted);
-                        db.SaveChanges();             
+                        db.SaveChanges();
                     }
                     List<int> allowPermissionList = new List<int>();
                     string[] id = permissionID.Split(',');
@@ -1730,7 +1734,7 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public Guid CreateRoleWithoutPermission(string roledesc, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission , Guid ClientId)
+        public Guid CreateRoleWithoutPermission(string roledesc, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission, Guid ClientId)
         {
             Guid retVal = Guid.Empty;
             Guid NewRoleId = Guid.NewGuid();
@@ -1793,8 +1797,8 @@ namespace BDSService
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
-                return retVal;
-            }
+            return retVal;
+        }
         #endregion
 
         #region delete role and reassign new role to existing users
@@ -1804,7 +1808,7 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy , Guid ClientId)
+        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy, Guid ClientId)
         {
             int retVal = 0;
             try
@@ -1934,9 +1938,9 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        
+
         //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-        public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby , Guid ClientId)
+        public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby, Guid ClientId)
         {
             int retVal = 0;
             try
@@ -2014,8 +2018,8 @@ namespace BDSService
 
         /// <summary>
         /// Function Copy role and its permissions.
-		/// Added By : Arpita Soni
-		/// Tiekct : #131
+        /// Added By : Arpita Soni
+        /// Tiekct : #131
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
@@ -2415,22 +2419,22 @@ namespace BDSService
                            where u.IsDeleted == false && u.ClientId == clientId && ua.ApplicationId == applicationId && ua.IsDeleted == false
                            && appRole.ApplicationId == applicationId && appRole.IsDeleted == false && r.ClientId == clientId
 
-                            select new BDSEntities.UserHierarchy
-                            {
-                                UserId = u.UserId,
-                                Email = u.Email,
-                                FirstName = u.FirstName,
-                                LastName = u.LastName,
-                                RoleId = r.RoleId,
-                                RoleTitle = r.Title,
-                                ColorCode = r.ColorCode,
-                                JobTitle = u.JobTitle,
-                                Phone = u.Phone,
-                                //Start Manoj 08Jul2014 PL # 34 (Measure)
-                                //ManagerId = ua.ManagerId
-                                ManagerId = u.ManagerId
-                                //End Manoj 08Jul2014 PL # 34 (Measure)
-                            }
+                           select new BDSEntities.UserHierarchy
+                           {
+                               UserId = u.UserId,
+                               Email = u.Email,
+                               FirstName = u.FirstName,
+                               LastName = u.LastName,
+                               RoleId = r.RoleId,
+                               RoleTitle = r.Title,
+                               ColorCode = r.ColorCode,
+                               JobTitle = u.JobTitle,
+                               Phone = u.Phone,
+                               //Start Manoj 08Jul2014 PL # 34 (Measure)
+                               //ManagerId = ua.ManagerId
+                               ManagerId = u.ManagerId
+                               //End Manoj 08Jul2014 PL # 34 (Measure)
+                           }
                           ).ToList();
 
             return lstUserHierarchy;
@@ -2454,9 +2458,9 @@ namespace BDSService
             ////Modified by Mitesh Vaishnav on 09-07-2014 for internal point #40 user should delete application wise
             List<BDSEntities.User> managerList = new List<BDSEntities.User>();
             List<User> lstManager = (from u in db.Users
-                                  join ua in db.User_Application on u.UserId equals ua.UserId
-                                  where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && (userId == Guid.Empty ? true : u.UserId != userId) && ua.IsDeleted==false
-                                  select u).ToList();
+                                     join ua in db.User_Application on u.UserId equals ua.UserId
+                                     where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && (userId == Guid.Empty ? true : u.UserId != userId) && ua.IsDeleted == false
+                                     select u).ToList();
             //if (lstManager.Count > 0)
             //{
             //    foreach (var user in lstManager)
@@ -2480,7 +2484,7 @@ namespace BDSService
                 ManagerName = (m.FirstName + " " + m.LastName).Trim(),
                 ManagerId = m.ManagerId
             }));
-            
+
             if (userId != Guid.Empty)
                 managerList = managerList.Where(a => a.ManagerId != userId).ToList();
 
@@ -2658,5 +2662,71 @@ namespace BDSService
             }
             return teamMemberList;
         }
+
+        #region Client Database List
+
+        /// <summary>
+        /// Get List of Permitted Databases
+        /// Added By : Arpita Soni
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <returns>List of databases</returns>
+        public List<BDSEntities.ClientDatabase> GetDatabaseList(Guid userId)
+        {
+            List<BDSEntities.ClientDatabase> lstClientDatabases = new List<BDSEntities.ClientDatabase>();
+            try
+            {
+                lstClientDatabases = (from ucd in db.UserClientDatabases
+                                      join cd in db.ClientDatabases on ucd.ClientDatabaseID equals cd.Id
+                                      where ucd.UserID == userId
+                                      orderby cd.DatabaseName
+                                      select new BDSEntities.ClientDatabase
+                                      {
+                                          ClientDatabaseID = cd.Id,
+                                          ClientID = cd.ClientID,
+                                          DatabaseName = cd.DatabaseName,
+                                          ConnectionString = cd.ConnectionString
+                                      }).ToList();
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return lstClientDatabases;
+        }
+
+        /// <summary>
+        /// Set default rights for database
+        /// Added By : Arpita Soni
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <param name="clientId">Client ID</param>
+        /// <returns>Returns 1 if Succcess, otherwise 0</returns>
+        public int SetDefaultRightsForDababase(Guid userId,Guid clientId)
+        {
+            try
+            {
+                var objClientDB = (from cd in db.ClientDatabases where cd.ClientID == clientId select cd).FirstOrDefault();
+
+                UserClientDatabase objUserClientDB;
+                if (objClientDB != null)
+                {
+                    objUserClientDB = new UserClientDatabase();
+                    objUserClientDB.UserID = userId;
+                    objUserClientDB.ClientDatabaseID = objClientDB.Id;
+                    db.Entry(objUserClientDB).State = EntityState.Added;
+                    db.UserClientDatabases.Add(objUserClientDB);
+                    db.SaveChanges();
+                    return 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return 0;
+        }
+        #endregion
     }
 }

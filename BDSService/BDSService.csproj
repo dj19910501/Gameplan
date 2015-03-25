@@ -111,6 +111,7 @@
     <Compile Include="BDSEntities\ApplicationActivity.cs" />
     <Compile Include="BDSEntities\Client.cs" />
     <Compile Include="BDSEntities\CustomRestriction.cs" />
+    <Compile Include="BDSEntities\ClientDatabase.cs" />
     <Compile Include="BDSEntities\Menu.cs" />
     <Compile Include="BDSEntities\PasswordResetRequest.cs" />
     <Compile Include="BDSEntities\Permission.cs" />
@@ -126,6 +127,9 @@
     </Compile>
     <Compile Include="BDSUserRepository.cs" />
     <Compile Include="Client.cs">
+      <DependentUpon>BDSAuth.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ClientDatabase.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
     <Compile Include="CommonFile.cs" />
@@ -156,6 +160,9 @@
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
     <Compile Include="User.cs">
+      <DependentUpon>BDSAuth.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserClientDatabase.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
     <Compile Include="User_Activity_Permission.cs">
