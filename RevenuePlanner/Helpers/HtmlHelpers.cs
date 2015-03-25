@@ -3978,7 +3978,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Jan <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.January.ToString(), "---") : "---";
                                 }
                                 else
                                 {
@@ -3990,7 +3990,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Feb <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.February.ToString(), "---") : "---";
                                 }
                                 else
                                 {
@@ -4003,7 +4003,7 @@ namespace RevenuePlanner.Helpers
 
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Mar <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.March.ToString(), "---") : "---";
                                 }
                                 else
                                 {
@@ -4015,7 +4015,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Apr <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.April.ToString(),"---") : "---";
                                 }
                                 else
                                 {
@@ -4027,7 +4027,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.May <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.May.ToString(), "---") : "---";
                                 }
                                 else
                                 {
@@ -4039,7 +4039,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Jun <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.June.ToString(), "---") : "---";
                                 }
                                 else
                                 {
@@ -4051,7 +4051,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Jul <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.July.ToString(), "---") : "---";
                                 }
                                 else
                                 {
@@ -4063,7 +4063,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Aug <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.August.ToString(), "---") : "---";
                                 }
                                 else
                                 {
@@ -4075,7 +4075,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Sep <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.September.ToString(), "---") : "---";
                                 }
                                 else
                                 {
@@ -4088,7 +4088,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Oct <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.October.ToString(), "---") : "---";
                                 }
                                 else
                                 {
@@ -4100,7 +4100,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Nov <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.November.ToString(), "---"):"---";
                                 }
                                 else
                                 {
@@ -4111,7 +4111,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType == Helpers.ActivityType.ActivityLineItem && p.Month.Dec <= 0)
                                 {
-                                    divProgram.InnerHtml = "---";
+                                    divProgram.InnerHtml = (isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem) ? ClueTipAnchorTag(Enums.Months.December.ToString(), "---") : "---";
                                 }
                                 else
                                 {

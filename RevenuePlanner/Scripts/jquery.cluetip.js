@@ -596,6 +596,7 @@
                     }
 
                     if ($link.parent().hasClass('clueplanned')) {
+                        var splitedEntityId = entityId.split('_');
                         if ($link.parent().hasClass('tacticLevel')) {
                             var tcm = $link.text().replace(/,/g, "");
                             var tbm = $link.parent().attr('mainbudget').toString().replace(/,/g, "");//mainbudget
@@ -611,7 +612,7 @@
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tby.toString(), false, false) + '" ov="' + tby + '"  disabled="disabled" />' +
                                 '<label class="label-toooltip" >Unallocated Budget(y):  </label>' +
                                 '<input type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(), false, false) + '" id="unAllocatedBudget" />';
-                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('tacticcpt_', '') + '" section="Tactic" tab="Planned" mnth="' + entityMonth + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="Tactic" tab="Planned" mnth="' + entityMonth + '" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
                         }
@@ -623,7 +624,7 @@
                                 '<input type="text" id="CostMonth" value="' + FormatCommasBudget(tcm.toString(), false, false) + '" ov="' + tcm + '" />' +
                                '<label class="label-toooltip" >Line Item Cost(y):  </label>' +
                                 '<input type="text" id="CostYear" value="' + FormatCommasBudget(tcy.toString(), false, false) + '" ov="' + tcy + '" />';
-                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('lineitemcptl_', '') + '" section="LineItem" tab="Planned" mnth="' + entityMonth + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="LineItem" tab="Planned" mnth="' + entityMonth + '" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
                         }
@@ -631,12 +632,13 @@
                     //clueactual
                     
                     if ($link.parent().hasClass('clueactual')) {
+                        var splitedEntityId = entityId.split('_');
                         //lineitemLevel
                         if ($link.parent().hasClass('lineitemLevel')) {
                             var tcm = $link.text().replace(/,/g, "");
                             var $loadmeHtml = '<label class="label-toooltip" >Line Item Cost(' + displaymq + '):  </label>' +
                                 '<input type="text" id="CostMonth" value="' + FormatCommasBudget(tcm.toString(), false, false) + '" ov="' + tcm + '" />';
-                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('lineitemcptl_', '') + '" section="LineItem" tab="Actual" mnth="' + entityMonth + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="LineItem" tab="Actual" mnth="' + entityMonth + '" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
                         }
@@ -645,7 +647,7 @@
                             var tcm = $link.text().replace(/,/g, "");
                             var $loadmeHtml = '<label class="label-toooltip" >Tactic Actual Cost(' + displaymq + '):  </label>' +
                                 '<input type="text" id="CostMonth" value="' + FormatCommasBudget(tcm.toString(), false, false) + '" ov="' + tcm + '" />';
-                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('tacticcpt_', '') + '" section="Tactic" tab="Actual" mnth="' + entityMonth + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="Tactic" tab="Actual" mnth="' + entityMonth + '" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
                         }
