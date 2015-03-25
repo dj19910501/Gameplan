@@ -12139,7 +12139,7 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
     position: absolute;
     top: 0px; 
     right: 0px;
-    /*display:none;*/
+    display:none;
 }
 .blue-corner-budget {
     /*border-right: 13px solid #3FA9F5;

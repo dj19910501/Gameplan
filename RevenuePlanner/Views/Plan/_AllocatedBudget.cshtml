@@ -117,13 +117,16 @@
     }).get();
    
     $(document).ready(function () {
-        ////The object CurrentTab is initiate in parent of this view
-        //if (currentTab == "aPlanned") {
-        //    $("#divCostBudget").removeAttr('style');
-        //}
-        //else {
-        //    $("#divCostBudget").attr('style', 'display:none;')
-        //}
+        //The object CurrentTab is initiate in parent of this view
+        var TacCustomTitle = "@Common.TacticCustomTitle";
+        if (currentTab == "aPlanned" && $('#ddlViewBy').val().indexOf(TacCustomTitle) < 0) {
+            $("#divCostBudget").removeAttr('style');
+        }
+        else {
+            $("#aonCost").removeClass('request-btn-active');
+            $("#aoffCost").addClass('request-btn-active');
+            $("#divCostBudget").attr('style', 'display:none;')
+        }
         SetHeader();
        // AddTipsy();
         $.fn.hasScrollBar = function () {
