@@ -857,12 +857,12 @@
             if (finalValue == '') {
                 finalValue = '';
             }
-            if (isShowAddActual == 1) {
-                $("#divAddActual").css("display", "block");
-            }
-            else {
-                $("#divAddActual").css("display", "none");
-            }
+            //if (isShowAddActual == 1) {
+            //    $("#divAddActual").css("display", "block");
+            //}
+            //else {
+            //    $("#divAddActual").css("display", "none");
+            //}
 
             return finalValue;
 
@@ -935,6 +935,20 @@
             
             //// get selected value from multiselect 
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
+        //Mofied By Komal Rawal
+        var arrPlanIds = new Array();
+        arrPlanIds = PlanIds.split(',');
+        var GetSelectedPlanNo = arrPlanIds.length;
+        if (GetSelectedPlanNo > 1) {
+            $("#divAddActual").hide();
+
+            }
+            else
+            {
+            $("#divAddActual").show();
+
+        }
+        //End
             
             SortingId = '';
             $.ajax({

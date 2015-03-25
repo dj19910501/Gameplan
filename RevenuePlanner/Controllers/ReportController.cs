@@ -121,14 +121,9 @@ namespace RevenuePlanner.Controllers
             foreach (string year in yearlist)
 	        {
                 objYear = new SelectListItem();
-                if (year == Common.GetCurrentYear())
-                {
-                    objYear.Text = "FY " + year + Common.labelThisYear;
-                }
-                else
-                {
+                
                     objYear.Text = "FY " + year;
-                }
+                
                 objYear.Value = year;
                 objYear.Selected = year == selectedYear ? true : false;
                 lstYear.Add(objYear);
