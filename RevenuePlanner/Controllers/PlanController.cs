@@ -4832,9 +4832,10 @@ namespace RevenuePlanner.Controllers
 
                             if (tacticost > yearlycost)
                             {
+                                if (objTactic.Cost != yearlycost)
+                                {
                                 double diffcost = tacticost - yearlycost;
-                                int endmonth = objTactic.EndDate.Month;
-                                int endmonthactual = endmonth;
+                                    int endmonth = 12;
                                 while (diffcost > 0 && endmonth != 0)
                                 {
                                     if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
@@ -4857,10 +4858,16 @@ namespace RevenuePlanner.Controllers
                                     }
                                     // if not reduce value than what happen
                                 }
+                                }
+                                else
+                                {
                                 yearlycost = tacticost;
+                                }
                             }
                             else if (tacticost < yearlycost)
                             {
+                                if (objTactic.Cost != yearlycost)
+                                {
                                 double diffcost = yearlycost - tacticost;
                                 int startmonth = objTactic.StartDate.Month;
                                 if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
@@ -4876,6 +4883,11 @@ namespace RevenuePlanner.Controllers
                                     objTacticCost.CreatedBy = Sessions.User.UserId;
                                     objTacticCost.CreatedDate = DateTime.Now;
                                     db.Entry(objTacticCost).State = EntityState.Added;
+                                    }
+                                }
+                                else
+                                {
+                                    yearlycost = tacticost;
                                 }
                             }
                             objTactic.Cost = yearlycost;
@@ -4989,13 +5001,13 @@ namespace RevenuePlanner.Controllers
 
                                                         if (BudgetDiff <= 0)
                                                         {
-                                                            thisQuarterFirstMonthBudget.Value = 0;
                                                             tacticost -= thisQuarterFirstMonthBudget.Value;
+                                                            thisQuarterFirstMonthBudget.Value = 0;
                                                         }
                                                         else
                                                         {
+                                                            tacticost -= (thisQuarterFirstMonthBudget.Value - BudgetDiff);
                                                             thisQuarterFirstMonthBudget.Value = BudgetDiff;
-                                                            tacticost -= thisQuarterFirstMonthBudget.Value + BudgetDiff;
                                                         }
 
                                                         db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
@@ -5043,9 +5055,10 @@ namespace RevenuePlanner.Controllers
 
                             if (tacticost > yearlycost)
                             {
+                                if (objTactic.Cost != yearlycost)
+                                {
                                 double diffcost = tacticost - yearlycost;
-                                int endmonth = objTactic.EndDate.Month;
-                                int endmonthactual = endmonth;
+                                    int endmonth = 12;
                                 while (diffcost > 0 && endmonth != 0)
                                 {
                                     if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
@@ -5068,10 +5081,16 @@ namespace RevenuePlanner.Controllers
                                     }
                                     // if not reduce value than what happen
                                 }
+                                }
+                                else
+                                {
                                 yearlycost = tacticost;
+                                }
                             }
                             else if (tacticost < yearlycost)
                             {
+                                if (objTactic.Cost != yearlycost)
+                                {
                                 double diffcost = yearlycost - tacticost;
                                 int startmonth = objTactic.StartDate.Month;
                                 if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
@@ -5087,6 +5106,11 @@ namespace RevenuePlanner.Controllers
                                     objTacticCost.CreatedBy = Sessions.User.UserId;
                                     objTacticCost.CreatedDate = DateTime.Now;
                                     db.Entry(objTacticCost).State = EntityState.Added;
+                                    }
+                                }
+                                else
+                                {
+                                    yearlycost = tacticost;
                                 }
                             }
                             objTactic.Cost = yearlycost;
@@ -5317,8 +5341,10 @@ namespace RevenuePlanner.Controllers
 
                         if (lineitemtotalcost > yearlycost)
                         {
-                            double diffcost = yearlycost - tacticost;
-                            int endmonth = objTactic.EndDate.Month;
+                                if (objLineitem.Cost != yearlycost)
+                                {
+                                    double diffcost = lineitemtotalcost - yearlycost;
+                                    int endmonth = 12;
                             while (diffcost > 0 && endmonth != 0)
                             {
                                 if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
@@ -5342,9 +5368,16 @@ namespace RevenuePlanner.Controllers
                                 // if not reduce value than what happen
                             }
                         }
+                                else
+                                {
+                                    yearlycost = lineitemtotalcost;
+                                }
+                            }
                         else if (lineitemtotalcost < yearlycost)
                         {
-                            double diffcost = yearlycost - tacticost;
+                                if (objLineitem.Cost != yearlycost)
+                                {
+                                    double diffcost = yearlycost - lineitemtotalcost;
                             int startmonth = objTactic.StartDate.Month;
                             if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
                             {
@@ -5361,6 +5394,11 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(objlineitemCost).State = EntityState.Added;
                             }
                         }
+                                else
+                                {
+                                    yearlycost = lineitemtotalcost;
+                                }
+                            }
                         objLineitem.Cost = yearlycost;
                         db.Entry(objLineitem).State = EntityState.Modified;
                         db.Entry(objTactic).State = EntityState.Modified;
@@ -5470,13 +5508,13 @@ namespace RevenuePlanner.Controllers
 
                                                         if (BudgetDiff <= 0)
                                                         {
-                                                            thisQuarterFirstMonthBudget.Value = 0;
                                                             lineitemtotalcost -= thisQuarterFirstMonthBudget.Value;
+                                                            thisQuarterFirstMonthBudget.Value = 0;
                                                         }
                                                         else
                                                         {
+                                                            lineitemtotalcost -= (thisQuarterFirstMonthBudget.Value - BudgetDiff);
                                                             thisQuarterFirstMonthBudget.Value = BudgetDiff;
-                                                            lineitemtotalcost -= thisQuarterFirstMonthBudget.Value + BudgetDiff;
                                                         }
 
                                                         db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
@@ -5574,8 +5612,10 @@ namespace RevenuePlanner.Controllers
 
                             if (lineitemtotalcost > yearlycost)
                             {
-                                double diffcost = tacticost - yearlycost;
-                                int endmonth = objTactic.EndDate.Month;
+                                if (objLineitem.Cost != yearlycost)
+                                {
+                                    double diffcost = lineitemtotalcost - yearlycost;
+                                    int endmonth = 12;
                                 int endmonthactual = endmonth;
                                 while (diffcost > 0 && endmonth != 0)
                                 {
@@ -5599,11 +5639,17 @@ namespace RevenuePlanner.Controllers
                                     }
                                     // if not reduce value than what happen
                                 }
-                                yearlycost = tacticost;
+                                }
+                                else
+                                {
+                                    yearlycost = lineitemtotalcost;
+                                }
                             }
                             else if (lineitemtotalcost < yearlycost)
                             {
-                                double diffcost = yearlycost - tacticost;
+                                if (objLineitem.Cost != yearlycost)
+                                {
+                                    double diffcost = yearlycost - lineitemtotalcost;
                                 int startmonth = objTactic.StartDate.Month;
                                 if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
                                 {
@@ -5618,6 +5664,11 @@ namespace RevenuePlanner.Controllers
                                     objlineitemCost.CreatedBy = Sessions.User.UserId;
                                     objlineitemCost.CreatedDate = DateTime.Now;
                                     db.Entry(objlineitemCost).State = EntityState.Added;
+                                }
+                            }
+                                else
+                                {
+                                    yearlycost = lineitemtotalcost;
                                 }
                             }
                             objLineitem.Cost = yearlycost;
@@ -6667,11 +6718,7 @@ namespace RevenuePlanner.Controllers
                 }
                 model = modelCustom;
             }
-            //Threre is no need to manage lines for actuals
-            if (budgetTab == Enums.BudgetTab.Planned)
-            {
-                model = ManageLineItems(model);
-            }
+           
             //Set actual for quarters
             if (AllocatedBy == "quarters")  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
             {
@@ -6710,7 +6757,11 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-
+            //Threre is no need to manage lines for actuals
+            if (budgetTab == Enums.BudgetTab.Planned)
+            {
+                model = ManageLineItems(model);
+            }
             ViewBag.AllocatedBy = AllocatedBy;
             ViewBag.ViewBy = ViewByID;//(int)viewBy;
             ViewBag.Tab = (int)budgetTab;
