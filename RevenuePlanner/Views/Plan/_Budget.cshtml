@@ -11,7 +11,7 @@
     BudgetMonth PercAllocated = ViewBag.PercAllocated;
     double planAllocation = 0;
     double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
-    planAllocation = (sumMonth == 0 && plan.Allocated == 0) ? 0 : (sumMonth > 0 && plan.Allocated == 0) ? 101 : sumMonth / plan.Allocated * 100;
+    planAllocation = (sumMonth == 0 && plan.MainBudgeted == 0) ? 0 : (sumMonth > 0 && plan.MainBudgeted == 0) ? 101 : sumMonth / plan.MainBudgeted * 100;
     string strTab = Convert.ToString(ViewBag.Tab);
     bool isquarter = false;
     string column2Width = strTab == "2" ? "max-width:69%;" : "";
@@ -255,13 +255,13 @@
                 $('#planCostTitle').html('Total Planned Cost');
 
             var sumMonth = number_format('@sumMonth', 0, '.', ',');
-            var allocated = number_format('@plan.Allocated', 0, '.', ',');
+            var allocated = number_format('@plan.MainBudgeted', 0, '.', ',');
             $('#planCostValue').prop('title', '$' + sumMonth + '/' + '$' + allocated);
             $('#planCostValue').popover('destroy');
             bootstrapetitle($('#planCostValue'), '$' + sumMonth + '/' + '$' + allocated, "tipsy-innerWhite");
 
             sumMonth = FormatNumber('@sumMonth', false);
-            allocated = FormatNumber('@plan.Allocated', false);
+            allocated = FormatNumber('@plan.MainBudgeted', false);
             $('#planCostValue').html(sumMonth + '/' + allocated);
             $('#divPlanProgress').css("width", "@planAllocation%");
             if ('@planAllocation' > 100) {
@@ -272,9 +272,9 @@
                 $('#divPlanProgress').css("background", "#3fa9f5");
             }
             if (currentTab == 'aActuals')
-                $('#monthCompareTitle').html('Actuals vs Allocated');
+                $('#monthCompareTitle').html('Actuals vs Budget');
             else
-                $('#monthCompareTitle').html('Planned vs Allocated');
+                $('#monthCompareTitle').html('Planned Cost vs Budget');
             $('.progressPlanned').show();
         }
         else {
