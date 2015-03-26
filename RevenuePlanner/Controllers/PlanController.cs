@@ -5911,15 +5911,23 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetAllocatedBugetData(int PlanId)
         {
+            List<Guid> lstSubordinatesIds = new List<Guid>();
+            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            if (IsTacticAllowForSubordinates)
+            {
+                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+            }
+
             var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var campaignobj = campaign.Select(_campgn => new
             {
                 id = _campgn.PlanCampaignId,
                 title = _campgn.Title,
                 description = _campgn.Description,
-                isOwner = Sessions.User.UserId == _campgn.CreatedBy ? 0 : 1,
+                isOwner = Sessions.User.UserId == _campgn.CreatedBy ? 1 : 0,
                 Budgeted = _campgn.CampaignBudget,
                 Budget = _campgn.Plan_Campaign_Budget.Select(b1 => new BudgetedValue { Period = b1.Period, Value = b1.Value }).ToList(),
+                createdBy = _campgn.CreatedBy,
                 programs = (db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId.Equals(_campgn.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pcpj => new
                 {
                     id = pcpj.PlanProgramId,
@@ -5927,7 +5935,8 @@ namespace RevenuePlanner.Controllers
                     description = pcpj.Description,
                     Budgeted = pcpj.ProgramBudget,
                     Budget = pcpj.Plan_Campaign_Program_Budget.Select(_budgt => new BudgetedValue { Period = _budgt.Period, Value = _budgt.Value }).ToList(),
-                    isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
+                    isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 1 : 0,
+                    createdBy = pcpj.CreatedBy,
                     tactics = (db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
                     {
                         id = pcptj.PlanTacticId,
@@ -5935,7 +5944,8 @@ namespace RevenuePlanner.Controllers
                         description = pcptj.Description,
                         Cost = pcptj.TacticBudget,
                         Budget = pcptj.Plan_Campaign_Program_Tactic_Budget.Select(t => new BudgetedValue { Period = t.Period, Value = t.Value }).ToList(),
-                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 0 : 1
+                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 1 : 0,
+                        createBy = pcptj.CreatedBy
 
                     }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id)
 
@@ -5950,6 +5960,7 @@ namespace RevenuePlanner.Controllers
                 isOwner = _campgn.isOwner,
                 Budgeted = _campgn.Budgeted,
                 Budget = _campgn.Budget,
+                createdBy = _campgn.createdBy,
                 programs = _campgn.programs.Select(_prgrm => new
                 {
                     id = _prgrm.id,
@@ -5958,6 +5969,7 @@ namespace RevenuePlanner.Controllers
                     Budgeted = _prgrm.Budgeted,
                     Budget = _prgrm.Budget,
                     isOwner = _prgrm.isOwner,
+                    createdBy = _prgrm.createdBy,
                     tactics = _prgrm.tactics.Select(_tactic => new
                     {
                         id = _tactic.id,
@@ -5965,7 +5977,8 @@ namespace RevenuePlanner.Controllers
                         description = _tactic.description,
                         Budgeted = _tactic.Cost,
                         Budget = _tactic.Budget,
-                        isOwner = _tactic.isOwner
+                        isOwner = _tactic.isOwner,
+                        createdBy = _tactic.createBy
                     })
                 })
             });
@@ -5977,7 +5990,8 @@ namespace RevenuePlanner.Controllers
                 description = _camgn.description,
                 Budget = _camgn.Budget,
                 Budgeted = _camgn.Budgeted,
-                isOwner = _camgn.isOwner == 0 ? (_camgn.programs.Any(_prgrm => _prgrm.isOwner == 1) ? 1 : 0) : 1,
+                isOwner = _camgn.isOwner == 1 ? (_camgn.programs.Where(p => p.tactics.Any(t => t.isOwner == 0)).Select(p => p.tactics).ToList().Count > 0 ? 0 : 1) : 0,
+                createdBy = _camgn.createdBy,
                 programs = _camgn.programs.Select(_prgm => new
                 {
                     id = _prgm.id,
@@ -5985,7 +5999,8 @@ namespace RevenuePlanner.Controllers
                     description = _prgm.description,
                     Budget = _prgm.Budget,
                     Budgeted = _prgm.Budgeted,
-                    isOwner = _prgm.isOwner == 0 ? (_prgm.tactics.Any(_tactic => _tactic.isOwner == 1) ? 1 : 0) : 1,
+                    isOwner = _prgm.isOwner == 1 ? (_prgm.tactics.Any(_tactic => _tactic.isOwner == 0) ? 0 : 1) : 0,
+                    createdBy = _prgm.createdBy,
                     tactics = _prgm.tactics
                 })
             });
@@ -6012,6 +6027,8 @@ namespace RevenuePlanner.Controllers
                 obj.ParentActivityId = "0";
                 obj.Budgeted = objPlan.Budget;
                 obj.IsOwner = true;
+                obj.isEditable = false;
+                obj.CreatedBy = objPlan.CreatedBy;
                 obj = GetMonthWiseData(obj, lst);
                 model.Add(obj);
                 parentPlanId = objPlan.PlanId.ToString();
@@ -6026,6 +6043,8 @@ namespace RevenuePlanner.Controllers
                     obj.IsOwner = Convert.ToBoolean(c.isOwner);
                     obj = GetMonthWiseData(obj, c.Budget);
                     obj.Budgeted = c.Budgeted;
+                    obj.CreatedBy = c.createdBy;
+                    obj.isEditable = false;
                     model.Add(obj);
                     parentCampaignId = c.id.ToString();
                     foreach (var p in c.programs)
@@ -6039,6 +6058,8 @@ namespace RevenuePlanner.Controllers
                         obj.IsOwner = Convert.ToBoolean(p.isOwner);
                         obj = GetMonthWiseData(obj, p.Budget);
                         obj.Budgeted = p.Budgeted;
+                        obj.CreatedBy = p.createdBy;
+                        obj.isEditable = false;
                         model.Add(obj);
                         parentProgramId = p.id.ToString();
                         foreach (var t in p.tactics)
@@ -6051,12 +6072,87 @@ namespace RevenuePlanner.Controllers
                             obj.ParentActivityId = parentProgramId;
                             obj.IsOwner = Convert.ToBoolean(t.isOwner);
                             obj = GetMonthWiseData(obj, t.Budget);
+                            obj.CreatedBy = t.createdBy;
+                            obj.isEditable = false;
                             obj.Budgeted = t.Budgeted;
                             model.Add(obj);
                         }
                     }
                 }
             }
+
+            //Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
+            foreach (var item in model)
+            {
+                if (item.ActivityType == ActivityType.ActivityPlan)
+                {
+                    bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                    if (item.CreatedBy == Sessions.User.UserId || IsPlanEditAllAuthorized)
+                    {
+                        item.isEditable = true;
+                    }
+                    else if (lstSubordinatesIds.Contains(item.CreatedBy))
+                    {
+                        item.isEditable = true;
+                    }
+                }
+                else if (item.ActivityType == ActivityType.ActivityCampaign)
+                {
+                    if (item.CreatedBy == Sessions.User.UserId || lstSubordinatesIds.Contains(item.CreatedBy))
+                    {
+                        List<int> planTacticIds = new List<int>();
+                        List<int> lstAllowedEntityIds = new List<int>();
+                        //item.programs.ToList().ForEach(p => p.tactics.ToList().ForEach(t => planTacticIds.Add(t.id)));
+                        model.Where(m => m.ActivityType == ActivityType.ActivityTactic && model.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList().Contains(m.ActivityId)).ToList().ForEach(t => planTacticIds.Add(Convert.ToInt32(t.ActivityId)));
+                        lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                        {
+                            item.isEditable = true;
+                        }
+                        else
+                        {
+                            item.isEditable = false;
+                        }
+                    }
+                }
+                else if (item.ActivityType == ActivityType.ActivityProgram)
+                {
+                    if (item.CreatedBy == Sessions.User.UserId || lstSubordinatesIds.Contains(item.CreatedBy))
+                    {
+                        List<int> planTacticIds = new List<int>();
+                        List<int> lstAllowedEntityIds = new List<int>();
+                        model.Where(m => m.ActivityType == ActivityType.ActivityTactic && m.ParentActivityId == item.ActivityId).ToList().ForEach(t => planTacticIds.Add(Convert.ToInt32(t.ActivityId)));
+                        lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                        {
+                            item.isEditable = true;
+                        }
+                        else
+                        {
+                            item.isEditable = false;
+                        }
+                    }
+                }
+                else if (item.ActivityType == ActivityType.ActivityTactic)
+                {
+                    if (item.CreatedBy == Sessions.User.UserId || lstSubordinatesIds.Contains(item.CreatedBy))
+                    {
+                        List<int> planTacticIds = new List<int>();
+                        List<int> lstAllowedEntityIds = new List<int>();
+                        planTacticIds.Add(Convert.ToInt32(item.ActivityId));
+                        lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                        {
+                            item.isEditable = true;
+                        }
+                        else
+                        {
+                            item.isEditable = false;
+                        }
+                    }
+                }
+            }
+            //End Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
 
             // Start - Added by Sohel Pathan on 08/09/2014 for PL ticket #642
             // Set budget for quarters
@@ -6355,6 +6451,12 @@ namespace RevenuePlanner.Controllers
         public ActionResult GetBudgetedData(int PlanId, Enums.BudgetTab budgetTab = Enums.BudgetTab.Planned, Enums.ViewBy viewBy = Enums.ViewBy.Campaign)
         {
             //int _viewBy = 6;//1025;
+            List<Guid> lstSubordinatesIds = new List<Guid>();
+            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            if (IsTacticAllowForSubordinates)
+            {
+                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+            }
             TempData["ViewBy"] = (int)viewBy;//_viewBy;//
             string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
             string entTacticType = Enums.EntityType.Tactic.ToString();
@@ -6372,6 +6474,7 @@ namespace RevenuePlanner.Controllers
                 Budget = p.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
                 BudgetMonth = p.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
                 MainBudgeted = p.CampaignBudget,
+                createdBy=p.CreatedBy,
                 programs = (db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId.Equals(p.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pcpj => new
                 {
                     id = "cp_" + pcpj.PlanProgramId.ToString(),
@@ -6381,6 +6484,7 @@ namespace RevenuePlanner.Controllers
                     Budget = pcpj.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
                     BudgetMonth = pcpj.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
                     MainBudgeted = pcpj.ProgramBudget,
+                    createdBy=pcpj.CreatedBy,
                     tactic = (db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.PlanProgramId.Equals(pcpj.PlanProgramId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pctj => new
                     {
                         id = "cpt_" + pctj.PlanTacticId.ToString(),
@@ -6393,6 +6497,8 @@ namespace RevenuePlanner.Controllers
                         BudgetMonth = pctj.Plan_Campaign_Program_Tactic_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
                         CustomFieldEntities = db.CustomField_Entity.Where(entity => entity.EntityId.Equals(pctj.PlanTacticId) && entity.CustomField.EntityType.Equals(entTacticType)).ToList(),
                         MainBudgeted = pctj.TacticBudget,
+                        createdBy=pctj.CreatedBy,
+                        isAfterApproved=Common.CheckAfterApprovedStatus(pctj.Status),
                         lineitems = (db.Plan_Campaign_Program_Tactic_LineItem.Where(pcp => pcp.PlanTacticId.Equals(pctj.PlanTacticId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pclj => new
                         {
                             id = "cptl_" + pclj.PlanLineItemId.ToString(),
@@ -6400,6 +6506,7 @@ namespace RevenuePlanner.Controllers
                             description = pclj.Description,
                             isOwner = Sessions.User.UserId == pclj.CreatedBy ? 0 : 1,
                             Cost = pclj.Cost,
+                            createdBy=pclj.CreatedBy,
                             Budget = budgetTab == Enums.BudgetTab.Planned ? pclj.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList()
                                                                      : pclj.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
                         }).Select(pclj => pclj).Distinct().OrderBy(pclj => pclj.id)
@@ -6432,6 +6539,9 @@ namespace RevenuePlanner.Controllers
                 obj = GetMonthWiseData(obj, lst);
                 obj = GetMonthWiseDataForBudget(obj, lst);
                 obj.MainBudgeted = objPlan.Budget;
+                obj.CreatedBy = objPlan.CreatedBy;
+                obj.isAfterApproved=false;
+                obj.isEditable = false;
                 model.Add(obj);
                 parentPlanId = "plan_" + objPlan.PlanId.ToString();
                 foreach (var c in campaignobj)
@@ -6447,6 +6557,9 @@ namespace RevenuePlanner.Controllers
                     obj = GetMonthWiseData(obj, c.Budget);
                     obj = GetMonthWiseDataForBudget(obj, c.BudgetMonth);
                     obj.MainBudgeted = c.MainBudgeted;
+                    obj.CreatedBy = c.createdBy;
+                    obj.isEditable = false;
+                    obj.isAfterApproved=false;
                     model.Add(obj);
                     parentCampaignId = c.id;
                     foreach (var p in c.programs)
@@ -6462,6 +6575,9 @@ namespace RevenuePlanner.Controllers
                         obj = GetMonthWiseData(obj, p.Budget);
                         obj = GetMonthWiseDataForBudget(obj, p.BudgetMonth);
                         obj.MainBudgeted = p.MainBudgeted;
+                        obj.CreatedBy = p.createdBy;
+                        obj.isEditable = false;
+                        obj.isAfterApproved=false;
                         model.Add(obj);
                         parentProgramId = p.id;
                         foreach (var t in p.tactic)
@@ -6479,6 +6595,9 @@ namespace RevenuePlanner.Controllers
                             obj = GetMonthWiseDataForBudget(obj, t.BudgetMonth);
                             obj.CustomFieldEntities = t.CustomFieldEntities;
                             obj.MainBudgeted = t.MainBudgeted;
+                            obj.CreatedBy = t.createdBy;
+                            obj.isEditable = false;
+                            obj.isAfterApproved=t.isAfterApproved;
                             model.Add(obj);
                             parentTacticId = t.id;
                             foreach (var l in t.lineitems)
@@ -6494,6 +6613,9 @@ namespace RevenuePlanner.Controllers
                                 obj.IsOwner = Convert.ToBoolean(l.isOwner);
                                 obj = GetMonthWiseData(obj, l.Budget);
                                 obj.ParentMonth = obj.Month;
+                                obj.CreatedBy = l.createdBy;
+                                obj.isEditable = false;
+                                obj.isAfterApproved=t.isAfterApproved;
                                 obj.BudgetMonth = new BudgetMonth();
                                 model.Add(obj);
                             }
@@ -6501,6 +6623,51 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
+
+            //Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
+            foreach (var item in model)
+            {
+                
+                if (item.ActivityType == ActivityType.ActivityTactic)
+                {
+                    if (item.CreatedBy == Sessions.User.UserId || lstSubordinatesIds.Contains(item.CreatedBy))
+                    {
+                        List<int> planTacticIds = new List<int>();
+                        List<int> lstAllowedEntityIds = new List<int>();
+                        planTacticIds.Add(Convert.ToInt32(item.ActivityId.Replace("cpt_","")));
+                        lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                        {
+                            item.isEditable = true;
+                        }
+                        else
+                        {
+                            item.isEditable = false;
+                        }
+                    }
+                }
+                else if (item.ActivityType == ActivityType.ActivityLineItem)
+                {
+                    if (item.CreatedBy == Sessions.User.UserId)
+                    {
+                        List<int> planTacticIds = new List<int>();
+                        List<int> lstAllowedEntityIds = new List<int>();
+                        planTacticIds.Add(Convert.ToInt32(item.ParentActivityId.Replace("cpt_", "")));
+                        lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                        {
+                            item.isEditable = true;
+                        }
+                        else
+                        {
+                            item.isEditable = false;
+                        }
+
+                    }
+                }
+            }
+            //End Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
+
             int ViewByID = (int)viewBy;//_viewBy;
             //// if ViewBy is any CustomField then Create Model in this hierarchy level : Plan > CustomField > Campaign > Program > Tactic > LineItem
             if (ViewByID > 0)

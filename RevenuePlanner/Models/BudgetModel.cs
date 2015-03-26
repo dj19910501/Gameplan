@@ -46,6 +46,9 @@ namespace RevenuePlanner.Models
         public List<CustomField_Entity> CustomFieldEntities { get; set; }
         public int Weightage { get; set; }
         public string CustomFieldType { get; set; }
+        public bool isEditable { get; set; }
+        public Guid CreatedBy { get; set; }
+        public bool isAfterApproved { get; set; }
     }
 
     public class BudgetModelReport
