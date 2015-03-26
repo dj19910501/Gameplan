@@ -3409,7 +3409,25 @@ namespace RevenuePlanner.Controllers
                                 }
                                 #endregion
 
+                                //// check that Tactic cost count greater than 0 OR Plan's AllocatedBy is None or Defaults.
+                                if ((db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).ToList()).Count() == 0 ||
+                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
+                                    || pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+                                {
+                                    pcpobj.Cost = form.Cost;
+                                }
 
+                                List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                                double totalLineitemCost = 0;
+                                tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId).ToList();
+                                List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
+
+                                if (objtotalLineitemCost != null && objtotalLineitemCost.Count() > 0)
+                                    totalLineitemCost = objtotalLineitemCost.Sum(l => l.Cost);
+                                if (totalLineitemCost > form.Cost)
+                                {
+                                    form.Cost = totalLineitemCost;
+                                }
                                 //Added By komal Rawal for #1249
                                 if (form.Cost > pcpobj.Cost)
                                 {
@@ -3542,13 +3560,8 @@ namespace RevenuePlanner.Controllers
                                 // Start Added by dharmraj for ticket #644
 
                                 //// Calculate TotalLineItem cost.
-                                List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                                double totalLineitemCost = 0;
-                                tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId).ToList();
-                                List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
-
-                                if (objtotalLineitemCost != null && objtotalLineitemCost.Count() > 0)
-                                    totalLineitemCost = objtotalLineitemCost.Sum(l => l.Cost);
+                               
+                               
 
                                 Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.Title == Common.DefaultLineItemTitle && lineItem.LineItemTypeId == null);
                                 if (pcpobj.Cost > totalLineitemCost)
