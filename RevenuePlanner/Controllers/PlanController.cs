@@ -4286,11 +4286,13 @@ namespace RevenuePlanner.Controllers
             {
                 int EntityId = Convert.ToInt32(entityId);
                 var popupValues = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(inputs);
-                string period = monthList[month].ToString();
                 double monthlyBudget = popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).Any() && popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).FirstOrDefault().Value != "" ? Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).FirstOrDefault().Value) : popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).FirstOrDefault().Value == "" ? 0 : -1;
                 double yearlyBudget = popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).Any() && popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).FirstOrDefault().Value != "" ? Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).FirstOrDefault().Value) : popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).FirstOrDefault().Value == "" ? 0 : -1;
+                if (popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).Any() && popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).Any())
+                {
                 if (monthlyBudget >= 0 && yearlyBudget >= 0)
                 {
+                        string period = monthList[month].ToString();
                     if (string.Compare(section, Enums.Section.Plan.ToString(), true) == 0)
                     {
                         var objPlan = db.Plans.Where(p => p.PlanId == EntityId && p.IsDeleted.Equals(false)).FirstOrDefault();
@@ -4737,6 +4739,47 @@ namespace RevenuePlanner.Controllers
                     }
                     db.SaveChanges();
                     return Json(new { budgetMonth = monthlyBudget, budgetYear = yearlyBudget, isSuccess = true });
+                }
+            }
+                else if (popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).Any())
+                {
+                    if (string.Compare(section, Enums.Section.Plan.ToString(), true) == 0)
+                    {
+                        var objPlan = db.Plans.Where(p => p.PlanId == EntityId && p.IsDeleted.Equals(false)).FirstOrDefault();
+                        objPlan.Budget = yearlyBudget;
+                        db.Entry(objPlan).State = EntityState.Modified;
+                    }
+                    else if (string.Compare(section, Enums.Section.Campaign.ToString(), true) == 0)
+                    {
+                        var objCampaign = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == EntityId && pc.IsDeleted.Equals(false)).FirstOrDefault();
+                        objCampaign.CampaignBudget = yearlyBudget;
+                        db.Entry(objCampaign).State = EntityState.Modified;
+                    }
+                    else if (string.Compare(section, Enums.Section.Program.ToString(), true) == 0)
+                    {
+                        var objProgram = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == EntityId && pcp.IsDeleted.Equals(false)).FirstOrDefault();
+                        objProgram.ProgramBudget = yearlyBudget;
+                        db.Entry(objProgram).State = EntityState.Modified;
+                    }
+                    else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
+                    {
+                        var objTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == EntityId && pcpt.IsDeleted.Equals(false)).FirstOrDefault();
+                        if (objTactic.Plan_Campaign_Program_Tactic_Budget.ToList().Count == 0)
+                        {
+                            int startmonth = objTactic.StartDate.Month;
+                            Plan_Campaign_Program_Tactic_Budget objtacticbudget = new Plan_Campaign_Program_Tactic_Budget();
+                            objtacticbudget.Period = PeriodChar + startmonth;
+                            objtacticbudget.PlanTacticId = objTactic.PlanTacticId;
+                            objtacticbudget.Value = yearlyBudget;
+                            objtacticbudget.CreatedBy = Sessions.User.UserId;
+                            objtacticbudget.CreatedDate = DateTime.Now;
+                            db.Entry(objtacticbudget).State = EntityState.Added;
+                        }
+                        objTactic.TacticBudget = yearlyBudget;
+                        db.Entry(objTactic).State = EntityState.Modified;
+                    }
+                    db.SaveChanges();
+                    return Json(new { budgetMonth = 0, budgetYear = yearlyBudget, isSuccess = true });
                 }
             }
             catch (Exception e)

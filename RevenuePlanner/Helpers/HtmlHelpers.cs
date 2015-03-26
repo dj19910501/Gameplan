@@ -1666,7 +1666,9 @@ namespace RevenuePlanner.Helpers
                 TagBuilder span = new TagBuilder("span");
                 if (Tab == "0")
                 {
-                    div.InnerHtml = plan.Allocated.ToString(formatThousand);
+                    div.InnerHtml = plan.isEditable ? ClueTipAnchorTag(string.Empty, plan.Allocated.ToString(formatThousand)) : plan.Allocated.ToString(formatThousand);
+                    div.AddCssClass("planLevel");
+                    div.AddCssClass("clueallocatedbudget");
                 }
                 else
                 {
@@ -1730,7 +1732,8 @@ namespace RevenuePlanner.Helpers
                 divLast.AddCssClass("campaignLevel");
                 if (Tab == "0")
                 {
-                    divLast.InnerHtml = c.Allocated.ToString(formatThousand);
+                    divLast.InnerHtml = c.isEditable ? ClueTipAnchorTag(string.Empty, c.Allocated.ToString(formatThousand)) : c.Allocated.ToString(formatThousand);
+                    divLast.AddCssClass("clueallocatedbudget");
                 }
                 else
                 {
@@ -1842,7 +1845,8 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                            divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
+                            divProgram.InnerHtml += p.isEditable ? ClueTipAnchorTag(string.Empty, p.Allocated.ToString(formatThousand)) : p.Allocated.ToString(formatThousand);
+                            divProgram.AddCssClass("clueallocatedbudget");
                         }
                     }
                     else

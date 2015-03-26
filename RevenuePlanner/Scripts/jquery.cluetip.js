@@ -494,6 +494,42 @@
                     var unb = $('.column3').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                     
                     // Check it call from allocated -- clueallocated
+                    if ($link.parent().hasClass('clueallocatedbudget')) {
+                        if ($link.parent().hasClass('campaignLevel')) {
+                            var cby = $link.text().replace(/,/g, "");
+                            var $loadmeHtml = '<label class="label-toooltip" >Campaign Budget (y):  </label>' +
+                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(cby.toString(), false, false) + '" ov="' + cby + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('campaign', '') + '" section="Campaign" mnth="' + entityMonth + '" />';
+                            $localContent.find('.tooltip-field').html($loadmeHtml);
+                            $localContent.find('h3').text(entityTitle);
+                        }
+                        else if ($link.parent().hasClass('programLevel')) {
+                            var pby = $link.text().replace(/,/g, "");
+                            var $loadmeHtml = '<label class="label-toooltip" >Program Budget (y):  </label>' +
+                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(pby.toString(), false, false) + '" ov="' + pby + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('program', '') + '" section="Program" mnth="' + entityMonth + '" />';
+                            $localContent.find('.tooltip-field').html($loadmeHtml);
+                            $localContent.find('h3').text(entityTitle);
+                        }
+                        else if ($link.parent().hasClass('tacticLevel')) {
+                            var tby = $link.text().replace(/,/g, "");
+                            var $loadmeHtml = '<label class="label-toooltip" >Tactic Budget (y):  </label>' +
+                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tby.toString(), false, false) + '" ov="' + tby + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('tactic', '') + '" section="Tactic" mnth="' + entityMonth + '" />';
+                            $localContent.find('.tooltip-field').html($loadmeHtml);
+                            $localContent.find('h3').text(entityTitle);
+                        }
+                        else if ($link.parent().hasClass('planLevel')) {
+                            var plbm = $link.text().replace(/,/g, "");
+                            var $loadmeHtml = '<label class="label-toooltip" >Plan Budget (y):  </label>' +
+                               '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(plbm.toString(), false, false) + '" ov="' + plbm + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('plan', '') + '" section="Plan" mnth="' + entityMonth + '" />';
+                            $localContent.find('.tooltip-field').html($loadmeHtml);
+                            entityTitle = $('#divPlanDetails').text();
+                            $localContent.find('h3').text(entityTitle);
+                        }
+                    }
+                    // Check it call from allocated -- clueallocated
                     if ($link.parent().hasClass('clueallocated')) {
                     //campaign cell click 
                     if ($link.parent().hasClass('campaignLevel')) {
