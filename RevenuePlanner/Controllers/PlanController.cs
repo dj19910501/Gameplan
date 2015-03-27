@@ -4534,7 +4534,7 @@ namespace RevenuePlanner.Controllers
                             objProgramBudget.Value = monthlyBudget;
                             objProgramBudget.CreatedBy = Sessions.User.UserId;
                             objProgramBudget.CreatedDate = DateTime.Now;
-                            db.Entry(objProgramBudget).State = EntityState.Modified;
+                            db.Entry(objProgramBudget).State = EntityState.Added;
                         }
 
                         }
