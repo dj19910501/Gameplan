@@ -309,48 +309,9 @@
         if (!iserror) {
             if ($("#hdnIsBudgetAllocated").val() == "True") {
                 var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
-                if (lstAllocInputs.length > 0) {
-                    var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
-                    var inputLength = lstAllocInputs.length;
-                    var removeLength = 0;
-                    for (var i = 0; i < lstAllocInputs.length; i++) {
-                        if (inputLength == 1) {
-                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
-                        }
-                        else if (inputLength == 2) {
-                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
-                            removeLength = 4;
-                        }
-                        else if (inputLength > 2) {
-                            if (i == inputLength - 2) {
-                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
-                                removeLength = 4;
-                            }
-                            else {
-                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
-                                removeLength = 2;
-                            }
-                        }
-                    }
-
-                    errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
-                    errorMsg += '.';
-
-                    ShowBudgetError(errorMsg);
-                    return false;
-                }
+            
                 
-                if ($("#lblTotalAllocated").hasClass('error-text')) {
-                    errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted";
-                    ShowBudgetError(errorMsg);
-                    return false;
-                }
-
-                if (parseInt(ReplaceCC($("#lblUnallocatedBudget").val())) < 0) {
-                    errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotSetBudgetLessthanAllocated";
-                    ShowBudgetError(errorMsg);
-                    return false;
-                }
+              
 
                 if (SavePlanFlag) {
                     var lstAllocInputs = $(".budget-section input.low-budgeted").not('.unallocated-text');

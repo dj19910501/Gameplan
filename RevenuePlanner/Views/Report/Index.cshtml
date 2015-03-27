@@ -229,7 +229,7 @@
              }
 
            @* Added By komal Rawal*@
-            <div id="accordion-Owner" class="dropdown-section accordion" style="display:none;"> 
+            <div id="accordion-Owner" class="dropdown-section accordion" > 
                 <div class="accordion-group">
                     <div class="accordion-heading">
                         <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
@@ -249,7 +249,7 @@
                 </div>
             </div>
 
-              <div id="accordion-TacticType" class="dropdown-section accordion" style="display:none;">
+              <div id="accordion-TacticType" class="dropdown-section accordion" >
                 <div class="accordion-group">
                     <div class="accordion-heading">
                         <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
@@ -1068,8 +1068,6 @@ $('#liSummary').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
-       // $("#accordion-Owner").show();
-      //  $("#accordion-TacticType").show();
         loadBasedOnPlan();
     }
 });
@@ -1083,8 +1081,6 @@ $('#liRevenue').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
-       // $("#accordion-Owner").show();
-     //   $("#accordion-TacticType").show();
         LoadRevenueView();
         loadBasedOnPlan();
     }
@@ -1099,8 +1095,6 @@ $('#liConversion').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
-     //   $("#accordion-Owner").show();
-    //    $("#accordion-TacticType").show();
         LoadConversionView();
         loadBasedOnPlan();
     }
@@ -1115,8 +1109,6 @@ $('#liConversion').click(function () {
                 LoadYearDropdown(leftPaneOption);
                 RemoveAllActiveItem();
                 $(this).addClass('active');
-                $("#accordion-Owner").hide();
-                $("#accordion-TacticType").hide();
                 LoadBudgetView();
             }
         });

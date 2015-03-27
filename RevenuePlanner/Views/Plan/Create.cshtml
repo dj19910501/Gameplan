@@ -273,10 +273,7 @@
                 <p>Total Allocated:<span id="spnTotalAllocatedBudget" class="source-sans-proregular">$0</span></p>
                 <p>Total Budgeted:<span id="spnTotalBudget" class="source-sans-proregular"></span></p>
             </div>
-            <div id="divErrMoreAllocation" class="alert alert-error error-msg">
-                <a class="close">×</a>
-                <p class="source-sans-probold">@Common.objCached.ErrMsgBudgetAllocationExceeds</p>
-            </div>
+            
             <div id="divErrCampaignBudgetAllocation" class="alert alert-error error-msg">
                 <a class="close ErrCampaignBudgetAllocation">×</a>
                 <p class="source-sans-probold">@Common.objCached.ErrMsgLessCampaignBudget</p>
@@ -420,13 +417,7 @@
 
      var TotalAllocatedCampaignBudget = $('#TotalAllocatedCampaignBudget').val();
      var totalBudget = parseInt(ReplaceCC($("#txtBudget").val()));
-     if (TotalAllocatedCampaignBudget > totalBudget) {
-         $('#divErrLessBudget').css("display", "block");
-         isError = true;
-     }
-     else {
-         $("#divErrLessBudget").css("display", "none");
-     }
+    
 
      if (!isError) {
          $("#GoalValue").val(ReplaceCC($("#GoalValue").val()));    @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
@@ -463,7 +454,7 @@
                                       $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
                                       renderDisablePlanDefinationSection();
                                       $('#divErrCampaignBudgetAllocation').hide();
-                                      $('#divErrMoreAllocation').hide();
+                                      
                                       var totalBudget = FormatCurrency($("#txtBudget").val(), false);
                                       if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower()') {
                                           $('#divDefaultBudget').show();
@@ -551,7 +542,7 @@
           @* Start - Added by Sohel Pathan on 25/07/2014 for PL ticket #597 *@
           $('#button-back').hide();
           $('#divPlanBudgetAllocation').hide();
-          $('#divErrMoreAllocation').hide();
+          
           $('#button-saveContinue').hide();
           $('#divPlanDefinationEnabled').show();
           $('#divPlanDefinationDisabled').hide();
@@ -571,7 +562,7 @@
               $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
               renderDisablePlanDefinationSection();
               $('#divErrCampaignBudgetAllocation').hide();
-              $('#divErrMoreAllocation').hide();
+              
               var totalBudget = FormatCurrency($("#txtBudget").val(), false);
               var budgetType = "";
               if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower()') {
@@ -1028,15 +1019,7 @@
     }
 
     $('#button-saveContinue').click(function (e) {
-        if ($('#spnTotalAllocatedBudget').hasClass('error-text')) {
-            $('#divErrMoreAllocation').show();
-            $('#divErrCampaignBudgetAllocation').find('.source-sans-probold').html('');
-            $('#divErrCampaignBudgetAllocation').hide();
-            isErrorShown = true;
-            return;
-        }
-        else {
-            $('#divErrMoreAllocation').hide();
+        
             var isError = false;
             var inputsType;
             var AllocatedBy = $('#AllocatedBy').val().toLowerCase();
@@ -1124,7 +1107,7 @@
         if (!isError) {
             saveBudgetAllocation(inputsType);
         }
-    }
+    
     });
 
 function saveBudgetAllocation(inputsType) {

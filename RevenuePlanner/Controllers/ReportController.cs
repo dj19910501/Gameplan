@@ -601,7 +601,7 @@ namespace RevenuePlanner.Controllers
                                                                   tacticStatus.Contains(tactic.Status) &&
                                                                   planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
                                                                   ).ToList();
-
+            }
 
                 //Added by Komal Rawal
                 if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
@@ -620,7 +620,6 @@ namespace RevenuePlanner.Controllers
 
                 }
                 //End
-            }
 
             if (Sessions.ReportCustomFieldIds != null && Sessions.ReportCustomFieldIds.Count() > 0)
             {
@@ -5033,7 +5032,7 @@ namespace RevenuePlanner.Controllers
 
             //// Get Tactic list.
            
-               tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => status.Contains(tactic.Status) && PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => tactic).Distinct().ToList();
+               tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => (status.Contains(tactic.Status)) && PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => tactic).Distinct().ToList();
                if (tacticList.Count > 0)
                {
                    List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
