@@ -369,6 +369,8 @@
             url: '@Url.Action("GetOwnerListForFilter", "Report")',
                 data: {
                     PlanId: Planids.toString(),
+                    leftPaneOption : leftPaneOption
+                   
                 },
                 dataType: "json",
                 success: function (data) {
@@ -454,6 +456,7 @@
             url: '@Url.Action("GetTacticTypeListForFilter", "Report")',
             data: {
                 PlanId: Planids.toString(),
+                leftPaneOption: leftPaneOption
                 },
               dataType: "json",
               success: function (data) {
@@ -1064,6 +1067,11 @@ $('#liSummary').click(function () {
     if (isAllowClick) {
         document.title = "Summary";
         isAllowClick = false;
+        if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
+            GetOwnerListForFilter(PlanIds);
+            GetTacticTypelist(PlanIds);
+        }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
@@ -1077,6 +1085,11 @@ $('#liRevenue').click(function () {
     if (isAllowClick) {
         document.title = "Revenue";
         isAllowClick = false;
+        if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
+           GetOwnerListForFilter(PlanIds);
+           GetTacticTypelist(PlanIds);
+       }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
@@ -1091,6 +1104,11 @@ $('#liConversion').click(function () {
     if (isAllowClick) {
         document.title = "Conversion";
         isAllowClick = false;
+        if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
+           GetOwnerListForFilter(PlanIds);
+           GetTacticTypelist(PlanIds);
+       }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
@@ -1105,6 +1123,11 @@ $('#liConversion').click(function () {
     if (isAllowClick) {
         document.title = "Budget";
         isAllowClick = false;
+        if (leftPaneOption != '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+            leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
+             GetOwnerListForFilter(PlanIds);
+             GetTacticTypelist(PlanIds);
+         }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
                 LoadYearDropdown(leftPaneOption);
                 RemoveAllActiveItem();

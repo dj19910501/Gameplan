@@ -4989,11 +4989,11 @@ namespace RevenuePlanner.Controllers
 
         #region Get Owners by planID Method
         //Added By komal Rawal
-        public JsonResult GetOwnerListForFilter(string PlanId)
+        public JsonResult GetOwnerListForFilter(string PlanId, string leftPaneOption)
         {
             try
             {
-                var lstOwners = GetIndividualsByPlanId(PlanId);
+                var lstOwners = GetIndividualsByPlanId(PlanId, leftPaneOption);
                 var lstAllowedOwners = lstOwners.Select(owner => new
                 {
                     OwnerId = owner.UserId,
@@ -5019,7 +5019,7 @@ namespace RevenuePlanner.Controllers
             return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
         }
 
-        private List<User> GetIndividualsByPlanId(string PlanId)
+        private List<User> GetIndividualsByPlanId(string PlanId, string leftPaneOption)
         {
             List<int> PlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
           
@@ -5032,7 +5032,17 @@ namespace RevenuePlanner.Controllers
 
             //// Get Tactic list.
            
-               tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => (status.Contains(tactic.Status)) && PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => tactic).Distinct().ToList();
+            
+            if (leftPaneOption == RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString())
+            {
+
+                tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => tactic).Distinct().ToList();
+            }
+            else
+            {
+                
+               tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => status.Contains(tactic.Status)  && PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => tactic).Distinct().ToList();
+            }
                if (tacticList.Count > 0)
                {
                    List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
@@ -5061,8 +5071,9 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Tactic type list
-        public JsonResult GetTacticTypeListForFilter(string PlanId)
+        public JsonResult GetTacticTypeListForFilter(string PlanId,string leftPaneOption)
         {
+            
             try
             {
                 List<int> lstPlanIds = new List<int>();
@@ -5078,12 +5089,25 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
-             
+                if (leftPaneOption == RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString())
+                {
                  var objTacticType = (from tactic in db.Plan_Campaign_Program_Tactic
                                        where lstPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IsDeleted == false
                                        select new { tactic.TacticType.Title,tactic.TacticTypeId }).Distinct().ToList();
               
                 return Json(new { isSuccess = true, TacticTypelist = objTacticType }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                             List<string> status = Common.GetStatusListAfterApproved();                  
+                            var objTacticType = (from tactic in db.Plan_Campaign_Program_Tactic
+                                         where status.Contains(tactic.Status) && lstPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IsDeleted == false
+                                         select new { tactic.TacticType.Title, tactic.TacticTypeId }).Distinct().ToList();
+
+                    return Json(new { isSuccess = true, TacticTypelist = objTacticType }, JsonRequestBehavior.AllowGet);
+                }
+              
+               
             }
             catch (Exception objException)
             {
