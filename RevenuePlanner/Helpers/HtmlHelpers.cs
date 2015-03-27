@@ -4204,8 +4204,8 @@ namespace RevenuePlanner.Helpers
                 {
                     //if (Tab == "2")
                     //{
-                    //    double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
-                    //    div.InnerHtml = sumMonth.ToString(formatThousand);
+                    //double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
+                    //div.InnerHtml = sumMonth.ToString(formatThousand);
                     //}
                     //else
                     //{
@@ -4256,11 +4256,16 @@ namespace RevenuePlanner.Helpers
                     TagBuilder div = new TagBuilder("div");
                     div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
                     div.AddCssClass("firstLevel");
-                    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower() && c.ActivityType != Helpers.ActivityType.ActivityCustomField.ToString())
+                    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                     {
                         //div.InnerHtml = c.Budgeted.ToString();
                         double sumMonth = c.Month.Jan + c.Month.Feb + c.Month.Mar + c.Month.Apr + c.Month.May + c.Month.Jun + c.Month.Jul + c.Month.Aug + c.Month.Sep + c.Month.Oct + c.Month.Nov + c.Month.Dec;
-                        double unAllocated = c.MainBudgeted - sumMonth;
+                        double unAllocated = 0;//c.MainBudgeted - sumMonth;
+                        double childBudget = 0;
+                        var campaignIds = model.Where(m => m.ActivityType == Helpers.ActivityType.ActivityCampaign && m.ParentActivityId == c.ActivityId).Select(m => m.ActivityId).ToList();
+                        var childProgramIds = model.Where(m => m.ActivityType == Helpers.ActivityType.ActivityProgram && campaignIds.Contains(m.ParentActivityId)).Select(m => m.ActivityId).ToList();
+                        childBudget = model.Where(m => m.ActivityType == Helpers.ActivityType.ActivityTactic && childProgramIds.Contains(m.ParentActivityId)).Select(m => m.MainBudgeted).Sum();
+                        unAllocated = childBudget - sumMonth;
                         if (unAllocated < 0)
                         {
                             div.AddCssClass("budgetError");
@@ -4400,15 +4405,15 @@ namespace RevenuePlanner.Helpers
                 {
                     if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                     {
-                        if (Tab == "2")
-                        {
+                        //if (Tab == "2")
+                        //{
                             double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
                             div.InnerHtml = sumMonth.ToString(formatThousand);
-                        }
-                        else
-                        {
-                            div.InnerHtml = plan.Allocated.ToString(formatThousand);
-                        }
+                        //}
+                        //else
+                        //{
+                        //    div.InnerHtml = plan.Allocated.ToString(formatThousand);
+                        //}
                     }
                     else
                     {
@@ -4489,15 +4494,15 @@ namespace RevenuePlanner.Helpers
                     {
                         if (AllocatedBy != "default")
                         {
-                            if (Tab == "2")
-                            {
+                            //if (Tab == "2")
+                            //{
                                 double sumMonth = c.Month.Jan + c.Month.Feb + c.Month.Mar + c.Month.Apr + c.Month.May + c.Month.Jun + c.Month.Jul + c.Month.Aug + c.Month.Sep + c.Month.Oct + c.Month.Nov + c.Month.Dec;
                                 divLast.InnerHtml = sumMonth.ToString(formatThousand);
-                            }
-                            else
-                            {
-                                divLast.InnerHtml = c.Allocated.ToString(formatThousand);
-                            }
+                            //}
+                            //else
+                            //{
+                            //    divLast.InnerHtml = c.Allocated.ToString(formatThousand);
+                            //}
                         }
                         else
                         {
@@ -4571,10 +4576,27 @@ namespace RevenuePlanner.Helpers
                     TagBuilder divProgram = new TagBuilder("div");
                     divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
 
-                    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower() && p.ActivityType == Helpers.ActivityType.ActivityTactic.ToString())
+                    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower() && p.ActivityType != Helpers.ActivityType.ActivityLineItem.ToString())
                     {
                         double sumMonth = p.Month.Jan + p.Month.Feb + p.Month.Mar + p.Month.Apr + p.Month.May + p.Month.Jun + p.Month.Jul + p.Month.Aug + p.Month.Sep + p.Month.Oct + p.Month.Nov + p.Month.Dec;
-                        double unAllocated = p.MainBudgeted - sumMonth;
+                        double unAllocated = 0;//p.MainBudgeted - sumMonth;
+                        double childBudget = 0;
+                        if (p.ActivityType == Helpers.ActivityType.ActivityCampaign)
+                        {
+                            var subProgramIds = model.Where(m => m.ActivityType == Helpers.ActivityType.ActivityProgram && m.ParentActivityId == p.ActivityId).Select(m => m.ActivityId).ToList();
+                            childBudget = model.Where(t => t.ActivityType == Helpers.ActivityType.ActivityTactic && subProgramIds.Contains(t.ParentActivityId)).Select(t => t.MainBudgeted).Sum();
+                            unAllocated = childBudget - sumMonth;
+                        }
+                        else if (p.ActivityType == Helpers.ActivityType.ActivityProgram)
+                        {
+                            childBudget = model.Where(t => t.ActivityType == Helpers.ActivityType.ActivityTactic && t.ParentActivityId == p.ActivityId).Select(t => t.MainBudgeted).Sum();
+                            unAllocated = childBudget - sumMonth;
+                        }
+                        else
+                        {
+                            unAllocated = p.MainBudgeted - sumMonth;
+                        }
+
                         divProgram.AddCssClass(innerClass);
                         if (unAllocated < 0)
                         {
@@ -4685,15 +4707,15 @@ namespace RevenuePlanner.Helpers
                             //}
                             //else
                             //{
-                            if (Tab == "2")
-                            {
+                            //if (Tab == "2")
+                            //{
                                 double sumMonth = p.Month.Jan + p.Month.Feb + p.Month.Mar + p.Month.Apr + p.Month.May + p.Month.Jun + p.Month.Jul + p.Month.Aug + p.Month.Sep + p.Month.Oct + p.Month.Nov + p.Month.Dec;
                                 divProgram.InnerHtml = sumMonth.ToString(formatThousand);
-                            }
-                            else
-                            {
-                                divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
-                            }
+                            //}
+                            //else
+                            //{
+                            //    divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
+                            //}
                             //}
                         }
                         else

@@ -323,7 +323,7 @@
                     $cluetip.css({ left: posX });
                 } else {
                     posX = (linkWidth > linkLeft && linkLeft > tipWidth) ||
-                      linkLeft + linkWidth + tipWidth + lOffset > winWidth ?
+                      linkLeft + linkWidth + tipWidth + lOffset+30 > winWidth ?
                       linkLeft - tipWidth - lOffset :
                       linkWidth + linkLeft + lOffset;
                     if (link.tagName.toLowerCase() == 'area' || opts.positionBy == 'mouse' || linkWidth + tipWidth > winWidth) { // position by mouse

@@ -441,7 +441,6 @@ else {
             advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
         });
     });
-
     var Assortment = 'Budgeting';
     $('#aPlanDetails').click(function (e) {
          var id = CurrentPlanId;
@@ -737,5 +736,8 @@ else {
         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
             e.preventDefault();
         }
+    });
+    $('.column2,.column1').scroll(function () {
+        $('.cluetip').css('display', 'none');
     });
 </script>

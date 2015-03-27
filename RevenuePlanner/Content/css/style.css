@@ -24,7 +24,7 @@
     font-family: 'Conv_HelveticaLTStd-Light', Arial, "sans-serif";
 }
 
-.conv-proximanova-light {
+.conv-proximanova-light {orange-corner-budget
     font-family: 'Conv_ProximaNova-Light', Arial, "sans-serif";
 }
 
@@ -8933,8 +8933,15 @@ tbody.column1 div {
 
 tbody.column2 {
     overflow-x: auto;
-    border-right: 1px solid #808080;
+    
     max-width: 59%;
+   
+}
+.column4 tr td {
+     border-right:1px #808080 solid;
+}
+.column3 tr td {
+     border-left:1px #808080 solid;
 }
 /*Start modified by Mitesh vaishnav for PL ticket #1228*/
 tbody.column3 {
@@ -12071,7 +12078,7 @@ li.close-list {
 .cluetip-default .ui-cluetip-header {  background-color: #87876a;}
 .ui-cluetip-header {display:none;}
 /* default arrows */
-div.cluetip-default .cluetip-arrows {border-width: 0; background-image: url("../images/l.png"); margin-left: 1px;}
+div.cluetip-default .cluetip-arrows {border-width: 0; background-image: url("../images/l.png"); /*margin-left: 1px;*/}/*removeing margin-left for observation 3 in PL ticket #696*/
 div.clue-left-default .cluetip-arrows {background-image: url("../images/r.png");  left: 100%;  margin-right: -11px;}
 div.clue-top-default .cluetip-arrows {  background-image: url("../images/d.ong");  top: 95%;  left: 50%;  margin-left: -11px;  width: 22px;  height: 11px;}
 div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.png");  top: -19px;  left: 50%;  margin-left: -11px;width: 22px;  height: 11px;}
@@ -12130,6 +12137,7 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
     position: absolute;
     top: 0px; 
     right: 0px;
+    cursor:pointer;
 }
 .red-corner-budget {
     border-right: 13px solid red;
