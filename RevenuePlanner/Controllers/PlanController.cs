@@ -6146,7 +6146,8 @@ namespace RevenuePlanner.Controllers
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         //item.programs.ToList().ForEach(p => p.tactics.ToList().ForEach(t => planTacticIds.Add(t.id)));
-                        model.Where(m => m.ActivityType == ActivityType.ActivityTactic && model.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList().Contains(m.ActivityId)).ToList().ForEach(t => planTacticIds.Add(Convert.ToInt32(t.ActivityId)));
+                        var modeltacticIds=model.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList();
+                        model.Where(m => m.ActivityType == ActivityType.ActivityTactic && model.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList().Contains(m.ParentActivityId)).ToList().ForEach(t => planTacticIds.Add(Convert.ToInt32(t.ActivityId)));
                         lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
