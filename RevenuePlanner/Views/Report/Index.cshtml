@@ -357,9 +357,10 @@
         OwnerIds: [],
         TacticTypeids: []
     };
-    function GetOwnerListForFilter(Planids) {
+   
+    function GetOwnerListForFilter(Planids, ifexists) {
         $('#ulSelectedOwner').html('');
-        filters.OwnerIds = [];
+        //filters.OwnerIds = [];
         $.ajax({
             beforeSend: function (x) {
                 myApp.hidePleaseWait();
@@ -387,7 +388,14 @@
                                     $("#ulOwnerAllModule").css("display", "block");
                                     $("#NoOwnerFound").hide();
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"></input></li>');
+                                        var checked = "";
+                                        var checkedclass = "";
+                                        if (ifexists &&  filters.OwnerIds.indexOf(OwnerItem.OwnerId)>= 0) {
+                                            checked = "checked";
+                                            checkedclass = "close-list";
+                                        }
+
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
                                     });
                                 }
                                 else {
@@ -443,10 +451,10 @@
         });
     }
 
-    function GetTacticTypelist(Planids) {
+    function GetTacticTypelist(Planids, ifexists) {
      
         $('#ulTacticType').html('');
-        filters.TacticTypeids = [];
+       // filters.TacticTypeids = [];
         $.ajax({
             beforeSend: function (x) {
                 myApp.hidePleaseWait();
@@ -472,7 +480,13 @@
                                     $("#TacticTypeAllModule").css("display", "block");
                                     $("#NoTTFound").hide();
                                     $.each(data.TacticTypelist, function (i, TactictypeItem) {
-                                        $('#ulTacticType').append('<li class="accordion-inner" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="' + TactictypeItem.TacticTypeId + '"></input></li>');
+                                        var checked = "";
+                                        var checkedclass = "";
+                                        if (ifexists && filters.TacticTypeids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                                            checked = "checked";
+                                            checkedclass = "close-list";
+                                        }
+                                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="' + TactictypeItem.TacticTypeId + '"'+ checked +'></input></li>');
                                     });
                                 }
                                 else {
@@ -560,8 +574,8 @@
         LoadYearDropdown();
         loadBasedOnPlan();
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
-        GetOwnerListForFilter(PlanIds);
-        GetTacticTypelist(PlanIds);
+        GetOwnerListForFilter(PlanIds,false);
+        GetTacticTypelist(PlanIds,false);
         $("#DivShareReport").hide();
         GetFilterIdForPlan(multiselectPlanId);
         function toggleChevron(e) {
@@ -594,14 +608,16 @@
         if (_checked != null && _checked != 'undefined' && _checked === 'checked') {
             $("#" + _parentliId).addClass('close-list');
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
-            GetOwnerListForFilter(PlanIds);
-            GetTacticTypelist(PlanIds);
+           
+                GetOwnerListForFilter(PlanIds,false);
+            
+            GetTacticTypelist(PlanIds,false);
         }
         else {
             $("#" + _parentliId).removeClass('close-list');
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
-            GetOwnerListForFilter(PlanIds);
-            GetTacticTypelist(PlanIds);
+            GetOwnerListForFilter(PlanIds,false);
+            GetTacticTypelist(PlanIds,false);
         }
     }
 
@@ -682,8 +698,8 @@
                 }
 
                 PlanIds = GetFilterIdForPlan(multiselectPlanId);
-                GetTacticTypelist(PlanIds);
-                GetOwnerListForFilter(PlanIds);
+                GetTacticTypelist(PlanIds,false);
+                GetOwnerListForFilter(PlanIds,false);
             }
         });
     }
@@ -706,8 +722,8 @@
         }
 
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
-        GetOwnerListForFilter(PlanIds);
-        GetTacticTypelist(PlanIds);
+        GetOwnerListForFilter(PlanIds,false);
+        GetTacticTypelist(PlanIds,false);
     }
 
     function BulkCustomFieldOperation(selection,ulCutomFieldId) {
@@ -1072,8 +1088,8 @@ $('#liSummary').click(function () {
         isAllowClick = false;
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
-            GetOwnerListForFilter(PlanIds);
-            GetTacticTypelist(PlanIds);
+            GetOwnerListForFilter(PlanIds,true);
+            GetTacticTypelist(PlanIds,true);
         }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
         LoadYearDropdown(leftPaneOption);
@@ -1090,8 +1106,8 @@ $('#liRevenue').click(function () {
         isAllowClick = false;
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
-           GetOwnerListForFilter(PlanIds);
-           GetTacticTypelist(PlanIds);
+           GetOwnerListForFilter(PlanIds,true);
+           GetTacticTypelist(PlanIds,true);
        }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
         LoadYearDropdown(leftPaneOption);
@@ -1109,8 +1125,8 @@ $('#liConversion').click(function () {
         isAllowClick = false;
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
-           GetOwnerListForFilter(PlanIds);
-           GetTacticTypelist(PlanIds);
+           GetOwnerListForFilter(PlanIds,true);
+           GetTacticTypelist(PlanIds,true);
        }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
         LoadYearDropdown(leftPaneOption);
@@ -1128,8 +1144,8 @@ $('#liConversion').click(function () {
         isAllowClick = false;
         if (leftPaneOption != '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
-             GetOwnerListForFilter(PlanIds);
-             GetTacticTypelist(PlanIds);
+             GetOwnerListForFilter(PlanIds,true);
+             GetTacticTypelist(PlanIds,true);
          }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
                 LoadYearDropdown(leftPaneOption);
