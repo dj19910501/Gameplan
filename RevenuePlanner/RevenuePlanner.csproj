@@ -375,6 +375,7 @@
     <Content Include="Content\images\edit-icon-white.png" />
     <Content Include="Content\images\edit-icon.png" />
     <Content Include="Content\images\error-image.png" />
+    <Content Include="Content\images\export.png" />
     <Content Include="Content\images\favicon.png" />
     <Content Include="Content\images\filter-icon-active.png" />
     <Content Include="Content\images\filter-icon-blue.png" />
@@ -439,6 +440,7 @@
     <Content Include="Content\images\red-arrow-down.png" />
     <Content Include="Content\images\red-row.png" />
     <Content Include="Content\images\requests-logo.png" />
+    <Content Include="Content\images\round-plus.png" />
     <Content Include="Content\images\select2-spinner.gif" />
     <Content Include="Content\images\select2.png" />
     <Content Include="Content\images\select2x2.png" />
@@ -469,6 +471,9 @@
     <Content Include="Content\images\u.png" />
     <Content Include="Content\images\user_image_not_found.png" />
     <Content Include="Content\images\vertical.png" />
+    <Content Include="Content\images\view-fullscreen.png" />
+    <Content Include="Content\images\volumedown.png" />
+    <Content Include="Content\images\volumeup.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />

@@ -12229,7 +12229,7 @@ max-width:20% !important;
 
    /*for coversion charts*/
    .coversionline-chart{ padding: 0px 75px; }
-    .coversionline-chart2{ padding: 0px 75px; margin-top:10px; }
+    .coversionline-chart2{ margin-top:10px; }
 
     /*for conversion table*/
     .conversion-table h4{ font-size:21px;font-family: source_sans_proregular; font-weight:normal;}

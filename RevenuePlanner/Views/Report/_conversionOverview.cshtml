@@ -13,7 +13,8 @@
     Projected_Goal mqlProj_Goal = new Projected_Goal();
     Projected_Goal inqProj_Goal = new Projected_Goal();
     Projected_Goal cwProj_Goal = new Projected_Goal();
-    
+    Conversion_Benchmark_Model mqlBenchmark = new Conversion_Benchmark_Model();
+    Conversion_Benchmark_Model cwBenchmark = new Conversion_Benchmark_Model();
     // Get MQL,CW & INQ StageCode
     string mqlStageCode = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
     string inqStageCode = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
@@ -32,6 +33,10 @@
     // MQL & CW Linechart data
     var mqllinechartdata = JsonConvert.SerializeObject(mqlProjected_Goal_LineChart.linechartdata);
     var cwlinechartdata = JsonConvert.SerializeObject(cwProjected_Goal_LineChart.linechartdata);
+    
+    // MQL & CW Benchmark Model data.
+    mqlBenchmark = mqlProjected_Goal_LineChart.Stage_Benchmark;
+    cwBenchmark = cwProjected_Goal_LineChart.Stage_Benchmark;
 }
 
 <div class="report-btn-group">
@@ -83,11 +88,11 @@
         <div class="revenue-graph-info">
             <a href="" class="viewfullscreen">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
-            <p class="yearcounter" id="">TQLs</p>
+            <p class="yearcounter" id="">@mqlBenchmark.stagename</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
-            <p class="amountcounter" id="">28%</p>
-            <p class="smallamountcounter" id="">Benchmark:22%</p>
-            <p class="statustext above" id="">6% Above Plan</p>
+            <p class="amountcounter" id="">@mqlBenchmark.stageVolume</p>
+            <p class="smallamountcounter" id="">@mqlBenchmark.Benchmark</p>
+            <p class="statustext above" id="">@mqlBenchmark.PercentageDifference</p>
 
             <div class="coversionline-chart2">
                 <div id="MQLLineChart"></div>
@@ -96,11 +101,11 @@
         <div class="revenue-graph-info noborder">
             <a href="" class="viewfullscreen">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
-            <p class="yearcounter" id="">Closed/Won Deals</p>
+            <p class="yearcounter" id="">@cwBenchmark.stagename</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
-            <p class="amountcounter" id="">44%</p>
-            <p class="smallamountcounter" id="">Benchmark:46%</p>
-            <p class="statustext " id="">2% Below Plan</p>
+            <p class="amountcounter" id="">@cwBenchmark.stageVolume</p>
+            <p class="smallamountcounter" id="">@cwBenchmark.Benchmark</p>
+            <p class="statustext " id="">@cwBenchmark.PercentageDifference</p>
 
             <div class="coversionline-chart2">
                 <div id="CWLineChart"></div>
@@ -279,8 +284,9 @@
         //        alert("key:" + key + "Value:" + _val);
         //    });
         //});
-        BindRevenueLineChart(mqlchartdata.categories, 3.7, mqlchartdata.series, mqlLinechartDivId);
-        BindRevenueLineChart(cwchartdata.categories, 3.7, mqlchartdata.series, cwLinechartDivId);
+        var _conversionlinechartHeight = 250, _conversionlinechartWidth = 340;
+        BindLineChart(mqlchartdata.categories, 3.7, mqlchartdata.series, mqlLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
+        BindLineChart(cwchartdata.categories, 3.7, mqlchartdata.series, cwLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
     });
 
     function FormattingProjvsGoal(act_proj, goal, percentage, isnegative, _stagecode) {
@@ -327,81 +333,5 @@
         $(_lblGoal).html(_formtGoal);
         $(_lblPercentage).html(_formtPercentage);
     }
-
-    // Start:- Revenue_LineChart script 
-    function BindRevenueLineChart(_categories, _plotlineVal, _series, _linechartDivId) {
-        var options = {
-            chart: {
-                spacingTop: 50
-            },
-            colors: ['#B04499', '#999999'],
-            legend: {
-                align: 'top',
-                verticalAlign: 'top',
-                layout: 'horizontal',
-                x: 60,
-                y: -30
-            },
-            title: {
-                text: ''
-            },
-            xAxis: {
-                categories: _categories,
-                lineColor: 'black',
-                lineWidth: 2,
-                tickColor: 'black',
-                tickWidth: 2,
-                plotLines: [{
-                    color: 'black', // Color value
-                    dashStyle: 'longdash', // Style of the plot line. Default to solid
-                    value: _plotlineVal, // Value of where the line will appear
-                    width: 2, // Width of the line    
-                    label: {
-                        text: 'Today',
-                        align: 'middle',
-                        verticalAlign: 'top',
-                        rotation: 0,
-                        x: -15,
-                        y: -10
-                    }
-                }],
-                tickPosition: 'inside',
-                labels: {
-                    color: '#2d2d2d',
-                    style: {
-                        "fontWeight": "bold"
-                    }
-                }
-            },
-            yAxis: {
-                lineColor: 'black',
-                gridLineWidth: 0,
-                minorGridLineWidth: 0,
-                lineWidth: 2,
-                tickPosition: 'inside',
-                tickLength: 5,
-                tickWidth: 2,
-                tickColor: 'black',
-                tickAmount: 5,
-                labels: {
-                    color: '#2d2d2d',
-                    style: {
-                        "fontWeight": "bold"
-                    }
-                },
-                title: {
-                    text: ''
-                }
-            },
-            series: []
-        }
-
-        var serLength = _series.length;
-        for (var i = 0; i < serLength ; i++) {
-            options.series.push(eval(_series[i]));
-        }
-        $(_linechartDivId).highcharts(options);
-    }
-    // End:- Revenue_LineChart script 
 
 </script>

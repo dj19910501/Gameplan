@@ -199,9 +199,7 @@ td,tbody th {
 
 
 <script type="text/javascript">
-    //$(document).ready(function () {
-        
-    //});
+    var _defautlChartHeight = 400, _defautlChartWidth = 600;
     $(function () {
         var strUrl = "@Url.Content("~/Report/GetRevenueLineChartData")";
         var _sparklineurl = "@Url.Content("~/Report/GetRevenueSparkLineChartData")";
@@ -257,7 +255,8 @@ td,tbody th {
         //    });
         //});
         var linechartDivId = "#RevenueLineChart";
-        BindRevenueLineChart(chartdata.categories, 3.7, chartdata.series, linechartDivId);
+        
+        BindLineChart(chartdata.categories, 3.7, chartdata.series, linechartDivId, _defautlChartWidth, _defautlChartHeight);
 
         @*$.ajax({
             type: "POST",
@@ -314,9 +313,11 @@ td,tbody th {
     }
 
     // Start:- Revenue_LineChart script 
-    function BindRevenueLineChart(_categories, _plotlineVal, _series,_linechartDivId) {
+    function BindLineChart(_categories, _plotlineVal, _series, _linechartDivId, _chartwidth, _chartHeight) {
         var options = {
             chart: {
+                height: _chartHeight,
+                width: _chartwidth,
                 spacingTop: 50
             },
             colors: ['#B04499', '#999999'],
@@ -545,9 +546,4 @@ td,tbody th {
 
     // End:- Revenue_SparkLineChart script 
 
-    // Start:- Conversion_StackedBarChart script 
-    function BindConversionStackedBarChart() {
-
-    }
-    // End:- Conversion_StackedBarChart script 
 </script>

@@ -525,6 +525,7 @@ namespace RevenuePlanner.Controllers
             public double Value { get; set; }
             public int StartMonth { get; set; }
             public int EndMonth { get; set; }
+            public int StartYear { get; set; }
         }
 
         /// <summary>
@@ -541,7 +542,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (tactic.StartMonth == tactic.EndMonth)
                     {
-                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear + PeriodPrefix + tactic.StartMonth, Value = tactic.Value, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth });
+                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear + PeriodPrefix + tactic.StartMonth, Value = tactic.Value, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear });
                     }
                     else
                     {
@@ -549,7 +550,7 @@ namespace RevenuePlanner.Controllers
                         double totalValue = (double)tactic.Value / (double)totalMonth;
                         for (var i = tactic.StartMonth; i <= tactic.EndMonth; i++)
                         {
-                            listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth });
+                            listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear });
                         }
                     }
                 }
@@ -559,11 +560,11 @@ namespace RevenuePlanner.Controllers
                     double totalValue = (double)tactic.Value / (double)totalMonth;
                     for (var i = tactic.StartMonth; i <= 12; i++)
                     {
-                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth });
+                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear });
                     }
                     for (var i = 1; i <= tactic.EndMonth + 1; i++)
                     {
-                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.EndYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth });
+                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.EndYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear });
                     }
                 }
             }
@@ -5246,7 +5247,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
                 #endregion
 
-                #region "Calculate ProjVsGoal & Linechart for MQL"
+                #region "Calculate ProjVsGoal, Linechart & Benchmarck for MQL"
                 #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
                 string mqlStageCode = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
                 ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
@@ -5268,12 +5269,22 @@ namespace RevenuePlanner.Controllers
                 objProjected_Goal_LineChart.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
                 objProjected_Goal_LineChart.projected_goal = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
                 objProjected_Goal_LineChart.StageCode = mqlStageCode;
+                
+                #region "MQL: Set Benchmark Model data"
+                Conversion_Benchmark_Model mqlStageBenchmarkmodel = new Conversion_Benchmark_Model();
+                mqlStageBenchmarkmodel.stagename = MQLStageLabel.ToString();
+                mqlStageBenchmarkmodel.stageVolume = "28%";
+                mqlStageBenchmarkmodel.Benchmark = "Benchmark: 22%";
+                mqlStageBenchmarkmodel.PercentageDifference = "6% Above Plan"; 
+                #endregion
+                objProjected_Goal_LineChart.Stage_Benchmark = mqlStageBenchmarkmodel;
+                
                 Projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
                 objConversionOverviewModel.Projected_LineChartList = Projected_Goal_LineChartList != null ? Projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
                 #endregion
                 #endregion
 
-                #region "Calculate ProjVsGoal & LineChart for CW"
+                #region "Calculate ProjVsGoal, LineChart & Benchmark for CW"
                 #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
                 string cwStageCode = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString();
                 ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
@@ -5295,22 +5306,21 @@ namespace RevenuePlanner.Controllers
                 objProjected_Goal_LineChart.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
                 objProjected_Goal_LineChart.projected_goal = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
                 objProjected_Goal_LineChart.StageCode = cwStageCode;
+
+                #region "CW: Set Benchmark Model data"
+                Conversion_Benchmark_Model cwStageBenchmarkmodel = new Conversion_Benchmark_Model();
+                cwStageBenchmarkmodel.stagename = CWStageLabel;
+                cwStageBenchmarkmodel.stageVolume = "44%";
+                cwStageBenchmarkmodel.Benchmark = "Benchmark: 46%";
+                cwStageBenchmarkmodel.PercentageDifference = "2% Below Plan";
+                #endregion
+                objProjected_Goal_LineChart.Stage_Benchmark = cwStageBenchmarkmodel;
+
                 Projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
                 objConversionOverviewModel.Projected_LineChartList = Projected_Goal_LineChartList != null ? Projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
                 #endregion
                 #endregion
 
-                #region "Set MQL & CW Benchmark Model Data"
-                Conversion_Benchmark_Model objStageBenchmarkmodel = new Conversion_Benchmark_Model();
-
-                #region "Set MQL Benchmark model data"
-                objStageBenchmarkmodel.stagename = MQLStageLabel.ToString();
-                objStageBenchmarkmodel.stageVolume = "28%";
-                objStageBenchmarkmodel.Banchmark = "22%";
-                objStageBenchmarkmodel.PercentageDifference = "6% Above Plan";
-                #endregion
-
-                #endregion
                 #endregion
 
                 #region "Set Revenue & Coversion model data to Master Model(i.e ReportOverviewModel)"
@@ -5627,58 +5637,8 @@ namespace RevenuePlanner.Controllers
                 {
                     objsparkLineCharts = new sparkLineCharts();
                     revType = new Enums.TOPRevenueType();
-                    //if (IsFirst)
-                    //{
-                    //    revType = Enums.TOPRevenueType.Revenue;
-                    //    if(row==2)
-                    //        revType = Enums.TOPRevenueType.Performance;
-                    //    if (row == 3)
-                    //        revType = Enums.TOPRevenueType.Cost;
-                    //}
-                    //else
-                    //{
                     revType = RevenueTypeList[row - 1];
-                    //}
-                    #region "Set Fixed SparkLine chart data"
                     lstSparklineData = new List<sparklineData>();
-                    //_sparklinedata = new sparklineData();
-                    //_sparklinedata.Name = "General";
-                    //_sparklinedata.RevenueTypeValue = "$18.9M";
-                    ////_sparklinedata.Goal_ROI = "+15%";
-                    //_sparklinedata.IsPositive = true;
-                    //_sparklinedata.Trend = "71, 78, 39, 66";
-                    //lstSparklineData.Add(_sparklinedata);
-
-                    //_sparklinedata = new sparklineData();
-                    //_sparklinedata.Name = "Economic Buyer";
-                    //_sparklinedata.RevenueTypeValue = "+5%";
-                    //_sparklinedata.IsPositive = true;
-                    //_sparklinedata.Trend = "87, 44, 74, 41";
-                    //lstSparklineData.Add(_sparklinedata);
-
-                    //_sparklinedata = new sparklineData();
-                    //_sparklinedata.Name = "Executive Influencer";
-                    //_sparklinedata.RevenueTypeValue = "-12%";
-                    //_sparklinedata.IsPositive = false;
-                    //_sparklinedata.Trend = "56, 12, 8, 25";
-                    //lstSparklineData.Add(_sparklinedata);
-
-                    //_sparklinedata = new sparklineData();
-                    //_sparklinedata.Name = "Technical Buyer";
-                    //_sparklinedata.RevenueTypeValue = "$800M";
-                    //_sparklinedata.IsPositive = false;
-                    //_sparklinedata.Trend = "48, 95, 76, 97";
-                    //lstSparklineData.Add(_sparklinedata);
-
-                    //_sparklinedata = new sparklineData();
-                    //_sparklinedata.Name = "Controller";
-                    //_sparklinedata.RevenueTypeValue = "$650K";
-                    //_sparklinedata.IsPositive = true;
-                    //_sparklinedata.Trend = "31, 71, 2, 71";
-                    //lstSparklineData.Add(_sparklinedata);
-
-
-                    #endregion
                     lstSparklineData = GetActualRevenueTrendData(selectedCustomField, TacticData, revType, timeFrameOption);
 
                     objsparkLineCharts.sparklinechartdata = lstSparklineData;
@@ -5970,7 +5930,8 @@ namespace RevenuePlanner.Controllers
                                 TacticId = tac.TacticId,
                                 StartMonth = tac.StartMonth,
                                 EndMonth = tac.EndMonth,
-                                Value = tac.Value
+                                Value = tac.Value,
+                                Year = tac.StartYear
                             }).Distinct().ToList();
                             ProjectedRevenueTrendList = GetProjectedTrendModel(TacticList);
                             #endregion
@@ -6393,15 +6354,24 @@ namespace RevenuePlanner.Controllers
                     ProjectedTacticList = GetProjectedMQLValueDataTableForReport(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
                 }
 
-
                 // Create ProjectedTacticModel from ProjectedRevenueTacticList to get ProjecteRevenueTrend model list.
-                lstTactic = ProjectedTacticList.Select(tac => new ProjectedTacticModel
-                {
-                    TacticId = tac.Id,
-                    StartMonth = tac.StartMonth,
-                    EndMonth = tac.EndMonth,
-                    Value = tac.Value
-                }).Distinct().ToList();
+                lstTactic = (from _prjTac in ProjectedTacticList
+                             group _prjTac by new
+                             {
+                                _prjTac.Id,
+                                _prjTac.StartMonth,
+                                _prjTac.EndMonth,
+                                _prjTac.Value,
+                                _prjTac.StartYear,
+                             } into tac
+                             select new ProjectedTacticModel
+                             {
+                                TacticId = tac.Key.Id,
+                                StartMonth = tac.Key.StartMonth,
+                                EndMonth = tac.Key.EndMonth,
+                                Value = tac.Key.Value,
+                                Year = tac.Key.StartYear
+                             }).Distinct().ToList();
 
                 // Get Projected Revenue Trend List.
                 ProjectedTrendModelList = GetProjectedTrendModel(lstTactic);
@@ -6537,6 +6507,7 @@ namespace RevenuePlanner.Controllers
             int TotalTacticMonths = 0, _InvolvedTacticMonths = 0;
             double TotalRevenue = 0;
             ProjectedTrendModel objProjectedTrendModel = new ProjectedTrendModel();
+            int _currentYear = Convert.ToInt32(currentYear);
             #endregion
 
             try
@@ -6551,7 +6522,7 @@ namespace RevenuePlanner.Controllers
                         objProjectedTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
 
                         //// Calculate Trend calculation for month that is greater than current ruuning month.
-                        if (_trendMonth > currentMonth && tactic.EndMonth > currentMonth)
+                        if (_trendMonth > currentMonth && tactic.EndMonth > currentMonth && _trendMonth > tactic.StartMonth && _currentYear <= tactic.Year)
                         {
                             TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
                             TotalRevenue = tactic.Value * TotalTacticMonths; // Get Total Projected Revenue.

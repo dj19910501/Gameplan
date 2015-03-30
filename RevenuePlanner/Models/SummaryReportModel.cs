@@ -141,7 +141,7 @@ namespace RevenuePlanner.Models
     {
         public string stagename { get; set; }
         public string stageVolume { get; set; }
-        public string Banchmark { get; set; }
+        public string Benchmark { get; set; }
         public string PercentageDifference { get; set; }
      }
     #endregion
@@ -190,6 +190,7 @@ namespace RevenuePlanner.Models
         public int StartMonth { get; set; }
         public int EndMonth { get; set; }
         public double Value { get; set; }
+        public int Year { get; set; }
     }
 
     #endregion
