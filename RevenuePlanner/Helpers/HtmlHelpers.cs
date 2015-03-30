@@ -1706,7 +1706,7 @@ namespace RevenuePlanner.Helpers
                         span.Attributes.Add("class", "orange-corner-budget");
                     }
                 }
-                else if (Tab == "1")
+                else if (Tab == "1" && AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                 {
                     div.Attributes.Add("mainbudget", plan.MainBudgeted.ToString());
                     if (plan.Allocated > plan.MainBudgeted)
@@ -1771,7 +1771,7 @@ namespace RevenuePlanner.Helpers
                         span.Attributes.Add("class", "orange-corner-budget");
                     }
                 }
-                else if (Tab == "1")
+                else if (Tab == "1" && AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                 {
                     divLast.Attributes.Add("mainbudget", c.MainBudgeted.ToString());
                     if (c.Allocated > c.MainBudgeted)
@@ -1892,7 +1892,7 @@ namespace RevenuePlanner.Helpers
                             span.Attributes.Add("class", "orange-corner-budget");
                         }
                     }
-                    else if (Tab == "1")
+                    else if (Tab == "1" && AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                     {
                         divProgram.Attributes.Add("mainbudget", p.MainBudgeted.ToString());
                         if (p.Allocated > p.MainBudgeted && ActivityType != Helpers.ActivityType.ActivityLineItem.ToString())

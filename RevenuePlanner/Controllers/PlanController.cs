@@ -4747,6 +4747,10 @@ namespace RevenuePlanner.Controllers
                     {
                         var objPlan = db.Plans.Where(p => p.PlanId == EntityId && p.IsDeleted.Equals(false)).FirstOrDefault();
                         objPlan.Budget = yearlyBudget;
+                        if (yearlyBudget == 0)
+                        {
+                            objPlan.AllocatedBy = Enums.PlanAllocatedBy.defaults.ToString();
+                        }
                         db.Entry(objPlan).State = EntityState.Modified;
                     }
                     else if (string.Compare(section, Enums.Section.Campaign.ToString(), true) == 0)

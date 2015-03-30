@@ -533,7 +533,12 @@ $("[linktype=tactic]").click(function (e) {
     $(document).click(function () {
         $('.cluetip').css('display', 'none');
     });
-
+    $('.tooltip-field').on('focus', '#CostMonth', function () {
+        $(this).val($(this).val().replace(/,/g, ""));
+    });
+    $('.tooltip-field').on('focus', '#CostYear', function () {
+        $(this).val($(this).val().replace(/,/g, ""));
+    });
     $('.tooltip-field').on('keyup', '#CostMonth', function () {
         var oldBudget = parseFloat($(this).attr('ov').toString());
         var newBudget = 0;
