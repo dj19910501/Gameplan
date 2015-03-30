@@ -4749,7 +4749,7 @@ namespace RevenuePlanner.Controllers
                         objPlan.Budget = yearlyBudget;
                         if (yearlyBudget == 0)
                         {
-                            objPlan.AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
+                            objPlan.AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
                         }
                         db.Entry(objPlan).State = EntityState.Modified;
                     }
