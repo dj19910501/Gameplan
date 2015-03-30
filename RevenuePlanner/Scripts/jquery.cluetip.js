@@ -323,8 +323,8 @@
                     $cluetip.css({ left: posX });
                 } else {
                     posX = (linkWidth > linkLeft && linkLeft > tipWidth) ||
-                      linkLeft + linkWidth + tipWidth + lOffset+30 > winWidth ?
-                      linkLeft - tipWidth - lOffset :
+                      linkLeft + linkWidth + tipWidth + lOffset+120 > winWidth ?
+                      linkLeft - tipWidth - lOffset-30 :
                       linkWidth + linkLeft + lOffset;
                     if (link.tagName.toLowerCase() == 'area' || opts.positionBy == 'mouse' || linkWidth + tipWidth > winWidth) { // position by mouse
                         if (mouseX + 20 + tipWidth > winWidth) {
@@ -553,9 +553,7 @@
                                 '<label class="label-toooltip" >Child Programs Budget(' + displaymq + '):  </label>' +
                                 '<input type="text" disabled="disabled" value="' + FormatCommasBudget(childPbm.toString(), false, false) + '" />' +
                                 '<label class="label-toooltip" >Campaign Budget (y):  </label>' +
-                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(cby.toString(), false, false) + '" ov="' + cby + '" />' +
-                                '<label class="label-toooltip" >Unallocated Budget (y):  </label>' +
-                                '<input id="unAllocatedBudget" type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(), false, false) + '" />';
+                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(cby.toString(), false, false) + '" ov="' + cby + '" />';
                         $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('campaign', '') + '" section="Campaign" mnth="' + entityMonth + '" />';
                         $localContent.find('.tooltip-field').html($loadmeHtml);
                         $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
@@ -581,9 +579,7 @@
                                 '<label class="label-toooltip">Child Tactics Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" disabled="disabled" value="' + FormatCommasBudget(pcm.toString(), false, false) + '" />' +
                                 '<label class="label-toooltip" >Program Budget (y):  </label>' +
-                                '<input type="text" type="text" id="BudgetYear" value="' + FormatCommasBudget(pby.toString(), false, false) + '" ov="' + pby + '" />' +
-                                '<label class="label-toooltip" >Unallocated Budget (y):  </label>' +
-                                '<input type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(), false, false) + '" id="unAllocatedBudget" />';
+                                '<input type="text" type="text" id="BudgetYear" value="' + FormatCommasBudget(pby.toString(), false, false) + '" ov="' + pby + '" />';
                         $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('program', '') + '" section="Program" mnth="' + entityMonth + '" />';
                         $localContent.find('.tooltip-field').html($loadmeHtml);
                         $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
@@ -598,9 +594,7 @@
                                 '<label class="label-toooltip">Remaining Program Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="remainingBudget" value="' + rpbm + '" disabled="disabled"/>' +
                                 '<label class="label-toooltip" >Tactic Budget (y):  </label>' +
-                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tby.toString(), false, false) + '" ov="' + tby + '" />' +
-                                '<label class="label-toooltip" >Unallocated Budget (y):  </label>' +
-                                '<input type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(), false, false) + '" id="unAllocatedBudget" />';
+                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tby.toString(), false, false) + '" ov="' + tby + '" />' ;
                         $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('tactic', '') + '" section="Tactic" mnth="' + entityMonth + '" />';
                         $localContent.find('.tooltip-field').html($loadmeHtml);
                         $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
@@ -621,9 +615,7 @@
                                 '<label class="label-toooltip" >Child Campaigns Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="tbm" value="' + FormatCommasBudget(childCbm.toString(), false, false) + '" disabled="disabled" />' +
                                 '<label class="label-toooltip" >Plan Budget (y):  </label>' +
-                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(plby.toString(), false, false) + '" ov="' + plby + '" />' +
-                                '<label class="label-toooltip" >Unallocated Budget (y):  </label>' +
-                                '<input type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(), false, false) + '" id="unAllocatedBudget" />';
+                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(plby.toString(), false, false) + '" ov="' + plby + '" />' ;
                         $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('plan', '') + '" section="Plan" mnth="'+entityMonth+'" />';
                         $localContent.find('.tooltip-field').html($loadmeHtml);
                         entityTitle = $('#divPlanDetails').text();
@@ -645,9 +637,7 @@
                                  '<label class="label-toooltip" >Tactic Cost (y):  </label>' +
                                 '<input type="text" id="CostYear" value="' + FormatCommasBudget(tcy.toString(), false, false) + '" ov="' + tcy + '" />' +
                                 '<label class="label-toooltip" >Tactic Budget (y):  </label>' +
-                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tby.toString(), false, false) + '" ov="' + tby + '"  disabled="disabled" />' +
-                                '<label class="label-toooltip" >Unallocated Budget (y):  </label>' +
-                                '<input type="text" disabled="disabled" value="' + FormatCommasBudget(unb.toString(), false, false) + '" id="unAllocatedBudget" />';
+                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tby.toString(), false, false) + '" ov="' + tby + '"  disabled="disabled" />' ;
                             $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="Tactic" tab="Planned" mnth="' + entityMonth + '" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);

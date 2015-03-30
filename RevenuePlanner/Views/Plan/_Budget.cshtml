@@ -14,7 +14,6 @@
     planAllocation = (sumMonth == 0 && plan.MainBudgeted == 0) ? 0 : (sumMonth > 0 && plan.MainBudgeted == 0) ? 101 : sumMonth / plan.MainBudgeted * 100;
     string strTab = Convert.ToString(ViewBag.Tab);
     bool isquarter = false;
-    string column2Width = strTab == "2" ? "max-width:69%;" : "";
     if (AllocatedBy.ToLower() == strQuarters)
     {
         isquarter = true;
@@ -67,7 +66,7 @@
                               }
                         </tbody>
                         }
-                        <tbody class="column2" style="@column2Width">
+                        <tbody class="column2" style="max-width:69%;">
                             @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, plan.BudgetMonth, AllocatedBy, strTab)
                             
                             @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
@@ -79,29 +78,9 @@
                             @Html.CampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
                             }
                         </tbody>
-                        @if (strTab == "1")
-                        {
+                       @if (strTab == "2")
+                       {
                         <tbody class="column3">
-                            <tr>
-                                <td>
-                                   <div>Unallocated</div>
-                                   
-                                </td>
-                           
-                            </tr>
-                            @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
-                            {
-                            @Html.ParentSummary(ActivityType.ActivityCustomField, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
-                            }
-                            else
-                            {
-                            @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
-                            }
-                        </tbody>
-                        }
-                        else
-                        {
-                            <tbody class="column3">
                             <tr>
                                 <td>
                                     <div>Total</div>
@@ -116,7 +95,7 @@
                             @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
                               }
                         </tbody>
-                        }
+                       }
                     </table>
                     <div style="clear: both;"></div>
                 </div>
@@ -355,13 +334,13 @@
                 else if (i == 8) {
                     strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
                     if ('@PercAllocated.Aug' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;" class="error"></span></div>';
-            }
-            else if (i == 9) {
-                strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
-                if ('@PercAllocated.Sep' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;" class="error"></span></div>';
+                }
+                else if (i == 9) {
+                    strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
+                    if ('@PercAllocated.Sep' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;" class="error"></span></div>';
@@ -507,12 +486,12 @@ $("[linktype=tactic]").click(function (e) {
     var id = $(this).attr('id');
     id = id.replace('cpt_', '');
     ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+});
+$("[linktype=lineitem]").click(function (e) {
+    var id = $(this).attr('id');
+    id = id.replace('cptl_', '');
+    ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
-    $("[linktype=lineitem]").click(function (e) {
-        var id = $(this).attr('id');
-        id = id.replace('cptl_', '');
-        ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-     });
 </script>
 
 <script type="text/javascript">
@@ -544,12 +523,10 @@ $("[linktype=tactic]").click(function (e) {
         var newBudget = 0;
         if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
             newBudget = parseFloat($(this).val().replace(/,/g, ""));
-            $(this).val(newBudget.toString());
             $(this).attr('ov', newBudget.toString());
         }
     });
     $('.tooltip-field').on('focusout', '#CostMonth', function () {
-        //alert(parseFloat($(this).attr('ov').toString()));
         var newcost = $(this).val().replace(/,/g, "");
         $(this).val(FormatCommasBudget(newcost.toString(), false, false));
     });
@@ -559,27 +536,14 @@ $("[linktype=tactic]").click(function (e) {
         var newYearBudget = 0;
         if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
             newYearBudget = parseFloat($(this).val().replace(/,/g, ""));
-            $(this).val(newYearBudget.toString());
         }
         var section = $('#entityDetails').attr('section').toString();
-        if (section == "Tactic") {
-            var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
-            var budgetyear = $(this).parent().find('#BudgetYear');
-            var budgetyearvalue = parseFloat(budgetyear.attr('ov').toString().replace(/,/g, ""));
-            var unAllocated = parseFloat(unAllocatedInput.val().replace(/,/g, ""));
-            var newunAllocated = parseFloat(budgetyearvalue - newYearBudget);
-            unAllocatedInput.val(newunAllocated.toString());
-        }
         $(this).attr('ov', newYearBudget.toString());
     });
     $('.tooltip-field').on('focusout', '#CostYear', function () {
         var newYearBudget = $(this).val().replace(/,/g, "");
         $(this).val(FormatCommasBudget(newYearBudget.toString(), false, false));
         var section = $('#entityDetails').attr('section').toString();
-        if (section == "Tactic") {
-            var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
-            unAllocatedInput.val(FormatCommasBudget(unAllocatedInput.val().replace(/,/g, ""), false, false));
-        }
     });
 
     $('#btnClueTip').click(function () {

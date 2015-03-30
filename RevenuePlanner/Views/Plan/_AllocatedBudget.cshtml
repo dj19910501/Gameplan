@@ -672,18 +672,12 @@ else {
         $('.cluetip').css('display', 'none');
     });
     $('.tooltip-field').on('keyup', '#BudgetMonth', function () {
-       
         var oldBudget = parseFloat($(this).attr('ov').toString());
         
         var newBudget = 0;
         if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
             newBudget = parseFloat($(this).val().replace(/,/g, ""));
-            $(this).val(newBudget.toString());
         }
-        var unAllocatedInput=$(this).parent().find('#unAllocatedBudget');
-        var unAllocated = parseFloat(unAllocatedInput.val().replace(/,/g, ""));
-        unAllocated = (unAllocated + oldBudget) - newBudget;
-        unAllocatedInput.val(unAllocated.toString());
         $(this).attr('ov', newBudget.toString());
         var remaingBudgetInput = $(this).parent().find('#remainingBudget');
         if (typeof remaingBudgetInput.val() != 'undefined') {
@@ -695,8 +689,6 @@ else {
     $('.tooltip-field').on('focusout', '#BudgetMonth', function () {
         var newBudget = $(this).val().replace(/,/g, "");
         $(this).val(FormatCommasBudget(newBudget.toString(), false, false));
-        var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
-        unAllocatedInput.val(FormatCommasBudget(unAllocatedInput.val().replace(/,/g, ""), false, false));
         var remaingBudgetInput = $(this).parent().find('#remainingBudget');
         if (typeof remaingBudgetInput.val() != 'undefined') {
             remaingBudgetInput.val(FormatCommasBudget(remaingBudgetInput.val().replace(/,/g,"")));
@@ -708,21 +700,12 @@ else {
         var newYearBudget = 0;
         if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
             newYearBudget = parseFloat($(this).val().replace(/,/g, ""));
-            $(this).val(newYearBudget.toString());
-        }
-        var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
-        if (typeof unAllocatedInput.val() != 'undefined') {
-            var unAllocated = parseFloat(unAllocatedInput.val().replace(/,/g, ""));
-            unAllocated = (unAllocated + newYearBudget) - oldYearBudget;
-            unAllocatedInput.val(unAllocated.toString());
         }
         $(this).attr('ov', newYearBudget.toString());
     });
     $('.tooltip-field').on('focusout', '#BudgetYear', function () {
         var newYearBudget = $(this).val().replace(/,/g, "");
         $(this).val(FormatCommasBudget(newYearBudget.toString(), false, false));
-        var unAllocatedInput = $(this).parent().find('#unAllocatedBudget');
-        unAllocatedInput.val(FormatCommasBudget(unAllocatedInput.val().replace(/,/g, ""), false, false));
     });
     $('.tooltip-field').on('keydown', '#BudgetMonth,#BudgetYear', function (e) {
         // Allow: backspace, delete, tab, escape, enter and .

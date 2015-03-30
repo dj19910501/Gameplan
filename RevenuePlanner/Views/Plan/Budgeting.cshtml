@@ -188,7 +188,7 @@
                     var currObj, tacticDP, programDP, campaignDP;
                     if (strExpandType == 'lineitem') {
                         if ($("#hdnBudgetingIsDelete").val() != "true") {
-                            currObj = $('#' + strExpandId).parent();
+                            currObj = $('#' + strExpandId.replace('_','')).parent();
                             tacticDP = $(currObj).parent().attr('data-parent'); //tactic
                             programDP = $(currObj).parent().parent().attr('data-parent'); //program
                             campaignDP = $(currObj).parent().parent().parent().attr('data-parent'); //campaign
