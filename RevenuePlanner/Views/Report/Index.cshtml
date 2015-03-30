@@ -17,6 +17,7 @@
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/slimScrollHorizontal.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.actual.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/highcharts.js")"></script>
 <link href="@Url.Content("~/Content/css/dhtmlxchart.css")" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <style type="text/css">
@@ -761,8 +762,10 @@
         $('#conversionHeader').css('display', 'none');
         $('#revenueHeader').css('display', 'none');
         $("#BtnShareReport").show();
-        var url = '@Url.Content("~/Report/GetSummaryData/")';
-        $('#divMainReportPart').load(url , function () {
+        @*var url = '@Url.Content("~/Report/GetSummaryData/")';
+        $('#divMainReportPart').load(url , function () {*@
+        var url = '@Url.Content("~/Report/GetOverviewData/")';
+        $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain, function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
         });

@@ -642,6 +642,7 @@
     <Content Include="Scripts\js\dhtmlxchart.js" />
     <Content Include="Scripts\js\DHTMLX\danddcontrol.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt.js" />
+    <Content Include="Scripts\js\highcharts.js" />
     <Content Include="Scripts\js\html5shiv.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.min.js" />
@@ -871,6 +872,10 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="Views\Report\_Overview.cshtml" />
+    <Content Include="Views\Report\_SparkLineChart.cshtml" />
+    <Content Include="Views\Report\_SparkLineChartTable.cshtml" />
+    <Content Include="Views\Report\_conversionOverview.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

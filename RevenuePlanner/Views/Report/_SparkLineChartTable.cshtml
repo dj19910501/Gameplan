@@ -1,0 +1,59 @@
+﻿@model RevenuePlanner.Models.sparkLineCharts
+@using RevenuePlanner.Models;
+@{
+    string classnobordr, classheader, classTotal;
+    classnobordr = classheader = classTotal = string.Empty;
+    if (!Model.IsOddSequence)
+    {
+        classnobordr = "top-cost noborder";
+        classheader = "top-cost-header";
+    }
+    else
+    {
+        classnobordr = "top-revenue";
+        classheader = "top-revenue-header";
+    }
+}
+
+<div class="top-revenue-table">
+    <table id="@Model.sparklinechartId">
+        <thead>
+            <tr>
+                @foreach (string _col in Model.RevenueTypeColumns)
+                {
+                    <th>@_col</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (sparklineData item in Model.sparklinechartdata)
+            {
+                classTotal = "nobold";
+                if (item.IsTotal)
+                {
+                    classTotal = "lastraw";
+                }
+                <tr>
+                    <th class="@classTotal">@item.Name</th>
+                    @if (item.Is_Pos_Neg_Status)
+                    {
+                        if (item.IsPositive)
+                        {
+                        <td class="above">@item.RevenueTypeValue</td>
+                        }
+                        else
+                        {
+                        <td class="below">@item.RevenueTypeValue</td>
+                        }
+                    }
+                    else
+                    {
+                        <td class="revCurrencyVal @classTotal" orig-val="@item.RevenueTypeValue">@item.RevenueTypeValue</td>
+                    }
+                    <td data-sparkline="@item.Trend" class="dvsparkline"></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

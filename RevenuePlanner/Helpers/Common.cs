@@ -180,6 +180,11 @@ namespace RevenuePlanner.Helpers
         public const string YearlyBudgetForEntity = "BudgetYear";
         public const string MonthlyCostForEntity = "CostMonth";
         public const string YearlyCostForEntity = "CostYear";
+	    
+        public static List<string> TOPRevenueColumnList = new List<string>() { "Name", "Revenue", "Trend"};
+        public static List<string> TOPPerformanceColumnList = new List<string>() { "Name", "Proj. vs Goal", "Trend" };
+        public static List<string> TOPCostColumnList = new List<string>() { "Name", "Cost", "Trend" };
+        public static List<string> TOPROIColumnList = new List<string>() { "Name", "ROI", "Trend" };
         #endregion
 
         #region Functions for File and IO Handling
@@ -2564,6 +2569,11 @@ namespace RevenuePlanner.Helpers
             return lstStageTitle;
         }
 
+        #endregion
+
+        #region "PlanLevel"
+        public static string BelowPlan = "Below Plan";
+        public static string AbovePlan = "Above Plan";
         #endregion
 
         #region CustomizedStage

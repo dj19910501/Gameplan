@@ -952,6 +952,20 @@ namespace RevenuePlanner.Helpers
             Monthly,
             Quarterly
         }
+
+        /// <summary>
+        /// TOP Revenue Type
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>23/03/2015</CreatedDate>
+        public enum TOPRevenueType
+        {
+            Revenue,
+            Performance,
+            Cost,
+            ROI
+        }
+
     }
 
     #region Authorization
@@ -1024,6 +1038,5 @@ namespace RevenuePlanner.Helpers
     {
         public const string Plan = "Plan";
     }
-
 
 }

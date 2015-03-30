@@ -1,0 +1,114 @@
+﻿@model List<RevenuePlanner.Models.sparkLineCharts>
+@using RevenuePlanner.Models;
+
+
+<script type="text/javascript">
+    $(function () {
+        formatCurrency();
+        $(".revCustomFieldDDL").change(function (e) {
+            var _sparklineurl = "@Url.Content("~/Report/LoadSparkLineChartPartial")";
+            var ddlId = $(this).attr('id');
+            var div = "#"+$(this).attr('ChartDivId');
+            var _selectedCustomFieldValue = $(this).val();
+            var _timeframeoption = getYearSelectedValue(false);
+            var _revenueType = ddlId.split('custmDDL_')[1];
+            //alert(ddlId + ":" + _revenueType);
+            _sparklineurl = _sparklineurl + "?strCutomfield=" + _selectedCustomFieldValue + "&timeFrameOption=" + _timeframeoption + "&strRevenueType=" + _revenueType;
+            $(div).load(_sparklineurl, function () {
+                BindSparkLineChart();
+                doChunk();
+                formatCurrency(div);
+            });
+        });
+    });
+    function formatCurrency(_divId) {
+        var _revTypeColAttr = ".revCurrencyVal";
+        var _revTypeCol ;
+        if (_divId != null && _divId != 'undefined' && _divId != '') // if formating to any specific div currency value.
+            _revTypeColAttr = _divId + " " + _revTypeColAttr;
+
+        _revTypeCol = $(_revTypeColAttr);
+        $.each(_revTypeCol, function (key, _td) {
+            var revTypeColText = $(_td).attr('orig-val');
+            if (revTypeColText != null && revTypeColText != 'undefined' && revTypeColText != 'NaN') {
+                $(_td).html(FormatNumber(Math.abs(parseFloat($(_td).html())), false));
+            }
+        });
+    }
+</script>
+@foreach (sparkLineCharts _objmodel in Model)
+{
+    string classnobordr, classheader, classTotal;
+    classnobordr = classheader = classTotal = string.Empty;
+    if (!_objmodel.IsOddSequence)
+    {
+        classnobordr = "top-cost noborder";
+        classheader = "top-cost-header";
+    }
+    else
+    {
+        classnobordr = "top-revenue";
+        classheader = "top-revenue-header";
+    }
+
+        <div class="@classnobordr">
+            <div class="@classheader">
+                <h5>@_objmodel.ChartHeader</h5>
+                <div class="revenue-summary-custom">
+                    @*<div class="selectText">Business Unit</div>
+                    <select>
+                        <option value="">Business Unit</option>
+                        <option value=""></option>
+                        <option value=""></option>
+                    </select>*@
+                    @Html.DropDownList(_objmodel.CustomfieldDDLId, new SelectList((System.Collections.IEnumerable)ViewBag.SummaryCustomFieldList, "Value", "Text"), new { @class="revCustomFieldDDL", @ChartDivId ="dv"+_objmodel.sparklinechartId })
+                </div>
+                <span id="btnWeight" name="btnWeight" class="viewfullscreen">
+                    <img src="~/Content/images/view-fullscreen.png" /></span>
+            </div>
+            <div id="dv@_objmodel.sparklinechartId">
+            @Html.Partial("_SparkLineChartTable", _objmodel)
+            </div>
+            @*<div class="top-revenue-table">
+                <table id="@_objmodel.sparklinechartId">
+                    <thead>
+                        <tr>
+                            @foreach (string _col in _objmodel.RevenueTypeColumns)
+                            {
+                                <th>@_col</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (sparklineData item in _objmodel.sparklinechartdata)
+                        {
+                            classTotal = "nobold";
+                            if (item.IsTotal)
+                            {
+                                classTotal = "lastraw";
+                            }
+                            <tr>
+                                <th class="@classTotal">@item.Name</th>
+                                @if (item.IsPercentage)
+                                {
+                                    if (item.IsPositive)
+                                    {
+                                        <td class="above">@item.RevenueTypeValue</td>
+                                    }
+                                    else
+                                    {
+                                        <td class="below">@item.RevenueTypeValue</td>
+                                    }
+                                }
+                                else
+                                {
+                                    <td>@item.RevenueTypeValue</td>
+                                }
+                                <td data-sparkline="@item.Trend" class="dvsparkline"></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>*@
+        </div>
+}

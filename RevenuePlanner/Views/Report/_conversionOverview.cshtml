@@ -1,0 +1,407 @@
+﻿@model RevenuePlanner.Models.ConversionOverviewModel
+@using RevenuePlanner.Models;
+@using RevenuePlanner.Helpers;
+@using Newtonsoft.Json;
+
+@{
+    List<conversion_Projected_Goal_LineChart> Projected_Goal_LineChartList = Model.Projected_LineChartList;
+    
+    // Declare local variables.
+    conversion_Projected_Goal_LineChart mqlProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
+    conversion_Projected_Goal_LineChart inqProjected_Goal = new conversion_Projected_Goal_LineChart();
+    conversion_Projected_Goal_LineChart cwProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
+    Projected_Goal mqlProj_Goal = new Projected_Goal();
+    Projected_Goal inqProj_Goal = new Projected_Goal();
+    Projected_Goal cwProj_Goal = new Projected_Goal();
+    
+    // Get MQL,CW & INQ StageCode
+    string mqlStageCode = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
+    string inqStageCode = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
+    string cwStageCode = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString();
+    
+    // Set MQL,CW & INQ Proj_Goal_Linechart data.
+    inqProjected_Goal = Projected_Goal_LineChartList.Where(convrsn => convrsn.StageCode.Equals(inqStageCode)).FirstOrDefault();
+    mqlProjected_Goal_LineChart = Projected_Goal_LineChartList.Where(convrsn => convrsn.StageCode.Equals(mqlStageCode)).FirstOrDefault();
+    cwProjected_Goal_LineChart = Projected_Goal_LineChartList.Where(convrsn => convrsn.StageCode.Equals(cwStageCode)).FirstOrDefault();
+    
+    // Set MQL,CW & INQ Proj_Goal data.
+    mqlProj_Goal = mqlProjected_Goal_LineChart.projected_goal;
+    inqProj_Goal = inqProjected_Goal.projected_goal;
+    cwProj_Goal = cwProjected_Goal_LineChart.projected_goal;
+    
+    // MQL & CW Linechart data
+    var mqllinechartdata = JsonConvert.SerializeObject(mqlProjected_Goal_LineChart.linechartdata);
+    var cwlinechartdata = JsonConvert.SerializeObject(cwProjected_Goal_LineChart.linechartdata);
+}
+
+<div class="report-btn-group">
+    <p class="revanue-p">Conversion</p>
+    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
+    <a name="" class="btn  source-sans-proregular report-grey-btn" id=""><span>
+        <img src="~/Content/images/export.png" /></span>Export</a>
+    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn " id="">
+        <span>
+            <img src="~/Content/images/round-plus.png" /></span>Add Widget</button>
+</div>
+<div class="revenue-graph">
+    <div class="row">
+        <!--for ticket # 1221 start Change by tirthak-->
+        <div class="revenue-graph-info">
+            <a href="" class="viewfullscreen">
+                <img src="~/Content/images/view-fullscreen.png" /></a>
+            <p class="yearcounter" id="">Volume</p>
+            <p class="smalltext" id="">Projected Vs Goal</p>
+            <div class="row" style="border: none;">
+                <span class="yearcounter volume-1-titel" id="inqlblStageName">@inqProj_Goal.Name</span>
+                <span class="amountcounter volume-1-counter" id="inqlblAct_Proj">@inqProj_Goal.Actual_Projected</span>
+                <span class="statustext volume-1-smallcounter above" id="">
+                    <img id="inqVolUp" src="~/Content/images/volumeup.png" style="vertical-align: initial; display:none;" />
+                    <img id="inqVolDown" src="~/Content/images/volumedown.png" style="vertical-align: initial; display:none;" />
+                    <span id="inqlblPercentage">@inqProj_Goal.Percentage</span></span>
+                <p class="smalltext volume-1-smallstatus" id="inqlblGoal">/ @inqProj_Goal.Goal</p>
+            </div>
+            <div class="row" style="border: none;">
+                <span class="yearcounter volume-1-titel" id="mqllblStageName">@mqlProj_Goal.Name</span>
+                <span class="amountcounter volume-1-counter" id="mqllblAct_Proj">@mqlProj_Goal.Actual_Projected</span>
+                <span class="statustext volume-1-smallcounter below">
+                    <img id="mqlVolUp" src="~/Content/images/volumeup.png" style="vertical-align: initial; display:none;" />
+                    <img id="mqlVolDown" src="~/Content/images/volumedown.png" style="vertical-align: initial; display:none;" />
+                    <span id="mqllblPercentage">@mqlProj_Goal.Percentage</span></span>
+                <p class="smalltext volume-1-smallstatus" id="mqllblGoal">/ @mqlProj_Goal.Goal</p>
+            </div>
+            <div class="row" style="border: none;">
+                <span class="yearcounter volume-1-titel" id="cwlblStageName">@cwProj_Goal.Name</span>
+                <span class="amountcounter volume-1-counter" id="cwlblAct_Proj">@cwProj_Goal.Actual_Projected</span>
+                <span style="" class="statustext volume-last-smallcounter below" id="">
+                    <img id="cwVolUp" src="~/Content/images/volumeup.png" style="vertical-align: initial; display:none;" />
+                    <img id="cwVolDown" src="~/Content/images/volumedown.png" style="vertical-align: initial; display:none;" />
+                    <span id="cwlblPercentage">@cwProj_Goal.Percentage</span></span>
+                <p class="smalltext volume-1-smallstatus" id="cwlblGoal">/ @cwProj_Goal.Goal</p>
+            </div>
+        </div>
+        <!--for ticket # 1221 start Change by tirthak-->
+        <div class="revenue-graph-info">
+            <a href="" class="viewfullscreen">
+                <img src="~/Content/images/view-fullscreen.png" /></a>
+            <p class="yearcounter" id="">TQLs</p>
+            <p class="smalltext" id="">Projected Vs Goal</p>
+            <p class="amountcounter" id="">28%</p>
+            <p class="smallamountcounter" id="">Benchmark:22%</p>
+            <p class="statustext above" id="">6% Above Plan</p>
+
+            <div class="coversionline-chart2">
+                <div id="MQLLineChart"></div>
+            </div>
+        </div>
+        <div class="revenue-graph-info noborder">
+            <a href="" class="viewfullscreen">
+                <img src="~/Content/images/view-fullscreen.png" /></a>
+            <p class="yearcounter" id="">Closed/Won Deals</p>
+            <p class="smalltext" id="">Projected Vs Goal</p>
+            <p class="amountcounter" id="">44%</p>
+            <p class="smallamountcounter" id="">Benchmark:46%</p>
+            <p class="statustext " id="">2% Below Plan</p>
+
+            <div class="coversionline-chart2">
+                <div id="CWLineChart"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row noborder">
+        <div class="conversion-table">
+            <h4>Volume Heatmap</h4>
+            <div class="volume-type">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+
+                        </tr>
+                        <tr>
+                            <th>INQ</th>
+
+                        </tr>
+                        <tr>
+                            <th>MQL</th>
+
+                        </tr>
+                        <tr>
+                            <th>TQL</th>
+
+                        </tr>
+                        <tr>
+                            <th>CW</th>
+
+                        </tr>
+
+                    </thead>
+
+                </table>
+
+            </div>
+            <div class="volume-month">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Jan</th>
+                            <th>Feb</th>
+                            <th>Mar</th>
+                            <th>Apr</th>
+                            <th>May</th>
+                            <th>Jun</th>
+                            <th>Jul</th>
+                            <th>Aug</th>
+                            <th>Sep</th>
+                            <th>Oct</th>
+                            <th>Nov</th>
+                            <th>Dec</th>
+
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>500</td>
+                            <td class="lightblue">1000</td>
+                            <td class="darkblue">3000</td>
+                            <td class="lightgreen">4500</td>
+                            <td class="darkgreen">6000</td>
+                            <td class="darkgreen">7100</td>
+                            <td class="darkblue">3300</td>
+                            <td class="lightblue">1500</td>
+                            <td>700</td>
+                            <td>500</td>
+                            <td>500</td>
+                            <td>500</td>
+                        </tr>
+                        <tr>
+                            <td>300</td>
+                            <td class="lightblue">800</td>
+                            <td class="darkblue">2000</td>
+                            <td class="lightgreen">3500</td>
+                            <td class="darkgreen">5000</td>
+                            <td class="darkgreen">5100</td>
+                            <td class="lightgreen">3300</td>
+                            <td class="lightblue">1500</td>
+                            <td>500</td>
+                            <td>400</td>
+                            <td>400</td>
+                            <td>400</td>
+                        </tr>
+                        <tr>
+                            <td>100</td>
+                            <td class="lightblue">200</td>
+                            <td class="lightblue">1000</td>
+                            <td class="lightgreen">2500</td>
+                            <td class="darkgreen">4000</td>
+                            <td class="lightblue">2100</td>
+                            <td class="lightblue">3300</td>
+                            <td class="lightblue">1500</td>
+                            <td>400</td>
+                            <td>300</td>
+                            <td>300</td>
+                            <td>300</td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td class="">100</td>
+                            <td class="lightblue">200</td>
+                            <td class="darkblue">500</td>
+                            <td class="darkgreen">1000</td>
+                            <td class="lightblue">300</td>
+                            <td class="">100</td>
+                            <td class="">50</td>
+                            <td>100</td>
+                            <td>100</td>
+                            <td>50</td>
+                            <td>80</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+                <!--for ticket # 1221 added Change by tirthak-->
+                <div class="volumechart">
+                    <div class="chartarea">
+                        <img src="~/Content/images/volumehot-coldchart.png" />
+
+                    </div>
+                    <span class="V-chart-status">Cold</span> <span class="V-chart-status2">Hot</span>
+                </div>
+                <div class="volumechart2">
+                    <div class="chartarea">
+                        <img src="~/Content/images/v-chart2.png" />
+                    </div>
+                    <span class="V-chart-status">Projected</span>
+                </div>
+                <!------------------>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var lblStageName = "lblStageName", lblAct_Proj = "lblAct_Proj", lblVolUp = "VolUp", lblVolDown = "VolDown", lblPercentage = "lblPercentage", lblGoal = "lblGoal";
+
+    $(function () {
+        var mql_actual_Projected = "@mqlProj_Goal.Actual_Projected";
+        var mql_goal = "@mqlProj_Goal.Goal";
+        var mql_percentage = "@mqlProj_Goal.Percentage";
+        var mql_isnegativePercentage = "@mqlProj_Goal.IsnegativePercentage";
+
+        var inq_actual_Projected = "@inqProj_Goal.Actual_Projected";
+        var inq_goal = "@inqProj_Goal.Goal";
+        var inq_percentage = "@inqProj_Goal.Percentage";
+        var inq_isnegativePercentage = "@inqProj_Goal.IsnegativePercentage";
+
+        var cw_actual_Projected = "@cwProj_Goal.Actual_Projected";
+        var cw_goal = "@cwProj_Goal.Goal";
+        var cw_percentage = "@cwProj_Goal.Percentage";
+        var cw_isnegativePercentage = "@cwProj_Goal.IsnegativePercentage";
+
+        var MQL = "mql", INQ = "inq", CW = "cw";
+        FormattingProjvsGoal(mql_actual_Projected, mql_goal, mql_percentage, mql_isnegativePercentage, MQL);
+        FormattingProjvsGoal(inq_actual_Projected, inq_goal, inq_percentage, inq_isnegativePercentage, INQ);
+        FormattingProjvsGoal(cw_actual_Projected, cw_goal, cw_percentage, cw_isnegativePercentage, CW);
+
+        var mql_lineardata = "@mqllinechartdata";
+        var mqlchartdata = (mql_lineardata.toString().replace(/&quot;/g, '"'));
+        mqlchartdata = JSON.parse(mqlchartdata);
+        var mqlLinechartDivId = "#MQLLineChart";
+
+        var cw_lineardata = "@cwlinechartdata";
+        var cwchartdata = (cw_lineardata.toString().replace(/&quot;/g, '"'));
+        cwchartdata = JSON.parse(cwchartdata);
+        var cwLinechartDivId = "#CWLineChart";
+        //alert(chartdata.toString());
+        //$.each(chartdata.series, function (i, val) {
+        //    $.each(val, function (key, _val) {
+        //        alert("key:" + key + "Value:" + _val);
+        //    });
+        //});
+        BindRevenueLineChart(mqlchartdata.categories, 3.7, mqlchartdata.series, mqlLinechartDivId);
+        BindRevenueLineChart(cwchartdata.categories, 3.7, mqlchartdata.series, cwLinechartDivId);
+    });
+
+    function FormattingProjvsGoal(act_proj, goal, percentage, isnegative, _stagecode) {
+        var _actual_Projected = act_proj;
+        var _goal = goal;
+        var _percentage = percentage;
+        var isnegativePercentage = isnegative;
+        var stagecode = _stagecode.toLowerCase();
+
+        var _lblAct_ProjectedId = "#" + stagecode + lblAct_Proj, _lblGoal = "#" + stagecode + lblGoal, _lblPercentage = "#" + stagecode + lblPercentage, _lblVolUp = "#" + stagecode + lblVolUp, _lblVolDown = "#" + stagecode + lblVolDown;
+        var _formtActualProjected = "0", _formtGoal = "0", _formtPercentage = "0";
+
+        if (_goal == null || _goal == 'undefined' || _goal == '')
+            _formtGoal = "0";
+        else
+            _formtGoal = numberWithCommas(Math.abs(parseFloat(_goal)));
+
+        _formtGoal = "/" + _formtGoal;
+        if (_actual_Projected == null || _actual_Projected == 'undefined' || _actual_Projected == '')
+            _formtActualProjected = "0";
+        else
+            _formtActualProjected = numberWithCommas(Math.abs(parseFloat(_actual_Projected)));
+
+        if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
+            _formtPercentage = "0";
+            $(_lblPercentage).removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (isnegativePercentage.toLowerCase() == 'true') {
+                _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true);
+                $(_lblPercentage).removeClass("greenLabel").addClass("redLabel");
+                $(_lblVolUp).hide();
+                $(_lblVolDown).show();
+            }
+            else {
+                _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true);
+                $(_lblPercentage).removeClass("redLabel").addClass("greenLabel");
+                $(_lblVolUp).show();
+                $(_lblVolDown).hide();
+            }
+        }
+
+        $(_lblAct_ProjectedId).html(_formtActualProjected);
+        $(_lblGoal).html(_formtGoal);
+        $(_lblPercentage).html(_formtPercentage);
+    }
+
+    // Start:- Revenue_LineChart script 
+    function BindRevenueLineChart(_categories, _plotlineVal, _series, _linechartDivId) {
+        var options = {
+            chart: {
+                spacingTop: 50
+            },
+            colors: ['#B04499', '#999999'],
+            legend: {
+                align: 'top',
+                verticalAlign: 'top',
+                layout: 'horizontal',
+                x: 60,
+                y: -30
+            },
+            title: {
+                text: ''
+            },
+            xAxis: {
+                categories: _categories,
+                lineColor: 'black',
+                lineWidth: 2,
+                tickColor: 'black',
+                tickWidth: 2,
+                plotLines: [{
+                    color: 'black', // Color value
+                    dashStyle: 'longdash', // Style of the plot line. Default to solid
+                    value: _plotlineVal, // Value of where the line will appear
+                    width: 2, // Width of the line    
+                    label: {
+                        text: 'Today',
+                        align: 'middle',
+                        verticalAlign: 'top',
+                        rotation: 0,
+                        x: -15,
+                        y: -10
+                    }
+                }],
+                tickPosition: 'inside',
+                labels: {
+                    color: '#2d2d2d',
+                    style: {
+                        "fontWeight": "bold"
+                    }
+                }
+            },
+            yAxis: {
+                lineColor: 'black',
+                gridLineWidth: 0,
+                minorGridLineWidth: 0,
+                lineWidth: 2,
+                tickPosition: 'inside',
+                tickLength: 5,
+                tickWidth: 2,
+                tickColor: 'black',
+                tickAmount: 5,
+                labels: {
+                    color: '#2d2d2d',
+                    style: {
+                        "fontWeight": "bold"
+                    }
+                },
+                title: {
+                    text: ''
+                }
+            },
+            series: []
+        }
+
+        var serLength = _series.length;
+        for (var i = 0; i < serLength ; i++) {
+            options.series.push(eval(_series[i]));
+        }
+        $(_linechartDivId).highcharts(options);
+    }
+    // End:- Revenue_LineChart script 
+
+</script>

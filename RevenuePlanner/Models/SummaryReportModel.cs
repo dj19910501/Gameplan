@@ -55,4 +55,142 @@ namespace RevenuePlanner.Models
         public int PlanTacticId { get; set; }
         public double ProjectedRevenue { get; set; }
     }
+    
+    #region "Report"
+    
+    #region "Revenue"
+    #region "LineChart Entity"
+    public class Projected_Goal
+    {
+        public string Name { get; set; } /// this properties used in conversion page.
+        public string year { get; set; }
+        public string Actual_Projected { get; set; }
+        public string Goal { get; set; }
+        public string Percentage { get; set; }
+        public bool IsnegativePercentage { get; set; }
+    }
+    public class lineChartData
+    {
+        public List<string> categories { get; set; }
+        public List<series> series { get; set; }
+    }
+    public class series
+    {
+        public string name { get; set; }
+        public List<double> data { get; set; }
+        public marker marker { get; set; }
+    }
+    public class marker
+    {
+        public string symbol { get; set; }
+    }
+    public class ReportOverviewModel
+    { 
+        public RevenueOverviewModel revenueOverviewModel { get; set; }
+        public ConversionOverviewModel conversionOverviewModel { get; set; }
+    }
+    public class RevenueOverviewModel
+    {
+        public lineChartData linechartdata { get; set; }
+        public Projected_Goal projected_goal { get; set; }
+        public List<sparkLineCharts> SparkLineChartsData { get; set; }
+    }
+    #endregion
+
+    #region "Sparkline chart Entity"
+    public class sparkLineCharts
+    {
+        public string sparklinechartId { get; set; }
+        public string ChartHeader { get; set; }
+        public string CustomfieldDDLId { get; set; }
+        public List<sparklineData> sparklinechartdata { get; set; }
+        //public bool IsRevenue { get; set; }
+        public bool IsOddSequence { get; set; }
+        public Helpers.Enums.TOPRevenueType TOPRevenueType { get; set; }
+        public List<string> RevenueTypeColumns { get; set; }
+        //public TOPRevenueTypeColumns RevenueTypeColumns { get; set; }
+    }
+    public class sparklineData
+    {
+        public string Name { get; set; }
+        public string RevenueTypeValue { get; set; }
+        public bool IsPositive { get; set; }
+        public string Trend { get; set; }
+        public bool IsTotal { get; set; }
+        public bool IsPercentage { get; set; }
+        public bool Is_Pos_Neg_Status { get; set; }
+        public double Value { get; set; }
+    }
+    #endregion  
+    
+    #endregion
+
+    #region"Conversion"
+    public class ConversionOverviewModel
+    {
+        public List<conversion_Projected_Goal_LineChart> Projected_LineChartList { get; set; }
+    }
+    public class conversion_Projected_Goal_LineChart
+    {
+        public string StageCode { get; set; }
+        public lineChartData linechartdata { get; set; }
+        public Projected_Goal projected_goal { get; set; }
+        public Conversion_Benchmark_Model Stage_Benchmark { get; set; }
+    }
+    public class Conversion_Benchmark_Model
+    {
+        public string stagename { get; set; }
+        public string stageVolume { get; set; }
+        public string Banchmark { get; set; }
+        public string PercentageDifference { get; set; }
+     }
+    #endregion
+
+    public class ActualDataTable
+    {
+        public int PlanTacticId { get; set; }
+        public string Period { get; set; }
+        public string StageTitle { get; set; }
+        public double ActualValue { get; set; }
+    }
+
+    public class ProjectedTrendModel
+    {
+        public int PlanTacticId { get; set; }
+        public int NoTacticMonths { get; set; }
+        public double Value { get; set; }
+        public double TrendValue { get; set; }
+        public string Month { get; set; }
+    }
+
+    public class ActualTrendModel
+    {
+        public int PlanTacticId { get; set; }
+        public double TrendValue { get; set; }
+        public string Month { get; set; }
+    }
+
+    public class TacticMonthInterval
+    {
+        public int PlanTacticId { get; set; }
+        public string Month { get; set; }
+    }
+
+    public class TacticwiseOverviewModel
+    {
+        public int PlanTacticId { get; set; }
+        public double Actual_ProjectedValue { get; set; }
+        public double Goal { get; set; }
+        public double Percentage { get; set; }
+    }
+
+    public class ProjectedTacticModel
+    {
+        public int TacticId { get; set; }
+        public int StartMonth { get; set; }
+        public int EndMonth { get; set; }
+        public double Value { get; set; }
+    }
+
+    #endregion
 }

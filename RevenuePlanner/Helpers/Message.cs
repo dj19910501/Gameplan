@@ -2366,6 +2366,21 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _MarketingDealDescription = value; }
         }
         ////End - Added by Mitesh Vaishnav for PL ticket #1215
+
+        ////Start - Added by Viral Kadiya for PL ticket #1220
+        private string _RevenueSparklineChartHeader;
+        public string RevenueSparklineChartHeader
+        {
+            get
+            {
+                return _RevenueSparklineChartHeader;
+            }
+            set
+            {
+                _RevenueSparklineChartHeader = value;
+            }
+        }
+        ////End - Added by Viral Kadiya for PL ticket #1220
         #endregion
 
         #region  Functions
@@ -3111,6 +3126,11 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _MarketingDealDescription = strMsgValue;
                                             break;
                                         ////End - Added by Mitesh Vaishnav for PL ticket #1215
+                                        ////Start - Added by Viral Kadiya for PL ticket #1220
+                                        case "RevenueSparklineChartHeader":
+                                            _RevenueSparklineChartHeader = strMsgValue;
+                                            break;
+                                        ////End - Added by Viral Kadiya for PL ticket #1220
                                     }
                                 }
                                 i = i + 1;

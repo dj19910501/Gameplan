@@ -908,4 +908,10 @@
 		<value>I use marketing to generate leads annually from my website, blogs and social media efforts with an average deal size of #MarketingDealSize.</value>
 	</Field>
 	<!--End Added by Mitesh Vaishnav for PL ticket #1215-->
+  <!--start Added by Viral Kadiya for PL ticket #1220-->
+  <Field>
+    <Name>RevenueSparklineChartHeader</Name>
+    <value>TOP {0} by</value>
+  </Field>
+  <!--start Added by Viral Kadiya for PL ticket #1220-->
 </Messages>

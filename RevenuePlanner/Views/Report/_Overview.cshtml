@@ -1,0 +1,553 @@
+﻿@model RevenuePlanner.Models.ReportOverviewModel
+@using Newtonsoft.Json;
+@{
+    var linechartdata = JsonConvert.SerializeObject(Model.revenueOverviewModel.linechartdata);
+    var revenue_Projected_Goal = Model.revenueOverviewModel.projected_goal;
+    var SparkLineChartData = Model.revenueOverviewModel.SparkLineChartsData;
+    var ConversionOverviewModel = Model.conversionOverviewModel;
+}
+
+<style type="text/css">
+#table-sparkline {
+	margin: 0 auto;
+    border-collapse: collapse;
+}
+th {
+    font-weight: bold;
+    text-align: left;
+}
+td,tbody th {
+    padding: 5px;
+    border-top: 1px solid silver;
+    height: 20px;
+}
+
+
+.highcharts-tooltip>span {
+	background: white;
+	border: 1px solid silver;
+	border-radius: 3px;
+	box-shadow: 1px 1px 2px #888;
+	padding: 8px;
+}
+.dvsparkline div {
+    float:right;
+}
+    .lastraw {
+        font-size: 15px;
+        font-weight: bold;
+        line-height: 25px;
+        text-align: left;
+    }
+    .nobold {
+        font-weight:inherit !important;
+    }
+    .redLabel {
+    color:#ff0000 !important;
+    }
+    .greenLabel {
+    color:#009E26 !important;
+    }
+</style>
+
+<div class="report-index-wrapper">
+    <div class="revenue-wrapper">
+        <div class="report-revenue">
+            <div class="report-btn-group">
+                <p class="revanue-p">Revenue</p>
+                <button name="btnRevenueDetails" class="btn btn-blue text-shadow-blue source-sans-proregular" id="btnRevenueDetails" onclick="onRevenueDetailsClick();">Details</button>
+                <a name="" class="btn source-sans-proregular report-grey-btn" id=""><span>
+                    <img src="~/Content/images/export.png" /></span>Export</a>
+                <button  class="btn btn-blue  text-shadow-blue source-sans-proregular report-blue-btn " ><span>
+                    <img src="~/Content/images/round-plus.png" /></span>Add Widget</button>
+            </div>
+            <div class="revenue-graph">
+                <div class="row">
+                    <div class="revenue-graph-info noborder">
+                        <p class="yearcounter" id="lblRevProjectedYear">@revenue_Projected_Goal.year</p>
+                        <p class="smalltext" id="lblActual_Projected">Projected Vs Goal</p>
+                        <p class="amountcounter" id="lblRevActual_Projected">@revenue_Projected_Goal.Actual_Projected</p>
+                        <p class="smallamountcounter" id="lblRevGoal">@revenue_Projected_Goal.Goal</p>
+                        <p class="statustext" id="lblRevPercentage">@revenue_Projected_Goal.Percentage</p>
+                    </div>
+                    <div class="r-graph">
+                        <div id="RevenueLineChart">
+                        </div>
+                    </div>
+                </div>
+                <div class="row noborder">
+                    <div class="reveanue-table" id="RevenueSparklinecharts">
+                        @Html.Partial("_SparkLineChart",SparkLineChartData)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="revenue-wrapper">
+        <div class="report-revenue">
+           <div id="conversionPartial">
+               @Html.Partial("_conversionOverview",ConversionOverviewModel)
+           </div>
+        </div>
+    </div>
+<div class="revenue-wrapper">
+    <div class="report-revenue">
+        <div class="report-btn-group">
+            <p class="revanue-p">Budgeting</p>
+            <button name="" class="btn btn-blue  text-shadow-blue source-sans-proregular" id="">Details</button>
+            <a name="" class="btn  source-sans-proregular report-grey-btn" id=""><span>
+                <img src="~/Content/images/export.png" /></span>Export</a>
+            <button name="" class="btn btn-blue  text-shadow-blue source-sans-proregular report-blue-btn " id=""><span>
+                <img src="~/Content/images/round-plus.png" /></span>Add Widget</button>
+        </div>
+        <div class="revenue-graph">
+            <div class="row">
+                <div class="budgeting-graph-info">
+                    <a href="" class="viewfullscreen">
+                        <img src="~/Content/images/view-fullscreen.png" /></a>
+                    <p class="budgeting-titel" id="">Allocated VS Budgeted</p>
+
+
+                    <div class="budgeting-linechart">
+                        <img src="~/Content/images/budgeting-linechart.png" />
+                    </div>
+                    <p class="chartinfo" id="">$1.69M / $2.00M</p>
+
+                </div>
+                <div class="budgeting-graph-info">
+                    <a href="" class="viewfullscreen">
+                        <img src="~/Content/images/view-fullscreen.png" /></a>
+                    <p class="budgeting-titel" id="">Planned Cost vs Allocated</p>
+
+
+                    <div class="budgeting-linechart">
+                        <img src="~/Content/images/budgeting-linechart.png" />
+                    </div>
+                    <p class="chartinfo" id="">$1.69M / $2.00M</p>
+
+                </div>
+                <div class="budgeting-graph-info noborder-right">
+                    <a href="" class="viewfullscreen">
+                        <img src="~/Content/images/view-fullscreen.png" /></a>
+                    <p class="budgeting-titel" id="">Actuals Vs Allocated</p>
+
+
+                    <div class="budgeting-linechart">
+                        <img src="~/Content/images/budgeting-linechart.png" />
+                    </div>
+                    <p class="chartinfo" id="">$1.69M / $2.00M</p>
+                </div>
+            </div>
+            <div class="row noborder">
+                <div class="budget-linechart2">
+                    <img src="~/Content/images/budgeting-linechart2.png" /></div>
+                <div class="budgetchart-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Planned Cost</th>
+                                <th>Allocated</th>
+                                <th>Budgeted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="below">$48,000</td>
+                                <td>$10,000</td>
+                                <td>$45,000</td>
+                            </tr>
+                            <tr>
+                                <td>$25,000</td>
+                                <td>$30,000</td>
+                                <td>$40,000</td>
+                            </tr>
+                            <tr>
+                                <td class="below">$10,000</td>
+                                <td>$8,500</td>
+                                <td>$50,000</td>
+                            </tr>
+                            <tr>
+                                <td>$41,000</td>
+                                <td>$46,500</td>
+                                <td>$50,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid all-height" id="modalMainContainer">
+    <div class="row-fluid calc-height">
+        <div class="container-fluid">
+            <div class="row-fluid ">
+                <div class="span12">
+                    <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; position: fixed;">
+                        <div style="margin: 80px auto !important">
+                            <div id="divPartial">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divBackground" class="modal-backdrop fade in" style="display: none; z-index: 2502 !important;"></div>
+</div>
+
+
+<script type="text/javascript">
+    //$(document).ready(function () {
+        
+    //});
+    $(function () {
+        var strUrl = "@Url.Content("~/Report/GetRevenueLineChartData")";
+        var _sparklineurl = "@Url.Content("~/Report/GetRevenueSparkLineChartData")";
+
+        // Start:- Revenue_Projected_Goal Overview script 
+
+        var _actual_Projected = "@revenue_Projected_Goal.Actual_Projected";
+        var _goal = "@revenue_Projected_Goal.Goal";
+        var _percentage = "@revenue_Projected_Goal.Percentage";
+        var isnegativePercentage = "@revenue_Projected_Goal.IsnegativePercentage";
+
+        var _formtActualProjected = "0", _formtGoal = "0", _formtPercentage = "0";
+
+        if (_goal == null || _goal == 'undefined' || _goal == '')
+            _formtGoal = "0";
+        else
+            _formtGoal = FormatNumber(Math.abs(parseFloat(_goal)), false);
+
+        _formtGoal = "/" + _formtGoal;
+        if (_actual_Projected == null || _actual_Projected == 'undefined' || _actual_Projected == '')
+            _formtActualProjected = "0";
+        else
+            _formtActualProjected = FormatNumber(Math.abs(parseFloat(_actual_Projected)), false);
+
+        if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
+            _formtPercentage = "0";
+            $("#lblRevPercentage").removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (isnegativePercentage.toLowerCase() == 'true') {
+                _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true) + " " + "@RevenuePlanner.Helpers.Common.BelowPlan.ToString()";
+                $("#lblRevPercentage").removeClass("greenLabel").addClass("redLabel");
+            }
+            else {
+                _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true) + " " + "@RevenuePlanner.Helpers.Common.AbovePlan.ToString()";
+                $("#lblRevPercentage").removeClass("redLabel").addClass("greenLabel");
+            }
+        }
+
+        $("#lblRevActual_Projected").html(_formtActualProjected);
+        $("#lblRevGoal").html(_formtGoal);
+        $("#lblRevPercentage").html(_formtPercentage);
+        // End:- Revenue_Projected_Goal Overview script 
+
+        // Start:- Revenue_LineChart script 
+        var _lineardata = "@linechartdata";
+        var chartdata = (_lineardata.toString().replace(/&quot;/g, '"'));
+        chartdata = JSON.parse(chartdata);
+        //alert(chartdata.toString());
+        //$.each(chartdata.series, function (i, val) {
+        //    $.each(val, function (key, _val) {
+        //        alert("key:" + key + "Value:" + _val);
+        //    });
+        //});
+        var linechartDivId = "#RevenueLineChart";
+        BindRevenueLineChart(chartdata.categories, 3.7, chartdata.series, linechartDivId);
+
+        @*$.ajax({
+            type: "POST",
+            async: false,
+            url: strUrl,
+            dataType: "json",
+            data: {},
+            success: function (data) {
+                if (data.isSuccess != null && data.isSuccess != 'undefined' && !data.isSuccess) {
+                    alert('InValidData!');
+                }
+                else {
+                    //var chartdata = data;
+                    var _chardata = "@Html.Raw(Json.Encode(linechartdata))";
+                    var chardata = JSON.parse(_chardata);
+                    $.each(chartdata.series, function (i, val) {
+                        $.each(val, function (key, _val) {
+                            alert("key:" + key + "Value:" + _val);
+                        });
+                    });
+                    BindRevenueLineChart(chartdata.categories, 8.5, chartdata.series);
+                }
+            }
+        });*@
+        // End:- Revenue_LineChart script 
+
+        // Start:- Revenue_SparkLineChart script 
+        //$("#RevenueSparklinecharts").load(_sparklineurl);
+        //BindSparkLineChart();
+        //doChunk();
+        BindSparkLineChart();
+        doChunk();
+        $('.revenue-summary-custom').find('select').each(function () {
+            //if ($(this).attr('id') != ddlChildRevenueSummeryId && $(this).attr('id') != ddlChildRevenueToPlanId) {
+            $(this).multiselect({
+                multiple: false,
+                noneSelectedText: "Please Select",
+                selectedList: 1,
+                CustomCampaignName: "@RevenuePlanner.Helpers.Common.CampaignCustomTitle",
+                CustomProgramName: "@RevenuePlanner.Helpers.Common.ProgramCustomTitle",
+                CustomTacticName: "@RevenuePlanner.Helpers.Common.TacticCustomTitle"
+            }).multiselectfilter({
+                CustomCampaignName: "@RevenuePlanner.Helpers.Common.CampaignCustomTitle",
+                CustomProgramName: "@RevenuePlanner.Helpers.Common.ProgramCustomTitle",
+                CustomTacticName: "@RevenuePlanner.Helpers.Common.TacticCustomTitle"
+            });
+            //}
+        });
+        // End:- Revenue_SparkLineChart script 
+    });
+
+    function onRevenueDetailsClick() {
+        $('#liRevenue').click();
+    }
+
+    // Start:- Revenue_LineChart script 
+    function BindRevenueLineChart(_categories, _plotlineVal, _series,_linechartDivId) {
+        var options = {
+            chart: {
+                spacingTop: 50
+            },
+            colors: ['#B04499', '#999999'],
+            legend: {
+                align: 'top',
+                verticalAlign: 'top',
+                layout: 'horizontal',
+                x: 60,
+                y: -30
+            },
+            title: {
+                text: ''
+            },
+            xAxis: {
+                categories: _categories,
+                lineColor: 'black',
+                lineWidth: 2,
+                tickColor: 'black',
+                tickWidth: 2,
+                plotLines: [{
+                    color: 'black', // Color value
+                    dashStyle: 'longdash', // Style of the plot line. Default to solid
+                    value: _plotlineVal, // Value of where the line will appear
+                    width: 2, // Width of the line    
+                    label: {
+                        text: 'Today',
+                        align: 'middle',
+                        verticalAlign: 'top',
+                        rotation: 0,
+                        x: -15,
+                        y: -10
+                    }
+                }],
+                tickPosition: 'inside',
+                labels: {
+                    color: '#2d2d2d',
+                    style: {
+                        "fontWeight":"bold"
+                    }
+                }
+            },
+            yAxis: {
+                lineColor: 'black',
+                gridLineWidth: 0,
+                minorGridLineWidth: 0,
+                lineWidth: 2,
+                tickPosition: 'inside',
+                tickLength: 5,
+                tickWidth: 2,
+                tickColor: 'black',
+                tickAmount: 5,
+                labels: {
+                    color: '#2d2d2d',
+                    style: {
+                        "fontWeight": "bold"
+                    }
+                },
+                title: {
+                    text:''
+                }
+            },
+            series: []
+        }
+        
+        var serLength = _series.length;
+        for (var i = 0; i < serLength ; i++) {
+            options.series.push(eval(_series[i]));
+        }
+        $(_linechartDivId).highcharts(options);
+    }
+    // End:- Revenue_LineChart script 
+
+    // Start:- Revenue_SparkLineChart script 
+
+    function BindSparkLineChart() {
+    /**
+     * Create a constructor for sparklines that takes some sensible defaults and merges in the individual
+     * chart options. This function is also available from the jQuery plugin as $(element).highcharts('SparkLine').
+     */
+        Highcharts.SparkLine = function (options, callback) {
+            var defaultOptions = {
+                chart: {
+                    renderTo: (options.chart && options.chart.renderTo) || this,
+                    backgroundColor: null,
+                    borderWidth: 0,
+                    type: 'area',
+                    margin: [2, 0, 2, 0],
+                    width: 120,
+                    height: 20,
+                    style: {
+                        overflow: 'visible'
+                    },
+                    skipClone: true
+                },
+                title: {
+                    text: ''
+                },
+                credits: {
+                    enabled: false
+                },
+                //colors: ['#c7e9f4'],
+                xAxis: {
+                    labels: {
+                        enabled: false
+                    },
+                    title: {
+                        text: null
+                    },
+                    startOnTick: false,
+                    endOnTick: false,
+                    tickPositions: []
+                },
+                yAxis: {
+                    endOnTick: false,
+                    startOnTick: false,
+                    labels: {
+                        enabled: false
+                    },
+                    title: {
+                        text: null
+                    },
+                    tickPositions: [0]
+                },
+                legend: {
+                    enabled: false
+                },
+                tooltip: {
+                    backgroundColor: null,
+                    borderWidth: 0,
+                    shadow: false,
+                    useHTML: true,
+                    hideDelay: 0,
+                    shared: true,
+                    padding: 0,
+                    positioner: function (w, h, point) {
+                        return { x: point.plotX - w / 2, y: point.plotY - h };
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        animation: false,
+                        lineWidth: 1,
+                        shadow: false,
+                        states: {
+                            hover: {
+                                lineWidth: 1
+                            }
+                        },
+                        marker: {
+                            radius: 1,
+                            states: {
+                                hover: {
+                                    radius: 2
+                                }
+                            }
+                        }, color: '#c7e9f4',
+                        borderWidth: 0
+                        //,fillOpacity: 0.25
+                    },
+                    column: {
+                        negativeColor: '#910000',
+                        borderColor: 'silver'
+                    }
+                }
+            };
+            options = Highcharts.merge(defaultOptions, options);
+
+            return new Highcharts.Chart(options, callback);
+        };
+    }
+
+    // Creating 153 sparkline charts is quite fast in modern browsers, but IE8 and mobile
+    // can take some seconds, so we split the input into chunks and apply them in timeouts
+    // in order avoid locking up the browser process and allow interaction.
+    function doChunk() {
+        var start = +new Date(),
+            $tds = $("td[data-sparkline]"),
+            fullLen = $tds.length,
+            n = 0;
+        var time = +new Date(),
+            i,
+            len = $tds.length,
+            $td,
+            stringdata,
+            arr,
+            data,
+            chart;
+
+        for (i = 0; i < len; i += 1) {
+            $td = $($tds[i]);
+            stringdata = $td.data('sparkline');
+            arr = stringdata.split('; ');
+            data = $.map(arr[0].split(', '), parseFloat);
+            chart = {};
+
+            if (arr[1]) {
+                chart.type = arr[1];
+            }
+            $td.highcharts('SparkLine', {
+                series: [{
+                    data: data,
+                    pointStart: 1
+                }],
+                tooltip: {
+                    headerFormat: '<span style="font-size: 10px">' + $td.parent().find('th').html() + ', Q{point.x}:</span><br/>',
+                    pointFormat: '<b>{point.y}.000</b> USD'
+                },
+                chart: chart
+            });
+
+            n += 1;
+
+            // If the process takes too much time, run a timeout to allow interaction with the browser
+            if (new Date() - time > 500) {
+                $tds.splice(0, i + 1);
+                setTimeout(doChunk, 0);
+                break;
+            }
+
+            // Print a feedback on the performance
+            //if (n === fullLen) {
+            //    $('#result').html('Generated ' + fullLen + ' sparklines in ' + (new Date() - start) + ' ms');
+            //}
+        }
+    }
+
+    // End:- Revenue_SparkLineChart script 
+
+    // Start:- Conversion_StackedBarChart script 
+    function BindConversionStackedBarChart() {
+
+    }
+    // End:- Conversion_StackedBarChart script 
+</script>
