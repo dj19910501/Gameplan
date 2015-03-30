@@ -1806,11 +1806,14 @@ namespace RevenuePlanner.Helpers
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
             string parentClassName = "campaign";
+            bool isProgram = false;
+            bool isOtherLineItem = false;
             if (ActivityType == Helpers.ActivityType.ActivityProgram)
             {
                 mainClass = "sub program-lvl";
                 innerClass = "programLevel";
                 parentClassName = "campaign";
+                isProgram = true;
             }
             else if (ActivityType == Helpers.ActivityType.ActivityTactic)
             {
@@ -1834,6 +1837,10 @@ namespace RevenuePlanner.Helpers
                 div.Attributes.Add("data-parent", parentClassName + ParentActivityId.ToString());
                 foreach (BudgetModel p in lst)
                 {
+                    if (p.ActivityType == Helpers.ActivityType.ActivityLineItem && p.ActivityName == Common.DefaultLineItemTitle)
+                    {
+                        isOtherLineItem = true;
+                    }
                     TagBuilder span = new TagBuilder("span");
                     TagBuilder divProgram = new TagBuilder("div");
                     divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
@@ -1860,7 +1867,8 @@ namespace RevenuePlanner.Helpers
                             }
                             else
                             {
-                                divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
+                                divProgram.InnerHtml +=p.isEditable && !isOtherLineItem && !isProgram ? ClueTipAnchorTag(string.Empty, p.Allocated.ToString(formatThousand)): p.Allocated.ToString(formatThousand) ;
+                                divProgram.AddCssClass("clueallocatedCost");
                             }
                         }
                         else

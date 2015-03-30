@@ -492,6 +492,27 @@
                     var entityTitle = $('.column1').find('#' + entityId).text();
                     var entityMonth = $link.attr('mnth').toString();
                     var unb = $('.column3').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+
+                    // Check it call from allocated -- cluePlannedCost
+                    if ($link.parent().hasClass('clueallocatedCost')) {
+                        var splitedEntityId = entityId.split('_');
+                        if ($link.parent().hasClass('tacticLevel')) {
+                            var tcy = $link.text().replace(/,/g, "");
+                            var $loadmeHtml = '<label class="label-toooltip" >Tactic Cost (y):  </label>' +
+                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tcy.toString(), false, false) + '" ov="' + tcy + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="Tactic" mnth="' + entityMonth + '" tab="Planned" />';
+                            $localContent.find('.tooltip-field').html($loadmeHtml);
+                            $localContent.find('h3').text(entityTitle);
+                        }
+                        else if ($link.parent().hasClass('lineitemLevel')) {
+                            var lcy = $link.text().replace(/,/g, "");
+                            var $loadmeHtml = '<label class="label-toooltip" >Lineitem Cost (y):  </label>' +
+                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(lcy.toString(), false, false) + '" ov="' + lcy + '" />';
+                            $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="LineItem" mnth="' + entityMonth + '" tab="Planned" />';
+                            $localContent.find('.tooltip-field').html($loadmeHtml);
+                            $localContent.find('h3').text(entityTitle);
+                        }
+                    }
                     
                     // Check it call from allocated -- clueallocated
                     if ($link.parent().hasClass('clueallocatedbudget')) {
