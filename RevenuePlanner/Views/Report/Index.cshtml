@@ -360,7 +360,9 @@
    
     function GetOwnerListForFilter(Planids, ifexists) {
         $('#ulSelectedOwner').html('');
-        //filters.OwnerIds = [];
+        if (!ifexists) {
+            filters.OwnerIds = [];
+        }
         $.ajax({
             beforeSend: function (x) {
                 myApp.hidePleaseWait();
@@ -454,7 +456,9 @@
     function GetTacticTypelist(Planids, ifexists) {
      
         $('#ulTacticType').html('');
-       // filters.TacticTypeids = [];
+        if (!ifexists) {
+            filters.TacticTypeids = [];
+        }
         $.ajax({
             beforeSend: function (x) {
                 myApp.hidePleaseWait();
@@ -778,10 +782,10 @@
         $('#conversionHeader').css('display', 'none');
         $('#revenueHeader').css('display', 'none');
         $("#BtnShareReport").show();
-        @*var url = '@Url.Content("~/Report/GetSummaryData/")';
-        $('#divMainReportPart').load(url , function () {*@
-        var url = '@Url.Content("~/Report/GetOverviewData/")';
-        $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain, function () {
+        var url = '@Url.Content("~/Report/GetSummaryData/")';
+        $('#divMainReportPart').load(url , function () {
+       @* var url = '@Url.Content("~/Report/GetOverviewData/")';
+        $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain, function () {*@
             isAllowClick = true;
             myApp.hidePleaseWait();
         });
