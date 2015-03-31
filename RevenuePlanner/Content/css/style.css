@@ -12229,7 +12229,7 @@ max-width:20% !important;
    .revenue-graph-info .statustext { font-size:24px;font-family: source_sans_proregular; font-weight:normal;text-align:center; margin:20px 0px; color:#FF0000;}
 
    /* for r graph */
-   .r-graph { margin-bottom: 20px; padding: 20px 20px 20px 145px; width:53%; float:left; vertical-align:middle; border-left:1px #e8e7e7 solid;}
+   .r-graph { margin-bottom: 20px; padding: 20px 20px 10px 145px; width:53%; float:left; vertical-align:middle; border-left:1px #e8e7e7 solid;}
 
    /*for revenue table*/
   .reveanue-table {width: 100%;}

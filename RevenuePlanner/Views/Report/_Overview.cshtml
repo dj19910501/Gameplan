@@ -48,6 +48,9 @@ td,tbody th {
     .greenLabel {
     color:#009E26 !important;
     }
+    .hideReport {
+    display:none !important;
+    }
 </style>
 
 <div class="report-index-wrapper">
@@ -56,9 +59,9 @@ td,tbody th {
             <div class="report-btn-group">
                 <p class="revanue-p">Revenue</p>
                 <button name="btnRevenueDetails" class="btn btn-blue text-shadow-blue source-sans-proregular" id="btnRevenueDetails" onclick="onRevenueDetailsClick();">Details</button>
-                <a name="" class="btn source-sans-proregular report-grey-btn" id=""><span>
+                <a name="" class="btn source-sans-proregular report-grey-btn hideReport" id=""><span>
                     <img src="~/Content/images/export.png" /></span>Export</a>
-                <button  class="btn btn-blue  text-shadow-blue source-sans-proregular report-blue-btn " ><span>
+                <button  class="btn btn-blue  text-shadow-blue source-sans-proregular report-blue-btn hideReport" ><span>
                     <img src="~/Content/images/round-plus.png" /></span>Add Widget</button>
             </div>
             <div class="revenue-graph">
@@ -199,7 +202,7 @@ td,tbody th {
 
 
 <script type="text/javascript">
-    var _defautlChartHeight = 400, _defautlChartWidth = 600;
+    var _defautlChartHeight = 275, _defautlChartWidth = 600;
     $(function () {
         var strUrl = "@Url.Content("~/Report/GetRevenueLineChartData")";
         var _sparklineurl = "@Url.Content("~/Report/GetRevenueSparkLineChartData")";
@@ -223,8 +226,7 @@ td,tbody th {
             _formtActualProjected = "0";
         else
             _formtActualProjected = FormatNumber(Math.abs(parseFloat(_actual_Projected)), false);
-
-        if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
+        if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN' || _percentage == '-NaN') {
             _formtPercentage = "0";
             $("#lblRevPercentage").removeClass("greenLabel").removeClass("redLabel");
         }
@@ -256,7 +258,7 @@ td,tbody th {
         //});
         var linechartDivId = "#RevenueLineChart";
         
-        BindLineChart(chartdata.categories, 3.7, chartdata.series, linechartDivId, _defautlChartWidth, _defautlChartHeight);
+        BindLineChart(chartdata.categories, chartdata.todayValue, chartdata.isDisplay, chartdata.series, linechartDivId, _defautlChartWidth, _defautlChartHeight);
 
         @*$.ajax({
             type: "POST",
@@ -313,7 +315,7 @@ td,tbody th {
     }
 
     // Start:- Revenue_LineChart script 
-    function BindLineChart(_categories, _plotlineVal, _series, _linechartDivId, _chartwidth, _chartHeight) {
+    function BindLineChart(_categories, _plotlineVal,_isshowPlotLine, _series, _linechartDivId, _chartwidth, _chartHeight) {
         var options = {
             chart: {
                 height: _chartHeight,
@@ -337,7 +339,7 @@ td,tbody th {
                 lineWidth: 2,
                 tickColor: 'black',
                 tickWidth: 2,
-                plotLines: [{
+                plotLines: _isshowPlotLine.toLowerCase() == "true" ? [{
                     color: 'black', // Color value
                     dashStyle: 'longdash', // Style of the plot line. Default to solid
                     value: _plotlineVal, // Value of where the line will appear
@@ -350,7 +352,7 @@ td,tbody th {
                         x: -15,
                         y: -10
                     }
-                }],
+                }] : [],
                 tickPosition: 'inside',
                 labels: {
                     color: '#2d2d2d',
@@ -386,6 +388,14 @@ td,tbody th {
         for (var i = 0; i < serLength ; i++) {
             options.series.push(eval(_series[i]));
         }
+        //alert(_isshowPlotLine);
+        //if (_isshowPlotLine.toLowerCase() == "false")
+        //{
+        //    options.plotLines.length = 0;
+        //}
+       // if (_isshowPlotLine.toLowerCase() == "false"){
+       //     options.plotLines.push('');
+       //}
         $(_linechartDivId).highcharts(options);
     }
     // End:- Revenue_LineChart script 

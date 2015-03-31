@@ -63,7 +63,7 @@
                     </select>*@
                     @Html.DropDownList(_objmodel.CustomfieldDDLId, new SelectList((System.Collections.IEnumerable)ViewBag.SummaryCustomFieldList, "Value", "Text"), new { @class="revCustomFieldDDL", @ChartDivId ="dv"+_objmodel.sparklinechartId })
                 </div>
-                <span id="btnWeight" name="btnWeight" class="viewfullscreen">
+                <span id="btnWeight" name="btnWeight" class="viewfullscreen hideReport">
                     <img src="~/Content/images/view-fullscreen.png" /></span>
             </div>
             <div id="dv@_objmodel.sparklinechartId">

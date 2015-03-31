@@ -42,9 +42,9 @@
 <div class="report-btn-group">
     <p class="revanue-p">Conversion</p>
     <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
-    <a name="" class="btn  source-sans-proregular report-grey-btn" id=""><span>
+    <a name="" class="btn  source-sans-proregular report-grey-btn hideReport" id=""><span>
         <img src="~/Content/images/export.png" /></span>Export</a>
-    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn " id="">
+    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">
         <span>
             <img src="~/Content/images/round-plus.png" /></span>Add Widget</button>
 </div>
@@ -52,7 +52,7 @@
     <div class="row">
         <!--for ticket # 1221 start Change by tirthak-->
         <div class="revenue-graph-info">
-            <a href="" class="viewfullscreen">
+            <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
             <p class="yearcounter" id="">Volume</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
@@ -86,27 +86,25 @@
         </div>
         <!--for ticket # 1221 start Change by tirthak-->
         <div class="revenue-graph-info">
-            <a href="" class="viewfullscreen">
+            <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
             <p class="yearcounter" id="">@mqlBenchmark.stagename</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
-            <p class="amountcounter" id="">@mqlBenchmark.stageVolume</p>
-            <p class="smallamountcounter" id="">@mqlBenchmark.Benchmark</p>
-            <p class="statustext above" id="">@mqlBenchmark.PercentageDifference</p>
-
+            <p class="amountcounter benchmarkVol" id="mqlBenchmarkVol" orig-val="@mqlBenchmark.stageVolume">@mqlBenchmark.stageVolume</p>
+            <p class="smallamountcounter benchmarkVol benchmark" id="mqlBenchmark" orig-val="@mqlBenchmark.Benchmark">@mqlBenchmark.Benchmark</p>
+            @*<p class="statustext above" id="">@mqlBenchmark.PercentageDifference</p>*@
             <div class="coversionline-chart2">
                 <div id="MQLLineChart"></div>
             </div>
         </div>
         <div class="revenue-graph-info noborder">
-            <a href="" class="viewfullscreen">
+            <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
             <p class="yearcounter" id="">@cwBenchmark.stagename</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
-            <p class="amountcounter" id="">@cwBenchmark.stageVolume</p>
-            <p class="smallamountcounter" id="">@cwBenchmark.Benchmark</p>
-            <p class="statustext " id="">@cwBenchmark.PercentageDifference</p>
-
+            <p class="amountcounter benchmarkVol" id="cwBenchmarkVol" orig-val="@cwBenchmark.stageVolume">@cwBenchmark.stageVolume</p>
+            <p class="smallamountcounter benchmarkVol benchmark" id="cwBenchmark" orig-val="@cwBenchmark.Benchmark">@cwBenchmark.Benchmark</p>
+            @*<p class="statustext " id="">@cwBenchmark.PercentageDifference</p>*@
             <div class="coversionline-chart2">
                 <div id="CWLineChart"></div>
             </div>
@@ -284,9 +282,25 @@
         //        alert("key:" + key + "Value:" + _val);
         //    });
         //});
+        var _TypeCol = $(".benchmarkVol");
+        $.each(_TypeCol, function (key, _cntrl) {
+            //alert("Key: " + key + "Control: " + _cntrl);
+            var _cntrlId = $(_cntrl).attr('id');
+            //alert(_cntrlId);
+            var text = $("#"+_cntrlId).attr('orig-val');
+            //alert(text);
+            if (text != null && text != 'undefined' && text != 'NaN') {
+                $("#" + _cntrlId).html(FormatNumber(Math.abs(parseFloat(text)), true));
+            }
+        });
+
+
+
         var _conversionlinechartHeight = 250, _conversionlinechartWidth = 340;
-        BindLineChart(mqlchartdata.categories, 3.7, mqlchartdata.series, mqlLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
-        BindLineChart(cwchartdata.categories, 3.7, mqlchartdata.series, cwLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
+        BindLineChart(mqlchartdata.categories, mqlchartdata.todayValue, mqlchartdata.isDisplay, mqlchartdata.series, mqlLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
+        BindLineChart(cwchartdata.categories, cwchartdata.todayValue, cwchartdata.isDisplay, mqlchartdata.series, cwLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
+
+        
     });
 
     function FormattingProjvsGoal(act_proj, goal, percentage, isnegative, _stagecode) {

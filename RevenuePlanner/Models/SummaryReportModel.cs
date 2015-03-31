@@ -73,6 +73,8 @@ namespace RevenuePlanner.Models
     {
         public List<string> categories { get; set; }
         public List<series> series { get; set; }
+        public string isDisplay { get; set; }
+        public string todayValue { get; set; }
     }
     public class series
     {
@@ -142,8 +144,13 @@ namespace RevenuePlanner.Models
         public string stagename { get; set; }
         public string stageVolume { get; set; }
         public string Benchmark { get; set; }
-        public string PercentageDifference { get; set; }
+        //public string PercentageDifference { get; set; }
      }
+    public class Stage_Benchmark
+    {
+        public string StageCode { get; set;}
+        public double Benchmark { get; set; }
+    }
     #endregion
 
     public class ActualDataTable
