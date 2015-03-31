@@ -12221,11 +12221,11 @@ max-width:20% !important;
 
     /*@Tirthak 10-03-2014 for revenue info */
    .revenue-graph { width:100%; }
-   .revenue-graph .revenue-graph-info {margin:10px 0px 20px 0px; padding:25px;width:29%; float:left; border-right: 1px solid #e8e7e7;}
+   .revenue-graph .revenue-graph-info {margin:10px 0px 20px 0px; padding:25px;width:29%; float:left; border-right: 1px solid #e8e7e7; text-align:center;}
    .revenue-graph-info .yearcounter { margin-top:30px;font-family: source_sans_proregular; font-size:20px; text-transform:uppercase; font-weight:500;text-align:center;}
    .revenue-graph-info .smalltext { font-size:14px;font-family: source_sans_proregular; font-weight:normal;text-align:center; margin:-10px; color:#7c7c7c;}
-   .revenue-graph-info .smallamountcounter { font-size:14px;font-family: source_sans_proregular; font-weight:normal;text-align:center; color:#7c7c7c;}
-   .revenue-graph-info .amountcounter { margin-top:35px;font-family: source_sans_proregular; font-size:42px; text-transform:uppercase; font-weight:normal;text-align:center;}
+   .revenue-graph-info .smallamountcounter { font-size:14px;font-family: source_sans_proregular; font-weight:normal; margin: 0 auto; width:20%; display:block; color:#7c7c7c;}
+   .revenue-graph-info .amountcounter { margin-top:35px;font-family: source_sans_proregular; font-size:42px; text-transform:uppercase; font-weight:normal;display:inline-block; width:30%;}
    .revenue-graph-info .statustext { font-size:24px;font-family: source_sans_proregular; font-weight:normal;text-align:center; margin:20px 0px; color:#FF0000;}
 
    /* for r graph */

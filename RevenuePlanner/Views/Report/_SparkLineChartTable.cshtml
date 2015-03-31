@@ -3,6 +3,8 @@
 @{
     string classnobordr, classheader, classTotal;
     classnobordr = classheader = classTotal = string.Empty;
+    int _recordCount = Model != null && Model.sparklinechartdata != null ? Model.sparklinechartdata.Count : 0;
+    int _colCount = Model != null && Model.RevenueTypeColumns != null ? Model.RevenueTypeColumns.Count : 0;
     if (!Model.IsOddSequence)
     {
         classnobordr = "top-cost noborder";
@@ -26,32 +28,43 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (sparklineData item in Model.sparklinechartdata)
+            @if (_recordCount > 0)
             {
-                classTotal = "nobold";
-                if (item.IsTotal)
+                int indx =1;
+                string tdId = string.Empty;
+                foreach (sparklineData item in Model.sparklinechartdata)
                 {
-                    classTotal = "lastraw";
-                }
-                <tr>
-                    <th class="@classTotal">@item.Name</th>
-                    @if (item.Is_Pos_Neg_Status)
+                    tdId = "td_" + indx.ToString() + "_" + Model.sparklinechartId;
+                    classTotal = "nobold";
+                    if (item.IsTotal)
                     {
-                        if (item.IsPositive)
+                        classTotal = "lastraw";
+                    }
+                    <tr>
+                        <th class="@classTotal">@item.Name</th>
+                        @if (item.Is_Pos_Neg_Status)
                         {
-                        <td class="above">@item.RevenueTypeValue</td>
+                            if (item.IsPositive)
+                            {
+                            <td class="above">@item.RevenueTypeValue</td>
+                            }
+                            else
+                            {
+                            <td class="below">@item.RevenueTypeValue</td>
+                            }
                         }
                         else
                         {
-                        <td class="below">@item.RevenueTypeValue</td>
+                            <td class="revCurrencyVal @classTotal" orig-val="@item.RevenueTypeValue" id="@tdId">@item.RevenueTypeValue</td>
                         }
-                    }
-                    else
-                    {
-                        <td class="revCurrencyVal @classTotal" orig-val="@item.RevenueTypeValue">@item.RevenueTypeValue</td>
-                    }
-                    <td data-sparkline="@item.Trend" class="dvsparkline"></td>
-                </tr>
+                        <td data-sparkline="@item.Trend" class="dvsparkline"></td>
+                    </tr>
+                    indx++;
+                }
+            }
+            else
+            {
+                <tr> <td colspan="@_colCount" class="gray" style="text-align:left;"> No saved reports to display.</td></tr>
             }
         </tbody>
     </table>

@@ -218,14 +218,18 @@ td,tbody th {
 
         if (_goal == null || _goal == 'undefined' || _goal == '')
             _formtGoal = "0";
-        else
+        else {
             _formtGoal = FormatNumber(Math.abs(parseFloat(_goal)), false);
+            setBootstrapTooltip("#lblRevGoal", _goal, 5, true);
+        }
 
         _formtGoal = "/" + _formtGoal;
         if (_actual_Projected == null || _actual_Projected == 'undefined' || _actual_Projected == '')
             _formtActualProjected = "0";
-        else
+        else {
             _formtActualProjected = FormatNumber(Math.abs(parseFloat(_actual_Projected)), false);
+            setBootstrapTooltip("#lblRevActual_Projected", _actual_Projected, 5, true);
+        }
         if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN' || _percentage == '-NaN') {
             _formtPercentage = "0";
             $("#lblRevPercentage").removeClass("greenLabel").removeClass("redLabel");
@@ -260,35 +264,10 @@ td,tbody th {
         
         BindLineChart(chartdata.categories, chartdata.todayValue, chartdata.isDisplay, chartdata.series, linechartDivId, _defautlChartWidth, _defautlChartHeight);
 
-        @*$.ajax({
-            type: "POST",
-            async: false,
-            url: strUrl,
-            dataType: "json",
-            data: {},
-            success: function (data) {
-                if (data.isSuccess != null && data.isSuccess != 'undefined' && !data.isSuccess) {
-                    alert('InValidData!');
-                }
-                else {
-                    //var chartdata = data;
-                    var _chardata = "@Html.Raw(Json.Encode(linechartdata))";
-                    var chardata = JSON.parse(_chardata);
-                    $.each(chartdata.series, function (i, val) {
-                        $.each(val, function (key, _val) {
-                            alert("key:" + key + "Value:" + _val);
-                        });
-                    });
-                    BindRevenueLineChart(chartdata.categories, 8.5, chartdata.series);
-                }
-            }
-        });*@
         // End:- Revenue_LineChart script 
 
         // Start:- Revenue_SparkLineChart script 
-        //$("#RevenueSparklinecharts").load(_sparklineurl);
-        //BindSparkLineChart();
-        //doChunk();
+        
         BindSparkLineChart();
         doChunk();
         $('.revenue-summary-custom').find('select').each(function () {
@@ -314,91 +293,7 @@ td,tbody th {
         $('#liRevenue').click();
     }
 
-    // Start:- Revenue_LineChart script 
-    function BindLineChart(_categories, _plotlineVal,_isshowPlotLine, _series, _linechartDivId, _chartwidth, _chartHeight) {
-        var options = {
-            chart: {
-                height: _chartHeight,
-                width: _chartwidth,
-                spacingTop: 50
-            },
-            colors: ['#B04499', '#999999'],
-            legend: {
-                align: 'top',
-                verticalAlign: 'top',
-                layout: 'horizontal',
-                x: 60,
-                y: -30
-            },
-            title: {
-                text: ''
-            },
-            xAxis: {
-                categories: _categories,
-                lineColor: 'black',
-                lineWidth: 2,
-                tickColor: 'black',
-                tickWidth: 2,
-                plotLines: _isshowPlotLine.toLowerCase() == "true" ? [{
-                    color: 'black', // Color value
-                    dashStyle: 'longdash', // Style of the plot line. Default to solid
-                    value: _plotlineVal, // Value of where the line will appear
-                    width: 2, // Width of the line    
-                    label: {
-                        text: 'Today',
-                        align: 'middle',
-                        verticalAlign: 'top',
-                        rotation: 0,
-                        x: -15,
-                        y: -10
-                    }
-                }] : [],
-                tickPosition: 'inside',
-                labels: {
-                    color: '#2d2d2d',
-                    style: {
-                        "fontWeight":"bold"
-                    }
-                }
-            },
-            yAxis: {
-                lineColor: 'black',
-                gridLineWidth: 0,
-                minorGridLineWidth: 0,
-                lineWidth: 2,
-                tickPosition: 'inside',
-                tickLength: 5,
-                tickWidth: 2,
-                tickColor: 'black',
-                tickAmount: 5,
-                labels: {
-                    color: '#2d2d2d',
-                    style: {
-                        "fontWeight": "bold"
-                    }
-                },
-                title: {
-                    text:''
-                }
-            },
-            series: []
-        }
         
-        var serLength = _series.length;
-        for (var i = 0; i < serLength ; i++) {
-            options.series.push(eval(_series[i]));
-        }
-        //alert(_isshowPlotLine);
-        //if (_isshowPlotLine.toLowerCase() == "false")
-        //{
-        //    options.plotLines.length = 0;
-        //}
-       // if (_isshowPlotLine.toLowerCase() == "false"){
-       //     options.plotLines.push('');
-       //}
-        $(_linechartDivId).highcharts(options);
-    }
-    // End:- Revenue_LineChart script 
 
     // Start:- Revenue_SparkLineChart script 
 

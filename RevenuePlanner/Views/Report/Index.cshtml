@@ -1186,4 +1186,82 @@ $('#liConversion').click(function () {
                 });
             }
         }
+
+    // Start:- Linchart script 
+    function BindLineChart(_categories, _plotlineVal, _isshowPlotLine, _series, _linechartDivId, _chartwidth, _chartHeight) {
+        var options = {
+            chart: {
+                height: _chartHeight,
+                width: _chartwidth,
+                spacingTop: 50
+            },
+            colors: ['#B04499', '#999999'],
+            legend: {
+                align: 'top',
+                verticalAlign: 'top',
+                layout: 'horizontal',
+                x: 60,
+                y: -30
+            },
+            title: {
+                text: ''
+            },
+            xAxis: {
+                categories: _categories,
+                lineColor: 'black',
+                lineWidth: 2,
+                tickColor: 'black',
+                tickWidth: 2,
+                plotLines: _isshowPlotLine.toLowerCase() == "true" ? [{
+                    color: 'black', // Color value
+                    dashStyle: 'longdash', // Style of the plot line. Default to solid
+                    value: _plotlineVal, // Value of where the line will appear
+                    width: 2, // Width of the line    
+                    label: {
+                        text: 'Today',
+                        align: 'middle',
+                        verticalAlign: 'top',
+                        rotation: 0,
+                        x: -15,
+                        y: -10
+                    }
+                }] : [],
+                tickPosition: 'inside',
+                labels: {
+                    color: '#2d2d2d',
+                    style: {
+                        "fontWeight": "bold"
+                    }
+                }
+            },
+            yAxis: {
+                lineColor: 'black',
+                gridLineWidth: 0,
+                minorGridLineWidth: 0,
+                lineWidth: 2,
+                tickPosition: 'inside',
+                tickLength: 5,
+                tickWidth: 2,
+                tickColor: 'black',
+                tickAmount: 5,
+                labels: {
+                    color: '#2d2d2d',
+                    style: {
+                        "fontWeight": "bold"
+                    }
+                },
+                title: {
+                    text: ''
+                }
+            },
+            series: []
+        }
+
+        var serLength = _series.length;
+        for (var i = 0; i < serLength ; i++) {
+            options.series.push(eval(_series[i]));
+        }
+        $(_linechartDivId).highcharts(options);
+    }
+    // End:- Linchart script 
 </script>

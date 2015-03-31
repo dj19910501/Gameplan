@@ -28,10 +28,13 @@
             _revTypeColAttr = _divId + " " + _revTypeColAttr;
 
         _revTypeCol = $(_revTypeColAttr);
+        var _tdId = '',revTypeColText ='';
         $.each(_revTypeCol, function (key, _td) {
-            var revTypeColText = $(_td).attr('orig-val');
+            revTypeColText = $(_td).attr('orig-val');
+            _tdId = "#" + $(_td).attr('id');
             if (revTypeColText != null && revTypeColText != 'undefined' && revTypeColText != 'NaN') {
                 $(_td).html(FormatNumber(Math.abs(parseFloat($(_td).html())), false));
+                setBootstrapTooltip(_tdId, revTypeColText, 3, true);
             }
         });
     }
@@ -55,12 +58,6 @@
             <div class="@classheader">
                 <h5>@_objmodel.ChartHeader</h5>
                 <div class="revenue-summary-custom">
-                    @*<div class="selectText">Business Unit</div>
-                    <select>
-                        <option value="">Business Unit</option>
-                        <option value=""></option>
-                        <option value=""></option>
-                    </select>*@
                     @Html.DropDownList(_objmodel.CustomfieldDDLId, new SelectList((System.Collections.IEnumerable)ViewBag.SummaryCustomFieldList, "Value", "Text"), new { @class="revCustomFieldDDL", @ChartDivId ="dv"+_objmodel.sparklinechartId })
                 </div>
                 <span id="btnWeight" name="btnWeight" class="viewfullscreen hideReport">
@@ -69,46 +66,5 @@
             <div id="dv@_objmodel.sparklinechartId">
             @Html.Partial("_SparkLineChartTable", _objmodel)
             </div>
-            @*<div class="top-revenue-table">
-                <table id="@_objmodel.sparklinechartId">
-                    <thead>
-                        <tr>
-                            @foreach (string _col in _objmodel.RevenueTypeColumns)
-                            {
-                                <th>@_col</th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (sparklineData item in _objmodel.sparklinechartdata)
-                        {
-                            classTotal = "nobold";
-                            if (item.IsTotal)
-                            {
-                                classTotal = "lastraw";
-                            }
-                            <tr>
-                                <th class="@classTotal">@item.Name</th>
-                                @if (item.IsPercentage)
-                                {
-                                    if (item.IsPositive)
-                                    {
-                                        <td class="above">@item.RevenueTypeValue</td>
-                                    }
-                                    else
-                                    {
-                                        <td class="below">@item.RevenueTypeValue</td>
-                                    }
-                                }
-                                else
-                                {
-                                    <td>@item.RevenueTypeValue</td>
-                                }
-                                <td data-sparkline="@item.Trend" class="dvsparkline"></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>*@
         </div>
 }

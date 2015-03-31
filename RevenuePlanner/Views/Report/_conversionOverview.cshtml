@@ -276,30 +276,23 @@
         var cwchartdata = (cw_lineardata.toString().replace(/&quot;/g, '"'));
         cwchartdata = JSON.parse(cwchartdata);
         var cwLinechartDivId = "#CWLineChart";
-        //alert(chartdata.toString());
-        //$.each(chartdata.series, function (i, val) {
-        //    $.each(val, function (key, _val) {
-        //        alert("key:" + key + "Value:" + _val);
-        //    });
-        //});
         var _TypeCol = $(".benchmarkVol");
+        var _formatednumber = '';
         $.each(_TypeCol, function (key, _cntrl) {
-            //alert("Key: " + key + "Control: " + _cntrl);
             var _cntrlId = $(_cntrl).attr('id');
-            //alert(_cntrlId);
-            var text = $("#"+_cntrlId).attr('orig-val');
-            //alert(text);
+            var _Id = "#"+_cntrlId;
+            var text = $(_Id).attr('orig-val');
+            var _isBenchmark = $(_Id).hasClass("benchmark");
             if (text != null && text != 'undefined' && text != 'NaN') {
-                $("#" + _cntrlId).html(FormatNumber(Math.abs(parseFloat(text)), true));
+                _formatednumber = FormatNumber(Math.abs(parseFloat(text)), true);
+                if (_isBenchmark)
+                    _formatednumber = "Benchmark: " + _formatednumber;
+                $(_Id).html(_formatednumber);
             }
         });
-
-
-
         var _conversionlinechartHeight = 250, _conversionlinechartWidth = 340;
         BindLineChart(mqlchartdata.categories, mqlchartdata.todayValue, mqlchartdata.isDisplay, mqlchartdata.series, mqlLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
         BindLineChart(cwchartdata.categories, cwchartdata.todayValue, cwchartdata.isDisplay, mqlchartdata.series, cwLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
-
         
     });
 
