@@ -782,10 +782,10 @@
         $('#conversionHeader').css('display', 'none');
         $('#revenueHeader').css('display', 'none');
         $("#BtnShareReport").show();
-        var url = '@Url.Content("~/Report/GetSummaryData/")';
-        $('#divMainReportPart').load(url , function () {
-       @* var url = '@Url.Content("~/Report/GetOverviewData/")';
-        $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain, function () {*@
+       @* var url = '@Url.Content("~/Report/GetSummaryData/")';
+        $('#divMainReportPart').load(url , function () {*@
+        var url = '@Url.Content("~/Report/GetOverviewData/")';
+        $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain, function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
         });

@@ -6581,7 +6581,7 @@ namespace RevenuePlanner.Controllers
 
                 #region "Set Series, Categories & Marker data to Model"
                 series objSeries1 = new series();
-                objSeries1.name = "Actual/Projected";
+                objSeries1.name = "Projected";
                 objSeries1.data = serData1;
                 marker objMarker1 = new marker();
                 objMarker1.symbol = "square";
