@@ -506,7 +506,7 @@
                         }
                         else if ($link.parent().hasClass('lineitemLevel')) {
                             var lcy = $link.text().replace(/,/g, "");
-                            var $loadmeHtml = '<label class="label-toooltip" >Lineitem Cost (y):  </label>' +
+                            var $loadmeHtml = '<label class="label-toooltip" >Line Item Cost (y):  </label>' +
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(lcy.toString(), false, false) + '" ov="' + lcy + '" />';
                             $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="LineItem" mnth="' + entityMonth + '" tab="Planned" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
