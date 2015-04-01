@@ -6712,10 +6712,70 @@ namespace RevenuePlanner.Controllers
                 {
                     //LineChartData.isDisplay = "1";
                     int currentmonth = currentDate.Month;
-                    int currentmonthdays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
                     int currentdatedays = currentDate.Day;
-                    resultTodayValue = (currentmonth - 1) + (Convert.ToDouble(currentdatedays) / Convert.ToDouble(currentmonthdays));
-                   // LineChartData.TodayValue = todayindex.ToString();
+                    if (!IsQuarterly)
+                    {
+                        int currentmonthdays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+                        resultTodayValue = (currentmonth - 1) + (Convert.ToDouble(currentdatedays) / Convert.ToDouble(currentmonthdays));
+                    }
+                    // LineChartData.TodayValue = todayindex.ToString();
+                    else
+                    {
+                        int currentQuarter = ((currentMonth - 1) / 3);
+                        int totaldays = 0;
+                        int currentdays = 0;
+                        if (currentQuarter == 0)
+                        {
+                            for (int i = 1; i <= 3; i++)
+                            {
+                                totaldays += DateTime.DaysInMonth(currentDate.Year, i);
+                            }
+                            for (int i = 1; i < currentmonth; i++)
+                            {
+                                currentdays += DateTime.DaysInMonth(currentDate.Year, i);
+                            }
+                            currentdays += currentdatedays;
+                        }
+                        else if (currentQuarter == 1)
+                        {
+                            for (int i = 4; i <= 6; i++)
+                            {
+                                totaldays += DateTime.DaysInMonth(currentDate.Year, i);
+                            }
+                            for (int i = 4; i < currentmonth; i++)
+                            {
+                                currentdays += DateTime.DaysInMonth(currentDate.Year, i);
+                            }
+                            currentdays += currentdatedays;
+                        }
+                        else if (currentQuarter == 2)
+                        {
+                            for (int i = 7; i <= 9; i++)
+                            {
+                                totaldays += DateTime.DaysInMonth(currentDate.Year, i);
+                            }
+                            for (int i = 7; i < currentmonth; i++)
+                            {
+                                currentdays += DateTime.DaysInMonth(currentDate.Year, i);
+                            }
+                            currentdays += currentdatedays;
+                        }
+                        else if (currentQuarter == 3)
+                        {
+                            for (int i = 10; i <= 12; i++)
+                            {
+                                totaldays += DateTime.DaysInMonth(currentDate.Year, i);
+                            }
+                            for (int i = 10; i < currentmonth; i++)
+                            {
+                                currentdays += DateTime.DaysInMonth(currentDate.Year, i);
+                            }
+                            currentdays += currentdatedays;
+                        }
+
+                        resultTodayValue = (currentQuarter) + (Convert.ToDouble(currentdays) / Convert.ToDouble(totaldays));
+                    }
+
                 }
                 //else
                 //{
