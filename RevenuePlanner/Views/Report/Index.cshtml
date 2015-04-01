@@ -790,6 +790,7 @@
         $('#conversionHeader').css('display', 'none');
         $('#revenueHeader').css('display', 'none');
         $("#BtnShareReport").show();
+        $('#accordion-quart').css('display', 'block');
        @* var url = '@Url.Content("~/Report/GetSummaryData/")';
         $('#divMainReportPart').load(url , function () {*@
         var url = '@Url.Content("~/Report/GetOverviewData/")';
@@ -842,7 +843,8 @@
         $('#formSideFilter').css('display', 'block');
         $("#BtnShareReport").show();
         $('#divMainReportPart').empty();
-
+        $('#accordion-quart').css('display', 'none');
+        
     var url = '@Url.Content("~/Report/GetRevenueData/")';
         $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain , function () {
             isAllowClick = true;
@@ -857,6 +859,7 @@
         $('#formSideFilter').css('display', 'block');
         $("#BtnShareReport").show();
         $('#divMainReportPart').empty();
+        $('#accordion-quart').css('display', 'none');
         var url = '@Url.Content("~/Report/GetConversionData/")';
         $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain , function () {
             isAllowClick = true;
@@ -872,7 +875,7 @@
             $('#revenueHeader').css('display', 'none');
             $('#UlPlanHeader').css('display', 'none');
             $('#formSideFilter').css('display', 'none');
-
+            $('#accordion-quart').css('display', 'none');
             var url = '@Url.Content("~/Report/GetBudget/")';
             $('#divMainReportPart').load(url, function () {
                 isAllowClick = true;

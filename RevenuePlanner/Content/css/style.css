@@ -12261,7 +12261,7 @@ max-width:20% !important;
 
    /*for top revenue table*/
    .top-revenue-table{ width:100%;font-family: source_sans_proregular;}
-   .top-revenue-table table{ width:80%; float:left; margin-top:35px;}
+   .top-revenue-table table{ width:80%; float:left; margin-top:20px;}
    .top-revenue-table table th{font-size:14px; text-align:left; line-height:25px;}
    .top-revenue-table table tfoot td{font-size:15px; text-align:left; line-height:25px; font-weight:bold;}
    .top-revenue-table table tfoot td:nth-child(2){ text-align:right;}
