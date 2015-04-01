@@ -5137,7 +5137,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return Partial View _Summary</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        public ActionResult GetOverviewData(string timeframeOption, string revCustomField)
+        public ActionResult GetOverviewData(string timeframeOption, string revCustomField, string isQuarterly)
         {
             ReportOverviewModel objReportOverviewModel = new ReportOverviewModel();
             RevenueOverviewModel objRevenueOverviewModel = new RevenueOverviewModel();
@@ -5153,8 +5153,11 @@ namespace RevenuePlanner.Controllers
             string strMQLStageCode = Enums.InspectStage.MQL.ToString();
             string strCWStageCode = Enums.InspectStage.CW.ToString();
             double _Benchmark = 0, _inqActual_Projected = 0, _mqlActual_Projected = 0, _cwActual_Projected = 0, stageVolumePercntg =0;
+            bool IsQuarterly = false;
             try
             {
+                if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(Enums.ViewByAllocated.Quarterly.ToString()))
+                    IsQuarterly = true;
                 //// get tactic list
                 List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
                 //// Calculate Value for ecah tactic
@@ -5211,7 +5214,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 #region "Set Linechart & Revenue Overview data to model"
-                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption);
+                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
                 objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                 objRevenueOverviewModel.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
                 objRevenueOverviewModel.projected_goal = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
@@ -5274,7 +5277,7 @@ namespace RevenuePlanner.Controllers
                 #region "Conversion : Set Linechart & Revenue Overview data to model"
                 string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
                 objLineChartData = new lineChartData();
-                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption);
+                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
                 objProjectedGoal = new Projected_Goal();
                 objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                 objProjectedGoal.Name = !string.IsNullOrEmpty(MQLStageLabel) ? MQLStageLabel : mqlStageCode;
@@ -5319,7 +5322,7 @@ namespace RevenuePlanner.Controllers
                 #region "Conversion : Set Linechart & Revenue Overview data to model"
                 string CWStageLabel = Common.GetLabel(Common.StageModeCW);
                 objLineChartData = new lineChartData();
-                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption);
+                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
                 objProjectedGoal = new Projected_Goal();
                 objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                 objProjectedGoal.Name = !string.IsNullOrEmpty(CWStageLabel) ? CWStageLabel : cwStageCode;
@@ -6532,13 +6535,13 @@ namespace RevenuePlanner.Controllers
         /// <param name="ProjectedTrendModelList"> Trend Model list of Projected</param>
         /// <param name="timeframeOption">Selected Year from left Filter</param>
         /// <returns>Return LineChart Model</returns>
-        public lineChartData GetLineChartData(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<ProjectedTrendModel> ProjectedTrendModelList, string timeframeOption)
+        public lineChartData GetLineChartData(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<ProjectedTrendModel> ProjectedTrendModelList, string timeframeOption, bool IsQuarterly)
         {
             #region "Declare Local Varialbles"
             List<string> categories = new List<string>();
             List<series> lstseries = new List<series>();
             lineChartData LineChartData = new lineChartData();
-            bool IsQuarterly = false, IsDisplay=false;
+            bool IsDisplay=false;
             List<double> serData1 = new List<double>();
             List<double> serData2 = new List<double>();
             double monthlyActualTotal = 0, monthlyProjectedTotal = 0, monthlyGoalTotal = 0, TodayValue=0;
@@ -6556,15 +6559,54 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-                #region "Get Categories based on selected Filter value like {'Yearly','Quarterly'}"
-                if (!IsQuarterly)
+                #region "Get Categories based on selected Filter value like {'Monthly','Quarterly'}"
+                if (IsQuarterly)
+                {
+                    categories = new List<string>() { "Q1","Q2","Q3","Q4"};
+                }
+                else
                 {
                     categories = GetDisplayMonthListForReport(timeframeOption); // Get Categories list for Yearly Filter value like {Jan,Feb..}.
                 }
                 #endregion
 
                 #region "Monthly Calculate Actual, Projected & Goal Total"
-                if (!IsQuarterly)
+                if (IsQuarterly)
+                {
+                    //curntPeriod = PeriodPrefix + i;
+                    List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+                    List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+                    List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+                    List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+                    double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, ProjectedQ1 = 0, ProjectedQ2 = 0, ProjectedQ3 = 0, ProjectedQ4 = 0, GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
+
+                    ActualQ1 = ActualTacticList.Where(actual => Q1.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+                    ProjectedQ1 = ProjectedTrendModelList.Where(_projected => Q1.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
+                    GoalQ1 = ProjectedTrendModelList.Where(_projected => Q1.Contains(_projected.Month)).Sum(_projected => _projected.Value);
+                    serData1.Add(ActualQ1 + ProjectedQ1);
+                    serData2.Add(GoalQ1);
+
+                    ActualQ2 = ActualTacticList.Where(actual => Q2.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+                    ProjectedQ2 = ProjectedTrendModelList.Where(_projected => Q2.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
+                    GoalQ2 = ProjectedTrendModelList.Where(_projected => Q2.Contains(_projected.Month)).Sum(_projected => _projected.Value);
+                    serData1.Add(ActualQ2 + ProjectedQ2);
+                    serData2.Add(GoalQ2);
+
+                    ActualQ3 = ActualTacticList.Where(actual => Q3.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+                    ProjectedQ3 = ProjectedTrendModelList.Where(_projected => Q3.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
+                    GoalQ3 = ProjectedTrendModelList.Where(_projected => Q3.Contains(_projected.Month)).Sum(_projected => _projected.Value);
+                    serData1.Add(ActualQ3 + ProjectedQ3);
+                    serData2.Add(GoalQ3);
+
+                    ActualQ4 = ActualTacticList.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+                    ProjectedQ4 = ProjectedTrendModelList.Where(_projected => Q4.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
+                    GoalQ4 = ProjectedTrendModelList.Where(_projected => Q4.Contains(_projected.Month)).Sum(_projected => _projected.Value);
+                    serData1.Add(ActualQ4 + ProjectedQ4);
+                    serData2.Add(GoalQ4);
+
+
+                }
+                else
                 {
                     for (int i = 1; i <= catLength; i++)
                     {
@@ -6574,7 +6616,6 @@ namespace RevenuePlanner.Controllers
                         monthlyGoalTotal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
                         serData1.Add(monthlyActualTotal + monthlyProjectedTotal);
                         serData2.Add(monthlyGoalTotal);
-
                     }
                 }
                 #endregion

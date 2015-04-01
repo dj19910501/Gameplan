@@ -9,6 +9,8 @@
     var ViewCustomFieldOptions = (List<RevenuePlanner.Models.CustomFieldOption>)ViewBag.ViewCustomFieldOptions;
     // End - Added by Arpita Soni on 01/19/2015 for Ticket #1148 
     
+    string _monthly = Enums.ViewByAllocated.Monthly.ToString();
+    string _quarterly =  Enums.ViewByAllocated.Quarterly.ToString();
     ViewBag.Title = "Summary";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -119,15 +121,18 @@
                 </div>
             </div>
 
-            <div id="accordion-quart" class="dropdown-section accordion" style="display:none;">
+            <div id="accordion-quart" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-quart" href="#accordion-element-quart">Quarterly<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        <h2 id="aTimeFrame" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-quart" href="#accordion-element-quart"><span class="sidebarliwidth" id="spTimeFrameText">Monthly</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-quart" class="accordion-body collapse">
-                        <ul class="scroll-list" id="ulSelectedQuart">
-                            <li class="accordion-inner close-list" title="Monthly" id="liMonthly"><span class="sidebarliwidth">@RevenuePlanner.Helpers.Enums.ViewByAllocated.Monthly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Monthly" /></li>
-                            <li class="accordion-inner close-list" title="Quarterly" id="liQuarterly"><span class="sidebarliwidth">@RevenuePlanner.Helpers.Enums.ViewByAllocated.Quarterly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Quarterly" /></li>
+                        <ul class="scroll-list singleselect" id="ulSelectedQuart">
+                            @*<li class="accordion-inner close-list" title="Monthly" id="liMonthly" timeframe-val="@_monthly"><span class="sidebarliwidth">@_monthly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Monthly" /></li>
+                            <li class="accordion-inner" title="Quarterly" id="liQuarterly" timeframe-val="@_quarterly"><span class="sidebarliwidth">@_quarterly</span><input type="radio" name="quarter" class="chkbxfilter" id="Quarterly" /></li>*@
+                            @*<li class="accordion-inner close-list" title="Monthly" id="@ddlYearId" onclick="OnTimeFrameChange(this);" yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span></li>*@
+                            <li class="accordion-inner close-list" title="Monthly" id="liMonthly" timeframe-val="@_monthly" onclick="OnTimeFrameChange(this);"><span class="sidebarliwidth">@_monthly</span></li>
+                            <li class="accordion-inner" title="Quarterly" id="liQuarterly" timeframe-val="@_quarterly" onclick="OnTimeFrameChange(this);"><span class="sidebarliwidth">@_quarterly</span></li>
                         </ul>
                         <div class="list-tab">
                         </div>
@@ -555,6 +560,7 @@
     var isAllowClick = true;
     var multiselectPlanId = "ulSelectedPlans";
     var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
+    var Qurt_Month = '';
 
     $(document).ready(function () {
 
@@ -573,6 +579,8 @@
         $(".sbToggle").css("border-top-color", "#6D6D6D");
 
         OptionMain = getYearSelectedValue(true);
+
+        Qurt_Month = getQuarterMonthlySelectedValue();
 
         // Load Multiselect Dropdown list i.e. Bind with new design
         LoadYearDropdown();
@@ -785,7 +793,7 @@
        @* var url = '@Url.Content("~/Report/GetSummaryData/")';
         $('#divMainReportPart').load(url , function () {*@
         var url = '@Url.Content("~/Report/GetOverviewData/")';
-        $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain, function () {
+        $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
         });
@@ -949,6 +957,8 @@
             });
 
             OptionMain = getYearSelectedValue(true);
+
+            Qurt_Month = getQuarterMonthlySelectedValue();
             
         @foreach (var custField in ViewCustomFields)
         {
@@ -1027,6 +1037,18 @@ function OnYearChange(_yearli) {
     $("#aYear").click();
 }
 
+function OnTimeFrameChange(_quartmonthli) {
+    $(_quartmonthli).siblings().each(function () {
+        $(this).removeClass('close-list');
+    });
+    $(_quartmonthli).addClass('close-list');
+    Qurt_Month = $(_quartmonthli).attr('timeframe-val');
+
+    var _timeframeText = $(_quartmonthli).attr('title');
+    $("#spTimeFrameText").html(_timeframeText);
+    $("#aTimeFrame").click();
+}
+
 function LoadYearDropdown() {
     var isClick = false;
     var ul_lis = "#ulSelectedYear li";
@@ -1083,6 +1105,21 @@ function getYearSelectedValue(isYearDetail) {
     }
 
     return _selectedYear;
+}
+
+function getQuarterMonthlySelectedValue() {
+    var _selecteditem = '';
+    $('#ulSelectedQuart li').each(function () {
+        if ($(this).hasClass('close-list')) {
+            _selecteditem = $(this);
+        }
+    });
+    var _selected = $(_selecteditem[0]).attr('timeframe-val');
+
+    //var _YearText = $(_selecteditem).find('span').eq(0).html();
+    //$("#spYearText").html(_YearText);
+
+    return _selected;
 }
 
 //// summary click event
