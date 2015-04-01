@@ -9611,6 +9611,13 @@ footer {
     background: #e6e6e6;
 }
 
+.event-rowReport .campaign-row {
+    background: #f2f2f2;
+}
+.campaign-rowReport .programLevel,.event-rowReport .programLevel,.event-rowReport .tacticLevel,.event-rowReport .lineitemLevel,.campaign-rowReport .lineitemLevel {
+    background: white;
+}
+
 .column1 .event-rowReport div {
     padding: 11px 15px;
 }
@@ -9902,7 +9909,7 @@ footer {
 }
 
 .reportRowHover {
-    background-color: #DFF0F8;
+    background-color: #DFF0F8 !important;
 }
 
 /*Added By Pratik - Maintenence css Start PL #468 9/17/2014*/
