@@ -492,7 +492,7 @@
                     var entityTitle = $('.column1').find('#' + entityId).text();
                     var entityMonth = $link.attr('mnth').toString();
                     var unb = $('.column3').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
-
+                    var isOrangeCorner = $link.parent().find('span').hasClass('orange-corner-budget');
                     // Check it call from allocated -- cluePlannedCost
                     if ($link.parent().hasClass('clueallocatedCost')) {
                         var splitedEntityId = entityId.split('_');
@@ -518,7 +518,8 @@
                     if ($link.parent().hasClass('clueallocatedbudget')) {
                         if ($link.parent().hasClass('campaignLevel')) {
                             var cby = $link.text().replace(/,/g, "");
-                            var $loadmeHtml = '<label class="label-toooltip" >Campaign Budget (y):  </label>' +
+                            var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Campaign budget is less than the budget for it\'s programs.</div>' : '';
+                            var $loadmeHtml = messageDiv+'<label class="label-toooltip" >Campaign Budget (y):  </label>' +
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(cby.toString(), false, false) + '" ov="' + cby + '" />';
                             $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('campaign', '') + '" section="Campaign" mnth="' + entityMonth + '" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
@@ -526,7 +527,8 @@
                         }
                         else if ($link.parent().hasClass('programLevel')) {
                             var pby = $link.text().replace(/,/g, "");
-                            var $loadmeHtml = '<label class="label-toooltip" >Program Budget (y):  </label>' +
+                            var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Program budget is less than the budget for it\'s tactics.</div>' : '';
+                            var $loadmeHtml = messageDiv+'<label class="label-toooltip" >Program Budget (y):  </label>' +
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(pby.toString(), false, false) + '" ov="' + pby + '" />';
                             $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('program', '') + '" section="Program" mnth="' + entityMonth + '" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
@@ -542,7 +544,8 @@
                         }
                         else if ($link.parent().hasClass('planLevel')) {
                             var plbm = $link.text().replace(/,/g, "");
-                            var $loadmeHtml = '<label class="label-toooltip" >Plan Budget (y):  </label>' +
+                            var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Plan budget is less than the budget for it\'s campaigns.</div>' : '';
+                            var $loadmeHtml = messageDiv+'<label class="label-toooltip" >Plan Budget (y):  </label>' +
                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(plbm.toString(), false, false) + '" ov="' + plbm + '" />';
                             $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('plan', '') + '" section="Plan" mnth="' + entityMonth + '" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
@@ -566,8 +569,8 @@
                                 }
                             }
                         });
-
-                            var $loadmeHtml = '<label class="label-toooltip">Campaign Budget (' + displaymq + '):  </label>' +
+                        var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Campaign monthly budget is less than the monthly budget for it\'s programs.</div>' : '';
+                            var $loadmeHtml = messageDiv+'<label class="label-toooltip">Campaign Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(cbm.toString(), false, false) + '" ov="' + cbm + '" />' +
                                 '<label class="label-toooltip" >Remaining Plan Budget (' + displaymq + '):  </label>' +
                                 '<input id="remainingBudget" type="text" disabled="disabled" value="' + rpbm + '" />' +
@@ -593,7 +596,8 @@
                         var rpbm = $link.parent().attr('allocated').toString();
                         var pbm = $link.text().replace(/,/g, "");
                         var pby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
-                            var $loadmeHtml = '<label class="label-toooltip" >Program Budget (' + displaymq + '):  </label>' +
+                        var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Program monthly budget is less than the monthly budget for it\'s tactics.</div>' : '';
+                            var $loadmeHtml =messageDiv+ '<label class="label-toooltip" >Program Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(pbm.toString(), false, false) + '" ov="' + pbm + '" />' +
                                 '<label class="label-toooltip">Remaining Campaign Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="remainingBudget" value="' + rpbm + '" disabled="disabled"/>' +
@@ -631,7 +635,8 @@
                                 childCbm += parseFloat($campaign.text().replace(/,/g, ""));
                             }
                         });
-                            var $loadmeHtml = '<label class="label-toooltip">Plan Budget (' + displaymq + '):  </label>' +
+                        var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Plan monthly budget is less than the monthly budget for it\'s campaigns.</div>' : '';
+                            var $loadmeHtml =messageDiv+ '<label class="label-toooltip">Plan Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(plbm.toString(), false, false) + '" ov="' + plbm + '" />' +
                                 '<label class="label-toooltip" >Child Campaigns Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="tbm" value="' + FormatCommasBudget(childCbm.toString(), false, false) + '" disabled="disabled" />' +
