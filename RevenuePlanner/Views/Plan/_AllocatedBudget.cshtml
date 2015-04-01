@@ -248,7 +248,7 @@
                     if ('@PercAllocated.Jan' <= 100)
                             strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;"></span></div>';
                         else
-                            strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;" class="error"></span></div>';
+                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;background-color:#FF931E;" class="error"></span></div>';
                     }
                     else if (i == 2) {
                         strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
@@ -731,10 +731,8 @@ else {
     $('.column2,.column1').scroll(function () {
         $('.cluetip').css('display', 'none');
     });
-    $('.orange-corner-budget').bind('click', function () {
-        $(this).parent().find('a').trigger('click');
-        //$(this).parent().find('a').get(0).click();
+    $('.orange-corner-budget').bind('click', function (event) {
+        $(this).parent().find('a').get(0).click();
         return false;
-        //anchor.trigger('click');
     });
 </script>
