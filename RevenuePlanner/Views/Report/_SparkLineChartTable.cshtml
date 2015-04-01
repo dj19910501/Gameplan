@@ -16,6 +16,11 @@
         classheader = "top-revenue-header";
     }
 }
+<style type="text/css">
+    .tdWidth {
+        width: 30%;
+    }
+</style>
 
 <div class="top-revenue-table">
     <table id="@Model.sparklinechartId">
@@ -23,7 +28,7 @@
             <tr>
                 @foreach (string _col in Model.RevenueTypeColumns)
                 {
-                    <th>@_col</th>
+                    <th style="width:30%;">@_col</th>
                 }
             </tr>
         </thead>
@@ -31,9 +36,13 @@
             @if (_recordCount > 0)
             {
                 int indx =1;
-                string tdId = string.Empty;
+                string tdId = string.Empty, tdWidth = string.Empty;
                 foreach (sparklineData item in Model.sparklinechartdata)
                 {
+                    if (indx.Equals(1))
+                    {
+                        tdWidth = "tdWidth";
+                    }
                     tdId = "td_" + indx.ToString() + "_" + Model.sparklinechartId;
                     classTotal = "nobold";
                     if (item.IsTotal)
@@ -41,7 +50,7 @@
                         classTotal = "lastraw";
                     }
                     <tr>
-                        <th class="@classTotal">@item.Name</th>
+                        <th class="@classTotal rpttipsytitle @tdWidth ">@item.Name</th>
                         @if (item.Is_Pos_Neg_Status)
                         {
                             if (item.IsPositive)

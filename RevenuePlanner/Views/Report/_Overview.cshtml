@@ -5,6 +5,7 @@
     var revenue_Projected_Goal = Model.revenueOverviewModel.projected_goal;
     var SparkLineChartData = Model.revenueOverviewModel.SparkLineChartsData;
     var ConversionOverviewModel = Model.conversionOverviewModel;
+    bool isPlanExistToShowReport = Convert.ToBoolean(ViewBag.IsPlanExistToShowReport); 
 }
 
 <style type="text/css">
@@ -52,9 +53,10 @@ td,tbody th {
     display:none !important;
     }
 </style>
-
+@Html.Hidden("hdnIsPlanExistToShowReport", isPlanExistToShowReport)
 <div class="report-index-wrapper">
-    <div class="revenue-wrapper">
+    <div id="DivNoPlanToShowReport" style="border-top:none; display:none;" class="NoDataFound">No data found for selected active filters.</div>
+    <div class="revenue-wrapper" id="divRevenue" style="display:none;">
         <div class="report-revenue">
             <div class="report-btn-group">
                 <p class="revanue-p">Revenue</p>
@@ -68,7 +70,7 @@ td,tbody th {
                 <div class="row">
                     <div class="revenue-graph-info noborder">
                         <p class="yearcounter" id="lblRevProjectedYear">@revenue_Projected_Goal.year</p>
-                        <p class="smalltext" id="lblActual_Projected">Projected Vs Goal</p>
+                        <p class="smalltext" id="lblActual_Projected">Actual/Projected Vs Goal</p>
                         <p class="amountcounter" id="lblRevActual_Projected">@revenue_Projected_Goal.Actual_Projected</p>
                         <p class="smallamountcounter" id="lblRevGoal">@revenue_Projected_Goal.Goal</p>
                         <p class="statustext" id="lblRevPercentage">@revenue_Projected_Goal.Percentage</p>
@@ -86,14 +88,14 @@ td,tbody th {
             </div>
         </div>
     </div>
-    <div class="revenue-wrapper">
+    <div class="revenue-wrapper" id="divConversion" style="display:none;">
         <div class="report-revenue">
            <div id="conversionPartial">
                @Html.Partial("_conversionOverview",ConversionOverviewModel)
            </div>
         </div>
     </div>
-<div class="revenue-wrapper" style="display:none;">
+<div class="revenue-wrapper" style="display:none;" id="divBudgeting">
     <div class="report-revenue">
         <div class="report-btn-group">
             <p class="revanue-p">Budgeting</p>
@@ -204,6 +206,7 @@ td,tbody th {
 <script type="text/javascript">
     var _defautlChartHeight = 275, _defautlChartWidth = 600;
     $(function () {
+        ShowHideReport();
         var strUrl = "@Url.Content("~/Report/GetRevenueLineChartData")";
         var _sparklineurl = "@Url.Content("~/Report/GetRevenueSparkLineChartData")";
 
@@ -451,4 +454,19 @@ td,tbody th {
 
     // End:- Revenue_SparkLineChart script 
 
+    function ShowHideReport() {
+        var _isplan = $('#hdnIsPlanExistToShowReport').val().toLowerCase();
+        if (_isplan == 'true') {
+            $('#DivNoPlanToShowReport').css('display', 'none');
+            $('#divRevenue').css('display', 'block');
+            $('#divConversion').css('display', 'block');
+            //$('#divBudgeting').css('display', 'block');
+        }
+        else {
+            $('#DivNoPlanToShowReport').css('display', 'block');
+            $('#divRevenue').css('display', 'none');
+            $('#divConversion').css('display', 'none');
+            $('#divBudgeting').css('display', 'none');
+        }
+    }
 </script>

@@ -1,6 +1,8 @@
 ﻿@model List<RevenuePlanner.Models.sparkLineCharts>
 @using RevenuePlanner.Models;
-
+@{
+    int counter = 1;
+    }
 
 <script type="text/javascript">
     $(function () {
@@ -18,8 +20,10 @@
                 BindSparkLineChart();
                 doChunk();
                 formatCurrency(div);
+                NumberFormatterTipsyTitle(".rpttipsytitle", 20);
             });
         });
+        //BindDivRow();
     });
     function formatCurrency(_divId) {
         var _revTypeColAttr = ".revCurrencyVal";
@@ -38,33 +42,69 @@
             }
         });
     }
+    function BindDivRow()
+    {
+        var _spanstart = $(".row_start");
+        var _spanend = $(".row_end");
+        var _spanUnUsed = $(".remove_Span");
+        $.each(_spanstart, function (key, _span) {
+            $(_span).replaceWith('<div class="row">');
+            //alert("Key:" + key + ",Span:" + _span);
+        });
+        //$.each(_spanend, function (key, _span) {
+        //    $(_span).replaceWith('</div>');
+        //    //alert("Key:" + key + ",Span:" + _span);
+        //});
+        //$.each(_spanUnUsed, function (key, _span) {
+        //    $(_span).empty();
+        //    $(_span).remove();
+        //    //alert("Key:" + key + ",Span:" + _span);
+        //});
+    }
 </script>
 @foreach (sparkLineCharts _objmodel in Model)
 {
-    string classnobordr, classheader, classTotal;
-    classnobordr = classheader = classTotal = string.Empty;
+    string classnobordr, classheader, classTotal,row_start,row_end,row_apnd;
+    classnobordr = classheader = classTotal = row_start = row_end =row_apnd = string.Empty;
     if (!_objmodel.IsOddSequence)
     {
         classnobordr = "top-cost noborder";
         classheader = "top-cost-header";
+        row_end = "row_end";
+        row_start = "remove_Span";
+        row_apnd = "row_apnd";
     }
     else
     {
         classnobordr = "top-revenue";
         classheader = "top-revenue-header";
+        row_start = "row_start";
+        row_end = "remove_Span";
     }
-
-        <div class="@classnobordr">
-            <div class="@classheader">
-                <h5>@_objmodel.ChartHeader</h5>
-                <div class="revenue-summary-custom">
-                    @Html.DropDownList(_objmodel.CustomfieldDDLId, new SelectList((System.Collections.IEnumerable)ViewBag.SummaryCustomFieldList, "Value", "Text"), new { @class="revCustomFieldDDL", @ChartDivId ="dv"+_objmodel.sparklinechartId })
+    if (counter % 2 != 0)
+    {
+        @: <div class="row">
+    }
+    <div class="@row_apnd">
+        <span class="@row_start"></span>
+            <div class="@classnobordr">
+                <div class="@classheader">
+                    <h5>@_objmodel.ChartHeader</h5>
+                    <div class="revenue-summary-custom">
+                        @Html.DropDownList(_objmodel.CustomfieldDDLId, new SelectList((System.Collections.IEnumerable)ViewBag.SummaryCustomFieldList, "Value", "Text"), new { @class="revCustomFieldDDL", @ChartDivId ="dv"+_objmodel.sparklinechartId })
+                    </div>
+                    <span id="btnWeight" name="btnWeight" class="viewfullscreen hideReport">
+                        <img src="~/Content/images/view-fullscreen.png" /></span>
                 </div>
-                <span id="btnWeight" name="btnWeight" class="viewfullscreen hideReport">
-                    <img src="~/Content/images/view-fullscreen.png" /></span>
+                <div id="dv@_objmodel.sparklinechartId">
+                @Html.Partial("_SparkLineChartTable", _objmodel)
+                </div>
             </div>
-            <div id="dv@_objmodel.sparklinechartId">
-            @Html.Partial("_SparkLineChartTable", _objmodel)
-            </div>
-        </div>
+        <span class="@row_end"></span>
+    </div>
+     if (counter % 2 == 0)
+     {
+        @: </div>
+    }
+    counter++;
 }

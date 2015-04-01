@@ -5985,7 +5985,7 @@ namespace RevenuePlanner.Controllers
                             #region "Set Sparkline chart Data"
                             _sparklinedata = new sparklineData();
                             _sparklinedata.Name = _obj.Title;
-                            strRevenueTypeColumn = Proj_Goal > 0 ? ("+" + Math.Round(Proj_Goal, 1).ToString() + "%") : (Proj_Goal.Equals(0) ? "0%" : "-" + Math.Round(Proj_Goal, 1).ToString() + "%");
+                            strRevenueTypeColumn = Proj_Goal > 0 ? ("+" + Math.Round(Proj_Goal, 1).ToString() + "%") : (Proj_Goal.Equals(0) ? "0%" : Math.Round(Proj_Goal, 1).ToString() + "%");
                             _sparklinedata.RevenueTypeValue = strRevenueTypeColumn;
                             _sparklinedata.IsPositive = Proj_Goal >= 0 ? true : false;
                             _sparklinedata.IsPercentage = true;
@@ -6024,7 +6024,7 @@ namespace RevenuePlanner.Controllers
                         _sparklinedata = new sparklineData();
                         _sparklinedata.Name = "Total";
                         strRevenueTypeColumn = string.Empty;
-                        strRevenueTypeColumn = TotalRevenueTypeCol > 0 ? ("+" + Math.Round(TotalRevenueTypeCol, 1).ToString() + "%") : (TotalRevenueTypeCol.Equals(0) ? "0%" : "-" + Math.Round(TotalRevenueTypeCol, 1).ToString() + "%");
+                        strRevenueTypeColumn = TotalRevenueTypeCol > 0 ? ("+" + Math.Round(TotalRevenueTypeCol, 1).ToString() + "%") : (TotalRevenueTypeCol.Equals(0) ? "0%" : Math.Round(TotalRevenueTypeCol, 1).ToString() + "%");
                         _sparklinedata.RevenueTypeValue = strRevenueTypeColumn;
                         _sparklinedata.IsPositive = TotalRevenueTypeCol >= 0 ? true : false;
                         _sparklinedata.Is_Pos_Neg_Status = true;
@@ -6208,7 +6208,7 @@ namespace RevenuePlanner.Controllers
                             #region "Set Sparkline chart Data"
                             _sparklinedata = new sparklineData();
                             _sparklinedata.Name = _obj.Title;
-                            strRevenueTypeColumn = TotalROIValueCurrentMonth < 0 ? ("-" + Math.Round(TotalROIValueCurrentMonth, 1).ToString()) : (Math.Round(TotalROIValueCurrentMonth, 1).ToString());
+                            strRevenueTypeColumn = Math.Round(TotalROIValueCurrentMonth, 1).ToString();
                             _sparklinedata.RevenueTypeValue = strRevenueTypeColumn;
                             _sparklinedata.IsPositive = TotalROIValueCurrentMonth >= 0 ? true : false;
                             _sparklinedata.Is_Pos_Neg_Status = true;
@@ -6277,7 +6277,7 @@ namespace RevenuePlanner.Controllers
                         _sparklinedata = new sparklineData();
                         _sparklinedata.Name = "Total";
                         strRevenueTypeColumn = string.Empty;
-                        strRevenueTypeColumn = TotalRevenueTypeCol < 0 ? ("-" + Math.Round(TotalRevenueTypeCol, 1).ToString()) : (Math.Round(TotalRevenueTypeCol, 1).ToString());
+                        strRevenueTypeColumn = Math.Round(TotalRevenueTypeCol, 1).ToString();
                         _sparklinedata.RevenueTypeValue = strRevenueTypeColumn;
                         _sparklinedata.IsPositive = TotalRevenueTypeCol >= 0 ? true : false;
                         _sparklinedata.Is_Pos_Neg_Status = true;

@@ -51,41 +51,48 @@
 <div class="revenue-graph">
     <div class="row">
         <!--for ticket # 1221 start Change by tirthak-->
-        <div class="revenue-graph-info">
+        <div class="revenue-graph-info conversion-graph-width conversion-graph-padding">
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
             <p class="yearcounter" id="">Volume</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
             <div class="row" style="border: none;">
                 <span class="yearcounter volume-1-titel" id="inqlblStageName">@inqProj_Goal.Name</span>
-                <span class="amountcounter volume-1-counter" id="inqlblAct_Proj">@inqProj_Goal.Actual_Projected</span>
+                <span class="amountcounter volume-1-counter">
+                    <span id="inqlblAct_Proj">@inqProj_Goal.Actual_Projected </span>
+                    <p class="smalltext volume-1-smallstatus" id="inqlblGoal">/ @inqProj_Goal.Goal</p>
+                </span>
                 <span class="statustext volume-1-smallcounter above" id="">
                     <img id="inqVolUp" src="~/Content/images/volumeup.png" style="vertical-align: initial; display:none;" />
                     <img id="inqVolDown" src="~/Content/images/volumedown.png" style="vertical-align: initial; display:none;" />
                     <span id="inqlblPercentage">@inqProj_Goal.Percentage</span></span>
-                <p class="smalltext volume-1-smallstatus" id="inqlblGoal">/ @inqProj_Goal.Goal</p>
             </div>
             <div class="row" style="border: none;">
                 <span class="yearcounter volume-1-titel" id="mqllblStageName">@mqlProj_Goal.Name</span>
-                <span class="amountcounter volume-1-counter" id="mqllblAct_Proj">@mqlProj_Goal.Actual_Projected</span>
+                <span class="amountcounter volume-1-counter">
+                    <span id="mqllblAct_Proj">@mqlProj_Goal.Actual_Projected</span>
+                    <p class="smalltext volume-1-smallstatus" id="mqllblGoal">/ @mqlProj_Goal.Goal</p>
+                </span>
                 <span class="statustext volume-1-smallcounter below">
                     <img id="mqlVolUp" src="~/Content/images/volumeup.png" style="vertical-align: initial; display:none;" />
                     <img id="mqlVolDown" src="~/Content/images/volumedown.png" style="vertical-align: initial; display:none;" />
                     <span id="mqllblPercentage">@mqlProj_Goal.Percentage</span></span>
-                <p class="smalltext volume-1-smallstatus" id="mqllblGoal">/ @mqlProj_Goal.Goal</p>
             </div>
             <div class="row" style="border: none;">
                 <span class="yearcounter volume-1-titel" id="cwlblStageName">@cwProj_Goal.Name</span>
-                <span class="amountcounter volume-1-counter" id="cwlblAct_Proj">@cwProj_Goal.Actual_Projected</span>
+                <span class="amountcounter volume-1-counter">
+                    <span id="cwlblAct_Proj">@cwProj_Goal.Actual_Projected</span>
+                    <p class="smalltext volume-1-smallstatus" id="cwlblGoal">/ @cwProj_Goal.Goal</p>
+                </span>
                 <span style="" class="statustext volume-last-smallcounter below" id="">
                     <img id="cwVolUp" src="~/Content/images/volumeup.png" style="vertical-align: initial; display:none;" />
                     <img id="cwVolDown" src="~/Content/images/volumedown.png" style="vertical-align: initial; display:none;" />
                     <span id="cwlblPercentage">@cwProj_Goal.Percentage</span></span>
-                <p class="smalltext volume-1-smallstatus" id="cwlblGoal">/ @cwProj_Goal.Goal</p>
+                
             </div>
         </div>
         <!--for ticket # 1221 start Change by tirthak-->
-        <div class="revenue-graph-info">
+        <div class="revenue-graph-info conversion-graph-width conversion-graph-padding">
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
             <p class="yearcounter" id="">@mqlBenchmark.stagename</p>
@@ -97,7 +104,7 @@
                 <div id="MQLLineChart"></div>
             </div>
         </div>
-        <div class="revenue-graph-info noborder">
+        <div class="revenue-graph-info conversion-graph-width conversion-graph-padding noborder">
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
             <p class="yearcounter" id="">@cwBenchmark.stagename</p>
