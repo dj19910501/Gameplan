@@ -6555,7 +6555,7 @@ namespace RevenuePlanner.Controllers
                 if (currentYear == timeframeOption)
                 {
                     IsDisplay = true;
-                    TodayValue = GetTodayPlotValue(timeframeOption);
+                    TodayValue = GetTodayPlotValue(timeframeOption, IsQuarterly);
                 }
                 #endregion
 
@@ -6700,7 +6700,7 @@ namespace RevenuePlanner.Controllers
             return ProjectedTrendModelList;
         }
 
-        public double GetTodayPlotValue(string timeframeOption)
+        public double GetTodayPlotValue(string timeframeOption,bool IsQuarterly)
         {
             double resultTodayValue = 0;
             try
