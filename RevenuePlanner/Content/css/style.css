@@ -12155,6 +12155,7 @@ div.clue-bottom-default .cluetip-arrows {  background-image: url("../images/u.pn
     top: 0px; 
     right: 0px;
     display:none;
+    cursor:pointer;
 }
 .blue-corner-budget {
     /*border-right: 13px solid #3FA9F5;
@@ -12844,6 +12845,16 @@ max-width:20% !important;
         color:#FFA039;
         border:1px solid #FFA039;
         background-color:#FCF8E7;
+        border-radius:4px;
+        font-size:13px;
+    }
+ .clue-tip-message-red {
+        margin:0 0 10px 10px ;
+        padding:12px;
+        width:86%;
+        color:red;
+        border:1px solid red;
+        /*background-color:#FCF8E7;*/
         border-radius:4px;
         font-size:13px;
     }

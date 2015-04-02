@@ -362,7 +362,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Jan.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Jan < obj.Jan)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.January.ToString());
                         }
                         //className = obj.Jan <= parent.Jan ? className : className + budgetError;
                     }
@@ -373,7 +375,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Feb.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Feb < obj.Feb)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.February.ToString());
                         }
                         //className = obj.Feb <= parent.Feb ? className : className + budgetError;
                     }
@@ -384,7 +388,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Mar.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Mar < obj.Mar)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.March.ToString());
                         }
                         //className = obj.Mar <= parent.Mar ? className : className + budgetError;
                     }
@@ -395,7 +401,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Apr.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Apr < obj.Apr)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.April.ToString());
                         }
                         //className = obj.Apr <= parent.Apr ? className : className + budgetError;
                     }
@@ -406,7 +414,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.May.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.May < obj.May)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.May.ToString());
                         }
                         //className = obj.May <= parent.May ? className : className + budgetError;
                     }
@@ -417,7 +427,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Jun.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Jun < obj.Jun)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.June.ToString());
                         }
                         //className = obj.Jun <= parent.Jun ? className : className + budgetError;
                     }
@@ -428,7 +440,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Jul.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Jul < obj.Jul)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.July.ToString());
                         }
                         //className = obj.Jul <= parent.Jul ? className : className + budgetError;
                     }
@@ -439,7 +453,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Aug.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Aug < obj.Aug)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.August.ToString());
                         }
                         //className = obj.Aug <= parent.Aug ? className : className + budgetError;
                     }
@@ -450,7 +466,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Sep.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Sep < obj.Sep)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.September.ToString());
                         }
                         //className = obj.Sep <= parent.Sep ? className : className + budgetError;
                     }
@@ -461,7 +479,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Oct.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Oct < obj.Oct)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.October.ToString());
                         }
                         //className = obj.Oct <= parent.Oct ? className : className + budgetError;
                     }
@@ -472,7 +492,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Nov.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Nov < obj.Nov)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.November.ToString());
                         }
                         //className = obj.Nov <= parent.Nov ? className : className + budgetError;
                     }
@@ -483,7 +505,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Dec.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Dec < obj.Dec)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Months.December.ToString());
                         }
                         //className = obj.Dec <= parent.Dec ? className : className + budgetError;
                     }
@@ -495,7 +519,10 @@ namespace RevenuePlanner.Helpers
                     tdValue.AddCssClass(className);
                     tdHeader.InnerHtml += divHeader.ToString();
                     trHeader.InnerHtml += tdHeader.ToString();
-
+                    if (strTab == "1")
+                    {
+                        divValue.AddCssClass("planLevel clueplanned");
+                    }
                     divValue.InnerHtml += span.ToString();
                     tdValue.InnerHtml += divValue.ToString();
                     trValue.InnerHtml += tdValue.ToString();
@@ -522,7 +549,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Jan.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Jan < obj.Jan)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()]);
                         }
                         //className = obj.Jan <= parent.Jan ? className : className + budgetError;
                     }
@@ -533,7 +562,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Apr.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Apr < obj.Apr)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()]);
                         }
                         //className = obj.Apr <= parent.Apr ? className : className + budgetError;
                     }
@@ -544,7 +575,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Jul.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Jul < obj.Jul)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()]);
                         }
                         //className = obj.Jul <= parent.Jul ? className : className + budgetError;
                     }
@@ -555,7 +588,9 @@ namespace RevenuePlanner.Helpers
                         divValue.InnerHtml = obj.Oct.ToString(formatThousand);
                         if (strTab == "1" && budgetMonth.Oct < obj.Oct)
                         {
-                            span.AddCssClass("red-corner-budget");
+                            span.AddCssClass("red-corner-budget clickme");
+                            span.Attributes.Add("rel", "#loadme");
+                            span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()]);
                         }
                         //className = obj.Oct <= parent.Oct ? className : className + budgetError;
                     }
@@ -567,7 +602,10 @@ namespace RevenuePlanner.Helpers
                     tdValue.AddCssClass(className);
                     tdHeader.InnerHtml += divHeader.ToString();
                     trHeader.InnerHtml += tdHeader.ToString();
-
+                    if (strTab == "1")
+                    {
+                        divValue.AddCssClass("clueplanned");
+                    }
                     divValue.InnerHtml += span.ToString();
                     tdValue.InnerHtml += divValue.ToString();
                     trValue.InnerHtml += tdValue.ToString();
@@ -703,7 +741,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Jan < c.Month.Jan)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.January.ToString());
                             }
                         }
                         else if (i == 2)
@@ -714,7 +754,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Feb <= c.ParentMonth.Feb ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Feb < c.Month.Feb)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.February.ToString());
                             }
                         }
                         else if (i == 3)
@@ -725,7 +767,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Mar <= c.ParentMonth.Mar ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Mar < c.Month.Mar)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.March.ToString());
                             }
                         }
                         else if (i == 4)
@@ -736,7 +780,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Apr < c.Month.Apr)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.April.ToString());
                             }
                         }
                         else if (i == 5)
@@ -747,7 +793,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.May <= c.ParentMonth.May ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.May < c.Month.May)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.May.ToString());
                             }
                         }
                         else if (i == 6)
@@ -758,7 +806,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Jun <= c.ParentMonth.Jun ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Jun < c.Month.Jun)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.June.ToString());
                             }
                         }
                         else if (i == 7)
@@ -769,7 +819,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Jul < c.Month.Jul)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.July.ToString());
                             }
                         }
                         else if (i == 8)
@@ -780,7 +832,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Aug <= c.ParentMonth.Aug ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Aug < c.Month.Aug)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.August.ToString());
                             }
                         }
                         else if (i == 9)
@@ -791,7 +845,9 @@ namespace RevenuePlanner.Helpers
                             className = c.Month.Sep <= c.ParentMonth.Sep ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Sep < c.Month.Sep)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.September.ToString());
                             }
                         }
                         else if (i == 10)
@@ -802,7 +858,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Oct < c.Month.Oct)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.October.ToString());
                             }
                         }
                         else if (i == 11)
@@ -813,7 +871,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Nov <= c.ParentMonth.Nov ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Nov < c.Month.Nov)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.November.ToString());
                             }
                         }
                         else if (i == 12)
@@ -824,10 +884,16 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Dec <= c.ParentMonth.Dec ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Dec < c.Month.Dec)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Months.December.ToString());
                             }
                         }
                         div.AddCssClass(className);
+                        if (strTab == "1")
+                        {
+                            div.AddCssClass("clueplanned");
+                        }
                         div.InnerHtml += span.ToString();
                         td.InnerHtml = div.ToString();
 
@@ -854,7 +920,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Jan < c.Month.Jan)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()]);
                             }
                         }
                         else if (i == 2)
@@ -865,7 +933,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Apr < c.Month.Apr)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()]);
                             }
                         }
                         else if (i == 3)
@@ -876,7 +946,9 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Jul < c.Month.Jul)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()]);
                             }
                         }
                         else if (i == 4)
@@ -887,13 +959,18 @@ namespace RevenuePlanner.Helpers
                             //className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + budgetError;
                             if (strTab == "1" && c.BudgetMonth.Oct < c.Month.Oct)
                             {
-                                span.AddCssClass("red-corner-budget");
+                                span.AddCssClass("red-corner-budget clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()]);
                             }
                         }
                         div.AddCssClass(className);
                         div.InnerHtml += span.ToString();
                         td.InnerHtml = div.ToString();
-
+                        if (strTab == "1")
+                        {
+                            div.AddCssClass("clueplanned");
+                        }
                         td.InnerHtml += ProgramMonth(helper, Helpers.ActivityType.ActivityProgram, c.ActivityId, model, AllocatedBy, i, strTab).ToString();
                         tr.InnerHtml += td.ToString();
                     }
@@ -1010,7 +1087,7 @@ namespace RevenuePlanner.Helpers
             if (ActivityType == Helpers.ActivityType.ActivityProgram)
             {
                 mainClass = "sub program-lvl";
-                innerClass = "programLevel";
+                innerClass = isPlannedTab ? "programLevel clueplanned" : "programLevel";
                 parentClassName = "campaign";
             }
             else if (ActivityType == Helpers.ActivityType.ActivityTactic)
@@ -1068,6 +1145,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Jan < p.Month.Jan && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.January.ToString());
+                                    }
                                 }
                             }
 
@@ -1093,6 +1176,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Feb < p.Month.Feb && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.February.ToString());
+                                    }
                                 }
                             }
 
@@ -1118,6 +1207,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Mar < p.Month.Mar && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.March.ToString());
+                                    }
                                 }
                             }
 
@@ -1144,6 +1239,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Apr < p.Month.Apr && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.April.ToString());
+                                    }
                                 }
                             }
 
@@ -1169,6 +1270,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.May < p.Month.May && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.May.ToString());
+                                    }
                                 }
                             }
 
@@ -1195,6 +1302,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Jun < p.Month.Jun && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.June.ToString());
+                                    }
                                 }
                             }
 
@@ -1221,6 +1334,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Jul < p.Month.Jul && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.July.ToString());
+                                    }
                                 }
                             }
 
@@ -1247,6 +1366,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Aug < p.Month.Aug && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.August.ToString());
+                                    }
                                 }
                             }
 
@@ -1273,6 +1398,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Sep < p.Month.Sep && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.September.ToString());
+                                    }
                                 }
                             }
 
@@ -1300,6 +1431,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Oct < p.Month.Oct && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.October.ToString());
+                                    }
                                 }
                             }
 
@@ -1326,6 +1463,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Nov < p.Month.Nov && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.November.ToString());
+                                    }
                                 }
                             }
                         }
@@ -1351,6 +1494,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Dec < p.Month.Dec && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Months.December.ToString());
+                                    }
                                 }
                             }
                         }
@@ -1378,6 +1527,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Jan < p.Month.Jan && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()]);
+                                    }
                                 }
                             }
 
@@ -1403,6 +1558,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Apr < p.Month.Apr && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()]);
+                                    }
                                 }
                             }
 
@@ -1428,6 +1589,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Jul < p.Month.Jul && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth", Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()]);
+                                    }
                                 }
                             }
 
@@ -1453,6 +1620,12 @@ namespace RevenuePlanner.Helpers
                                 if (strTab == "1" && p.BudgetMonth.Oct < p.Month.Oct && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
+                                    if (!isTactic)
+                                    {
+                                        span.AddCssClass("clickme");
+                                        span.Attributes.Add("rel", "#loadme");
+                                        span.Attributes.Add("mnth",Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()]);
+                                    }
                                 }
                             }
 
@@ -1711,7 +1884,10 @@ namespace RevenuePlanner.Helpers
                     div.Attributes.Add("mainbudget", plan.MainBudgeted.ToString());
                     if (plan.Allocated > plan.MainBudgeted)
                     {
-                        span.Attributes.Add("class", "red-corner-budget");
+                        span.Attributes.Add("class", "red-corner-budget clickme");
+                        span.Attributes.Add("rel", "#loadme");
+                        span.Attributes.Add("mnth", string.Empty);
+                        div.AddCssClass("planLevel clueallocatedCost");
                     }
                 }
                 div.InnerHtml += span.ToString();
@@ -1776,7 +1952,10 @@ namespace RevenuePlanner.Helpers
                     divLast.Attributes.Add("mainbudget", c.MainBudgeted.ToString());
                     if (c.Allocated > c.MainBudgeted)
                     {
-                        span.Attributes.Add("class", "red-corner-budget");
+                        span.Attributes.Add("class", "red-corner-budget clickme");
+                        span.Attributes.Add("rel", "#loadme");
+                        span.Attributes.Add("mnth", string.Empty);
+                        divLast.AddCssClass("clueallocatedCost");
                     }
                 }
                 divLast.InnerHtml += span.ToString();
@@ -1867,7 +2046,7 @@ namespace RevenuePlanner.Helpers
                             }
                             else
                             {
-                                divProgram.InnerHtml +=p.isEditable && !isOtherLineItem && !isProgram ? ClueTipAnchorTag(string.Empty, p.Allocated.ToString(formatThousand)): p.Allocated.ToString(formatThousand) ;
+                                divProgram.InnerHtml += p.isEditable && !isOtherLineItem && !isProgram ? ClueTipAnchorTag(string.Empty, p.Allocated.ToString(formatThousand)) : p.Allocated.ToString(formatThousand);
                                 divProgram.AddCssClass("clueallocatedCost");
                             }
                         }
@@ -1906,6 +2085,12 @@ namespace RevenuePlanner.Helpers
                         if (p.Allocated > p.MainBudgeted && ActivityType != Helpers.ActivityType.ActivityLineItem.ToString())
                         {
                             span.Attributes.Add("class", "red-corner-budget");
+                            if (Helpers.ActivityType.ActivityTactic != ActivityType)
+                            {
+                                span.AddCssClass("clickme");
+                                span.Attributes.Add("rel", "#loadme");
+                                span.Attributes.Add("mnth", string.Empty);
+                            }
                         }
                     }
                     //divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
@@ -4415,8 +4600,8 @@ namespace RevenuePlanner.Helpers
                     {
                         //if (Tab == "2")
                         //{
-                            double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
-                            div.InnerHtml = sumMonth.ToString(formatThousand);
+                        double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
+                        div.InnerHtml = sumMonth.ToString(formatThousand);
                         //}
                         //else
                         //{
@@ -4504,8 +4689,8 @@ namespace RevenuePlanner.Helpers
                         {
                             //if (Tab == "2")
                             //{
-                                double sumMonth = c.Month.Jan + c.Month.Feb + c.Month.Mar + c.Month.Apr + c.Month.May + c.Month.Jun + c.Month.Jul + c.Month.Aug + c.Month.Sep + c.Month.Oct + c.Month.Nov + c.Month.Dec;
-                                divLast.InnerHtml = sumMonth.ToString(formatThousand);
+                            double sumMonth = c.Month.Jan + c.Month.Feb + c.Month.Mar + c.Month.Apr + c.Month.May + c.Month.Jun + c.Month.Jul + c.Month.Aug + c.Month.Sep + c.Month.Oct + c.Month.Nov + c.Month.Dec;
+                            divLast.InnerHtml = sumMonth.ToString(formatThousand);
                             //}
                             //else
                             //{
@@ -4717,8 +4902,8 @@ namespace RevenuePlanner.Helpers
                             //{
                             //if (Tab == "2")
                             //{
-                                double sumMonth = p.Month.Jan + p.Month.Feb + p.Month.Mar + p.Month.Apr + p.Month.May + p.Month.Jun + p.Month.Jul + p.Month.Aug + p.Month.Sep + p.Month.Oct + p.Month.Nov + p.Month.Dec;
-                                divProgram.InnerHtml = sumMonth.ToString(formatThousand);
+                            double sumMonth = p.Month.Jan + p.Month.Feb + p.Month.Mar + p.Month.Apr + p.Month.May + p.Month.Jun + p.Month.Jul + p.Month.Aug + p.Month.Sep + p.Month.Oct + p.Month.Nov + p.Month.Dec;
+                            divProgram.InnerHtml = sumMonth.ToString(formatThousand);
                             //}
                             //else
                             //{

@@ -594,5 +594,8 @@ $("[linktype=lineitem]").click(function (e) {
     $('.column2,.column1').scroll(function () {
         $('.cluetip').css('display', 'none');
     });
-
+    $(".tacticLevel").find('.red-corner-budget').bind('click', function (event) {
+        $(this).parent().find('a').get(0).click();
+        return false;
+    });
 </script>
