@@ -49,17 +49,17 @@
             <img src="~/Content/images/round-plus.png" /></span>Add Widget</button>
 </div>
 <div class="revenue-graph">
-    <div class="row">
+    <div class="row" style="border-bottom:none;">
         <!--for ticket # 1221 start Change by tirthak-->
         <div class="revenue-graph-info conversion-graph-width conversion-graph-padding">
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
-            <p class="yearcounter" id="">Volume</p>
+            <p class="yearcounterHead" id="">Volume</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
             <div class="row" style="border: none;">
                 <span class="yearcounter volume-1-titel" id="inqlblStageName">@inqProj_Goal.Name</span>
                 <span class="amountcounter volume-1-counter">
-                    <span id="inqlblAct_Proj">@inqProj_Goal.Actual_Projected </span>
+                    <span id="inqlblAct_Proj">@inqProj_Goal.Actual_Projected </span><br />
                     <p class="smalltext volume-1-smallstatus" id="inqlblGoal">/ @inqProj_Goal.Goal</p>
                 </span>
                 <span class="statustext volume-1-smallcounter above" id="">
@@ -70,7 +70,7 @@
             <div class="row" style="border: none;">
                 <span class="yearcounter volume-1-titel" id="mqllblStageName">@mqlProj_Goal.Name</span>
                 <span class="amountcounter volume-1-counter">
-                    <span id="mqllblAct_Proj">@mqlProj_Goal.Actual_Projected</span>
+                    <span id="mqllblAct_Proj">@mqlProj_Goal.Actual_Projected</span><br />
                     <p class="smalltext volume-1-smallstatus" id="mqllblGoal">/ @mqlProj_Goal.Goal</p>
                 </span>
                 <span class="statustext volume-1-smallcounter below">
@@ -81,7 +81,7 @@
             <div class="row" style="border: none;">
                 <span class="yearcounter volume-1-titel" id="cwlblStageName">@cwProj_Goal.Name</span>
                 <span class="amountcounter volume-1-counter">
-                    <span id="cwlblAct_Proj">@cwProj_Goal.Actual_Projected</span>
+                    <span id="cwlblAct_Proj">@cwProj_Goal.Actual_Projected</span><br />
                     <p class="smalltext volume-1-smallstatus" id="cwlblGoal">/ @cwProj_Goal.Goal</p>
                 </span>
                 <span style="" class="statustext volume-last-smallcounter below" id="">
@@ -92,10 +92,10 @@
             </div>
         </div>
         <!--for ticket # 1221 start Change by tirthak-->
-        <div class="revenue-graph-info conversion-graph-width conversion-graph-padding">
+        <div class="revenue-graph-info conversion-graph-width conversion-graph-padding" style="border-left: 1px solid rgb(238, 238, 238); border-right: 1px solid rgb(238, 238, 238); ">
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
-            <p class="yearcounter" id="">@mqlBenchmark.stagename</p>
+            <p class="yearcounterHead" id="">@mqlBenchmark.stagename</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
             <p class="amountcounter benchmarkVol" id="mqlBenchmarkVol" orig-val="@mqlBenchmark.stageVolume">@mqlBenchmark.stageVolume</p>
             <p class="smallamountcounter benchmarkVol benchmark" id="mqlBenchmark" orig-val="@mqlBenchmark.Benchmark">@mqlBenchmark.Benchmark</p>
@@ -107,7 +107,7 @@
         <div class="revenue-graph-info conversion-graph-width conversion-graph-padding noborder">
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
-            <p class="yearcounter" id="">@cwBenchmark.stagename</p>
+            <p class="yearcounterHead" id="">@cwBenchmark.stagename</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
             <p class="amountcounter benchmarkVol" id="cwBenchmarkVol" orig-val="@cwBenchmark.stageVolume">@cwBenchmark.stageVolume</p>
             <p class="smallamountcounter benchmarkVol benchmark" id="cwBenchmark" orig-val="@cwBenchmark.Benchmark">@cwBenchmark.Benchmark</p>
@@ -298,8 +298,8 @@
             }
         });
         var _conversionlinechartHeight = 250, _conversionlinechartWidth = 340;
-        BindLineChart(mqlchartdata.categories, mqlchartdata.todayValue, mqlchartdata.isDisplay, mqlchartdata.series, mqlLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
-        BindLineChart(cwchartdata.categories, cwchartdata.todayValue, cwchartdata.isDisplay, mqlchartdata.series, cwLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight);
+        BindLineChart(mqlchartdata.categories, mqlchartdata.todayValue, mqlchartdata.isDisplay, mqlchartdata.series, mqlLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight, false);
+        BindLineChart(cwchartdata.categories, cwchartdata.todayValue, cwchartdata.isDisplay, mqlchartdata.series, cwLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight, false);
         
     });
 

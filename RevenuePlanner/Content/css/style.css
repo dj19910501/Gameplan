@@ -12221,31 +12221,32 @@ max-width:20% !important;
     .report-grey-btn {font-family: source_sans_prolight !important; font-size: 14px;}
     .report-grey-btn img {padding: 0 4px 1px 0;}
     .report-blue-btn {float: right !important;  padding: 0 10px;}
-    .report-btn-group {width: 98%;}
+    .report-btn-group {width: 97.9%;}
     .report-btn-group button {margin: 0;}
     .report-blue-btn > span {padding-right: 6px;}
-    .revenue-graph .row { border-bottom:1px #e8e7e7 solid; margin:15px; width:100%;}
+    .revenue-graph .row { border-bottom:1px #e8e7e7 solid; width:98%; margin:0% 1% 0% 1%}
 
 
     /*@Tirthak 10-03-2014 for revenue info */
    .revenue-graph { width:100%; }
-   .revenue-graph .revenue-graph-info {margin:10px 0px 20px 0px; padding:25px; width:21%; float:left; border-right: 1px solid #e8e7e7; text-align:center;}
-   .conversion-graph-padding { padding: 0 25px !important; }
+   .revenue-graph .revenue-graph-info {margin:1% 0% 1% 0%; padding:2%; width:21%; float:left; text-align:center;}
+   /*.conversion-graph-padding { padding: 0 25px !important; }*/
    .conversion-graph-width { width:29% !important; }
-   .revenue-graph-info .yearcounter { margin-top:30px;font-family: source_sans_proregular; font-size:20px; text-transform:uppercase; font-weight:500;text-align:center;}
-   .revenue-graph-info .smalltext { font-size:14px;font-family: source_sans_proregular; font-weight:normal;text-align:center; margin:-10px; color:#7c7c7c;}
-   .revenue-graph-info .smallamountcounter { font-size:14px;font-family: source_sans_proregular; font-weight:normal; margin: 0 auto; width:30%; display:block; color:#7c7c7c;}
-   .revenue-graph-info .amountcounter  { margin-top:35px;font-family: source_sans_proregular; font-size:42px; text-transform:uppercase; font-weight:normal;display:inline-block; width:36%;}
+   .revenue-graph-info .yearcounter { margin:10% 6% 0% 0%;font-family: source_sans_proregular; font-size:20px; text-transform:uppercase; font-weight:500;text-align:right;}
+    .revenue-graph-info .yearcounterHead { margin:0% 0% 0% 0%;font-family: source_sans_proregular; font-size:20px; text-transform:none; font-weight:500;text-align:center;}
+   .revenue-graph-info .smalltext { font-size:14px;font-family: source_sans_proregular; font-weight:normal;text-align:center; color:#7c7c7c;}
+   .revenue-graph-info .smallamountcounter { font-size:14px;font-family: source_sans_proregular; font-weight:normal; margin: 0 auto; width:50%; display:block; color:#7c7c7c;}
+   .revenue-graph-info .amountcounter  { margin-top:10% 0% 0% 2%;font-family: source_sans_proregular; font-size:42px; text-transform:uppercase; font-weight:normal;display:inline-block; width:35%;}
    .revenue-graph-info .statustext { font-size:24px;font-family: source_sans_proregular; font-weight:normal;text-align:center; margin:20px 0px; color:#FF0000;}
-
+   .conversion-graph-width .row { padding-top: 5%; margin-top: 2%; margin-bottom: 2%; }
    /* for r graph */
-   .r-graph { margin-bottom: 20px;/*padding: 10px 20px 10px 145px;*/ padding: 0px 20px 0px 145px; width:53%; float:left; vertical-align:middle; border-left:1px #e8e7e7 solid;}
+   .r-graph { margin:1% 0% 1% 0%;/*padding: 10px 20px 10px 145px;*/ padding: 0% 10% 0% 10%; width:54%; float:left; vertical-align:middle; border-left:1px #e8e7e7 solid;}
 
    /*for revenue table*/
   .reveanue-table {width: 100%;}
-  .top-revenue{ width:44%; float:left; padding: 10px 20px; margin-bottom:15px; padding-top:10px;padding-bottom:10px; border-right:1px #eee solid;}
+  .top-revenue{ width:43%; float:left; padding: 2% 4% 2% 2%; margin-top:1%; margin-bottom:1%; border-right:1px #eee solid;}
   .top-revenue h5 {font-family: source_sans_proregular; font-size:20px;font-weight:normal; float:left; margin-right:15px; margin-top: 3px; }
-  .top-cost{ width:44%; float:left; padding: 10px 10px 10px 95px; margin-bottom:15px; padding-top:10px;padding-bottom:10px;}
+  .top-cost{ width:43%; float:left; padding: 2% 0% 2% 6%; margin-top:1%; margin-bottom:1%;}
   .top-cost h5 {font-family: source_sans_proregular; font-size:20px;  font-weight:normal; float:left; margin-right:15px;  margin-top: 3px;}
   .top-revenue-header{ width:90%;}
   .top-cost-header{ width:90%;}
@@ -12262,7 +12263,7 @@ max-width:20% !important;
 
    /*for top revenue table*/
    .top-revenue-table{ width:100%;font-family: source_sans_proregular;}
-   .top-revenue-table table{ width:80%; float:left; margin-top:20px;}
+   .top-revenue-table table{ width:95%; float:left; margin-top:20px;}
    .top-revenue-table table th{font-size:14px; text-align:left; line-height:25px;}
    .top-revenue-table table tfoot td{font-size:15px; text-align:left; line-height:25px; font-weight:bold;}
    .top-revenue-table table tfoot td:nth-child(2){ text-align:right;}
@@ -12483,19 +12484,19 @@ max-width:20% !important;
     /*start media css*/
     @media screen and (max-width: 1366px) {
     .report-btn-group {padding: 10px 0 0 21px;}
-    .r-graph {margin: 0 0 0 65px;}
-    .top-cost{padding:10px 10px 10px 66px;}
+    /*.r-graph {margin: 0 0 0 65px;}*/
+   /* .top-cost{padding:10px 10px 10px 66px;}*/
     .revenue-graph-info .viewfullscreen{margin-right:16px;padding-top:0}
-    .revenue-graph .revenue-graph-info{width:28%;}
+    .revenue-graph .revenue-graph-info{width:21%;}
     .report-heder-tab li {padding: 1% 6%;}
     }
 
      @media screen and (max-width: 1440px) {
     .report-btn-group {padding: 10px 0 0 22px;}
-    .r-graph {margin: 0 0 0 65px;}
-    .top-cost{padding:10px 10px 10px 66px;}
+    /*.r-graph {margin: 0 0 0 65px;}*/
+   /* .top-cost{padding:10px 10px 10px 66px;}*/
     .revenue-graph-info .viewfullscreen{margin-right:16px;padding-top:0}
-    .revenue-graph .revenue-graph-info{width:28%;}
+    .revenue-graph .revenue-graph-info{width:21%;}
     .coversionline-chart { padding: 0 50px;}
     .coversionline-chart2{padding:0 50px;}
     .budgeting-linechart { padding: 10px 50px;}
@@ -12509,10 +12510,10 @@ max-width:20% !important;
 
       @media screen and (max-width: 1280px) {
     .report-btn-group {padding: 10px 0 0 19px;}
-    .r-graph {margin: 0 0 0 65px;}
-    .top-cost{padding:10px 10px 10px 58px;}
+    /*.r-graph {margin: 0 0 0 65px;}*/
+   /* .top-cost{padding:10px 10px 10px 58px;}*/
     .revenue-graph-info .viewfullscreen{margin-right:0px;padding-top:0}
-    .revenue-graph .revenue-graph-info{width:27%;}
+    .revenue-graph .revenue-graph-info{width:21%;}
     .coversionline-chart { padding: 0 25px;}
     .coversionline-chart2{padding:0 25px;}
     .budgeting-linechart { padding: 10px 25px;}
@@ -12571,9 +12572,9 @@ max-width:20% !important;
     margin-left: 25px;
     margin-right: 15px;*/
      float: left;
-    margin-left: 0;
+    /*margin-left: 0;
     margin-right: 3px;
-    margin-top: 33px !important;
+    margin-top: 33px !important;*/
     width: 29%;
 }
 
@@ -12588,8 +12589,9 @@ max-width:20% !important;
     font-size: 15px !important;
     vertical-align: middle;
     float: left;
-    margin-top: 33px !important;
-    width: 33.33%;
+    margin-top: 10% !important;
+    padding-left: 5% !important;
+    width: 20%;
     margin-bottom: 10px !important;
     text-align: left !important;
 }
@@ -12619,8 +12621,9 @@ max-width:20% !important;
     font-size: 15px !important;
     vertical-align: middle;
     float: left;
-    margin-top: 33px !important;
-    width: 33.33% !important;
+    margin-top: 10% !important;
+    padding-left: 5% !important;
+    width: 20% !important;
     margin-bottom: 10px !important;
     text-align: left !important;
 }
@@ -12664,10 +12667,10 @@ max-width:20% !important;
     /*start media css*/
     @media screen and (max-width: 1366px) {
     .report-btn-group {padding: 10px 0 0 21px;}
-    .r-graph {margin: 0 0 0 65px;}
+    /*.r-graph {margin: 0 0 0 65px;}*/
     .reveanue-table .top-revenue:nth-child(2n){padding:10px 10px 10px 66px;} /*Update on 13-03-2015 by tirthak*/
     .revenue-graph-info .viewfullscreen{margin-right:16px;padding-top:0}
-    .revenue-graph .revenue-graph-info{width:28%;}
+    .revenue-graph .revenue-graph-info{width:21%;}
     .report-heder-tab li {padding: 1% 5% !important; width: 14.96%;}/*Update on 13-03-2015 by tirthak*/
 
      /*for ticket # 1221 added by tirthak*/
@@ -12676,9 +12679,9 @@ max-width:20% !important;
             width: 40%;
         }
 
-        .volume-1-titel {
+        /*.volume-1-titel {
             margin-left: 0;
-        }
+        }*/
 
         .volume-1-counter {
             width: 48%;
@@ -12708,10 +12711,10 @@ max-width:20% !important;
 
      @media screen and (max-width: 1440px) {
     .report-btn-group {padding: 10px 0 0 22px;}
-    .r-graph {margin: 0 0 0 65px;}
+    /*.r-graph {margin: 0 0 0 65px;}*/
     .reveanue-table .top-revenue:nth-child(2n){padding:10px 10px 10px 66px;}/*Update on 13-03-2015 by tirthak*/
     .revenue-graph-info .viewfullscreen{margin-right:16px;padding-top:0}
-    .revenue-graph .revenue-graph-info{width:28%;}
+    .revenue-graph .revenue-graph-info{width:21%;}
     .coversionline-chart { padding: 0 50px;}
     .coversionline-chart2{padding:0 50px;}
     .budgeting-linechart { padding: 10px 50px;}
@@ -12719,13 +12722,16 @@ max-width:20% !important;
 
     /*for ticket # 1221 added by tirthak*/
 
-        .top-revenue-table table thead tr th:nth-child(1) {
+        /*.top-revenue-table table thead tr th:nth-child(1) {
             width: 40%;
-        }
+        }*/
 
-        .volume-1-titel {
-            margin-left: 15px;
+        #RevenueSparklinecharts .row:last-child {
+            border-bottom:none;
         }
+        /*.volume-1-titel {
+            margin-left: 15px;
+        }*/
 
         .volume-1-counter {
             width: 44%;
@@ -12763,9 +12769,9 @@ max-width:20% !important;
             width: 40%;
         }
 
-        .volume-1-titel {
+        /*.volume-1-titel {
             margin-left: 15px;
-        }
+        }*/
 
         .volume-1-counter {
             width: 44%;
@@ -12795,10 +12801,10 @@ max-width:20% !important;
 
       @media screen and (max-width: 1280px) {
     .report-btn-group {padding: 10px 0 0 19px;}
-    .r-graph {margin: 0 0 0 65px;}
+    /*.r-graph {margin: 0 0 0 65px;}*/
      .reveanue-table .top-revenue:nth-child(2n){padding:10px 10px 10px 58px;}/*Update on 13-03-2015 by tirthak*/
     .revenue-graph-info .viewfullscreen{margin-right:0px;padding-top:0}
-    .revenue-graph .revenue-graph-info{width:27%;}
+    .revenue-graph .revenue-graph-info{width:21%;}
     .coversionline-chart { padding: 0 25px;}
     .coversionline-chart2{padding:0 25px;}
     .budgeting-linechart { padding: 10px 25px;}

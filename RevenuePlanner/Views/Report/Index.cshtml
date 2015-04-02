@@ -1228,7 +1228,7 @@ $('#liConversion').click(function () {
         }
 
     // Start:- Linchart script 
-    function BindLineChart(_categories, _plotlineVal, _isshowPlotLine, _series, _linechartDivId, _chartwidth, _chartHeight) {
+    function BindLineChart(_categories, _plotlineVal, _isshowPlotLine, _series, _linechartDivId, _chartwidth, _chartHeight, _plotOptions) {
         var options = {
             chart: {
                 height: _chartHeight,
@@ -1292,6 +1292,20 @@ $('#liConversion').click(function () {
                 },
                 title: {
                     text: ''
+                }
+            },
+            plotOptions: _plotOptions ? {
+                series: {
+                    marker: {
+                        enabled: true
+                    }
+                }
+            }:
+                {
+                    series: {
+                        marker: {
+                            enabled: false
+                        }
                 }
             },
             series: []

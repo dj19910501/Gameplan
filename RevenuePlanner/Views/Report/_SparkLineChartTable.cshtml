@@ -17,8 +17,11 @@
     }
 }
 <style type="text/css">
-    .tdWidth {
+    .tdWidth30 {
         width: 30%;
+    }
+     .tdWidth40 {
+        width: 40%;
     }
 </style>
 
@@ -26,9 +29,18 @@
     <table id="@Model.sparklinechartId">
         <thead>
             <tr>
-                @foreach (string _col in Model.RevenueTypeColumns)
-                {
-                    <th style="width:30%;">@_col</th>
+                @{
+                    int indheaderx = 1;
+                    foreach (string _col in Model.RevenueTypeColumns)
+                    {
+                        string tdWidthheader = "tdWidth30";
+                        if (indheaderx == Model.RevenueTypeColumns.Count)
+                        {
+                            tdWidthheader = "tdWidth40";
+                        }
+                        <th class="@tdWidthheader">@_col</th>
+                        indheaderx++;
+                    }
                 }
             </tr>
         </thead>
@@ -41,7 +53,7 @@
                 {
                     if (indx.Equals(1))
                     {
-                        tdWidth = "tdWidth";
+                        tdWidth = "tdWidth30";
                     }
                     tdId = "td_" + indx.ToString() + "_" + Model.sparklinechartId;
                     classTotal = "nobold";
