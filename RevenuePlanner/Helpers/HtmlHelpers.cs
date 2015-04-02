@@ -604,7 +604,7 @@ namespace RevenuePlanner.Helpers
                     trHeader.InnerHtml += tdHeader.ToString();
                     if (strTab == "1")
                     {
-                        divValue.AddCssClass("clueplanned");
+                        divValue.AddCssClass("planLevel clueplanned");
                     }
                     divValue.InnerHtml += span.ToString();
                     tdValue.InnerHtml += divValue.ToString();
@@ -965,12 +965,12 @@ namespace RevenuePlanner.Helpers
                             }
                         }
                         div.AddCssClass(className);
-                        div.InnerHtml += span.ToString();
-                        td.InnerHtml = div.ToString();
                         if (strTab == "1")
                         {
                             div.AddCssClass("clueplanned");
                         }
+                        div.InnerHtml += span.ToString();
+                        td.InnerHtml = div.ToString();
                         td.InnerHtml += ProgramMonth(helper, Helpers.ActivityType.ActivityProgram, c.ActivityId, model, AllocatedBy, i, strTab).ToString();
                         tr.InnerHtml += td.ToString();
                     }

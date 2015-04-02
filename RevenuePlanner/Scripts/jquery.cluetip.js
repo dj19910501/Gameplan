@@ -482,8 +482,10 @@
                 else if (opts.local) {
                     
                     var displaymq = "m";
+                    var periodText = "monthly";
                     if (opts.isQuarter) {
                         displaymq = "q";
+                        periodText = "quarterly";
                     }
 
                     var $localContent = $(tipAttribute + (/^#\S+$/.test(tipAttribute) ? '' : ':eq(' + index + ')')).clone(true).show();
@@ -501,7 +503,7 @@
                             var errorSpan = $link.parent().find('span');
                             var isredCorner = errorSpan.hasClass('red-corner-budget') && errorSpan.css('display') != 'none' ? true : false;
                             var messageDiv = isredCorner ? '<div class="clue-tip-message-red">Tactic\'s cost is over it\'s budget.</div>' : '';
-                            var $loadmeHtml =messageDiv+ '<label class="label-toooltip" >Tactic Cost (y):  </label>' +
+                            var $loadmeHtml = messageDiv + '<label class="label-toooltip" >Tactic Planned Cost (y):  </label>' +
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tcy.toString(), false, false) + '" ov="' + tcy + '" />';
                             $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="Tactic" mnth="' + entityMonth + '" tab="Planned" />';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
@@ -596,7 +598,7 @@
                                 }
                             }
                         });
-                        var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Campaign monthly budget is less than the monthly budget for it\'s programs.</div>' : '';
+                        var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Campaign ' + periodText + ' budget is less than the ' + periodText + ' budget for it\'s programs.</div>' : '';
                             var $loadmeHtml = messageDiv+'<label class="label-toooltip">Campaign Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(cbm.toString(), false, false) + '" ov="' + cbm + '" />' +
                                 '<label class="label-toooltip" >Remaining Plan Budget (' + displaymq + '):  </label>' +
@@ -623,7 +625,7 @@
                         var rpbm = $link.parent().attr('allocated').toString();
                         var pbm = $link.text().replace(/,/g, "");
                         var pby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
-                        var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Program monthly budget is less than the monthly budget for it\'s tactics.</div>' : '';
+                        var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Program ' + periodText + ' budget is less than the ' + periodText + ' budget for it\'s tactics.</div>' : '';
                             var $loadmeHtml =messageDiv+ '<label class="label-toooltip" >Program Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(pbm.toString(), false, false) + '" ov="' + pbm + '" />' +
                                 '<label class="label-toooltip">Remaining Campaign Budget (' + displaymq + '):  </label>' +
@@ -662,7 +664,7 @@
                                 childCbm += parseFloat($campaign.text().replace(/,/g, ""));
                             }
                         });
-                        var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Plan monthly budget is less than the monthly budget for it\'s campaigns.</div>' : '';
+                        var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Plan ' + periodText + ' budget is less than the ' + periodText + ' budget for it\'s campaigns.</div>' : '';
                             var $loadmeHtml =messageDiv+ '<label class="label-toooltip">Plan Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(plbm.toString(), false, false) + '" ov="' + plbm + '" />' +
                                 '<label class="label-toooltip" >Child Campaigns Budget (' + displaymq + '):  </label>' +
@@ -685,12 +687,12 @@
                             var tby = $('.column4').find('#' + $link.parent().attr('id').toString()).attr('mainbudget').replace(/,/g, "");
                             var errorSpan=$link.parent().find('span');
                             var isredCorner = errorSpan.hasClass('red-corner-budget') && errorSpan.css('display') != 'none' ? true : false;
-                            var messageDiv = isredCorner ? '<div class="clue-tip-message-red">Tactic\'s monthly cost is over it\'s monthly budget.</div>' : '';
-                            var $loadmeHtml = messageDiv+'<label class="label-toooltip" >Tactic Cost (' + displaymq + '):  </label>' +
+                            var messageDiv = isredCorner ? '<div class="clue-tip-message-red">Tactic\'s ' + periodText + ' cost is over it\'s ' + periodText + ' budget.</div>' : '';
+                            var $loadmeHtml = messageDiv + '<label class="label-toooltip" >Tactic Planned Cost (' + displaymq + '):  </label>' +
                                 '<input type="text" id="CostMonth" value="' + FormatCommasBudget(tcm.toString(), false, false) + '" ov="' + tcm + '" />' +
                                 '<label class="label-toooltip">Tactic Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="tacticmainBudget" value="' + FormatCommasBudget(tbm.toString(), false, false) + '" ov="' + tbm + '" disabled="disabled"/>' +
-                                 '<label class="label-toooltip" >Tactic Cost (y):  </label>' +
+                                 '<label class="label-toooltip" >Tactic Planned Cost (y):  </label>' +
                                 '<input type="text" id="CostYear" value="' + FormatCommasBudget(tcy.toString(), false, false) + '" ov="' + tcy + '" />' +
                                 '<label class="label-toooltip" >Tactic Budget (y):  </label>' +
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tby.toString(), false, false) + '" ov="' + tby + '"  disabled="disabled" />' ;
@@ -715,21 +717,21 @@
                         else if ($link.parent().hasClass('planLevel')) {
                             entityTitle = $("#divPlanDetails").text();
                             var lcy = $link.text().replace(/,/g, "");
-                            var $loadmeHtml = '<div class="clue-tip-message-red">Plan\'s monthly cost is over it\'s monthly budget. </div>';
+                            var $loadmeHtml = '<div class="clue-tip-message-red">Plan\'s ' + periodText + ' cost is over it\'s ' + periodText + ' budget. </div>';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityTitle);
                             $localContent.find('#btnClueTip').css('display', 'none');
                         }
                         else if ($link.parent().hasClass('campaignLevel')) {
                             var lcy = $link.text().replace(/,/g, "");
-                            var $loadmeHtml = '<div class="clue-tip-message-red">Campaign\'s monthly cost is over it\'s monthly budget. </div>';
+                            var $loadmeHtml = '<div class="clue-tip-message-red">Campaign\'s ' + periodText + ' cost is over it\'s ' + periodText + ' budget. </div>';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityTitle);
                             $localContent.find('#btnClueTip').css('display', 'none');
                         }
                         else if ($link.parent().hasClass('programLevel')) {
                             var lcy = $link.text().replace(/,/g, "");
-                            var $loadmeHtml = '<div class="clue-tip-message-red">Program\'s monthly cost is over it\'s monthly budget. </div>';
+                            var $loadmeHtml = '<div class="clue-tip-message-red">Program\'s ' + periodText + ' cost is over it\'s ' + periodText + ' budget. </div>';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityTitle);
                             $localContent.find('#btnClueTip').css('display', 'none');
