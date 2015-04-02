@@ -5940,6 +5940,7 @@ namespace RevenuePlanner.Controllers
                         {
 
                             #region "Calculate Proj.Vs Goal Value"
+                            #region "ReInitialize Variables"
                             ActualDataTable = new List<ActualDataTable>();
                             TacticDataTable = new List<TacticDataTable>();
                             ProjectedRevenueTrendList = new List<ProjectedTrendModel>();
@@ -5948,7 +5949,8 @@ namespace RevenuePlanner.Controllers
                             fltrTacticData = new List<TacticStageValue>();
                             strRevenueTypeColumn = string.Empty;
                             fltrTrendActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                            TacticListMonth = new List<TacticMonthValue>();
+                            TacticListMonth = new List<TacticMonthValue>(); 
+                            #endregion
 
                             fltrTacticData = Tacticdata.Where(tac => _obj.planTacticList.Contains(tac.TacticObj.PlanTacticId)).ToList();
 
@@ -6040,14 +6042,70 @@ namespace RevenuePlanner.Controllers
 
                             lstSparklineData.Add(_sparklinedata);
                         }
+
+                        #region "Calculate Total for Proj.Vs Goal & Trend"
+                        List<ProjectedTacticModel> lstTotalTacticModel = new List<ProjectedTacticModel>();
+                        TacticListMonth = new List<TacticMonthValue>();
+                        TacticListMonth = GetProjectedRevenueValueDataTableForReport(Tacticdata);
+                        lstTotalTacticModel = TacticListMonth.Select(tac => new ProjectedTacticModel
+                            {
+                                TacticId = tac.Id,
+                                StartMonth = tac.StartMonth,
+                                EndMonth = tac.EndMonth,
+                                Value = tac.Value,
+                                Year = tac.StartYear
+                            }).Distinct().ToList();
+                        
+                        List<ProjectedTrendModel> lstTotalProjectedTrendModel = GetProjectedTrendModel(lstTotalTacticModel);
+                        lstTotalProjectedTrendModel = (from _prjTac in lstTotalProjectedTrendModel
+                                                     group _prjTac by new
+                                                     {
+                                                         _prjTac.PlanTacticId,
+                                                         _prjTac.Month,
+                                                         _prjTac.Value,
+                                                         _prjTac.TrendValue
+                                                     } into tac
+                                                     select new ProjectedTrendModel
+                                                     {
+                                                         PlanTacticId = tac.Key.PlanTacticId,
+                                                         Month = tac.Key.Month,
+                                                         Value = tac.Key.Value,
+                                                         TrendValue = tac.Key.TrendValue
+                                                     }).Distinct().ToList();
+
+                        double TotalActual_Projected = ActualTacticList.Sum(actual => actual.Actualvalue) + lstTotalProjectedTrendModel.Sum(proj => proj.TrendValue);
+                        double TotalGoal = lstTotalProjectedTrendModel.Sum(proj => proj.Value);
+                        double TotalProj_Goal = TotalActual_Projected > 0 ? ((TotalActual_Projected - TotalGoal) / TotalActual_Projected) : 0;
+                        double _totalTrendQ1 = 0, _totalTrendQ2 = 0, _totalTrendQ3 = 0, _totalTrendQ4 = 0, _totalActualQ1 = 0, _totalActualQ2 = 0, _totalActualQ3 = 0, _totalActualQ4 = 0;
+
+                        #region "Calculate Trend Quarterly"
+                        _totalActualQ1 = ActualTacticList.Where(actual => Q1.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+                        _totalActualQ2 = ActualTacticList.Where(actual => Q2.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+                        _totalActualQ3 = ActualTacticList.Where(actual => Q3.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+                        _totalActualQ4 = ActualTacticList.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+
+                        _totalTrendQ1 = lstTotalProjectedTrendModel.Where(_projTrend => Q1.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
+                        _totalTrendQ2 = lstTotalProjectedTrendModel.Where(_projTrend => Q2.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
+                        _totalTrendQ3 = lstTotalProjectedTrendModel.Where(_projTrend => Q3.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
+                        _totalTrendQ4 = lstTotalProjectedTrendModel.Where(_projTrend => Q4.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
+
+                        TotalTrendQ1 = (_totalActualQ1 + _totalTrendQ1);
+                        TotalTrendQ2 = (_totalActualQ2 + _totalTrendQ2);
+                        TotalTrendQ3 = (_totalActualQ3 + _totalTrendQ3);
+                        TotalTrendQ4 = (_totalActualQ4 + _totalTrendQ4);
+                        #endregion
+                        
+                        #endregion
+
                         resultSparklineData = lstSparklineData.OrderByDescending(data => data.Value).Take(5).ToList();
+                        
                         #region "Add TOTAL Sparkline record to list"
                         _sparklinedata = new sparklineData();
                         _sparklinedata.Name = "Total";
                         strRevenueTypeColumn = string.Empty;
-                        strRevenueTypeColumn = TotalRevenueTypeCol > 0 ? ("+" + Math.Round(TotalRevenueTypeCol, 1).ToString() + "%") : (TotalRevenueTypeCol.Equals(0) ? "0%" : Math.Round(TotalRevenueTypeCol, 1).ToString() + "%");
+                        strRevenueTypeColumn = TotalProj_Goal > 0 ? ("+" + Math.Round(TotalProj_Goal, 1).ToString() + "%") : (TotalProj_Goal.Equals(0) ? "0%" : Math.Round(TotalProj_Goal, 1).ToString() + "%");
                         _sparklinedata.RevenueTypeValue = strRevenueTypeColumn;
-                        _sparklinedata.IsPositive = TotalRevenueTypeCol >= 0 ? true : false;
+                        _sparklinedata.IsPositive = TotalProj_Goal >= 0 ? true : false;
                         _sparklinedata.Is_Pos_Neg_Status = true;
                         _sparklinedata.Trend = string.Join(", ", new List<string> { TotalTrendQ1.ToString(), TotalTrendQ2.ToString(), TotalTrendQ3.ToString(), TotalTrendQ4.ToString() });
                         _sparklinedata.IsTotal = true;
@@ -6477,6 +6535,11 @@ namespace RevenuePlanner.Controllers
                 {
                     // Get TacticDataTable list of Projected Revenue.
                     ProjectedTacticList = GetProjectedMQLValueDataTableForReport(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
+                }
+                else if (StageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()))
+                {
+                    // Get TacticDataTable list of Projected Revenue.
+                    ProjectedTacticList = GetProjectedCWValueDataTableForReport(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
                 }
 
                 // Create ProjectedTacticModel from ProjectedRevenueTacticList to get ProjecteRevenueTrend model list.
