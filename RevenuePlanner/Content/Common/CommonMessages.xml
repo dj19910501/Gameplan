@@ -911,7 +911,7 @@
   <!--start Added by Viral Kadiya for PL ticket #1220-->
   <Field>
     <Name>RevenueSparklineChartHeader</Name>
-    <value>TOP {0} by</value>
+    <value>Top {0} by</value>
   </Field>
   <!--start Added by Viral Kadiya for PL ticket #1220-->
 </Messages>

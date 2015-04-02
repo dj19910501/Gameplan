@@ -5929,6 +5929,7 @@ namespace RevenuePlanner.Controllers
                         List<TacticStageValue> fltrTacticData = new List<TacticStageValue>();
                         List<Plan_Campaign_Program_Tactic_Actual> TrendActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
                         List<Plan_Campaign_Program_Tactic_Actual> fltrTrendActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                        List<TacticMonthValue> TacticListMonth = new List<TacticMonthValue>();
                         string strRevenueTypeColumn = string.Empty;
                         #endregion
 
@@ -5947,6 +5948,7 @@ namespace RevenuePlanner.Controllers
                             fltrTacticData = new List<TacticStageValue>();
                             strRevenueTypeColumn = string.Empty;
                             fltrTrendActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                            TacticListMonth = new List<TacticMonthValue>();
 
                             fltrTacticData = Tacticdata.Where(tac => _obj.planTacticList.Contains(tac.TacticObj.PlanTacticId)).ToList();
 
@@ -5960,15 +5962,31 @@ namespace RevenuePlanner.Controllers
 
                             #region "Get Tactic data by Weightage for Projected by StageCode(Revenue)"
                             TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, fltrTacticData, IsTacticCustomField);
-                            TacticList = TacticDataTable.Select(tac => new ProjectedTacticModel
+                            TacticListMonth = GetMonthWiseValueList(TacticDataTable);
+                            TacticList = TacticListMonth.Select(tac => new ProjectedTacticModel
                             {
-                                TacticId = tac.TacticId,
+                                TacticId = tac.Id,
                                 StartMonth = tac.StartMonth,
                                 EndMonth = tac.EndMonth,
                                 Value = tac.Value,
                                 Year = tac.StartYear
                             }).Distinct().ToList();
                             ProjectedRevenueTrendList = GetProjectedTrendModel(TacticList);
+                            ProjectedRevenueTrendList = (from _prjTac in ProjectedRevenueTrendList
+                                                         group _prjTac by new
+                                                         {
+                                                             _prjTac.PlanTacticId,
+                                                             _prjTac.Month,
+                                                             _prjTac.Value,
+                                                             _prjTac.TrendValue
+                                                         } into tac
+                                                         select new ProjectedTrendModel
+                                                         {
+                                                             PlanTacticId = tac.Key.PlanTacticId,
+                                                             Month = tac.Key.Month,
+                                                             Value = tac.Key.Value,
+                                                             TrendValue = tac.Key.TrendValue
+                                                         }).Distinct().ToList();
                             #endregion
 
                             #region "Calculate Proj.Vs Goal"
@@ -6094,11 +6112,10 @@ namespace RevenuePlanner.Controllers
                             {
                                 strActual = strProjected = strTrendValue = string.Empty;
                                 ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = TrendQ1 = TrendQ2 = TrendQ3 = TrendQ4 = 0;
-
-                                ActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
-                                ActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
-                                ActualQ3 = CurrentMonthCostList.Where(actual => Q3.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
-                                ActualQ4 = CurrentMonthCostList.Where(actual => Q4.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
+                                ActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length -2) : string.Empty)).Sum(actual => actual.Value);
+                                ActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                ActualQ3 = CurrentMonthCostList.Where(actual => Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                ActualQ4 = CurrentMonthCostList.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
                                 TrendQ1 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
                                 TrendQ2 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
                                 TrendQ3 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);

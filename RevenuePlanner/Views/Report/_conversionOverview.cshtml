@@ -315,14 +315,17 @@
 
         if (_goal == null || _goal == 'undefined' || _goal == '')
             _formtGoal = "0";
-        else
-            _formtGoal = numberWithCommas(Math.abs(parseFloat(_goal)));
-
+        else {
+            _formtGoal = FormatNumber(Math.abs(parseFloat(_goal)), false);//numberWithCommas(Math.abs(parseFloat(_goal)));
+            setBootstrapTooltip(_lblGoal, _goal, 4, true);
+        }
         _formtGoal = "/" + _formtGoal;
         if (_actual_Projected == null || _actual_Projected == 'undefined' || _actual_Projected == '')
             _formtActualProjected = "0";
-        else
-            _formtActualProjected = numberWithCommas(Math.abs(parseFloat(_actual_Projected)));
+        else {
+            _formtActualProjected = FormatNumber(Math.abs(parseFloat(_actual_Projected)), false);//numberWithCommas(Math.abs(parseFloat(_actual_Projected)));
+            setBootstrapTooltip(_lblAct_ProjectedId, _actual_Projected, 4, true);
+        }
 
         if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
             _formtPercentage = "0";
@@ -342,7 +345,7 @@
                 $(_lblVolDown).hide();
             }
         }
-
+        
         $(_lblAct_ProjectedId).html(_formtActualProjected);
         $(_lblGoal).html(_formtGoal);
         $(_lblPercentage).html(_formtPercentage);
