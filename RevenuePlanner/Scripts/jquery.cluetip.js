@@ -334,6 +334,7 @@
                             posX = mouseX + lOffset;
                         }
                     }
+                    
                     pY = posX < 0 ? event.pageY + tOffset : event.pageY;
                     if (posX < 0 || opts.positionBy == 'bottomTop' || opts.positionBy == 'topBottom') {
                         posX = (mouseX + (tipWidth / 2) > winWidth) ? winWidth / 2 - tipWidth / 2 : Math.max(mouseX - (tipWidth / 2), 0);
@@ -499,7 +500,7 @@
                     if ($link.parent().hasClass('clueallocatedCost')) {
                         var splitedEntityId = entityId.split('_');
                         if ($link.parent().hasClass('tacticLevel')) {
-                            var tcy = $link.text().replace(/,/g, "");
+                            var tcy = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                             var errorSpan = $link.parent().find('span');
                             var isredCorner = errorSpan.hasClass('red-corner-budget') && errorSpan.css('display') != 'none' ? true : false;
                             var messageDiv = isredCorner ? '<div class="clue-tip-message-red">Tactic\'s cost is over it\'s budget.</div>' : '';
@@ -511,7 +512,7 @@
                             $localContent.find('#btnClueTip').css('display', 'block');
                         }
                         else if ($link.parent().hasClass('lineitemLevel')) {
-                            var lcy = $link.text().replace(/,/g, "");
+                            var lcy = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                             var $loadmeHtml = '<label class="label-toooltip" >Line Item Cost (y):  </label>' +
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(lcy.toString(), false, false) + '" ov="' + lcy + '" />';
                             $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + splitedEntityId[splitedEntityId.length - 1] + '" section="LineItem" mnth="' + entityMonth + '" tab="Planned" />';
@@ -521,21 +522,18 @@
                         }
                         else if ($link.parent().hasClass('planLevel')) {
                             entityTitle = $('#divPlanDetails').text();
-                            var lcy = $link.text().replace(/,/g, "");
                             var $loadmeHtml = '<div class="clue-tip-message-red">Plan\'s cost is over it\'s budget.</div>';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityTitle);
                             $localContent.find('#btnClueTip').css('display', 'none');
                         }
                         else if ($link.parent().hasClass('campaignLevel')) {
-                            var lcy = $link.text().replace(/,/g, "");
                             var $loadmeHtml = '<div class="clue-tip-message-red">Campaign\'s  cost is over it\'s budget.</div>';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityTitle);
                             $localContent.find('#btnClueTip').css('display', 'none');
                         }
                         else if ($link.parent().hasClass('programLevel')) {
-                            var lcy = $link.text().replace(/,/g, "");
                             var $loadmeHtml = '<div class="clue-tip-message-red">Program\'s cost is over it\'s budget. </div>';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityTitle);
@@ -546,7 +544,7 @@
                     // Check it call from allocated -- clueallocated
                     if ($link.parent().hasClass('clueallocatedbudget')) {
                         if ($link.parent().hasClass('campaignLevel')) {
-                            var cby = $link.text().replace(/,/g, "");
+                            var cby = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                             var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Campaign budget is less than the budget for it\'s programs.</div>' : '';
                             var $loadmeHtml = messageDiv+'<label class="label-toooltip" >Campaign Budget (y):  </label>' +
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(cby.toString(), false, false) + '" ov="' + cby + '" />';
@@ -555,7 +553,7 @@
                             $localContent.find('h3').text(entityTitle);
                         }
                         else if ($link.parent().hasClass('programLevel')) {
-                            var pby = $link.text().replace(/,/g, "");
+                            var pby = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                             var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Program budget is less than the budget for it\'s tactics.</div>' : '';
                             var $loadmeHtml = messageDiv+'<label class="label-toooltip" >Program Budget (y):  </label>' +
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(pby.toString(), false, false) + '" ov="' + pby + '" />';
@@ -564,7 +562,7 @@
                             $localContent.find('h3').text(entityTitle);
                         }
                         else if ($link.parent().hasClass('tacticLevel')) {
-                            var tby = $link.text().replace(/,/g, "");
+                            var tby = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                             var $loadmeHtml = '<label class="label-toooltip" >Tactic Budget (y):  </label>' +
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(tby.toString(), false, false) + '" ov="' + tby + '" />';
                             $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('tactic', '') + '" section="Tactic" mnth="' + entityMonth + '" />';
@@ -572,7 +570,7 @@
                             $localContent.find('h3').text(entityTitle);
                         }
                         else if ($link.parent().hasClass('planLevel')) {
-                            var plbm = $link.text().replace(/,/g, "");
+                            var plbm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                             var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Plan budget is less than the budget for it\'s campaigns.</div>' : '';
                             var $loadmeHtml = messageDiv+'<label class="label-toooltip" >Plan Budget (y):  </label>' +
                                '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(plbm.toString(), false, false) + '" ov="' + plbm + '" />';
@@ -586,7 +584,7 @@
                     if ($link.parent().hasClass('clueallocated')) {
                     //campaign cell click 
                     if ($link.parent().hasClass('campaignLevel')) {
-                        var cbm = $link.text().replace(/,/g, "");
+                        var cbm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                         var rpbm = $link.parent().attr('allocated').toString();
                         var cby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                         var childPbm = 0;
@@ -623,7 +621,7 @@
                             }
                         });
                         var rpbm = $link.parent().attr('allocated').toString();
-                        var pbm = $link.text().replace(/,/g, "");
+                        var pbm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                         var pby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                         var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Program ' + periodText + ' budget is less than the ' + periodText + ' budget for it\'s tactics.</div>' : '';
                             var $loadmeHtml =messageDiv+ '<label class="label-toooltip" >Program Budget (' + displaymq + '):  </label>' +
@@ -640,7 +638,7 @@
                     }
                         //Tactic cell click
                     else if ($link.parent().hasClass('tacticLevel')) {
-                        var tbm = $link.text().replace(/,/g, "");
+                        var tbm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                         var rpbm = $link.parent().attr('allocated').toString();
                         var tby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                             var $loadmeHtml = '<label class="label-toooltip" >Tactic Budget (' + displaymq + '):  </label>' +
@@ -655,7 +653,7 @@
                     }
                         //Plan cell click
                     else if ($link.parent().hasClass('planLevel')) {
-                        var plbm = $link.text().replace(/,/g, "");
+                        var plbm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                         var childCbm = 0;
                         var plby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                         $('.column2').find('.campaignLevel .clickme[mnth="' + entityMonth + '"]').each(function () {
@@ -681,7 +679,7 @@
                     if ($link.parent().hasClass('clueplanned')) {
                         var splitedEntityId = entityId.split('_');
                         if ($link.parent().hasClass('tacticLevel')) {
-                            var tcm = $link.text().replace(/,/g, "");
+                            var tcm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                             var tbm = $link.parent().attr('mainbudget').toString().replace(/,/g, "");//mainbudget
                             var tcy = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                             var tby = $('.column4').find('#' + $link.parent().attr('id').toString()).attr('mainbudget').replace(/,/g, "");
@@ -703,7 +701,7 @@
                         }
                         //lineitemLevel
                         else if ($link.parent().hasClass('lineitemLevel')) {
-                            var tcm = $link.text().replace(/,/g, "");
+                            var tcm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                             var tcy = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                             var $loadmeHtml = '<label class="label-toooltip" >Line Item Cost (' + displaymq + '):  </label>' +
                                 '<input type="text" id="CostMonth" value="' + FormatCommasBudget(tcm.toString(), false, false) + '" ov="' + tcm + '" />' +
@@ -716,21 +714,18 @@
                         }
                         else if ($link.parent().hasClass('planLevel')) {
                             entityTitle = $("#divPlanDetails").text();
-                            var lcy = $link.text().replace(/,/g, "");
                             var $loadmeHtml = '<div class="clue-tip-message-red">Plan\'s ' + periodText + ' cost is over it\'s ' + periodText + ' budget. </div>';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityTitle);
                             $localContent.find('#btnClueTip').css('display', 'none');
                         }
                         else if ($link.parent().hasClass('campaignLevel')) {
-                            var lcy = $link.text().replace(/,/g, "");
                             var $loadmeHtml = '<div class="clue-tip-message-red">Campaign\'s ' + periodText + ' cost is over it\'s ' + periodText + ' budget. </div>';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityTitle);
                             $localContent.find('#btnClueTip').css('display', 'none');
                         }
                         else if ($link.parent().hasClass('programLevel')) {
-                            var lcy = $link.text().replace(/,/g, "");
                             var $loadmeHtml = '<div class="clue-tip-message-red">Program\'s ' + periodText + ' cost is over it\'s ' + periodText + ' budget. </div>';
                             $localContent.find('.tooltip-field').html($loadmeHtml);
                             $localContent.find('h3').text(entityTitle);

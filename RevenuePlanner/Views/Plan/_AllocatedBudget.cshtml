@@ -8,7 +8,7 @@
     string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
     string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
     bool isquarter = false;
-    if(AllocatedBy.ToLower() == strQuarters)
+    if (AllocatedBy.ToLower() == strQuarters)
     {
         isquarter = true;
     }
@@ -39,7 +39,7 @@
                             </tr>
                             @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, "0")
                         </tbody>
-                          <tbody class="column4">
+                        <tbody class="column4">
                             <tr>
                                 <td>
                                     <div>Budget</div>
@@ -48,7 +48,7 @@
                             @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, "0")
                         </tbody>
                         <tbody class="column2">
-                            @Html.AllocatedPlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy,Model)
+                            @Html.AllocatedPlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy, Model)
                             @Html.AllocatedCampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy)
                         </tbody>
                         <tbody class="column3">
@@ -59,7 +59,7 @@
                             </tr>
                             @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, "0")
                         </tbody>
-                       
+
                     </table>
                     <div style="clear: both;"></div>
                 </div>
@@ -67,20 +67,21 @@
         </div>
     </div>
 </div>
-<div id="loadme" class="loadme-true" style="display:none;">
-   	<h3 class="source-sans-proregular"></h3>
-   	<div class="tooltip-field">
-    	
+<div id="loadme" class="loadme-true" style="display: none;">
+    <h3 class="source-sans-proregular"></h3>
+    <div class="tooltip-field">
     </div>
-    <p class="button-grp-tooltip"> <button class="btn btn-blue text-shadow-blue source-sans-proregular tooltip-button" id="btnClueTip">Save</button> </p>
-   </div>
- <div class="container-fluid all-height" id="modalMainContainer">
+    <p class="button-grp-tooltip">
+        <button class="btn btn-blue text-shadow-blue source-sans-proregular tooltip-button" id="btnClueTip">Save</button>
+    </p>
+</div>
+<div class="container-fluid all-height" id="modalMainContainer">
     <div class="row-fluid calc-height">
         <div class="container-fluid">
             <div class="row-fluid ">
                 <div class="span12">
 
-  <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed;">
+                    <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed;">
                         <div style="margin: 80px auto !important">
                             <div id="successMessage" class="alert alert-success message-position-popup" style="display: none; margin: auto !important; max-width: 1000px !important;">
                                 <a class="close">×</a>
@@ -101,9 +102,9 @@
             </div>
         </div>
     </div>
-                    </div>
+</div>
 <script type="text/javascript">
-  
+
     var heights = $('.column1').find('div').map(function () {
         var intWidth = 0;
         if ($(this).css('display') == 'none') {
@@ -112,10 +113,10 @@
         else {
             intWidth = $(this).width();
         }
-       
+
         return $(this).width();
     }).get();
-   
+
     $(document).ready(function () {
         //The object CurrentTab is initiate in parent of this view
         var TacCustomTitle = "@Common.TacticCustomTitle";
@@ -128,11 +129,10 @@
             $("#divCostBudget").attr('style', 'display:none;')
         }
         SetHeader();
-       // AddTipsy();
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
-       
+
         // Budget Table
         var mainTableWidth = $('.budget-table').width();
         var columnWidth1 = $('.column1').width();
@@ -157,12 +157,11 @@
 
             //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
             var data = $(".column1").get(0);
-         
+
             $(".budget-table .column1 > tr").each(function () {
                 $(this).width(data.scrollWidth);
-                
-        });
-           
+            });
+
         });
 
         //in case of chrome browser it is creating design issue
@@ -181,24 +180,13 @@
                         $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
                     if ($('.column1 .program-lvl').length > 0)
                         $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
-                    
+
                 }
             } catch (e) {
 
             }
         }
     });
-    //function AddTipsy() {
-    //    $("div[allocated]").each(function () {
-    //        var num = $(this).attr('allocated');
-    //        if (parseInt(num) < 0) {
-    //            bootstrapetitle($(this), 'Remaining: ' + num.replace('-', '-$'), "tipsy-innerWhite");
-    //        }
-    //        else {
-    //            bootstrapetitle($(this), 'Remaining: $' + num, "tipsy-innerWhite");
-    //        }
-    //    });
-    //}
     function SetHeader() {
         $('#divViewBy').hide();
         if ('@AllocatedBy' != '@strDefault') {
@@ -210,12 +198,12 @@
             $('#planCostValue').popover('destroy');
             bootstrapetitle($('#planCostValue'), '$' + sumMonth + '/' + '$' + allocated, "tipsy-innerWhite");
 
-        sumMonth = FormatNumber('@sumMonth', false);
-        allocated = FormatNumber('@plan.Budgeted', false);
+            sumMonth = FormatNumber('@sumMonth', false);
+            allocated = FormatNumber('@plan.Budgeted', false);
 
-        $('#planCostValue').html(sumMonth + '/' + allocated);
-        $('#divPlanProgress').css("width", "@planAllocation%");
-            if ('@planAllocation' > 100) {
+            $('#planCostValue').html(sumMonth + '/' + allocated);
+            $('#divPlanProgress').css("width", "@planAllocation%");
+        if ('@planAllocation' > 100) {
                 $('#divPlanProgress').css("width", "100%");
                 $('#divPlanProgress').css("background", "#ff1e26");
             }
@@ -224,8 +212,8 @@
             }
 
 
-        $('#monthCompareTitle').html('Monthly Budget Allocation');
-        $('.progressPlanned').show();
+            $('#monthCompareTitle').html('Monthly Budget Allocation');
+            $('.progressPlanned').show();
         }
         else {
             $('#planCostTitle').html('Planned Budget Allocation');
@@ -235,7 +223,7 @@
             $('#monthCompareTitle').html('Monthly Budget Allocation');
             $('.progressPlanned').show();
         }
-       
+
         if ('@AllocatedBy' == '@strQuarters') {
             $('#monthCompareTitle').html('Quarterly Budget Allocation');
         }
@@ -246,20 +234,20 @@
                 if (i == 1) {
                     strMonthHTML += '<span class="title source-sans-proregular">JAN</span>';
                     if ('@PercAllocated.Jan' <= 100)
-                            strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;"></span></div>';
-                        else
-                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;background-color:#FF931E;" class="error"></span></div>';
-                    }
-                    else if (i == 2) {
-                        strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
-                        if ('@PercAllocated.Feb' <= 100)
-                        strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;"></span></div>';
+                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;"></span></div>';
                     else
-                            strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;background-color:#FF931E;" class="error"></span></div>';
+                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;background-color:#FF931E;" class="error"></span></div>';
                 }
-                else if (i == 3) {
-                    strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
-                    if ('@PercAllocated.Mar' <= 100)
+                else if (i == 2) {
+                    strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
+                    if ('@PercAllocated.Feb' <= 100)
+                            strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;"></span></div>';
+                        else
+                            strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;background-color:#FF931E;" class="error"></span></div>';
+                    }
+                    else if (i == 3) {
+                        strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
+                        if ('@PercAllocated.Mar' <= 100)
                         strMonthHTML += '<div title="@PercAllocated.Mar%"><span style="width:@PercAllocated.Mar%;"></span></div>';
                     else
                         strMonthHTML += '<div title="@PercAllocated.Mar%"><span style="width:@PercAllocated.Mar%;background-color:#FF931E;" class="error"></span></div>';
@@ -302,13 +290,13 @@
                 else if (i == 9) {
                     strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
                     if ('@PercAllocated.Sep' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;"></span></div>';
-                else
+                        strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;"></span></div>';
+                    else
                         strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;background-color:#FF931E;" class="error"></span></div>';
-            }
-            else if (i == 10) {
-                strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
-                if ('@PercAllocated.Oct' <= 100)
+                }
+                else if (i == 10) {
+                    strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
+                    if ('@PercAllocated.Oct' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;background-color:#FF931E;" class="error"></span></div>';
@@ -336,20 +324,20 @@ else if ('@AllocatedBy' == '@strQuarters') {
                 if (i == 1) {
                     strMonthHTML += '<span class="title source-sans-proregular">Q1</span>';
                     if ('@PercAllocated.Jan' <= 100)
-                            strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;"></span></div>';
-                        else
-                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;background-color:#FF931E;" class="error"></span></div>';
-                    }
-                    else if (i == 2) {
-                        strMonthHTML += '<span class="title source-sans-proregular">Q2</span>';
-                        if ('@PercAllocated.Apr' <= 100)
-                        strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;"></span></div>';
+                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;"></span></div>';
                     else
-                            strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;background-color:#FF931E;" class="error"></span></div>';
+                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;background-color:#FF931E;" class="error"></span></div>';
                 }
-                else if (i == 3) {
-                    strMonthHTML += '<span class="title source-sans-proregular">Q3</span>';
-                    if ('@PercAllocated.Jul' <= 100)
+                else if (i == 2) {
+                    strMonthHTML += '<span class="title source-sans-proregular">Q2</span>';
+                    if ('@PercAllocated.Apr' <= 100)
+                            strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;"></span></div>';
+                        else
+                            strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;background-color:#FF931E;" class="error"></span></div>';
+                    }
+                    else if (i == 3) {
+                        strMonthHTML += '<span class="title source-sans-proregular">Q3</span>';
+                        if ('@PercAllocated.Jul' <= 100)
                         strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;"></span></div>';
                     else
                         strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;background-color:#FF931E;" class="error"></span></div>';
@@ -443,29 +431,30 @@ else {
     });
     var Assortment = 'Budgeting';
     $('#aPlanDetails').click(function (e) {
-         var id = CurrentPlanId;
+        var id = CurrentPlanId;
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 
-    function AssignDefaultValue() {
-        $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
-            $(this).attr("myValue", $(this).val());
-        });
-    }
+     function AssignDefaultValue() {
+         $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
+             $(this).attr("myValue", $(this).val());
+         });
+     }
 
-    $("[linktype=campaign]").click(function (e) {
-         var id = $(this).attr('id');     
-        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+     $("[linktype=campaign],[linktype=program],[linktype=tactic]").click(function (e) {
+         var section = $(this).attr('linktype');
+         var id = $(this).attr('id');
+         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 
-    $("[linktype=program]").click(function (e) {
-        var id = $(this).attr('id');       
-        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    @* $("[linktype=program]").click(function (e) {
+         var id = $(this).attr('id');
+         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
     $("[linktype=tactic]").click(function (e) {
         var id = $(this).attr('id');
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-    });
+    });*@
     $('#btnClueTip').click(function () {
         var entityId = $('#entityDetails').val();
         var section = $('#entityDetails').attr('section').toString();
@@ -487,184 +476,18 @@ else {
             url: '@Url.Content("~/Plan/SaveBudgetCell/")',
             dataType: "json",
             data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&isquarter=' + isquarter,
-                  success: function (data) {
-                      if (data.isSuccess == true) {
-                          //updatePopupDetails(data, entityId, section, month);
-                          $("#hdnBudgetingExpandId").val(section.toLowerCase() +entityId);
-                          $("#hdnBudgetingIsSave").val("true");
-                          $('#aAllocated').trigger('click');
-                      }
-                      else {
-                          alert('Error');
-                      }
-                  }
-           });
-    });
-    function updatePopupDetails(data, entityId, section, month) {
-        section = section.toLowerCase();
-        $('.cluetip-outer').parent().css('display', 'none');
-        $('.column2').find('.'+section+'Level[id="'+section+entityId+'"] a[mnth="' + month + '"]').each(function () {
-
-                var newBudget = parseFloat(data.budgetMonth);
-                $(this).text(FormatCommasBudget(data.budgetMonth.toString(), false, false));
-               
-                if (section == 'plan') {
-
-                    //update unallocated Budget for plan and its blue corner
-                    var TotalAllocatedBudget = 0;
-                    $('.column2').find('.' + section + 'Level a').each(function () {
-                        if (!isNaN(parseFloat($(this).text().replace(/,/g, "")))) {
-                            TotalAllocatedBudget += parseFloat($(this).text().replace(/,/g, ""));
-                        }
-                    });
-                    var unallocatedBudget = parseFloat(data.budgetYear) - TotalAllocatedBudget;
-                    $('.column3').find('#' + section + entityId).html(FormatCommasBudget(unallocatedBudget.toString(), false, false)+'<span></span>');
-                    if (unallocatedBudget > 0) {
-                        $('.column3').find('#' + section + entityId + ' span').addClass('blue-corner-budget');
-                    }
-                    //End update unallocated Budget for plan and its blue corner
-
-                    //update monthly Budget of plan's orange corner
-                    var childBudget = 0;
-                    $('.campaignLevel').find('a[mnth="' + month + '"]').each(function () {
-                        childBudget += parseFloat($(this).text().replace(/,/g, ""));
-                    });
-                    if (childBudget > newBudget) {
-                        $(this).parent().find('span').addClass('orange-corner-budget');
-                    }
-                    else {
-                        $(this).parent().find('span').removeClass('orange-corner-budget');
-                    }
-                    //End update monthly Budget of plan's orange corner
-
-                    //update yearly budget for plan and it's orange corner
-                    var newYearBudget = parseFloat(data.budgetYear);
-                    var childYearBudget = 0;
-                    $('.column4').find('.campaignLevel').each(function () {
-                        if (!isNaN(parseFloat($(this).text().replace(/,/g, "")))) {
-                            childYearBudget += parseFloat($(this).text().replace(/,/g, ""));
-                        }
-                    });
-                    $('.column4').find('#' + section + entityId).html(FormatCommasBudget(newYearBudget.toString(), false, false)+'<span></span>');
-                    if (childYearBudget > newYearBudget) {
-                        $('.column4').find('#' + section + entityId + ' span').addClass('orange-corner-budget');
-                    }
-                    else {
-                        $('.Column4').find('#' + section + entityId + ' span').removeClass('orange-corner-budget');
-                    }
-                    //End update yearly budget for plan and it's orange corner
+            success: function (data) {
+                if (data.isSuccess == true) {
+                    $("#hdnBudgetingExpandId").val(section.toLowerCase() + entityId);
+                    $("#hdnBudgetingIsSave").val("true");
+                    $('#aAllocated').trigger('click');
                 }
                 else {
-                    var subLevel = section == 'campaign' ? 'program-lvl' : 'tactic-lvl';
-                    var subChildlvl = section == 'campaign' ? 'programLevel' : 'tacticLevel';
-
-                    //update unAllocated Budget and its blue corner
-                    var totalAllocatedBudget = 0;
-                    $('.column2').find('[id="' + section + entityId + '"]').each(function () {
-                        if (!isNaN(parseFloat($(this).find('a').text().replace(/,/g, "")))) {
-                            totalAllocatedBudget += parseFloat($(this).find('a').text().replace(/,/g, ""));
-                        }
-                    });
-                    var unallocatedBudget = parseFloat(data.budgetYear) - totalAllocatedBudget;
-                    $('.column3').find('#' + section + entityId).html(FormatCommasBudget(unallocatedBudget.toString(), false, false) + '<span></span>');
-                    if (unallocatedBudget > 0) {
-                        $('.column3').find('#' + section + entityId + ' span').addClass('blue-corner-budget');
-                    }
-                    //End update unAllocated Budget and its blue corner
-
-                    //update clicked cell orange corner
-                    var childBudget = 0;
-                    $(this).parents('.campaign-row').find('.' + subLevel + '[data-parent="' + section + entityId + '"]').each(function () {
-                        $(this).find('.' + subChildlvl + ' a').each(function () {
-                            if (!isNaN(parseFloat($(this).text().replace(/,/g, "")))) {
-                                childBudget += parseFloat($(this).text().replace(/,/g, ""));
-                            }
-                        });
-                    });
-                    if (childBudget > newBudget) {
-                        $(this).parent().find('span').addClass('orange-corner-budget');
-                    }
-                    else {
-                        $(this).parent().find('span').removeClass('orange-corner-budget');
-                    }
-                    //End update clicked cell orange corner
-
-                    //update yearly Budget and its orange corner
-                    var newYearBudget = parseFloat(data.budgetYear);
-                    var childYearBudget = 0;
-                    $('.column4').find('.' + subLevel + '[data-parent="' + section + entityId + '"]').each(function () {
-                        $(this).find('.' + subChildlvl).each(function () {
-                            if (!isNaN(parseFloat($(this).text().replace(/,/g, "")))) {
-                                childYearBudget += parseFloat($(this).text().replace(/,/g, ""));
-                            }
-                        });
-                    });
-                    $('.column4').find('#' + section + entityId).html(FormatCommasBudget(newYearBudget.toString(), false, false) + '<span></span>');
-                    if (childYearBudget > newYearBudget) {
-                        $('.column4').find('#' + section + entityId + ' span').addClass('orange-corner-budget');
-                    }
-                    else {
-                        $('.Column4').find('#' + section + entityId + ' span').removeClass('orange-corner-budget');
-                    }
-                    //End update yearly Budget and its orange corner
-
-                    //Update parent budget's orange corner
-                    if (section == 'campaign') {
-                        var parentDiv = $('.column2').find('.planLevel a[mnth="' + month + '"]').parent();
-                        var parentBudget = parseFloat(parentDiv.find('a').text().replace(/,/g, ""));
-                        if (!isNaN(parentBudget)) {
-                            $(this).parent().attr('allocated', (parentBudget - newBudget).toString());
-                            if (parentBudget >= newBudget) {
-                                parentDiv.find('span').removeClass('orange-corner-budget');
-                            }
-                            else {
-                                parentDiv.find('span').addClass('orange-corner-budget');
-                            }
-                        }
-                        var parentId = parentDiv.attr('id').toString();
-                        var parentYearDiv=$('.column4').find('#' + parentId);
-                        var parentYearlyBudget = parseFloat(parentYearDiv.text().replace(/,/g, ""));
-                        if (!isNaN(parentYearlyBudget)) {
-                            if (parentYearlyBudget >= newYearBudget) {
-                                parentYearDiv.find('span').removeClass('orange-corner-budget');
-                            }
-                            else {
-                                parentYearDiv.find('span').addClass('orange-corner-budget');
-                            }
-                        }
-                    }
-                    else {
-                        var parentId = $(this).parents('.sub').attr('data-parent').toString();
-                        if (parent != '' && typeof parentId != 'undefined') {
-                            var parentDiv = $(this).parents('.campaign-row').find('#' + parentId);
-                            var parentBudget = parseFloat(parentDiv.find('a').text().replace(/,/g, ""));
-                            if (!isNaN(parentBudget)) {
-                                $(this).parent().attr('allocated', (parentBudget - newBudget).toString());
-                                if (parentBudget >= newBudget) {
-                                    parentDiv.find('span').removeClass('orange-corner-budget');
-                                }
-                                else {
-                                    parentDiv.find('span').addClass('orange-corner-budget');
-                                }
-                            }
-                            var parentYearDiv = $('.column4').find('#' + parentId);
-                            var parentYearBudget = parseFloat(parentYearDiv.text().replace(/,/g, ""));
-                            if (!isNaN(parentYearBudget)) {
-                                if (parentYearBudget >= newYearBudget) {
-                                    parentYearDiv.find('span').removeClass('orange-corner-budget');
-                                }
-                                else {
-                                    parentYearDiv.find('span').addClass('orange-corner-budget');
-                                }
-                            }
-
-                        }
-                    }
-                    //End Update parent monthly budget's orange corner
+                    alert('Error');
                 }
+            }
         });
-
-    }
+    });
     $('.cluetip-outer').click(function (e) {
         e.stopPropagation();
     });
@@ -673,7 +496,7 @@ else {
     });
     $('.tooltip-field').on('keyup', '#BudgetMonth', function () {
         var oldBudget = parseFloat($(this).attr('ov').toString());
-        
+
         var newBudget = 0;
         if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
             newBudget = parseFloat($(this).val().replace(/,/g, ""));
@@ -691,7 +514,7 @@ else {
         $(this).val(FormatCommasBudget(newBudget.toString(), false, false));
         var remaingBudgetInput = $(this).parent().find('#remainingBudget');
         if (typeof remaingBudgetInput.val() != 'undefined') {
-            remaingBudgetInput.val(FormatCommasBudget(remaingBudgetInput.val().replace(/,/g,"")));
+            remaingBudgetInput.val(FormatCommasBudget(remaingBudgetInput.val().replace(/,/g, "")));
         }
     });
     $('.tooltip-field').on('keyup', '#BudgetYear', function () {
@@ -722,17 +545,17 @@ else {
             e.preventDefault();
         }
     });
-    $('.tooltip-field').on('focus', '#BudgetYear', function () {
-        $(this).val($(this).val().replace(/,/g, ""));
-    });
-    $('.tooltip-field').on('focus', '#BudgetMonth', function () {
+    $('.tooltip-field').on('focus', '#BudgetYear,#BudgetMonth', function () {
         $(this).val($(this).val().replace(/,/g, ""));
     });
     $('.column2,.column1').scroll(function () {
         $('.cluetip').css('display', 'none');
     });
-    $('.orange-corner-budget').bind('click', function (event) {
-        $(this).parent().find('a').get(0).click();
-        return false;
-    });
+    //$('.orange-corner-budget').on("click",function (e) {
+    //    // alert(event.pageY);
+    //    //var event1 = jQuery.Event("click");
+    //    $(this).parent().find('a').get(0).click(this.event);//.get(0).
+    //    //$(this).parent().find('a').trigger(event1);
+    //    return false;
+    //});
 </script>

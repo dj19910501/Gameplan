@@ -175,7 +175,7 @@
         if ('@isquarter' == 'True') {
             isquarter = true;
         }
-        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter });
+        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter, positionBy: "mouse" });//
         // Budget Table
         var mainTableWidth = $('.budget-table').width();
         var columnWidth1 = $('.column1').width();
@@ -594,8 +594,8 @@ $("[linktype=lineitem]").click(function (e) {
     $('.column2,.column1').scroll(function () {
         $('.cluetip').css('display', 'none');
     });
-    $(".tacticLevel").find('.red-corner-budget').bind('click', function (event) {
-        $(this).parent().find('a').get(0).click();
-        return false;
-    });
+    //$(".tacticLevel").find('.red-corner-budget').bind('click', function (event) {
+    //    $(this).parent().find('a').get(0).click();
+    //    return false;
+    //});
 </script>
