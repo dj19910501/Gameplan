@@ -12212,8 +12212,8 @@ max-width:20% !important;
     /* Report Header Tabs - End */
     
   /* for revenue */
-    .revenue-wrapper {margin: 0 auto; width: 99%;}
-    .report-revenue {border-top: 1px solid #c9c9c9; border-right: 1px solid #c9c9c9; border-left: 1px solid #c9c9c9; border-bottom:1px solid #c9c9c9; margin:20px; }
+    .revenue-wrapper {width: 100%;}
+    .report-revenue {border-top: 1px solid #c9c9c9; border-right: 1px solid #c9c9c9; border-left: 1px solid #c9c9c9; border-bottom:1px solid #c9c9c9; margin:2% 2% 2% 2%; }
     .revanue-p {border-right: 1px solid #d9d9d9;   color: #000;    float: left;    font-family: source_sans_proregular;    font-size: 24px;    line-height: 34px;    margin-right: 20px;    padding-right: 20px;}
     .report-btn-group .btn {display: inline-block;    float: left;    margin-right: 20px;}
     .report-btn-group {background-color: #f1f1f1; clear: both; display: inline-block; margin-left: 0; padding: 10px 0 0 24px;}
@@ -12221,7 +12221,7 @@ max-width:20% !important;
     .report-grey-btn {font-family: source_sans_prolight !important; font-size: 14px;}
     .report-grey-btn img {padding: 0 4px 1px 0;}
     .report-blue-btn {float: right !important;  padding: 0 10px;}
-    .report-btn-group {width: 97.9%;}
+    .report-btn-group {width: 98%;}
     .report-btn-group button {margin: 0;}
     .report-blue-btn > span {padding-right: 6px;}
     .revenue-graph .row { border-bottom:1px #e8e7e7 solid; width:98%; margin:0% 1% 0% 1%}
@@ -12229,15 +12229,24 @@ max-width:20% !important;
 
     /*@Tirthak 10-03-2014 for revenue info */
    .revenue-graph { width:100%; }
-   .revenue-graph .revenue-graph-info {margin:1% 0% 1% 0%; padding:2%; width:21%; float:left; text-align:center;}
+   .revenue-graph .revenue-graph-info {margin:1% 0% 1% 0%; padding:0% 2% 0% 2%; width:21%; float:left; text-align:center;}
    /*.conversion-graph-padding { padding: 0 25px !important; }*/
    .conversion-graph-width { width:29% !important; }
-   .revenue-graph-info .yearcounter { margin:10% 6% 0% 0%;font-family: source_sans_proregular; font-size:20px; text-transform:uppercase; font-weight:500; text-align:center;}
+   .revenue-graph-info .yearcounter {margin-bottom:0%; font-family: source_sans_proregular; font-size:20px; text-transform:uppercase; font-weight:500; text-align:center;}
+.margintop10per { 
+    margin-top: 10%;
+}
+.marginright6per { 
+    margin-right: 6%;
+}
     .revenue-graph-info .conversion-lbl-right { text-align:right !important; }
-    .revenue-graph-info .yearcounterHead { margin:0% 0% 0% 0%;font-family: source_sans_proregular; font-size:20px; text-transform:none; font-weight:500;text-align:center;}
+    .revenue-graph-info .yearcounterHead { margin-bottom:0%; font-family: source_sans_proregular; font-size:20px; text-transform:none; font-weight:500;text-align:center;}
    .revenue-graph-info .smalltext { font-size:14px;font-family: source_sans_proregular; font-weight:normal;text-align:center; color:#7c7c7c;}
    .revenue-graph-info .smallamountcounter { font-size:14px;font-family: source_sans_proregular; font-weight:normal; margin: 0 auto; width:50%; display:block; color:#7c7c7c;}
    .revenue-graph-info .amountcounter  { margin-top:10% 0% 0% 2%;font-family: source_sans_proregular; font-size:42px; text-transform:uppercase; font-weight:normal;display:inline-block; width:35%;}
+   .revenue-graph-info .amountcounterhead  { margin:13% 0% 0% 0%; font-family: source_sans_proregular; font-size:42px; font-weight:normal;display:inline-block;}
+   .revenue-graph-info .smallamountcounterhead { font-size:14px;font-family: source_sans_proregular; font-weight:normal; margin: 0 auto; display:block; color:#7c7c7c;}
+   .revenue-graph-info .statustexthead { font-size:24px;font-family: source_sans_proregular; font-weight:normal;text-align:center; margin:13% 0% 13% 0%; color:#FF0000;}
    .revenue-graph-info .statustext { font-size:24px;font-family: source_sans_proregular; font-weight:normal;text-align:center; margin:20px 0px; color:#FF0000;}
    .conversion-graph-width .row { padding-top: 5%; margin-top: 2%; margin-bottom: 2%; }
    /* for r graph */
@@ -12484,7 +12493,7 @@ max-width:20% !important;
 
     /*start media css*/
     @media screen and (max-width: 1366px) {
-    .report-btn-group {padding: 10px 0 0 21px;}
+    .report-btn-group {padding: 1% 0 0 2%;}
     /*.r-graph {margin: 0 0 0 65px;}*/
    /* .top-cost{padding:10px 10px 10px 66px;}*/
     .revenue-graph-info .viewfullscreen{margin-right:16px;padding-top:0}
@@ -12493,30 +12502,30 @@ max-width:20% !important;
     }
 
      @media screen and (max-width: 1440px) {
-    .report-btn-group {padding: 10px 0 0 22px;}
+    .report-btn-group {padding: 1% 0 0 2%;}
     /*.r-graph {margin: 0 0 0 65px;}*/
    /* .top-cost{padding:10px 10px 10px 66px;}*/
     .revenue-graph-info .viewfullscreen{margin-right:16px;padding-top:0}
     .revenue-graph .revenue-graph-info{width:21%;}
     .coversionline-chart { padding: 0 50px;}
-    .coversionline-chart2{padding:0 50px;}
+    .coversionline-chart2{padding:0 1%;}
     .budgeting-linechart { padding: 10px 50px;}
     .report-heder-tab li {padding: 1% 6%;}
     }
 
      @media screen and (max-width: 1400px) {
-    .report-btn-group {padding: 10px 0 0 21px;}
+    .report-btn-group {padding: 1% 0 0 2%;}
     .report-heder-tab li {padding: 1% 6%;}
     }
 
       @media screen and (max-width: 1280px) {
-    .report-btn-group {padding: 10px 0 0 19px;}
+    .report-btn-group {padding: 1% 0 0 2%;}
     /*.r-graph {margin: 0 0 0 65px;}*/
    /* .top-cost{padding:10px 10px 10px 58px;}*/
     .revenue-graph-info .viewfullscreen{margin-right:0px;padding-top:0}
     .revenue-graph .revenue-graph-info{width:21%;}
     .coversionline-chart { padding: 0 25px;}
-    .coversionline-chart2{padding:0 25px;}
+    .coversionline-chart2{padding:0 1%;}
     .budgeting-linechart { padding: 10px 25px;}
     }
 
@@ -12591,7 +12600,7 @@ max-width:20% !important;
     vertical-align: middle;
     float: left;
     margin-top: 10% !important;
-    padding-left: 5% !important;
+    padding-left: 10% !important;
     width: 20%;
     margin-bottom: 10px !important;
     text-align: left !important;
@@ -12599,7 +12608,7 @@ max-width:20% !important;
 
 .volume-1-smallstatus {
     display: inline;
-    margin-left: 0px !important;
+    /*margin-left: 0px !important;*/
 }
 
 .volume-last-titel {
@@ -12623,7 +12632,7 @@ max-width:20% !important;
     vertical-align: middle;
     float: left;
     margin-top: 10% !important;
-    padding-left: 5% !important;
+    padding-left: 10% !important;
     width: 20% !important;
     margin-bottom: 10px !important;
     text-align: left !important;
@@ -12667,7 +12676,7 @@ max-width:20% !important;
 
     /*start media css*/
     @media screen and (max-width: 1366px) {
-    .report-btn-group {padding: 10px 0 0 21px;}
+    .report-btn-group {padding: 1% 0 0 2%;}
     /*.r-graph {margin: 0 0 0 65px;}*/
     .reveanue-table .top-revenue:nth-child(2n){padding:10px 10px 10px 66px;} /*Update on 13-03-2015 by tirthak*/
     .revenue-graph-info .viewfullscreen{margin-right:16px;padding-top:0}
@@ -12688,9 +12697,9 @@ max-width:20% !important;
             width: 48%;
         }
 
-        .volume-1-smallstatus {
+        /*.volume-1-smallstatus {
             margin-left: 40px !important;
-        }
+        }*/
 
         .volume-last-titel {
             margin-right: 15px;
@@ -12711,13 +12720,13 @@ max-width:20% !important;
     }
 
      @media screen and (max-width: 1440px) {
-    .report-btn-group {padding: 10px 0 0 22px;}
+    .report-btn-group {padding: 1% 0 0 2%;}
     /*.r-graph {margin: 0 0 0 65px;}*/
     .reveanue-table .top-revenue:nth-child(2n){padding:10px 10px 10px 66px;}/*Update on 13-03-2015 by tirthak*/
     .revenue-graph-info .viewfullscreen{margin-right:16px;padding-top:0}
     .revenue-graph .revenue-graph-info{width:21%;}
     .coversionline-chart { padding: 0 50px;}
-    .coversionline-chart2{padding:0 50px;}
+    .coversionline-chart2{padding:0 1%;}
     .budgeting-linechart { padding: 10px 50px;}
     .report-heder-tab li {padding: 1% 6%;}
 
@@ -12738,9 +12747,9 @@ max-width:20% !important;
             width: 44%;
         }
 
-        .volume-1-smallstatus {
+        /*.volume-1-smallstatus {
             margin-left: 60px !important;
-        }
+        }*/
 
         .volume-last-titel {
             margin-right: 15px;
@@ -12761,7 +12770,7 @@ max-width:20% !important;
     }
 
      @media screen and (max-width: 1400px) {
-    .report-btn-group {padding: 10px 0 0 21px;}
+    .report-btn-group {padding: 1% 0 0 2%;}
     .report-heder-tab li {padding: 1% 6%;}
 
      /*for ticket # 1221 added by tirthak*/
@@ -12778,9 +12787,9 @@ max-width:20% !important;
             width: 44%;
         }
 
-        .volume-1-smallstatus {
+        /*.volume-1-smallstatus {
             margin-left: 60px !important;
-        }
+        }*/
 
         .volume-last-titel {
             margin-right: 15px;
@@ -12801,13 +12810,13 @@ max-width:20% !important;
     }
 
       @media screen and (max-width: 1280px) {
-    .report-btn-group {padding: 10px 0 0 19px;}
+    .report-btn-group {padding: 1% 0 0 2%;}
     /*.r-graph {margin: 0 0 0 65px;}*/
      .reveanue-table .top-revenue:nth-child(2n){padding:10px 10px 10px 58px;}/*Update on 13-03-2015 by tirthak*/
     .revenue-graph-info .viewfullscreen{margin-right:0px;padding-top:0}
     .revenue-graph .revenue-graph-info{width:21%;}
     .coversionline-chart { padding: 0 25px;}
-    .coversionline-chart2{padding:0 25px;}
+    .coversionline-chart2{padding:0 1%;}
     .budgeting-linechart { padding: 10px 25px;}
 
    /*for ticket # 1221 added by tirthak*/
@@ -12824,9 +12833,9 @@ max-width:20% !important;
             width: 48%;
         }
 
-        .volume-1-smallstatus {
+        /*.volume-1-smallstatus {
             margin-left: 40px !important;
-        }
+        }*/
 
         .volume-last-titel {
             margin-right: 15px;

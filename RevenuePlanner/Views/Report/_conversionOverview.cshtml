@@ -54,10 +54,10 @@
         <div class="revenue-graph-info conversion-graph-width conversion-graph-padding">
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
-            <p class="yearcounterHead" id="">Volume</p>
+            <p class="yearcounterHead margintop10per" id="">Volume</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
             <div class="row" style="border: none;">
-                <span class="yearcounter volume-1-titel conversion-lbl-right" id="inqlblStageName">@inqProj_Goal.Name</span>
+                <span class="yearcounter margintop10per marginright6per volume-1-titel conversion-lbl-right" id="inqlblStageName">@inqProj_Goal.Name</span>
                 <span class="amountcounter volume-1-counter">
                     <span id="inqlblAct_Proj">@inqProj_Goal.Actual_Projected </span><br />
                     <p class="smalltext volume-1-smallstatus" id="inqlblGoal">/ @inqProj_Goal.Goal</p>
@@ -68,7 +68,7 @@
                     <span id="inqlblPercentage">@inqProj_Goal.Percentage</span></span>
             </div>
             <div class="row" style="border: none;">
-                <span class="yearcounter volume-1-titel conversion-lbl-right" id="mqllblStageName">@mqlProj_Goal.Name</span>
+                <span class="yearcounter margintop10per marginright6per volume-1-titel conversion-lbl-right" id="mqllblStageName">@mqlProj_Goal.Name</span>
                 <span class="amountcounter volume-1-counter">
                     <span id="mqllblAct_Proj">@mqlProj_Goal.Actual_Projected</span><br />
                     <p class="smalltext volume-1-smallstatus" id="mqllblGoal">/ @mqlProj_Goal.Goal</p>
@@ -79,7 +79,7 @@
                     <span id="mqllblPercentage">@mqlProj_Goal.Percentage</span></span>
             </div>
             <div class="row" style="border: none;">
-                <span class="yearcounter volume-1-titel conversion-lbl-right" id="cwlblStageName">@cwProj_Goal.Name</span>
+                <span class="yearcounter margintop10per marginright6per volume-1-titel conversion-lbl-right" id="cwlblStageName">@cwProj_Goal.Name</span>
                 <span class="amountcounter volume-1-counter">
                     <span id="cwlblAct_Proj">@cwProj_Goal.Actual_Projected</span><br />
                     <p class="smalltext volume-1-smallstatus" id="cwlblGoal">/ @cwProj_Goal.Goal</p>
@@ -95,25 +95,25 @@
         <div class="revenue-graph-info conversion-graph-width conversion-graph-padding" style="border-left: 1px solid rgb(238, 238, 238); border-right: 1px solid rgb(238, 238, 238); ">
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
-            <p class="yearcounterHead" id="">@mqlBenchmark.stagename</p>
+            <p class="yearcounterHead margintop10per" id="">@mqlBenchmark.stagename</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
             <p class="amountcounter benchmarkVol" id="mqlBenchmarkVol" orig-val="@mqlBenchmark.stageVolume">@mqlBenchmark.stageVolume</p>
             <p class="smallamountcounter benchmarkVol benchmark" id="mqlBenchmark" orig-val="@mqlBenchmark.Benchmark">@mqlBenchmark.Benchmark</p>
             @*<p class="statustext above" id="">@mqlBenchmark.PercentageDifference</p>*@
             <div class="coversionline-chart2">
-                <div id="MQLLineChart"></div>
+                <div id="MQLLineChart" style="width:22%;"></div>
             </div>
         </div>
         <div class="revenue-graph-info conversion-graph-width conversion-graph-padding noborder">
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
-            <p class="yearcounterHead" id="">@cwBenchmark.stagename</p>
+            <p class="yearcounterHead margintop10per" id="">@cwBenchmark.stagename</p>
             <p class="smalltext" id="">Projected Vs Goal</p>
             <p class="amountcounter benchmarkVol" id="cwBenchmarkVol" orig-val="@cwBenchmark.stageVolume">@cwBenchmark.stageVolume</p>
             <p class="smallamountcounter benchmarkVol benchmark" id="cwBenchmark" orig-val="@cwBenchmark.Benchmark">@cwBenchmark.Benchmark</p>
             @*<p class="statustext " id="">@cwBenchmark.PercentageDifference</p>*@
             <div class="coversionline-chart2">
-                <div id="CWLineChart"></div>
+                <div id="CWLineChart" style="width:22%;"></div>
             </div>
         </div>
     </div>
@@ -298,8 +298,8 @@
             }
         });
         var _conversionlinechartHeight = 250, _conversionlinechartWidth = 340;
-        BindLineChart(mqlchartdata.categories, mqlchartdata.todayValue, mqlchartdata.isDisplay, mqlchartdata.series, mqlLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight, false);
-        BindLineChart(cwchartdata.categories, cwchartdata.todayValue, cwchartdata.isDisplay, cwchartdata.series, cwLinechartDivId, _conversionlinechartWidth, _conversionlinechartHeight, false);
+        BindLineChart(mqlchartdata.categories, mqlchartdata.todayValue, mqlchartdata.isDisplay, mqlchartdata.series, mqlLinechartDivId, _conversionlinechartHeight, false);
+        BindLineChart(cwchartdata.categories, cwchartdata.todayValue, cwchartdata.isDisplay, cwchartdata.series, cwLinechartDivId,_conversionlinechartHeight, false);
         
     });
 

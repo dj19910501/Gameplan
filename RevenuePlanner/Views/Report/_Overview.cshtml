@@ -69,14 +69,14 @@ td,tbody th {
             <div class="revenue-graph">
                 <div class="row">
                     <div class="revenue-graph-info noborder">
-                        <p class="yearcounter" id="lblRevProjectedYear">@revenue_Projected_Goal.year</p>
+                        <p class="yearcounter margintop10per" id="lblRevProjectedYear">@revenue_Projected_Goal.year</p>
                         <p class="smalltext" id="lblActual_Projected">Actual/Projected Vs Goal</p>
-                        <p class="amountcounter" id="lblRevActual_Projected">@revenue_Projected_Goal.Actual_Projected</p>
-                        <p class="smallamountcounter" id="lblRevGoal">@revenue_Projected_Goal.Goal</p>
-                        <p class="statustext" id="lblRevPercentage">@revenue_Projected_Goal.Percentage</p>
+                        <p class="amountcounterhead" id="lblRevActual_Projected">@revenue_Projected_Goal.Actual_Projected</p>
+                        <p class="smallamountcounterhead" id="lblRevGoal">@revenue_Projected_Goal.Goal</p>
+                        <p class="statustexthead" id="lblRevPercentage">@revenue_Projected_Goal.Percentage</p>
                     </div>
-                    <div class="r-graph">
-                        <div id="RevenueLineChart">
+                    <div class="r-graph" style="height:260px;">
+                        <div id="RevenueLineChart" style="height:100%;">
                         </div>
                     </div>
                 </div>
@@ -265,7 +265,7 @@ td,tbody th {
         //});
         var linechartDivId = "#RevenueLineChart";
         
-        BindLineChart(chartdata.categories, chartdata.todayValue, chartdata.isDisplay, chartdata.series, linechartDivId, _defautlChartWidth, _defautlChartHeight,true);
+        BindLineChart(chartdata.categories, chartdata.todayValue, chartdata.isDisplay, chartdata.series, linechartDivId, 260, true);
 
         // End:- Revenue_LineChart script 
 
