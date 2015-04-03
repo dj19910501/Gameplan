@@ -48,7 +48,8 @@
             @if (_recordCount > 0)
             {
                 int indx =1;
-                string tdId = string.Empty, tdWidth = string.Empty;
+                string tdId = string.Empty, tdWidth = string.Empty, prefix = string.Empty, suffix = string.Empty;
+                
                 foreach (sparklineData item in Model.sparklinechartdata)
                 {
                     if (indx.Equals(1))
@@ -62,7 +63,7 @@
                         classTotal = "lastraw";
                     }
                     <tr>
-                        <th class="@classTotal rpttipsytitle @tdWidth ">@item.Name</th>
+                        <th class="@classTotal rpttipsytitle @tdWidth " tooltip-prefix="@item.Tooltip_Prefix" tooltip-suffix="@item.Tooltip_Suffix">@item.Name</th>
                         @if (item.Is_Pos_Neg_Status)
                         {
                             if (item.IsPositive)

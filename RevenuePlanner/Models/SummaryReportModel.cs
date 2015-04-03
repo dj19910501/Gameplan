@@ -122,6 +122,8 @@ namespace RevenuePlanner.Models
         public bool IsPercentage { get; set; }
         public bool Is_Pos_Neg_Status { get; set; }
         public double Value { get; set; }
+        public string Tooltip_Prefix { get; set; }
+        public string Tooltip_Suffix { get; set; }
     }
     #endregion  
     

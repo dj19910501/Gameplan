@@ -32,6 +32,9 @@ namespace RevenuePlanner.Controllers
         bool isPublishedPlanExist = false;
         private string abovePlan = "Above Plan";
         private string belowPlan = "Below Plan";
+        private string strPercentage = "%";
+        private string strCurrency = "$";
+        
         #endregion
 
         #region Report Index
@@ -5267,7 +5270,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 #region "Set Linechart & Revenue Overview data to model"
-                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly,Enums.ReportType.Revenue.ToString());
+                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
                 objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                 objRevenueOverviewModel.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
                 objRevenueOverviewModel.projected_goal = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
@@ -5330,7 +5333,7 @@ namespace RevenuePlanner.Controllers
                 #region "Conversion : Set Linechart & Revenue Overview data to model"
                 string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
                 objLineChartData = new lineChartData();
-                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly,Enums.ReportType.Conversion.ToString());
+                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
                 objProjectedGoal = new Projected_Goal();
                 objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                 objProjectedGoal.Name = !string.IsNullOrEmpty(MQLStageLabel) ? MQLStageLabel : mqlStageCode;
@@ -5375,7 +5378,7 @@ namespace RevenuePlanner.Controllers
                 #region "Conversion : Set Linechart & Revenue Overview data to model"
                 string CWStageLabel = Common.GetLabel(Common.StageModeCW);
                 objLineChartData = new lineChartData();
-                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly, Enums.ReportType.Conversion.ToString());
+                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
                 objProjectedGoal = new Projected_Goal();
                 objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                 objProjectedGoal.Name = !string.IsNullOrEmpty(CWStageLabel) ? CWStageLabel : cwStageCode;
@@ -5925,7 +5928,8 @@ namespace RevenuePlanner.Controllers
                             _sparklinedata.RevenueTypeValue = TotalActualValueCurrentMonth.ToString();
                             _sparklinedata.IsPositive = true;
                             _sparklinedata.Value = TotalActualValueCurrentMonth;
-                            // _sparklinedata.Trend = "31, 71, 2, 71";
+                            _sparklinedata.Tooltip_Prefix = strCurrency.ToString();
+                            _sparklinedata.Tooltip_Suffix = string.Empty;
                             _sparklinedata.IsTotal = false;
                             #endregion
 
@@ -5962,6 +5966,8 @@ namespace RevenuePlanner.Controllers
                         _sparklinedata.IsPositive = true;
                         _sparklinedata.Trend = string.Join(", ", new List<string> { TotalTrendQ1.ToString(), TotalTrendQ2.ToString(), TotalTrendQ3.ToString(), TotalTrendQ4.ToString() });
                         _sparklinedata.IsTotal = true;
+                        _sparklinedata.Tooltip_Prefix = strCurrency.ToString();
+                        _sparklinedata.Tooltip_Suffix = string.Empty;
                         resultSparklineData.Add(_sparklinedata);
                         #endregion
 
@@ -6068,6 +6074,8 @@ namespace RevenuePlanner.Controllers
                             _sparklinedata.Is_Pos_Neg_Status = true;
                             _sparklinedata.IsTotal = false;
                             _sparklinedata.Value = Proj_Goal;
+                            _sparklinedata.Tooltip_Prefix = string.Empty;
+                            _sparklinedata.Tooltip_Suffix = strPercentage.ToString();
                             #endregion
 
                             #region "Calcualte Actual & Projected value Quarterly"
@@ -6162,6 +6170,8 @@ namespace RevenuePlanner.Controllers
                         _sparklinedata.Is_Pos_Neg_Status = true;
                         _sparklinedata.Trend = string.Join(", ", new List<string> { TotalTrendQ1.ToString(), TotalTrendQ2.ToString(), TotalTrendQ3.ToString(), TotalTrendQ4.ToString() });
                         _sparklinedata.IsTotal = true;
+                        _sparklinedata.Tooltip_Prefix = string.Empty;
+                        _sparklinedata.Tooltip_Suffix = strPercentage.ToString();
                         resultSparklineData.Add(_sparklinedata);
                         #endregion
 
@@ -6216,6 +6226,8 @@ namespace RevenuePlanner.Controllers
                             _sparklinedata.IsPositive = true;
                             _sparklinedata.IsTotal = false;
                             _sparklinedata.Value = TotalActualCostCurrentMonth;
+                            _sparklinedata.Tooltip_Prefix = strCurrency.ToString();
+                            _sparklinedata.Tooltip_Suffix = string.Empty;
                             #endregion
 
                             #region "Calcualte Actual & Projected value Quarterly"
@@ -6250,6 +6262,8 @@ namespace RevenuePlanner.Controllers
                         _sparklinedata.IsPositive = true;
                         _sparklinedata.Trend = string.Join(", ", new List<string> { TotalTrendQ1.ToString(), TotalTrendQ2.ToString(), TotalTrendQ3.ToString(), TotalTrendQ4.ToString() });
                         _sparklinedata.IsTotal = true;
+                        _sparklinedata.Tooltip_Prefix = strCurrency.ToString();
+                        _sparklinedata.Tooltip_Suffix = string.Empty;
                         resultSparklineData.Add(_sparklinedata);
                         #endregion
 
@@ -6345,6 +6359,8 @@ namespace RevenuePlanner.Controllers
                             _sparklinedata.Is_Pos_Neg_Status = true;
                             _sparklinedata.IsTotal = false;
                             _sparklinedata.Value = TotalROIValueCurrentMonth;
+                            //_sparklinedata.Tooltip_Prefix = strCurrency.ToString();
+                            _sparklinedata.Tooltip_Prefix = _sparklinedata.Tooltip_Suffix = string.Empty;
                             #endregion
 
                             #region "Calcualte Actual & Projected value Quarterly"
@@ -6361,16 +6377,16 @@ namespace RevenuePlanner.Controllers
                                 revActualQ4 = revCurrentMonthList.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.ActualValue);
 
                                 //// Get Actual Cost value upto currentmonth by Quarterly.
-                                costActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
-                                costActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
-                                costActualQ3 = CurrentMonthCostList.Where(actual => Q3.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
-                                costActualQ4 = CurrentMonthCostList.Where(actual => Q4.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
+                                costActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                costActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                costActualQ3 = CurrentMonthCostList.Where(actual => Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                costActualQ4 = CurrentMonthCostList.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
 
                                 //// Calculate ROI based on Actual Revenue & Cost value.
-                                ActualQ1 = costActualQ1 != 0 ? ((revActualQ1 - costActualQ1) / costActualQ1) : 0;
-                                ActualQ2 = costActualQ2 != 0 ? ((revActualQ2 - costActualQ2) / costActualQ2) : 0;
-                                ActualQ3 = costActualQ3 != 0 ? ((revActualQ3 - costActualQ3) / costActualQ3) : 0;
-                                ActualQ4 = costActualQ4 != 0 ? ((revActualQ4 - costActualQ4) / costActualQ4) : 0;
+                                //ActualQ1 = costActualQ1 != 0 ? ((revActualQ1 - costActualQ1) / costActualQ1) : 0;
+                                //ActualQ2 = costActualQ2 != 0 ? ((revActualQ2 - costActualQ2) / costActualQ2) : 0;
+                                //ActualQ3 = costActualQ3 != 0 ? ((revActualQ3 - costActualQ3) / costActualQ3) : 0;
+                                //ActualQ4 = costActualQ4 != 0 ? ((revActualQ4 - costActualQ4) / costActualQ4) : 0;
 
                                 //// Calculate Trend for Actual: Revenue.
                                 revTrendQ1 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
@@ -6385,16 +6401,16 @@ namespace RevenuePlanner.Controllers
                                 costTrendQ4 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
 
                                 //// Calculate ROI Trend
-                                TrendQ1 = costTrendQ1 != 0 ? ((revTrendQ1 - costTrendQ1) / costTrendQ1) : 0;
-                                TrendQ2 = costTrendQ2 != 0 ? ((revTrendQ2 - costTrendQ2) / costTrendQ2) : 0;
-                                TrendQ3 = costTrendQ3 != 0 ? ((revTrendQ3 - costTrendQ3) / costTrendQ3) : 0;
-                                TrendQ4 = costTrendQ4 != 0 ? ((revTrendQ4 - costTrendQ4) / costTrendQ4) : 0;
+                                TrendQ1 = (costActualQ1 + costTrendQ1) != 0 ? (((revActualQ1 + revTrendQ1) - (costActualQ1 + costTrendQ1)) / (costActualQ1 + costTrendQ1)) : 0;
+                                TrendQ2 = (costActualQ2 + costTrendQ2) != 0 ? (((revActualQ2 + revTrendQ2) - (costActualQ2 + costTrendQ2)) / (costActualQ2 + costTrendQ2)) : 0;
+                                TrendQ3 = (costActualQ3 + costTrendQ3) != 0 ? (((revActualQ3 + revTrendQ3) - (costActualQ3 + costTrendQ3)) / (costActualQ3 + costTrendQ3)) : 0;
+                                TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0;
 
-                                TotalTrendQ1 = TotalTrendQ1 + (ActualQ1 + TrendQ1);
-                                TotalTrendQ2 = TotalTrendQ2 + (ActualQ2 + TrendQ2);
-                                TotalTrendQ3 = TotalTrendQ3 + (ActualQ3 + TrendQ3);
-                                TotalTrendQ4 = TotalTrendQ4 + (ActualQ4 + TrendQ4);
-                                strTrendValue = string.Join(", ", new List<string> { (ActualQ1 + TrendQ1).ToString(), (ActualQ2 + TrendQ2).ToString(), (ActualQ3 + TrendQ3).ToString(), (ActualQ4 + TrendQ4).ToString() });
+                                //TotalTrendQ1 = TotalTrendQ1 + TrendQ1;//(ActualQ1 + TrendQ1);
+                                //TotalTrendQ2 = TotalTrendQ2 + TrendQ2;//(ActualQ2 + TrendQ2);
+                                //TotalTrendQ3 = TotalTrendQ3 + TrendQ3;//(ActualQ3 + TrendQ3);
+                                //TotalTrendQ4 = TotalTrendQ4 + TrendQ4;//(ActualQ4 + TrendQ4);
+                                strTrendValue = string.Join(", ", new List<string> { (TrendQ1).ToString(), (TrendQ2).ToString(), (TrendQ3).ToString(), (TrendQ4).ToString() });
                                 _sparklinedata.Trend = strTrendValue;
                             }
                             #endregion
@@ -6452,16 +6468,16 @@ namespace RevenuePlanner.Controllers
                             revActualQ4 = ActualDataTable.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.ActualValue);
 
                             //// Get Actual Cost value upto currentmonth by Quarterly.
-                            costActualQ1 = TacticCostData.Where(actual => Q1.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
-                            costActualQ2 = TacticCostData.Where(actual => Q2.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
-                            costActualQ3 = TacticCostData.Where(actual => Q3.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
-                            costActualQ4 = TacticCostData.Where(actual => Q4.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
+                            costActualQ1 = TacticCostData.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                            costActualQ2 = TacticCostData.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                            costActualQ3 = TacticCostData.Where(actual => Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                            costActualQ4 = TacticCostData.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
 
                             //// Calculate ROI based on Actual Revenue & Cost value.
-                            ActualQ1 = costActualQ1 != 0 ? ((revActualQ1 - costActualQ1) / costActualQ1) : 0;
-                            ActualQ2 = costActualQ2 != 0 ? ((revActualQ2 - costActualQ2) / costActualQ2) : 0;
-                            ActualQ3 = costActualQ3 != 0 ? ((revActualQ3 - costActualQ3) / costActualQ3) : 0;
-                            ActualQ4 = costActualQ4 != 0 ? ((revActualQ4 - costActualQ4) / costActualQ4) : 0;
+                            //ActualQ1 = costActualQ1 != 0 ? ((revActualQ1 - costActualQ1) / costActualQ1) : 0;
+                            //ActualQ2 = costActualQ2 != 0 ? ((revActualQ2 - costActualQ2) / costActualQ2) : 0;
+                            //ActualQ3 = costActualQ3 != 0 ? ((revActualQ3 - costActualQ3) / costActualQ3) : 0;
+                            //ActualQ4 = costActualQ4 != 0 ? ((revActualQ4 - costActualQ4) / costActualQ4) : 0;
 
                             //// Calculate Trend for Actual: Revenue.
                             revTrendQ1 = ActualTrendModelList.Where(_actTrend => Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
@@ -6476,15 +6492,15 @@ namespace RevenuePlanner.Controllers
                             costTrendQ4 = ActualCostTrendModelList.Where(_actTrend => Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
 
                             //// Calculate ROI Trend
-                            TrendQ1 = costTrendQ1 != 0 ? ((revTrendQ1 - costTrendQ1) / costTrendQ1) : 0;
-                            TrendQ2 = costTrendQ2 != 0 ? ((revTrendQ2 - costTrendQ2) / costTrendQ2) : 0;
-                            TrendQ3 = costTrendQ3 != 0 ? ((revTrendQ3 - costTrendQ3) / costTrendQ3) : 0;
-                            TrendQ4 = costTrendQ4 != 0 ? ((revTrendQ4 - costTrendQ4) / costTrendQ4) : 0;
+                            TrendQ1 = (costActualQ1 + costTrendQ1) != 0 ? (((revActualQ1 + revTrendQ1) - (costActualQ1 + costTrendQ1)) / (costActualQ1 + costTrendQ1)) : 0;
+                            TrendQ2 = (costActualQ2 + costTrendQ2) != 0 ? (((revActualQ2 + revTrendQ2) - (costActualQ2 + costTrendQ2)) / (costActualQ2 + costTrendQ2)) : 0;
+                            TrendQ3 = (costActualQ3 + costTrendQ3) != 0 ? (((revActualQ3 + revTrendQ3) - (costActualQ3 + costTrendQ3)) / (costActualQ3 + costTrendQ3)) : 0;
+                            TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0;
 
-                            TotalTrendQ1 = (ActualQ1 + TrendQ1);
-                            TotalTrendQ2 = (ActualQ2 + TrendQ2);
-                            TotalTrendQ3 = (ActualQ3 + TrendQ3);
-                            TotalTrendQ4 = (ActualQ4 + TrendQ4);
+                            TotalTrendQ1 = TrendQ1;//(ActualQ1 + TrendQ1);
+                            TotalTrendQ2 = TrendQ2;//(ActualQ2 + TrendQ2);
+                            TotalTrendQ3 = TrendQ3;//(ActualQ3 + TrendQ3);
+                            TotalTrendQ4 = TrendQ4;//(ActualQ4 + TrendQ4);
 
                         }
                         #endregion
@@ -6503,6 +6519,7 @@ namespace RevenuePlanner.Controllers
                         _sparklinedata.Is_Pos_Neg_Status = true;
                         _sparklinedata.Trend = string.Join(", ", new List<string> { TotalTrendQ1.ToString(), TotalTrendQ2.ToString(), TotalTrendQ3.ToString(), TotalTrendQ4.ToString() });
                         _sparklinedata.IsTotal = true;
+                        _sparklinedata.Tooltip_Prefix = _sparklinedata.Tooltip_Suffix = string.Empty;
                         resultSparklineData.Add(_sparklinedata);
                         #endregion
 
@@ -6683,6 +6700,11 @@ namespace RevenuePlanner.Controllers
                     // Get TacticDataTable list of Projected Revenue.
                     ProjectedTacticList = GetProjectedCWValueDataTableForReport(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
                 }
+                else if (StageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()))
+                {
+                    // Get TacticDataTable list of Projected Revenue.
+                    ProjectedTacticList = GetConversionProjectedINQData(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
+                }
 
                 // Create ProjectedTacticModel from ProjectedRevenueTacticList to get ProjecteRevenueTrend model list.
                 lstTactic = (from _prjTac in ProjectedTacticList
@@ -6757,7 +6779,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ProjectedTrendModelList"> Trend Model list of Projected</param>
         /// <param name="timeframeOption">Selected Year from left Filter</param>
         /// <returns>Return LineChart Model</returns>
-        public lineChartData GetLineChartData(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<ProjectedTrendModel> ProjectedTrendModelList, string timeframeOption, bool IsQuarterly,string ReportType)
+        public lineChartData GetLineChartData(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<ProjectedTrendModel> ProjectedTrendModelList, string timeframeOption, bool IsQuarterly)
         {
             #region "Declare Local Varialbles"
             List<string> categories = new List<string>();
@@ -6813,16 +6835,8 @@ namespace RevenuePlanner.Controllers
                     ProjectedQ2 = ProjectedTrendModelList.Where(_projected => Q2.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
                     GoalQ2 = ProjectedTrendModelList.Where(_projected => Q2.Contains(_projected.Month)).Sum(_projected => _projected.Value);
 
-                    if (ReportType.Equals(Enums.ReportType.Conversion.ToString()))
-                    {
-                        Actual_ProjectedQ2 = (ActualQ2 + ProjectedQ2);
-                        serData2.Add(GoalQ2);
-                    }
-                    else
-                    {
-                        Actual_ProjectedQ2 = Actual_ProjectedQ1 + (ActualQ2 + ProjectedQ2);
-                        serData2.Add(GoalQ1 + GoalQ2);
-                    }
+                    Actual_ProjectedQ2 = Actual_ProjectedQ1 + (ActualQ2 + ProjectedQ2);
+                    serData2.Add(GoalQ1 + GoalQ2);
                     serData1.Add(Actual_ProjectedQ2);
                     //serData2.Add(GoalQ1 + GoalQ2);
 
@@ -6830,16 +6844,8 @@ namespace RevenuePlanner.Controllers
                     ProjectedQ3 = ProjectedTrendModelList.Where(_projected => Q3.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
                     GoalQ3 = ProjectedTrendModelList.Where(_projected => Q3.Contains(_projected.Month)).Sum(_projected => _projected.Value);
 
-                    if (ReportType.Equals(Enums.ReportType.Conversion.ToString()))
-                    {
-                        Actual_ProjectedQ3 = (ActualQ3 + ProjectedQ3);
-                        serData2.Add(GoalQ3);
-                    }
-                    else
-                    {
-                        Actual_ProjectedQ3 = Actual_ProjectedQ2 + (ActualQ3 + ProjectedQ3);
-                        serData2.Add(GoalQ1 + GoalQ2 + GoalQ3);
-                    }
+                    Actual_ProjectedQ3 = Actual_ProjectedQ2 + (ActualQ3 + ProjectedQ3);
+                    serData2.Add(GoalQ1 + GoalQ2 + GoalQ3);
                     serData1.Add(Actual_ProjectedQ3);
                     //serData2.Add(GoalQ1 + GoalQ2 + GoalQ3);
 
@@ -6847,16 +6853,8 @@ namespace RevenuePlanner.Controllers
                     ProjectedQ4 = ProjectedTrendModelList.Where(_projected => Q4.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
                     GoalQ4 = ProjectedTrendModelList.Where(_projected => Q4.Contains(_projected.Month)).Sum(_projected => _projected.Value);
                     
-                    if (ReportType.Equals(Enums.ReportType.Conversion.ToString()))
-                    {
-                        Actual_ProjectedQ4 = (ActualQ4 + ProjectedQ4);
-                        serData2.Add(GoalQ4);
-                    }
-                    else
-                    {
-                        Actual_ProjectedQ4 = Actual_ProjectedQ3 + (ActualQ4 + ProjectedQ4);
-                        serData2.Add(GoalQ1 + GoalQ2 + GoalQ3 + GoalQ4);
-                    }
+                    Actual_ProjectedQ4 = Actual_ProjectedQ3 + (ActualQ4 + ProjectedQ4);
+                    serData2.Add(GoalQ1 + GoalQ2 + GoalQ3 + GoalQ4);
                     serData1.Add(Actual_ProjectedQ4);
                     //serData2.Add(GoalQ1 + GoalQ2 + GoalQ3 + GoalQ4);
                 }
@@ -6869,16 +6867,10 @@ namespace RevenuePlanner.Controllers
                         monthlyActualTotal = ActualTacticList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Actualvalue);
                         monthlyProjectedTotal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.TrendValue);
                         monthlyGoalTotal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
-                        if (ReportType.Equals(Enums.ReportType.Conversion.ToString()))
-                        {
-                            Actual_Projected = (monthlyActualTotal + monthlyProjectedTotal);
-                            Goal = monthlyGoalTotal;
-                        }
-                        else
-                        {
-                            Actual_Projected = Actual_Projected + (monthlyActualTotal + monthlyProjectedTotal);
-                            Goal = Goal + monthlyGoalTotal;
-                        }
+                        
+                        Actual_Projected = Actual_Projected + (monthlyActualTotal + monthlyProjectedTotal);
+                        Goal = Goal + monthlyGoalTotal;
+                        
                         serData1.Add(Actual_Projected);
                         serData2.Add(Goal);
                     }

@@ -361,6 +361,7 @@ td,tbody th {
                     hideDelay: 0,
                     shared: true,
                     padding: 0,
+                    valueDecimals: 1,
                     positioner: function (w, h, point) {
                         return { x: point.plotX - w / 2, y: point.plotY - h };
                     }
@@ -432,7 +433,9 @@ td,tbody th {
                 }],
                 tooltip: {
                     headerFormat: '<span style="font-size: 10px">' + $td.parent().find('th').html() + ', Q{point.x}:</span><br/>',
-                    pointFormat: '<b>${point.y}</b> '
+                    pointFormat: '<b>{point.y}</b>',
+                    valuePrefix: $td.parent().find('th').attr('tooltip-prefix'),
+                    valueSuffix: $td.parent().find('th').attr('tooltip-suffix')
                 },
                 chart: chart
             });
