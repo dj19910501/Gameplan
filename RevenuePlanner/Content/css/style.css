@@ -12236,6 +12236,12 @@ max-width:20% !important;
 .margintop10per { 
     margin-top: 10%;
 }
+.margintop5per { 
+    margin-top: 5%;
+}
+.margintop10per { 
+    margin-top: 10%;
+}
 .marginright6per { 
     margin-right: 6%;
 }
@@ -12255,9 +12261,9 @@ max-width:20% !important;
    /*for revenue table*/
   .reveanue-table {width: 100%;}
   .top-revenue{ width:43%; float:left; padding: 2% 4% 2% 2%; margin-top:1%; margin-bottom:1%; border-right:1px #eee solid;}
-  .top-revenue h5 {font-family: source_sans_proregular; font-size:20px;font-weight:normal; float:left; margin-right:15px; margin-top: 3px; }
+  .top-revenue h5 {font-family: source_sans_proregular; font-size:22px;font-weight:normal; float:left; margin-right:15px; margin-top: 3px; }
   .top-cost{ width:43%; float:left; padding: 2% 0% 2% 6%; margin-top:1%; margin-bottom:1%;}
-  .top-cost h5 {font-family: source_sans_proregular; font-size:20px;  font-weight:normal; float:left; margin-right:15px;  margin-top: 3px;}
+  .top-cost h5 {font-family: source_sans_proregular; font-size:22px;  font-weight:normal; float:left; margin-right:15px;  margin-top: 3px;}
   .top-revenue-header{ width:90%;}
   .top-cost-header{ width:90%;}
 
@@ -12590,7 +12596,7 @@ max-width:20% !important;
 
 .volume-1-counter {
     float: left;
-    margin-top: 33px !important;
+    margin-top: 10% !important;
     width: 43%;
     text-align: left !important;
 }
@@ -12874,3 +12880,5 @@ max-width:20% !important;
         border-radius:4px;
         font-size:13px;
     }
+
+ 
