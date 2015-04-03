@@ -965,7 +965,6 @@ namespace RevenuePlanner.Helpers
             Cost,
             ROI
         }
-
     }
 
     #region Authorization

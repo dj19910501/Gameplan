@@ -12232,7 +12232,8 @@ max-width:20% !important;
    .revenue-graph .revenue-graph-info {margin:1% 0% 1% 0%; padding:2%; width:21%; float:left; text-align:center;}
    /*.conversion-graph-padding { padding: 0 25px !important; }*/
    .conversion-graph-width { width:29% !important; }
-   .revenue-graph-info .yearcounter { margin:10% 6% 0% 0%;font-family: source_sans_proregular; font-size:20px; text-transform:uppercase; font-weight:500;text-align:right;}
+   .revenue-graph-info .yearcounter { margin:10% 6% 0% 0%;font-family: source_sans_proregular; font-size:20px; text-transform:uppercase; font-weight:500; text-align:center;}
+    .revenue-graph-info .conversion-lbl-right { text-align:right !important; }
     .revenue-graph-info .yearcounterHead { margin:0% 0% 0% 0%;font-family: source_sans_proregular; font-size:20px; text-transform:none; font-weight:500;text-align:center;}
    .revenue-graph-info .smalltext { font-size:14px;font-family: source_sans_proregular; font-weight:normal;text-align:center; color:#7c7c7c;}
    .revenue-graph-info .smallamountcounter { font-size:14px;font-family: source_sans_proregular; font-weight:normal; margin: 0 auto; width:50%; display:block; color:#7c7c7c;}

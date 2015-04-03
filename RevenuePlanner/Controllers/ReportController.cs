@@ -5214,7 +5214,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 #region "Set Linechart & Revenue Overview data to model"
-                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
+                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly,Enums.ReportType.Revenue.ToString());
                 objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                 objRevenueOverviewModel.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
                 objRevenueOverviewModel.projected_goal = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
@@ -5277,7 +5277,7 @@ namespace RevenuePlanner.Controllers
                 #region "Conversion : Set Linechart & Revenue Overview data to model"
                 string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
                 objLineChartData = new lineChartData();
-                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
+                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly,Enums.ReportType.Conversion.ToString());
                 objProjectedGoal = new Projected_Goal();
                 objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                 objProjectedGoal.Name = !string.IsNullOrEmpty(MQLStageLabel) ? MQLStageLabel : mqlStageCode;
@@ -5322,7 +5322,7 @@ namespace RevenuePlanner.Controllers
                 #region "Conversion : Set Linechart & Revenue Overview data to model"
                 string CWStageLabel = Common.GetLabel(Common.StageModeCW);
                 objLineChartData = new lineChartData();
-                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
+                objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly, Enums.ReportType.Conversion.ToString());
                 objProjectedGoal = new Projected_Goal();
                 objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                 objProjectedGoal.Name = !string.IsNullOrEmpty(CWStageLabel) ? CWStageLabel : cwStageCode;
@@ -6615,7 +6615,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ProjectedTrendModelList"> Trend Model list of Projected</param>
         /// <param name="timeframeOption">Selected Year from left Filter</param>
         /// <returns>Return LineChart Model</returns>
-        public lineChartData GetLineChartData(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<ProjectedTrendModel> ProjectedTrendModelList, string timeframeOption, bool IsQuarterly)
+        public lineChartData GetLineChartData(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<ProjectedTrendModel> ProjectedTrendModelList, string timeframeOption, bool IsQuarterly,string ReportType)
         {
             #region "Declare Local Varialbles"
             List<string> categories = new List<string>();
@@ -6650,7 +6650,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-                #region "Monthly Calculate Actual, Projected & Goal Total"
+                #region "Monthly/Quarterly Calculate Actual, Projected & Goal Total"
                 if (IsQuarterly)
                 {
                     //curntPeriod = PeriodPrefix + i;
@@ -6658,44 +6658,87 @@ namespace RevenuePlanner.Controllers
                     List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
                     List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
                     List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-                    double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, ProjectedQ1 = 0, ProjectedQ2 = 0, ProjectedQ3 = 0, ProjectedQ4 = 0, GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
+                    double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, ProjectedQ1 = 0, ProjectedQ2 = 0, ProjectedQ3 = 0, ProjectedQ4 = 0, GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0, Actual_ProjectedQ1 = 0, Actual_ProjectedQ2 = 0, Actual_ProjectedQ3 = 0, Actual_ProjectedQ4 = 0;
 
                     ActualQ1 = ActualTacticList.Where(actual => Q1.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
                     ProjectedQ1 = ProjectedTrendModelList.Where(_projected => Q1.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
                     GoalQ1 = ProjectedTrendModelList.Where(_projected => Q1.Contains(_projected.Month)).Sum(_projected => _projected.Value);
-                    serData1.Add(ActualQ1 + ProjectedQ1);
+                    Actual_ProjectedQ1 = ActualQ1 + ProjectedQ1;
+                    serData1.Add(Actual_ProjectedQ1);
                     serData2.Add(GoalQ1);
 
                     ActualQ2 = ActualTacticList.Where(actual => Q2.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
                     ProjectedQ2 = ProjectedTrendModelList.Where(_projected => Q2.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
                     GoalQ2 = ProjectedTrendModelList.Where(_projected => Q2.Contains(_projected.Month)).Sum(_projected => _projected.Value);
-                    serData1.Add(ActualQ2 + ProjectedQ2);
-                    serData2.Add(GoalQ2);
+
+                    if (ReportType.Equals(Enums.ReportType.Conversion.ToString()))
+                    {
+                        Actual_ProjectedQ2 = (ActualQ2 + ProjectedQ2);
+                        serData2.Add(GoalQ2);
+                    }
+                    else
+                    {
+                        Actual_ProjectedQ2 = Actual_ProjectedQ1 + (ActualQ2 + ProjectedQ2);
+                        serData2.Add(GoalQ1 + GoalQ2);
+                    }
+                    serData1.Add(Actual_ProjectedQ2);
+                    //serData2.Add(GoalQ1 + GoalQ2);
 
                     ActualQ3 = ActualTacticList.Where(actual => Q3.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
                     ProjectedQ3 = ProjectedTrendModelList.Where(_projected => Q3.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
                     GoalQ3 = ProjectedTrendModelList.Where(_projected => Q3.Contains(_projected.Month)).Sum(_projected => _projected.Value);
-                    serData1.Add(ActualQ3 + ProjectedQ3);
-                    serData2.Add(GoalQ3);
+
+                    if (ReportType.Equals(Enums.ReportType.Conversion.ToString()))
+                    {
+                        Actual_ProjectedQ3 = (ActualQ3 + ProjectedQ3);
+                        serData2.Add(GoalQ3);
+                    }
+                    else
+                    {
+                        Actual_ProjectedQ3 = Actual_ProjectedQ2 + (ActualQ3 + ProjectedQ3);
+                        serData2.Add(GoalQ1 + GoalQ2 + GoalQ3);
+                    }
+                    serData1.Add(Actual_ProjectedQ3);
+                    //serData2.Add(GoalQ1 + GoalQ2 + GoalQ3);
 
                     ActualQ4 = ActualTacticList.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
                     ProjectedQ4 = ProjectedTrendModelList.Where(_projected => Q4.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
                     GoalQ4 = ProjectedTrendModelList.Where(_projected => Q4.Contains(_projected.Month)).Sum(_projected => _projected.Value);
-                    serData1.Add(ActualQ4 + ProjectedQ4);
-                    serData2.Add(GoalQ4);
-
-
+                    
+                    if (ReportType.Equals(Enums.ReportType.Conversion.ToString()))
+                    {
+                        Actual_ProjectedQ4 = (ActualQ4 + ProjectedQ4);
+                        serData2.Add(GoalQ4);
+                    }
+                    else
+                    {
+                        Actual_ProjectedQ4 = Actual_ProjectedQ3 + (ActualQ4 + ProjectedQ4);
+                        serData2.Add(GoalQ1 + GoalQ2 + GoalQ3 + GoalQ4);
+                    }
+                    serData1.Add(Actual_ProjectedQ4);
+                    //serData2.Add(GoalQ1 + GoalQ2 + GoalQ3 + GoalQ4);
                 }
                 else
                 {
+                    double Actual_Projected = 0, Goal = 0;
                     for (int i = 1; i <= catLength; i++)
                     {
                         curntPeriod = PeriodPrefix + i;
                         monthlyActualTotal = ActualTacticList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Actualvalue);
                         monthlyProjectedTotal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.TrendValue);
                         monthlyGoalTotal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
-                        serData1.Add(monthlyActualTotal + monthlyProjectedTotal);
-                        serData2.Add(monthlyGoalTotal);
+                        if (ReportType.Equals(Enums.ReportType.Conversion.ToString()))
+                        {
+                            Actual_Projected = (monthlyActualTotal + monthlyProjectedTotal);
+                            Goal = monthlyGoalTotal;
+                        }
+                        else
+                        {
+                            Actual_Projected = Actual_Projected + (monthlyActualTotal + monthlyProjectedTotal);
+                            Goal = Goal + monthlyGoalTotal;
+                        }
+                        serData1.Add(Actual_Projected);
+                        serData2.Add(Goal);
                     }
                 }
                 #endregion
