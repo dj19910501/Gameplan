@@ -12249,7 +12249,7 @@ max-width:20% !important;
     .revenue-graph-info .yearcounterHead { margin-bottom:0%; font-family: source_sans_proregular; font-size:20px; text-transform:none; font-weight:500;text-align:center;}
    .revenue-graph-info .smalltext { font-size:14px;font-family: source_sans_proregular; font-weight:normal;text-align:center; color:#7c7c7c;}
    .revenue-graph-info .smallamountcounter { font-size:14px;font-family: source_sans_proregular; font-weight:normal; margin: 0 auto; width:50%; display:block; color:#7c7c7c;}
-   .revenue-graph-info .amountcounter  { margin-top:10% 0% 0% 2%;font-family: source_sans_proregular; font-size:42px; text-transform:uppercase; font-weight:normal;display:inline-block; width:35%;}
+   .revenue-graph-info .amountcounter  { margin-top:10% 0% 0% 2%;font-family: source_sans_proregular; font-size:42px; text-transform:none; font-weight:normal;display:inline-block; width:35%;}
    .revenue-graph-info .amountcounterhead  { margin:13% 0% 0% 0%; font-family: source_sans_proregular; font-size:42px; font-weight:normal;display:inline-block;}
    .revenue-graph-info .smallamountcounterhead { font-size:14px;font-family: source_sans_proregular; font-weight:normal; margin: 0 auto; display:block; color:#7c7c7c;}
    .revenue-graph-info .statustexthead { font-size:24px;font-family: source_sans_proregular; font-weight:normal;text-align:center; margin:13% 0% 13% 0%; color:#FF0000;}
