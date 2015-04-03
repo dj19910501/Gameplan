@@ -2379,13 +2379,13 @@ namespace RevenuePlanner.Controllers
                     TrendRevenue = 0,
                     PlanCost = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Cost, IsTacticCustomField),
                     //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
-                    ActualCost = GetActualCostData(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
+                    ActualCost = GetActualCostDataByWeightage(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
                     TrendCost = 0,
                     RunRate = GetTrendRevenueDataContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, lastMonth, monthList, Tacticdata, IsTacticCustomField).Where(ar => p.planTacticList.Contains(ar.PlanTacticId)).Sum(ar => ar.MQL),
                     PipelineCoverage = 0,
                     RevSpend = GetRevenueVSSpendContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthWithYearList, monthList, revenue, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField),
                     RevenueTotal = GetActualRevenueTotal(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthList, revenue, Tacticdata, IsTacticCustomField),
-                    CostTotal = GetActualCostData(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && monthWithYearList.Contains(mr.Month)).Sum(r => r.Value)
+                    CostTotal = GetActualCostDataByWeightage(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && monthWithYearList.Contains(mr.Month)).Sum(r => r.Value)
                 }).Select(p => p).Distinct().OrderBy(p => p.Title);
 
                 return Json(campaignListFinal, JsonRequestBehavior.AllowGet);
@@ -2394,7 +2394,7 @@ namespace RevenuePlanner.Controllers
         }
 
 
-        private List<TacticMonthValue> GetActualCostData(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, List<TacticStageValue> Tacticdata, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList, bool IsTacticCustomField)
+        private List<TacticMonthValue> GetActualCostDataByWeightage(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, List<TacticStageValue> Tacticdata, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList, bool IsTacticCustomField)
         {
             List<TacticMonthValue> listmonthwise = new List<TacticMonthValue>();
             List<ActualDataTable> ActualData = new List<ActualDataTable>();
@@ -2413,6 +2413,38 @@ namespace RevenuePlanner.Controllers
                     List<Plan_Campaign_Program_Tactic_Actual> innerTacticActualList = tactic.ActualTacticList.Where(actualTac => actualTac.StageTitle == Enums.InspectStage.Cost.ToString()).ToList();
                     ActualData = GetActualTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, CustomFieldType, Enums.InspectStage.Cost, innerTacticActualList, Tacticdata, IsTacticCustomField);
                     ActualData.ForEach(actual => listmonthwise.Add(new TacticMonthValue { Id = id, Month = tactic.TacticYear + actual.Period, Value = actual.ActualValue }));
+                }
+            }
+            return listmonthwise;
+        }
+
+        /// <summary>
+        /// Get Actual Cost Data With Month Wise Without Weightage.
+        /// Added By: Viral Kadiya
+        /// </summary>
+        /// <param name="Tacticdata"></param>
+        /// <param name="LineItemActualList"></param>
+        /// <param name="LineItemList"></param>
+        /// <returns> Return Tactic Projected MonthWise Cost Data </returns>
+        private List<TacticMonthValue> GetActualCostData(List<TacticStageValue> Tacticdata, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList)
+        {
+            List<TacticMonthValue> listmonthwise = new List<TacticMonthValue>();
+            List<ActualDataTable> ActualData = new List<ActualDataTable>();
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> innerLineItemActualList = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+            foreach (var tactic in Tacticdata)
+            {
+                int id = tactic.TacticObj.PlanTacticId;
+                var InnerLineItemList = LineItemList.Where(l => l.PlanTacticId == id).ToList();
+                if (InnerLineItemList.Count() > 0)
+                {
+                    innerLineItemActualList = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                    innerLineItemActualList = LineItemActualList.Where(la => InnerLineItemList.Select(line => line.PlanLineItemId).Contains(la.PlanLineItemId)).ToList();
+                    innerLineItemActualList.ForEach(innerline => listmonthwise.Add(new TacticMonthValue { Id = id, Month = tactic.TacticYear + innerline.Period, Value = innerline.Value }));
+                }
+                else
+                {
+                    List<Plan_Campaign_Program_Tactic_Actual> innerTacticActualList = tactic.ActualTacticList.Where(actualTac => actualTac.StageTitle == Enums.InspectStage.Cost.ToString()).ToList();
+                    innerTacticActualList.ForEach(actual => listmonthwise.Add(new TacticMonthValue { Id = id, Month = tactic.TacticYear + actual.Period, Value = actual.Actualvalue }));
                 }
             }
             return listmonthwise;
@@ -2520,7 +2552,7 @@ namespace RevenuePlanner.Controllers
         {
             List<TacticMonthValue> lstMonthData = new List<TacticMonthValue>();
             List<Plan_Campaign_Program_Tactic_Actual> lstActualsTacticData = new List<Plan_Campaign_Program_Tactic_Actual>();
-            lstMonthData = GetActualCostData(CustomFieldId, CustomFieldOptionId, customFieldType, TacticData, LineItemList, LineItemActualList, IsTacticCustomField);
+            lstMonthData = GetActualCostDataByWeightage(CustomFieldId, CustomFieldOptionId, customFieldType, TacticData, LineItemList, LineItemActualList, IsTacticCustomField);
             lstActualsTacticData = ActualTacticList.Where(actualTac => planTacticList.Contains(actualTac.PlanTacticId) && monthList.Contains(actualTac.Period) && actualTac.StageTitle == revenue).ToList();
             List<ActualDataTable> lstActualDataTable = new List<ActualDataTable>();
             lstActualDataTable = GetActualTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, customFieldType, Enums.InspectStage.Revenue, lstActualsTacticData, TacticData, IsTacticCustomField);
@@ -4989,6 +5021,27 @@ namespace RevenuePlanner.Controllers
 
             return Actualtacticdata;
         }
+
+        /// <summary>
+        /// Get Actuals of Tactic Data.
+        /// </summary>
+        /// <param name="ActualTacticList"></param>
+        /// <returns>Return list of ActualDataTable</returns>
+        public List<ActualDataTable> GetActualTacticDataTable(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList)
+        {
+            List<ActualDataTable> Actualtacticdata = new List<ActualDataTable>();
+            ActualDataTable objActualTacticdt = new ActualDataTable();
+            foreach (Plan_Campaign_Program_Tactic_Actual objActual in ActualTacticList)
+            {
+                objActualTacticdt = new ActualDataTable();
+                objActualTacticdt.PlanTacticId = objActual.PlanTacticId;
+                objActualTacticdt.Period = objActual.Period;
+                objActualTacticdt.ActualValue = objActual.Actualvalue;
+                objActualTacticdt.StageTitle = objActual.StageTitle;
+                Actualtacticdata.Add(objActualTacticdt);
+            }
+            return Actualtacticdata;
+        }
         #endregion
 
         #region Get Owners by planID Method
@@ -6145,7 +6198,7 @@ namespace RevenuePlanner.Controllers
                             #region "Get ActualCost Data"
                             fltrTacticData = Tacticdata.Where(tac => _obj.planTacticList.Contains(tac.TacticObj.PlanTacticId)).ToList();
                             #region "Get Cost by LineItem"
-                            TacticCostData = GetActualCostData(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, fltrTacticData, tblTacticLineItemList, tblLineItemActualList, IsTacticCustomField);
+                            TacticCostData = GetActualCostDataByWeightage(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, fltrTacticData, tblTacticLineItemList, tblLineItemActualList, IsTacticCustomField);
                             CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
                             TotalActualCostCurrentMonth = CurrentMonthCostList.Sum(tac => tac.Value);
                             TotalRevenueTypeCol = TotalRevenueTypeCol + TotalActualCostCurrentMonth;
@@ -6258,7 +6311,7 @@ namespace RevenuePlanner.Controllers
                             fltrTacticData = Tacticdata.Where(tac => _obj.planTacticList.Contains(tac.TacticObj.PlanTacticId)).ToList();
 
                             #region "Get Cost by LineItem"
-                            TacticCostData = GetActualCostData(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, fltrTacticData, tblTacticLineItemList, tblLineItemActualList, IsTacticCustomField);
+                            TacticCostData = GetActualCostDataByWeightage(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, fltrTacticData, tblTacticLineItemList, tblLineItemActualList, IsTacticCustomField);
                             CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
                             TotalCostValueCurrentMonth = CurrentMonthCostList.Sum(tac => tac.Value);
                             //TotalRevenueTypeCol = TotalRevenueTypeCol + TotalCostValueCurrentMonth;
@@ -6348,6 +6401,95 @@ namespace RevenuePlanner.Controllers
 
                             lstSparklineData.Add(_sparklinedata);
                         }
+
+                        #region "Calculate Total for Proj.Vs Goal & Trend"
+                        #region "Calculate Revenue Actuals List"
+                        ActualCostTrendModelList = new List<ActualTrendModel>();
+                        ActualTrendModelList = new List<ActualTrendModel>();
+                        ActualDataTable = new List<Models.ActualDataTable>();
+                        revFltrActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
+                        revFltrActuals = revActualTacticList.Where(actual => IncludeCurrentMonth.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
+                        ActualDataTable = GetActualTacticDataTable(revFltrActuals);
+                        TotalRevenueValueCurrentMonth = ActualDataTable.Sum(actual => actual.ActualValue);
+                        TacticIds = new List<int>();
+                        TacticIds = Tacticdata.Select(tac => tac.TacticObj.PlanTacticId).ToList();
+                        ActualTrendModelList = GetActualTrendModel(Tacticdata, TacticIds, ActualDataTable);
+                        #endregion
+
+                        #region " Get Cost Actuals List "
+                        TacticCostData = new List<TacticMonthValue>();
+                        TacticCostData = GetActualCostData(Tacticdata, tblTacticLineItemList, tblLineItemActualList);
+                        TacticCostData = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
+                        TotalCostValueCurrentMonth = TacticCostData.Sum(tac => tac.Value);
+                        #endregion
+
+                        #region "Get Actuals Cost Trend Model List"
+                        ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, TacticIds, TacticCostData);
+                        #endregion
+
+                        #region "Calculate ROI"
+                        if (TotalCostValueCurrentMonth != 0)
+                        {
+                            TotalRevenueTypeCol = (TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth;
+                        }
+                        else
+                        {
+                            TotalRevenueTypeCol = 0;
+                        }
+                        #endregion
+
+                        #region "Calcualte Actual & Projected value Quarterly"
+                        if (IsQuarterly)
+                        {
+                            strActual = strProjected = strTrendValue = string.Empty;
+                            revActualQ1 = revActualQ2 = revActualQ3 = revActualQ4 = costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = revTrendQ1 = revTrendQ2 = revTrendQ3 = revTrendQ4 = costTrendQ1 = costTrendQ2 = costTrendQ3 = costTrendQ4 = 0;
+                            ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = TrendQ1 = TrendQ2 = TrendQ3 = TrendQ4 = 0;
+
+                            //// Get Actual Revenue value upto currentmonth by Quarterly.
+                            revActualQ1 = ActualDataTable.Where(actual => Q1.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+                            revActualQ2 = ActualDataTable.Where(actual => Q2.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+                            revActualQ3 = ActualDataTable.Where(actual => Q3.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+                            revActualQ4 = ActualDataTable.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+
+                            //// Get Actual Cost value upto currentmonth by Quarterly.
+                            costActualQ1 = TacticCostData.Where(actual => Q1.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
+                            costActualQ2 = TacticCostData.Where(actual => Q2.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
+                            costActualQ3 = TacticCostData.Where(actual => Q3.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
+                            costActualQ4 = TacticCostData.Where(actual => Q4.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.Id)).FirstOrDefault().TacticYear + actual.Month)).Sum(actual => actual.Value);
+
+                            //// Calculate ROI based on Actual Revenue & Cost value.
+                            ActualQ1 = costActualQ1 != 0 ? ((revActualQ1 - costActualQ1) / costActualQ1) : 0;
+                            ActualQ2 = costActualQ2 != 0 ? ((revActualQ2 - costActualQ2) / costActualQ2) : 0;
+                            ActualQ3 = costActualQ3 != 0 ? ((revActualQ3 - costActualQ3) / costActualQ3) : 0;
+                            ActualQ4 = costActualQ4 != 0 ? ((revActualQ4 - costActualQ4) / costActualQ4) : 0;
+
+                            //// Calculate Trend for Actual: Revenue.
+                            revTrendQ1 = ActualTrendModelList.Where(_actTrend => Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            revTrendQ2 = ActualTrendModelList.Where(_actTrend => Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            revTrendQ3 = ActualTrendModelList.Where(_actTrend => Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            revTrendQ4 = ActualTrendModelList.Where(_actTrend => Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+
+                            //// Calculate Trend for Actual: Cost.
+                            costTrendQ1 = ActualCostTrendModelList.Where(_actTrend => Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            costTrendQ2 = ActualCostTrendModelList.Where(_actTrend => Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            costTrendQ3 = ActualCostTrendModelList.Where(_actTrend => Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            costTrendQ4 = ActualCostTrendModelList.Where(_actTrend => Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+
+                            //// Calculate ROI Trend
+                            TrendQ1 = costTrendQ1 != 0 ? ((revTrendQ1 - costTrendQ1) / costTrendQ1) : 0;
+                            TrendQ2 = costTrendQ2 != 0 ? ((revTrendQ2 - costTrendQ2) / costTrendQ2) : 0;
+                            TrendQ3 = costTrendQ3 != 0 ? ((revTrendQ3 - costTrendQ3) / costTrendQ3) : 0;
+                            TrendQ4 = costTrendQ4 != 0 ? ((revTrendQ4 - costTrendQ4) / costTrendQ4) : 0;
+
+                            TotalTrendQ1 = (ActualQ1 + TrendQ1);
+                            TotalTrendQ2 = (ActualQ2 + TrendQ2);
+                            TotalTrendQ3 = (ActualQ3 + TrendQ3);
+                            TotalTrendQ4 = (ActualQ4 + TrendQ4);
+
+                        }
+                        #endregion
+
+                        #endregion
 
                         resultSparklineData = lstSparklineData.OrderByDescending(data => data.Value).Take(5).ToList();
 
