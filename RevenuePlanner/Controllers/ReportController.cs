@@ -6013,7 +6013,7 @@ namespace RevenuePlanner.Controllers
                             TotalActualValueCurrentMonth = CurrentMonthActualTacticList.Sum(ta => ta.ActualValue); // Get Total of Actual Revenue value. 
                             TotalRevenueTypeCol = TotalRevenueTypeCol + TotalActualValueCurrentMonth;
 
-                            List<ActualTrendModel> ActualTrendModelList = GetActualTrendModel(Tacticdata, _obj.planTacticList, CurrentMonthActualTacticList);
+                            //List<ActualTrendModel> ActualTrendModelList = GetActualTrendModel(Tacticdata, _obj.planTacticList, CurrentMonthActualTacticList);
                             #endregion
 
                             #region "Set Sparkline chart Data"
@@ -6359,7 +6359,7 @@ namespace RevenuePlanner.Controllers
                             #endregion
 
                             #region "Get Actuals Trend Model List"
-                            List<ActualTrendModel> ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, _obj.planTacticList, CurrentMonthCostList);
+                            //List<ActualTrendModel> ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, _obj.planTacticList, CurrentMonthCostList);
                             #endregion
                             #endregion
 
@@ -6379,19 +6379,33 @@ namespace RevenuePlanner.Controllers
                             {
                                 strActual = strProjected = strTrendValue = string.Empty;
                                 ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = TrendQ1 = TrendQ2 = TrendQ3 = TrendQ4 = 0;
+                                
                                 ActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length -2) : string.Empty)).Sum(actual => actual.Value);
-                                ActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                                ActualQ3 = CurrentMonthCostList.Where(actual => Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                                ActualQ4 = CurrentMonthCostList.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                                TrendQ1 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                TrendQ2 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                TrendQ3 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                TrendQ4 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                TotalTrendQ1 = TotalTrendQ1 + (ActualQ1 + TrendQ1);
-                                TotalTrendQ2 = TotalTrendQ2 + (ActualQ2 + TrendQ2);
-                                TotalTrendQ3 = TotalTrendQ3 + (ActualQ3 + TrendQ3);
-                                TotalTrendQ4 = TotalTrendQ4 + (ActualQ4 + TrendQ4);
-                                strTrendValue = string.Join(", ", new List<string> { (ActualQ1 + TrendQ1).ToString(), (ActualQ2 + TrendQ2).ToString(), (ActualQ3 + TrendQ3).ToString(), (ActualQ4 + TrendQ4).ToString() });
+                                // return record from list which contains Q1 or Q2 months : Summed Up (Q1 + Q2) Actuals Value
+                                ActualQ2 = ActualQ1 + CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                // return record from list which contains Q1,Q2 or Q3 months : Summed Up (Q1 + Q2 + Q3) Actuals Value
+                                ActualQ3 = ActualQ2 + CurrentMonthCostList.Where(actual => Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                // return record from list which contains Q1,Q2, Q3 or Q4 months : Summed Up (Q1 + Q2 + Q3 + Q4) Actuals Value
+                                ActualQ4 = ActualQ3 + CurrentMonthCostList.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                
+                                #region "Old Code"
+                                //TrendQ1 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //TrendQ2 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //TrendQ3 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //TrendQ4 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //TotalTrendQ1 = TotalTrendQ1 + (ActualQ1 + TrendQ1);
+                                //TotalTrendQ2 = TotalTrendQ2 + (ActualQ2 + TrendQ2);
+                                //TotalTrendQ3 = TotalTrendQ3 + (ActualQ3 + TrendQ3);
+                                //TotalTrendQ4 = TotalTrendQ4 + (ActualQ4 + TrendQ4); 
+                                #endregion
+
+                                TotalTrendQ1 = TotalTrendQ1 + (ActualQ1);
+                                TotalTrendQ2 = TotalTrendQ2 + (ActualQ2);
+                                TotalTrendQ3 = TotalTrendQ3 + (ActualQ3);
+                                TotalTrendQ4 = TotalTrendQ4 + (ActualQ4); 
+
+                                //strTrendValue = string.Join(", ", new List<string> { (ActualQ1 + TrendQ1).ToString(), (ActualQ2 + TrendQ2).ToString(), (ActualQ3 + TrendQ3).ToString(), (ActualQ4 + TrendQ4).ToString() });
+                                strTrendValue = string.Join(", ", new List<string> { (ActualQ1).ToString(), (ActualQ2).ToString(), (ActualQ3).ToString(), (ActualQ4).ToString() });
                                 _sparklinedata.Trend = strTrendValue;
                             }
                             #endregion
@@ -6476,7 +6490,7 @@ namespace RevenuePlanner.Controllers
                             #endregion
 
                             #region "Get Actuals Cost Trend Model List"
-                            ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, _obj.planTacticList, CurrentMonthCostList);
+                            //ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, _obj.planTacticList, CurrentMonthCostList);
                             #endregion
 
                             #endregion
@@ -6516,45 +6530,42 @@ namespace RevenuePlanner.Controllers
 
                                 //// Get Actual Revenue value upto currentmonth by Quarterly.
                                 revActualQ1 = revCurrentMonthList.Where(actual => Q1.Contains(actual.Period)).Sum(actual => actual.ActualValue);
-                                revActualQ2 = revCurrentMonthList.Where(actual => Q2.Contains(actual.Period)).Sum(actual => actual.ActualValue);
-                                revActualQ3 = revCurrentMonthList.Where(actual => Q3.Contains(actual.Period)).Sum(actual => actual.ActualValue);
-                                revActualQ4 = revCurrentMonthList.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+                                revActualQ2 = revCurrentMonthList.Where(actual => Q1.Contains(actual.Period) || Q2.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+                                revActualQ3 = revCurrentMonthList.Where(actual => Q1.Contains(actual.Period) || Q2.Contains(actual.Period) || Q3.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+                                revActualQ4 = revCurrentMonthList.Where(actual => Q1.Contains(actual.Period) || Q2.Contains(actual.Period) || Q3.Contains(actual.Period) || Q4.Contains(actual.Period)).Sum(actual => actual.ActualValue);
 
                                 //// Get Actual Cost value upto currentmonth by Quarterly.
                                 costActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                                costActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                                costActualQ3 = CurrentMonthCostList.Where(actual => Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                                costActualQ4 = CurrentMonthCostList.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                costActualQ2 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                costActualQ3 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                                costActualQ4 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
 
-                                //// Calculate ROI based on Actual Revenue & Cost value.
-                                //ActualQ1 = costActualQ1 != 0 ? ((revActualQ1 - costActualQ1) / costActualQ1) : 0;
-                                //ActualQ2 = costActualQ2 != 0 ? ((revActualQ2 - costActualQ2) / costActualQ2) : 0;
-                                //ActualQ3 = costActualQ3 != 0 ? ((revActualQ3 - costActualQ3) / costActualQ3) : 0;
-                                //ActualQ4 = costActualQ4 != 0 ? ((revActualQ4 - costActualQ4) / costActualQ4) : 0;
+                                #region "Old Code"
+                                ////// Calculate Trend for Actual: Revenue.
+                                //revTrendQ1 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //revTrendQ2 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //revTrendQ3 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //revTrendQ4 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
 
-                                //// Calculate Trend for Actual: Revenue.
-                                revTrendQ1 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                revTrendQ2 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                revTrendQ3 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                revTrendQ4 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                ////// Calculate Trend for Actual: Cost.
+                                //costTrendQ1 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //costTrendQ2 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //costTrendQ3 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                //costTrendQ4 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
 
-                                //// Calculate Trend for Actual: Cost.
-                                costTrendQ1 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                costTrendQ2 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                costTrendQ3 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                                costTrendQ4 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                                ////// Calculate ROI Trend
+                                //TrendQ1 = (costActualQ1 + costTrendQ1) != 0 ? (((revActualQ1 + revTrendQ1) - (costActualQ1 + costTrendQ1)) / (costActualQ1 + costTrendQ1)) : 0;
+                                //TrendQ2 = (costActualQ2 + costTrendQ2) != 0 ? (((revActualQ2 + revTrendQ2) - (costActualQ2 + costTrendQ2)) / (costActualQ2 + costTrendQ2)) : 0;
+                                //TrendQ3 = (costActualQ3 + costTrendQ3) != 0 ? (((revActualQ3 + revTrendQ3) - (costActualQ3 + costTrendQ3)) / (costActualQ3 + costTrendQ3)) : 0;
+                                //TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0; 
+                                #endregion
 
-                                //// Calculate ROI Trend
-                                TrendQ1 = (costActualQ1 + costTrendQ1) != 0 ? (((revActualQ1 + revTrendQ1) - (costActualQ1 + costTrendQ1)) / (costActualQ1 + costTrendQ1)) : 0;
-                                TrendQ2 = (costActualQ2 + costTrendQ2) != 0 ? (((revActualQ2 + revTrendQ2) - (costActualQ2 + costTrendQ2)) / (costActualQ2 + costTrendQ2)) : 0;
-                                TrendQ3 = (costActualQ3 + costTrendQ3) != 0 ? (((revActualQ3 + revTrendQ3) - (costActualQ3 + costTrendQ3)) / (costActualQ3 + costTrendQ3)) : 0;
-                                TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0;
+                                TrendQ1 = (costActualQ1) != 0 ? (((revActualQ1) - (costActualQ1)) / (costActualQ1)) : 0;
+                                TrendQ2 = (costActualQ2) != 0 ? (((revActualQ2) - (costActualQ2)) / (costActualQ2)) : 0;
+                                TrendQ3 = (costActualQ3) != 0 ? (((revActualQ3) - (costActualQ3)) / (costActualQ3)) : 0;
+                                TrendQ4 = (costActualQ4) != 0 ? (((revActualQ4) - (costActualQ4)) / (costActualQ4)) : 0; 
 
-                                //TotalTrendQ1 = TotalTrendQ1 + TrendQ1;//(ActualQ1 + TrendQ1);
-                                //TotalTrendQ2 = TotalTrendQ2 + TrendQ2;//(ActualQ2 + TrendQ2);
-                                //TotalTrendQ3 = TotalTrendQ3 + TrendQ3;//(ActualQ3 + TrendQ3);
-                                //TotalTrendQ4 = TotalTrendQ4 + TrendQ4;//(ActualQ4 + TrendQ4);
-                                strTrendValue = string.Join(", ", new List<string> { (TrendQ1).ToString(), (TrendQ2).ToString(), (TrendQ3).ToString(), (TrendQ4).ToString() });
+                                 strTrendValue = string.Join(", ", new List<string> { (TrendQ1).ToString(), (TrendQ2).ToString(), (TrendQ3).ToString(), (TrendQ4).ToString() });
                                 _sparklinedata.Trend = strTrendValue;
                             }
                             #endregion
@@ -6573,7 +6584,7 @@ namespace RevenuePlanner.Controllers
                         TotalRevenueValueCurrentMonth = ActualDataTable.Sum(actual => actual.ActualValue);
                         TacticIds = new List<int>();
                         TacticIds = Tacticdata.Select(tac => tac.TacticObj.PlanTacticId).ToList();
-                        ActualTrendModelList = GetActualTrendModel(Tacticdata, TacticIds, ActualDataTable);
+                        //ActualTrendModelList = GetActualTrendModel(Tacticdata, TacticIds, ActualDataTable);
                         #endregion
 
                         #region " Get Cost Actuals List "
@@ -6584,7 +6595,7 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                         #region "Get Actuals Cost Trend Model List"
-                        ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, TacticIds, TacticCostData);
+                        //ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, TacticIds, TacticCostData);
                         #endregion
 
                         #region "Calculate ROI"
@@ -6607,44 +6618,45 @@ namespace RevenuePlanner.Controllers
 
                             //// Get Actual Revenue value upto currentmonth by Quarterly.
                             revActualQ1 = ActualDataTable.Where(actual => Q1.Contains(actual.Period)).Sum(actual => actual.ActualValue);
-                            revActualQ2 = ActualDataTable.Where(actual => Q2.Contains(actual.Period)).Sum(actual => actual.ActualValue);
-                            revActualQ3 = ActualDataTable.Where(actual => Q3.Contains(actual.Period)).Sum(actual => actual.ActualValue);
-                            revActualQ4 = ActualDataTable.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+                            revActualQ2 = ActualDataTable.Where(actual => Q1.Contains(actual.Period) || Q2.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+                            revActualQ3 = ActualDataTable.Where(actual => Q1.Contains(actual.Period) || Q2.Contains(actual.Period) || Q3.Contains(actual.Period)).Sum(actual => actual.ActualValue);
+                            revActualQ4 = ActualDataTable.Where(actual => Q1.Contains(actual.Period) || Q2.Contains(actual.Period) || Q3.Contains(actual.Period) || Q4.Contains(actual.Period)).Sum(actual => actual.ActualValue);
 
                             //// Get Actual Cost value upto currentmonth by Quarterly.
                             costActualQ1 = TacticCostData.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                            costActualQ2 = TacticCostData.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                            costActualQ3 = TacticCostData.Where(actual => Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                            costActualQ4 = TacticCostData.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                            costActualQ2 = TacticCostData.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                            costActualQ3 = TacticCostData.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
+                            costActualQ4 = TacticCostData.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
 
-                            //// Calculate ROI based on Actual Revenue & Cost value.
-                            //ActualQ1 = costActualQ1 != 0 ? ((revActualQ1 - costActualQ1) / costActualQ1) : 0;
-                            //ActualQ2 = costActualQ2 != 0 ? ((revActualQ2 - costActualQ2) / costActualQ2) : 0;
-                            //ActualQ3 = costActualQ3 != 0 ? ((revActualQ3 - costActualQ3) / costActualQ3) : 0;
-                            //ActualQ4 = costActualQ4 != 0 ? ((revActualQ4 - costActualQ4) / costActualQ4) : 0;
+                            #region " Old Code "
+                            ////// Calculate Trend for Actual: Revenue.
+                            //revTrendQ1 = ActualTrendModelList.Where(_actTrend => Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            //revTrendQ2 = ActualTrendModelList.Where(_actTrend => Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            //revTrendQ3 = ActualTrendModelList.Where(_actTrend => Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            //revTrendQ4 = ActualTrendModelList.Where(_actTrend => Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
 
-                            //// Calculate Trend for Actual: Revenue.
-                            revTrendQ1 = ActualTrendModelList.Where(_actTrend => Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            revTrendQ2 = ActualTrendModelList.Where(_actTrend => Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            revTrendQ3 = ActualTrendModelList.Where(_actTrend => Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            revTrendQ4 = ActualTrendModelList.Where(_actTrend => Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            ////// Calculate Trend for Actual: Cost.
+                            //costTrendQ1 = ActualCostTrendModelList.Where(_actTrend => Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            //costTrendQ2 = ActualCostTrendModelList.Where(_actTrend => Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            //costTrendQ3 = ActualCostTrendModelList.Where(_actTrend => Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            //costTrendQ4 = ActualCostTrendModelList.Where(_actTrend => Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
 
-                            //// Calculate Trend for Actual: Cost.
-                            costTrendQ1 = ActualCostTrendModelList.Where(_actTrend => Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            costTrendQ2 = ActualCostTrendModelList.Where(_actTrend => Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            costTrendQ3 = ActualCostTrendModelList.Where(_actTrend => Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            costTrendQ4 = ActualCostTrendModelList.Where(_actTrend => Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
+                            ////// Calculate ROI Trend
+                            //TrendQ1 = (costActualQ1 + costTrendQ1) != 0 ? (((revActualQ1 + revTrendQ1) - (costActualQ1 + costTrendQ1)) / (costActualQ1 + costTrendQ1)) : 0;
+                            //TrendQ2 = (costActualQ2 + costTrendQ2) != 0 ? (((revActualQ2 + revTrendQ2) - (costActualQ2 + costTrendQ2)) / (costActualQ2 + costTrendQ2)) : 0;
+                            //TrendQ3 = (costActualQ3 + costTrendQ3) != 0 ? (((revActualQ3 + revTrendQ3) - (costActualQ3 + costTrendQ3)) / (costActualQ3 + costTrendQ3)) : 0;
+                            //TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0; 
+                            #endregion
 
-                            //// Calculate ROI Trend
-                            TrendQ1 = (costActualQ1 + costTrendQ1) != 0 ? (((revActualQ1 + revTrendQ1) - (costActualQ1 + costTrendQ1)) / (costActualQ1 + costTrendQ1)) : 0;
-                            TrendQ2 = (costActualQ2 + costTrendQ2) != 0 ? (((revActualQ2 + revTrendQ2) - (costActualQ2 + costTrendQ2)) / (costActualQ2 + costTrendQ2)) : 0;
-                            TrendQ3 = (costActualQ3 + costTrendQ3) != 0 ? (((revActualQ3 + revTrendQ3) - (costActualQ3 + costTrendQ3)) / (costActualQ3 + costTrendQ3)) : 0;
-                            TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0;
+                            TotalTrendQ1 = (costActualQ1) != 0 ? (((revActualQ1) - (costActualQ1)) / (costActualQ1)) : 0;
+                            TotalTrendQ2 = (costActualQ2) != 0 ? (((revActualQ2) - (costActualQ2)) / (costActualQ2)) : 0;
+                            TotalTrendQ3 = (costActualQ3) != 0 ? (((revActualQ3) - (costActualQ3)) / (costActualQ3)) : 0;
+                            TotalTrendQ4 = (costActualQ4) != 0 ? (((revActualQ4) - (costActualQ4)) / (costActualQ4)) : 0; 
 
-                            TotalTrendQ1 = TrendQ1;//(ActualQ1 + TrendQ1);
-                            TotalTrendQ2 = TrendQ2;//(ActualQ2 + TrendQ2);
-                            TotalTrendQ3 = TrendQ3;//(ActualQ3 + TrendQ3);
-                            TotalTrendQ4 = TrendQ4;//(ActualQ4 + TrendQ4);
+                            //TotalTrendQ1 = TrendQ1;//(ActualQ1 + TrendQ1);
+                            //TotalTrendQ2 = TrendQ2;//(ActualQ2 + TrendQ2);
+                            //TotalTrendQ3 = TrendQ3;//(ActualQ3 + TrendQ3);
+                            //TotalTrendQ4 = TrendQ4;//(ActualQ4 + TrendQ4);
 
                         }
                         #endregion
