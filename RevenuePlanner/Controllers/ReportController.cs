@@ -6461,7 +6461,7 @@ namespace RevenuePlanner.Controllers
                             TotalRevenueValueCurrentMonth = revCurrentMonthList.Sum(ta => ta.ActualValue); // Get Total of Actual Revenue value. 
                             //TotalRevenueTypeCol = TotalRevenueTypeCol + TotalRevenueValueCurrentMonth;
 
-                            ActualTrendModelList = GetActualTrendModel(Tacticdata, _obj.planTacticList, revCurrentMonthList);
+                            //ActualTrendModelList = GetActualTrendModel(Tacticdata, _obj.planTacticList, revCurrentMonthList);
                             #endregion
 
                             #region " Get Cost Actuals List "
