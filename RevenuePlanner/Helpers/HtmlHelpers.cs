@@ -4540,48 +4540,40 @@ namespace RevenuePlanner.Helpers
         /// Render activity names for all campaigns
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="ActivityType"></param>
-        /// <param name="ParentActivityId"></param>
+        /// <param name="activityType"></param>
+        /// <param name="parentActivityId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static MvcHtmlString ActivityMainParentReport(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModelReport> model)
+        public static MvcHtmlString ActivityMainParentReport(this HtmlHelper helper, string activityType, string parentActivityId, List<BudgetModelReport> model)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (BudgetModelReport c in model.Where(p => p.ActivityType == Helpers.ActivityType.ActivityPlan && p.ParentActivityId == ParentActivityId).ToList())
+            foreach (BudgetModelReport c in model.Where(p => p.ActivityType == ActivityType.ActivityPlan && p.ParentActivityId == parentActivityId).ToList())
             {
-                if (model.Where(p => p.ActivityType == Helpers.ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId).Count() > 0)
+                if (model.Any(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId))
                 {
                     TagBuilder tr = new TagBuilder("tr");
-                    //tr.AddCssClass("displayRow");
                     TagBuilder td = new TagBuilder("td");
                     td.AddCssClass("campaign-rowReport audience");
 
 
                     TagBuilder div = new TagBuilder("div");
-                    div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                    div.Attributes.Add("id", activityType + c.ActivityId);
                     div.AddCssClass("firstLevel");
                     TagBuilder aLink = new TagBuilder("span");
-                    if (model.Where(p => p.ActivityType == Helpers.ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId).Count() > 0)
+                    if (model.Any(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId))
                     {
                         TagBuilder aAccordian = new TagBuilder("a");
                         aAccordian.AddCssClass("accordionClick");
-                        // aAccordian.AddCssClass("collapse");
                         div.InnerHtml = aAccordian.ToString();
-                        //aLink.Attributes.Add("style", "cursor:pointer;");
                     }
                     else
                     {
                         aLink.Attributes.Add("style", "padding-left:20px;");
                     }
-                    //aLink.Attributes.Add("id", c.ActivityId.ToString());
-                    //aLink.Attributes.Add("linktype", "main");
                     aLink.InnerHtml = c.ActivityName;
-
                     div.InnerHtml += aLink.ToString();
-
                     td.InnerHtml = div.ToString();
-
-                    td.InnerHtml += ActivityChildReport(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model).ToString();
+                    td.InnerHtml += ActivityChildReport(helper, ActivityType.ActivityCampaign, c.ActivityId, model).ToString();
                     tr.InnerHtml = td.ToString();
                     sb.AppendLine(tr.ToString());
                 }
@@ -4593,11 +4585,11 @@ namespace RevenuePlanner.Helpers
         /// Render activity names for all children
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="ActivityType"></param>
-        /// <param name="ParentActivityId"></param>
+        /// <param name="activityType"></param>
+        /// <param name="parentActivityId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static MvcHtmlString ActivityChildReport(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModelReport> model)
+        public static MvcHtmlString ActivityChildReport(this HtmlHelper helper, string activityType, string parentActivityId, List<BudgetModelReport> model)
         {
 
             string mainClass = "sub program-lvl";
@@ -4605,27 +4597,27 @@ namespace RevenuePlanner.Helpers
             string parentClassName = "plan";
             string childActivity = "tactic";
             bool needAccrodian = true;
-            if (ActivityType == Helpers.ActivityType.ActivityCampaign)
+            if (activityType == ActivityType.ActivityCampaign)
             {
                 mainClass = "sub campaign-lvl";
                 innerClass = "campaignLevelReport";
                 childActivity = "program";
             }
-            else if (ActivityType == Helpers.ActivityType.ActivityProgram)
+            else if (activityType == ActivityType.ActivityProgram)
             {
                 mainClass = "sub program-lvl";
                 innerClass = "programLevel";
                 parentClassName = "campaign";
                 childActivity = "tactic";
             }
-            else if (ActivityType == Helpers.ActivityType.ActivityTactic)
+            else if (activityType == ActivityType.ActivityTactic)
             {
                 mainClass = "sub tactic-lvl";
                 innerClass = "tacticLevel";
                 parentClassName = "program";
                 childActivity = "lineitem";
             }
-            else if (ActivityType == Helpers.ActivityType.ActivityLineItem)
+            else if (activityType == ActivityType.ActivityLineItem)
             {
                 mainClass = "sub lineItem-lvl";
                 innerClass = "lineitemLevel";
@@ -4634,28 +4626,26 @@ namespace RevenuePlanner.Helpers
                 childActivity = "";
             }
 
-            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList();
+            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == activityType && p.ParentActivityId == parentActivityId).ToList();
             if (lst.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
                 TagBuilder div = new TagBuilder("div");
                 div.AddCssClass(mainClass);
-                div.Attributes.Add("data-parent", parentClassName + ParentActivityId.ToString());
+                div.Attributes.Add("data-parent", parentClassName + parentActivityId);
                 foreach (BudgetModelReport p in lst)
                 {
                     TagBuilder divProgram = new TagBuilder("div");
-                    divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
+                    divProgram.Attributes.Add("id", activityType + p.ActivityId);
                     divProgram.AddCssClass(innerClass);
 
                     TagBuilder aLink = new TagBuilder("span");
                     if (needAccrodian)
                     {
-                        if (model.Where(p1 => p1.ActivityType == childActivity && p1.ParentActivityId == p.ActivityId).Count() > 0)
+                        if (model.Any(p1 => p1.ActivityType == childActivity && p1.ParentActivityId == p.ActivityId))
                         {
                             TagBuilder aAccordian = new TagBuilder("a");
-                            //aAccordian.Attributes.Add("href", "#");
                             aAccordian.AddCssClass("accordionClick");
-                            //aAccordian.AddCssClass("collapse");
                             divProgram.InnerHtml = aAccordian.ToString();
                         }
                         else
@@ -4664,69 +4654,58 @@ namespace RevenuePlanner.Helpers
                         }
                     }
 
-                    //aLink.Attributes.Add("href", "#");
                     aLink.InnerHtml = p.ActivityName;
-
-
-                    //aLink.Attributes.Add("id", p.Id);
-                    //aLink.Attributes.Add("linktype", ActivityType);
-
                     divProgram.InnerHtml += aLink.ToString();
-
                     div.InnerHtml += divProgram.ToString();
 
-                    if (ActivityType == Helpers.ActivityType.ActivityCampaign)
-                        div.InnerHtml += ActivityChildReport(helper, Helpers.ActivityType.ActivityProgram, p.ActivityId, model).ToString();
-                    else if (ActivityType == Helpers.ActivityType.ActivityProgram)
-                        div.InnerHtml += ActivityChildReport(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model).ToString();
-                    else if (ActivityType == Helpers.ActivityType.ActivityTactic)
-                        div.InnerHtml += ActivityChildReport(helper, Helpers.ActivityType.ActivityLineItem, p.ActivityId, model).ToString();
+                    if (activityType == ActivityType.ActivityCampaign)
+                        div.InnerHtml += ActivityChildReport(helper, ActivityType.ActivityProgram, p.ActivityId, model).ToString();
+                    else if (activityType == ActivityType.ActivityProgram)
+                        div.InnerHtml += ActivityChildReport(helper, ActivityType.ActivityTactic, p.ActivityId, model).ToString();
+                    else if (activityType == ActivityType.ActivityTactic)
+                        div.InnerHtml += ActivityChildReport(helper, ActivityType.ActivityLineItem, p.ActivityId, model).ToString();
                 }
                 sb.AppendLine(div.ToString());
                 return new MvcHtmlString(sb.ToString());
             }
-            else
-            {
-                return new MvcHtmlString(string.Empty);
-            }
+            return new MvcHtmlString(string.Empty);
         }
 
         /// <summary>
         /// Render month header and plans month values
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="ActivityType"></param>
-        /// <param name="ActivityId"></param>
+        /// <param name="activityType"></param>
+        /// <param name="activityId"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static MvcHtmlString PlanMonthReport(this HtmlHelper helper, string ActivityType, string ActivityId, List<BudgetModelReport> model, string AllocatedBy, bool isPlanTab)
+        public static MvcHtmlString PlanMonthReport(this HtmlHelper helper, string activityType, string activityId, List<BudgetModelReport> model, string allocatedBy, bool isPlanTab)
         {
             StringBuilder sb = new StringBuilder();
             TagBuilder trHeader = new TagBuilder("tr");
             TagBuilder trValue = new TagBuilder("tr");
             TagBuilder trInnerHeader = new TagBuilder("tr");
-            int IncrementCount = 1;
-            bool IsQuarter = false;
-            if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
+            int incrementCount = 1;
+            bool isQuarter = false;
+            if (allocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
-                IncrementCount = 3;
-                IsQuarter = true;
+                incrementCount = 3;
+                isQuarter = true;
             }
-            BudgetModelReport objMain = model.Where(main => main.ActivityType == ActivityType && main.ActivityId == ActivityId).FirstOrDefault();
+            BudgetModelReport objMain = model.FirstOrDefault(main => main.ActivityType == activityType && main.ActivityId == activityId);
             string className = "";// "event-row";
-            double AllocatedValue = 0;
-            double ActualValue = 0;
-            double PlannedValue = 0;
-            double ChildAllocatedValue = 0;
-            for (int i = 1; i <= 12; i += IncrementCount)
+            double actualValue = 0;
+            double plannedValue = 0;
+            double childAllocatedValue = 0;
+            for (int i = 1; i <= 12; i += incrementCount)
             {
                 TagBuilder tdHeader = new TagBuilder("td");
                 //tdHeader.AddCssClass("event-row");
                 TagBuilder divHeader = new TagBuilder("div");
 
-                if (IsQuarter)
+                if (isQuarter)
                 {
-                    divHeader.InnerHtml = "Q" + ((i / IncrementCount) + 1).ToString();
+                    divHeader.InnerHtml = "Q" + ((i / incrementCount) + 1);
                 }
                 else
                 {
@@ -4748,88 +4727,69 @@ namespace RevenuePlanner.Helpers
                 aActual.Attributes.Add("id", "Actual_Down_" + i);
                 divHeaderInnerActual.InnerHtml += aActual;
 
-                divValueInnerActual.Attributes.Add("id", ActivityType + ActivityId.ToString());
-
-                AllocatedValue = 0;
-                ActualValue = 0;
-                PlannedValue = 0;
-                ChildAllocatedValue = 0;
+                divValueInnerActual.Attributes.Add("id", activityType + activityId);
 
                 switch (i)
                 {
                     case 1:
-                        ActualValue = objMain.MonthActual.Jan;
-                        AllocatedValue = objMain.MonthAllocated.Jan;
-                        PlannedValue = objMain.MonthPlanned.Jan;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Jan;
+                        actualValue = objMain.MonthActual.Jan;
+                        plannedValue = objMain.MonthPlanned.Jan;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Jan;
                         break;
                     case 2:
-                        ActualValue = objMain.MonthActual.Feb;
-                        AllocatedValue = objMain.MonthAllocated.Feb;
-                        PlannedValue = objMain.MonthPlanned.Feb;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Feb;
+                        actualValue = objMain.MonthActual.Feb;
+                        plannedValue = objMain.MonthPlanned.Feb;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Feb;
                         break;
                     case 3:
-                        ActualValue = objMain.MonthActual.Mar;
-                        AllocatedValue = objMain.MonthAllocated.Mar;
-                        PlannedValue = objMain.MonthPlanned.Mar;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Mar;
+                        actualValue = objMain.MonthActual.Mar;
+                        plannedValue = objMain.MonthPlanned.Mar;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Mar;
                         break;
                     case 4:
-                        ActualValue = objMain.MonthActual.Apr;
-                        AllocatedValue = objMain.MonthAllocated.Apr;
-                        PlannedValue = objMain.MonthPlanned.Apr;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Apr;
+                        actualValue = objMain.MonthActual.Apr;
+                        plannedValue = objMain.MonthPlanned.Apr;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Apr;
                         break;
                     case 5:
-                        ActualValue = objMain.MonthActual.May;
-                        AllocatedValue = objMain.MonthAllocated.May;
-                        PlannedValue = objMain.MonthPlanned.May;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.May;
+                        actualValue = objMain.MonthActual.May;
+                        plannedValue = objMain.MonthPlanned.May;
+                        childAllocatedValue = objMain.ChildMonthAllocated.May;
                         break;
                     case 6:
-                        ActualValue = objMain.MonthActual.Jun;
-                        AllocatedValue = objMain.MonthAllocated.Jun;
-                        PlannedValue = objMain.MonthPlanned.Jun;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Jun;
+                        actualValue = objMain.MonthActual.Jun;
+                        plannedValue = objMain.MonthPlanned.Jun;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Jun;
                         break;
                     case 7:
-                        ActualValue = objMain.MonthActual.Jul;
-                        AllocatedValue = objMain.MonthAllocated.Jul;
-                        PlannedValue = objMain.MonthPlanned.Jul;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Jul;
+                        actualValue = objMain.MonthActual.Jul;
+                        plannedValue = objMain.MonthPlanned.Jul;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Jul;
                         break;
                     case 8:
-                        ActualValue = objMain.MonthActual.Aug;
-                        AllocatedValue = objMain.MonthAllocated.Aug;
-                        PlannedValue = objMain.MonthPlanned.Aug;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Aug;
+                        actualValue = objMain.MonthActual.Aug;
+                        plannedValue = objMain.MonthPlanned.Aug;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Aug;
                         break;
                     case 9:
-                        ActualValue = objMain.MonthActual.Sep;
-                        AllocatedValue = objMain.MonthAllocated.Sep;
-                        PlannedValue = objMain.MonthPlanned.Sep;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Sep;
+                        actualValue = objMain.MonthActual.Sep;
+                        plannedValue = objMain.MonthPlanned.Sep;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Sep;
                         break;
                     case 10:
-                        ActualValue = objMain.MonthActual.Oct;
-                        AllocatedValue = objMain.MonthAllocated.Oct;
-                        PlannedValue = objMain.MonthPlanned.Oct;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Oct;
+                        actualValue = objMain.MonthActual.Oct;
+                        plannedValue = objMain.MonthPlanned.Oct;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Oct;
                         break;
                     case 11:
-                        ActualValue = objMain.MonthActual.Nov;
-                        AllocatedValue = objMain.MonthAllocated.Nov;
-                        PlannedValue = objMain.MonthPlanned.Nov;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Nov;
+                        actualValue = objMain.MonthActual.Nov;
+                        plannedValue = objMain.MonthPlanned.Nov;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Nov;
                         break;
                     case 12:
-                        ActualValue = objMain.MonthActual.Dec;
-                        AllocatedValue = objMain.MonthAllocated.Dec;
-                        PlannedValue = objMain.MonthPlanned.Dec;
-                        ChildAllocatedValue = objMain.ChildMonthAllocated.Dec;
-                        break;
-                    default:
+                        actualValue = objMain.MonthActual.Dec;
+                        plannedValue = objMain.MonthPlanned.Dec;
+                        childAllocatedValue = objMain.ChildMonthAllocated.Dec;
                         break;
                 }
 
@@ -4837,17 +4797,16 @@ namespace RevenuePlanner.Helpers
                 double dblProgress = 0;
                 // Actual
                 className = "";
-                divValueInnerActual.InnerHtml = ActualValue.ToString(formatThousand);
+                divValueInnerActual.InnerHtml = actualValue.ToString(formatThousand);
                 if (isPlanTab)
                 {
-                    if (ActualValue > ChildAllocatedValue)
+                    if (actualValue > childAllocatedValue)
                     {
                         className += budgetError;
-                        divValueInnerActual.Attributes.Add("OverBudget", Math.Abs(ChildAllocatedValue - ActualValue).ToString(formatThousand));
+                        divValueInnerActual.Attributes.Add("OverBudget", Math.Abs(childAllocatedValue - actualValue).ToString(formatThousand));
                     }
                     span = new TagBuilder("span");
-                    dblProgress = 0;
-                    dblProgress = (ActualValue == 0 && ChildAllocatedValue == 0) ? 0 : (ActualValue > 0 && ChildAllocatedValue == 0) ? 101 : ActualValue / ChildAllocatedValue * 100;
+                    dblProgress = (actualValue == 0 && childAllocatedValue == 0) ? 0 : (actualValue > 0 && childAllocatedValue == 0) ? 101 : actualValue / childAllocatedValue * 100;
 
                     span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                     if (dblProgress > 100)
@@ -4889,18 +4848,18 @@ namespace RevenuePlanner.Helpers
                 aPlanned.Attributes.Add("id", "Planned_Down_" + i);
                 divHeaderInnerPlanned.InnerHtml += aPlanned;
 
-                divValueInnerPlanned.Attributes.Add("id", ActivityType + ActivityId.ToString());
-                divValueInnerPlanned.InnerHtml = PlannedValue.ToString(formatThousand);
+                divValueInnerPlanned.Attributes.Add("id", activityType + activityId);
+                divValueInnerPlanned.InnerHtml = plannedValue.ToString(formatThousand);
                 if (isPlanTab)
                 {
-                    if (PlannedValue > ChildAllocatedValue)
+                    if (plannedValue > childAllocatedValue)
                     {
                         className += budgetError;
-                        divValueInnerPlanned.Attributes.Add("OverBudget", Math.Abs(ChildAllocatedValue - PlannedValue).ToString(formatThousand));
+                        divValueInnerPlanned.Attributes.Add("OverBudget", Math.Abs(childAllocatedValue - plannedValue).ToString(formatThousand));
                     }
                     span = new TagBuilder("span");
                     dblProgress = 0;
-                    dblProgress = (PlannedValue == 0 && ChildAllocatedValue == 0) ? 0 : (PlannedValue > 0 && ChildAllocatedValue == 0) ? 101 : PlannedValue / ChildAllocatedValue * 100;
+                    dblProgress = (plannedValue == 0 && childAllocatedValue == 0) ? 0 : (plannedValue > 0 && childAllocatedValue == 0) ? 101 : plannedValue / childAllocatedValue * 100;
 
                     span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                     if (dblProgress > 100)
@@ -4938,10 +4897,10 @@ namespace RevenuePlanner.Helpers
                 aAllocated.Attributes.Add("id", "Allocated_Down_" + i);
                 divHeaderInnerAllocated.InnerHtml += aAllocated;
 
-                divValueInnerAllocated.Attributes.Add("id", ActivityType + ActivityId.ToString());
+                divValueInnerAllocated.Attributes.Add("id", activityType + activityId);
                 if (isPlanTab)
                 {
-                    divValueInnerAllocated.InnerHtml = ChildAllocatedValue.ToString(formatThousand);
+                    divValueInnerAllocated.InnerHtml = childAllocatedValue.ToString(formatThousand);
                 }
                 else
                 {
@@ -4967,131 +4926,128 @@ namespace RevenuePlanner.Helpers
         /// Get Campaign Month and call Program
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="ActivityType"></param>
-        /// <param name="ParentActivityId"></param>
+        /// <param name="activityType"></param>
+        /// <param name="parentActivityId"></param>
         /// <param name="model"></param>
-        /// <param name="AllocatedBy"></param>
+        /// <param name="allocatedBy"></param>
         /// <returns></returns>
-        public static MvcHtmlString ParentMonthReport(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModelReport> model, string AllocatedBy, bool isPlanTab)
+        public static MvcHtmlString ParentMonthReport(this HtmlHelper helper, string activityType, string parentActivityId, List<BudgetModelReport> model, string allocatedBy, bool isPlanTab)
         {
 
             StringBuilder sb = new StringBuilder();
-            foreach (BudgetModelReport c in model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList())
+            foreach (BudgetModelReport c in model.Where(p => p.ActivityType == activityType && p.ParentActivityId == parentActivityId).ToList())
             {
-                if (model.Where(p => p.ActivityType == Helpers.ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId).Count() > 0)
+                if (model.Any(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId))
                 {
-                    int IncrementCount = 1;
-                    if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
+                    int incrementCount = 1;
+                    if (allocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
                     {
-                        IncrementCount = 3;
+                        incrementCount = 3;
                     }
                     TagBuilder tr = new TagBuilder("tr");
-                    for (int i = 1; i <= 12; i += IncrementCount)
+                    for (int i = 1; i <= 12; i += incrementCount)
                     {
                         string className = "firstLevel";
                         TagBuilder td = new TagBuilder("td");
                         td.AddCssClass("event-rowReport");
 
                         TagBuilder div = new TagBuilder("div");
-                        div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                        div.Attributes.Add("id", activityType + c.ActivityId);
 
-                        double AllocatedValue = 0;
-                        double ActualValue = 0;
-                        double PlannedValue = 0;
-                        double ChildAllocatedValue = 0;
+                        double allocatedValue = 0;
+                        double actualValue = 0;
+                        double plannedValue = 0;
+                        double childAllocatedValue = 0;
 
                         switch (i)
                         {
                             case 1:
-                                ActualValue = c.MonthActual.Jan;
-                                AllocatedValue = c.MonthAllocated.Jan;
-                                PlannedValue = c.MonthPlanned.Jan;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Jan;
+                                actualValue = c.MonthActual.Jan;
+                                allocatedValue = c.MonthAllocated.Jan;
+                                plannedValue = c.MonthPlanned.Jan;
+                                childAllocatedValue = c.ChildMonthAllocated.Jan;
                                 break;
                             case 2:
-                                ActualValue = c.MonthActual.Feb;
-                                AllocatedValue = c.MonthAllocated.Feb;
-                                PlannedValue = c.MonthPlanned.Feb;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Feb;
+                                actualValue = c.MonthActual.Feb;
+                                allocatedValue = c.MonthAllocated.Feb;
+                                plannedValue = c.MonthPlanned.Feb;
+                                childAllocatedValue = c.ChildMonthAllocated.Feb;
                                 break;
                             case 3:
-                                ActualValue = c.MonthActual.Mar;
-                                AllocatedValue = c.MonthAllocated.Mar;
-                                PlannedValue = c.MonthPlanned.Mar;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Mar;
+                                actualValue = c.MonthActual.Mar;
+                                allocatedValue = c.MonthAllocated.Mar;
+                                plannedValue = c.MonthPlanned.Mar;
+                                childAllocatedValue = c.ChildMonthAllocated.Mar;
                                 break;
                             case 4:
-                                ActualValue = c.MonthActual.Apr;
-                                AllocatedValue = c.MonthAllocated.Apr;
-                                PlannedValue = c.MonthPlanned.Apr;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Apr;
+                                actualValue = c.MonthActual.Apr;
+                                allocatedValue = c.MonthAllocated.Apr;
+                                plannedValue = c.MonthPlanned.Apr;
+                                childAllocatedValue = c.ChildMonthAllocated.Apr;
                                 break;
                             case 5:
-                                ActualValue = c.MonthActual.May;
-                                AllocatedValue = c.MonthAllocated.May;
-                                PlannedValue = c.MonthPlanned.May;
-                                ChildAllocatedValue = c.ChildMonthAllocated.May;
+                                actualValue = c.MonthActual.May;
+                                allocatedValue = c.MonthAllocated.May;
+                                plannedValue = c.MonthPlanned.May;
+                                childAllocatedValue = c.ChildMonthAllocated.May;
                                 break;
                             case 6:
-                                ActualValue = c.MonthActual.Jun;
-                                AllocatedValue = c.MonthAllocated.Jun;
-                                PlannedValue = c.MonthPlanned.Jun;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Jun;
+                                actualValue = c.MonthActual.Jun;
+                                allocatedValue = c.MonthAllocated.Jun;
+                                plannedValue = c.MonthPlanned.Jun;
+                                childAllocatedValue = c.ChildMonthAllocated.Jun;
                                 break;
                             case 7:
-                                ActualValue = c.MonthActual.Jul;
-                                AllocatedValue = c.MonthAllocated.Jul;
-                                PlannedValue = c.MonthPlanned.Jul;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Jul;
+                                actualValue = c.MonthActual.Jul;
+                                allocatedValue = c.MonthAllocated.Jul;
+                                plannedValue = c.MonthPlanned.Jul;
+                                childAllocatedValue = c.ChildMonthAllocated.Jul;
                                 break;
                             case 8:
-                                ActualValue = c.MonthActual.Aug;
-                                AllocatedValue = c.MonthAllocated.Aug;
-                                PlannedValue = c.MonthPlanned.Aug;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Aug;
+                                actualValue = c.MonthActual.Aug;
+                                allocatedValue = c.MonthAllocated.Aug;
+                                plannedValue = c.MonthPlanned.Aug;
+                                childAllocatedValue = c.ChildMonthAllocated.Aug;
                                 break;
                             case 9:
-                                ActualValue = c.MonthActual.Sep;
-                                AllocatedValue = c.MonthAllocated.Sep;
-                                PlannedValue = c.MonthPlanned.Sep;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Sep;
+                                actualValue = c.MonthActual.Sep;
+                                allocatedValue = c.MonthAllocated.Sep;
+                                plannedValue = c.MonthPlanned.Sep;
+                                childAllocatedValue = c.ChildMonthAllocated.Sep;
                                 break;
                             case 10:
-                                ActualValue = c.MonthActual.Oct;
-                                AllocatedValue = c.MonthAllocated.Oct;
-                                PlannedValue = c.MonthPlanned.Oct;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Oct;
+                                actualValue = c.MonthActual.Oct;
+                                allocatedValue = c.MonthAllocated.Oct;
+                                plannedValue = c.MonthPlanned.Oct;
+                                childAllocatedValue = c.ChildMonthAllocated.Oct;
                                 break;
                             case 11:
-                                ActualValue = c.MonthActual.Nov;
-                                AllocatedValue = c.MonthAllocated.Nov;
-                                PlannedValue = c.MonthPlanned.Nov;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Nov;
+                                actualValue = c.MonthActual.Nov;
+                                allocatedValue = c.MonthAllocated.Nov;
+                                plannedValue = c.MonthPlanned.Nov;
+                                childAllocatedValue = c.ChildMonthAllocated.Nov;
                                 break;
                             case 12:
-                                ActualValue = c.MonthActual.Dec;
-                                AllocatedValue = c.MonthAllocated.Dec;
-                                PlannedValue = c.MonthPlanned.Dec;
-                                ChildAllocatedValue = c.ChildMonthAllocated.Dec;
-                                break;
-                            default:
+                                actualValue = c.MonthActual.Dec;
+                                allocatedValue = c.MonthAllocated.Dec;
+                                plannedValue = c.MonthPlanned.Dec;
+                                childAllocatedValue = c.ChildMonthAllocated.Dec;
                                 break;
                         }
 
                         TagBuilder span = new TagBuilder("span");
                         double dblProgress = 0;
                         //Actual
-                        div.InnerHtml = ActualValue.ToString(formatThousand);
+                        div.InnerHtml = actualValue.ToString(formatThousand);
                         if (isPlanTab)
                         {
-                            if (ActualValue > AllocatedValue)
+                            if (actualValue > allocatedValue)
                             {
                                 className += budgetError;
-                                div.Attributes.Add("OverBudget", Math.Abs(AllocatedValue - ActualValue).ToString(formatThousand));
+                                div.Attributes.Add("OverBudget", Math.Abs(allocatedValue - actualValue).ToString(formatThousand));
                             }
                             span = new TagBuilder("span");
-                            dblProgress = 0;
-                            dblProgress = (ActualValue == 0 && AllocatedValue == 0) ? 0 : (ActualValue > 0 && AllocatedValue == 0) ? 101 : ActualValue / AllocatedValue * 100;
+                            dblProgress = (actualValue == 0 && allocatedValue == 0) ? 0 : (actualValue > 0 && allocatedValue == 0) ? 101 : actualValue / allocatedValue * 100;
 
                             span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                             if (dblProgress > 100)
@@ -5108,7 +5064,7 @@ namespace RevenuePlanner.Helpers
                         }
                         div.AddCssClass(className);
                         td.InnerHtml = div.ToString();
-                        td.InnerHtml += ChildMonthActualReport(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model, AllocatedBy, i, isPlanTab).ToString();
+                        td.InnerHtml += ChildMonthActualReport(helper, ActivityType.ActivityCampaign, c.ActivityId, model, allocatedBy, i, isPlanTab).ToString();
                         tr.InnerHtml += td.ToString();
 
                         // Planned
@@ -5117,19 +5073,19 @@ namespace RevenuePlanner.Helpers
                         tdPlanned.AddCssClass("event-rowReport");
 
                         TagBuilder divPlanned = new TagBuilder("div");
-                        divPlanned.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                        divPlanned.Attributes.Add("id", activityType + c.ActivityId);
 
-                        divPlanned.InnerHtml = PlannedValue.ToString(formatThousand);
+                        divPlanned.InnerHtml = plannedValue.ToString(formatThousand);
                         if (isPlanTab)
                         {
-                            if (PlannedValue > AllocatedValue)
+                            if (plannedValue > allocatedValue)
                             {
                                 className += budgetError;
-                                divPlanned.Attributes.Add("OverBudget", Math.Abs(AllocatedValue - PlannedValue).ToString(formatThousand));
+                                divPlanned.Attributes.Add("OverBudget", Math.Abs(allocatedValue - plannedValue).ToString(formatThousand));
                             }
                             span = new TagBuilder("span");
                             dblProgress = 0;
-                            dblProgress = (PlannedValue == 0 && AllocatedValue == 0) ? 0 : (PlannedValue > 0 && AllocatedValue == 0) ? 101 : PlannedValue / AllocatedValue * 100;
+                            dblProgress = (plannedValue == 0 && allocatedValue == 0) ? 0 : (plannedValue > 0 && allocatedValue == 0) ? 101 : plannedValue / allocatedValue * 100;
 
                             span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                             if (dblProgress > 100)
@@ -5145,7 +5101,7 @@ namespace RevenuePlanner.Helpers
                         }
                         divPlanned.AddCssClass(className);
                         tdPlanned.InnerHtml = divPlanned.ToString();
-                        tdPlanned.InnerHtml += ChildMonthPlannedReport(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model, AllocatedBy, i, isPlanTab).ToString();
+                        tdPlanned.InnerHtml += ChildMonthPlannedReport(helper, ActivityType.ActivityCampaign, c.ActivityId, model, allocatedBy, i, isPlanTab).ToString();
                         tr.InnerHtml += tdPlanned.ToString();
 
                         // Allocated
@@ -5154,19 +5110,19 @@ namespace RevenuePlanner.Helpers
                         tdAllocated.AddCssClass("event-rowReport");
 
                         TagBuilder divAllocated = new TagBuilder("div");
-                        divAllocated.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                        divAllocated.Attributes.Add("id", activityType + c.ActivityId);
                         if (isPlanTab)
                         {
-                            divAllocated.InnerHtml = AllocatedValue.ToString(formatThousand);
+                            divAllocated.InnerHtml = allocatedValue.ToString(formatThousand);
 
-                            if (AllocatedValue < ChildAllocatedValue)
+                            if (allocatedValue < childAllocatedValue)
                             {
                                 className += budgetError;
-                                divAllocated.Attributes.Add("Allocated", ChildAllocatedValue.ToString(formatThousand));
+                                divAllocated.Attributes.Add("Allocated", childAllocatedValue.ToString(formatThousand));
                             }
-                            else if (AllocatedValue > ChildAllocatedValue)
+                            else if (allocatedValue > childAllocatedValue)
                             {
-                                divAllocated.Attributes.Add("Remaining", (AllocatedValue - ChildAllocatedValue).ToString(formatThousand));
+                                divAllocated.Attributes.Add("Remaining", (allocatedValue - childAllocatedValue).ToString(formatThousand));
                             }
 
 
@@ -5178,7 +5134,7 @@ namespace RevenuePlanner.Helpers
                         divAllocated.AddCssClass(className);
                         tdAllocated.InnerHtml = divAllocated.ToString();
 
-                        tdAllocated.InnerHtml += ChildMonthAllocatedReport(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model, AllocatedBy, i, isPlanTab).ToString();
+                        tdAllocated.InnerHtml += ChildMonthAllocatedReport(helper, ActivityType.ActivityCampaign, c.ActivityId, model, allocatedBy, i, isPlanTab).ToString();
                         tr.InnerHtml += tdAllocated.ToString();
 
                     }
@@ -5192,51 +5148,51 @@ namespace RevenuePlanner.Helpers
         /// Recursive call to children for month
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="ActivityType"></param>
-        /// <param name="ParentActivityId"></param>
+        /// <param name="activityType"></param>
+        /// <param name="parentActivityId"></param>
         /// <param name="model"></param>
-        /// <param name="AllocatedBy"></param>
+        /// <param name="allocatedBy"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        public static MvcHtmlString ChildMonthActualReport(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModelReport> model, string AllocatedBy, int month, bool isPlanTab)
+        public static MvcHtmlString ChildMonthActualReport(this HtmlHelper helper, string activityType, string parentActivityId, List<BudgetModelReport> model, string allocatedBy, int month, bool isPlanTab)
         {
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
             string parentClassName = "plan";
-            if (ActivityType == Helpers.ActivityType.ActivityCampaign)
+            if (activityType == ActivityType.ActivityCampaign)
             {
                 mainClass = "sub campaign-lvl";
                 innerClass = "campaign-row audience";
             }
-            else if (ActivityType == "program")
+            else if (activityType == "program")
             {
                 mainClass = "sub program-lvl";
                 innerClass = "programLevel";
                 parentClassName = "campaign";
             }
-            else if (ActivityType == "tactic")
+            else if (activityType == "tactic")
             {
                 mainClass = "sub tactic-lvl";
                 innerClass = "tacticLevel";
                 parentClassName = "program";
             }
-            else if (ActivityType == "lineitem")
+            else if (activityType == "lineitem")
             {
                 mainClass = "sub lineItem-lvl";
                 innerClass = "lineitemLevel";
                 parentClassName = "tactic";
             }
-            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList();
+            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == activityType && p.ParentActivityId == parentActivityId).ToList();
             if (lst.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
                 TagBuilder div = new TagBuilder("div");
                 div.AddCssClass(mainClass);
-                div.Attributes.Add("data-parent", parentClassName + ParentActivityId.ToString());
+                div.Attributes.Add("data-parent", parentClassName + parentActivityId);
                 foreach (BudgetModelReport p in lst)
                 {
                     TagBuilder divProgram = new TagBuilder("div");
-                    divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
+                    divProgram.Attributes.Add("id", activityType + p.ActivityId);
                     string className = "";
                     TagBuilder span = new TagBuilder("span");
                     double dblProgress = 0;
@@ -5292,16 +5248,14 @@ namespace RevenuePlanner.Helpers
                             ActualPlannedValue = p.MonthActual.Dec;
                             AllocatedValue = p.MonthAllocated.Dec;
                             break;
-                        default:
-                            break;
                     }
 
 
-                    if (ActivityType == Helpers.ActivityType.ActivityLineItem && ActualPlannedValue <= 0)
+                    if (activityType == Helpers.ActivityType.ActivityLineItem && ActualPlannedValue <= 0)
                     {
                         divProgram.InnerHtml = "---";
                     }
-                    else if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                    else if (activityType != Helpers.ActivityType.ActivityLineItem && activityType != Helpers.ActivityType.ActivityTactic)
                     {
                         divProgram.InnerHtml = ActualPlannedValue.ToString(formatThousand);
                         if (isPlanTab)
@@ -5335,147 +5289,142 @@ namespace RevenuePlanner.Helpers
 
                     div.InnerHtml += divProgram.ToString();
 
-                    if (ActivityType == Helpers.ActivityType.ActivityCampaign)
-                        div.InnerHtml += ChildMonthActualReport(helper, Helpers.ActivityType.ActivityProgram, p.ActivityId, model, AllocatedBy, month, isPlanTab).ToString();
+                    if (activityType == ActivityType.ActivityCampaign)
+                        div.InnerHtml += ChildMonthActualReport(helper, ActivityType.ActivityProgram, p.ActivityId, model, allocatedBy, month, isPlanTab).ToString();
 
-                    else if (ActivityType == Helpers.ActivityType.ActivityProgram)
-                        div.InnerHtml += ChildMonthActualReport(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model, AllocatedBy, month, isPlanTab).ToString();
+                    else if (activityType == ActivityType.ActivityProgram)
+                        div.InnerHtml += ChildMonthActualReport(helper, ActivityType.ActivityTactic, p.ActivityId, model, allocatedBy, month, isPlanTab).ToString();
 
-                    else if (ActivityType == Helpers.ActivityType.ActivityTactic)
-                        div.InnerHtml += ChildMonthActualReport(helper, Helpers.ActivityType.ActivityLineItem, p.ActivityId, model, AllocatedBy, month, isPlanTab).ToString();
+                    else if (activityType == ActivityType.ActivityTactic)
+                        div.InnerHtml += ChildMonthActualReport(helper, ActivityType.ActivityLineItem, p.ActivityId, model, allocatedBy, month, isPlanTab).ToString();
                 }
                 sb.AppendLine(div.ToString());
                 return new MvcHtmlString(sb.ToString());
             }
-            else
-            {
-                return new MvcHtmlString(string.Empty);
-            }
+            return new MvcHtmlString(string.Empty);
         }
 
         /// <summary>
         /// Recursive call to children for month
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="ActivityType"></param>
-        /// <param name="ParentActivityId"></param>
+        /// <param name="activityType"></param>
+        /// <param name="parentActivityId"></param>
         /// <param name="model"></param>
-        /// <param name="AllocatedBy"></param>
+        /// <param name="allocatedBy"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        public static MvcHtmlString ChildMonthPlannedReport(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModelReport> model, string AllocatedBy, int month, bool isPlanTab)
+        public static MvcHtmlString ChildMonthPlannedReport(this HtmlHelper helper, string activityType, string parentActivityId, List<BudgetModelReport> model, string allocatedBy, int month, bool isPlanTab)
         {
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
             string parentClassName = "plan";
-            if (ActivityType == Helpers.ActivityType.ActivityCampaign)
+            if (activityType == Helpers.ActivityType.ActivityCampaign)
             {
                 mainClass = "sub campaign-lvl";
                 innerClass = "campaign-row audience";
             }
-            else if (ActivityType == "program")
+            else if (activityType == "program")
             {
                 mainClass = "sub program-lvl";
                 innerClass = "programLevel";
                 parentClassName = "campaign";
             }
-            else if (ActivityType == "tactic")
+            else if (activityType == "tactic")
             {
                 mainClass = "sub tactic-lvl";
                 innerClass = "tacticLevel";
                 parentClassName = "program";
             }
-            else if (ActivityType == "lineitem")
+            else if (activityType == "lineitem")
             {
                 mainClass = "sub lineItem-lvl";
                 innerClass = "lineitemLevel";
                 parentClassName = "tactic";
             }
-            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList();
+            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == activityType && p.ParentActivityId == parentActivityId).ToList();
             if (lst.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
                 TagBuilder div = new TagBuilder("div");
                 div.AddCssClass(mainClass);
-                div.Attributes.Add("data-parent", parentClassName + ParentActivityId.ToString());
+                div.Attributes.Add("data-parent", parentClassName + parentActivityId);
                 foreach (BudgetModelReport p in lst)
                 {
                     TagBuilder divProgram = new TagBuilder("div");
-                    divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
+                    divProgram.Attributes.Add("id", activityType + p.ActivityId);
                     string className = "";
                     TagBuilder span = new TagBuilder("span");
                     double dblProgress = 0;
-                    double PlannedValue = 0;
-                    double AllocatedValue = 0;
+                    double plannedValue = 0;
+                    double allocatedValue = 0;
                     switch (month)
                     {
                         case 1:
-                            PlannedValue = p.MonthPlanned.Jan;
-                            AllocatedValue = p.MonthAllocated.Jan;
+                            plannedValue = p.MonthPlanned.Jan;
+                            allocatedValue = p.MonthAllocated.Jan;
                             break;
                         case 2:
-                            PlannedValue = p.MonthPlanned.Feb;
-                            AllocatedValue = p.MonthAllocated.Feb;
+                            plannedValue = p.MonthPlanned.Feb;
+                            allocatedValue = p.MonthAllocated.Feb;
                             break;
                         case 3:
-                            PlannedValue = p.MonthPlanned.Mar;
-                            AllocatedValue = p.MonthAllocated.Mar;
+                            plannedValue = p.MonthPlanned.Mar;
+                            allocatedValue = p.MonthAllocated.Mar;
                             break;
                         case 4:
-                            PlannedValue = p.MonthPlanned.Apr;
-                            AllocatedValue = p.MonthAllocated.Apr;
+                            plannedValue = p.MonthPlanned.Apr;
+                            allocatedValue = p.MonthAllocated.Apr;
                             break;
                         case 5:
-                            PlannedValue = p.MonthPlanned.May;
-                            AllocatedValue = p.MonthAllocated.May;
+                            plannedValue = p.MonthPlanned.May;
+                            allocatedValue = p.MonthAllocated.May;
                             break;
                         case 6:
-                            PlannedValue = p.MonthPlanned.Jun;
-                            AllocatedValue = p.MonthAllocated.Jun;
+                            plannedValue = p.MonthPlanned.Jun;
+                            allocatedValue = p.MonthAllocated.Jun;
                             break;
                         case 7:
-                            PlannedValue = p.MonthPlanned.Jul;
-                            AllocatedValue = p.MonthAllocated.Jul;
+                            plannedValue = p.MonthPlanned.Jul;
+                            allocatedValue = p.MonthAllocated.Jul;
                             break;
                         case 8:
-                            PlannedValue = p.MonthPlanned.Aug;
-                            AllocatedValue = p.MonthAllocated.Aug;
+                            plannedValue = p.MonthPlanned.Aug;
+                            allocatedValue = p.MonthAllocated.Aug;
                             break;
                         case 9:
-                            PlannedValue = p.MonthPlanned.Sep;
-                            AllocatedValue = p.MonthAllocated.Sep;
+                            plannedValue = p.MonthPlanned.Sep;
+                            allocatedValue = p.MonthAllocated.Sep;
                             break;
                         case 10:
-                            PlannedValue = p.MonthPlanned.Oct;
-                            AllocatedValue = p.MonthAllocated.Oct;
+                            plannedValue = p.MonthPlanned.Oct;
+                            allocatedValue = p.MonthAllocated.Oct;
                             break;
                         case 11:
-                            PlannedValue = p.MonthPlanned.Nov;
-                            AllocatedValue = p.MonthAllocated.Nov;
+                            plannedValue = p.MonthPlanned.Nov;
+                            allocatedValue = p.MonthAllocated.Nov;
                             break;
                         case 12:
-                            PlannedValue = p.MonthPlanned.Dec;
-                            AllocatedValue = p.MonthAllocated.Dec;
-                            break;
-                        default:
+                            plannedValue = p.MonthPlanned.Dec;
+                            allocatedValue = p.MonthAllocated.Dec;
                             break;
                     }
 
-                    if (ActivityType == Helpers.ActivityType.ActivityLineItem && PlannedValue <= 0)
+                    if (activityType == ActivityType.ActivityLineItem && plannedValue <= 0)
                     {
                         divProgram.InnerHtml = "---";
                     }
-                    else if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                    else if (activityType != ActivityType.ActivityLineItem && activityType != ActivityType.ActivityTactic)
                     {
-                        divProgram.InnerHtml = PlannedValue.ToString(formatThousand);
+                        divProgram.InnerHtml = plannedValue.ToString(formatThousand);
                         if (isPlanTab)
                         {
-                            if (PlannedValue > AllocatedValue)
+                            if (plannedValue > allocatedValue)
                             {
                                 className += budgetError;
-                                divProgram.Attributes.Add("OverBudget", Math.Abs(AllocatedValue - PlannedValue).ToString(formatThousand));
+                                divProgram.Attributes.Add("OverBudget", Math.Abs(allocatedValue - plannedValue).ToString(formatThousand));
                             }
-                            dblProgress = (PlannedValue == 0 && AllocatedValue == 0) ? 0 : (PlannedValue > 0 && AllocatedValue == 0) ? 101 : PlannedValue / AllocatedValue * 100;
+                            dblProgress = (plannedValue == 0 && allocatedValue == 0) ? 0 : (plannedValue > 0 && allocatedValue == 0) ? 101 : plannedValue / allocatedValue * 100;
 
                             span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                             if (dblProgress > 100)
@@ -5491,7 +5440,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
-                        divProgram.InnerHtml = PlannedValue.ToString(formatThousand);
+                        divProgram.InnerHtml = plannedValue.ToString(formatThousand);
                     }
 
                     divProgram.AddCssClass(className);
@@ -5499,160 +5448,142 @@ namespace RevenuePlanner.Helpers
 
                     div.InnerHtml += divProgram.ToString();
 
-                    if (ActivityType == Helpers.ActivityType.ActivityCampaign)
-                        div.InnerHtml += ChildMonthPlannedReport(helper, Helpers.ActivityType.ActivityProgram, p.ActivityId, model, AllocatedBy, month, isPlanTab).ToString();
+                    if (activityType == ActivityType.ActivityCampaign)
+                        div.InnerHtml += ChildMonthPlannedReport(helper, ActivityType.ActivityProgram, p.ActivityId, model, allocatedBy, month, isPlanTab).ToString();
 
-                    else if (ActivityType == Helpers.ActivityType.ActivityProgram)
-                        div.InnerHtml += ChildMonthPlannedReport(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model, AllocatedBy, month, isPlanTab).ToString();
+                    else if (activityType == ActivityType.ActivityProgram)
+                        div.InnerHtml += ChildMonthPlannedReport(helper, ActivityType.ActivityTactic, p.ActivityId, model, allocatedBy, month, isPlanTab).ToString();
 
-                    else if (ActivityType == Helpers.ActivityType.ActivityTactic)
-                        div.InnerHtml += ChildMonthPlannedReport(helper, Helpers.ActivityType.ActivityLineItem, p.ActivityId, model, AllocatedBy, month, isPlanTab).ToString();
+                    else if (activityType == ActivityType.ActivityTactic)
+                        div.InnerHtml += ChildMonthPlannedReport(helper, ActivityType.ActivityLineItem, p.ActivityId, model, allocatedBy, month, isPlanTab).ToString();
                 }
                 sb.AppendLine(div.ToString());
                 return new MvcHtmlString(sb.ToString());
             }
-            else
-            {
-                return new MvcHtmlString(string.Empty);
-            }
+            return new MvcHtmlString(string.Empty);
         }
 
         /// <summary>
         /// Recursive call to children for month
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="ActivityType"></param>
-        /// <param name="ParentActivityId"></param>
+        /// <param name="activityType"></param>
+        /// <param name="parentActivityId"></param>
         /// <param name="model"></param>
-        /// <param name="AllocatedBy"></param>
+        /// <param name="allocatedBy"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        public static MvcHtmlString ChildMonthAllocatedReport(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModelReport> model, string AllocatedBy, int month, bool isPlanTab)
+        public static MvcHtmlString ChildMonthAllocatedReport(this HtmlHelper helper, string activityType, string parentActivityId, List<BudgetModelReport> model, string allocatedBy, int month, bool isPlanTab)
         {
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
             string parentClassName = "plan";
-            if (ActivityType == Helpers.ActivityType.ActivityCampaign)
+            if (activityType == Helpers.ActivityType.ActivityCampaign)
             {
                 mainClass = "sub campaign-lvl";
                 innerClass = "campaign-row audience";
             }
-            else if (ActivityType == "program")
+            else if (activityType == "program")
             {
                 mainClass = "sub program-lvl";
                 innerClass = "programLevel";
                 parentClassName = "campaign";
             }
-            else if (ActivityType == "tactic")
+            else if (activityType == "tactic")
             {
                 mainClass = "sub tactic-lvl";
                 innerClass = "tacticLevel";
                 parentClassName = "program";
             }
-            else if (ActivityType == "lineitem")
+            else if (activityType == "lineitem")
             {
                 mainClass = "sub lineItem-lvl";
                 innerClass = "lineitemLevel";
                 parentClassName = "tactic";
             }
-            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList();
+            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == activityType && p.ParentActivityId == parentActivityId).ToList();
             if (lst.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
                 TagBuilder div = new TagBuilder("div");
                 div.AddCssClass(mainClass);
-                div.Attributes.Add("data-parent", parentClassName + ParentActivityId.ToString());
+                div.Attributes.Add("data-parent", parentClassName + parentActivityId);
                 foreach (BudgetModelReport p in lst)
                 {
                     TagBuilder divProgram = new TagBuilder("div");
-                    divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
+                    divProgram.Attributes.Add("id", activityType + p.ActivityId);
                     string className = "";
-                    double PlannedValue = 0;
-                    double AllocatedValue = 0;
-                    double ChildAllocatedValue = 0;
+                    double allocatedValue = 0;
+                    double childAllocatedValue = 0;
                     switch (month)
                     {
                         case 1:
-                            PlannedValue = p.MonthPlanned.Jan;
-                            AllocatedValue = p.MonthAllocated.Jan;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Jan;
+                            allocatedValue = p.MonthAllocated.Jan;
+                            childAllocatedValue = p.ChildMonthAllocated.Jan;
                             break;
                         case 2:
-                            PlannedValue = p.MonthPlanned.Feb;
-                            AllocatedValue = p.MonthAllocated.Feb;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Feb;
+                            allocatedValue = p.MonthAllocated.Feb;
+                            childAllocatedValue = p.ChildMonthAllocated.Feb;
                             break;
                         case 3:
-                            PlannedValue = p.MonthPlanned.Mar;
-                            AllocatedValue = p.MonthAllocated.Mar;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Mar;
+                            allocatedValue = p.MonthAllocated.Mar;
+                            childAllocatedValue = p.ChildMonthAllocated.Mar;
                             break;
                         case 4:
-                            PlannedValue = p.MonthPlanned.Apr;
-                            AllocatedValue = p.MonthAllocated.Apr;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Apr;
+                            allocatedValue = p.MonthAllocated.Apr;
+                            childAllocatedValue = p.ChildMonthAllocated.Apr;
                             break;
                         case 5:
-                            PlannedValue = p.MonthPlanned.May;
-                            AllocatedValue = p.MonthAllocated.May;
-                            ChildAllocatedValue = p.ChildMonthAllocated.May;
+                            allocatedValue = p.MonthAllocated.May;
+                            childAllocatedValue = p.ChildMonthAllocated.May;
                             break;
                         case 6:
-                            PlannedValue = p.MonthPlanned.Jun;
-                            AllocatedValue = p.MonthAllocated.Jun;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Jun;
+                            allocatedValue = p.MonthAllocated.Jun;
+                            childAllocatedValue = p.ChildMonthAllocated.Jun;
                             break;
                         case 7:
-                            PlannedValue = p.MonthPlanned.Jul;
-                            AllocatedValue = p.MonthAllocated.Jul;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Jul;
+                            allocatedValue = p.MonthAllocated.Jul;
+                            childAllocatedValue = p.ChildMonthAllocated.Jul;
                             break;
                         case 8:
-                            PlannedValue = p.MonthPlanned.Aug;
-                            AllocatedValue = p.MonthAllocated.Aug;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Aug;
+                            allocatedValue = p.MonthAllocated.Aug;
+                            childAllocatedValue = p.ChildMonthAllocated.Aug;
                             break;
                         case 9:
-                            PlannedValue = p.MonthPlanned.Sep;
-                            AllocatedValue = p.MonthAllocated.Sep;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Sep;
+                            allocatedValue = p.MonthAllocated.Sep;
+                            childAllocatedValue = p.ChildMonthAllocated.Sep;
                             break;
                         case 10:
-                            PlannedValue = p.MonthPlanned.Oct;
-                            AllocatedValue = p.MonthAllocated.Oct;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Oct;
+                            allocatedValue = p.MonthAllocated.Oct;
+                            childAllocatedValue = p.ChildMonthAllocated.Oct;
                             break;
                         case 11:
-                            PlannedValue = p.MonthPlanned.Nov;
-                            AllocatedValue = p.MonthAllocated.Nov;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Nov;
+                            allocatedValue = p.MonthAllocated.Nov;
+                            childAllocatedValue = p.ChildMonthAllocated.Nov;
                             break;
                         case 12:
-                            PlannedValue = p.MonthPlanned.Dec;
-                            AllocatedValue = p.MonthAllocated.Dec;
-                            ChildAllocatedValue = p.ChildMonthAllocated.Dec;
-                            break;
-                        default:
+                            allocatedValue = p.MonthAllocated.Dec;
+                            childAllocatedValue = p.ChildMonthAllocated.Dec;
                             break;
                     }
 
 
-                    if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic && isPlanTab)
+                    if (activityType != ActivityType.ActivityLineItem && activityType != ActivityType.ActivityTactic && isPlanTab)
                     {
-                        if (ActivityType != Helpers.ActivityType.ActivityProgram)
+                        if (activityType != ActivityType.ActivityProgram)
                         {
-                            if (AllocatedValue < ChildAllocatedValue)
+                            if (allocatedValue < childAllocatedValue)
                             {
                                 className += budgetError;
-                                divProgram.Attributes.Add("Allocated", ChildAllocatedValue.ToString(formatThousand));
+                                divProgram.Attributes.Add("Allocated", childAllocatedValue.ToString(formatThousand));
                             }
-                            else if (AllocatedValue > ChildAllocatedValue)
+                            else if (allocatedValue > childAllocatedValue)
                             {
-                                divProgram.Attributes.Add("Remaining", (AllocatedValue - ChildAllocatedValue).ToString(formatThousand));
+                                divProgram.Attributes.Add("Remaining", (allocatedValue - childAllocatedValue).ToString(formatThousand));
                             }
                         }
 
-                        divProgram.InnerHtml = AllocatedValue.ToString(formatThousand);
+                        divProgram.InnerHtml = allocatedValue.ToString(formatThousand);
                     }
                     else
                     {
@@ -5663,44 +5594,40 @@ namespace RevenuePlanner.Helpers
                     divProgram.AddCssClass(innerClass);
                     div.InnerHtml += divProgram.ToString();
 
-                    if (ActivityType == Helpers.ActivityType.ActivityCampaign)
-                        div.InnerHtml += ChildMonthAllocatedReport(helper, Helpers.ActivityType.ActivityProgram, p.ActivityId, model, AllocatedBy, month, isPlanTab).ToString();
+                    if (activityType == ActivityType.ActivityCampaign)
+                        div.InnerHtml += ChildMonthAllocatedReport(helper, ActivityType.ActivityProgram, p.ActivityId, model, allocatedBy, month, isPlanTab).ToString();
 
-                    else if (ActivityType == Helpers.ActivityType.ActivityProgram)
-                        div.InnerHtml += ChildMonthAllocatedReport(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model, AllocatedBy, month, isPlanTab).ToString();
+                    else if (activityType == ActivityType.ActivityProgram)
+                        div.InnerHtml += ChildMonthAllocatedReport(helper, ActivityType.ActivityTactic, p.ActivityId, model, allocatedBy, month, isPlanTab).ToString();
 
-                    else if (ActivityType == Helpers.ActivityType.ActivityTactic)
-                        div.InnerHtml += ChildMonthAllocatedReport(helper, Helpers.ActivityType.ActivityLineItem, p.ActivityId, model, AllocatedBy, month, isPlanTab).ToString();
+                    else if (activityType == ActivityType.ActivityTactic)
+                        div.InnerHtml += ChildMonthAllocatedReport(helper, ActivityType.ActivityLineItem, p.ActivityId, model, allocatedBy, month, isPlanTab).ToString();
                 }
                 sb.AppendLine(div.ToString());
                 return new MvcHtmlString(sb.ToString());
             }
-            else
-            {
-                return new MvcHtmlString(string.Empty);
-            }
+            return new MvcHtmlString(string.Empty);
         }
 
         /// <summary>
         /// Get Campaign Month and call Program
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="ActivityType"></param>
-        /// <param name="ParentActivityId"></param>
+        /// <param name="activityType"></param>
+        /// <param name="parentActivityId"></param>
         /// <param name="model"></param>
-        /// <param name="AllocatedBy"></param>
+        /// <param name="allocatedBy"></param>
         /// <returns></returns>
-        public static MvcHtmlString ParentSummaryReport(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModelReport> model, string AllocatedBy, bool isPlanTab)
+        public static MvcHtmlString ParentSummaryReport(this HtmlHelper helper, string activityType, string parentActivityId, List<BudgetModelReport> model, string allocatedBy, bool isPlanTab)
         {
             StringBuilder sb = new StringBuilder();
-            BudgetModelReport plan = model.Where(pl => pl.ActivityType == Helpers.ActivityType.ActivityMain).SingleOrDefault();
+            BudgetModelReport plan = model.SingleOrDefault(pl => pl.ActivityType == ActivityType.ActivityMain);
             if (plan != null)
             {
                 TagBuilder tr = new TagBuilder("tr");
 
                 //First Actual
                 TagBuilder td = new TagBuilder("td");
-                //td.AddCssClass("event-rowReport");
                 TagBuilder div = new TagBuilder("div");
 
                 double sumMonthActual = plan.MonthActual.Jan + plan.MonthActual.Feb + plan.MonthActual.Mar + plan.MonthActual.Apr + plan.MonthActual.May + plan.MonthActual.Jun + plan.MonthActual.Jul + plan.MonthActual.Aug + plan.MonthActual.Sep + plan.MonthActual.Oct + plan.MonthActual.Nov + plan.MonthActual.Dec;
@@ -5714,7 +5641,6 @@ namespace RevenuePlanner.Helpers
                 {
                     span = new TagBuilder("span");
 
-                    dblProgress = 0;
                     dblProgress = (sumMonthActual == 0 && sumMonthAllocated == 0) ? 0 : (sumMonthActual > 0 && sumMonthAllocated == 0) ? 101 : sumMonthActual / sumMonthAllocated * 100;
                     span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                     if (dblProgress > 100)
@@ -5734,7 +5660,6 @@ namespace RevenuePlanner.Helpers
 
                 // Second Planned
                 td = new TagBuilder("td");
-                //  td.AddCssClass("event-rowReport");
                 div = new TagBuilder("div");
 
                 div.InnerHtml = sumMonthPlanned.ToString(formatThousand);
@@ -5762,7 +5687,6 @@ namespace RevenuePlanner.Helpers
 
                 //Third Allocated
                 td = new TagBuilder("td");
-                // td.AddCssClass("event-rowReport");
                 div = new TagBuilder("div");
                 if (isPlanTab)
                 {
@@ -5777,19 +5701,17 @@ namespace RevenuePlanner.Helpers
 
                 sb.AppendLine(tr.ToString());
             }
-            foreach (BudgetModelReport c in model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList())
+            foreach (BudgetModelReport c in model.Where(p => p.ActivityType == activityType && p.ParentActivityId == parentActivityId).ToList())
             {
-                if (model.Where(p => p.ActivityType == Helpers.ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId).Count() > 0)
+                if (model.Any(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId))
                 {
-
                     TagBuilder tr = new TagBuilder("tr");
-
                     //First Actual
                     TagBuilder td = new TagBuilder("td");
                     td.AddCssClass("event-rowReport");
 
                     TagBuilder div = new TagBuilder("div");
-                    div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                    div.Attributes.Add("id", activityType + c.ActivityId);
                     div.AddCssClass("firstLevel");
                     double sumMonthActual = c.MonthActual.Jan + c.MonthActual.Feb + c.MonthActual.Mar + c.MonthActual.Apr + c.MonthActual.May + c.MonthActual.Jun + c.MonthActual.Jul + c.MonthActual.Aug + c.MonthActual.Sep + c.MonthActual.Oct + c.MonthActual.Nov + c.MonthActual.Dec;
                     double sumMonthPlanned = c.MonthPlanned.Jan + c.MonthPlanned.Feb + c.MonthPlanned.Mar + c.MonthPlanned.Apr + c.MonthPlanned.May + c.MonthPlanned.Jun + c.MonthPlanned.Jul + c.MonthPlanned.Aug + c.MonthPlanned.Sep + c.MonthPlanned.Oct + c.MonthPlanned.Nov + c.MonthPlanned.Dec;
@@ -5818,7 +5740,7 @@ namespace RevenuePlanner.Helpers
                     }
                     td.InnerHtml = div.ToString();
 
-                    td.InnerHtml += ChildSummaryReport(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model, "first", AllocatedBy, isPlanTab).ToString();
+                    td.InnerHtml += ChildSummaryReport(helper, ActivityType.ActivityCampaign, c.ActivityId, model, "first", allocatedBy, isPlanTab).ToString();
 
                     tr.InnerHtml += td.ToString();
 
@@ -5827,7 +5749,7 @@ namespace RevenuePlanner.Helpers
                     td.AddCssClass("event-rowReport");
 
                     div = new TagBuilder("div");
-                    div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                    div.Attributes.Add("id", activityType + c.ActivityId);
                     div.AddCssClass("firstLevel");
 
                     div.InnerHtml = sumMonthPlanned.ToString(formatThousand);
@@ -5852,7 +5774,7 @@ namespace RevenuePlanner.Helpers
                     }
                     td.InnerHtml = div.ToString();
 
-                    td.InnerHtml += ChildSummaryReport(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model, "Second", AllocatedBy, isPlanTab).ToString();
+                    td.InnerHtml += ChildSummaryReport(helper, ActivityType.ActivityCampaign, c.ActivityId, model, "Second", allocatedBy, isPlanTab).ToString();
 
                     tr.InnerHtml += td.ToString();
 
@@ -5862,7 +5784,7 @@ namespace RevenuePlanner.Helpers
                     td.AddCssClass("event-rowReport");
 
                     div = new TagBuilder("div");
-                    div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                    div.Attributes.Add("id", activityType + c.ActivityId);
                     div.AddCssClass("firstLevel");
                     if (isPlanTab)
                     {
@@ -5883,7 +5805,7 @@ namespace RevenuePlanner.Helpers
                     }
                     td.InnerHtml = div.ToString();
 
-                    td.InnerHtml += ChildSummaryReport(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model, "Third", AllocatedBy, isPlanTab).ToString();
+                    td.InnerHtml += ChildSummaryReport(helper, ActivityType.ActivityCampaign, c.ActivityId, model, "Third", allocatedBy, isPlanTab).ToString();
 
                     tr.InnerHtml += td.ToString();
                     sb.AppendLine(tr.ToString());
@@ -5896,52 +5818,51 @@ namespace RevenuePlanner.Helpers
         /// Recursive call to children for month
         /// </summary>
         /// <param name="helper"></param>
-        /// <param name="ActivityType"></param>
-        /// <param name="ParentActivityId"></param>
+        /// <param name="activityType"></param>
+        /// <param name="parentActivityId"></param>
         /// <param name="model"></param>
-        /// <param name="AllocatedBy"></param>
+        /// <param name="allocatedBy"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        public static MvcHtmlString ChildSummaryReport(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModelReport> model, string mode, string AllocatedBy, bool isPlanTab)
+        public static MvcHtmlString ChildSummaryReport(this HtmlHelper helper, string activityType, string parentActivityId, List<BudgetModelReport> model, string mode, string allocatedBy, bool isPlanTab)
         {
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
             string parentClassName = "plan";
-            if (ActivityType == Helpers.ActivityType.ActivityCampaign)
+            if (activityType == ActivityType.ActivityCampaign)
             {
                 mainClass = "sub campaign-lvl";
                 innerClass = "campaign-row audience";
             }
-            else if (ActivityType == Helpers.ActivityType.ActivityProgram)
+            else if (activityType == ActivityType.ActivityProgram)
             {
                 mainClass = "sub program-lvl";
                 innerClass = "programLevel";
                 parentClassName = "campaign";
             }
-            else if (ActivityType == Helpers.ActivityType.ActivityTactic)
+            else if (activityType == ActivityType.ActivityTactic)
             {
                 mainClass = "sub tactic-lvl";
                 innerClass = "tacticLevel";
                 parentClassName = "program";
             }
-            else if (ActivityType == Helpers.ActivityType.ActivityLineItem)
+            else if (activityType == ActivityType.ActivityLineItem)
             {
                 mainClass = "sub lineItem-lvl";
                 innerClass = "lineitemLevel";
                 parentClassName = "tactic";
             }
-            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList();
+            List<BudgetModelReport> lst = model.Where(p => p.ActivityType == activityType && p.ParentActivityId == parentActivityId).ToList();
             if (lst.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
                 TagBuilder div = new TagBuilder("div");
                 div.AddCssClass(mainClass);
-                div.Attributes.Add("data-parent", parentClassName + ParentActivityId.ToString());
+                div.Attributes.Add("data-parent", parentClassName + parentActivityId);
                 foreach (BudgetModelReport p in lst)
                 {
                     TagBuilder divProgram = new TagBuilder("div");
-                    divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
-                    //divProgram.AddCssClass(innerClass);
+                    divProgram.Attributes.Add("id", activityType + p.ActivityId);
                     double sumMonthAllocated = p.MonthAllocated.Jan + p.MonthAllocated.Feb + p.MonthAllocated.Mar + p.MonthAllocated.Apr + p.MonthAllocated.May + p.MonthAllocated.Jun + p.MonthAllocated.Jul + p.MonthAllocated.Aug + p.MonthAllocated.Sep + p.MonthAllocated.Oct + p.MonthAllocated.Nov + p.MonthAllocated.Dec;
                     if (mode == "first")
                     {
@@ -5956,7 +5877,7 @@ namespace RevenuePlanner.Helpers
                             span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                             if (dblProgress > 100)
                             {
-                                if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                                if (activityType != ActivityType.ActivityLineItem && activityType != ActivityType.ActivityTactic)
                                 {
                                     divProgram.AddCssClass(budgetError);
                                     divProgram.Attributes.Add("OverBudget", Math.Abs(sumMonthAllocated - sumMonthActual).ToString(formatThousand));
@@ -5972,7 +5893,7 @@ namespace RevenuePlanner.Helpers
                                 span.AddCssClass("progressBar");
                             }
 
-                            if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                            if (activityType != ActivityType.ActivityLineItem && activityType != ActivityType.ActivityTactic)
                             {
                                 divProgram.InnerHtml += span.ToString();
                             }
@@ -5992,7 +5913,7 @@ namespace RevenuePlanner.Helpers
                             span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                             if (dblProgress > 100)
                             {
-                                if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                                if (activityType != ActivityType.ActivityLineItem && activityType != ActivityType.ActivityTactic)
                                 {
                                     divProgram.AddCssClass(budgetError);
                                     divProgram.Attributes.Add("OverBudget", Math.Abs(sumMonthAllocated - sumMonthPlanned).ToString(formatThousand));
@@ -6009,7 +5930,7 @@ namespace RevenuePlanner.Helpers
                             }
 
 
-                            if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic)
+                            if (activityType != ActivityType.ActivityLineItem && activityType != ActivityType.ActivityTactic)
                             {
                                 divProgram.InnerHtml += span.ToString();
                             }
@@ -6017,9 +5938,9 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
-                        if (ActivityType != Helpers.ActivityType.ActivityLineItem && ActivityType != Helpers.ActivityType.ActivityTactic && isPlanTab)
+                        if (activityType != ActivityType.ActivityLineItem && activityType != ActivityType.ActivityTactic && isPlanTab)
                         {
-                            if (ActivityType != Helpers.ActivityType.ActivityProgram)
+                            if (activityType != ActivityType.ActivityProgram)
                             {
                                 double sumMonthChildAllocated = p.ChildMonthAllocated.Jan + p.ChildMonthAllocated.Feb + p.ChildMonthAllocated.Mar + p.ChildMonthAllocated.Apr + p.ChildMonthAllocated.May + p.ChildMonthAllocated.Jun + p.ChildMonthAllocated.Jul + p.ChildMonthAllocated.Aug + p.ChildMonthAllocated.Sep + p.ChildMonthAllocated.Oct + p.ChildMonthAllocated.Nov + p.ChildMonthAllocated.Dec;
 
@@ -6044,22 +5965,18 @@ namespace RevenuePlanner.Helpers
 
                     }
                     div.InnerHtml += divProgram.ToString();
-                    if (ActivityType == Helpers.ActivityType.ActivityCampaign)
-                        div.InnerHtml += ChildSummaryReport(helper, Helpers.ActivityType.ActivityProgram, p.ActivityId, model, mode, AllocatedBy, isPlanTab).ToString();
-                    else if (ActivityType == Helpers.ActivityType.ActivityProgram)
-                        div.InnerHtml += ChildSummaryReport(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model, mode, AllocatedBy, isPlanTab).ToString();
-                    else if (ActivityType == Helpers.ActivityType.ActivityTactic)
-                        div.InnerHtml += ChildSummaryReport(helper, Helpers.ActivityType.ActivityLineItem, p.ActivityId, model, mode, AllocatedBy, isPlanTab).ToString();
+                    if (activityType == ActivityType.ActivityCampaign)
+                        div.InnerHtml += ChildSummaryReport(helper, ActivityType.ActivityProgram, p.ActivityId, model, mode, allocatedBy, isPlanTab).ToString();
+                    else if (activityType == ActivityType.ActivityProgram)
+                        div.InnerHtml += ChildSummaryReport(helper, ActivityType.ActivityTactic, p.ActivityId, model, mode, allocatedBy, isPlanTab).ToString();
+                    else if (activityType == ActivityType.ActivityTactic)
+                        div.InnerHtml += ChildSummaryReport(helper, ActivityType.ActivityLineItem, p.ActivityId, model, mode, allocatedBy, isPlanTab).ToString();
 
                 }
                 sb.AppendLine(div.ToString());
                 return new MvcHtmlString(sb.ToString());
             }
-            else
-            {
-                return new MvcHtmlString(string.Empty);
-            }
-
+            return new MvcHtmlString(string.Empty);
         }
 
         #endregion //Budgeting Report
