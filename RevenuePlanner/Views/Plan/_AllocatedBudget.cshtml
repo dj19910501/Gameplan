@@ -446,15 +446,6 @@ else {
          var id = $(this).attr('id');
          ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
-
-    @* $("[linktype=program]").click(function (e) {
-         var id = $(this).attr('id');
-         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-    });
-    $("[linktype=tactic]").click(function (e) {
-        var id = $(this).attr('id');
-        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-    });*@
     $('#btnClueTip').click(function () {
         var entityId = $('#entityDetails').val();
         var section = $('#entityDetails').attr('section').toString();
@@ -551,11 +542,4 @@ else {
     $('.column2,.column1').scroll(function () {
         $('.cluetip').css('display', 'none');
     });
-    //$('.orange-corner-budget').on("click",function (e) {
-    //    // alert(event.pageY);
-    //    //var event1 = jQuery.Event("click");
-    //    $(this).parent().find('a').get(0).click(this.event);//.get(0).
-    //    //$(this).parent().find('a').trigger(event1);
-    //    return false;
-    //});
 </script>
