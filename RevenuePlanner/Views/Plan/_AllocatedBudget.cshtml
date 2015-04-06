@@ -2,16 +2,12 @@
 @using RevenuePlanner.Helpers
 @model List<BudgetModel>
 @{
-    string AllocatedBy = ViewBag.AllocatedBy;
-    BudgetModel plan = Model.Where(p => p.ActivityType == ActivityType.ActivityPlan).SingleOrDefault();
-    string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
-    string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
-    string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
-    bool isquarter = false;
-    if (AllocatedBy.ToLower() == strQuarters)
-    {
-        isquarter = true;
-    }
+    string allocatedBy = ViewBag.AllocatedBy;
+    BudgetModel plan = Model.SingleOrDefault(p => p.ActivityType == ActivityType.ActivityPlan);
+    string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToLower();
+    string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToLower();
+    string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower();
+    bool isquarter = allocatedBy.ToLower() == strQuarters;
 }
 @{
     BudgetMonth PercAllocated = ViewBag.PercAllocated;
@@ -45,11 +41,11 @@
                                     <div>Budget</div>
                                 </td>
                             </tr>
-                            @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, "0")
+                            @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, allocatedBy, "0")
                         </tbody>
                         <tbody class="column2">
-                            @Html.AllocatedPlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy, Model)
-                            @Html.AllocatedCampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy)
+                            @Html.AllocatedPlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, allocatedBy, Model)
+                            @Html.AllocatedCampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, allocatedBy)
                         </tbody>
                         <tbody class="column3">
                             <tr>
@@ -57,7 +53,7 @@
                                     <div>Unallocated</div>
                                 </td>
                             </tr>
-                            @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, "0")
+                            @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, allocatedBy, "0")
                         </tbody>
 
                     </table>
@@ -189,7 +185,7 @@
     });
     function SetHeader() {
         $('#divViewBy').hide();
-        if ('@AllocatedBy' != '@strDefault') {
+        if ('@allocatedBy' != '@strDefault') {
             $('#planCostTitle').html('Planned Budget Allocation');
             var sumMonth = number_format('@sumMonth', 0, '.', ',');
             var allocated = number_format('@plan.Budgeted', 0, '.', ',');
@@ -224,11 +220,11 @@
             $('.progressPlanned').show();
         }
 
-        if ('@AllocatedBy' == '@strQuarters') {
+        if ('@allocatedBy' == '@strQuarters') {
             $('#monthCompareTitle').html('Quarterly Budget Allocation');
         }
         var strMonthHTML = '';
-        if ('@AllocatedBy' == '@strMonths') {
+        if ('@allocatedBy' == '@strMonths') {
             for (var i = 1; i <= 12; i++) {
                 strMonthHTML += '<div class="budgetMonth">';
                 if (i == 1) {
@@ -318,7 +314,7 @@
     strMonthHTML += '</div>';
 }
 }
-else if ('@AllocatedBy' == '@strQuarters') {
+else if ('@allocatedBy' == '@strQuarters') {
             for (var i = 1; i <= 4; i++) {
                 strMonthHTML += '<div class="budgetMonth">';
                 if (i == 1) {
