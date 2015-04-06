@@ -269,7 +269,8 @@ td,tbody th {
         BindLineChart(chartdata.categories, chartdata.todayValue, chartdata.isDisplay, chartdata.series, linechartDivId, 260, false);
 
         // End:- Revenue_LineChart script 
-
+        $('#MQLLineChart').highcharts().reflow();
+        $('#CWLineChart').highcharts().reflow();
         // Start:- Revenue_SparkLineChart script 
         
         BindSparkLineChart();
