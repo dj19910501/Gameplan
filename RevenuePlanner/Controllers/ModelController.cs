@@ -568,7 +568,8 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns json object</returns>
         public JsonResult CheckTargetStage(int ModelId, int StageId)
         {
-            var objTacticType = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == ModelId && tacticType.StageId == StageId).FirstOrDefault();
+            //Modified By Komal Rawal for #1244
+            var objTacticType = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == ModelId && tacticType.StageId == StageId && tacticType.IsDeleted == false).FirstOrDefault();
             if (objTacticType == null)
             {
                 return Json("notexist", JsonRequestBehavior.AllowGet);
@@ -2337,7 +2338,7 @@ namespace RevenuePlanner.Controllers
                         var version = tblModels.Where(model => model.ClientId.Equals(Sessions.User.ClientId) && model.Title == Title).OrderByDescending(model => model.CreatedDate).Select(model => model.Version).FirstOrDefault();
                         if (version != null && version != "")
                         {
-                            newModel.Version = Convert.ToString((Convert.ToDouble(version) + 0.1));
+                            newModel.Version = Convert.ToString((Convert.ToDecimal(version) + (decimal)0.1)); //Modified By Komal Rawal for #1245
                         }
                         else
                         {

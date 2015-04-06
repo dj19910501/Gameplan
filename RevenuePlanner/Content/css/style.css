@@ -10793,7 +10793,7 @@ li.close-list {
 
 .white-bg-edirProgram {
     background: none repeat scroll 0 0 #fff;
-    float: left;
+    float: right;  /*Modified by komal for #1181*/ 
     overflow: auto;
     padding: 8px 20px 0;
     width: 97%;

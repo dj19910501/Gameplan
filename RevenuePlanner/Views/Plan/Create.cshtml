@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     string strPlanId = Convert.ToString(Model.PlanId);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
+    bool IsModelCreateEditAuthorized = (bool)ViewBag.modelcreateedit; //Added By Komal Rawal for #1176
     ViewBag.strplanid = strPlanId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
     ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
     bool isBackFromAssortment = false;//Added by Mitesh vaishnav on 25/07/2014 for PL ticket 619
@@ -61,7 +62,7 @@
                         <div id="divPlanDefinationEnabled">
                             I'm using the 
                         @{
-    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
+    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable) && IsModelCreateEditAuthorized)
     {
                             @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
                             <span id="ModelTitle" class="source-sans-proregular"></span>
