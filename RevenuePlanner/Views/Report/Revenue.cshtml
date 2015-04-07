@@ -968,7 +968,7 @@
                         lines: false
                     },
                     legend: {
-                        values: [{ text: "Actual", color: "#d4d4d4" }, { text: "Projected", color: "#1a638a" }, { text: "Contribution", color: "#559659" }],
+                        values: [{ text: "Actual", color: "#d4d4d4" }, { text: "Goal", color: "#1a638a" }, { text: "Contribution", color: "#559659" }],
                         valign: "middle",
                         align: "left",
                         width: 50,
@@ -1015,7 +1015,7 @@
                     $('#table_reports2 > tbody').empty();
                     var qvalue = "@Common.GetCurrentQuarter()"
                     var curr_month = "@Common.GetCurrentMonth()"
-                    addRowReport2("Projected Revenue", reportTableInfo2.data.projectedRevenue, 1, qvalue, curr_month);
+                    addRowReport2("Goal Revenue", reportTableInfo2.data.projectedRevenue, 1, qvalue, curr_month);
                     addRowReport2("Actual Revenue", reportTableInfo2.data.actualRevenue, 2, qvalue, curr_month);
                     addRowReport2("Difference", reportTableInfo2.data.difference, 3, qvalue, curr_month);
                     addRowReport2("% Contribution", reportTableInfo2.data.contribution, 4, qvalue, curr_month);

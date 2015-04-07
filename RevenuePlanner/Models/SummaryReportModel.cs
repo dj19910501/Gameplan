@@ -202,5 +202,11 @@ namespace RevenuePlanner.Models
         public int Year { get; set; }
     }
 
+    public class ActualTacticListByStage
+    {
+        public List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList { get; set; }
+        public string StageCode { get; set;}
+    }
+
     #endregion
 }

@@ -5210,6 +5210,16 @@ namespace RevenuePlanner.Controllers
             string strCWStageCode = Enums.InspectStage.CW.ToString();
             double _Benchmark = 0, _inqActual_Projected = 0, _mqlActual_Projected = 0, _cwActual_Projected = 0, stageVolumePercntg =0;
             bool IsQuarterly = false;
+            string revStageCode = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
+            string inqStageCode = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
+            string mqlStageCode = Enums.InspectStageValues[strMQLStageCode].ToString();
+            string cwStageCode = Enums.InspectStageValues[strCWStageCode].ToString();
+            List<string> ActualStageCodeList = new List<string>();
+            ActualStageCodeList.Add(revStageCode);
+            ActualStageCodeList.Add(inqStageCode);
+            ActualStageCodeList.Add(mqlStageCode);
+            ActualStageCodeList.Add(cwStageCode);
+            List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             try
             {
                 if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(Enums.ViewByAllocated.Quarterly.ToString()))
@@ -5258,18 +5268,18 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IsPlanExistToShowReport = true;
 
                     List<string> includeMonth = GetMonthListForReport(timeframeOption);
-
+                    ActualTacticStageList = GetActualListInTacticInterval(Tacticdata, timeframeOption, ActualStageCodeList);
                     #region "Revenue related Code"
 
                     #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    string revStageCode = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-                    ActualList = GetActualListInTacticInterval(Tacticdata, timeframeOption, revStageCode);
+
+                    ActualList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(revStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, revStageCode);
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualList, ProjectedTrendList);
                     #endregion
 
                     #region "Set Linechart & Revenue Overview data to model"
-                    objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly, Enums.ReportType.Revenue.ToString());
+                    objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
                     objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                     objRevenueOverviewModel.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
                     objRevenueOverviewModel.projected_goal = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
@@ -5287,11 +5297,11 @@ namespace RevenuePlanner.Controllers
 
                     #region "Calculate ProjVsGoal for INQ"
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    string inqStageCode = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
+                    
                     ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
                     ProjectedTrendList = new List<ProjectedTrendModel>();
                     OverviewModelList = new List<TacticwiseOverviewModel>();
-                    ActualList = GetActualListInTacticInterval(Tacticdata, timeframeOption, inqStageCode);
+                    ActualList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(inqStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, inqStageCode);
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualList, ProjectedTrendList);
                     #endregion
@@ -5313,11 +5323,11 @@ namespace RevenuePlanner.Controllers
 
                     #region "Calculate ProjVsGoal, Linechart & Benchmarck for MQL"
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    string mqlStageCode = Enums.InspectStageValues[strMQLStageCode].ToString();
+                    
                     ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
                     ProjectedTrendList = new List<ProjectedTrendModel>();
                     OverviewModelList = new List<TacticwiseOverviewModel>();
-                    ActualList = GetActualListInTacticInterval(Tacticdata, timeframeOption, mqlStageCode);
+                    ActualList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(mqlStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, mqlStageCode);
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualList, ProjectedTrendList);
                     #endregion
@@ -5332,7 +5342,7 @@ namespace RevenuePlanner.Controllers
                     #region "Conversion : Set Linechart & Revenue Overview data to model"
                     string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
                     objLineChartData = new lineChartData();
-                    objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly, Enums.ReportType.Conversion.ToString());
+                    objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
                     objProjectedGoal = new Projected_Goal();
                     objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                     objProjectedGoal.Name = !string.IsNullOrEmpty(MQLStageLabel) ? MQLStageLabel : mqlStageCode;
@@ -5365,11 +5375,11 @@ namespace RevenuePlanner.Controllers
 
                     #region "Calculate ProjVsGoal, LineChart & Benchmark for CW"
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    string cwStageCode = Enums.InspectStageValues[strCWStageCode].ToString();
+                    
                     ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
                     ProjectedTrendList = new List<ProjectedTrendModel>();
                     OverviewModelList = new List<TacticwiseOverviewModel>();
-                    ActualList = GetActualListInTacticInterval(Tacticdata, timeframeOption, cwStageCode);
+                    ActualList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(cwStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, cwStageCode);
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualList, ProjectedTrendList);
                     #endregion
@@ -5377,7 +5387,7 @@ namespace RevenuePlanner.Controllers
                     #region "Conversion : Set Linechart & Revenue Overview data to model"
                     string CWStageLabel = Common.GetLabel(Common.StageModeCW);
                     objLineChartData = new lineChartData();
-                    objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly, Enums.ReportType.Conversion.ToString());
+                    objLineChartData = GetLineChartData(ActualList, ProjectedTrendList, timeframeOption, IsQuarterly);
                     objProjectedGoal = new Projected_Goal();
                     objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                     objProjectedGoal.Name = !string.IsNullOrEmpty(CWStageLabel) ? CWStageLabel : cwStageCode;
@@ -5472,11 +5482,13 @@ namespace RevenuePlanner.Controllers
         /// <param name="timeframeOption">Selected Year from left YearFilter dropdown</param>
         /// <param name="includeMonth"> list of include month to filter TacticData & ActualTactic list</param>
         /// <returns>Return List of ActualTacticList</returns>
-        public List<Plan_Campaign_Program_Tactic_Actual> GetActualListUpToCurrentMonthByStageCode(List<TacticStageValue> TacticData, string timeframeOption, string StageCode, bool IsTillCurrentMonth)
+        public List<ActualTacticListByStage> GetActualListUpToCurrentMonthByStageCode(List<TacticStageValue> TacticData, string timeframeOption, List<string> StageCodeList, bool IsTillCurrentMonth)
         {
             #region "Declare local Variables"
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             List<string> includeActualMonth = new List<string>();
+            List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
+            ActualTacticListByStage objActualTacticListByStage = new ActualTacticListByStage();
             #endregion
             try
             {
@@ -5494,15 +5506,20 @@ namespace RevenuePlanner.Controllers
                 }
                 TacticData.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
 
-                //// Filter ActualTacticlist by RevenueStageCode & IncludeMonth list till current Month ex.{Jan,Feb,March}.
-                ActualTacticList = ActualTacticList.Where(actual => actual.StageTitle.Equals(StageCode) && includeActualMonth.Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
-
+                foreach (string stagecode in StageCodeList)
+                {
+                    objActualTacticListByStage = new ActualTacticListByStage();
+                    objActualTacticListByStage.StageCode = stagecode;
+                    //// Filter ActualTacticlist by RevenueStageCode & IncludeMonth list till current Month ex.{Jan,Feb,March}.
+                    objActualTacticListByStage.ActualTacticList = ActualTacticList.Where(actual => actual.StageTitle.Equals(stagecode) && includeActualMonth.Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
+                    ActualTacticStageList.Add(objActualTacticListByStage);
+                }
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            return ActualTacticList;
+            return ActualTacticStageList;
         }
 
         /// <summary>
@@ -5891,7 +5908,9 @@ namespace RevenuePlanner.Controllers
             //strCustomField = !string.IsNullOrEmpty(strCustomField) ? strCustomField : string.Empty;
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             string revStageCode = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-
+            List<string> revStageCodeList = new List<string> { revStageCode };
+            List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
+            List<ActualTacticListByStage> ActualStageList = new List<ActualTacticListByStage>();
             #region "Quarterly Trend Varaibles"
             List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
             List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
@@ -5996,8 +6015,11 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                         #region "Evaluate Customfield Option wise Sparkline chart data"
-
-                        ActualTacticList = GetActualListUpToCurrentMonthByStageCode(Tacticdata, timeFrameOption, revStageCode, false);
+                        ActualTacticStageList = GetActualListUpToCurrentMonthByStageCode(Tacticdata, timeFrameOption, revStageCodeList, false);
+                        if (ActualTacticStageList != null)
+                        {
+                            ActualTacticList = ActualTacticStageList.Where(act => act.StageCode.Equals(revStageCode)).Select(act => act.ActualTacticList).FirstOrDefault();
+                        }
                         foreach (RevenueContrinutionData _obj in CustomFieldOptionList)
                         {
                             ProjectedRevenueTrendList = new List<ProjectedTrendModel>();
@@ -6097,8 +6119,17 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                         #region "Evaluate Customfield Option wise Sparkline chart data"
-                        ActualTacticList = GetActualListInTacticInterval(Tacticdata, timeFrameOption, revStageCode);
-                        TrendActualTacticList = GetActualListUpToCurrentMonthByStageCode(Tacticdata, timeFrameOption, revStageCode, true);
+                        ActualStageList = GetActualListInTacticInterval(Tacticdata, timeFrameOption, revStageCodeList);
+                        if (ActualStageList != null)
+                        {
+                            ActualTacticList = ActualStageList.Where(act => act.StageCode.Equals(revStageCode)).Select(act => act.ActualTacticList).FirstOrDefault();
+                        }
+
+                        ActualTacticStageList = GetActualListUpToCurrentMonthByStageCode(Tacticdata, timeFrameOption, revStageCodeList, true);
+                        if (ActualTacticStageList != null)
+                        {
+                            TrendActualTacticList = ActualTacticStageList.Where(act => act.StageCode.Equals(revStageCode)).Select(act => act.ActualTacticList).FirstOrDefault();
+                        }
                         foreach (RevenueContrinutionData _obj in CustomFieldOptionList)
                         {
 
@@ -6452,7 +6483,11 @@ namespace RevenuePlanner.Controllers
 
                         #region "Evaluate Customfield Option wise Sparkline chart data"
 
-                        revActualTacticList = GetActualListUpToCurrentMonthByStageCode(Tacticdata, timeFrameOption, revStageCode, false);
+                        ActualTacticStageList = GetActualListUpToCurrentMonthByStageCode(Tacticdata, timeFrameOption, revStageCodeList, false);
+                        if (ActualTacticStageList != null)
+                        {
+                            revActualTacticList = ActualTacticStageList.Where(act => act.StageCode.Equals(revStageCode)).Select(act => act.ActualTacticList).FirstOrDefault();
+                        }
 
                         #region "LineItems list for Cost Calculation"
                         TacticIds = Tacticdata.Select(tac => tac.TacticObj.PlanTacticId).ToList();
@@ -6806,26 +6841,33 @@ namespace RevenuePlanner.Controllers
         /// <param name="timeframeOption">Selected Year from left YearFilter dropdown</param>
         /// <param name="includeMonth"> list of include month to filter TacticData & ActualTactic list</param>
         /// <returns>Return List of ActualTacticList</returns>
-        public List<Plan_Campaign_Program_Tactic_Actual> GetActualListInTacticInterval(List<TacticStageValue> TacticData, string timeframeOption, string StageCode)
+        public List<ActualTacticListByStage> GetActualListInTacticInterval(List<TacticStageValue> TacticData, string timeframeOption, List<string> StageCodeList)
         {
             #region "Declare local Variables"
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             List<TacticMonthInterval> lstTacticMonths = new List<TacticMonthInterval>();
+            List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             #endregion
             try
             {
                 lstTacticMonths = GetTacticMonthInterval(TacticData);
                 bool IsTillCurrentMonth = true;
-                ActualTacticList = GetActualListUpToCurrentMonthByStageCode(TacticData, timeframeOption, StageCode, IsTillCurrentMonth);
+                ActualTacticStageList = GetActualListUpToCurrentMonthByStageCode(TacticData, timeframeOption, StageCodeList, IsTillCurrentMonth);
 
                 //// Filter ActualTacticList by Total month included in Tactic.
-                ActualTacticList = ActualTacticList.Where(actual => lstTacticMonths.Where(tac => tac.PlanTacticId.Equals(actual.PlanTacticId)).Select(tac => tac.Month).Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
+                foreach (ActualTacticListByStage objActualStage in ActualTacticStageList)
+                {
+                    if(objActualStage.ActualTacticList != null)
+                    {
+                        objActualStage.ActualTacticList = objActualStage.ActualTacticList.Where(actual => lstTacticMonths.Where(tac => tac.PlanTacticId.Equals(actual.PlanTacticId)).Select(tac => tac.Month).Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
+                    }
+                }
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            return ActualTacticList;
+            return ActualTacticStageList;
         }
 
         /// <summary>
@@ -6935,7 +6977,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ProjectedTrendModelList"> Trend Model list of Projected</param>
         /// <param name="timeframeOption">Selected Year from left Filter</param>
         /// <returns>Return LineChart Model</returns>
-        public lineChartData GetLineChartData(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<ProjectedTrendModel> ProjectedTrendModelList, string timeframeOption, bool IsQuarterly, string strReportType)
+        public lineChartData GetLineChartData(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<ProjectedTrendModel> ProjectedTrendModelList, string timeframeOption, bool IsQuarterly)
         {
             #region "Declare Local Varialbles"
             List<string> categories = new List<string>();
@@ -7035,11 +7077,7 @@ namespace RevenuePlanner.Controllers
 
                 
                 #region "Set Series, Categories & Marker data to Model"
-                string Series2Name = string.Empty;
-                if (strReportType.Equals(Enums.ReportType.Conversion.ToString()))
-                    Series2Name = "Benchmark";
-                else
-                    Series2Name = "Goal";
+                
                 series objSeries1 = new series();
                 objSeries1.name = "Actual/Projected";
                 objSeries1.data = serData1;
@@ -7049,7 +7087,7 @@ namespace RevenuePlanner.Controllers
                 lstseries.Add(objSeries1);
                 series objSeries2 = new series();
 
-                objSeries2.name = Series2Name;
+                objSeries2.name = "Goal";
                 objSeries2.data = serData2;
                 marker objMarker2 = new marker();
                 objMarker2.symbol = "square";

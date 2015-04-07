@@ -4886,7 +4886,7 @@ namespace RevenuePlanner.Helpers
                 TagBuilder divHeaderInnerAllocated = new TagBuilder("div");
                 TagBuilder tdValueInnerAllocated = new TagBuilder("td");
                 TagBuilder divValueInnerAllocated = new TagBuilder("div");
-                divHeaderInnerAllocated.InnerHtml = "Allocated";
+                divHeaderInnerAllocated.InnerHtml = "Budget"; //*Allocated
 
                 TagBuilder aAllocated = new TagBuilder("a");
                 aAllocated.AddCssClass("UpperArrowReport");

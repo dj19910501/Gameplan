@@ -406,10 +406,10 @@
                     }
                     for (j in json_reportTableInfo2) {
                         if (typeof json_reportTableInfo2[j] != 'undefined') {
-                            addRowReport2("@Html.LabelForINQ("INQ") Projected", json_reportTableInfo2[j].INQGoal, 1, json_reportTableInfo2[j].monthList);
+                            addRowReport2("@Html.LabelForINQ("INQ") Goal", json_reportTableInfo2[j].INQGoal, 1, json_reportTableInfo2[j].monthList);
                             addRowReport2("@Html.LabelForINQ("INQ") Actual", json_reportTableInfo2[j].INQActual, 2, json_reportTableInfo2[j].monthList);
                             addRowReport2("Difference", [], 3, json_reportTableInfo2[j].monthList);
-                            addRowReport2("@Html.LabelForMQL("MQL") Projected", json_reportTableInfo2[j].MQLGoal, 4, json_reportTableInfo2[j].monthList);
+                            addRowReport2("@Html.LabelForMQL("MQL") Goal", json_reportTableInfo2[j].MQLGoal, 4, json_reportTableInfo2[j].monthList);
                             addRowReport2("@Html.LabelForMQL("MQL") Actual", json_reportTableInfo2[j].MQLActual, 5, json_reportTableInfo2[j].monthList);
                             addRowReport2("Difference", [], 6, json_reportTableInfo2[j].monthList);
                             addRowReport2("Total @Html.LabelForMQL("MQL")", [], 7, json_reportTableInfo2[j].monthList);
