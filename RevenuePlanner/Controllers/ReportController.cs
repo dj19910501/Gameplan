@@ -5552,6 +5552,7 @@ namespace RevenuePlanner.Controllers
             List<ActualDataTable> ActualTacticListbyTactic = new List<ActualDataTable>();
             double TotalActualUpToCurrentMonth = 0;
             int involveMonthTillCurrentMonth = 0;
+            int _currentYear = Convert.ToInt32(currentYear);
             #endregion
 
             try
@@ -5563,7 +5564,7 @@ namespace RevenuePlanner.Controllers
                     _TacEndMonth = tactic.EndDate.Month;
                     _planTacticId = tactic.PlanTacticId;
 
-                    if (_TacEndMonth > currentMonth)
+                    //if (_TacEndMonth > currentMonth)
                     {
                         if (curntActualTacticList != null && curntActualTacticList.Count > 0)
                         {
@@ -5583,7 +5584,7 @@ namespace RevenuePlanner.Controllers
                             objActualTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
 
                             //// Calculate Trend calculation for month that is greater than current ruuning month.
-                            if (_trendMonth > currentMonth && involveMonthTillCurrentMonth > 0)
+                            if (_trendMonth > currentMonth && involveMonthTillCurrentMonth > 0 && _currentYear >= tactic.StartDate.Year)
                             {
                                 objActualTrendModel.TrendValue = (TotalActualUpToCurrentMonth / involveMonthTillCurrentMonth) * _trendMonth;
                             }
@@ -5623,6 +5624,7 @@ namespace RevenuePlanner.Controllers
             StageCodeList = ActualTacticStageList.Distinct().Select(actual => actual.StageCode).ToList();
             List<Plan_Campaign_Program_Tactic> TacticList = new List<Plan_Campaign_Program_Tactic>();
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+            int _currentYear = Convert.ToInt32(currentYear);
             #endregion
 
             try
@@ -5639,10 +5641,17 @@ namespace RevenuePlanner.Controllers
 
                     foreach (var tactic in TacticList)
                     {
-                        _TacEndMonth = tactic.EndDate.Month;
+                        if (_currentYear <= tactic.StartDate.Year)
+                        {
+                            _TacEndMonth = tactic.EndDate.Month;
+                        }
+                        else
+                        {
+                            _TacEndMonth = 12;
+                        }
                         _planTacticId = tactic.PlanTacticId;
                         _TacStartMonth = tactic.StartDate.Month;
-                        if (_TacEndMonth > currentMonth)
+                       // if ((_currentYear == tactic.StartDate.Year && _TacEndMonth > currentMonth) || (_currentYear < tactic.StartDate.Year))
                         {
                             //ActualMonthList = new List<string>();
                             //for (int month = _TacStartMonth; month <= currentMonth; month++)
@@ -5674,13 +5683,13 @@ namespace RevenuePlanner.Controllers
                                     objActualTrendModel.StageCode = stagecode;
 
                                     //// Calculate Trend calculation for month that is greater than current ruuning month.
-                                    if (_trendMonth > currentMonth && involveMonthTillCurrentMonth > 0)
+                                    if (involveMonthTillCurrentMonth > 0 && (_currentYear < tactic.StartDate.Year || (_trendMonth > currentMonth && _currentYear == tactic.StartDate.Year)))
                                     {
                                         //involveMonthTillCurrentMonth = (_trendMonth - _TacStartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
                                         //TotalActualUpToCurrentMonth = ActualTacticListbyTactic.Where(actual => ActualMonthList.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
                                         objActualTrendModel.TrendValue = (TotalActualUpToCurrentMonth / involveMonthTillCurrentMonth);
                                     }
-                                    else if (_trendMonth >= _TacStartMonth && _trendMonth <= currentMonth) // Set Same ActualValue as Trend value till current month from Tactic StartMonth.
+                                    else if (_currentYear > tactic.StartDate.Year || (_currentYear == tactic.StartDate.Year &&  _trendMonth <= currentMonth)) // Set Same ActualValue as Trend value till current month from Tactic StartMonth.
                                     {
                                         CurrentPeriod = PeriodPrefix + _trendMonth.ToString();
                                         objActualTrendModel.TrendValue = ActualTacticListbyTactic.Where(actual => actual.Period.Equals(CurrentPeriod)).Select(actual => actual.Actualvalue).FirstOrDefault();
@@ -5715,6 +5724,7 @@ namespace RevenuePlanner.Controllers
             List<TacticMonthValue> CostListbyTactic = new List<TacticMonthValue>();
             double TotalCostUpToCurrentMonth = 0;
             int involveMonthTillCurrentMonth = 0;
+            int _currentYear = Convert.ToInt32(currentYear);
             #endregion
 
             try
@@ -5726,7 +5736,7 @@ namespace RevenuePlanner.Controllers
                     _TacEndMonth = tactic.EndDate.Month;
                     _planTacticId = tactic.PlanTacticId;
 
-                    if (_TacEndMonth > currentMonth)
+                    //if (_TacEndMonth > currentMonth)
                     {
                         if (curntCostList != null && curntCostList.Count > 0)
                         {
@@ -5746,7 +5756,7 @@ namespace RevenuePlanner.Controllers
                             objActualTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
 
                             //// Calculate Trend calculation for month that is greater than current ruuning month.
-                            if (_trendMonth > currentMonth && involveMonthTillCurrentMonth > 0)
+                            if (_trendMonth > currentMonth && involveMonthTillCurrentMonth > 0 && _currentYear >= tactic.StartDate.Year)
                             {
                                 objActualTrendModel.TrendValue = (TotalCostUpToCurrentMonth / involveMonthTillCurrentMonth) * _trendMonth;
                             }
@@ -6975,7 +6985,8 @@ namespace RevenuePlanner.Controllers
                 {
                     if(objActualStage.ActualTacticList != null)
                     {
-                        objActualStage.ActualTacticList = objActualStage.ActualTacticList.Where(actual => lstTacticMonths.Where(tac => tac.PlanTacticId.Equals(actual.PlanTacticId)).Select(tac => tac.Month).Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
+                        //objActualStage.ActualTacticList = objActualStage.ActualTacticList.Where(actual => lstTacticMonths.Where(tac => tac.PlanTacticId.Equals(actual.PlanTacticId)).Select(tac => tac.Month).Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
+                        //objActualStage.ActualTacticList = objActualStage.ActualTacticList.Where(actual => lstTacticMonths.Where(tac => tac.PlanTacticId.Equals(actual.PlanTacticId)).Select(tac => tac.Month).Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
                     }
                 }
             }
@@ -7277,7 +7288,7 @@ namespace RevenuePlanner.Controllers
 
                         //// Calculate Trend calculation for month that is greater than current ruuning month.
                         //if (_trendMonth > currentMonth && tactic.EndMonth > currentMonth && _trendMonth > tactic.StartMonth && _currentYear <= tactic.Year)
-                        if (tactic.EndMonth > currentMonth && _trendMonth > tactic.StartMonth && _trendMonth >= currentMonth && _currentYear <= tactic.Year)
+                        if (_trendMonth > tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth > currentMonth &&  _trendMonth >= currentMonth && _currentYear == tactic.Year)))
                         {
                             TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
                             //TotalRevenue = tactic.Value * TotalTacticMonths; // Get Total Projected Revenue.
