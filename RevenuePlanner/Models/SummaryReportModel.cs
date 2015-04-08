@@ -177,6 +177,7 @@ namespace RevenuePlanner.Models
         public int PlanTacticId { get; set; }
         public double TrendValue { get; set; }
         public string Month { get; set; }
+        public string StageCode { get; set; }
     }
 
     public class TacticMonthInterval
