@@ -1,11 +1,22 @@
 ﻿@model RevenuePlanner.Models.ReportOverviewModel
 @using Newtonsoft.Json;
 @{
-    var linechartdata = JsonConvert.SerializeObject(Model.revenueOverviewModel.linechartdata);
-    var revenue_Projected_Goal = Model.revenueOverviewModel.projected_goal;
-    var SparkLineChartData = Model.revenueOverviewModel.SparkLineChartsData;
-    var ConversionOverviewModel = Model.conversionOverviewModel;
-    bool isPlanExistToShowReport = Convert.ToBoolean(ViewBag.IsPlanExistToShowReport); 
+    var linechartdata = Model.revenueOverviewModel != null ? JsonConvert.SerializeObject(Model.revenueOverviewModel.linechartdata) : string.Empty;
+    var revenue_Projected_Goal = Model.revenueOverviewModel != null ? Model.revenueOverviewModel.projected_goal : new RevenuePlanner.Models.Projected_Goal();
+    var SparkLineChartData = Model.revenueOverviewModel != null ? Model.revenueOverviewModel.SparkLineChartsData : new List<RevenuePlanner.Models.sparkLineCharts>();
+    var ConversionOverviewModel = Model.conversionOverviewModel != null ? Model.conversionOverviewModel : new RevenuePlanner.Models.ConversionOverviewModel();
+    bool isPlanExistToShowReport = Convert.ToBoolean(ViewBag.IsPlanExistToShowReport);
+    var _actual_Projected = (dynamic)null;
+    var _goal = (dynamic)null;
+    var _percentage = (dynamic)null;
+    var isnegativePercentage = (dynamic)null;
+    if (revenue_Projected_Goal != null)
+    {
+    _actual_Projected = revenue_Projected_Goal.Actual_Projected != null ? revenue_Projected_Goal.Actual_Projected : null;
+    _goal = revenue_Projected_Goal.Goal != null ? revenue_Projected_Goal.Goal : null;
+    _percentage = revenue_Projected_Goal.Percentage != null ? revenue_Projected_Goal.Percentage : null;
+    isnegativePercentage = revenue_Projected_Goal.IsnegativePercentage != null ? revenue_Projected_Goal.IsnegativePercentage : false;
+    }
 }
 
 <style type="text/css">
@@ -57,6 +68,8 @@ td,tbody th {
 @Html.Hidden("hdnIsPlanExistToShowReport", isPlanExistToShowReport)
 <div class="report-index-wrapper">
     <div id="DivNoPlanToShowReport" style="border-top:none; display:none;" class="NoDataFound">No data found for selected active filters.</div>
+    @if(isPlanExistToShowReport)
+    {
     <div class="revenue-wrapper" id="divRevenue" style="display:none;">
         <div class="report-revenue">
             <div class="report-btn-group">
@@ -201,6 +214,7 @@ td,tbody th {
     </div>
 </div>
 <div id="divBackground" class="modal-backdrop fade in" style="display: none; z-index: 2502 !important;"></div>
+    }
 </div>
 
 
@@ -208,15 +222,18 @@ td,tbody th {
     var _defautlChartHeight = 275, _defautlChartWidth = 600;
     $(function () {
         ShowHideReport();
+        var _isplan = "@isPlanExistToShowReport";
+        if (_isplan.toLowerCase() == 'true') 
+        {
         var strUrl = "@Url.Content("~/Report/GetRevenueLineChartData")";
         var _sparklineurl = "@Url.Content("~/Report/GetRevenueSparkLineChartData")";
 
         // Start:- Revenue_Projected_Goal Overview script 
 
-        var _actual_Projected = "@revenue_Projected_Goal.Actual_Projected";
-        var _goal = "@revenue_Projected_Goal.Goal";
-        var _percentage = "@revenue_Projected_Goal.Percentage";
-        var isnegativePercentage = "@revenue_Projected_Goal.IsnegativePercentage";
+            var _actual_Projected = "@_actual_Projected";
+            var _goal = "@_goal";
+            var _percentage = "@_percentage";
+            var isnegativePercentage = "@isnegativePercentage";
 
         var _formtActualProjected = "0", _formtGoal = "0", _formtPercentage = "0";
 
@@ -292,6 +309,7 @@ td,tbody th {
             //}
         });
         // End:- Revenue_SparkLineChart script 
+        }
     });
 
     function onRevenueDetailsClick() {

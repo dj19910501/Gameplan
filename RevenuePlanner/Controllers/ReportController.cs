@@ -5301,7 +5301,7 @@ namespace RevenuePlanner.Controllers
 
                     #region "Calculate ProjVsGoal for INQ"
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    
+
                     ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
                     ProjectedTrendList = new List<ProjectedTrendModel>();
                     OverviewModelList = new List<TacticwiseOverviewModel>();
@@ -5329,7 +5329,7 @@ namespace RevenuePlanner.Controllers
 
                     #region "Calculate ProjVsGoal, Linechart & Benchmarck for MQL"
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    
+
                     ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
                     ProjectedTrendList = new List<ProjectedTrendModel>();
                     OverviewModelList = new List<TacticwiseOverviewModel>();
@@ -5383,7 +5383,7 @@ namespace RevenuePlanner.Controllers
 
                     #region "Calculate ProjVsGoal, LineChart & Benchmark for CW"
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    
+
                     ActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
                     ProjectedTrendList = new List<ProjectedTrendModel>();
                     OverviewModelList = new List<TacticwiseOverviewModel>();
@@ -5434,6 +5434,11 @@ namespace RevenuePlanner.Controllers
                     objReportOverviewModel.revenueOverviewModel = objRevenueOverviewModel;
                     objReportOverviewModel.conversionOverviewModel = objConversionOverviewModel;
                     #endregion
+                }
+                else
+                {
+                    objReportOverviewModel.revenueOverviewModel = new RevenueOverviewModel();
+                    objReportOverviewModel.conversionOverviewModel = new ConversionOverviewModel();
                 }
 
 
