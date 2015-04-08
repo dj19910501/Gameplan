@@ -330,14 +330,14 @@
           }
           
           @* Start - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
-          $('#txtBudget').parent().find('.currency_dollar').keydown(function (e) {
-              var keycode = (e.keyCode ? e.keyCode : e.which);
-              if (keycode == 13) {//Enter key pressed
-                  changeBudgetValues();//Trigger search button click event
-              }
-          });
+          //$('#txtBudget').parent().find('.currency_dollar').keydown(function (e) {
+          //    var keycode = (e.keyCode ? e.keyCode : e.which);
+          //    if (keycode == 13) {//Enter key pressed
+          //        changeBudgetValues();//Trigger search button click event
+          //    }
+          //});
           $('#txtBudget').parent().find('.currency_dollar').blur(function (e) {
-              
+              $('#txtBudget').val($(this).val());
               changeBudgetValues();
           });
           @* End - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
