@@ -606,7 +606,7 @@
         var _checked = $(_plancheckbox).attr('checked');
         var _val = $(_plancheckbox).attr('id');
         var _planliId = "liPlan" + _val;
-        OnCheckboxChange(_planliId, _checked);
+        OnCheckboxChangeForPlan(_planliId, _checked);
     }
 
     function OnMultiselectchange(_checkbox) {
@@ -615,21 +615,27 @@
         var _parentliId = "liCustom" + _val;
         OnCheckboxChange(_parentliId, _checked);
     }
-
-    function OnCheckboxChange(_parentliId, _checked) {
+    function OnCheckboxChangeForPlan(_parentliId, _checked) {
         if (_checked != null && _checked != 'undefined' && _checked === 'checked') {
             $("#" + _parentliId).addClass('close-list');
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
-           
-                GetOwnerListForFilter(PlanIds,false);
-            
-            GetTacticTypelist(PlanIds,false);
+            GetOwnerListForFilter(PlanIds, false);
+            GetTacticTypelist(PlanIds, false);
         }
         else {
             $("#" + _parentliId).removeClass('close-list');
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
-            GetOwnerListForFilter(PlanIds,false);
-            GetTacticTypelist(PlanIds,false);
+            GetOwnerListForFilter(PlanIds, false);
+            GetTacticTypelist(PlanIds, false);
+        }
+    }
+
+    function OnCheckboxChange(_parentliId, _checked) {
+        if (_checked != null && _checked != 'undefined' && _checked === 'checked') {
+            $("#" + _parentliId).addClass('close-list');
+        }
+        else {
+            $("#" + _parentliId).removeClass('close-list');
         }
     }
 
@@ -696,7 +702,7 @@
                         $("#PlanAllModule").css("display", "block");
                         $("#NoPlanFound").hide();
                         $.each(data, function (index, item) {
-                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Text + '" onchange="OnMultiselectchange(this)" id="' + item.Value + '"></input></li>');
+                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Text + '" onchange="OnPlanchange(this)" id="' + item.Value + '"></input></li>');
             });
                     }
                     else {
