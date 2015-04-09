@@ -146,7 +146,8 @@ namespace RevenuePlanner.Models
         public string stagename { get; set; }
         public string stageVolume { get; set; }
         public string Benchmark { get; set; }
-        //public string PercentageDifference { get; set; }
+        public string PercentageDifference { get; set; }
+        public bool IsNegativePercentage { get; set; }
      }
     public class Stage_Benchmark
     {

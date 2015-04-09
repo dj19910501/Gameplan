@@ -96,9 +96,10 @@
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
             <p class="yearcounterHead margintop10per" id="">@mqlBenchmark.stagename</p>
-            <p class="smalltext" id="">Projected</p>
+            <p class="smalltext" id="">Conversion</p>
             <p class="amountcounter benchmarkVol" id="mqlBenchmarkVol" orig-val="@mqlBenchmark.stageVolume">@mqlBenchmark.stageVolume</p>
             <p class="smallamountcounter benchmarkVol benchmark" id="mqlBenchmark" orig-val="@mqlBenchmark.Benchmark">@mqlBenchmark.Benchmark</p>
+            <p class="statustext redLabel" id="mqlPercentage">@mqlBenchmark.PercentageDifference</p> 
             @*<p class="statustext above" id="">@mqlBenchmark.PercentageDifference</p>*@
             <div class="coversionline-chart2" style="width:auto;">
                 <div id="MQLLineChart" style="width:auto;"></div>
@@ -108,10 +109,10 @@
             <a href="" class="viewfullscreen hideReport">
                 <img src="~/Content/images/view-fullscreen.png" /></a>
             <p class="yearcounterHead margintop10per" id="">@cwBenchmark.stagename</p>
-            <p class="smalltext" id="">Projected</p>
+            <p class="smalltext" id="">Conversion</p>
             <p class="amountcounter benchmarkVol" id="cwBenchmarkVol" orig-val="@cwBenchmark.stageVolume">@cwBenchmark.stageVolume</p>
             <p class="smallamountcounter benchmarkVol benchmark" id="cwBenchmark" orig-val="@cwBenchmark.Benchmark">@cwBenchmark.Benchmark</p>
-            @*<p class="statustext " id="">@cwBenchmark.PercentageDifference</p>*@
+            <p class="statustext " id="cwPercentage">@cwBenchmark.PercentageDifference</p>
             <div class="coversionline-chart2" style="width:100%;">
                 <div id="CWLineChart" style="width:100%;"></div>
             </div>
@@ -269,11 +270,22 @@
         var cw_percentage = "@cwProj_Goal.Percentage";
         var cw_isnegativePercentage = "@cwProj_Goal.IsnegativePercentage";
 
+        var mql_labelId = "#mqlPercentage";
+        var mql_stage_percentage ="@mqlBenchmark.PercentageDifference";
+        var mql_stage_isNegative ="@mqlBenchmark.IsNegativePercentage";
+        
+        var cw_labelId = "#cwPercentage";
+        var cw_stage_percentage ="@cwBenchmark.PercentageDifference";
+        var cw_stage_isNegative ="@cwBenchmark.IsNegativePercentage";
+
         var MQL = "mql", INQ = "inq", CW = "cw";
         FormattingProjvsGoal(mql_actual_Projected, mql_goal, mql_percentage, mql_isnegativePercentage, MQL);
         FormattingProjvsGoal(inq_actual_Projected, inq_goal, inq_percentage, inq_isnegativePercentage, INQ);
         FormattingProjvsGoal(cw_actual_Projected, cw_goal, cw_percentage, cw_isnegativePercentage, CW);
 
+        FormattingConversionPercentage(mql_labelId,mql_stage_percentage,mql_stage_isNegative);
+        FormattingConversionPercentage(cw_labelId,cw_stage_percentage,cw_stage_isNegative);
+        
         var mql_lineardata = "@mqllinechartdata";
         var mqlchartdata = (mql_lineardata.toString().replace(/&quot;/g, '"'));
         mqlchartdata = JSON.parse(mqlchartdata);
@@ -336,7 +348,7 @@
         else {
             if (isnegativePercentage.toLowerCase() == 'true') {
                 _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true);
-                $(_lblPercentage).removeClass("greenLabel").addClass("redLabel");
+                $(_lblPercentage).removeClass("greenLabel").addClass("redLabel") 
                 $(_lblVolUp).hide();
                 $(_lblVolDown).show();
             }
@@ -353,4 +365,22 @@
         $(_lblPercentage).html(_formtPercentage);
     }
 
+    function FormattingConversionPercentage(labelId, _percentage, isnegative) {
+        var _formtPercentage = "0";
+        if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
+            _formtPercentage = "0";
+            $(labelId).removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (isnegative.toLowerCase() == 'true') {
+                _formtPercentage = FormatNumber(_percentage, true) + " " + "@RevenuePlanner.Helpers.Common.BelowPlan.ToString()";
+                $(labelId).removeClass("greenLabel").addClass("redLabel");
+            }
+            else {
+                _formtPercentage = FormatNumber(_percentage, true) + " " + "@RevenuePlanner.Helpers.Common.AbovePlan.ToString()";
+                $(labelId).removeClass("redLabel").addClass("greenLabel");
+            }
+        }
+        $(labelId).html(_formtPercentage);
+    }
 </script>

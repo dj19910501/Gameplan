@@ -5208,7 +5208,7 @@ namespace RevenuePlanner.Controllers
             List<Stage_Benchmark> StageBenchmarkList = new List<Stage_Benchmark>();
             string strMQLStageCode = Enums.InspectStage.MQL.ToString();
             string strCWStageCode = Enums.InspectStage.CW.ToString();
-            double _Benchmark = 0, _inqActual_Projected = 0, _mqlActual_Projected = 0, _cwActual_Projected = 0, stageVolumePercntg =0;
+            double _Benchmark = 0, _inqActual = 0, _mqlActual = 0, _cwActual = 0, stageVolumePercntg = 0;
             bool IsQuarterly = false;
             string revStageCode = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
             string inqStageCode = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
@@ -5322,8 +5322,8 @@ namespace RevenuePlanner.Controllers
                     objProjected_Goal_LineChart.StageCode = inqStageCode;
                     Projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
                     objConversionOverviewModel.Projected_LineChartList = Projected_Goal_LineChartList != null ? Projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
-                    if (objProjectedGoal != null)
-                        _inqActual_Projected = !string.IsNullOrEmpty(objProjectedGoal.Actual_Projected) ? Convert.ToDouble(objProjectedGoal.Actual_Projected) : 0;
+                    if (ActualTacticTrendList != null)
+                        _inqActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
                     #endregion
                     #endregion
 
@@ -5341,6 +5341,7 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region "Conversion: GetStgewise Benchmark"
+                    double Actual_Benchmark_Percentage = 0;
                     List<string> StageCodeList = new List<string>();
                     StageCodeList.Add(strMQLStageCode);
                     StageCodeList.Add(strCWStageCode);
@@ -5361,10 +5362,11 @@ namespace RevenuePlanner.Controllers
 
 
                     #region "MQL: Set Benchmark Model data"
-                    if (objProjectedGoal != null)
+                    _Benchmark = stageVolumePercntg = 0;
+                    if (ActualTacticTrendList != null)
                     {
-                        _mqlActual_Projected = !string.IsNullOrEmpty(objProjectedGoal.Actual_Projected) ? Convert.ToDouble(objProjectedGoal.Actual_Projected) : 0;
-                        stageVolumePercntg = _inqActual_Projected > 0 ? (_mqlActual_Projected / _inqActual_Projected) : 0;
+                        _mqlActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        stageVolumePercntg = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
                     }
 
                     _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strMQLStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
@@ -5372,7 +5374,9 @@ namespace RevenuePlanner.Controllers
                     mqlStageBenchmarkmodel.stagename = MQLStageLabel.ToString();
                     mqlStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
                     mqlStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
-                    //mqlStageBenchmarkmodel.PercentageDifference = "6% Above Plan"; 
+                    Actual_Benchmark_Percentage = _Benchmark > 0 ? (stageVolumePercntg / _Benchmark):0;
+                    mqlStageBenchmarkmodel.IsNegativePercentage = Actual_Benchmark_Percentage < 0 ? true : false;
+                    mqlStageBenchmarkmodel.PercentageDifference = Actual_Benchmark_Percentage.ToString(); 
                     #endregion
                     objProjected_Goal_LineChart.Stage_Benchmark = mqlStageBenchmarkmodel;
 
@@ -5408,10 +5412,10 @@ namespace RevenuePlanner.Controllers
 
                     #region "CW: Set Benchmark Model data"
                     stageVolumePercntg = 0;
-                    if (objProjectedGoal != null)
+                    if (ActualTacticTrendList != null)
                     {
-                        _cwActual_Projected = !string.IsNullOrEmpty(objProjectedGoal.Actual_Projected) ? Convert.ToDouble(objProjectedGoal.Actual_Projected) : 0;
-                        stageVolumePercntg = _mqlActual_Projected > 0 ? (_cwActual_Projected / _mqlActual_Projected) : 0;
+                        _cwActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        stageVolumePercntg = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
                     }
                     _Benchmark = 0;
                     _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strCWStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
@@ -5419,7 +5423,9 @@ namespace RevenuePlanner.Controllers
                     cwStageBenchmarkmodel.stagename = CWStageLabel;
                     cwStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
                     cwStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
-                    //cwStageBenchmarkmodel.PercentageDifference = "2% Below Plan";
+                    Actual_Benchmark_Percentage = _Benchmark > 0 ? (stageVolumePercntg / _Benchmark) : 0;
+                    cwStageBenchmarkmodel.IsNegativePercentage = Actual_Benchmark_Percentage < 0 ? true : false;
+                    cwStageBenchmarkmodel.PercentageDifference = Actual_Benchmark_Percentage.ToString(); 
                     #endregion
                     objProjected_Goal_LineChart.Stage_Benchmark = cwStageBenchmarkmodel;
 
