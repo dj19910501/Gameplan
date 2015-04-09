@@ -270,7 +270,7 @@ namespace Integration.Salesforce
             //// Get SalesForce PlanIds.
             List<int> lstSalesForceplanIds = lstPlans.Where(objplan => !lstEloquaPlanIds.Contains(objplan.PlanId)).Select(plan => plan.PlanId).ToList();
 
-            int INQStageId = db.Stages.FirstOrDefault(s => s.ClientId == ClientId && s.Code == Common.StageINQ).StageId;
+            int INQStageId = db.Stages.FirstOrDefault(s => s.ClientId == ClientId && s.Code == Common.StageINQ && s.IsDeleted == false).StageId;
             // Get List of status after Approved Status
             List<string> statusList = Common.GetStatusListAfterApproved();
             

@@ -269,7 +269,7 @@ namespace Integration.Eloqua
                                                                                                                        tactic.IsDeleted == false).ToList();
 
                         //// Get MQL Level
-                        var MQLLevel = db.Stages.Where(ObjStage => ObjStage.Code == Common.StageMQL && ObjStage.ClientId == _ClientId).Select(ObjStage => ObjStage.Level).FirstOrDefault();
+                        var MQLLevel = db.Stages.Where(ObjStage => ObjStage.Code == Common.StageMQL && ObjStage.ClientId == _ClientId && ObjStage.IsDeleted == false).Select(ObjStage => ObjStage.Level).FirstOrDefault();
 
                         //// Get list of SalesForceIntegrationInstanceTacticID(CRMId).
                         List<string> lstSalesForceIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => lstSalesForcePlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IntegrationInstanceTacticId != null).Select(_tac => _tac.IntegrationInstanceTacticId).ToList();

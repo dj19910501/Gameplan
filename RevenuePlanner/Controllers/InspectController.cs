@@ -2394,7 +2394,7 @@ namespace RevenuePlanner.Controllers
 
             //// Calculate MQL at runtime 
             string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
-            int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == TitleMQL).Level);
+            int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == TitleMQL && stage.IsDeleted == false).Level);
             //Compareing MQL stage level with tactic stage level
             if (_inspetmodel.StageLevel < MQLStageLevel)
             {
@@ -3776,7 +3776,7 @@ namespace RevenuePlanner.Controllers
             DateTime StartDate = new DateTime();
             string stageMQL = Enums.Stage.MQL.ToString();
             int tacticStageLevel = 0;
-            int levelMQL = db.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL)).Level.Value;
+            int levelMQL = db.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL) && stage.IsDeleted == false).Level.Value;
             if (form.PlanTacticId != 0)
             {
                 if (isTacticTypeChange)
@@ -6923,7 +6923,7 @@ namespace RevenuePlanner.Controllers
                     TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(pcpt, false);
                     //// Set MQL
                     string stageMQL = Enums.Stage.MQL.ToString();
-                    int levelMQL = db.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL)).Level.Value;
+                    int levelMQL = db.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL) && stage.IsDeleted == false).Level.Value;
                     int tacticStageLevel = Convert.ToInt32(pcpt.Stage.Level);
                     if (tacticStageLevel < levelMQL)
                     {

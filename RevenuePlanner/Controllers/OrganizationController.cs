@@ -174,7 +174,7 @@ namespace RevenuePlanner.Controllers
                     ids = string.Join(",", filterlist.Select(filter => filter.ApplicationActivityId.ToString()).ToArray());
                 }//commented by uday for functional review point...3-7-2014
                 ViewData["permissionids"] = ids.ToString();
-                TempData["RoleList"] = new SelectList(RoleList, "Value", "Text", RoleList.First());
+                TempData["RoleList"] = new SelectList(RoleList, "Value", "Text");
             }
             catch (Exception e)
             {

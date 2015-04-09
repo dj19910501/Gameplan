@@ -2547,7 +2547,7 @@ namespace RevenuePlanner.Helpers
             List<string> lstStageTitle = new List<string>();
             string stageMQL = Enums.Stage.MQL.ToString();
             int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == tacticId).Stage.Level);
-            int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
+            int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.IsDeleted == false && s.Code.Equals(stageMQL)).Level.Value;
 
             if (tacticStageLevel < levelMQL)
             {
@@ -2591,7 +2591,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities objDbMRPEntities = new MRPEntities();
             //// Compute the tactic relation list
             List<TacticStageValueRelation> tacticValueRelationList = GetCalculation(tlist, isIncludeImprovement);
-            List<Stage> stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            List<Stage> stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
             //// Fetch the tactic stages and it's value
             //// Return finalized TacticStageValue list to the Parent method 
             return GetTacticStageValueList(tlist, tacticValueRelationList, stageList, false, IsReport);
@@ -2977,7 +2977,7 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities dbStage = new MRPEntities();
             List<StageList> stageList = new List<StageList>();
-            var Stage = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).ToList();
+            var Stage = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).ToList();
             string CW = Enums.Stage.CW.ToString();
             string CR = Enums.StageType.CR.ToString();
             foreach (var s in Stage.Where(st => st.Level != null && st.Code != CW))
@@ -3205,7 +3205,7 @@ namespace RevenuePlanner.Helpers
 
             var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).Distinct().ToList();
             List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
-            List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
             //End #955
 
             List<TacticStageValue> TacticData = GetTacticStageRelationForSinglePlan(lstTactic, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, MainModelId, stageList, isIncludeImprovement);

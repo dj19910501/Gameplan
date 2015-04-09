@@ -260,7 +260,7 @@ namespace RevenuePlanner.Controllers
 
             #region INQ
             string inq = Enums.Stage.INQ.ToString();
-            int INQStageId = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == inq && stage.IsDeleted == false).StageId;
+            int INQStageId = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false && stage.Code == inq && stage.IsDeleted == false).StageId;
 
             //// Get INQ Actual Value
             var INQActualList = GetActualValueForINQ(ActualTacticList, INQStageId).Where(tacticactual => includeMonth.Contains(Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == tacticactual.PlanTacticId).TacticYear + tacticactual.Period)).ToList();
@@ -1341,7 +1341,7 @@ namespace RevenuePlanner.Controllers
             string inq = Enums.Stage.INQ.ToString();
             string mql = Enums.Stage.MQL.ToString();
             string CustomfieldType = string.Empty;
-            int INQStageId = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == inq && stage.IsDeleted == false).StageId;
+            int INQStageId = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false && stage.Code == inq && stage.IsDeleted == false).StageId;
             string strINQStage = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
             if (Tacticdata.Count() > 0)
             {
@@ -2202,7 +2202,7 @@ namespace RevenuePlanner.Controllers
             if (Tacticdata.Count() > 0)
             {
                 string inq = Enums.Stage.INQ.ToString();
-                int INQStaged = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == inq).StageId;
+                int INQStaged = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false && stage.Code == inq).StageId;
                 List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
                 Tacticdata.ForEach(tactic => tactic.ActualTacticList.ForEach(_tac => ActualTacticList.Add(_tac)));
                 ActualTacticList = ActualTacticList.Where(mr => includeMonth.Contains((Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == mr.PlanTacticId).TacticYear) + mr.Period)).ToList();

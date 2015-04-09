@@ -1329,7 +1329,7 @@ namespace RevenuePlanner.Controllers
                 string inqstage = Enums.Stage.INQ.ToString();
                 string mqlstage = Enums.Stage.MQL.ToString();
                 tacticStageRelationList = Common.GetTacticStageRelation(lstTactic.Select(tactic => tactic.objPlanTactic).ToList(), false);
-                stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).ToList();
+                stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).ToList();
                 inqLevel = Convert.ToInt32(stageList.Single(stage => stage.Code == inqstage).Level);
                 mqlLevel = Convert.ToInt32(stageList.Single(stage => stage.Code == mqlstage).Level);
             }
