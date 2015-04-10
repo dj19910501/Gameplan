@@ -305,7 +305,7 @@
             if (text != null && text != 'undefined' && text != 'NaN') {
                 _formatednumber = FormatNumber(Math.abs(parseFloat(text)), true);
                 if (_isBenchmark)
-                    _formatednumber = "Benchmark: " + _formatednumber;
+                    _formatednumber = "Goal: " + _formatednumber;
                 $(_Id).html(_formatednumber);
             }
         });
@@ -373,7 +373,7 @@
         }
         else {
             if (isnegative.toLowerCase() == 'true') {
-                _formtPercentage = FormatNumber(_percentage, true) + " " + "@RevenuePlanner.Helpers.Common.BelowPlan.ToString()";
+                _formtPercentage = FormatNumber(Math.abs(_percentage), true) + " " + "@RevenuePlanner.Helpers.Common.BelowPlan.ToString()";
                 $(labelId).removeClass("greenLabel").addClass("redLabel");
             }
             else {

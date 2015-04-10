@@ -5375,6 +5375,7 @@ namespace RevenuePlanner.Controllers
                     mqlStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
                     mqlStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
                     Actual_Benchmark_Percentage = _Benchmark > 0 ? (stageVolumePercntg / _Benchmark):0;
+                    Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
                     mqlStageBenchmarkmodel.IsNegativePercentage = Actual_Benchmark_Percentage < 0 ? true : false;
                     mqlStageBenchmarkmodel.PercentageDifference = Actual_Benchmark_Percentage.ToString(); 
                     #endregion
@@ -5424,6 +5425,7 @@ namespace RevenuePlanner.Controllers
                     cwStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
                     cwStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
                     Actual_Benchmark_Percentage = _Benchmark > 0 ? (stageVolumePercntg / _Benchmark) : 0;
+                    Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
                     cwStageBenchmarkmodel.IsNegativePercentage = Actual_Benchmark_Percentage < 0 ? true : false;
                     cwStageBenchmarkmodel.PercentageDifference = Actual_Benchmark_Percentage.ToString(); 
                     #endregion
