@@ -593,6 +593,11 @@ namespace RevenuePlanner.Controllers
             bool IsTactic = viewBy.Contains(Common.TacticCustomTitle) ? true : false;
             string entityType = Enums.EntityType.Tactic.ToString();
 
+            //Added By komal Rawal for #1282
+            Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
+            var ImprovementColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
+
             //// Set viewBy option as per GanttType selecte and grap CustomTypeId in case of CustomField
             if (IsTactic)
             {
@@ -793,7 +798,7 @@ namespace RevenuePlanner.Controllers
                 Duration = tacticTask.Duration,
                 Progress = 0,
                 Open = false,
-                Color = string.Concat(Common.GANTT_BAR_CSS_CLASS_PREFIX, tacticTask.ColorCode.ToLower()),
+                Color = TacticColor,
                 PlanId = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId,
                 PlanTitle = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title,
                 Campaign = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign,
@@ -1014,7 +1019,7 @@ namespace RevenuePlanner.Controllers
                 progress = 0,
                 open = true,
                 parent = string.Format("Z{0}_L{1}_M{2}", taskdataImprovement.MainParentId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
-                color = string.Concat(Common.GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, taskdataImprovement.ImprovementTactic.ImprovementTacticType.ColorCode.ToLower()),
+                color = ImprovementColor,
                 isSubmitted = taskdataImprovement.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = taskdataImprovement.ImprovementTactic.Status.Equals(tacticStatusDeclined),
                 inqs = 0,
@@ -1096,6 +1101,10 @@ namespace RevenuePlanner.Controllers
         private JsonResult PrepareTacticAndRequestTabResult(string viewBy, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult)
         {
             List<object> tacticAndRequestTaskData = GetTaskDetailTactic(viewBy, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic);
+            //Added By komal Rawal for #1282
+            Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            var TacticColor =  ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
+            
 
             if (activemenu.Equals(Enums.ActiveMenu.Home))
             {
@@ -1113,7 +1122,7 @@ namespace RevenuePlanner.Controllers
                 {
                     tactic.TacticTypeId,
                     tactic.Title,
-                    ColorCode = tactic.ColorCode
+                    ColorCode = TacticColor
                 }).Distinct().OrderBy(tactic => tactic.Title);
 
                 return Json(new
@@ -1317,6 +1326,15 @@ namespace RevenuePlanner.Controllers
         {
             string tacticStatusSubmitted = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
+            //Added By komal Rawal for #1282
+            Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(),e=>e.ColorCode);
+            var PlanColor = ColorCodelist[Enums.EntityType.Plan.ToString().ToLower()];
+            var ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
+            var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
+            var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
+            var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
+            //Emd
+            
 
             //// Added BY Bhavesh, Calculate MQL at runtime #376
             List<TacticStageValue> tacticStageRelationList = new List<TacticStageValue>();
@@ -1345,7 +1363,7 @@ namespace RevenuePlanner.Controllers
                 progress = GetTacticProgress(tactic.objPlanTactic, lstImprovementTactic, tactic.PlanId),
                 open = false,
                 parent = string.Format("L{0}_C{1}_P{2}", tactic.PlanId, tactic.PlanCampaignId, tactic.objPlanTactic.PlanProgramId),
-                color = string.Concat(Common.GANTT_BAR_CSS_CLASS_PREFIX, tactic.TacticType.ColorCode.ToLower()),
+                color = TacticColor,
                 isSubmitted = tactic.objPlanTactic.Status == tacticStatusSubmitted,
                 isDeclined = tactic.objPlanTactic.Status == tacticStatusDeclined,
                 projectedStageValue = viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase) ? stageList.Single(s => s.StageId == tactic.objPlanTactic.StageId).Level <= inqLevel ? Convert.ToString(tacticStageRelationList.Single(tm => tm.TacticObj.PlanTacticId == tactic.objPlanTactic.PlanTacticId).INQValue) : "N/A" : "0",
@@ -1389,7 +1407,7 @@ namespace RevenuePlanner.Controllers
                 progress = GetProgramProgress(lstTactic, tactic.objPlanTacticProgram, lstImprovementTactic, tactic.PlanId),
                 open = false,
                 parent = string.Format("L{0}_C{1}", tactic.PlanId, tactic.PlanCampaignId),
-                color = string.Empty,
+                color = ProgramColor,
                 planprogramid = tactic.objPlanTactic.PlanProgramId,
                 Status = tactic.objPlanTacticProgram.Status
             }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
@@ -1404,7 +1422,7 @@ namespace RevenuePlanner.Controllers
                 progress = program.progress,
                 open = program.open,
                 parent = program.parent,
-                color = (program.progress == 1 ? " stripe stripe-no-border " : (program.progress > 0 ? "partialStripe" : string.Empty)),
+                color = program.color + (program.progress == 1 ? " stripe stripe-no-border " : (program.progress > 0 ? "partialStripe" : string.Empty)),
                 planprogramid = program.planprogramid,
                 Status = program.Status
             });
@@ -1421,7 +1439,7 @@ namespace RevenuePlanner.Controllers
                 progress = GetCampaignProgress(lstTactic, tactic.objPlanTacticCampaign, lstImprovementTactic, tactic.PlanId),
                 open = false,
                 parent = string.Format("L{0}", tactic.PlanId),
-                color = GetColorBasedOnImprovementActivity(lstImprovementTactic, tactic.PlanId),
+                color = CampaignColor,
                 plancampaignid = tactic.PlanCampaignId,
                 Status = tactic.objPlanTacticCampaign.Status
             }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
@@ -1458,7 +1476,7 @@ namespace RevenuePlanner.Controllers
                                                           GetMaxEndDateForPlan(GanttTabs.Tactic, tactic.objPlanTactic.PlanTacticId, tactic.PlanId, lstCampaign, lstProgram, lstTactic)),
                                                lstTactic, lstImprovementTactic, tactic.PlanId),
                 open = false,
-                color = GetColorBasedOnImprovementActivity(lstImprovementTactic, tactic.PlanId),
+                color = PlanColor,
                 planid = tactic.PlanId
             }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
 
@@ -1495,7 +1513,7 @@ namespace RevenuePlanner.Controllers
                                                           GetMaxEndDateForPlan(GanttTabs.None, improvementTactic.ImprovementPlanTacticId, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic)),
                                                lstTactic, lstImprovementTactic, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
                 open = false,
-                color = GetColorBasedOnImprovementActivity(lstImprovementTactic, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                color = PlanColor,
                 planid = improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId
             }).Select(improvementTactic => improvementTactic).Distinct().OrderBy(improvementTactic => improvementTactic.text);
 
@@ -1534,7 +1552,7 @@ namespace RevenuePlanner.Controllers
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, improvementTactic.minStartDate, CalendarEndDate) - 1,
                 progress = 0,
                 open = true,
-                color = GetColorBasedOnImprovementActivity(lstImprovementTactic, improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                color = ImprovementTacticColor,
                 ImprovementActivityId = improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
                 isImprovement = true,
                 IsHideDragHandleLeft = improvementTactic.minStartDate < CalendarStartDate,
@@ -1552,7 +1570,7 @@ namespace RevenuePlanner.Controllers
                 progress = 0,
                 open = true,
                 parent = string.Format("L{0}_M{1}", improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
-                color = string.Concat(Common.GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, improvementTacticActivty.ImprovementTactic.ImprovementTacticType.ColorCode.ToLower()),
+                color = ImprovementTacticColor,
                 isSubmitted = improvementTacticActivty.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = improvementTacticActivty.ImprovementTactic.Status.Equals(tacticStatusDeclined),
                 inqs = 0,

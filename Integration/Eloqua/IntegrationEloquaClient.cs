@@ -547,33 +547,32 @@ namespace Integration.Eloqua
         {
             Enums.Mode currentMode = Common.GetMode(planIMPTactic.IsDeleted, planIMPTactic.IsDeployedToIntegration, planIMPTactic.IntegrationInstanceTacticId, planIMPTactic.Status);
             int _folderId = 0, _ImprvmntTacticFolderId = 0;
-            if (currentMode == Enums.Mode.Update)
-            {
-                _ImprvmntTacticFolderId = GetEloquaFolderIdByPlanId(planIMPTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId);
+            _ImprvmntTacticFolderId = GetEloquaFolderIdByPlanId(planIMPTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId);
+            //if (currentMode == Enums.Mode.Update)
+            //{
+            //    _folderId = (_ImprvmntTacticFolderId.ToString() == "0") ? GetEloquaRootFolderId() : _ImprvmntTacticFolderId;
 
-                _folderId = (_ImprvmntTacticFolderId.ToString() == "0") ? GetEloquaRootFolderId() : _ImprvmntTacticFolderId;
-
-                try
-                {
-                    int GPFolderId = GetEloquaCampaign(planIMPTactic.IntegrationInstanceTacticId).folderId;
-                    if (GPFolderId != _folderId)
-                    {
-                        currentMode = Enums.Mode.Create;
-                        planIMPTactic.IntegrationInstanceTacticId = null;
-                    }
-                }
-                catch (Exception e)
-                {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua Exception occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
-                    _ErrorMessage = Common.msgChildLevelError.ToString();
-                    if (e.Message.Contains(NotFound))
-                    {
-                        planIMPTactic.IntegrationInstanceTacticId = null;
-                        planIMPTactic = SyncImprovementData(planIMPTactic);
-                        return planIMPTactic;
-                    }
-                }
-            }
+            //    try
+            //    {
+            //        int GPFolderId = GetEloquaCampaign(planIMPTactic.IntegrationInstanceTacticId).folderId;
+            //        if (GPFolderId != _folderId)
+            //        {
+            //            currentMode = Enums.Mode.Create;
+            //            planIMPTactic.IntegrationInstanceTacticId = null;
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua Exception occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+            //        _ErrorMessage = Common.msgChildLevelError.ToString();
+            //        if (e.Message.Contains(NotFound))
+            //        {
+            //            planIMPTactic.IntegrationInstanceTacticId = null;
+            //            planIMPTactic = SyncImprovementData(planIMPTactic);
+            //            return planIMPTactic;
+            //        }
+            //    }
+            //}
 
             if (currentMode.Equals(Enums.Mode.Create))
             {
@@ -653,8 +652,8 @@ namespace Integration.Eloqua
                     _ErrorMessage = Common.msgChildLevelError.ToString();
                     if (e.Message.Contains(NotFound))// || e.Message.Contains(InternalServerError))
                     {
-                        planIMPTactic.IntegrationInstanceTacticId = null;
-                        planIMPTactic = SyncImprovementData(planIMPTactic);
+                       // planIMPTactic.IntegrationInstanceTacticId = null;
+                       // planIMPTactic = SyncImprovementData(planIMPTactic);
                         return planIMPTactic;
                     }
                     else
@@ -834,34 +833,34 @@ namespace Integration.Eloqua
         {
             Enums.Mode currentMode = Common.GetMode(planTactic.IsDeleted, planTactic.IsDeployedToIntegration, planTactic.IntegrationInstanceTacticId, planTactic.Status);
             int _folderId = 0, _tacFolderId = 0;
-            if (currentMode == Enums.Mode.Update)
-            {
-                _tacFolderId = GetEloquaFolderIdByPlanId(planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId);
-                _folderId = (_tacFolderId.ToString() == "0") ? GetEloquaRootFolderId() : _tacFolderId;
+            _tacFolderId = GetEloquaFolderIdByPlanId(planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId);
+            //if (currentMode == Enums.Mode.Update)
+            //{
+            //    _folderId = (_tacFolderId.ToString() == "0") ? GetEloquaRootFolderId() : _tacFolderId;
 
-                try
-                {
-                    int GPFolderId = GetEloquaCampaign(planTactic.IntegrationInstanceTacticId).folderId;
-                    if (GPFolderId != _folderId)
-                    {
-                        currentMode = Enums.Mode.Create;
-                        planTactic.IntegrationInstanceTacticId = null;
-                    }
-                }
-                catch (Exception e)
-                {
-                    //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
-                    _ErrorMessage = Common.msgChildLevelError.ToString();
-                    //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                    if (e.Message.Contains(NotFound))
-                    {
-                        planTactic.IntegrationInstanceTacticId = null;
-                        planTactic = SyncTacticData(planTactic);
-                        return planTactic;
-                    }
-                }
-            }
+            //    try
+            //    {
+            //        int GPFolderId = GetEloquaCampaign(planTactic.IntegrationInstanceTacticId).folderId;
+            //        if (GPFolderId != _folderId)
+            //        {
+            //            currentMode = Enums.Mode.Create;
+            //            planTactic.IntegrationInstanceTacticId = null;
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+            //        _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+            //        _ErrorMessage = Common.msgChildLevelError.ToString();
+            //        //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+            //        if (e.Message.Contains(NotFound))
+            //        {
+            //            planTactic.IntegrationInstanceTacticId = null;
+            //            planTactic = SyncTacticData(planTactic);
+            //            return planTactic;
+            //        }
+            //    }
+            //}
 
             if (currentMode.Equals(Enums.Mode.Create))
             {
@@ -945,8 +944,8 @@ namespace Integration.Eloqua
 
                     if (e.Message.Contains(NotFound))
                     {
-                        planTactic.IntegrationInstanceTacticId = null;
-                        planTactic = SyncTacticData(planTactic);
+                        //planTactic.IntegrationInstanceTacticId = null;
+                       // planTactic = SyncTacticData(planTactic);
                         return planTactic;
                     }
                     else

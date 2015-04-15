@@ -788,9 +788,12 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         public enum EntityType
         {
+            //Modified for #1282
             Campaign,
             Program,
-            Tactic
+            Tactic,
+            Plan,
+            ImprovementTactic
         }
 
         #region "Inspect Popup"

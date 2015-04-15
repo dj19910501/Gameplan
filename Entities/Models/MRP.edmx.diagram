@@ -131,6 +131,7 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.fk_TacticType_Stage" />
+        <EntityTypeShape EntityType="MRPModel.EntityTypeColor" Width="1.5" PointX="6.1199587779678222" PointY="19.462151357653621" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

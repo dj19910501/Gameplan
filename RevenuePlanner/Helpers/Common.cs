@@ -5085,6 +5085,15 @@ namespace RevenuePlanner.Helpers
                             return lstTactic;
                         }
 
+                        //For #774
+                        var Entityid = objDbMrpEntities.CustomField_Entity.Where(entityid=>lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).ToList();
+
+                        if (Entityid.Count() == 0)
+                       
+                        {
+                            return lstTactic;
+                       
+                        }
                         //End
                         var lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == clientId &&
                                                                                                         customFieldEntity.CustomField.IsDeleted.Equals(false) &&
@@ -5287,6 +5296,18 @@ namespace RevenuePlanner.Helpers
                             return lstTactic;
                         }
 
+                        //For #774
+                        var Entityid = objDbMrpEntities.CustomField_Entity.Where(entityid => lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).ToList();
+
+                       
+                        if (Entityid.Count() == 0)
+                        {
+                             
+
+                            return lstTactic;
+
+                        }
+                       
                         //End
                         var lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == clientId &&
                                                                                                         customFieldEntity.CustomField.IsDeleted.Equals(false) &&

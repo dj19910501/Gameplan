@@ -79,6 +79,9 @@
     <Compile Include="Models\CustomRestriction.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\EntityTypeColor.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\GameplanDataType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

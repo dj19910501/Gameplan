@@ -1972,7 +1972,7 @@ function CountTacticForRenderChart(leftNavTaskID, CampaignID) {
 function getCSSForTask(task) {
     var isImprovement = false;
     if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
-        var cssClass = task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+        var cssClass = ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                   if (typeof task.isImprovement != 'undefined' && task.isImprovement == true &&
                       typeof task.ImprovementPlanTacticId != 'undefined') {
                       cssClass += ' improvement border-top';
@@ -1988,7 +1988,7 @@ function getCSSForTask(task) {
                       }
                   }
               } else {
-                  cssClass = task.color + ' no_drag ';
+                  cssClass = ' no_drag ';
               }
 
               //// Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
@@ -2040,9 +2040,9 @@ function getCSSForTask(task) {
               //// Function to add class to each task bar.
               gantt.templates.task_class = function (start, end, task) {
                   if (typeof task.plantacticid != 'undefined') {
-                      return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+                      return ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                                          } else {
-                                             return task.color;
+                                             return '';
                                          }
               };
                                      gantt.parse(filteredTasks);
@@ -2067,9 +2067,9 @@ function getCSSForTask(task) {
                                      //// Function to add class to each task bar.
                                      gantt.templates.task_class = function (start, end, task) {
                                          if (typeof task.plantacticid != 'undefined') {
-                                             return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+                                             return ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                                  } else {
-                                     return task.color;
+                                     return '';
                                  }
                                      };
 
@@ -2110,9 +2110,9 @@ function getCSSForTask(task) {
                              //// Function to add class to each task bar.
                              gantt.templates.task_class = function (start, end, task) {
                                  if (typeof task.plantacticid != 'undefined') {
-                                     return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+                                     return ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                                  } else {
-                                     return task.color;
+                                     return '';
                                  }
       };
                              gantt.parse(filteredTasks);
@@ -2137,9 +2137,9 @@ function getCSSForTask(task) {
                              //// Function to add class to each task bar.
                              gantt.templates.task_class = function (start, end, task) {
                                  if (typeof task.plantacticid != 'undefined') {
-                                     return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+                                     return ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                                  } else {
-                                     return task.color;
+                                     return '';
                                  }
                                      };
 

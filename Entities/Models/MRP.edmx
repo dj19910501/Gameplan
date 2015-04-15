@@ -17,6 +17,7 @@
           <EntitySet Name="CustomFieldOption" EntityType="MRPModel.Store.CustomFieldOption" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomFieldType" EntityType="MRPModel.Store.CustomFieldType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomRestriction" EntityType="MRPModel.Store.CustomRestriction" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="EntityTypeColor" EntityType="MRPModel.Store.EntityTypeColor" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="GameplanDataType" EntityType="MRPModel.Store.GameplanDataType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="GameplanDataTypePull" EntityType="MRPModel.Store.GameplanDataTypePull" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ImprovementTacticType" EntityType="MRPModel.Store.ImprovementTacticType" store:Type="Tables" Schema="dbo" />
@@ -214,10 +215,6 @@
           <AssociationSet Name="FK_Model_Model" Association="MRPModel.Store.FK_Model_Model">
             <End Role="Model" EntitySet="Model" />
             <End Role="Model1" EntitySet="Model" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_Stage_Model" Association="MRPModel.Store.FK_Model_Stage_Model">
-            <End Role="Model" EntitySet="Model" />
-            <End Role="Model_Stage" EntitySet="Model_Stage" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Budget_Plan" Association="MRPModel.Store.FK_Plan_Budget_Plan">
             <End Role="Plan" EntitySet="Plan" />
@@ -488,6 +485,14 @@
           <Property Name="Permission" Type="smallint" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EntityTypeColor">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="EntityType" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="ColorCode" Type="nvarchar" Nullable="false" MaxLength="50" />
         </EntityType>
         <EntityType Name="GameplanDataType">
           <Key>
@@ -1615,18 +1620,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Model_Stage_Model">
-          <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="1" />
-          <End Role="Model_Stage" Type="MRPModel.Store.Model_Stage" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="Model_Stage">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Plan_Budget_Plan">
           <End Role="Plan" Type="MRPModel.Store.Plan" Multiplicity="1" />
           <End Role="Plan_Budget" Type="MRPModel.Store.Plan_Budget" Multiplicity="*" />
@@ -2325,6 +2318,7 @@
             <End Role="Stage" EntitySet="Stages" />
             <End Role="TacticType" EntitySet="TacticTypes" />
           </AssociationSet>
+          <EntitySet Name="EntityTypeColors" EntityType="MRPModel.EntityTypeColor" />
         </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -4111,6 +4105,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="EntityTypeColor">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="EntityType" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ColorCode" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4982,6 +4984,15 @@
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="NotificationId" ColumnName="NotificationId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EntityTypeColors">
+            <EntityTypeMapping TypeName="MRPModel.EntityTypeColor">
+              <MappingFragment StoreEntitySet="EntityTypeColor">
+                <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

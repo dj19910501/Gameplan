@@ -6879,6 +6879,14 @@ namespace RevenuePlanner.Controllers
             string statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
             string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+            //Added By komal Rawal for #1282
+            Dictionary<string, string> ColorCodelist = db.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            var PlanColor = ColorCodelist[Enums.EntityType.Plan.ToString().ToLower()];
+            var ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
+            var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
+            var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
+            var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
+            //Emd
             try
             {
                 //// Get Inspect Model for Tactic InspectPopup.
@@ -6895,7 +6903,7 @@ namespace RevenuePlanner.Controllers
                                   ProgramTitle = pcpt.Plan_Campaign_Program.Title,
                                   Status = pcpt.Status,
                                   TacticTypeId = pcpt.TacticTypeId,
-                                  ColorCode = pcpt.TacticType.ColorCode,
+                                  ColorCode = TacticColor,
                                   Description = pcpt.Description,
                                   PlanCampaignId = pcpt.Plan_Campaign_Program.PlanCampaignId,
                                   PlanProgramId = pcpt.PlanProgramId,
@@ -6978,7 +6986,7 @@ namespace RevenuePlanner.Controllers
                     imodel.ProgramTitle = objPlan_Campaign_Program.Title;
                     imodel.CampaignTitle = objPlan_Campaign_Program.Plan_Campaign.Title;
                     imodel.Status = objPlan_Campaign_Program.Status;
-                    imodel.ColorCode = Common.Program_InspectPopup_Flag_Color;
+                    imodel.ColorCode = ProgramColor;
                     imodel.Description = objPlan_Campaign_Program.Description;
                     imodel.PlanCampaignId = objPlan_Campaign_Program.PlanCampaignId;
                     imodel.PlanProgramId = objPlan_Campaign_Program.PlanProgramId;
@@ -7038,7 +7046,7 @@ namespace RevenuePlanner.Controllers
 
                     imodel.CampaignTitle = objPlan_Campaign.Title;
                     imodel.Status = objPlan_Campaign.Status;
-                    imodel.ColorCode = Common.Campaign_InspectPopup_Flag_Color;
+                    imodel.ColorCode = CampaignColor;
                     imodel.Description = objPlan_Campaign.Description;
                     imodel.PlanCampaignId = objPlan_Campaign.PlanCampaignId;
                     imodel.OwnerId = objPlan_Campaign.CreatedBy;
@@ -7064,7 +7072,7 @@ namespace RevenuePlanner.Controllers
                                   ProgramTitle = pcpt.Plan_Improvement_Campaign_Program.Title,
                                   Status = pcpt.Status,
                                   TacticTypeId = pcpt.ImprovementTacticTypeId,
-                                  ColorCode = pcpt.ImprovementTacticType.ColorCode,
+                                  ColorCode = ImprovementTacticColor,
                                   Description = pcpt.Description,
                                   PlanCampaignId = pcpt.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
                                   PlanProgramId = pcpt.ImprovementPlanProgramId,
@@ -7091,7 +7099,7 @@ namespace RevenuePlanner.Controllers
                                    select p).FirstOrDefault();
 
                     imodel.PlanId = objPlan.PlanId;
-                    imodel.ColorCode = Common.Plan_InspectPopup_Flag_Color;
+                    imodel.ColorCode = PlanColor;
                     imodel.Description = objPlan.Description;
                     imodel.OwnerId = objPlan.CreatedBy;
                     imodel.Title = objPlan.Title;

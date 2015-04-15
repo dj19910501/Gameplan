@@ -941,7 +941,7 @@ function dataProcessor(t) {
     var s = Math.floor((this.config.row_height - a) / 2),
         r = document.createElement("div"),
         o = Math.round(n - e.x);
-    r.setAttribute(this.config.task_attribute, t.id), r.appendChild(gantt._render_task_content(t, o)), r.className = this._combine_item_class("gantt_task_line", this.templates.task_class(t.start_date, t.end_date, t), t.id), r.style.cssText = ["left:" + e.x + "px", "top:" + (s + e.y) + "px", "height:" + a + "px", "line-height:" + a + "px", "width:" + o + "px"].join(";");
+    r.setAttribute(this.config.task_attribute, t.id), r.appendChild(gantt._render_task_content(t, o)), r.className = this._combine_item_class("gantt_task_line", this.templates.task_class(t.start_date, t.end_date, t), t.id), r.style.cssText = ["left:" + e.x + "px", "top:" + (s + e.y) + "px", "height:" + a + "px", "line-height:" + a + "px", "width:" + o + "px", "background-color:#" + t.color ,"border-left: none", "border-right: none", "border-top: none"].join(";");
     var d = this._render_leftside_content(t);
     return d && r.appendChild(d), d = this._render_rightside_content(t), d && r.appendChild(d), i.show_progress && this._render_task_progress(t, r, o), i.drag_resize && !this._is_flex_task(t) && gantt._render_pair(r, "gantt_task_drag", t, function (t) {
         var e = document.createElement("div");
