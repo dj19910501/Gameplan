@@ -104,7 +104,7 @@
                                           checked = "checked";
                                           checkedclass = "close-list";
                                       }
-                                      $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
+                                      $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                                   });
                               }
                               else {
@@ -1382,6 +1382,31 @@
                 GanttOpenBranch($(this).attr('taskid'));
             });
         })
+
+        $(accordionDiv).find('.item-color').each(function () {
+            var colorcode = $(this).attr('colorcode');
+            if ($(this).find('.cf').length == 0) {
+                $(this).css("border-left", "7px solid #" + colorcode);
+                $(this).hover(function () {
+                    $(this).css("background-color", "#" + colorcode);
+                },
+                function () {
+                    $(this).css("background", "none repeat scroll 0% 0% transparent");
+                }
+                );
+            }
+            else {
+                $(this).find('.cf').css("border-left", "7px solid #" + colorcode);
+                $(this).find('.cf').hover(function () {
+                    $(this).css("background-color", "#" + colorcode);
+                },
+                function () {
+                    $(this).css("background", "none repeat scroll 0% 0% transparent");
+                }
+                );
+            }
+
+        });
     }
 
     //// Modified By Maninder Singh Wadhva PL Ticket#47
