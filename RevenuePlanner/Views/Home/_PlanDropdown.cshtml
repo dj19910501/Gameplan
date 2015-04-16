@@ -84,12 +84,21 @@
         $("#ddlTabViewBy").multiselect('refresh');
         $("#ddlTabViewBy").trigger('change');
         requestPlanActiveTab(false);
+        //Modified by komal rawal for #1283
+        $(".sidebar-section #ulTacticType").find(' li .TacticNumber').each(function () {
+            var oldvalue = $(this).attr("Previousvalue");
+            var setvalue = $(this).html(oldvalue);
+    });
     });
     $('.request').click(function () {
         isRequest = true;
         requestPlanActiveTab(isRequest);
         getViewByList = true;
         RefreshCurrentTab();
+        //Modified by komal rawal for #1283
+        $(".sidebar-section #ulTacticType").find(' li .TacticNumber').each(function () {
+            var setvalue = $(this).html("0");
+        });
     });
 
 

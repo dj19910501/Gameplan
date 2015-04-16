@@ -353,7 +353,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="activeMenu">current/selected active menu</param>
         /// <param name="getViewByList">flag to retrieve viewby list</param>
         /// <returns>Returns json result object of tactic type and plan campaign program tactic.</returns>
-        public JsonResult GetViewControlDetail(string viewBy, string planId, string timeFrame, string customFieldIds, string ownerIds, string activeMenu, bool getViewByList)
+        public JsonResult GetViewControlDetail(string viewBy, string planId, string timeFrame, string customFieldIds, string ownerIds, string activeMenu, bool getViewByList, string TacticTypeid)
         {
             //// Create plan list based on PlanIds of search filter
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -398,10 +398,15 @@ namespace RevenuePlanner.Controllers
             //// Owner filter criteria.
             List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
 
+            //Modified by komal rawal for #1283
+            //TacticType filter criteria
+            List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+
             //// Applying filters to tactic (IsDelete, Individuals)
             List<Plan_Tactic> lstTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
                                                                        lstProgramId.Contains(tactic.PlanProgramId) &&
-                                                                       (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))
+                                                                       (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy)) &&
+                                                                        (filterTacticType.Count.Equals(0) || filterTacticType.Contains(tactic.TacticType.TacticTypeId))
                                                                         && (!((tactic.EndDate < CalendarStartDate) || (tactic.StartDate > CalendarEndDate))))
                                                                        .ToList().Select(tactic => new Plan_Tactic
                                                                        {
@@ -3706,6 +3711,74 @@ namespace RevenuePlanner.Controllers
             return isValidEntity;
         }
 
+        #endregion
+
+        #region Tactic type list 
+        //Added by Komal rawal for #1283
+        public JsonResult GetTacticTypeListForFilter(string PlanId, string ViewBy, string ActiveMenu)
+        {
+
+            try
+            {
+                List<int> lstPlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
+
+                List<string> status = Common.GetStatusListAfterApproved();
+                Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, ActiveMenu.ToLower());
+
+                var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && lstPlanIds.Contains(campaign.PlanId)).Select(campaign => campaign.PlanCampaignId).ToList();
+                var programList = objDbMrpEntities.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && campaignList.Contains(program.PlanCampaignId)).Select(program => program.PlanProgramId).ToList();
+                var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic);
+
+
+                List<int> lstAllowedEntityIds = new List<int>();
+
+                var TacticUserList = tacticList.Distinct().ToList();
+
+                if (ActiveMenu.Equals(Enums.ActiveMenu.Plan.ToString()))
+                {
+                    List<string> statusCD = new List<string>();
+                    statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                    statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+                    TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status) || ((tactic.CreatedBy == Sessions.User.UserId && !ViewBy.Equals(GanttTabs.Request.ToString())) ? statusCD.Contains(tactic.Status) : false)).Distinct().ToList();
+                }
+                else
+                {
+                    TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status)).Distinct().ToList();
+                }
+
+                if (TacticUserList.Count > 0)
+                {
+                    List<int> planTacticIds = TacticUserList.Select(tactic => tactic.PlanTacticId).ToList();
+                    lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                    //// Custom Restrictions applied
+                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                }
+
+                var objTacticType = TacticUserList.GroupBy(pc => new { title = pc.TacticType.Title, id = pc.TacticTypeId }).Select(pc => new
+                                     {
+                                         Title = pc.Key.title ,
+                                         TacticTypeId = pc.Key.id,
+                                         Number = pc.Count()
+                                     }).OrderBy(TacticType => TacticType.Title,new AlphaNumericComparer());
+
+
+                return Json(new { isSuccess = true, TacticTypelist = objTacticType }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
+        }
         #endregion
 
     }

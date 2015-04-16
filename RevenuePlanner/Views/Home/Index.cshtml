@@ -63,6 +63,111 @@
 @Html.HiddenFor(m => m.PlanId)
 @section Sidebar{
     <script type="text/javascript">
+        //Added By komal rawal for #1283
+        function GetTacticTypelist(Planids) {
+           
+            $('#ulTacticType').html('');
+           
+                filters.TacticTypeids = [];
+            
+            $.ajax({
+                beforeSend: function (x) {
+                    myApp.hidePleaseWait();
+                },
+                type: "GET",
+                async: false,
+                cache: false,
+                url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
+            data: {
+                PlanId: Planids.toString(),
+                ViewBy: type,
+                ActiveMenu: $('#ActiveMenu').val()
+               
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                  }
+                  else {
+                    if (data.isSuccess == true) {
+                       
+                          if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+                              TactictypeCount = data.TacticTypelist.length;
+                              if (TactictypeCount > 0) {
+                                  $("#TacticTypeAllModule").css("display", "block");
+                                  $("#NoTTFound").hide();
+                                  $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                                      var checked = "";
+                                      var checkedclass = "";
+                                      if (filters.TacticTypeids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                                          checked = "checked";
+                                          checkedclass = "close-list";
+                                      }
+                                      $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " "+'(<span class="font-size14 TacticNumber" Previousvalue= '+TactictypeItem.Number+'>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
+                                  });
+                              }
+                              else {
+                                  $("#TacticTypeAllModule").css("display", "none");
+                                  $("#NoTTFound").show();
+                              }
+                          }
+                          else {
+                              $("#TacticTypeAllModule").css("display", "none");
+                              $("#NoTTFound").show();
+                          }
+                      }
+                  }
+              }
+        });
+
+      }
+
+
+    function BulkTTOperation(selection) {
+        filters.TacticTypeids = [];
+        if (selection) {
+            $("#ulTacticType li").each(function (i) {
+                $(this).addClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).attr("checked", "checked");
+                filters.TacticTypeids.push(chkid);
+
+            });
+        }
+        else {
+            $("#ulTacticType li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+        }
+
+    }
+
+    function toggleTacticType(obj) {
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#liTT" + id).addClass("close-list");
+        }
+        else {
+            $("#liTT" + id).removeClass("close-list");
+        }
+
+        filters.TacticTypeids = [];
+        $("#ulTacticType li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.TacticTypeids.push(chkid);
+            }
+        });
+    }
+
+
+
+   
+  
+    //End
         // Edited to add PlanYear option.
         var Currenttime = "thisquarter";
         $(document).ready(function () {
@@ -391,7 +496,34 @@
                     </div>
                 </div>
             </div>
+
+             <div id="accordion-TacticType" class="dropdown-section accordion" >
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
         </div>
+                    <div id="accordion-element-TacticType" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulTacticType">
+                            
+                        </ul>
+                        <div class="list-tab">
+                              <ul id="TacticTypeAllModule">
+                                    <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                    <li>|</li>
+                                    <li><a onclick="BulkTTOperation(false)">deselect all</a></li>
+                                </ul>
+                                <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
+                             
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+       
+    
 
         @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
         {
@@ -557,7 +689,8 @@
         PlanIDs: [],
         SelectedPlans: [],
         PlanTitles: [],
-        OwnerIds: []
+        OwnerIds: [],
+        TacticTypeids: []
     };
 
     var PlanCount = 0, OwnerCount = 0;
@@ -632,12 +765,14 @@
             filters.SelectedPlans.push(id);
             filters.PlanTitles.push($("#" + id).attr("plantitle"));
             GetOwnerListForFilter(filters.SelectedPlans);
+            GetTacticTypelist(filters.SelectedPlans);
         }
         else {
             $("#liPlan" + id).removeClass("close-list");
             removeByValue(filters.SelectedPlans, id);
             removeByValue(filters.PlanTitles, ($("#" + id).attr("plantitle")));
             GetOwnerListForFilter(filters.SelectedPlans);
+            GetTacticTypelist(filters.SelectedPlans);
         }
 
         if (filters.SelectedPlans.length == 0) {
@@ -822,6 +957,7 @@
                        $("#ulOwnerAllModule").css("display", "none");
                        $("#NoOwnerFound").show();
                        filters.OwnerIds = [];
+                       filters.TacticTypeids = [];
                    }
                }
                else {
@@ -831,6 +967,7 @@
                    $("#ulOwnerAllModule").css("display", "none");
                    $("#NoOwnerFound").show();
                    filters.OwnerIds = [];
+                   filters.TacticTypeids = [];
                }
            }
        });
@@ -839,6 +976,7 @@
    function ResetControlsBeforeOtherAttributes() {
        filters.customFieldIds = [];
        filters.OwnerIds = [];
+       filters.TacticTypeids = [];
        $('#divCustomFieldsFilter').html('');
        $('#ulSelectedOwner').html('');
    }
@@ -979,6 +1117,7 @@
            isFirstCall = false;
        }
        GetOwnerListForFilter(filters.SelectedPlans);
+       GetTacticTypelist(filters.SelectedPlans);
    }
 
    //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
@@ -1149,6 +1288,7 @@
         getViewByList = true;
         BindOtherAttributes();
         GetOwnerListForFilter(PlanIdsCustom);
+        GetTacticTypelist(PlanIdsCustom);
         $('#hdnSelectedPlanIds').val(PlanIdsCustom);
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
     });
@@ -1229,7 +1369,7 @@
     function AddImprovementActivities(colorCode, parentTitle, parentId, filteredData) {
         var accordionDiv = $('#DivAccordionImprovementActivities');
         accordionDiv.append("<div class='accordion-heading'>\
-                                    <a href='#accordion-element-improvement-" + parentId + "' data-toggle='collapse' class='accordion-toggle item-" + colorCode + " collapsed chevron-right'>\
+                                    <a href='#accordion-element-improvement-" + parentId + "' data-toggle='collapse' colorcode = '" + colorCode  + "' class='accordion-toggle item-color collapsed chevron-right'>\
                                         <div class='cf'>" + parentTitle + "<span class='pull-right'><span id='spnimprovement_" + parentId + "'>0</span>/" + filteredData.length + "</span></div>\
                                     </a>\
                                 </div>\
@@ -1237,7 +1377,7 @@
                                 </div>");
 
         $.each(filteredData, function (index2, objfilteredData) {
-            $("#accordion-element-improvement-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' class='accordion-inner item-" + colorCode + " cursor-pointer'>" + objfilteredData.Title + "</a>")
+            $("#accordion-element-improvement-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' colorcode = '" + colorCode + "' class='accordion-inner item-color cursor-pointer'>" + objfilteredData.Title + "</a>")
             $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
                 GanttOpenBranch($(this).attr('taskid'));
             });
@@ -1249,7 +1389,7 @@
     function AddMarketingActivities(colorCode, parentTitle, parentId, filteredData) {
         var accordionDiv = $('#DivAccordionMarketingActivities');
         accordionDiv.append("<div class='accordion-heading'>\
-                                    <a href='#accordion-element-marketing-" + parentId + "' data-toggle='collapse' class='accordion-toggle item-" + colorCode + " collapsed chevron-right'>\
+                                    <a href='#accordion-element-marketing-" + parentId + "' data-toggle='collapse' colorcode = '" + colorCode + "' class='accordion-toggle item-color collapsed chevron-right'>\
                                         <div class='cf'>" + parentTitle + "<span class='pull-right'><span id='spn_" + parentId + "'>0</span>/" + filteredData.length + "</span></div>\
                                     </a>\
                                 </div>\
@@ -1257,11 +1397,22 @@
                                 </div>");
 
         $.each(filteredData, function (index2, objfilteredData) {
-            $("#accordion-element-marketing-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' class='accordion-inner item-" + colorCode + " cursor-pointer'>" + objfilteredData.Title + "</a>")
+            $("#accordion-element-marketing-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' colorcode = '" + colorCode + "' class='accordion-inner item-color cursor-pointer'>" + objfilteredData.Title + "</a>")
             $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
                 GanttOpenBranch($(this).attr('taskid'));
             });
         })
+
+        $(accordionDiv).find('.item-color').each(function () {
+          //  var colorcode = $(this).attr('colorcode');
+          //  alert(colorcode);
+          //  $(this).css("border-left", "7px solid #" + colorcode);
+          //  $(this).find('div').css("border-left", "7px solid #" + colorcode + " !important");
+         //   $(this).hover(function(){
+         //       $(this).css("background-color", colorcode + " !important");
+         //   });
+
+        });
     }
 
     //// Modified By Maninder Singh Wadhva PL Ticket#47
@@ -1423,6 +1574,7 @@ function AjaxRequest() {
     var Planid = filters.SelectedPlans;
     var CustomFieldId = filters.customFieldIds;
     var OwnerIds = filters.OwnerIds;
+    var TacticTypeids = filters.TacticTypeids; //Modified for #1283
     var GetSelectedPlanNo = filters.SelectedPlans.length;
 
     if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
@@ -1450,6 +1602,7 @@ function AjaxRequest() {
                   timeFrame: isQuater,
                   customFieldIds: CustomFieldId.toString(),
                   ownerIds: OwnerIds.toString(),
+                  TacticTypeid:TacticTypeids.toString(),
                   activeMenu: $('#ActiveMenu').val(),
                   getViewByList: getViewByList
               },
