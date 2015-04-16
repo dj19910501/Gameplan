@@ -142,7 +142,7 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Tactic.ToString();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
-            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, DateTime.Now.Year.ToString(), CommaSeparatedCustomFields, "", Enums.ActiveMenu.Home.ToString(), false) as JsonResult;
+            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, DateTime.Now.Year.ToString(), CommaSeparatedCustomFields, "", Enums.ActiveMenu.Home.ToString(), false, "") as JsonResult;
 
             if (result != null)
             {
@@ -170,7 +170,7 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Custom.ToString();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
-            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, DateTime.Now.Year.ToString(), CommaSeparatedCustomFields, "", Enums.ActiveMenu.Home.ToString(), false) as JsonResult;
+            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, DateTime.Now.Year.ToString(), CommaSeparatedCustomFields, "", Enums.ActiveMenu.Home.ToString(), false, "") as JsonResult;
 
             if (result != null)
             {
@@ -198,7 +198,7 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Tactic.ToString();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
-            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, DateTime.Now.Year.ToString(), CommaSeparatedCustomFields, "", Enums.ActiveMenu.Plan.ToString(), false) as JsonResult;
+            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, DateTime.Now.Year.ToString(), CommaSeparatedCustomFields, "", Enums.ActiveMenu.Plan.ToString(), false, "") as JsonResult;
 
             if (result != null)
             {
@@ -226,7 +226,7 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Custom.ToString();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
-            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, DateTime.Now.Year.ToString(), CommaSeparatedCustomFields, "", Enums.ActiveMenu.Plan.ToString(), false) as JsonResult;
+            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, DateTime.Now.Year.ToString(), CommaSeparatedCustomFields, "", Enums.ActiveMenu.Plan.ToString(), false, "") as JsonResult;
 
             if (result != null)
             {
