@@ -602,6 +602,9 @@ namespace RevenuePlanner.Controllers
             Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
             var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
             var ImprovementColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
+            var ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
+            var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
+            var PlanColor = ColorCodelist[Enums.EntityType.Plan.ToString().ToLower()];
 
             //// Set viewBy option as per GanttType selecte and grap CustomTypeId in case of CustomField
             if (IsTactic)
@@ -645,7 +648,7 @@ namespace RevenuePlanner.Controllers
                         CustomFieldId = tacticItem.objPlanTactic.StageId.ToString(),
                         CustomFieldTitle = tacticItem.objPlanTactic.Stage.Title,
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticItem.objPlanTactic.StageId, tacticPlanId, tacticItem.objPlanTacticProgram.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
-                        ColorCode = tacticItem.objPlanTactic.Stage.ColorCode,
+                        ColorCode = TacticColor,
                         StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
                         EndDate = DateTime.MaxValue,
                         Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField,
@@ -838,7 +841,8 @@ namespace RevenuePlanner.Controllers
                 duration = groupedTask.Select(task => task.duration).ToList().Max(),
                 progress = groupedTask.Select(task => task.progress).FirstOrDefault(),
                 open = groupedTask.Select(task => task.open).FirstOrDefault(),
-                color = groupedTask.ToList().Select(task => task.color).FirstOrDefault() + ((groupedTask.ToList().Select(task => task.progress).FirstOrDefault() > 0) ? "stripe" : string.Empty)
+                colorcode = groupedTask.ToList().Select(task => task.color).FirstOrDefault(),
+                color = ((groupedTask.ToList().Select(task => task.progress).FirstOrDefault() > 0) ? "stripe" : string.Empty)
             });
 
             //// Finalize Custom Field task data to be render in gantt chart
@@ -850,7 +854,8 @@ namespace RevenuePlanner.Controllers
                 duration = taskdata.end_date == DateTime.MaxValue ? taskdata.duration : Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, Convert.ToDateTime(taskdata.start_date), taskdata.end_date),
                 progress = taskdata.progress,
                 open = taskdata.open,
-                color = taskdata.color + ((taskdata.progress > 0) ? "stripe" : string.Empty)
+                color = ((taskdata.progress > 0) ? "stripe" : string.Empty),
+                colorcode = taskdata.colorcode
             });
             #endregion
 
@@ -881,7 +886,7 @@ namespace RevenuePlanner.Controllers
                 progress = taskdata.PlanProgress,
                 open = false,
                 parent = string.Format("Z{0}", taskdata.MainParentId),
-                color = GetColorBasedOnImprovementActivity(lstImprovementTactic, taskdata.PlanId),
+                color = PlanColor,
                 planid = taskdata.PlanId
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
 
@@ -895,7 +900,8 @@ namespace RevenuePlanner.Controllers
                 progress = taskDataPlan.Where(plan => plan.id == taskdata.id).Select(plan => plan.progress).Min(),
                 open = taskdata.open,
                 parent = taskdata.parent,
-                color = taskdata.color + (taskdata.progress > 0 ? "stripe" : string.Empty),
+                color = (taskdata.progress > 0 ? "stripe" : string.Empty),
+                colorcode = taskdata.color,
                 planid = taskdata.planid
             }).ToList().Distinct().ToList();
             #endregion
@@ -910,7 +916,7 @@ namespace RevenuePlanner.Controllers
                 progress = taskdata.CampaignProgress,
                 open = false,
                 parent = string.Format("Z{0}_L{1}", taskdata.MainParentId, taskdata.PlanId),
-                color = GetColorBasedOnImprovementActivity(lstImprovementTactic, taskdata.PlanId),
+                color = CampaignColor,
                 plancampaignid = taskdata.Program.PlanCampaignId,
                 Status = taskdata.Campaign.Status
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
@@ -925,7 +931,8 @@ namespace RevenuePlanner.Controllers
                 progress = taskDataCampaign.Where(campaign => campaign.id == taskdata.id).Select(campaign => campaign.progress).Min(),
                 open = taskdata.open,
                 parent = taskdata.parent,
-                color = taskdata.color + (taskdata.progress == 1 ? " stripe" : (taskdata.progress > 0 ? "stripe" : string.Empty)),
+                color = (taskdata.progress == 1 ? " stripe" : (taskdata.progress > 0 ? "stripe" : string.Empty)),
+                colorcode = taskdata.color,
                 plancampaignid = taskdata.plancampaignid,
                 Status = taskdata.Status
             }).ToList().Distinct().ToList();
@@ -941,7 +948,7 @@ namespace RevenuePlanner.Controllers
                 progress = taskdata.ProgramProgress,
                 open = false,
                 parent = string.Format("Z{0}_L{1}_C{2}", taskdata.MainParentId, taskdata.PlanId, taskdata.Program.PlanCampaignId),
-                color = string.Empty,
+                color = ProgramColor,
                 planprogramid = taskdata.Program.PlanProgramId,
                 Status = taskdata.Program.Status
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
@@ -957,6 +964,7 @@ namespace RevenuePlanner.Controllers
                 open = taskdata.open,
                 parent = taskdata.parent,
                 color = (taskdata.progress == 1 ? " stripe stripe-no-border " : (taskdata.progress > 0 ? "partialStripe" : string.Empty)),
+                colorcode = taskdata.color,
                 planprogramid = taskdata.planprogramid,
                 Status = taskdata.Status
             }).ToList().Distinct().ToList();
@@ -987,7 +995,8 @@ namespace RevenuePlanner.Controllers
                 progress = taskdata.progress,
                 open = taskdata.open,
                 parent = taskdata.parent,
-                color = taskdata.color + (taskdata.progress == 1 ? " stripe" : string.Empty),
+                color =  (taskdata.progress == 1 ? " stripe" : string.Empty),
+                colorcode = taskdata.color,
                 plantacticid = taskdata.plantacticid,
                 Status = taskdata.Status
             }).Distinct().ToList();
@@ -1003,7 +1012,8 @@ namespace RevenuePlanner.Controllers
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, taskdataImprovement.MinStartDate, CalendarEndDate) - 1,
                 progress = 0,
                 open = true,
-                color = GetColorBasedOnImprovementActivity(lstImprovementTactic, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                colorcode = ImprovementColor,
+                color = string.Empty,
                 ImprovementActivityId = taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
                 isImprovement = true,
                 IsHideDragHandleLeft = taskdataImprovement.MinStartDate < CalendarStartDate,
@@ -1024,7 +1034,8 @@ namespace RevenuePlanner.Controllers
                 progress = 0,
                 open = true,
                 parent = string.Format("Z{0}_L{1}_M{2}", taskdataImprovement.MainParentId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
-                color = ImprovementColor,
+                colorcode = ImprovementColor,
+                color = string.Empty,
                 isSubmitted = taskdataImprovement.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = taskdataImprovement.ImprovementTactic.Status.Equals(tacticStatusDeclined),
                 inqs = 0,
@@ -1389,7 +1400,8 @@ namespace RevenuePlanner.Controllers
                 progress = tactic.progress,
                 open = tactic.open,
                 parent = tactic.parent,
-                color = tactic.color + (tactic.progress == 1 ? " stripe" : string.Empty),
+                color = (tactic.progress == 1 ? " stripe" : string.Empty),
+                colorcode = tactic.color,
                 isSubmitted = tactic.isSubmitted,
                 isDeclined = tactic.isDeclined,
                 projectedStageValue = tactic.projectedStageValue,
@@ -1427,7 +1439,8 @@ namespace RevenuePlanner.Controllers
                 progress = program.progress,
                 open = program.open,
                 parent = program.parent,
-                color = program.color + (program.progress == 1 ? " stripe stripe-no-border " : (program.progress > 0 ? "partialStripe" : string.Empty)),
+                color = (program.progress == 1 ? " stripe stripe-no-border " : (program.progress > 0 ? "partialStripe" : string.Empty)),
+                colorcode = program.color,
                 planprogramid = program.planprogramid,
                 Status = program.Status
             });
@@ -1459,7 +1472,8 @@ namespace RevenuePlanner.Controllers
                 progress = campaign.progress,
                 open = campaign.open,
                 parent = campaign.parent,
-                color = campaign.color + (campaign.progress == 1 ? " stripe" : (campaign.progress > 0 ? "stripe" : string.Empty)),
+                color = (campaign.progress == 1 ? " stripe" : (campaign.progress > 0 ? "stripe" : string.Empty)),
+                colorcode = campaign.color,
                 plancampaignid = campaign.plancampaignid,
                 Status = campaign.Status
             });
@@ -1494,7 +1508,8 @@ namespace RevenuePlanner.Controllers
                 duration = plan.duration,
                 progress = plan.progress,
                 open = plan.open,
-                color = plan.color + (plan.progress > 0 ? "stripe" : string.Empty),
+                color = (plan.progress > 0 ? "stripe" : string.Empty),
+                colorcode = plan.color,
                 planid = plan.planid
             });
             #endregion
@@ -1531,7 +1546,8 @@ namespace RevenuePlanner.Controllers
                 duration = improvementTactic.duration,
                 progress = improvementTactic.progress,
                 open = improvementTactic.open,
-                color = improvementTactic.color + (improvementTactic.progress > 0 ? "stripe" : string.Empty),
+                color = (improvementTactic.progress > 0 ? "stripe" : string.Empty),
+                colorcode = improvementTactic.color,
                 planid = improvementTactic.planid
             });
             #endregion
@@ -1557,7 +1573,8 @@ namespace RevenuePlanner.Controllers
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, improvementTactic.minStartDate, CalendarEndDate) - 1,
                 progress = 0,
                 open = true,
-                color = ImprovementTacticColor,
+                color = string.Empty,
+                colorcode = ImprovementTacticColor,
                 ImprovementActivityId = improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
                 isImprovement = true,
                 IsHideDragHandleLeft = improvementTactic.minStartDate < CalendarStartDate,
@@ -1575,7 +1592,8 @@ namespace RevenuePlanner.Controllers
                 progress = 0,
                 open = true,
                 parent = string.Format("L{0}_M{1}", improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
-                color = ImprovementTacticColor,
+                color = string.Empty,
+                colorcode = ImprovementTacticColor,
                 isSubmitted = improvementTacticActivty.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = improvementTacticActivty.ImprovementTactic.Status.Equals(tacticStatusDeclined),
                 inqs = 0,
@@ -3739,8 +3757,7 @@ namespace RevenuePlanner.Controllers
                     List<string> statusCD = new List<string>();
                     statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
                     statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-                    statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-
+                    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
                     TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status) || ((tactic.CreatedBy == Sessions.User.UserId && !ViewBy.Equals(GanttTabs.Request.ToString())) ? statusCD.Contains(tactic.Status) : false)).Distinct().ToList();
                 }
                 else

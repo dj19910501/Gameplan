@@ -1404,13 +1404,27 @@
         })
 
         $(accordionDiv).find('.item-color').each(function () {
-          //  var colorcode = $(this).attr('colorcode');
-          //  alert(colorcode);
-          //  $(this).css("border-left", "7px solid #" + colorcode);
-          //  $(this).find('div').css("border-left", "7px solid #" + colorcode + " !important");
-         //   $(this).hover(function(){
-         //       $(this).css("background-color", colorcode + " !important");
-         //   });
+            var colorcode = $(this).attr('colorcode');
+            if ($(this).find('.cf').length == 0) {
+                $(this).css("border-left", "7px solid #" + colorcode);
+                $(this).hover(function () {
+                    $(this).css("background-color", "#" + colorcode);
+                },
+                function () {
+                    $(this).css("background", "none repeat scroll 0% 0% transparent");
+                }
+                );
+            }
+            else {
+                $(this).find('.cf').css("border-left", "7px solid #" + colorcode);
+                $(this).find('.cf').hover(function () {
+                    $(this).css("background-color", "#" + colorcode);
+                },
+                function () {
+                    $(this).css("background", "none repeat scroll 0% 0% transparent");
+                }
+                );
+            }
 
         });
     }
@@ -2125,7 +2139,7 @@ function CountTacticForRenderChart(leftNavTaskID, CampaignID) {
 function getCSSForTask(task) {
     var isImprovement = false;
     if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
-        var cssClass = ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+        var cssClass = task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                   if (typeof task.isImprovement != 'undefined' && task.isImprovement == true &&
                       typeof task.ImprovementPlanTacticId != 'undefined') {
                       cssClass += ' improvement border-top';
@@ -2141,7 +2155,7 @@ function getCSSForTask(task) {
                       }
                   }
               } else {
-                  cssClass = ' no_drag ';
+        cssClass = task.color + ' no_drag ';
               }
 
               //// Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
@@ -2193,9 +2207,9 @@ function getCSSForTask(task) {
               //// Function to add class to each task bar.
               gantt.templates.task_class = function (start, end, task) {
                   if (typeof task.plantacticid != 'undefined') {
-                      return ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+                      return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                                          } else {
-                                             return '';
+                      return task.color;
                                          }
               };
                                      gantt.parse(filteredTasks);
@@ -2220,9 +2234,9 @@ function getCSSForTask(task) {
                                      //// Function to add class to each task bar.
                                      gantt.templates.task_class = function (start, end, task) {
                                          if (typeof task.plantacticid != 'undefined') {
-                                             return ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+                                             return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                                  } else {
-                                     return '';
+                                             return task.color;
                                  }
                                      };
 
@@ -2263,9 +2277,9 @@ function getCSSForTask(task) {
                              //// Function to add class to each task bar.
                              gantt.templates.task_class = function (start, end, task) {
                                  if (typeof task.plantacticid != 'undefined') {
-                                     return ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+                                     return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                                  } else {
-                                     return '';
+                                     return task.color;
                                  }
       };
                              gantt.parse(filteredTasks);
@@ -2290,9 +2304,9 @@ function getCSSForTask(task) {
                              //// Function to add class to each task bar.
                              gantt.templates.task_class = function (start, end, task) {
                                  if (typeof task.plantacticid != 'undefined') {
-                                     return ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
+                                     return task.color + ' cursorPointer' + (task.isSubmitted && ('@PlanGanttTypes.Request.ToString()' == type) ? ' to-approve' : '');
                                  } else {
-                                     return '';
+                                     return task.color;
                                  }
                                      };
 
