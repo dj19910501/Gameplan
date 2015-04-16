@@ -669,7 +669,7 @@ namespace RevenuePlanner.Controllers
                     {
                         CustomFieldId = tactic.StageId,
                         Title = tactic.Title,
-                        ColorCode = tactic.ColorCode
+                        ColorCode = TacticColor
                     }).ToList().Distinct().Select(tactic => new CustomFields()
                     {
                         CustomFieldId = tactic.CustomFieldId.ToString(),
@@ -752,7 +752,7 @@ namespace RevenuePlanner.Controllers
                     CustomFieldId = tacticItem.customFieldId.ToString(),
                     CustomFieldTitle = tacticItem.customFieldTitle,
                     TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticItem.customFieldId, tacticPlanId, tacticItem.tactic.Plan_Campaign_Program.PlanCampaignId, tacticItem.tactic.PlanProgramId, tacticItem.tactic.PlanTacticId),
-                    ColorCode = Common.ColorCodeForCustomField,
+                    ColorCode = TacticColor,
                     StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
                     EndDate = Common.GetEndDateAsPerCalendarInDateFormat(CalendarEndDate, MaxEndDateForCustomField),
                     Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField, MaxEndDateForCustomField),
@@ -774,7 +774,7 @@ namespace RevenuePlanner.Controllers
                 {
                         CustomFieldId = tactic.customFieldId,
                     Title = tactic.customFieldTitle,
-                    ColorCode = Common.ColorCodeForCustomField.ToString()
+                        ColorCode = TacticColor
                     }).ToList().Distinct().Select(tactic => new CustomFields()
                     {
                         CustomFieldId = tactic.CustomFieldId.ToString(),
