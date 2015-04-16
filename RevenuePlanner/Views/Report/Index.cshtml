@@ -495,7 +495,7 @@
                                             checked = "checked";
                                             checkedclass = "close-list";
                                         }
-                                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="' + TactictypeItem.TacticTypeId + '"'+ checked +'></input></li>');
+                                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                                     });
                                 }
                                 else {
@@ -536,7 +536,7 @@
     }
 
     function toggleTacticType(obj) {
-        var id = $(obj).attr('id');
+        var id = $(obj).attr('id').toString().replace("CbTT", "");
         if ($(obj).is(':checked')) {
             $("#liTT" + id).addClass("close-list");
         }
