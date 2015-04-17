@@ -1079,7 +1079,7 @@ namespace Integration.Eloqua
             int folderId = 0;
 
             //// Get Plan Id for selected Tactic.
-            var tblplan = db.Plans.Where(pc => PlanIds.Distinct().Contains(pc.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => new { PlanId = pc.PlanId, Title = pc.Title, FolderPath = pc.EloquaFolderPath }).ToList();
+            var tblplan = db.Plans.Where(pc => PlanIds.Contains(pc.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => new { PlanId = pc.PlanId, Title = pc.Title, FolderPath = pc.EloquaFolderPath }).ToList();
             Dictionary<int, int> dictPlanFolderId = new Dictionary<int, int>();
             foreach (var _plan in tblplan)
             {
