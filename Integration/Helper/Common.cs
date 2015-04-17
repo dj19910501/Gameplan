@@ -106,6 +106,10 @@ namespace Integration.Helper
             {
                 return Enums.Mode.Update;
             }
+            else if (isDeployedToIntegration && !string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
+            {
+                return Enums.Mode.None;
+            }
             else if (!string.IsNullOrWhiteSpace(integrationInstanceTacticId))
             {
                 return Enums.Mode.Delete;

@@ -504,7 +504,7 @@ namespace Integration.Eloqua
                 Resource = string.Format("/assets/campaign/{0}", id),
                 RequestFormat = DataFormat.Json
             };
-
+            tactic.Remove("folderId");
             if (tactic.ContainsKey(titleMappedValue))
             {
                 tactic[titleMappedValue] = Common.TruncateName(tactic[titleMappedValue].ToString());
@@ -634,7 +634,7 @@ namespace Integration.Eloqua
                 instanceLogTactic.SyncTimeStamp = DateTime.Now;
                 try
                 {
-                    if (UpdateImprovementTactic(planIMPTactic, _ImprvmntTacticFolderId))
+                    if (UpdateImprovementTactic(planIMPTactic, 0))
                     {
                         planIMPTactic.LastSyncDate = DateTime.Now;
                         planIMPTactic.ModifiedDate = DateTime.Now;
@@ -652,8 +652,8 @@ namespace Integration.Eloqua
                     _ErrorMessage = Common.msgChildLevelError.ToString();
                     if (e.Message.Contains(NotFound))// || e.Message.Contains(InternalServerError))
                     {
-                       // planIMPTactic.IntegrationInstanceTacticId = null;
-                       // planIMPTactic = SyncImprovementData(planIMPTactic);
+                        planIMPTactic.IntegrationInstanceTacticId = null;
+                        planIMPTactic = SyncImprovementData(planIMPTactic);
                         return planIMPTactic;
                     }
                     else
@@ -923,7 +923,7 @@ namespace Integration.Eloqua
                 instanceLogTactic.SyncTimeStamp = DateTime.Now;
                 try
                 {
-                    if (UpdateTactic(planTactic, _tacFolderId))
+                    if (UpdateTactic(planTactic, 0))
                     {
                         planTactic.LastSyncDate = DateTime.Now;
                         planTactic.ModifiedDate = DateTime.Now;
@@ -944,8 +944,8 @@ namespace Integration.Eloqua
 
                     if (e.Message.Contains(NotFound))
                     {
-                        //planTactic.IntegrationInstanceTacticId = null;
-                       // planTactic = SyncTacticData(planTactic);
+                        planTactic.IntegrationInstanceTacticId = null;
+                        planTactic = SyncTacticData(planTactic);
                         return planTactic;
                     }
                     else
