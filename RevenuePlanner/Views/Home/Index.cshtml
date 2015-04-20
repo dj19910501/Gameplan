@@ -529,7 +529,7 @@
         {
             <!--First Static Accordion-->
             <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
-            <div class="accordion colors left-nav margin-bottom10" id="marketing-activities">
+            <div class="accordion colors left-nav margin-bottom10" id="marketing-activities" style="display:none;">
 
                 <div class="accordion-group source-sans-proregular">
                     <div class="accordion-heading">
@@ -1694,19 +1694,20 @@ function AjaxRequest() {
                       var IsProgram = type.indexOf('@Common.ProgramCustomTitle') > 0 ? '@Common.ProgramCustomTitle' : type.toString();
                             var IsTactic = type.indexOf('@Common.TacticCustomTitle') > 0 ? '@Common.TacticCustomTitle' : type.toString();
                             if (isRequest) {
-                                AddAccordionToggleAndInnerRequest(data);
+                               // AddAccordionToggleAndInnerRequest(data);
                             }
                             else if (type == '@PlanGanttTypes.Tactic.ToString()') {
-                                AddAccordionToggleAndInnerTactic(data);
+                              //  AddAccordionToggleAndInnerTactic(data);
                             }
                             else if (IsTactic == type) {
-                                AddAccordionToggleAndInnerCustomFields(data);
+                              //  AddAccordionToggleAndInnerCustomFields(data);
                             }
                             else {
                                 $('#marketing-activities').hide();
                             }
 
-                            AttachEventToGroupHeading();
+                          AttachEventToGroupHeading();
+                          $('#marketing-activities').hide();
                         }
                         else {
                             $('#marketing-activities').hide();
@@ -3145,7 +3146,7 @@ gantt.attachEvent("onTaskClosed", function (id) {
 
 //// Added by :- Sohel Pathan on 11/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
 function OnTaskCollapse(id) {
-    iterateMarketingActivitesOnCollapse(id);
+    //iterateMarketingActivitesOnCollapse(id);
 }
 
 function iterateMarketingActivitesOnCollapse(id) {
