@@ -55,7 +55,7 @@
             @Html.LabelFor(model => model.Phone)
             @if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)
                     {
-                @Html.TextBoxFor(model => model.Phone, new { maxlength = "12", placeholder = "000-000-0000" })
+                @Html.TextBoxFor(model => model.Phone)
                 @Html.ValidationMessageFor(model => model.Phone)
                     }
                     else

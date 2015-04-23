@@ -163,8 +163,8 @@ namespace Integration.Eloqua
             RestRequest request = new RestRequest(Method.GET)
             {
                 RequestFormat = DataFormat.Json,
-                Resource = string.Format("/assets/campaign/fields?search={0}&page={1}&count={2}&depth=complete",
-                                  "*", 1, 100)
+                Resource = string.Format("/assets/campaign/fields?search={0}&depth=complete",
+                                  "*")
             };
 
             IRestResponse response = _client.Execute(request);
@@ -193,7 +193,7 @@ namespace Integration.Eloqua
             RestRequest request = new RestRequest(Method.GET)
             {
                 RequestFormat = DataFormat.Json,
-                Resource = string.Format("/assets/contact/fields?search={0}&page={1}&count={2}&depth=complete", "*", 1, 100)
+                Resource = string.Format("/assets/contact/fields?search={0}&depth=complete", "*")
             };
 
             IRestResponse response = _client.Execute(request);
@@ -1228,8 +1228,8 @@ namespace Integration.Eloqua
             string _EloquaCampaignId = string.Empty;
             RestRequest request = new RestRequest(Method.GET)
             {
-                Resource = string.Format("/assets/campaigns?search={0}&page={1}&count={2}&depth=complete",
-                                  strSearchTerm, page, pageSize),
+                Resource = string.Format("/assets/campaigns?search={0}&depth=complete",
+                                  strSearchTerm),
                 RequestFormat = DataFormat.Json
             };
 

@@ -80,14 +80,7 @@
                     @Html.ValidationMessageFor(model => model.Email)
                 </div>
 
-                // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                <div class="cf inputs-aligned-horizontal">
-                    @Html.LabelFor(model => model.Phone)
-
-                    @Html.TextBoxFor(model => model.Phone, new { maxlength = "12", placeholder = "000-000-0000" })
-                    @Html.ValidationMessageFor(model => model.Phone)
-                </div>
-                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                
                 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.Password)
@@ -104,7 +97,14 @@
                     <span id="match"></span>
                     @Html.ValidationMessageFor(model => model.ConfirmPassword)
                 </div>
-                
+               // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                 <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.Phone)
+
+                    @Html.TextBoxFor(model => model.Phone)
+                  @Html.ValidationMessageFor(model => model.Phone)
+                </div>
+                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.JobTitle)
 
