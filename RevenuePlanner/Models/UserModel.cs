@@ -98,7 +98,7 @@ namespace RevenuePlanner.Models
         public Guid? NewManagerId { get; set; }
 
         [Display(Name = "Phone")]
-        [RegularExpression(@"^[0-9-]+", ErrorMessage = "Please enter proper phone number.")]
+        [RegularExpression(@"^[0-9-+]+", ErrorMessage = "Please enter proper phone number.")]
         public string Phone { get; set; }
         // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
     }
