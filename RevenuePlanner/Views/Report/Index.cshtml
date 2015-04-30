@@ -121,16 +121,13 @@
                 </div>
             </div>
 
-            <div id="accordion-quart" class="dropdown-section accordion">
+           @* <div id="accordion-quart" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
                         <h2 id="aTimeFrame" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-quart" href="#accordion-element-quart"><span class="sidebarliwidth" id="spTimeFrameText">Monthly</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-quart" class="accordion-body collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedQuart">
-                            @*<li class="accordion-inner close-list" title="Monthly" id="liMonthly" timeframe-val="@_monthly"><span class="sidebarliwidth">@_monthly</span><input type="radio" name="quarter" class="chkbxfilter" checked="checked"  id="Monthly" /></li>
-                            <li class="accordion-inner" title="Quarterly" id="liQuarterly" timeframe-val="@_quarterly"><span class="sidebarliwidth">@_quarterly</span><input type="radio" name="quarter" class="chkbxfilter" id="Quarterly" /></li>*@
-                            @*<li class="accordion-inner close-list" title="Monthly" id="@ddlYearId" onclick="OnTimeFrameChange(this);" yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span></li>*@
                             <li class="accordion-inner close-list" title="Monthly" id="liMonthly" timeframe-val="@_monthly" onclick="OnTimeFrameChange(this);"><span class="sidebarliwidth">@_monthly</span></li>
                             <li class="accordion-inner" title="Quarterly" id="liQuarterly" timeframe-val="@_quarterly" onclick="OnTimeFrameChange(this);"><span class="sidebarliwidth">@_quarterly</span></li>
                         </ul>
@@ -138,7 +135,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>*@
 
             <div id="accordion-2" class="dropdown-section accordion">
                 <div class="accordion-group">
@@ -294,6 +291,15 @@
    </ul>
 </div>
 
+@*Added By komal Rawal for #1296*@
+<div style="height:40px" id="ddlsection">
+     <div style="float: right;margin-top:20px; margin-right:15px;">
+      <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
+                    @Html.DropDownList("ddlAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport hide" })
+               </span>
+     </div>
+</div>
+
 <div id="budgetHeader" class="budgetColums budgetReporting" style="display: none">
     <div class="plannedCost">
         <h3 class="source-sans-proregular h3budget h3padding ">You've spent <span id="SpanTotalSpend"></span> out of <span id="SpanTotalBudgeted"></span>.</h3>
@@ -357,6 +363,33 @@
 </div>
 <script type="text/javascript">
     //Added By komal Rawal
+
+    //Added for #1296
+    $("#ddlAllocatedBySelectBox select").selectbox(); 
+
+    $("#ddlAllocate").change(function () {
+
+        AllocatedBy = $('#ddlAllocate option:selected').text();
+
+
+
+        Qurt_Month = AllocatedBy;
+        if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+            LoadSummary();
+        }
+        else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
+            LoadRevenueData();
+        }
+        else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+            LoadConversionData();
+        }
+        else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+            LoadBudgetView();
+        }
+    });
+
+
+    //End 
 
     var filters = {
         OwnerIds: [],
@@ -560,7 +593,7 @@
     var isAllowClick = true;
     var multiselectPlanId = "ulSelectedPlans";
     var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
-    var Qurt_Month = '';
+    var Qurt_Month = '@Enums.ViewByAllocated.Quarterly.ToString()';
 
     $(document).ready(function () {
 
@@ -580,7 +613,7 @@
 
         OptionMain = getYearSelectedValue(true);
 
-        Qurt_Month = getQuarterMonthlySelectedValue();
+       // Qurt_Month = getQuarterMonthlySelectedValue();
 
         // Load Multiselect Dropdown list i.e. Bind with new design
         LoadYearDropdown();
@@ -959,6 +992,7 @@
 
         //// handle update button event
         $('#updatedata').click(function () {
+        
             var arrOptionIds = new Array();
             //// close multiselect
             $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
@@ -967,7 +1001,7 @@
 
             OptionMain = getYearSelectedValue(true);
 
-            Qurt_Month = getQuarterMonthlySelectedValue();
+          //  Qurt_Month = getQuarterMonthlySelectedValue();
             
         @foreach (var custField in ViewCustomFields)
         {
@@ -1046,17 +1080,17 @@ function OnYearChange(_yearli) {
     $("#aYear").click();
 }
 
-function OnTimeFrameChange(_quartmonthli) {
-    $(_quartmonthli).siblings().each(function () {
-        $(this).removeClass('close-list');
-    });
-    $(_quartmonthli).addClass('close-list');
-    Qurt_Month = $(_quartmonthli).attr('timeframe-val');
+//function OnTimeFrameChange(_quartmonthli) {
+//    $(_quartmonthli).siblings().each(function () {
+//        $(this).removeClass('close-list');
+//    });
+//    $(_quartmonthli).addClass('close-list');
+//    Qurt_Month = $(_quartmonthli).attr('timeframe-val');
 
-    var _timeframeText = $(_quartmonthli).attr('title');
-    $("#spTimeFrameText").html(_timeframeText);
-    $("#aTimeFrame").click();
-}
+//    var _timeframeText = $(_quartmonthli).attr('title');
+//    $("#spTimeFrameText").html(_timeframeText);
+//    $("#aTimeFrame").click();
+//}
 
 function LoadYearDropdown() {
     var isClick = false;
@@ -1145,6 +1179,7 @@ $('#liSummary').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
+        $('#ddlsection').show(); //Modified for #1296
         loadBasedOnPlan();
     }
 });
@@ -1163,6 +1198,7 @@ $('#liRevenue').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
+        $('#ddlsection').hide(); //Modified for #1296
         LoadRevenueView();
         loadBasedOnPlan();
     }
@@ -1182,6 +1218,7 @@ $('#liConversion').click(function () {
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
+        $('#ddlsection').hide(); //Modified for #1296
         LoadConversionView();
         loadBasedOnPlan();
     }
@@ -1201,6 +1238,7 @@ $('#liConversion').click(function () {
                 LoadYearDropdown(leftPaneOption);
                 RemoveAllActiveItem();
                 $(this).addClass('active');
+                $('#ddlsection').hide(); //Modified for #1296
                 LoadBudgetView();
             }
         });
@@ -1235,6 +1273,11 @@ $('#liConversion').click(function () {
 
     // Start:- Linchart script 
     function BindLineChart(_categories, _plotlineVal, _isshowPlotLine, _series, _linechartDivId, _chartHeight, _plotOptions) {
+        Highcharts.setOptions({
+            lang: {
+                numericSymbols: ["k", "M", "B", "T", "P", "E"]
+            }
+        });
         var options = {
             chart: {
                 height: _chartHeight,
@@ -1273,6 +1316,7 @@ $('#liConversion').click(function () {
                     }
                 }] : [],
                 tickPosition: 'inside',
+                tickmarkPlacement: 'on',
                 labels: {
                     color: '#2d2d2d',
                     style: {
