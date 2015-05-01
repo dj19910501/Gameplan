@@ -28,6 +28,11 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Login
+        public bool destroySessions()
+        {
+            Session.Abandon();
+            return true;
+        }
 
         public ActionResult DBServiceUnavailable()
         {

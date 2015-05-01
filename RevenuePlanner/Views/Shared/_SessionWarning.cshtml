@@ -1,0 +1,83 @@
+﻿@using RevenuePlanner.Helpers
+@{
+    bool IsDisable = false;
+    if (Sessions.User != null)
+    {
+        IsDisable = true;
+    } 
+    
+@*<div class="container-fluid all-height" id="DivShareTacticPopupMain">
+    <div class="row-fluid calc-height">
+        <div class="span12">*@
+ 
+    <div id="DivsessionWarning" class="form-contact-support fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
+        <div class="login-wrapper">
+            <form name="login-register">
+               <h2 class="primary-title source-sans-prosemibold">Session Timeout</h2>
+                <label class="inpus-required-title source-sans-prolight">  For security reasons, You will be logged out of Gameplan<sup style="font-size:10px;">TM</sup> automatically in 5 minutes due to inactivity.</label>
+                 <span id="timerDiv" class="warningTimer source-sans-prosemibold">01:00</span>
+                <div id="summernote"></div>
+              
+                <br />
+                <br />
+                <button class="button-contact-support btn btn-large" id="submit_issue" style="margin-left:98px;">I'm still here</button>
+    </form>
+        </div>
+    </div>
+
+    <div id="DivBackgroundsessionWarning" class="modal-backdrop fade in " style="z-index: 999999; background-color: rgb(0, 0, 0) ! important;"></div>  
+}
+<script type="text/javascript">
+    var timerWatch;
+    $(document).ready(function (e) {
+        //clearTimeout(timerWatch);
+        var $worked = $("#timerDiv");
+        function update() {
+            var myTime = $worked.html();
+            var ss = myTime.split(":");
+            var dt = new Date();
+            dt.setHours(0);
+            dt.setMinutes(ss[0]);
+            dt.setSeconds(ss[1]);
+
+            var dt2 = new Date(dt.valueOf() - 1000);
+            var temp = dt2.toTimeString().split(" ");
+            var ts = temp[0].split(":");
+
+            $worked.html(ts[1] + ":" + ts[2]);
+            if (ts[1] == "00" && ts[2] == "00") {
+                var returnUrl = document.URL;//window.location.pathname;
+                sessLogOut(returnUrl);
+            }
+            else {
+              timerWatch=  setTimeout(update, 1000);
+            }
+        }
+
+        setTimeout(update, 1000);
+    });
+    function sessLogOut(returnUrl) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Login/destroySessions/")',
+            success: function (r) {
+                if (r) {
+                    window.location = '@Url.Content("~/login/Index?ReturnUrl=")' + returnUrl;
+                }
+            }
+           });
+        
+    }
+    $('#submit_issue').click(function () {
+        clearTimeout(timerWatch);
+        initSession();
+        close_popup();
+    });
+
+    function close_popup() {
+        $('#DivBackgroundsessionWarning').css("display", "none");
+        $('#DivsessionWarning').css("display", "none");
+        $('#DivBackgroundsessionWarning').remove();
+        $('#DivsessionWarning').remove();
+    }
+</script>

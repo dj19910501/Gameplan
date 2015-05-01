@@ -136,5 +136,15 @@ namespace RevenuePlanner.Controllers
         {
             return PartialView("~/Views/Plan/_NoModel.cshtml");
         }
+        /// <summary>
+        /// open popup for session timeout warning
+        /// </summary>
+        /// <CreatedBy>Mitesh Vaishnav</CreatedBy>
+        /// <CreatedDate>01/05/2015</CreatedDate>
+        /// <returns>Partial view</returns>
+        public PartialViewResult LoadSessionWarning()
+        {
+            return PartialView("~/Views/Shared/_SessionWarning.cshtml");
+        }
     }
 }

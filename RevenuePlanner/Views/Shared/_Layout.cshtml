@@ -11,14 +11,14 @@
     @RenderSection("nlFormContent", false)
 
     @Styles.Render("~/Content/css/GetCSS")
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css?n=")@DateTime.Now" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css?n=")@DateTime.Now" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css?n=")@DateTime.Now" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css?n=")@DateTime.Now" type="text/css" />
 
     @Scripts.Render("~/bundles/GetJS")
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts_extended.js?n=")@DateTime.Now"></script>
-    
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts_extended.js?n=")@DateTime.Now"></script>
+
 </head>
 <body>
     <div class="container-fluid all-height">
@@ -59,13 +59,54 @@
 </body>
 </html>
 @RenderSection("Scripts", false)
+
+<script type="text/javascript">
+    var sess_pollInterval = 60000;
+    var sess_expirationMinutes = 2;//parseInt('@Session.Timeout');
+    var sess_warningMinutes = 1;//sess_expirationMinutes - 5;;
+    var sess_intervalID;
+    var sess_lastActivity;
+
+    function initSession() {
+        sess_lastActivity = new Date();
+        sessSetInterval();
+        $(document).bind('keypress.session', function (ed, e) {
+            sessKeyPressed(ed, e);
+        });
+    }
+    function sessSetInterval() {
+        sess_intervalID = setInterval('sessInterval()', sess_pollInterval);
+    }
+    function sessClearInterval() {
+        clearInterval(sess_intervalID);
+
+    }
+    function sessKeyPressed(ed, e) {
+        sess_lastActivity = new Date();
+    }
+
+    function sessInterval() {
+        var now = new Date();
+        //get milliseconds of differneces
+        var diff = now - sess_lastActivity;
+        //get minutes between differences
+        var diffMins = (diff / 1000 / 60);
+        if (diffMins >= sess_warningMinutes) {
+            sessClearInterval();
+            $('#div_contactSupport').empty();
+            var url = '@Url.Content("~/Common/LoadSessionWarning/")';
+            $("#div_contactSupport").load(url);
+        }
+    }
+
+</script>
 <script type="text/javascript">
     $.ajaxSetup({
         cache: false
     });
     var isAlerted = false;
     $(document).ready(function () {
-
+        initSession();
         var IsOffline = '@RevenuePlanner.Helpers.Common.IsOffline';
 
         //// Start - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page
@@ -106,17 +147,16 @@
 
 
     });
-
     function CheckDataInconsistency() {
         if ('@Sessions.IsDisplayDataInconsistencyMsg' == 'True') {
             var IsSessionClient = readCookie('DataClientId' + '@Sessions.User.ClientId.ToString().ToLower()');
             if (IsSessionClient != null) {
                 alert('@Common.objCached.DataInconsistency');
-             var retvalue = '@RevenuePlanner.Helpers.Common.SetSessionVariable()';
+                var retvalue = '@RevenuePlanner.Helpers.Common.SetSessionVariable()';
             }
         }
     }
-   
+
 
     $(".alert").find(".close").on("click", function (e) {
         e.stopPropagation();
@@ -125,6 +165,7 @@
     });
     $.ajaxSetup({
         beforeSend: function (x) { //Called before every request
+            initSession();
             myApp.showPleaseWait();
         },
         statusCode: {
@@ -142,7 +183,7 @@
             GoToLogin();
         }
     });
-   
+
     function GoToLogin() {
         myApp.hidePleaseWait();
         //In case of error and it is due to session timed out -  the above code was not working in case of div.load, used to display slidepanel
@@ -154,7 +195,7 @@
                 window.location = '@Url.Content("~/login/Index?ReturnUrl=")' + readCookie('ReturnURL');
             }
             else {
-            window.location = "@Url.Content("~/login/Index")";
+                window.location = "@Url.Content("~/login/Index")";
             }
         }
     }
@@ -183,7 +224,7 @@
                         $(Sender).click();
                     }
                     else {
-                        
+
                     }
                 }
                 else {
@@ -192,7 +233,7 @@
             }
         });
     }
-    
+
     var myApp;
     myApp = myApp || (function () {
         var pleaseWaitDiv = $('<div style="z-index:99999" class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header">Please wait...</div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');

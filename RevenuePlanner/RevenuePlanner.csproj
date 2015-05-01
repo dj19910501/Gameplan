@@ -881,6 +881,7 @@
     <Content Include="Views\Report\_SparkLineChart.cshtml" />
     <Content Include="Views\Report\_SparkLineChartTable.cshtml" />
     <Content Include="Views\Report\_conversionOverview.cshtml" />
+    <Content Include="Views\Shared\_SessionWarning.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
