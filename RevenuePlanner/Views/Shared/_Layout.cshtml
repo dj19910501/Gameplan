@@ -66,6 +66,7 @@
     var sess_warningMinutes = sess_expirationMinutes - 5;;
     var sess_intervalID;
     var sess_lastActivity;
+    var warningRunTime = 0;
 
     function initSession() {
         sess_lastActivity = new Date();
@@ -91,11 +92,12 @@
         var diff = now - sess_lastActivity;
         //get minutes between differences
         var diffMins = (diff / 1000 / 60);
-        if (diffMins >= sess_warningMinutes) {
+        if (diffMins >= sess_warningMinutes+warningRunTime) {
             sessClearInterval();
             $('#div_contactSupport').empty();
             var url = '@Url.Content("~/Common/LoadSessionWarning/")';
             $("#div_contactSupport").load(url);
+            warningRunTime = 5;
         }
     }
 

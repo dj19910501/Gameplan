@@ -70,6 +70,7 @@
         
     }
     $('#submit_issue').click(function () {
+        warningRunTime = 0;
         clearTimeout(timerWatch);
         initSession();
         close_popup();
