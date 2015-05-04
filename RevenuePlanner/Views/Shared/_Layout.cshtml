@@ -62,8 +62,8 @@
 
 <script type="text/javascript">
     var sess_pollInterval = 60000;
-    var sess_expirationMinutes = 2;//parseInt('@Session.Timeout');
-    var sess_warningMinutes = 1;//sess_expirationMinutes - 5;;
+    var sess_expirationMinutes = parseInt('@Session.Timeout');
+    var sess_warningMinutes = sess_expirationMinutes - 5;;
     var sess_intervalID;
     var sess_lastActivity;
 

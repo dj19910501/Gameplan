@@ -60,7 +60,7 @@ namespace RevenuePlanner.Controllers
         /// Login view
         /// </summary>
         /// <returns></returns>
-        public ActionResult Index(string returnUrl = "")
+        public ActionResult Index(string returnUrl = "", bool sessionTimeout=false)
         {
             /* Bug 25:Unavailability of BDSService leads to no error shown to user */
 
@@ -71,7 +71,7 @@ namespace RevenuePlanner.Controllers
                 TempData["ErrorMessage"] = null;
                 isErrorMessageAddedToModel = true;
             }
-
+            TempData["SessionTimeOut"] = sessionTimeout.ToString();
             /* Bug 25:Unavailability of BDSService leads to no error shown to user */
 
             ViewBag.ReturnUrl = returnUrl;

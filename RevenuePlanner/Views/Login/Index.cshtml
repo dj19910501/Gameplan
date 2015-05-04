@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Login";
     Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    string sessionTimeoutErrMsg = TempData["SessionTimeOut"].ToString().ToLower();
 }
 @using (Html.BeginForm("", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "frmLogin", @class = "form-signin", name = "login-register" }))
 {
@@ -24,6 +25,12 @@
         }
         else {
             $("#errorMessage").slideDown(400);
+        }
+        if ('@sessionTimeoutErrMsg'=='true') {
+            $("#TimeOuterrorMessage").slideDown(400);
+        }
+        else {
+            $("#TimeOuterrorMessage").slideUp(400);
         }
 
         $("#UserEmail").focus();    //// Added by :- Sohel Pathan on 25/04/2014 for Internal Review Points to set focus on Email textbox on Page load.

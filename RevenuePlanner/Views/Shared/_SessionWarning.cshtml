@@ -15,7 +15,7 @@
             <form name="login-register">
                <h2 class="primary-title source-sans-prosemibold">Session Timeout</h2>
                 <label class="inpus-required-title source-sans-prolight">  For security reasons, You will be logged out of Gameplan<sup style="font-size:10px;">TM</sup> automatically in 5 minutes due to inactivity.</label>
-                 <span id="timerDiv" class="warningTimer source-sans-prosemibold">01:00</span>
+                 <span id="timerDiv" class="warningTimer source-sans-prosemibold">05:00</span>
                 <div id="summernote"></div>
               
                 <br />
@@ -47,6 +47,7 @@
             $worked.html(ts[1] + ":" + ts[2]);
             if (ts[1] == "00" && ts[2] == "00") {
                 var returnUrl = document.URL;//window.location.pathname;
+                close_popup();
                 sessLogOut(returnUrl);
             }
             else {
@@ -62,7 +63,7 @@
             url: '@Url.Content("~/Login/destroySessions/")',
             success: function (r) {
                 if (r) {
-                    window.location = '@Url.Content("~/login/Index?ReturnUrl=")' + returnUrl;
+                    window.location = '@Url.Content("~/login/Index?ReturnUrl=")' + returnUrl+'&sessionTimeout='+true;
                 }
             }
            });
