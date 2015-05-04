@@ -46,10 +46,10 @@
                     <strong>Error!</strong>
                     <div id="cErrors">@Html.ValidationSummary(true)</div>
                 </div>
-                 <div id="TimeOuterrorMessage" class="alert alert-error hide">
+                 <div id="TimeOuterrorMessage" class="alert alert-error hide" style="float:left;margin-left:200px;width:70%;margin-top:5px;border:1px solid;">
                     <a class="close">×</a>
-                    <strong>Timed out.</strong>
-                    <div id="timeOutcErrors">You were logged out of Gameplan <sup>TM</sup> due to inactivity. Please log in again.</div>
+                    <strong style="float:left;">Timed out.</strong>
+                    <div id="timeOutcErrors" style="float:left;width:470px;">You were logged out of Gameplan <sup>TM</sup> due to inactivity. Please log in again.</div>
                 </div>
                 <div class="login-wrapper">
                     @RenderBody()

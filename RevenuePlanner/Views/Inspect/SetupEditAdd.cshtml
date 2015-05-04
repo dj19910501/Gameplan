@@ -121,7 +121,7 @@
             <p>Owner <span class="required-asterisk">*</span></p>
             @if (IsTackticAddEdit)
             {
-                <span style="min-width: 100%; position: relative;">
+                <span style="min-width: 100%; position: relative;" class="simpleSelectBox">
                     @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
@@ -133,7 +133,7 @@
             @if (ExtIntService)
             {                 
 
-                <p style="width: 110%;">Deployed to Integration</p>
+                <p style="width: 110%;" class="margin-top-10">Deployed to Integration</p>
                 if (Model.IsDeployedToIntegration)
                 {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
@@ -396,18 +396,18 @@
               //End- Added by Viral Kadiya on 11/10/2014 for PL ticket #941 to refresh gantt data on cancel button click.
           });
 
-          $('#ddlOwner').multiselect({
+         @* $('#ddlOwner').multiselect({
               multiple: false,
               noneSelectedText: "Please Select",
               selectedList: 1,
               CustomName: '@Common.CustomTitle'
-          }).multiselectfilter();
+          }).multiselectfilter();*@
 
           $('#ddlOwner').next().css('width', '95%');
           $('#ddlOwner').next().css('min-height', '30px');
 
           var spanOwner = $('#multipleselect_ddlOwner');
-          $('#btnMultiselect_ddlOwner').after(spanOwner);
+         // $('#btnMultiselect_ddlOwner').after(spanOwner);
 
           /*Modified by Mitesh Vaishnav for PL ticket #1165*/
           var customFieldsValues = {};
@@ -488,15 +488,15 @@
 
         /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
         //// RequireField validation for Owner Dropdown
-          if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-              var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
+      @*    if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+              var OwnerValue = $('#ddlOwner').val();
               if (OwnerValue == "Please Select") {
                   $('#btnMultiselect_ddlOwner').addClass("error");
               }
               else {
                   $('#btnMultiselect_ddlOwner').removeClass("error");
               }
-          }
+          }*@
         /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
           if (iserror) {
               ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
