@@ -63,7 +63,7 @@
 <script type="text/javascript">
     var sess_pollInterval = 60000;
     var sess_expirationMinutes = parseInt('@Session.Timeout');
-    var sess_warningMinutes = sess_expirationMinutes - 5;;
+    var sess_warningMinutes = sess_expirationMinutes - 2;;
     var sess_intervalID;
     var sess_lastActivity;
     var warningRunTime = 0;
@@ -97,7 +97,7 @@
             $('#div_contactSupport').empty();
             var url = '@Url.Content("~/Common/LoadSessionWarning/")';
             $("#div_contactSupport").load(url);
-            warningRunTime = 5;
+            warningRunTime = 2;
         }
     }
 
