@@ -496,7 +496,7 @@ namespace Integration.Eloqua
                 string extension = string.Empty;
                 string filepath = string.Empty;
                 ArrayList srclist = new ArrayList();
-                ArrayList Listpath = new ArrayList();
+                Dictionary<string, bool> pathList = new Dictionary<string, bool>();
                 DataTable dt = new DataTable();
 
                 if (Directory.Exists(localDestpath))
@@ -550,13 +550,13 @@ namespace Integration.Eloqua
                             if (extension.ToLower().Trim() == ".xls" || extension.ToLower().Trim() == ".xlsx" || extension.ToLower().Trim() == ".csv")
                             {
                                 client.Get(SFTPSourcePath + "/" + objfiles.ToString(), localRunnungPath);
-                                Listpath.Add(localRunnungPath + "/" + objfiles.ToString());
+                                pathList.Add(localRunnungPath + "/" + objfiles.ToString(), extension.ToLower().Trim() == ".csv" ? true : false);
                             }
                         }
 
-                        if (Listpath != null && Listpath.Count > 0)
+                        if (pathList != null && pathList.Count > 0)
                         {
-                            foreach (string FullfileName in Listpath)
+                            foreach (string FullfileName in pathList.Keys)
                             {
                                 string fileName = System.IO.Path.GetFileName(FullfileName).ToString();
                                 dt = new DataTable();
@@ -569,7 +569,7 @@ namespace Integration.Eloqua
                                     var lstColumns = setarrExcelColumn(dt);
                                     if (lstColumns.Contains(eloquaCampaignIDColumn.ToLower()) && lstColumns.Contains(externalCampaignIDColumn.ToLower()) && lstColumns.Contains(eloquaResponseDateTimeColumn.ToLower()))
                                     {
-                                        var lstResult = dt.AsEnumerable().Where(a => !string.IsNullOrEmpty(a.Field<string>(eloquaResponseDateTimeColumn))).GroupBy(a => new { eloquaId = a[eloquaCampaignIDColumn], externalId = a[externalCampaignIDColumn], date = DateTime.ParseExact(a[eloquaResponseDateTimeColumn].ToString(), responsedateformat, CultureInfo.InvariantCulture).ToString("MM/yyyy") })
+                                        var lstResult = dt.AsEnumerable().Where(a => !string.IsNullOrEmpty(a.Field<string>(eloquaResponseDateTimeColumn))).GroupBy(a => new { eloquaId = a[eloquaCampaignIDColumn], externalId = a[externalCampaignIDColumn], date = pathList[FullfileName] ? DateTime.ParseExact(a[eloquaResponseDateTimeColumn].ToString(), responsedateformat, CultureInfo.InvariantCulture).ToString("MM/yyyy") : Convert.ToDateTime(a[eloquaResponseDateTimeColumn]).ToString("MM/yyyy") })
                                                                       .Select(a => new { id = a.Key, items = a.ToList().Count });
 
                                         List<EloquaResponseModel> lstResponse = new List<EloquaResponseModel>();
