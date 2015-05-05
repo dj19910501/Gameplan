@@ -46,6 +46,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\HelperSharp.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.5.452, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\Newtonsoft.Json.dll</HintPath>
@@ -101,6 +105,7 @@
     <Content Include="DLL\EntityFramework.dll" />
     <Content Include="DLL\Excel.dll" />
     <Content Include="DLL\HelperSharp.dll" />
+    <Content Include="DLL\ICSharpCode.SharpZipLib.dll" />
     <Content Include="DLL\Newtonsoft.Json.dll" />
     <Content Include="DLL\Org.Mentalis.Security.dll" />
     <Content Include="DLL\RestSharp.dll" />
