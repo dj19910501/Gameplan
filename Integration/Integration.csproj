@@ -42,10 +42,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\Excel.dll</HintPath>
     </Reference>
+    <Reference Include="Excel.2.0.1.0.Fakes">
+      <HintPath>FakesAssemblies\Excel.2.0.1.0.Fakes.dll</HintPath>
+    </Reference>
     <Reference Include="HelperSharp, Version=1.0.5120.16113, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\HelperSharp.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.5.452, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\Newtonsoft.Json.dll</HintPath>
@@ -101,11 +109,13 @@
     <Content Include="DLL\EntityFramework.dll" />
     <Content Include="DLL\Excel.dll" />
     <Content Include="DLL\HelperSharp.dll" />
+    <Content Include="DLL\ICSharpCode.SharpZipLib.dll" />
     <Content Include="DLL\Newtonsoft.Json.dll" />
     <Content Include="DLL\Org.Mentalis.Security.dll" />
     <Content Include="DLL\RestSharp.dll" />
     <Content Include="DLL\SalesforceSharp.dll" />
     <Content Include="DLL\Tamir.SharpSSH.dll" />
+    <Fakes Include="Fakes\Excel.fakes" />
     <None Include="Service References\BDSService\BDSService1.disco" />
     <None Include="Service References\BDSService\BDSService1.wsdl" />
     <None Include="Service References\BDSService\BDSService4.xsd">
