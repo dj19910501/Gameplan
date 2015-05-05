@@ -16,6 +16,7 @@ using Integration.Helper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using System.Globalization;
 
 #endregion
 
@@ -30,6 +31,7 @@ namespace Integration.Eloqua
         private static string eloquaCampaignIDColumn = "EloquaCampaignID";
         private static string externalCampaignIDColumn = "ExternalCampaignID";
         private static string eloquaResponseDateTimeColumn = "ResponseDateTime";
+        private static string responsedateformat = "yyyy:MM:dd";
         private MRPEntities db = new MRPEntities();
 
         #endregion
@@ -567,7 +569,7 @@ namespace Integration.Eloqua
                                     var lstColumns = setarrExcelColumn(dt);
                                     if (lstColumns.Contains(eloquaCampaignIDColumn.ToLower()) && lstColumns.Contains(externalCampaignIDColumn.ToLower()) && lstColumns.Contains(eloquaResponseDateTimeColumn.ToLower()))
                                     {
-                                        var lstResult = dt.AsEnumerable().Where(a => !string.IsNullOrEmpty(a.Field<string>(eloquaResponseDateTimeColumn))).GroupBy(a => new { eloquaId = a[eloquaCampaignIDColumn], externalId = a[externalCampaignIDColumn], date = Convert.ToDateTime(a[eloquaResponseDateTimeColumn]).ToString("MM/yyyy") })
+                                        var lstResult = dt.AsEnumerable().Where(a => !string.IsNullOrEmpty(a.Field<string>(eloquaResponseDateTimeColumn))).GroupBy(a => new { eloquaId = a[eloquaCampaignIDColumn], externalId = a[externalCampaignIDColumn], date = DateTime.ParseExact(a[eloquaResponseDateTimeColumn].ToString(), responsedateformat, CultureInfo.InvariantCulture).ToString("MM/yyyy")})
                                                                       .Select(a => new { id = a.Key, items = a.ToList().Count });
 
                                         List<EloquaResponseModel> lstResponse = new List<EloquaResponseModel>();
