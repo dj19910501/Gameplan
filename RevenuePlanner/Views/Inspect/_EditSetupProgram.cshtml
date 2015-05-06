@@ -65,6 +65,7 @@
      #multipleselect_ddlOwner {
         left: 0 !important;
         top: 20px !important;
+        min-width:205px;
     }
 
 </style>
@@ -103,7 +104,7 @@
 
                 @if (IsProgramEdit)
                 {
-                    <span style="min-width: 100%; position: relative;" class="simpleSelectBox">
+                    <span style="min-width: 100%; position: relative;">
                         @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                     </span>
                 }
@@ -217,17 +218,17 @@
 
     $(document).ready(function () {
 
-     @*   $('#ddlOwner').multiselect({
+        $('#ddlOwner').multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
             selectedList: 1,
             CustomName: '@Common.CustomTitle'
-        }).multiselectfilter();*@
-        $(".simpleSelectBox select").selectbox();
+        }).multiselectfilter();
+        //$(".simpleSelectBox select").selectbox();
         $('#ddlOwner').next().css('width', '95%');
         $('#ddlOwner').next().css('min-height', '30px');
         var spanOwner = $('#multipleselect_ddlOwner');
-       // $('#btnMultiselect_ddlOwner').after(spanOwner);
+        $('#btnMultiselect_ddlOwner').after(spanOwner);
         /*Added by Mitesh Vaishnav for PL ticket #1136
        Register events of new multiselect dropdown customfields*/
         $('.dropdown_new_btn').each(function () {
@@ -369,15 +370,15 @@
 
             /* Start - Added by bhavesh on 10/03/2015 for PL ticket #711 */
             //// RequireField validation for Owner Dropdown
-           @* if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+            if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
                 var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
-                if (OwnerValue == "Please Select") {
+                if (OwnerValue == "") {
                     $('#btnMultiselect_ddlOwner').addClass("error");
                 }
                 else {
                     $('#btnMultiselect_ddlOwner').removeClass("error");
                 }
-            }*@
+            }
             /* End - Added by bhavesh on 10/03/2015 for PL ticket #711 */
 
             if (iserror) {

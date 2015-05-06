@@ -12028,20 +12028,20 @@ li.close-list {
 }
 
 .minmax-width200 {
-    min-width: 198px !important;
-    max-width: 198px !important;
+    min-width: 205px !important;
+    max-width: 205px !important;
 }
 
 .minmax-width200-program {
-    min-width: 198px !important;
-    max-width: 198px !important;
+    min-width: 205px !important;
+    max-width: 205px !important;
 }
 
 .new-btn-plan {
     background: /*no-repeat scroll left center #2384b8;*/ no-repeat scroll left center #efefef;
     border: 1px solid #c6c6c6;
     border-radius: 0 5px 5px 0;
-    color: /*#fff !important;*/ color: #6d6d6d !important;
+    color: /*#fff !important;*/ #6d6d6d !important;
     font-family: source_sans_proregular;
     font-size: 13px;
     height: 32px;

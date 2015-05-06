@@ -58,6 +58,12 @@
     #multipleselect_ddlOwner {
         left: 0 !important;
         top: 20px !important;
+        min-width:205px;
+    }
+      #multipleselect_ddlTacticType {
+        left: 0 !important;
+        top: 20px !important;
+        min-width:205px;
     }
     @* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 *@
 
@@ -104,7 +110,7 @@
         </div>
         <div class="span3" id="inspect-modal-left-column2">
             <p>Tactic Type <span class="required-asterisk">*</span></p>
-            <span class="simpleSelectBox">
+            <span style="min-width: 100%; position: relative;">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
             <p class="margin-top-10">Tactic Planned Cost</p>
@@ -130,7 +136,7 @@
             <p>Owner <span class="required-asterisk">*</span></p>
             @if (IsTackticAddEdit)
             {
-                <span style="min-width: 100%; position: relative;" class="simpleSelectBox">
+                <span style="min-width: 100%; position: relative;">
                     @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
@@ -142,7 +148,7 @@
             @if (ExtIntService)
             {                 
 
-                <p style="width: 110%;" class="margin-top-10">Deployed to Integration</p>
+                <p style="width: 110%;">Deployed to Integration</p>
                 if (Model.IsDeployedToIntegration)
                 {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
@@ -237,7 +243,7 @@
           });
           ImageTipsy('#diffrentStageIcon'); // Added by Vira Kadiya on 11/18/2014 to resolve PL ticket #964.
           $(this).scrollTop(0);
-          $(".simpleSelectBox select").selectbox();
+          //$(".simpleSelectBox select").selectbox();
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
           $('#divTacticSaveCancel').css('display', 'block');
@@ -405,18 +411,20 @@
               //End- Added by Viral Kadiya on 11/10/2014 for PL ticket #941 to refresh gantt data on cancel button click.
           });
 
-         @* $('#ddlOwner').multiselect({
+          $('#ddlOwner,#ddlTacticType').multiselect({
               multiple: false,
               noneSelectedText: "Please Select",
               selectedList: 1,
               CustomName: '@Common.CustomTitle'
-          }).multiselectfilter();*@
+          }).multiselectfilter();
 
-          $('#ddlOwner').next().css('width', '95%');
-          $('#ddlOwner').next().css('min-height', '30px');
+          $('#ddlOwner,#ddlTacticType').next().css('width', '95%');
+          $('#ddlOwner,#ddlTacticType').next().css('min-height', '30px');
 
           var spanOwner = $('#multipleselect_ddlOwner');
-         // $('#btnMultiselect_ddlOwner').after(spanOwner);
+          var spanTacticType = $('#multipleselect_ddlTacticType');
+          $('#btnMultiselect_ddlOwner').after(spanOwner);
+          $('#btnMultiselect_ddlTacticType').after(spanTacticType);
 
           /*Modified by Mitesh Vaishnav for PL ticket #1165*/
           var customFieldsValues = {};
@@ -483,29 +491,38 @@
               }
           })
         //sbSelector
-          $('form').find('.sbSelector').each(function () {
-              if ($(this).parent().prev().attr('require') == 'true') {
-                  if ($(this).text() == 'Please Select') {
-                      $(this).addClass("error");
-                      iserror = true;
-                  }
-                  else {
-                      $(this).removeClass("error");
-                  }
-              }
-          });
+          //$('form').find('.sbSelector').each(function () {
+          //    if ($(this).parent().prev().attr('require') == 'true') {
+          //        if ($(this).text() == 'Please Select') {
+          //            $(this).addClass("error");
+          //            iserror = true;
+          //        }
+          //        else {
+          //            $(this).removeClass("error");
+          //        }
+          //    }
+          //});
 
         /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
         //// RequireField validation for Owner Dropdown
-      @*    if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+          if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
               var OwnerValue = $('#ddlOwner').val();
-              if (OwnerValue == "Please Select") {
+              if (OwnerValue == "") {
                   $('#btnMultiselect_ddlOwner').addClass("error");
               }
               else {
                   $('#btnMultiselect_ddlOwner').removeClass("error");
               }
-          }*@
+          }
+        if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+            var tacticTypeValue = $('#ddlTacticType').val();
+            if (tacticTypeValue == "") {
+                $('#btnMultiselect_ddlTacticType').addClass("error");
+            }
+            else {
+                $('#btnMultiselect_ddlTacticType').removeClass("error");
+            }
+        }
         /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
           if (iserror) {
               ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
@@ -877,9 +894,9 @@
     /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
     var tacticId = $('#hdnPlanTacticId').val();
 
-    $('.sbHolder').click(function () {
-        $('#multipleselect_ddlOwner').css('display', 'none');
-    });
+    //$('.sbHolder').click(function () {
+    //    $('#multipleselect_ddlOwner').css('display', 'none');
+    //});
     /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
     function autoGeneratedmultiselectWaightage() {
         var isError = [];
