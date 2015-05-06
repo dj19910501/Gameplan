@@ -3510,7 +3510,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                                 }
-                                if (isReSubmission && Common.CheckAfterApprovedStatus(status) && isOwner)
+                                if (isReSubmission && Common.CheckAfterApprovedStatus(status))
                                 {
                                     pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
                                     //// Get URL for Tactic to send in Email.
