@@ -24,6 +24,7 @@
             myView = "0";
         }
     }
+    RevenuePlanner.Models.HomePlan ListBudgetingPlan = ViewBag.budgetPlanList;
 }
 @section Sidebar
 {
@@ -88,7 +89,27 @@
     
       
 </div>
-<div id="DivloadPlan"></div>
+<div id="DivloadPlan">
+    <ul class="nav nav-tabs">
+        <li class="title-header source-sans-proregular bold font-size25px">
+            <form id="nl-form2" class="nl-form-plan-title without-margin plantitle">
+                <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40">
+                </select>
+                <div class="nl-overlay"></div>
+
+            </form>
+        </li>
+        <li id="aAllocated" class="pull-right" onclick="TabLoad('aAllocated');">
+            <a href="#">Budget</a>
+        </li>
+        <li id="aPlanned" class="pull-right" onclick="TabLoad('aPlanned');">
+            <a href="#">Planned</a>
+        </li>
+        <li id="aActuals" class="pull-right" onclick="TabLoad('aActuals');">
+            <a href="#">Actuals</a>
+        </li>
+    </ul>
+</div>
 <div id="divTabData" style="margin-top: 20px; margin-bottom: 30px;"></div>
 
 <script>
@@ -150,6 +171,7 @@
         });
         $("#ddlViewBy").multiselect('refresh');
         LoadPlan();
+        onClickPlanTitle();
     });
     function ExpandItems() {
         expand = $("#hdnBudgetingExpandId").val();
@@ -393,7 +415,13 @@ else {
 
 
 function LoadPlan() {
-    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")', function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true; });
+    //  $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")', function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true; });
+    var plans = @Html.Raw(Json.Encode(ListBudgetingPlan.plans))
+   populateNF(plans, "dropdown-plan-title");
+    var nlform = new NLForm(document.getElementById('nl-form2'));
+    TabLoad(currentTab);
+    ShowChangeLog(CurrentPlanId);
+    hideAllMessages = true;
 }
 
 function populateNF(items, id) {

@@ -6244,6 +6244,35 @@ namespace RevenuePlanner.Controllers
                     lstTacticCustomfield.ForEach(custom => { lstViewBy.Add(new ViewByModel { Text = custom.Name, Value = TacticCustomTitle + custom.CustomFieldId.ToString() }); });
                 }
                 ViewBag.ViewBy = lstViewBy;
+
+                #region BudgetingPlanList
+                HomePlan objHomePlan = new HomePlan();
+                List<SelectListItem> planList;
+                //if (Bid == "false")
+                //{
+                planList = Common.GetPlan().Select(_pln => new SelectListItem() { Text = _pln.Title, Value = _pln.PlanId.ToString() }).OrderBy(_pln => _pln.Text).ToList();
+                if (planList.Count > 0)
+                {
+                    var objexists = planList.Where(_pln => _pln.Value == Sessions.PlanId.ToString()).ToList();
+                    if (objexists.Count != 0)
+                    {
+                        planList.FirstOrDefault(_pln => _pln.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
+                    }
+                    /*changed by Nirav for plan consistency on 14 apr 2014*/
+
+                    if (!Common.IsPlanPublished(Sessions.PlanId))
+                    {
+                        string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+                        var activeplan = db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false && _pln.Status == planPublishedStatus).ToList();
+                        if (activeplan.Count > 0)
+                            Sessions.PublishedPlanId = Sessions.PlanId;
+                        else
+                            Sessions.PublishedPlanId = 0;
+                    }
+                }
+                objHomePlan.plans = planList;
+                ViewBag.budgetPlanList = objHomePlan;
+                #endregion
             }
             catch (Exception e)
             {
