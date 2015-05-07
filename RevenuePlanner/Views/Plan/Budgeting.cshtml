@@ -416,11 +416,11 @@ else {
 
 function LoadPlan() {
     //  $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")', function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true; });
+    ShowChangeLog(CurrentPlanId);
     var plans = @Html.Raw(Json.Encode(ListBudgetingPlan.plans))
    populateNF(plans, "dropdown-plan-title");
     var nlform = new NLForm(document.getElementById('nl-form2'));
-    TabLoad(currentTab);
-    ShowChangeLog(CurrentPlanId);
+    TabLoad(currentTab);   
     hideAllMessages = true;
 }
 

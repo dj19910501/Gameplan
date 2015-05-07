@@ -5291,26 +5291,23 @@ namespace RevenuePlanner.Helpers
                         //Added by Komal Rawal
                         var CustomFieldexists = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic) &&
                                                                                     (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
-                                                                                     ).Select(customfield => customfield).ToList();
-                        if (CustomFieldexists.Count() == 0)
+                                                                                     ).Any();
+                        if (CustomFieldexists)
                         {
                             return lstTactic;
                         }
 
                         //For #774
-                        var Entityid = objDbMrpEntities.CustomField_Entity.Where(entityid => lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).ToList();
+                        var Entityid = objDbMrpEntities.CustomField_Entity.Where(entityid => lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).Any();
 
                        
-                        if (Entityid.Count() == 0)
+                        if (Entityid)
                         {
-                             
-
                             return lstTactic;
-
                         }
                        
                         //End
-                        var lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == clientId &&
+                        var lstAllTacticCustomFieldEntities =objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == clientId &&
                                                                                                         customFieldEntity.CustomField.IsDeleted.Equals(false) &&
                                                                                                         customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
                                                                                                         customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
