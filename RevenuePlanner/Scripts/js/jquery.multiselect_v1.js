@@ -303,6 +303,7 @@
             var button = this.button;
 
             function clickHandler() {
+                $('.dropdown-wrapper').css('display', 'none');
                 self[self._isOpen ? 'close' : 'open']();
                 return false;
             }
