@@ -166,7 +166,16 @@ namespace Integration.Helper
             else
             {
                 System.IO.FileStream fs = new System.IO.FileStream(FullfilePath, System.IO.FileMode.Open);
-                IExcelDataReader excelReader2007 = ExcelReaderFactory.CreateOpenXmlReader(fs);
+                IExcelDataReader excelReader2007 = null;
+                if (ext.ToLower() == ".xlsx")
+                {
+                    excelReader2007 = ExcelReaderFactory.CreateOpenXmlReader(fs);
+                }
+                else
+                {
+                    excelReader2007 = ExcelReaderFactory.CreateBinaryReader(fs);
+                }
+
                 excelReader2007.IsFirstRowAsColumnNames = true;
                 DataSet result = excelReader2007.AsDataSet();
                 if (result.Tables.Count > 0)
