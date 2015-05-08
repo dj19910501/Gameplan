@@ -1210,14 +1210,14 @@
                         $("#ddlTactic").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
                     });
                     $('#ddlTactic').multiselect("refresh");
-                    //LoadDataRevenueRealization();
+                    LoadDataRevenueRealization();
                     myApp.hidePleaseWait();
                 },
                 error: function () {
                     $("#ddlTactic").empty();
                     $("#ddlTactic").append("<option value='0'>All Tactics</option>");
                     $('#ddlTactic').multiselect("refresh");
-                    //LoadDataRevenueRealization();
+                    LoadDataRevenueRealization();
                     GoToLogin();
                 }
             });
