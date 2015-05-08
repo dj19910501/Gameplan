@@ -569,7 +569,7 @@ namespace Integration.Eloqua
                                     var lstColumns = setarrExcelColumn(dt);
                                     if (lstColumns.Contains(eloquaCampaignIDColumn.ToLower()) && lstColumns.Contains(externalCampaignIDColumn.ToLower()) && lstColumns.Contains(eloquaResponseDateTimeColumn.ToLower()))
                                     {
-                                        var lstResult = dt.AsEnumerable().Where(a => !string.IsNullOrEmpty(a.Field<string>(eloquaResponseDateTimeColumn))).GroupBy(a => new { eloquaId = a[eloquaCampaignIDColumn], externalId = a[externalCampaignIDColumn], date = pathList[FullfileName] ?  DateTime.ParseExact(a[eloquaResponseDateTimeColumn].ToString(), responsedateformat, CultureInfo.InvariantCulture).ToString("MM/yyyy") : Convert.ToDateTime(a[eloquaResponseDateTimeColumn]).ToString("MM/yyyy") })
+                                        var lstResult = dt.AsEnumerable().Where(a => !string.IsNullOrEmpty(a.Field<string>(eloquaResponseDateTimeColumn))).GroupBy(a => new { eloquaId = a[eloquaCampaignIDColumn], externalId = a[externalCampaignIDColumn], date = pathList[FullfileName] ?  DateTime.ParseExact((a[eloquaResponseDateTimeColumn].ToString().Split(' ')[0]).ToString(), responsedateformat, CultureInfo.InvariantCulture).ToString("MM/yyyy") : Convert.ToDateTime(a[eloquaResponseDateTimeColumn]).ToString("MM/yyyy") })
                                                                       .Select(a => new { id = a.Key, items = a.ToList().Count });
 
                                         List<EloquaResponseModel> lstResponse = new List<EloquaResponseModel>();
