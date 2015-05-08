@@ -31,7 +31,7 @@ namespace Integration.Eloqua
         private static string eloquaCampaignIDColumn = "EloquaCampaignID";
         private static string externalCampaignIDColumn = "ExternalCampaignID";
         private static string eloquaResponseDateTimeColumn = "ResponseDateTime";
-        private static string responsedateformat = "yyyy:MM:dd";
+        private static string responsedateformat = "yyyy-MM-dd";
         private MRPEntities db = new MRPEntities();
 
         #endregion
