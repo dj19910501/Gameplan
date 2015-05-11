@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Login";
     Layout = "~/Views/Shared/_LoginLayout.cshtml";
-    string sessionTimeoutErrMsg = TempData["SessionTimeOut"].ToString().ToLower();
+    string sessionTimeoutErrMsg = TempData["SessionTimeOut"] != null ? TempData["SessionTimeOut"].ToString().ToLower() : string.Empty;
 }
 @using (Html.BeginForm("", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "frmLogin", @class = "form-signin", name = "login-register" }))
 {
