@@ -5,7 +5,7 @@
     //// Flag to indicate unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
-
+    var isCreated = ViewBag.IsCreated;
     var Allowresubmission = ViewBag.IsOwner;//Modified By komal Rawal for #1235
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
     string customFieldWeightage = ViewBag.customFieldWeightage;
@@ -65,6 +65,16 @@
         top: 20px !important;
         min-width:205px;
     }
+     #multipleselect_ddlcampaign {
+        left: 0 !important;
+        top: 20px !important;
+        min-width:205px;
+    }
+     #multipleselect_ddlProgram {
+        left: 0 !important;
+        top: 20px !important;
+        min-width:205px;
+    }
     @* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 *@
 
      .inspect-column-parent input, .inspect-column-parent textarea {
@@ -88,7 +98,7 @@
     <script src="~/Scripts/js/bootstrap-datepicker.js"></script> 
  
     bool ExtIntService = (bool)ViewBag.ExtIntService;  
-    @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+   // @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
     @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
     @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
     @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
@@ -102,9 +112,28 @@
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom: 0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>Parent Campaign</p>
-            @Html.TextBoxFor(model => model.CampaignTitle, new { @class = "span12 input-small truncate", id = "txtCampaign", @readonly = "true", style = "background:#F2F2F2;" })
+            @if (IsTackticAddEdit && !isCreated)
+            {
+                <span style="min-width: 100%; position: relative;">
+                    @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)ViewBag.PlanCampaignList, "PlanCampaignId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlcampaign", label = "Campaigns" })
+                </span>
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.CampaignTitle, new { @class = "span12 input-small truncate", id = "ddlcampaign", @readonly = "true", style = "background:#F2F2F2;" })
+            }
             <p>Parent Program</p>
-            @Html.TextBoxFor(model => model.ProgramTitle, new { @class = "span12 input-small truncate", id = "txtProgram", @readonly = "true", style = "background:#F2F2F2;" })
+            @if (IsTackticAddEdit && !isCreated)
+            {
+                <span style="min-width: 100%; position: relative;">
+                    @Html.DropDownListFor(model => model.PlanProgramId, new SelectList((System.Collections.IEnumerable)ViewBag.CampaignProgramList, "PlanProgramId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlProgram", label = "Programs" })
+                </span>
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.ProgramTitle, new { @class = "span12 input-small truncate", id = "ddlProgram", @readonly = "true", style = "background:#F2F2F2;" })
+                @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+            }
             <p>Description</p>
             @Html.TextArea("Description", Model.Description, new { placeholder = "Optional", @class = "span12 text-area-size input-setup", id = "Description" })   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         </div>
@@ -118,7 +147,7 @@
             <p>Start Date</p>
             <span style="position: relative;">
                 <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                    @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small" + resubmission +" input-setup", id = "t_startdate", label = "Start_Date" })
+                    @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_startdate", label = "Start_Date" })
                     <span class="add-on">
                         <img src="~/Content/images/gray-calendar-icon.png"></span>
                 </div>
@@ -126,7 +155,7 @@
             <p class="clear-section" style="margin-top: 2px;">End Date</p>
             <span style="position: relative;">
                 <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                    @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small" + resubmission +" input-setup", id = "t_enddate", label = "End_Date" })
+                    @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_enddate", label = "End_Date" })
                     <span class="add-on">
                         <img src="~/Content/images/gray-calendar-icon.png"></span>
                 </div>
@@ -148,7 +177,7 @@
             @if (ExtIntService)
             {                 
 
-                <p style="width: 110%;">Deployed to Integration</p>
+                <p style="width: 110%;" class="margin-top-10">Deployed to Integration</p>
                 if (Model.IsDeployedToIntegration)
                 {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
@@ -191,7 +220,7 @@
         </li>
     </ul>
 
-    <div  id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
     </div>   
 
@@ -216,8 +245,8 @@
         }
     }
 
-    var txtCampaignValue = '';
-    var txtProgramValue = '';
+    var ddlcampaignValue = '';
+    var ddlProgramValue = '';
     var txtTacticValue = '';
     var txtDescriptionValue = '';
 
@@ -250,7 +279,7 @@
           $('#EditForm').css('display', 'none');
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val());
-          $(".selectBox select").selectbox();
+          //$(".selectBox select").selectbox();
 
           $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
           $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
@@ -423,13 +452,32 @@
 
           var spanOwner = $('#multipleselect_ddlOwner');
           var spanTacticType = $('#multipleselect_ddlTacticType');
+         
           $('#btnMultiselect_ddlOwner').after(spanOwner);
           $('#btnMultiselect_ddlTacticType').after(spanTacticType);
-
+          
           /*Modified by Mitesh Vaishnav for PL ticket #1165*/
+
+          if ('@isCreated' != '@true') {
+              $('#ddlcampaign,#ddlProgram').multiselect({
+                  multiple: false,
+                  noneSelectedText: "Please Select",
+                  selectedList: 1,
+                  CustomName: '@Common.CustomTitle'
+              }).multiselectfilter();
+
+              $('#ddlcampaign,#ddlProgram').next().css('width', '95%');
+              $('#ddlcampaign,#ddlProgram').next().css('min-height', '30px');
+              var spanCampaign = $('#multipleselect_ddlcampaign');
+              var spanProgram = $('#multipleselect_ddlProgram');
+              $('#btnMultiselect_ddlcampaign').after(spanCampaign);
+              $('#btnMultiselect_ddlProgram').after(spanProgram);
+          }
+
+
           var customFieldsValues = {};
           if ('@customFieldWeightage' != '') {
-           customFieldsValues=   JSON.parse('@Html.Raw(customFieldWeightage)');
+              customFieldsValues = JSON.parse('@Html.Raw(customFieldWeightage)');
           }
 
           for (var i = 0; i < customFieldsValues.length; i++) {
@@ -454,66 +502,106 @@
              @:loadtacticdata($('#ddlTacticType').val());
              
           }
-
+          $('#ddlcampaign').bind('change', function () {
+              var selectedOption = $(this).val();
+              loadChildProgramList(selectedOption, "ddlProgram");
+          });
       });
+    function loadChildProgramList(parentOption, id) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/LoadProgramList/")',
+            data: {
+                ParentId: parentOption
+            },
+            success: function (r) {
+                var $dropdown = $("#" + id);
+                $dropdown.empty();
+                var $html = '';
+                if (r.length > 0) {
 
+                    $.each(r, function (index, objprogramList) {
+
+                        $html += '<option value="' + objprogramList.PlanProgramId + '">' + objprogramList.Title + '</option>';
+
+                    });
+                    $('#btnMultiselect_' + id).attr('style', 'display:block;');
+                    if ($('#btnMultiselect_' + id).parent().parent().hasClass('margin-rigthminus20px')) {
+                        $('#btnMultiselect_' + id).parent().parent().removeClass('margin-rigthminus20px');
+                    }
+                }
+                else {
+                    $('#btnMultiselect_' + id).attr('style', 'display:none;');
+                    $('#btnMultiselect_' + id).parent().parent().addClass('margin-rigthminus20px');
+                }
+                $dropdown.append($html);
+                $("#multipleselect_" + id).find("input[type='search']").val('');
+                $('#' + id).multiselect("refresh");
+                $('#ddlProgram').next().css('width', '95%');
+                $('#ddlProgram').next().css('min-height', '30px');
+                var spanProgram = $('#multipleselect_ddlProgram');
+                $('#btnMultiselect_ddlProgram').after(spanProgram);
+
+            }
+        });
+    }
     $("#btnUploadResult").on("click", function (e) {
         $('#MultiSelectProcced').css("display", "none");
-          document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
-          document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
-          document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
-          document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
+        document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
+        document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
+        document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
+        document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
 
-          var isLowBudgeted = false;
-          var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
-          var lowBudgetedMonths = "";
-          var removeLength = 0;
+        var isLowBudgeted = false;
+        var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
+        var lowBudgetedMonths = "";
+        var removeLength = 0;
 
-          var iserror = false;
-          $('form').find('input[type=text], select, textarea').each(function () {
-              if ($(this).attr('require') == 'true') {
-                  if ($(this).val() == '') {
-                      $(this).addClass("error");
-                      iserror = true;
-                  }
-                  else {
-                      $(this).removeClass("error");
-                  }
-              }
-          });
-          $('.dropdown_new_btn').each(function () {
-              if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select') {
-                  $(this).addClass("error");
-                  iserror = true;
-              }
-              else {
-                  $(this).removeClass("error");
-              }
-          })
+        var iserror = false;
+        $('form').find('input[type=text], select, textarea').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+        $('.dropdown_new_btn').each(function () {
+            if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select') {
+                $(this).addClass("error");
+                iserror = true;
+            }
+            else {
+                $(this).removeClass("error");
+            }
+        })
         //sbSelector
-          //$('form').find('.sbSelector').each(function () {
-          //    if ($(this).parent().prev().attr('require') == 'true') {
-          //        if ($(this).text() == 'Please Select') {
-          //            $(this).addClass("error");
-          //            iserror = true;
-          //        }
-          //        else {
-          //            $(this).removeClass("error");
-          //        }
-          //    }
-          //});
+        //$('form').find('.sbSelector').each(function () {
+        //    if ($(this).parent().prev().attr('require') == 'true') {
+        //        if ($(this).text() == 'Please Select') {
+        //            $(this).addClass("error");
+        //            iserror = true;
+        //        }
+        //        else {
+        //            $(this).removeClass("error");
+        //        }
+        //    }
+        //});
 
         /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
         //// RequireField validation for Owner Dropdown
-          if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-              var OwnerValue = $('#ddlOwner').val();
-              if (OwnerValue == "") {
-                  $('#btnMultiselect_ddlOwner').addClass("error");
-              }
-              else {
-                  $('#btnMultiselect_ddlOwner').removeClass("error");
-              }
-          }
+        if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+            var OwnerValue = $('#ddlOwner').val();
+            if (OwnerValue == "") {
+                $('#btnMultiselect_ddlOwner').addClass("error");
+            }
+            else {
+                $('#btnMultiselect_ddlOwner').removeClass("error");
+            }
+        }
         if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
             var tacticTypeValue = $('#ddlTacticType').val();
             if (tacticTypeValue == "") {
@@ -524,31 +612,31 @@
             }
         }
         /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
-          if (iserror) {
-              ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
-              return false;
-          }
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
 
         var regex = /(>|<)/m;
 
         var descriptionvalue = $("#Description").val();
         if (descriptionvalue.search(regex) >= 0) {
             var test = "@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription";
-              ShowError(test);
-              $("#Description").addClass("error");
-              return false;
-          }
+            ShowError(test);
+            $("#Description").addClass("error");
+            return false;
+        }
 
         var sdate = $('#t_startdate').val();
         var edate = $('#t_enddate').val();
         if (!isDate(sdate)) {
             alert('@Common.objCached.ValidateStartDate');
-              return false;
-          }
+            return false;
+        }
         if (!isDate(edate)) {
             alert('@Common.objCached.ValidateEndDate');
-              return false;
-          }
+            return false;
+        }
 
 
         if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
@@ -582,8 +670,8 @@
         if (arrError.length > 0) {
             var errorAttrbutes = arrError.join(',');
             ShowError('@Common.objCached.ValidateAttributeWeightSum'.replace('{0}', errorAttrbutes.toString()));
-              return false;
-          }
+            return false;
+        }
         ////creating object which contains value of custom fields
         _customFieldValues = [];
         $('form').find('input[type=text], select').each(function () {
@@ -618,32 +706,32 @@
 
         if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
             url = '@Url.Content("~/Inspect/LoadResubmission")';
-              $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
-          } else {
-              saveTactic();
-          }
+            $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
+        } else {
+            saveTactic();
+        }
     });
 
-      function saveTactic(resubmission) {
-          resubmission = typeof resubmission !== 'undefined' ? resubmission : false;
-          var txtCampaignValue = $("#txtCampaign").val();
-          var txtProgramValue = $("#txtProgram").val();
-          var txtTacticValue = $("#txtTacticTitle").val();
-          var txtDescriptionValue = htmlEncode($("#Description").val());
-          document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
-          document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
-          document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
-          document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
-          document.getElementById("Description").value = htmlEncode($('#Description').val());
-          var uId = $(window).attr('name');
+    function saveTactic(resubmission) {
+        resubmission = typeof resubmission !== 'undefined' ? resubmission : false;
+        var ddlcampaignValue = $("#ddlcampaign").val();
+        var ddlProgramValue = $("#ddlProgram").val();
+        var txtTacticValue = $("#txtTacticTitle").val();
+        var txtDescriptionValue = htmlEncode($("#Description").val());
+        document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
+        document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
+        document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
+        document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
+        document.getElementById("Description").value = htmlEncode($('#Description').val());
+        var uId = $(window).attr('name');
 
-          $.ajax({
-              type: 'POST',
-              url: '@Url.Content("~/Inspect/SetupSaveTactic")',
-              data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&resubmission=' + resubmission,
-              success: function (data) {
-                  if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                      window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/SetupSaveTactic")',
+            data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&resubmission=' + resubmission,
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
                     if (!data.IsDuplicate) {
@@ -663,24 +751,24 @@
                             $("#spanMessageSuccess").text(data.Msg);
                             $("#errorMessage").css("display", "none");
                             loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
-                            $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
-                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
-                                $("#hdnBudgetingExpandId").val("tactic" + planTacticId);
-                                $("#hdnBudgetingIsSave").val("true");
-                            }
-                            else {
-                                RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
-                            }
-                            $("#txtCampaign").val(txtCampaignValue);
-                            $("#txtProgram").val(txtProgramValue);
-                            $("#txtTacticTitle").val(txtTacticValue);
-                            $("#Description").val(txtDescriptionValue);
+                              $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
+                              if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                                  $("#hdnBudgetingExpandId").val("tactic" + planTacticId);
+                                  $("#hdnBudgetingIsSave").val("true");
+                              }
+                              else {
+                                  RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                              }
+                            $("#ddlcampaign").val(ddlcampaignValue);
+                            $("#ddlProgram").val(ddlProgramValue);
+                              $("#txtTacticTitle").val(txtTacticValue);
+                              $("#Description").val(txtDescriptionValue);
 
-                            //// if new record save then set Refresh flag to true.
-                            var _planTacticId = $("#hdnPlanTacticId").val();
-                            if (_planTacticId == '' || _planTacticId == null || _planTacticId == '0' || _planTacticId == 'undefined') {
-                                $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
-                                if (requestedModule == '@Enums.InspectPopupRequestedModules.Index.ToString()' || requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
+                              //// if new record save then set Refresh flag to true.
+                              var _planTacticId = $("#hdnPlanTacticId").val();
+                              if (_planTacticId == '' || _planTacticId == null || _planTacticId == '0' || _planTacticId == 'undefined') {
+                                  $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                                  if (requestedModule == '@Enums.InspectPopupRequestedModules.Index.ToString()' || requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
                                     RefershPlanHeaderCalc();
                                 }
                             }
@@ -694,7 +782,7 @@
                     }
                 }
             }
-          });
+        });
     }
 
     function ShowError(value) {
@@ -752,17 +840,17 @@
         }
     });
 
-//Added By Komal Rawal
+    //Added By Komal Rawal
     function loadtacticdata(tacticTypeId) {
         var pmql = 0;
         var pcost = 0;
         var projectedStageValue = 0;
-        txtCampaignValue = $("#txtCampaign").val();
-        txtProgramValue = $("#txtProgram").val();
+        ddlcampaignValue = $("#ddlcampaign").val();
+        ddlProgramValue = $("#ddlProgram").val();
         txtTacticValue = $("#txtTacticTitle").val();
         txtDescriptionValue = $("#Description").val();
-        document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
-        document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
+        document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
+        document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
         document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
         document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
 
@@ -797,8 +885,8 @@
                             $("#hdnIsDeployedToIntegration").val(false);
                         }
                         $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());
-                        $("#txtCampaign").val(txtCampaignValue);
-                        $("#txtProgram").val(txtProgramValue);
+                        $("#ddlcampaign").val(ddlcampaignValue);
+                        $("#ddlProgram").val(ddlProgramValue);
                         $("#txtTacticTitle").val(txtTacticValue);
                         $("#Description").val(txtDescriptionValue);
                     }
@@ -826,7 +914,7 @@
     $('#ddlTacticType').change(function () {
         var tacticTypeId = $(this).val();
         loadtacticdata(tacticTypeId);
-       
+
     });
 
     //End
@@ -840,16 +928,16 @@
         }
     }
 
-   
+
 
     $("#txtProjectedStageValue").focusout(function () {
-        txtCampaignValue = $("#txtCampaign").val();
-        txtProgramValue = $("#txtProgram").val();
+        ddlcampaignValue = $("#ddlcampaign").val();
+        ddlProgramValue = $("#ddlProgram").val();
         txtTacticValue = $("#txtTacticTitle").val();
         txtDescriptionValue = $("#Description").val();
 
-        document.getElementById("txtCampaign").value = htmlEncode($('#txtCampaign').val());
-        document.getElementById("txtProgram").value = htmlEncode($('#txtProgram').val());
+        document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
+        document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
         document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
         document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
         var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
@@ -882,8 +970,8 @@
                     $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
                     $("#txtRevenue").attr("title", $("#txtRevenue").val());
 
-                    $("#txtCampaign").val(txtCampaignValue);
-                    $("#txtProgram").val(txtProgramValue);
+                    $("#ddlcampaign").val(ddlcampaignValue);
+                    $("#ddlProgram").val(ddlProgramValue);
                     $("#txtTacticTitle").val(txtTacticValue);
                     $("#Description").val(txtDescriptionValue);
                 }

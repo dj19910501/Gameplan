@@ -3090,6 +3090,22 @@ namespace RevenuePlanner.Controllers
 
             // Start - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
             ViewBag.IsTackticAddEdit = true;
+            var campaignList = db.Plan_Campaign.Where(pc => pc.IsDeleted.Equals(false) && pc.PlanId == planId).Select(pc => new
+            {
+                pc.PlanCampaignId,
+                pc.Title
+            }).ToList().Select(c => new
+            {
+                PlanCampaignId = c.PlanCampaignId,
+                Title = HttpUtility.HtmlDecode(c.Title)
+            }).OrderBy(pc => pc.Title).ToList();
+            var programList = db.Plan_Campaign_Program.Where(pcp => pcp.IsDeleted.Equals(false) && pcp.PlanCampaignId == pcpt.Plan_Campaign_Program.PlanCampaignId).Select(pcp => new
+            {
+                pcp.PlanProgramId,
+                pcp.Title
+            }).OrderBy(pcp=>pcp.Title).ToList();
+            ViewBag.PlanCampaignList = campaignList;
+            ViewBag.CampaignProgramList = programList;
             try
             {
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId);
@@ -3339,6 +3355,8 @@ namespace RevenuePlanner.Controllers
                                 bool isReSubmission = false;
                                 bool isOwner = false;
                                 string status = string.Empty;
+                                int oldProgramId = 0;
+                                int oldCampaignId = 0;
                                 #endregion
                                 //Start - Added by Mitesh Vaishnav for PL ticket #1137
                                 if (resubmission)
@@ -3357,6 +3375,19 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.TacticTypeId = form.TacticTypeId;
                                 pcpobj.CreatedBy = form.OwnerId;
                                 pcpobj.ProjectedStageValue = form.ProjectedStageValue;
+                                if (pcpobj.PlanProgramId != form.PlanProgramId)
+                                {
+                                    oldProgramId = pcpobj.PlanProgramId;
+                                    oldCampaignId = pcpobj.Plan_Campaign_Program.PlanCampaignId;
+                                    pcpobj.PlanProgramId = form.PlanProgramId;
+                                    db.Entry(pcpobj).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                    pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).FirstOrDefault();
+                                    form.PStartDate = pcpobj.Plan_Campaign_Program.StartDate;
+                                    form.PEndDate = pcpobj.Plan_Campaign_Program.EndDate;
+                                    form.CStartDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate;
+                                    form.CEndDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate;
+                                }
                                 //End - Added by Mitesh Vaishnav - Remove old resubmission condition and combine it
 
 
@@ -3470,12 +3501,12 @@ namespace RevenuePlanner.Controllers
                                             if (DiffMonthCost > 0)
                                             {
                                                 if (DiffMonthCost > diffcost)
-                                            {
-                                                pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
-                                                diffcost = 0;
-                                            }
-                                            else
-                                            {
+                                                {
+                                                    pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
+                                                    diffcost = 0;
+                                                }
+                                                else
+                                                {
                                                     pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
                                                     diffcost = diffcost - DiffMonthCost;
                                                 }
@@ -3491,7 +3522,7 @@ namespace RevenuePlanner.Controllers
 
                                 }
 
-                                    pcpobj.Cost = form.Cost;
+                                pcpobj.Cost = form.Cost;
 
                                 //End
 
@@ -3521,6 +3552,7 @@ namespace RevenuePlanner.Controllers
                                 // Start - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
                                 if (result > 0)
                                 {
+                                   
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
                                     {
@@ -3571,8 +3603,8 @@ namespace RevenuePlanner.Controllers
                                 // Start Added by dharmraj for ticket #644
 
                                 //// Calculate TotalLineItem cost.
-                               
-                               
+
+
 
                                 Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.Title == Common.DefaultLineItemTitle && lineItem.LineItemTypeId == null);
                                 if (pcpobj.Cost > totalLineitemCost)
@@ -3644,6 +3676,11 @@ namespace RevenuePlanner.Controllers
                                     Common.ChangeProgramStatus(pcpobj.PlanProgramId);
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == pcpobj.PlanProgramId).Select(program => program.PlanCampaignId).Single();
                                     Common.ChangeCampaignStatus(PlanCampaignId);
+                                    if (oldProgramId > 0)
+                                    {
+                                        Common.ChangeProgramStatus(oldProgramId);
+                                        Common.ChangeCampaignStatus(oldCampaignId);
+                                    }
                                     //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                                     scope.Complete();
@@ -5598,7 +5635,7 @@ namespace RevenuePlanner.Controllers
 
                                     }
 
-                                        objLineitem.Cost = form.Cost;
+                                    objLineitem.Cost = form.Cost;
 
                                     //End
                                 }
@@ -5808,8 +5845,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                objLineitem.Cost = UpdateBugdetAllocationCost(arrCostInputValues, form.Cost);
-                            }
+                                    objLineitem.Cost = UpdateBugdetAllocationCost(arrCostInputValues, form.Cost);
+                                }
                             }
 
                             objLineitem.ModifiedBy = Sessions.User.UserId;
@@ -6058,7 +6095,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else if (arrCostInputValues.Length == 4)
                                     {
-                                        if (arrCostInputValues[(startmonth-1)/3] != "")
+                                        if (arrCostInputValues[(startmonth - 1) / 3] != "")
                                         {
                                             arrCostInputValues[(startmonth - 1) / 3] = (Convert.ToInt32(arrCostInputValues[(startmonth - 1) / 3]) + diffcost).ToString();
                                         }
@@ -6395,6 +6432,22 @@ namespace RevenuePlanner.Controllers
             return PartialView("_EditSetupLineitem", pc);
         }
         #endregion
+
+        /// <summary>
+        /// Load program title and Id based on campaign Id 
+        /// </summary>
+        /// <param name="ParentId">selected Campaign Id </param>
+        /// <returns></returns>
+        public JsonResult LoadProgramList(string ParentId)
+        {
+            int parentCampaignId=Convert.ToInt32(ParentId);
+            var programList = db.Plan_Campaign_Program.Where(p => p.IsDeleted.Equals(false) && p.PlanCampaignId == parentCampaignId).Select(p => new
+            {
+                p.PlanProgramId,
+                p.Title
+            }).OrderBy(p=>p.Title).ToList();
+            return Json(programList, JsonRequestBehavior.AllowGet);
+        }
 
         #region "Common Functions"
 

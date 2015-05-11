@@ -2311,7 +2311,7 @@ namespace RevenuePlanner.Helpers
                 string statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
                 string statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
                 string statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
-
+                string statusCreated=RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString();
                 try
                 {
                     using (MRPEntities db = new MRPEntities())
@@ -2322,6 +2322,7 @@ namespace RevenuePlanner.Helpers
                         {
                             if (lstTactic.Count > 0)
                             {
+                                int cntAllCreateTacticStatus = lstTactic.Where(pcpt => !pcpt.Status.Equals(statusCreated)).Count();
                                 int cntAllSumbitTacticStatus = lstTactic.Where(pcpt => !pcpt.Status.Equals(statussubmit)).Count();
                                 int cntAllApproveTacticStatus = lstTactic.Where(pcpt => (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
                                 int cntAllDeclineTacticStatus = lstTactic.Where(pcpt => !pcpt.Status.Equals(statusdecline)).Count();
@@ -2351,6 +2352,10 @@ namespace RevenuePlanner.Helpers
                                 else if (cntAllDeclineTacticStatus == 0)
                                 {
                                     status = statusdecline;
+                                }
+                                else if (cntAllCreateTacticStatus == 0)
+                                {
+                                    status = statusCreated;
                                 }
                                 else if (!flag)
                                 {
@@ -2396,7 +2401,7 @@ namespace RevenuePlanner.Helpers
                 string statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
                 string statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
                 string statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
-
+                string statusCreated = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString();
                 try
                 {
                     using (MRPEntities db = new MRPEntities())
@@ -2407,6 +2412,10 @@ namespace RevenuePlanner.Helpers
                         {
                             if (lstProgram.Count > 0)
                             {
+                                // Number of program with status is not 'Created' 
+                                int cntCreatedProgramStatus = lstProgram.Where(pcpt => !pcpt.Status.Equals(statusCreated)).Count();
+                                // Number of tactic with status is not 'Created'
+                                int cntCreatedTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == objPlan_Campaign.PlanCampaignId && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusCreated)).Count();
                                 // Number of program with status is not 'Submitted' 
                                 int cntSumbitProgramStatus = lstProgram.Where(pcpt => !pcpt.Status.Equals(statussubmit)).Count();
                                 // Number of tactic with status is not 'Submitted'
@@ -2452,6 +2461,10 @@ namespace RevenuePlanner.Helpers
                                 else if (cntDeclineProgramStatus == 0 && cntDeclineTacticStatus == 0)
                                 {
                                     status = statusdecline;
+                                }
+                                else if (cntCreatedProgramStatus == 0 && cntCreatedTacticStatus == 0)
+                                {
+                                    
                                 }
                                 else if (!flag)
                                 {
