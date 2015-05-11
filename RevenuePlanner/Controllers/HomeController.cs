@@ -420,6 +420,7 @@ namespace RevenuePlanner.Controllers
                                                                        }).ToList();
 
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+            List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
             //// Apply Custom restriction for None type
             if (lstTactic.Count() > 0)
             {
@@ -431,7 +432,7 @@ namespace RevenuePlanner.Controllers
                 if (filteredCustomFields.Count > 0)
                 {
 
-                    List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                   
                     filteredCustomFields.ForEach(customField =>
                     {
                         string[] splittedCustomField = customField.Split('_');
@@ -551,7 +552,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    return PrepareCustomFieldTabResult(viewBy, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult, lstFilteredCustomFieldOptionIds);
+                    return PrepareCustomFieldTabResult(viewBy, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult, lstCustomFieldFilter);
                 }
             }
             catch (Exception objException)
@@ -589,7 +590,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="improvementTacticTypeForAccordion">list of improvement tactic type for accrodian(left side pane)</param>
         /// <param name="viewByListResult">list of viewBy dropdown options</param>
         /// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        private JsonResult PrepareCustomFieldTabResult(string viewBy, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult, List<string> lstFilteredCustomFieldOptionIds)
+        private JsonResult PrepareCustomFieldTabResult(string viewBy, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult, List<CustomFieldFilter> lstCustomFieldFilter)
         {
             string sourceViewBy = viewBy;
             int CustomTypeId = 0;
@@ -710,8 +711,7 @@ namespace RevenuePlanner.Controllers
                                             new { Key1 = customfieldoptionLeftJoin.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)customfieldoptionLeftJoin.CustomFieldOptionId).Trim() } into cAll
                                         from cfo in cAll.DefaultIfEmpty()
                                         where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == entityType && customfield.CustomFieldId == CustomTypeId &&
-                                        customfield.ClientId == Sessions.User.ClientId && tacticIdList.Contains(tactic.PlanTacticId) &&
-                                        (customfieldtype.Name == DropDownList ? (lstFilteredCustomFieldOptionIds.Count.Equals(0) || lstFilteredCustomFieldOptionIds.Contains(customfieldentity.Value)) : true)
+                                        customfield.ClientId == Sessions.User.ClientId && tacticIdList.Contains(tactic.PlanTacticId)
                                         select new
                                         {
                                             tactic = tactic,
@@ -720,7 +720,7 @@ namespace RevenuePlanner.Controllers
                                             customFieldTitle = customfieldtype.Name == DropDownList ? cfo.Value : customfieldentity.Value,
                                             customFieldTYpe = customfieldtype.Name,
                                             EntityId = customfieldentity.EntityId,
-                                        }).ToList().Distinct().ToList();
+                                        }).ToList().Where(fltr => (fltr.customFieldTYpe == DropDownList ? (!(lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(fltr.masterCustomFieldId)).Any()) || lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(fltr.masterCustomFieldId)).Select(custmlst => custmlst.OptionId).Contains(fltr.customFieldId.ToString())) : true)).Distinct().ToList();
 
             //// Process CustomFieldTactic list retrieved from DB for further use
             var lstProcessedCustomFieldTactics = lstCustomFieldTactic.Select(customFieldTactic => new
