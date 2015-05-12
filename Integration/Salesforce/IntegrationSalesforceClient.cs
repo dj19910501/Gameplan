@@ -83,7 +83,7 @@ namespace Integration.Salesforce
         {
         }
 
-        public IntegrationSalesforceClient(int integrationInstanceId, int id, EntityType entityType, Guid userId, int integrationInstanceLogId,Guid applicationId)
+        public IntegrationSalesforceClient(int integrationInstanceId, int id, EntityType entityType, Guid userId, int integrationInstanceLogId, Guid applicationId)
         {
             _integrationInstanceId = integrationInstanceId;
             _id = id;
@@ -273,7 +273,7 @@ namespace Integration.Salesforce
             int INQStageId = db.Stages.FirstOrDefault(s => s.ClientId == ClientId && s.Code == Common.StageINQ && s.IsDeleted == false).StageId;
             // Get List of status after Approved Status
             List<string> statusList = Common.GetStatusListAfterApproved();
-            
+
             //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
             List<Plan_Campaign_Program_Tactic> lstAllTactics = db.Plan_Campaign_Program_Tactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                            tactic.IsDeployedToIntegration == true &&
@@ -284,7 +284,7 @@ namespace Integration.Salesforce
             List<EloquaIntegrationInstanceTactic_Model_Mapping> lstEloquaIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => lstEloquaPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IntegrationInstanceTacticId != null).Select(_tac => new EloquaIntegrationInstanceTactic_Model_Mapping
                                                                                                                                                                                                                                                                                      {
                                                                                                                                                                                                                                                                                          EloquaIntegrationInstanceTacticId = _tac.IntegrationInstanceTacticId,
-                                                                                                                                                                                                                                                                                       ModelIntegrationInstanceId = _tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId.Value
+                                                                                                                                                                                                                                                                                         ModelIntegrationInstanceId = _tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId.Value
                                                                                                                                                                                                                                                                                      }).ToList();
 
             if (lstEloquaIntegrationInstanceTacticIds == null)
@@ -294,9 +294,9 @@ namespace Integration.Salesforce
             //// Get Mapping List of SalesForceIntegrationInstanceTactic Ids(CRMIds) based on EloquaIntegrationInstanceTacticID(EloquaId).
             List<CRM_EloquaMapping> lstSalesForceIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
             foreach (int _ModelIntegrationInstanceId in lstEloquaIntegrationInstanceTacticIds.Select(tac => tac.ModelIntegrationInstanceId).Distinct())
+            {
+                try
                 {
-                    try
-                    {
                     Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(_ModelIntegrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
                     foreach (EloquaIntegrationInstanceTactic_Model_Mapping _EloquaTac in lstEloquaIntegrationInstanceTacticIds.Where(_eloqua => _eloqua.ModelIntegrationInstanceId.Equals(_ModelIntegrationInstanceId)))
                     {
@@ -304,28 +304,28 @@ namespace Integration.Salesforce
                         if (!string.IsNullOrEmpty(_EloquaTac.EloquaIntegrationInstanceTacticId))
                         {
 
-                    Integration.Eloqua.EloquaCampaign objEloqua = new Integration.Eloqua.EloquaCampaign();
-                    
-                    ////Get SalesForceIntegrationTacticId based on EloquaIntegrationTacticId.
-                    objEloqua = integrationEloquaClient.GetEloquaCampaign(_EloquaTac.EloquaIntegrationInstanceTacticId);
-                    if (objEloqua != null)
-                    {
-                            var _Tactic = lstAllTactics.Where(s => s.IntegrationInstanceTacticId == _EloquaTac.EloquaIntegrationInstanceTacticId).Select(_tac => _tac).FirstOrDefault();
-                        lstSalesForceIntegrationInstanceTacticIds.Add(
-                                                                  new CRM_EloquaMapping
-                                                                  {
-                                                                      CRMId = !string.IsNullOrEmpty(objEloqua.crmId) ? objEloqua.crmId : string.Empty,
-                                                                      EloquaId = _EloquaTac.EloquaIntegrationInstanceTacticId,
-                                                                      PlanTacticId = _Tactic != null ?_Tactic.PlanTacticId:0,
-                                                                      StartDate = _Tactic != null ?_Tactic.StartDate:(new DateTime()),
-                                                                  });
+                            Integration.Eloqua.EloquaCampaign objEloqua = new Integration.Eloqua.EloquaCampaign();
+
+                            ////Get SalesForceIntegrationTacticId based on EloquaIntegrationTacticId.
+                            objEloqua = integrationEloquaClient.GetEloquaCampaign(_EloquaTac.EloquaIntegrationInstanceTacticId);
+                            if (objEloqua != null)
+                            {
+                                var _Tactic = lstAllTactics.Where(s => s.IntegrationInstanceTacticId == _EloquaTac.EloquaIntegrationInstanceTacticId).Select(_tac => _tac).FirstOrDefault();
+                                lstSalesForceIntegrationInstanceTacticIds.Add(
+                                                                          new CRM_EloquaMapping
+                                                                          {
+                                                                              CRMId = !string.IsNullOrEmpty(objEloqua.crmId) ? objEloqua.crmId : string.Empty,
+                                                                              EloquaId = _EloquaTac.EloquaIntegrationInstanceTacticId,
+                                                                              PlanTacticId = _Tactic != null ? _Tactic.PlanTacticId : 0,
+                                                                              StartDate = _Tactic != null ? _Tactic.StartDate : (new DateTime()),
+                                                                          });
+                            }
                         }
                     }
-                    }
                 }
-                    catch (Exception)
-                    {
-                        continue;
+                catch (Exception)
+                {
+                    continue;
                 }
             }
 
@@ -336,9 +336,9 @@ namespace Integration.Salesforce
             //// Get Eloqua tactic list
             List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => lstEloquaPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.StageId == INQStageId && tactic.IntegrationInstanceTacticId != null).ToList();
             string SalesForceintegrationTacticIdsByEloquaId = String.Join("','", from _Tactic in lstEloquaTactic
-                                                                   join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
-                                                                   select _ElqTactic.CRMId);
-            
+                                                                                 join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
+                                                                                 select _ElqTactic.CRMId);
+
             //// Merge SalesForce & Eloqua IntegrationTacticIds by comma(',').
             string AllIntegrationTacticIds = !string.IsNullOrEmpty(SalesForceintegrationTacticIdsByEloquaId) ? (!string.IsNullOrEmpty(SalesForceintegrationTacticIds) ? (SalesForceintegrationTacticIds + "','" + SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIds;
             AllIntegrationTacticIds = AllIntegrationTacticIds.Trim(new char[] { ',' });
@@ -390,14 +390,14 @@ namespace Integration.Salesforce
                                     }
                                     objCampaign.CampaignId = campaignid;
                                     objCampaign.FirstRespondedDate = Convert.ToDateTime(jobj[FirstRespondedDate]);
-                                CampaignMemberList.Add(objCampaign);
-                            }
+                                    CampaignMemberList.Add(objCampaign);
+                                }
                                 catch (SalesforceException e)
                                 {
                                     ErrorFlag = true;
                                     _ErrorMessage = GetErrorMessage(e);
                                     string TacticId = Convert.ToString(jobj[CampaignId]); ////CRMId
-                                   
+
                                     //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
                                     var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
                                     if (tactic != null)
@@ -444,12 +444,12 @@ namespace Integration.Salesforce
                                     instanceTactic.CreatedBy = _userId;
                                     db.Entry(instanceTactic).State = EntityState.Added;
                                 }
-                                
+
                             }
                             List<Plan_Campaign_Program_Tactic> lstCRM_EloquaTactics = (from _Tactic in lstEloquaTactic
-                                                                                      join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
-                                                                                      where _ElqTactic.CRMId != null
-                                                                                      select _Tactic).ToList();
+                                                                                       join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
+                                                                                       where _ElqTactic.CRMId != null
+                                                                                       select _Tactic).ToList();
 
                             List<Plan_Campaign_Program_Tactic> lstMergedTactics = lstSalesForceTactic;
                             lstCRM_EloquaTactics.ForEach(_elqTactic => lstMergedTactics.Add(_elqTactic));
@@ -548,6 +548,143 @@ namespace Integration.Salesforce
 
         }
 
+        /// <summary>
+        /// Tactic moved to another program then update program into integration system
+        /// Created by : Mitesh Vaishnav
+        /// </summary>
+        /// <returns>If success then true else flase</returns>
+        public bool SyncMovedTacticData()
+        {
+            _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
+            _isResultError = false;
+            SetMappingDetails();
+            bool IsInstanceSync = false;
+
+            Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).FirstOrDefault();
+            Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
+            _parentId = planProgram.IntegrationInstanceProgramId;
+            if (string.IsNullOrWhiteSpace(_parentId))
+            {
+                Plan_Campaign planCampaign = planTactic.Plan_Campaign_Program.Plan_Campaign;
+                _parentId = planCampaign.IntegrationInstanceCampaignId;
+                if (string.IsNullOrWhiteSpace(_parentId))
+                {
+                    IntegrationInstancePlanEntityLog instanceLogCampaign = new IntegrationInstancePlanEntityLog();
+                    instanceLogCampaign.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                    instanceLogCampaign.IntegrationInstanceId = _integrationInstanceId;
+                    instanceLogCampaign.EntityId = planCampaign.PlanCampaignId;
+                    instanceLogCampaign.EntityType = EntityType.Campaign.ToString();
+                    instanceLogCampaign.Operation = Operation.Create.ToString();
+                    instanceLogCampaign.SyncTimeStamp = DateTime.Now;
+                    try
+                    {
+                        List<int> campaignIdList = new List<int>() { planCampaign.PlanCampaignId };
+                        var lstCustomFieldsCampaign = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                        if (lstCustomFieldsCampaign.Count > 0)
+                        {
+                            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                        }
+                        _parentId = CreateCampaign(planCampaign);
+                        planCampaign.IntegrationInstanceCampaignId = _parentId;
+                        planCampaign.LastSyncDate = DateTime.Now;
+                        planCampaign.ModifiedDate = DateTime.Now;
+                        planCampaign.ModifiedBy = _userId;
+                        db.Entry(planCampaign).State = EntityState.Modified;
+                        instanceLogCampaign.Status = StatusResult.Success.ToString();
+                    }
+                    catch (SalesforceException e)
+                    {
+                        _isResultError = true;
+                        instanceLogCampaign.Status = StatusResult.Error.ToString();
+                        instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                    }
+                    instanceLogCampaign.CreatedBy = this._userId;
+                    instanceLogCampaign.CreatedDate = DateTime.Now;
+                    db.Entry(instanceLogCampaign).State = EntityState.Added;
+                }
+
+                if (!string.IsNullOrWhiteSpace(_parentId))
+                {
+                    IntegrationInstancePlanEntityLog instanceLogProgram = new IntegrationInstancePlanEntityLog();
+                    instanceLogProgram.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                    instanceLogProgram.IntegrationInstanceId = _integrationInstanceId;
+                    instanceLogProgram.EntityId = planProgram.PlanProgramId;
+                    instanceLogProgram.EntityType = EntityType.Program.ToString();
+                    instanceLogProgram.Operation = Operation.Create.ToString();
+                    instanceLogProgram.SyncTimeStamp = DateTime.Now;
+                    try
+                    {
+                        // Start - Added by Sohel Pathan on 09/12/2014 for PL ticket #995, 996, & 997
+                        List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
+                        var lstCustomFieldsProgram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                        if (lstCustomFieldsProgram.Count > 0)
+                        {
+                            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsProgram).ToDictionary(c => c.Key, c => c.Value);
+                        }
+
+                        // End - Added by Sohel Pathan on 09/12/2014 for PL ticket #995, 996, & 997
+
+                        _parentId = CreateProgram(planProgram);
+                        planProgram.IntegrationInstanceProgramId = _parentId;
+                        planProgram.LastSyncDate = DateTime.Now;
+                        planProgram.ModifiedDate = DateTime.Now;
+                        planProgram.ModifiedBy = _userId;
+                        instanceLogProgram.Status = StatusResult.Success.ToString();
+                    }
+                    catch (SalesforceException e)
+                    {
+                        _isResultError = true;
+                        instanceLogProgram.Status = StatusResult.Error.ToString();
+                        instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                    }
+
+                    instanceLogProgram.CreatedBy = this._userId;
+                    instanceLogProgram.CreatedDate = DateTime.Now;
+                    db.Entry(instanceLogProgram).State = EntityState.Added;
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(_parentId))
+            {
+                IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
+                instanceLogTactic.EntityId = planTactic.PlanTacticId;
+                instanceLogTactic.EntityType = EntityType.Tactic.ToString();
+                instanceLogTactic.Operation = Operation.Create.ToString();
+                instanceLogTactic.SyncTimeStamp = DateTime.Now;
+                try
+                {
+                    Dictionary<string, object> tactic = new Dictionary<string, object>();
+                    tactic.Add(ColumnParentId, _parentId);
+                    bool updateSuccess = _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
+                    if (updateSuccess)
+                    {
+                        planTactic.LastSyncDate = DateTime.Now;
+                        planTactic.ModifiedDate = DateTime.Now;
+                        planTactic.ModifiedBy = _userId;
+                        instanceLogTactic.Status = StatusResult.Success.ToString();
+                    }
+                    else
+                    {
+                        instanceLogTactic.Status = StatusResult.Error.ToString();
+                        instanceLogTactic.ErrorDescription = UnableToUpdate;
+                    }
+                    // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+                }
+                catch (SalesforceException e)
+                {
+                    _isResultError = true;
+                    instanceLogTactic.Status = StatusResult.Error.ToString();
+                    instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                }
+
+                instanceLogTactic.CreatedBy = this._userId;
+                instanceLogTactic.CreatedDate = DateTime.Now;
+                db.Entry(instanceLogTactic).State = EntityState.Added;
+            }
+            return _isResultError;
+        }
+
         private class OpportunityMember
         {
             public string OpportunityId { get; set; }
@@ -619,37 +756,37 @@ namespace Integration.Salesforce
             //// Get Mapping List of SalesForceIntegrationInstanceTactic Ids(CRMIds) based on EloquaIntegrationInstanceTacticID(EloquaId).
             List<CRM_EloquaMapping> lstSalesForceIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
             foreach (int _ModelIntegrationInstanceId in lstEloquaIntegrationInstanceTacticIds.Select(tac => tac.ModelIntegrationInstanceId).Distinct())
+            {
+                try
                 {
-                    try
-                    {
                     Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(_ModelIntegrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
                     foreach (EloquaIntegrationInstanceTactic_Model_Mapping _EloquaTac in lstEloquaIntegrationInstanceTacticIds.Where(_eloqua => _eloqua.ModelIntegrationInstanceId.Equals(_ModelIntegrationInstanceId)))
                     {
                         if (!string.IsNullOrEmpty(_EloquaTac.EloquaIntegrationInstanceTacticId))
                         {
 
-                    Integration.Eloqua.EloquaCampaign objEloqua = new Integration.Eloqua.EloquaCampaign();
+                            Integration.Eloqua.EloquaCampaign objEloqua = new Integration.Eloqua.EloquaCampaign();
 
-                    ////Get SalesForceIntegrationTacticId based on EloquaIntegrationTacticId.
-                    objEloqua = integrationEloquaClient.GetEloquaCampaign(_EloquaTac.EloquaIntegrationInstanceTacticId);
-                    if (objEloqua != null)
-                    {
-                            var _Tactic = lstAllTactics.Where(s => s.IntegrationInstanceTacticId == _EloquaTac.EloquaIntegrationInstanceTacticId).Select(_tac => _tac).FirstOrDefault();
-                        lstSalesForceIntegrationInstanceTacticIds.Add(
-                                                                  new CRM_EloquaMapping
-                                                                  {
-                                                                      CRMId = !string.IsNullOrEmpty(objEloqua.crmId) ? objEloqua.crmId : string.Empty,
-                                                                      EloquaId = _EloquaTac.EloquaIntegrationInstanceTacticId,
-                                                                      PlanTacticId = _Tactic != null ? _Tactic.PlanTacticId : 0,
-                                                                      StartDate = _Tactic != null ? _Tactic.StartDate : (new DateTime()),
-                                                                  });
+                            ////Get SalesForceIntegrationTacticId based on EloquaIntegrationTacticId.
+                            objEloqua = integrationEloquaClient.GetEloquaCampaign(_EloquaTac.EloquaIntegrationInstanceTacticId);
+                            if (objEloqua != null)
+                            {
+                                var _Tactic = lstAllTactics.Where(s => s.IntegrationInstanceTacticId == _EloquaTac.EloquaIntegrationInstanceTacticId).Select(_tac => _tac).FirstOrDefault();
+                                lstSalesForceIntegrationInstanceTacticIds.Add(
+                                                                          new CRM_EloquaMapping
+                                                                          {
+                                                                              CRMId = !string.IsNullOrEmpty(objEloqua.crmId) ? objEloqua.crmId : string.Empty,
+                                                                              EloquaId = _EloquaTac.EloquaIntegrationInstanceTacticId,
+                                                                              PlanTacticId = _Tactic != null ? _Tactic.PlanTacticId : 0,
+                                                                              StartDate = _Tactic != null ? _Tactic.StartDate : (new DateTime()),
+                                                                          });
+                            }
+                        }
                     }
                 }
-                    }
-                }
-                    catch (Exception)
-                    {
-                        continue;
+                catch (Exception)
+                {
+                    continue;
                 }
             }
 
@@ -713,7 +850,7 @@ namespace Integration.Salesforce
                             isDoneFirstPullCW = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).Select(instance => instance.IsFirstPullCW).FirstOrDefault();
                             string opportunityGetQueryWhere = string.Empty;
                             string opportunityGetQuery = string.Empty;
-                            
+
                             string currentDate = DateTime.UtcNow.ToString(Common.DateFormatForSalesforce);
                             string cwsection = Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString();
                             string statusSuccess = StatusResult.Success.ToString();
@@ -732,7 +869,7 @@ namespace Integration.Salesforce
                             {
                                 opportunityGetQueryWhere = " WHERE " + StageName + "= '" + Common.ClosedWon + "' AND " + LastModifiedDate + " < " + currentDate;
                             }
-                            
+
                             string opportunityRoleQuery = "SELECT ContactId,IsPrimary,OpportunityId FROM OpportunityContactRole WHERE OpportunityId IN (SELECT Id FROM Opportunity" + opportunityGetQueryWhere + ")";
 
                             opportunityGetQuery = "SELECT Id," + CampaignId + "," + CloseDate + "," + Amount + ",CreatedDate FROM Opportunity" + opportunityGetQueryWhere;
@@ -747,15 +884,15 @@ namespace Integration.Salesforce
                                 try
                                 {
                                     if (Convert.ToString(jobj[Amount]) != null && Convert.ToString(jobj[CloseDate]) != null)
-                                {
-                                    string campaignid = Convert.ToString(jobj[CampaignId]);
-                                    objOpp.CampaignId = campaignid;
-                                    objOpp.OpportunityId = Convert.ToString(jobj["Id"]);
-                                    objOpp.CloseDate = Convert.ToDateTime(jobj[CloseDate]);
-                                    objOpp.CreatedDate = Convert.ToDateTime(jobj["CreatedDate"]);
-                                    objOpp.Amount = Convert.ToDouble(jobj[Amount]);
-                                    OpportunityMemberListInitial.Add(objOpp);
-                                }
+                                    {
+                                        string campaignid = Convert.ToString(jobj[CampaignId]);
+                                        objOpp.CampaignId = campaignid;
+                                        objOpp.OpportunityId = Convert.ToString(jobj["Id"]);
+                                        objOpp.CloseDate = Convert.ToDateTime(jobj[CloseDate]);
+                                        objOpp.CreatedDate = Convert.ToDateTime(jobj["CreatedDate"]);
+                                        objOpp.Amount = Convert.ToDouble(jobj[Amount]);
+                                        OpportunityMemberListInitial.Add(objOpp);
+                                    }
                                 }
                                 catch (SalesforceException e)
                                 {
@@ -769,7 +906,7 @@ namespace Integration.Salesforce
                                     _ErrorMessage = e.Message;
                                     continue;
                                 }
-                               
+
                             }
                             if (cwRecords.Count > 0)
                             {
@@ -824,14 +961,14 @@ namespace Integration.Salesforce
                                         {
                                             string str = Convert.ToString(jobj[ResponseDate]);
                                             if (Convert.ToString(jobj[ResponseDate]) != "")
-                                        {
-                                            string campaignid = Convert.ToString(jobj[CampaignId]);
-                                        objCampaign.CampaignId = campaignid;
-                                        objCampaign.ContactId = Convert.ToString(jobj["ContactId"]);
-                                            objCampaign.RespondedDate = Convert.ToDateTime(jobj[ResponseDate]);
-                                        ContactCampaignMemberList.Add(objCampaign);
-                                    }
-                                    }
+                                            {
+                                                string campaignid = Convert.ToString(jobj[CampaignId]);
+                                                objCampaign.CampaignId = campaignid;
+                                                objCampaign.ContactId = Convert.ToString(jobj["ContactId"]);
+                                                objCampaign.RespondedDate = Convert.ToDateTime(jobj[ResponseDate]);
+                                                ContactCampaignMemberList.Add(objCampaign);
+                                            }
+                                        }
                                     }
                                     catch (SalesforceException e)
                                     {
@@ -839,7 +976,7 @@ namespace Integration.Salesforce
                                         string TacticId = Convert.ToString(jobj[CampaignId]);
                                         if (TacticId != string.Empty)
                                         {
-                                            
+
                                             //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
                                             var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
                                             if (tactic != null)
@@ -848,20 +985,20 @@ namespace Integration.Salesforce
                                                 _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && (_SalTac.CRMId == TacticId || _SalTac.CRMId == TacticId.Substring(0, 15))).Select(s => s.PlanTacticId).FirstOrDefault();
                                             if (_PlanTacticId != 0)
                                             {
-                                        ErrorFlag = true;
-                                        _ErrorMessage = GetErrorMessage(e);
-                                        IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                        instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-                                        instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                                        instanceTactic.EntityId = _PlanTacticId;
-                                        instanceTactic.EntityType = EntityType.Tactic.ToString();
-                                        instanceTactic.Status = StatusResult.Error.ToString();
-                                        instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
-                                        instanceTactic.SyncTimeStamp = DateTime.Now;
-                                        instanceTactic.CreatedDate = DateTime.Now;
+                                                ErrorFlag = true;
+                                                _ErrorMessage = GetErrorMessage(e);
+                                                IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                                instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                                instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                                                instanceTactic.EntityId = _PlanTacticId;
+                                                instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                                instanceTactic.Status = StatusResult.Error.ToString();
+                                                instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
+                                                instanceTactic.SyncTimeStamp = DateTime.Now;
+                                                instanceTactic.CreatedDate = DateTime.Now;
                                                 instanceTactic.ErrorDescription = Common.CampaignMemberObjectError + GetErrorMessage(e);
-                                        instanceTactic.CreatedBy = _userId;
-                                        db.Entry(instanceTactic).State = EntityState.Added;
+                                                instanceTactic.CreatedBy = _userId;
+                                                db.Entry(instanceTactic).State = EntityState.Added;
                                             }
                                         }
                                         continue;
@@ -872,7 +1009,7 @@ namespace Integration.Salesforce
                                         string TacticId = Convert.ToString(jobj[CampaignId]);
                                         if (TacticId != string.Empty)
                                         {
-                                           
+
                                             //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
                                             var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
                                             if (tactic != null)
@@ -881,20 +1018,20 @@ namespace Integration.Salesforce
                                                 _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && (_SalTac.CRMId == TacticId || _SalTac.CRMId == TacticId.Substring(0, 15))).Select(s => s.PlanTacticId).FirstOrDefault();
                                             if (_PlanTacticId != 0)
                                             {
-                                        ErrorFlag = true;
-                                        _ErrorMessage = e.Message;
-                                        IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                        instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-                                        instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                                        instanceTactic.EntityId = _PlanTacticId;
-                                        instanceTactic.EntityType = EntityType.Tactic.ToString();
-                                        instanceTactic.Status = StatusResult.Error.ToString();
-                                        instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
-                                        instanceTactic.SyncTimeStamp = DateTime.Now;
-                                        instanceTactic.CreatedDate = DateTime.Now;
+                                                ErrorFlag = true;
+                                                _ErrorMessage = e.Message;
+                                                IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                                instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                                instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                                                instanceTactic.EntityId = _PlanTacticId;
+                                                instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                                instanceTactic.Status = StatusResult.Error.ToString();
+                                                instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
+                                                instanceTactic.SyncTimeStamp = DateTime.Now;
+                                                instanceTactic.CreatedDate = DateTime.Now;
                                                 instanceTactic.ErrorDescription = Common.CampaignMemberObjectError + e.Message;
-                                        instanceTactic.CreatedBy = _userId;
-                                        db.Entry(instanceTactic).State = EntityState.Added;
+                                                instanceTactic.CreatedBy = _userId;
+                                                db.Entry(instanceTactic).State = EntityState.Added;
                                             }
                                         }
                                         continue;
@@ -904,64 +1041,64 @@ namespace Integration.Salesforce
 
                                 if (!ErrorFlag)
                                 {
-                                ContactCampaignMemberList = (from element in ContactCampaignMemberList
-                                                             group element by element.ContactId
-                                                                 into groups
-                                                                 select groups.OrderByDescending(p => p.RespondedDate).First()).ToList();
+                                    ContactCampaignMemberList = (from element in ContactCampaignMemberList
+                                                                 group element by element.ContactId
+                                                                     into groups
+                                                                     select groups.OrderByDescending(p => p.RespondedDate).First()).ToList();
 
-                                List<OpportunityMember> OpportunityMemberList = new List<OpportunityMember>();
-                                OpportunityMemberList = (from om in OpportunityMemberListInitial
-                                                         join crm in ContactRoleList on om.OpportunityId equals crm.OpportunityId
-                                                         join ccml in ContactCampaignMemberList on crm.ContactId equals ccml.ContactId
-                                                         where om.CreatedDate >= ccml.RespondedDate && om.Amount != 0
-                                                         select new OpportunityMember
-                                                         {
-                                                             OpportunityId = om.OpportunityId,
-                                                             CampaignId = !AllIntegrationTacticIds.Contains(ccml.CampaignId) ? ccml.CampaignId.Substring(0, 15) : ccml.CampaignId,
-                                                             CloseDate = om.CloseDate,
-                                                             CreatedDate = om.CreatedDate,
-                                                             Amount = om.Amount
-                                                         }).ToList();
+                                    List<OpportunityMember> OpportunityMemberList = new List<OpportunityMember>();
+                                    OpportunityMemberList = (from om in OpportunityMemberListInitial
+                                                             join crm in ContactRoleList on om.OpportunityId equals crm.OpportunityId
+                                                             join ccml in ContactCampaignMemberList on crm.ContactId equals ccml.ContactId
+                                                             where om.CreatedDate >= ccml.RespondedDate && om.Amount != 0
+                                                             select new OpportunityMember
+                                                             {
+                                                                 OpportunityId = om.OpportunityId,
+                                                                 CampaignId = !AllIntegrationTacticIds.Contains(ccml.CampaignId) ? ccml.CampaignId.Substring(0, 15) : ccml.CampaignId,
+                                                                 CloseDate = om.CloseDate,
+                                                                 CreatedDate = om.CreatedDate,
+                                                                 Amount = om.Amount
+                                                             }).ToList();
 
-                            //// Get Tactics from Eloqualist those CRMID value does not null.
-                            List<Plan_Campaign_Program_Tactic> lstCRM_EloquaTactics = (from _Tactic in lstEloquaTactic
-                                                                                       join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
-                                                                                       where _ElqTactic.CRMId != null
-                                                                                       select _Tactic).ToList();
+                                    //// Get Tactics from Eloqualist those CRMID value does not null.
+                                    List<Plan_Campaign_Program_Tactic> lstCRM_EloquaTactics = (from _Tactic in lstEloquaTactic
+                                                                                               join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
+                                                                                               where _ElqTactic.CRMId != null
+                                                                                               select _Tactic).ToList();
 
-                            //// Merge SalesForce & Eloqua Tactic list.
-                            List<Plan_Campaign_Program_Tactic> lstMergedTactics = lstSalesForceTactic;
-                            lstCRM_EloquaTactics.ForEach(_elqTactic => lstMergedTactics.Add(_elqTactic));
-                            lstMergedTactics = lstMergedTactics.Distinct().ToList();
+                                    //// Merge SalesForce & Eloqua Tactic list.
+                                    List<Plan_Campaign_Program_Tactic> lstMergedTactics = lstSalesForceTactic;
+                                    lstCRM_EloquaTactics.ForEach(_elqTactic => lstMergedTactics.Add(_elqTactic));
+                                    lstMergedTactics = lstMergedTactics.Distinct().ToList();
 
-                            if (OpportunityMemberList.Count > 0)
-                            {
-                                var OpportunityMemberListGroup = OpportunityMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.CloseDate.ToString("MM/yyyy") }).Select(cl =>
-                                    new
+                                    if (OpportunityMemberList.Count > 0)
                                     {
-                                        CampaignId = cl.Key.CampaignId,
-                                        TacticId = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null ? (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId) : (lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(s => s.PlanTacticId).FirstOrDefault()),
-                                        Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
-                                        IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year)) || ((lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(_SalTac => _SalTac.StartDate) != null) && (lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(_SalTac => _SalTac.StartDate.Value).FirstOrDefault().Year == Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
-                                        Count = cl.Count(),
-                                        Revenue = cl.Sum(c => c.Amount)
-                                    }).Where(om => om.IsYear).ToList();
+                                        var OpportunityMemberListGroup = OpportunityMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.CloseDate.ToString("MM/yyyy") }).Select(cl =>
+                                            new
+                                            {
+                                                CampaignId = cl.Key.CampaignId,
+                                                TacticId = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null ? (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId) : (lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(s => s.PlanTacticId).FirstOrDefault()),
+                                                Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
+                                                IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year)) || ((lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(_SalTac => _SalTac.StartDate) != null) && (lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(_SalTac => _SalTac.StartDate.Value).FirstOrDefault().Year == Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
+                                                Count = cl.Count(),
+                                                Revenue = cl.Sum(c => c.Amount)
+                                            }).Where(om => om.IsYear).ToList();
 
-                                    var tacticidactual = OpportunityMemberListGroup.Select(opptactic => opptactic.TacticId).Distinct().ToList();
+                                        var tacticidactual = OpportunityMemberListGroup.Select(opptactic => opptactic.TacticId).Distinct().ToList();
 
-                                    List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => tacticidactual.Contains(actual.PlanTacticId) && (actual.StageTitle == Common.StageRevenue || actual.StageTitle == Common.StageCW)).ToList();
+                                        List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => tacticidactual.Contains(actual.PlanTacticId) && (actual.StageTitle == Common.StageRevenue || actual.StageTitle == Common.StageCW)).ToList();
                                         if (!isDoneFirstPullCW)
                                         {
-                                    OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
-                                    db.SaveChanges();
+                                            OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                            db.SaveChanges();
                                         }
 
-                                    lstMergedTactics = lstMergedTactics.Where(lstmerge => tacticidactual.Contains(lstmerge.PlanTacticId)).Distinct().ToList();
-                                foreach (var tactic in lstMergedTactics)
-                                {
-                                    var innerOpportunityMember = OpportunityMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
-                                    foreach (var objOpportunityMember in innerOpportunityMember)
-                                    {
+                                        lstMergedTactics = lstMergedTactics.Where(lstmerge => tacticidactual.Contains(lstmerge.PlanTacticId)).Distinct().ToList();
+                                        foreach (var tactic in lstMergedTactics)
+                                        {
+                                            var innerOpportunityMember = OpportunityMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
+                                            foreach (var objOpportunityMember in innerOpportunityMember)
+                                            {
                                                 var innertacticactualcw = OuteractualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageCW);
                                                 if (innertacticactualcw != null && isDoneFirstPullCW)
                                                 {
@@ -972,14 +1109,14 @@ namespace Integration.Salesforce
                                                 }
                                                 else
                                                 {
-                                        Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                        objPlanTacticActual.PlanTacticId = objOpportunityMember.TacticId;
-                                        objPlanTacticActual.Period = objOpportunityMember.Period;
-                                        objPlanTacticActual.StageTitle = Common.StageCW;
-                                        objPlanTacticActual.Actualvalue = objOpportunityMember.Count;
-                                        objPlanTacticActual.CreatedBy = _userId;
-                                        objPlanTacticActual.CreatedDate = DateTime.Now;
-                                        db.Entry(objPlanTacticActual).State = EntityState.Added;
+                                                    Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                                    objPlanTacticActual.PlanTacticId = objOpportunityMember.TacticId;
+                                                    objPlanTacticActual.Period = objOpportunityMember.Period;
+                                                    objPlanTacticActual.StageTitle = Common.StageCW;
+                                                    objPlanTacticActual.Actualvalue = objOpportunityMember.Count;
+                                                    objPlanTacticActual.CreatedBy = _userId;
+                                                    objPlanTacticActual.CreatedDate = DateTime.Now;
+                                                    db.Entry(objPlanTacticActual).State = EntityState.Added;
                                                 }
 
                                                 var innertacticactualrevenue = OuteractualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageRevenue);
@@ -992,39 +1129,39 @@ namespace Integration.Salesforce
                                                 }
                                                 else
                                                 {
-                                        Plan_Campaign_Program_Tactic_Actual objPlanTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
-                                        objPlanTacticActualRevenue.PlanTacticId = objOpportunityMember.TacticId;
-                                        objPlanTacticActualRevenue.Period = objOpportunityMember.Period;
-                                        objPlanTacticActualRevenue.StageTitle = Common.StageRevenue;
-                                        objPlanTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
-                                        objPlanTacticActualRevenue.CreatedBy = _userId;
-                                        objPlanTacticActualRevenue.CreatedDate = DateTime.Now;
-                                        db.Entry(objPlanTacticActualRevenue).State = EntityState.Added;
-                                    }
+                                                    Plan_Campaign_Program_Tactic_Actual objPlanTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
+                                                    objPlanTacticActualRevenue.PlanTacticId = objOpportunityMember.TacticId;
+                                                    objPlanTacticActualRevenue.Period = objOpportunityMember.Period;
+                                                    objPlanTacticActualRevenue.StageTitle = Common.StageRevenue;
+                                                    objPlanTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
+                                                    objPlanTacticActualRevenue.CreatedBy = _userId;
+                                                    objPlanTacticActualRevenue.CreatedDate = DateTime.Now;
+                                                    db.Entry(objPlanTacticActualRevenue).State = EntityState.Added;
+                                                }
                                             }
 
-                                    tactic.LastSyncDate = DateTime.Now;
-                                    tactic.ModifiedDate = DateTime.Now;
-                                    tactic.ModifiedBy = _userId;
+                                            tactic.LastSyncDate = DateTime.Now;
+                                            tactic.ModifiedDate = DateTime.Now;
+                                            tactic.ModifiedBy = _userId;
 
-                                    IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                    instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-                                    instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                                    instanceTactic.EntityId = tactic.PlanTacticId;
-                                    instanceTactic.EntityType = EntityType.Tactic.ToString();
-                                    instanceTactic.Status = StatusResult.Success.ToString();
-                                    instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
-                                    instanceTactic.SyncTimeStamp = DateTime.Now;
-                                    instanceTactic.CreatedDate = DateTime.Now;
-                                    instanceTactic.CreatedBy = _userId;
-                                    db.Entry(instanceTactic).State = EntityState.Added;
+                                            IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                            instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                            instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                                            instanceTactic.EntityId = tactic.PlanTacticId;
+                                            instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                            instanceTactic.Status = StatusResult.Success.ToString();
+                                            instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
+                                            instanceTactic.SyncTimeStamp = DateTime.Now;
+                                            instanceTactic.CreatedDate = DateTime.Now;
+                                            instanceTactic.CreatedBy = _userId;
+                                            db.Entry(instanceTactic).State = EntityState.Added;
+                                        }
+
+                                    }
                                 }
-                                
-                                }
-                                }
-                            
+
                             }
-                                db.SaveChanges();
+                            db.SaveChanges();
                             if (ErrorFlag)
                             {
                                 _isResultError = true;
@@ -1046,7 +1183,7 @@ namespace Integration.Salesforce
                                         IntegrationInstance integrationInstance = new IntegrationInstance();
                                         integrationInstance = dbinner.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId);
                                     }
-                                    
+
                                 }
                             }
 
@@ -1152,17 +1289,17 @@ namespace Integration.Salesforce
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
-           var clientActivityList = db.Client_Activity.Where(clientActivity=>clientActivity.ClientId==_clientId).ToList();
-           var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
-           var clientApplicationActivityList = (from c in clientActivityList
-                                                join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
-                                                select new
-                                                {
-                                                    Code = ca.Code,
-                                                    ActivityTitle = ca.ActivityTitle,
-                                                    clientId = c.ClientId
-                                                }).Select(c => c).ToList();
-           IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(clientActivity => clientActivity.Code == Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any();
+            var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
+            var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
+            var clientApplicationActivityList = (from c in clientActivityList
+                                                 join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
+                                                 select new
+                                                 {
+                                                     Code = ca.Code,
+                                                     ActivityTitle = ca.ActivityTitle,
+                                                     clientId = c.ClientId
+                                                 }).Select(c => c).ToList();
+            IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(clientActivity => clientActivity.Code == Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any();
 
 
         }
@@ -2243,7 +2380,7 @@ namespace Integration.Salesforce
                     campaign[titleMappedValue] = Common.TruncateName(campaign[titleMappedValue].ToString());
                 }
             }
-            
+
             string campaignId = _client.Create(objectName, campaign);
             return campaignId;
         }
@@ -2367,7 +2504,7 @@ namespace Integration.Salesforce
 
         private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
-            
+
             Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
             if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
             {

@@ -3103,7 +3103,7 @@ namespace RevenuePlanner.Controllers
             {
                 pcp.PlanProgramId,
                 pcp.Title
-            }).OrderBy(pcp=>pcp.Title).ToList();
+            }).OrderBy(pcp => pcp.Title).ToList();
             ViewBag.PlanCampaignList = campaignList;
             ViewBag.CampaignProgramList = programList;
             try
@@ -3552,7 +3552,7 @@ namespace RevenuePlanner.Controllers
                                 // Start - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
                                 if (result > 0)
                                 {
-                                   
+
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
                                     {
@@ -3596,6 +3596,15 @@ namespace RevenuePlanner.Controllers
                                                 string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                             }
+                                        }
+
+                                    }
+                                    if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0 && pcpobj.IsDeployedToIntegration && Common.CheckAfterApprovedStatus(pcpobj.Status))
+                                    {
+                                        if (pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
+                                        {
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(pcpobj.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic, true);
+                                            externalIntegration.Sync();
                                         }
                                     }
                                 }
@@ -6440,12 +6449,12 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult LoadProgramList(string ParentId)
         {
-            int parentCampaignId=Convert.ToInt32(ParentId);
+            int parentCampaignId = Convert.ToInt32(ParentId);
             var programList = db.Plan_Campaign_Program.Where(p => p.IsDeleted.Equals(false) && p.PlanCampaignId == parentCampaignId).Select(p => new
             {
                 p.PlanProgramId,
                 p.Title
-            }).OrderBy(p=>p.Title).ToList();
+            }).OrderBy(p => p.Title).ToList();
             return Json(programList, JsonRequestBehavior.AllowGet);
         }
 

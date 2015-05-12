@@ -67,6 +67,7 @@ namespace Integration
         string _integrationType { get; set; }
         bool _isResultError { get; set; }
         Guid _applicationId { get; set; }
+        bool _isTacticMoved { get; set; }
         private List<SyncError> _lstAllSyncError = new List<SyncError>();
         MRPEntities db = new MRPEntities();
         /// <summary>
@@ -84,12 +85,13 @@ namespace Integration
             {TacticStatus.Complete.ToString(), "Complete"}
         };
 
-        public ExternalIntegration(int id, Guid applicationId, Guid UserId = new Guid(), EntityType entityType = EntityType.IntegrationInstance)
+        public ExternalIntegration(int id, Guid applicationId, Guid UserId = new Guid(), EntityType entityType = EntityType.IntegrationInstance,bool isTacticMoved=false)
         {
             _id = id;
             _userId = UserId;
             _entityType = entityType;
             _applicationId = applicationId;
+            _isTacticMoved = isTacticMoved;
         }
 
         /// <summary>
@@ -225,7 +227,14 @@ namespace Integration
                     IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationSalesforceClient.IsAuthenticated)
                     {
-                        _isResultError = integrationSalesforceClient.SyncData();
+                        if (!_isTacticMoved)
+                        {
+                            _isResultError = integrationSalesforceClient.SyncData();
+                        }
+                        else
+                        {
+                            _isResultError = integrationSalesforceClient.SyncMovedTacticData();
+                        }
                     }
                     else
                     {
