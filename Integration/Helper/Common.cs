@@ -108,7 +108,9 @@ namespace Integration.Helper
             }
             else if (!string.IsNullOrWhiteSpace(integrationInstanceTacticId))
             {
-                return Enums.Mode.Delete;
+                return Enums.Mode.None;
+                /*Commenting out for issue #1322*/
+                //return Enums.Mode.Delete;
             }
             else
             {
