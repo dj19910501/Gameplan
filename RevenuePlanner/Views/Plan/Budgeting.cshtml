@@ -245,76 +245,52 @@
                         }
 
                     }
-                    else if (strExpandType == 'tactic') {
-                        if ($("#hdnBudgetingIsDelete").val() != "true") {
-                            currObj = $('#' + strExpandId).parent();
-                            programDP = $(currObj).parent().attr('data-parent'); //program
-                            campaignDP = $(currObj).parent().parent().attr('data-parent'); //campaign
+                    else if (strExpandType == 'campaign') {
+                        if (currentTab != 'aAllocated') {
+                            strExpand = 'campaignc_' + strExpandId;
                         }
-                        else {
-
-                            if (currentTab != 'aAllocated') {
-                                strExpandId = "#programcp_" + strExpandId;
-                            }
-                            else {
-                                strExpandId = "#program" + strExpandId;
-                            }
-
-                            currObj = $(strExpandId).next();
-                            programDP = $(currObj).attr('data-parent'); //program
-                            campaignDP = $(currObj).parent().attr('data-parent'); //campaign
-                            $("#hdnBudgetingIsDelete").val("false");
-                        }
-
-                        $('#' + campaignDP).css('display', 'block');
-                        $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
-                        $('#' + campaignDP + ' a:first-child').addClass('collapse');
-                        $('#' + programDP).css('display', 'block');
-                        $(".sub[data-parent='" + programDP + "']").css('display', 'block');
-                        $('#' + programDP + ' a:first-child').addClass('collapse');
-
-                        if ('@myView' != "0") {
-                            var mainDP = $(currObj).parent().parent().parent().attr('data-parent'); //audiance
-                            $('#' + mainDP).css('display', 'block');
-                            $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
-                            $('#' + mainDP + ' a:first-child').addClass('collapse');
-                        }
+                        $(".sub[data-parent='" + strExpand + "']").css('display', 'block');
+                        $('#' + strExpand).css('display', 'block');
+                        $('#' + strExpand + ' a:first-child').addClass('collapse');
                     }
                     else if (strExpandType == 'program') {
-                        // Added By : Kalpesh Sharma #907
-                        // When a user makes any change to the inspection window then the tree collapses on its own. The system should maintain the context. 
-                        var ProgramExpand = "#" + strExpandId;
                         if (currentTab != 'aAllocated') {
-                            ProgramExpand = "#cp_" + strExpandId;
+                            strExpand = 'programcp_' + strExpandId;
                         }
+                        if (typeof $('#' + strExpand).parent().attr('data-parent') != 'undefined') {
+                            $('#' + strExpand).parent().css('display', 'block');
 
-                        if ($("#hdnBudgetingIsDelete").val() != "true") {
-                            currObj = $(ProgramExpand).parent();
-                            campaignDP = $(currObj).parent().attr('data-parent'); //campaign
+                            campaignDP = $('#' + strExpand).parent().attr('data-parent');
+                            $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
+                            $('#' + campaignDP).css('display', 'block');
+                            $('#' + campaignDP + ' a:first-child').addClass('collapse');
                         }
-                        else {
-                            if (currentTab != 'aAllocated') {
-                                strExpandId = "#campaignc_" + strExpandId;
-                            }
-                            else {
-                                strExpandId = "#campaign" + strExpandId;
-                            }
-
-                            currObj = $(strExpandId).next();
-                            campaignDP = $(currObj).attr('data-parent');
-                            $("#hdnBudgetingIsDelete").val("false");
+                        $(".sub[data-parent='" + strExpand + "']").css('display', 'block');
+                        $('#' + strExpand).css('display', 'block');
+                        $('#' + strExpand + ' a:first-child').addClass('collapse');
+                       
+                    }
+                    else if (strExpandType == 'tactic') {
+                        if (currentTab != 'aAllocated') {
+                            strExpand = 'tacticcpt_' + strExpandId;
                         }
-
-                        $('#' + campaignDP).css('display', 'block');
-                        $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
-                        $('#' + campaignDP + ' a:first-child').addClass('collapse');
-
-                        if ('@myView' != "0") {
-                            var mainDP = $(currObj).parent().parent().attr('data-parent'); //audiance
-                            $('#' + mainDP).css('display', 'block');
-                            $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
-                            $('#' + mainDP + ' a:first-child').addClass('collapse');
+                        var prgm = $('#' + strExpand).parent().attr('data-parent');
+                        var cmgn = $('#' + prgm).parent().attr('data-parent');
+                        if (typeof cmgn != 'undefined') {
+                            $(".sub[data-parent='" + cmgn + "']").css('display', 'block');
+                            $('#' + cmgn).css('display', 'block');
+                            $('#' + cmgn + ' a:first-child').addClass('collapse');
                         }
+                        if (typeof prgm != 'undefined') {
+                            $('#' + strExpand).parent().css('display', 'block');
+                            $(".sub[data-parent='" + prgm + "']").css('display', 'block');
+                            $('#' + prgm).css('display', 'block');
+                            $('#' + prgm + ' a:first-child').addClass('collapse');
+                        }
+                        $(".sub[data-parent='" + strExpand + "']").css('display', 'block');
+                        $('#' + strExpand).css('display', 'block');
+                        $('#' + strExpand + ' a:first-child').addClass('collapse');
+
                     }
        // } removed by mitesh vaishnav for make expand functionality working in planned and actual tab
     }
@@ -344,7 +320,7 @@
             TabLoad(currentTab);
         });
 
-        function TabLoad(sender) {
+    function TabLoad(sender) {
             currentTab = sender;
             $("#hdnBudgetingCurrentTab").val(currentTab);
             $("#hdnBudgetingCurrentPlanId").val(CurrentPlanId);

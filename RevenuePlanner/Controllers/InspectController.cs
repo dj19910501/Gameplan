@@ -7937,7 +7937,7 @@ namespace RevenuePlanner.Controllers
 
                         string expand = CloneType.ToLower().Replace(" ", "");
                         if (expand == "campaign")
-                            return Json(new { IsSuccess = true, type = CalledFromBudget, Id = rtResult, msg = strMessage });
+                            return Json(new { IsSuccess = true, type = CalledFromBudget, Id = rtResult, expand = expand + rtResult.ToString(), msg = strMessage });
                         else
                             return Json(new { IsSuccess = true, type = CalledFromBudget, Id = rtResult, expand = expand + rtResult.ToString(), msg = strMessage });
                     }
@@ -8171,15 +8171,15 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (IsProgram)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "program" + cid.ToString() });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "campaign" + cid.ToString() });
                                 }
                                 else if (IsTactic)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "tactic" + pid.ToString() });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "program" + pid.ToString() });
                                 }
                                 else if (IsLineItem)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "lineitem" + tid.ToString() });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "tactic" + tid.ToString() });
                                 }
                             }
                             else if (IsIndex)

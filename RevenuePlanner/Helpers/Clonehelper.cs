@@ -324,6 +324,7 @@ namespace RevenuePlanner.Helpers
                     db.Plan_Campaign.Add(objPlanCampaign);
                     db.SaveChanges();
                     var PlanCampaignId = objPlanCampaign.PlanCampaignId;
+                    HttpContext.Current.Session["CampaignID"] = PlanCampaignId;
                     ////Start Added by Mitesh Vaishnav for PL ticket #718
                     ////cloning custom field values for particular campaign,program of particular campaign and tactic of particular program
                     string entityTypeCampaign = Enums.EntityType.Campaign.ToString();
@@ -448,7 +449,7 @@ namespace RevenuePlanner.Helpers
                     db.SaveChanges();
 
                     int PlanProgramId = objPlanCampaignPrograms.PlanProgramId;
-
+                    HttpContext.Current.Session["ProgramID"] = PlanProgramId;
                     ////Start Added by Mitesh Vaishnav for PL ticket #719
                     ////cloning custom field values for particular program and tactic of particular program
                     string entityTypeProgram = Enums.EntityType.Program.ToString();
@@ -544,7 +545,7 @@ namespace RevenuePlanner.Helpers
                 db.SaveChanges();
 
                 int planTacticId = objPlanCampaignProgramTactic.PlanTacticId;
-
+                HttpContext.Current.Session["TacticID"] = planTacticId;
                 ////Start Added by Mitesh Vaishnav for PL ticket #720
                 ////cloning custom field values for particular tactic.
                 string entityTypeTactic = Enums.EntityType.Tactic.ToString();
