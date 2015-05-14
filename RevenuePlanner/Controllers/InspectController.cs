@@ -6449,7 +6449,11 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult LoadProgramList(string ParentId)
         {
-            int parentCampaignId = Convert.ToInt32(ParentId);
+            int parentCampaignId=0;
+            if (!string.IsNullOrEmpty(ParentId))
+            {
+                parentCampaignId = Convert.ToInt32(ParentId);
+            }
             var programList = db.Plan_Campaign_Program.Where(p => p.IsDeleted.Equals(false) && p.PlanCampaignId == parentCampaignId).Select(p => new
             {
                 p.PlanProgramId,
