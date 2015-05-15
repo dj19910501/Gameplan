@@ -8917,6 +8917,10 @@ a:hover, a:focus {
             white-space: nowrap; /*text-overflow:ellipsis; overflow:hidden;*/
         }
 
+    .budget-table table tbody.column1 tr {
+        display: table-row;
+    }
+
 tbody.column1 {
     width: 20%;
     max-width: 20%;
@@ -12892,7 +12896,7 @@ div.clue-bottom-default .cluetip-arrows {
             background-color: #f8f7f7;
         }
 
-        .top-revenue-table table td:nth-child(2),top-revenue-table table td:nth-child(3),top-revenue-table table td:nth-child(4) {
+        .top-revenue-table table td:nth-child(2), top-revenue-table table td:nth-child(3), top-revenue-table table td:nth-child(4) {
             text-align: right !important;
         }
 
@@ -13810,12 +13814,11 @@ div.clue-bottom-default .cluetip-arrows {
     border-radius: 4px;
     font-size: 13px;
 }
+
 #DivsessionWarning {
-height:278px;
-width:360px;
-z-index:1000000;
-
-
+    height: 278px;
+    width: 360px;
+    z-index: 1000000;
 }
 
 .warningTimer {
