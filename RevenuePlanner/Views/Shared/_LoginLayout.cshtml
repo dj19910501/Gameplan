@@ -17,8 +17,17 @@
 
     @Scripts.Render("~/bundles/GetJSForLogin")
             <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
-
-
+    <!-- Hotjar -->
+    <script>
+        (function (f, b) {
+            var c;
+            f.hj = f.hj || function () { (f.hj.q = f.hj.q || []).push(arguments) };
+            f._hjSettings = { hjid: 14175, hjsv: 3 };
+            c = b.createElement("script"); c.async = 1;
+            c.src = "//static.hotjar.com/c/hotjar-14175.js?sv=3";
+            b.getElementsByTagName("head")[0].appendChild(c);
+        })(window, document);
+</script> 
 </head>
 <body class="gradient">
     @* Start - Added by :- Sohel Pathan on 22/05/2014 for PL #469 *@

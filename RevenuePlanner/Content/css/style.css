@@ -12892,7 +12892,7 @@ div.clue-bottom-default .cluetip-arrows {
             background-color: #f8f7f7;
         }
 
-        .top-revenue-table table td:nth-child(2), td:nth-child(3), td:nth-child(4) {
+        .top-revenue-table table td:nth-child(2),top-revenue-table table td:nth-child(3),top-revenue-table table td:nth-child(4) {
             text-align: right !important;
         }
 
