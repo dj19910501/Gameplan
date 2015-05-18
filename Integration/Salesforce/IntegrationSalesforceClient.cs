@@ -582,7 +582,19 @@ namespace Integration.Salesforce
                         var lstCustomFieldsCampaign = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
                         if (lstCustomFieldsCampaign.Count > 0)
                         {
-                            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                            if (_mappingCustomFields != null)
+                            {
+                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                            }
+                            else
+                            {
+                                //lstCustomFieldsCampaign.ToList().ForEach(c=>_mappingCustomFields.Add(c.Key,c.Value));
+                                _mappingCustomFields = new Dictionary<string, string>();
+                                foreach (var item in lstCustomFieldsCampaign)
+                                {
+                                    _mappingCustomFields.Add(item.Key.ToString(), item.Value.ToString());
+                                }
+                            }
                         }
                         _parentId = CreateCampaign(planCampaign);
                         planCampaign.IntegrationInstanceCampaignId = _parentId;
@@ -619,7 +631,18 @@ namespace Integration.Salesforce
                         var lstCustomFieldsProgram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
                         if (lstCustomFieldsProgram.Count > 0)
                         {
+                            if (_mappingCustomFields != null)
+                            {
                             _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsProgram).ToDictionary(c => c.Key, c => c.Value);
+                            }
+                            else{
+                                //lstCustomFieldsProgram.ToList().ForEach(c=>_mappingCustomFields.Add(c.Key,c.Value));
+                                _mappingCustomFields = new Dictionary<string, string>();
+                                foreach (var item in lstCustomFieldsProgram)
+                                {
+                                    _mappingCustomFields.Add(item.Key.ToString(), item.Value.ToString());
+                                }
+                            }
                         }
 
                         // End - Added by Sohel Pathan on 09/12/2014 for PL ticket #995, 996, & 997
