@@ -3602,7 +3602,7 @@ namespace RevenuePlanner.Controllers
                                         }
 
                                     }
-                                    if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0 && pcpobj.IsDeployedToIntegration && Common.CheckAfterApprovedStatus(pcpobj.Status))
+                                    if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0)
                                     {
                                         if (pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
                                         {
@@ -3613,7 +3613,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                     if (oldProgramId > 0)
                                     {
-                                        var actionSuffix = "From " + oldProgramTitle + " to " + pcpobj.Plan_Campaign_Program.Title;
+                                        var actionSuffix = oldProgramTitle + " to " + pcpobj.Plan_Campaign_Program.Title;
                                         Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix);
                                     }
                                 }
