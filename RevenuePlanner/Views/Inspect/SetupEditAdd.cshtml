@@ -118,7 +118,7 @@
                     @if (IsTackticAddEdit && !isCreated)
                     {
                        
-                            @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)ViewBag.PlanCampaignList, "PlanCampaignId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlcampaign", label = "Campaigns" })
+                            @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)ViewBag.PlanCampaignList, "PlanCampaignId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlcampaign", label = "Parent Campaign" })
                        
                     }
                     else
@@ -132,7 +132,7 @@
                     @if (IsTackticAddEdit && !isCreated)
                     {
                         <span style="min-width: 100%; position: relative;">
-                            @Html.DropDownListFor(model => model.PlanProgramId, new SelectList((System.Collections.IEnumerable)ViewBag.CampaignProgramList, "PlanProgramId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlProgram", label = "Programs" })
+                            @Html.DropDownListFor(model => model.PlanProgramId, new SelectList((System.Collections.IEnumerable)ViewBag.CampaignProgramList, "PlanProgramId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlProgram", label = "Parent Program" })
                         </span>
                     }
                     else
