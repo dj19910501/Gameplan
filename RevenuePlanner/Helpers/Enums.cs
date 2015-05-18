@@ -490,7 +490,8 @@ namespace RevenuePlanner.Helpers
             published,
             advanced,
             benchmarked,
-            created
+            created,
+            moved
         }
 
         public enum ChangeLog_ComponentType

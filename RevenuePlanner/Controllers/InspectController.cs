@@ -3356,6 +3356,7 @@ namespace RevenuePlanner.Controllers
                                 bool isOwner = false;
                                 string status = string.Empty;
                                 int oldProgramId = 0;
+                                string oldProgramTitle="";
                                 int oldCampaignId = 0;
                                 #endregion
                                 //Start - Added by Mitesh Vaishnav for PL ticket #1137
@@ -3378,6 +3379,7 @@ namespace RevenuePlanner.Controllers
                                 if (pcpobj.PlanProgramId != form.PlanProgramId)
                                 {
                                     oldProgramId = pcpobj.PlanProgramId;
+                                    oldProgramTitle=pcpobj.Plan_Campaign_Program.Title;
                                     oldCampaignId = pcpobj.Plan_Campaign_Program.PlanCampaignId;
                                     pcpobj.PlanProgramId = form.PlanProgramId;
                                     db.Entry(pcpobj).State = EntityState.Modified;
@@ -3541,6 +3543,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                                 }
+
                                 if (isReSubmission && Common.CheckAfterApprovedStatus(status))
                                 {
                                     pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
@@ -3605,7 +3608,13 @@ namespace RevenuePlanner.Controllers
                                         {
                                             ExternalIntegration externalIntegration = new ExternalIntegration(pcpobj.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic, true);
                                             externalIntegration.Sync();
+                                           
                                         }
+                                    }
+                                    if (oldProgramId > 0)
+                                    {
+                                        var actionSuffix = "From " + oldProgramTitle + " to " + pcpobj.Plan_Campaign_Program.Title;
+                                        Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix);
                                     }
                                 }
                                 // End - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
