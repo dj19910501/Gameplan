@@ -12416,7 +12416,10 @@ div.clue-bottom-default .cluetip-arrows {
     position: absolute;
     top: 0px;
     right: 0px;
-    cursor: pointer;
+    /*cursor: pointer;*/
+}
+.clickme.orange-corner-budget {
+cursor:pointer;
 }
 
 .red-corner-budget {
@@ -12428,9 +12431,11 @@ div.clue-bottom-default .cluetip-arrows {
     top: 0px;
     right: 0px;
     display: none;
-    cursor: pointer;
+    /*cursor: pointer;*/
 }
-
+.clickme.red-corner-budget {
+cursor:pointer;
+}
 .blue-corner-budget {
     /*border-right: 13px solid #3FA9F5;
     border-bottom: 13px solid transparent;
