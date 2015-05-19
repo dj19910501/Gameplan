@@ -523,7 +523,7 @@ namespace BDSService
         /// <returns>Returns details of specific user.</returns>
         public BDSEntities.User GetUserDetails(string userEmail)
         {
-            User user = db.Users.Where(varU => varU.Email == userEmail && varU.IsDeleted == false).SingleOrDefault();
+            User user = db.Users.Where(varU => varU.Email == userEmail && varU.IsDeleted == false).FirstOrDefault();
             if (user != null)
             {
                 BDSEntities.User userObj = new BDSEntities.User();
