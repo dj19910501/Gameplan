@@ -3602,20 +3602,7 @@ namespace RevenuePlanner.Controllers
                                         }
 
                                     }
-                                    if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0)
-                                    {
-                                        if (pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
-                                        {
-                                            ExternalIntegration externalIntegration = new ExternalIntegration(pcpobj.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic, true);
-                                            externalIntegration.Sync();
-                                           
-                                        }
-                                    }
-                                    if (oldProgramId > 0)
-                                    {
-                                        var actionSuffix = oldProgramTitle + " to " + pcpobj.Plan_Campaign_Program.Title;
-                                        Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix);
-                                    }
+                                   
                                 }
                                 // End - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
                                 // Start Added by dharmraj for ticket #644
@@ -3690,6 +3677,22 @@ namespace RevenuePlanner.Controllers
 
                                 if (result >= 1)
                                 {
+                                    //// Start - Added by :- Mitesh Vaishnav on 19/05/2015 for PL ticket #546
+                                    if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0)
+                                    {
+                                        if (pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
+                                        {
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(pcpobj.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic, true);
+                                            externalIntegration.Sync();
+
+                                        }
+                                    }
+                                    if (oldProgramId > 0)
+                                    {
+                                        var actionSuffix = oldProgramTitle + " to " + pcpobj.Plan_Campaign_Program.Title;
+                                        Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix);
+                                    }
+                                    //// End - Added by :- Mitesh Vaishnav on 19/05/2015 for PL ticket #546
                                     //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                     Common.ChangeProgramStatus(pcpobj.PlanProgramId);
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == pcpobj.PlanProgramId).Select(program => program.PlanCampaignId).Single();
