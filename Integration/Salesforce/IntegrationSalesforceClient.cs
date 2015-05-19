@@ -563,8 +563,6 @@ namespace Integration.Salesforce
             bool IsInstanceSync = false;
 
             Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).FirstOrDefault();
-            List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
-            _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
             Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
             _parentId = planProgram.IntegrationInstanceProgramId;
             if (string.IsNullOrWhiteSpace(_parentId))
@@ -681,16 +679,7 @@ namespace Integration.Salesforce
                 instanceLogTactic.SyncTimeStamp = DateTime.Now;
                 try
                 {
-                    Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
-                    if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
-                    {
-                        string titleMappedValue = _mappingTactic["Title"].ToString();
-
-                        if (tactic.ContainsKey(titleMappedValue))
-                        {
-                            tactic[titleMappedValue] = Common.TruncateName(planTactic.TacticCustomName.ToString());
-                        }
-                    }
+                    Dictionary<string, object> tactic = new Dictionary<string, object>();
                     tactic.Add(ColumnParentId, _parentId);
                     bool updateSuccess = _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
                     if (updateSuccess)
