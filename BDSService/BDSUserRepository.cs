@@ -53,7 +53,7 @@ namespace BDSService
                     BDSEntities.User userEntity = new BDSEntities.User();
                     userEntity.UserId = user.UserId;
                     userEntity.ClientId = user.ClientId;
-                    userEntity.Client = lstClient.FirstOrDefault(c => c.ClientId == user.ClientId).Name; //db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
+                    userEntity.Client = lstClient.Where(c => c.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault(); //db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault(); 
                     userEntity.DisplayName = user.DisplayName;
                     userEntity.Email = user.Email;
                     userEntity.FirstName = user.FirstName;
@@ -61,9 +61,9 @@ namespace BDSService
                     userEntity.LastName = user.LastName;
                     userEntity.Password = user.Password;
                     userEntity.ProfilePhoto = user.ProfilePhoto;
-                    userEntity.RoleId = lstUserApplication.FirstOrDefault(u => u.UserId == user.UserId).RoleId; //db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
-                    userEntity.RoleCode = lstRole.FirstOrDefault(rl => rl.RoleId == userEntity.RoleId).Code; //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
-                    userEntity.RoleTitle = lstRole.FirstOrDefault(rl => rl.RoleId == userEntity.RoleId).Title; //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
+                    userEntity.RoleId = lstUserApplication.Where(u => u.UserId == user.UserId).Select(ua => ua.RoleId).FirstOrDefault(); //db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
+                    userEntity.RoleCode = lstRole.Where(rl => rl.RoleId == userEntity.RoleId).Select(rl => rl.Code).FirstOrDefault(); //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
+                    userEntity.RoleTitle = lstRole.Where(rl => rl.RoleId == userEntity.RoleId).Select(rl => rl.Title).FirstOrDefault(); //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
 
                     //Start Manoj 08Jul2014 PL # 34 (Measure)
                     // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
@@ -261,9 +261,18 @@ namespace BDSService
                 //End PL#861 New User's Login Issues Manoj 22Oct2014
 
                 //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                var objRole = db.Roles.FirstOrDefault(rl => rl.RoleId == userObj.RoleId && rl.ClientId == userObj.ClientId);
-                userObj.RoleCode = objRole.Code; //db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Code).FirstOrDefault();
-                userObj.RoleTitle = objRole.Title; //db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Title).FirstOrDefault();
+                var objRole = db.Roles.Where(rl => rl.RoleId == userObj.RoleId && rl.ClientId == userObj.ClientId).FirstOrDefault();
+                if (objRole != null)
+                {
+                    userObj.RoleCode = objRole.Code; //db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Code).FirstOrDefault(); 
+                    userObj.RoleTitle = objRole.Title; //db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Title).FirstOrDefault(); 
+                }
+                else
+                {
+                    userObj.RoleCode = string.Empty;
+                    userObj.RoleTitle = string.Empty;
+                }
+
                 userObj.SecurityQuestionId = user.SecurityQuestionId;
                 userObj.SecurityQuestion = db.SecurityQuestions.Where(sq => sq.SecurityQuestionId == user.SecurityQuestionId).Select(s => s.SecurityQuestion1).FirstOrDefault();
                 userObj.Answer = user.Answer;
@@ -515,7 +524,7 @@ namespace BDSService
         /// <returns>Returns details of specific user.</returns>
         public BDSEntities.User GetUserDetails(string userEmail)
         {
-            User user = db.Users.FirstOrDefault(varU => varU.Email == userEmail && varU.IsDeleted == false);
+            User user = db.Users.Where(varU => varU.Email == userEmail && varU.IsDeleted == false).FirstOrDefault(); 
             if (user != null)
             {
                 BDSEntities.User userObj = new BDSEntities.User();
@@ -2702,7 +2711,7 @@ namespace BDSService
         /// <param name="userId">User ID</param>
         /// <param name="clientId">Client ID</param>
         /// <returns>Returns 1 if Succcess, otherwise 0</returns>
-        public int SetDefaultRightsForDababase(Guid userId,Guid clientId)
+        public int SetDefaultRightsForDababase(Guid userId, Guid clientId)
         {
             try
             {
