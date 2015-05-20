@@ -290,6 +290,8 @@
     <Content Include="Content\images\add-icon-blue.png" />
     <Content Include="Content\images\add-icon-white.png" />
     <Content Include="Content\images\add-large.png" />
+    <Content Include="Content\images\add-new-icon-white.png" />
+    <Content Include="Content\images\add-new-icon.png" />
     <Content Include="Content\images\add-small.png" />
     <Content Include="Content\images\ajax-loader.gif" />
     <Content Include="Content\images\apple-touch-icon-114-precomposed.png" />
@@ -357,6 +359,8 @@
     <Content Include="Content\images\close-x-big.png" />
     <Content Include="Content\images\close-x.png" />
     <Content Include="Content\images\comment_icon.png" />
+    <Content Include="Content\images\Copy-icon-white.png" />
+    <Content Include="Content\images\Copy-icon.png" />
     <Content Include="Content\images\copy.png" />
     <Content Include="Content\images\cross.png" />
     <Content Include="Content\images\d.png" />
@@ -439,6 +443,8 @@
     <Content Include="Content\images\r.png" />
     <Content Include="Content\images\red-arrow-down.png" />
     <Content Include="Content\images\red-row.png" />
+    <Content Include="Content\images\Remove-icon-white.png" />
+    <Content Include="Content\images\Remove-icon.png" />
     <Content Include="Content\images\requests-logo.png" />
     <Content Include="Content\images\round-plus.png" />
     <Content Include="Content\images\select2-spinner.gif" />

@@ -1318,6 +1318,12 @@ body {
     min-width: 390px;
 }
 
+/*Added By Komal Rawal for #1131*/
+.width540 {
+    min-width: 540px;
+}
+
+
 .width75 {
     min-width: 75px;
 }
@@ -3927,14 +3933,25 @@ span.arrow-down-results-icon {
     Accordion Campaign 
 -----------------------------*/
 .add-icon {
-    visibility: hidden;
-    background: url("../images/add-icon-blue.png") no-repeat;
-    width: 16px;
-    height: 16px;
+    /*visibility: hidden;*/
+    background: url("../images/add-new-icon.png") no-repeat;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    margin-right: 15px;
+    margin-right: 25px;
     margin-top: 15px;
     float: right;
+}
+
+.add-icon-old {
+    background: rgba(0, 0, 0, 0) url("../images/add-icon-blue.png") no-repeat scroll 0 0;
+    cursor: pointer;
+    float: right;
+    height: 16px;
+    margin-right: 15px;
+    margin-top: 15px;
+    visibility: hidden;
+    width: 16px;
 }
 
 .accordion-campaign {
@@ -3968,7 +3985,7 @@ span.arrow-down-results-icon {
                 background-color: #f0be29;
             }
 
-            .accordion-campaign a.accordion-toggle:hover .add-icon {
+            .accordion-campaign a.accordion-toggle:hover .add-icon-old {
                 visibility: visible;
             }
 
@@ -4050,25 +4067,168 @@ span.arrow-down-results-icon {
 }
 
 input.delete-icon + span, span.delete-tactic, .delete-temp-program, .delete-program {
-    background: url("../images/delete-icon.png") no-repeat;
-    width: 15px;
-    height: 15px;
+    background: url("../images/Remove-icon.png") no-repeat; /*Modified for #1131*/
+    width: 24px;
+    height: 24px;
     display: block;
     cursor: pointer;
     float: right;
     margin-top: 6px;
 }
 
+.delete-program-old {
+    left: 3px;
+    position: absolute;
+    top: 9px;
+    visibility: hidden;
+    background: rgba(0, 0, 0, 0) url("../images/delete-icon.png") no-repeat scroll 0 0;
+    cursor: pointer;
+    display: block;
+    float: right;
+    height: 15px;
+    margin-top: 6px;
+    width: 15px;
+}
+
 .delete-Improvement {
-    background: url("../images/gridCheckbox-icon.png") no-repeat;
+    background: url("../images/Remove-icon.png") no-repeat;
     width: 15px;
     height: 15px;
     display: block;
     cursor: pointer;
     float: right;
-    margin-top: 6px;
-    margin-left: 10px;
+    margin-top: 15px;
+    /*margin-left: 10px;*/
 }
+
+.delete-Improvement-old {
+    background: rgba(0, 0, 0, 0) url("../images/gridCheckbox-icon.png") no-repeat scroll 0 0;
+    cursor: pointer;
+    display: block;
+    float: right;
+    height: 15px;
+    margin-left: 10px;
+    margin-top: 6px;
+    width: 15px;
+    left: 3px;
+    position: absolute;
+    top: 9px;
+    visibility: hidden;
+}
+
+/*Added By komal Rawal for #1131*/
+
+#table_baseline tbody tr td span.duplicate-icon:hover {
+    background-color: #2384b8;
+    background-image: url("../images/Copy-icon-white.png");
+    background-position: 5px 5px !important;
+    background-size: 14px auto;
+    border-radius: 19px;
+    height: 24px;
+    margin: 2px 4px 4px 0;
+    width: 24px;
+}
+
+#table_baseline tbody tr td span.add-icon:hover {
+    background-color: #2384b8;
+    background-image: url("../images/add-new-icon-white.png");
+    background-position: 6px 4px !important;
+    background-size: auto auto;
+    border-radius: 19px;
+    height: 23px;
+    margin: 3px 11px 0 -7px;
+    width: 24px;
+}
+
+#table_baseline tbody tr td span.delete-temp-program:hover {
+    background-color: #c1272d;
+    background-image: url("../images/Remove-icon-white.png");
+    background-position: 6px 6px !important;
+    background-size: 12px auto;
+    border-radius: 19px;
+    height: 24px;
+    margin: 2px 3px 1px;
+    width: 25px;
+}
+
+.add-icon:hover {
+    background-color: #2384b8;
+    background-image: url("../images/add-new-icon-white.png");
+    background-position: 6px 4px !important;
+    background-size: 14px auto;
+    border-radius: 19px;
+    height: 23px;
+    margin: 10px 28px 0 0;
+    width: 22px;
+}
+
+#campaignAccordion span.duplicate-icon-campaignCopy:hover {
+    background-color: #2384b8;
+    background-image: url("../images/Copy-icon-white.png");
+    background-position: 5px 5px !important;
+    background-size: 13px auto;
+    border-radius: 19px;
+    height: 24px;
+    margin: 10px 7px 0;
+    width: 25px;
+}
+
+#campaignAccordion span.duplicate-icon-ProgramCopy:hover {
+    background-color: #2384b8;
+    background-image: url("../images/Copy-icon-white.png");
+    background-position: 5px 5px !important;
+    background-size: 13px auto;
+    border-radius: 19px;
+    height: 24px;
+    margin: 10px 7px 0;
+    width: 25px;
+}
+
+#campaignAccordion span.duplicate-icon-TacticCopy:hover {
+    background-color: #2384B8;
+    background-image: url("../images/Copy-icon-white.png");
+    background-position: 5px 4px !important;
+    background-size: 9px auto;
+    border-radius: 19px;
+    height: 18px;
+    width: 19px;
+}
+
+.lineitem-level span.duplicate-icon-LineItemCopy:hover {
+    background-color: #2384B8;
+    background-image: url("../images/Copy-icon-white.png");
+    background-position: 5px 4px !important;
+    background-size: 9px auto;
+    border-radius: 19px;
+    height: 18px;
+    width: 19px;
+}
+
+.delete-program:hover {
+    background-color: #c1272d;
+    background-image: url("../images/Remove-icon-white.png");
+    background-position: 6px 6px !important;
+    background-size: 12px auto;
+    border-radius: 19px;
+    height: 24px;
+    margin: 2px 0 0;
+    width: 24px;
+}
+
+.width121px {
+    width: 121px !important;
+}
+
+.delete-Improvement:hover {
+    background-color: #C1272D;
+    background-image: url("../images/Remove-icon-white.png");
+    background-position: 5px 4px !important;
+    background-size: 9px auto;
+    border-radius: 19px;
+    height: 18px;
+    width: 19px;
+}
+/*End*/
 
 input.delete-icon + span:hover, span.delete-tactic:hover, .delete-temp-program:hover, .delete-program:hover {
     background-position: -15px 0;
@@ -4115,17 +4275,17 @@ span.link-blue, a.link-blue {
 }
 
 .delete-program {
-    left: 3px;
+    right: 3px;
     position: absolute;
     top: 9px;
-    visibility: hidden;
+    /*visibility: hidden;*/
 }
 
 .delete-Improvement {
     left: 3px;
-    position: absolute;
+    /*position: absolute;*/
     top: 9px;
-    visibility: hidden;
+    /*visibility: hidden;*/
 }
 
 .program-level a.accordion-toggle:hover .delete-program {
@@ -6589,11 +6749,11 @@ span.left-arrow {
     TFS Bug 255 : Plan Campaign screen - Add delete icon for tactic and campaign in the grid
     CSS changes provide by Kapil and add by Nirav shah on 13 feb 2014
     */
-.accordion-campaign .accordion-header .accordion-toggle:hover .delete-program {
+.accordion-campaign .accordion-header .accordion-toggle:hover .delete-program-old {
     visibility: visible;
 }
 
-.accordion-campaign .accordion-header .accordion-toggle:hover .delete-Improvement {
+.accordion-campaign .accordion-header .accordion-toggle:hover .delete-Improvement-old {
     visibility: visible;
 }
 
@@ -6613,7 +6773,7 @@ span.left-arrow {
     float: right;
     /*margin-right: 10px;*/ /*commented by dharmraj #452*/
     margin-left: 7px;
-    visibility: hidden;
+    /*visibility: hidden;*/ /*commented by Komal #1131*/
 }
 
 /*Added by Mitesh Vaishnav for internal review point - If delete button not shown on plan selector than alignment is not proper*/
@@ -6625,7 +6785,7 @@ span.left-arrow {
 }
 /*End - Added by Mitesh Vaishnav*/
 
-input.delete-icon + span:hover, span.delete-tactic:hover, .delete-temp-program:hover, .delete-program:hover, .delete-Improvement:hover {
+input.delete-icon + span:hover, span.delete-tactic:hover, .delete-temp-program:hover, .delete-program:hover, .delete-Improvement:hover, .delete-program-old:hover, .delete-Improvement-old:hover {
     background-position: -15px 0;
 }
 
@@ -6640,13 +6800,26 @@ input.delete-icon + span:hover, span.delete-tactic:hover, .delete-temp-program:h
     background: url("../images/edit-icon-dark.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
     cursor: pointer;
     visibility: visible;
-    float: right;
+    float: left;
     height: 15px;
     margin-top: 6px;
     width: 15px;
 }
 
 /*end dharmraj changes*/
+
+/*Added By komal Rawal for #1131*/
+.edit-icon-dark {
+    background: url("../images/edit-icon-dark.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
+    cursor: pointer;
+    visibility: visible;
+    float: right;
+    height: 24px;
+    margin-top: 16px;
+    margin-left: 6px;
+    width: 24px;
+}
+/*End*/
 
 #sidebar {
     background: #E9E9E9;
@@ -8283,19 +8456,33 @@ input.icon-check-blue {
 
 /*Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*/
 #table_baseline tbody tr td span.duplicate-icon {
-    visibility: hidden;
-    background: url("../images/duplicate_icon.png") no-repeat;
-    width: 16px;
-    height: 16px;
+    /*visibility: hidden;*/
+    background: url("../images/Copy-icon.png") no-repeat;
+    width: 24px;
+    height: 24px;
     display: block;
-    float: left;
-    margin-top: 3px;
-    margin-left: 15px;
+    float: right;
+    margin-top: 6px;
+    margin-left: 4px;
 }
 
 #table_baseline tbody tr:hover td span.duplicate-icon {
     visibility: visible;
 }
+
+/*Added By komal rawal for #1131*/
+#table_baseline tbody tr td span.add-icon {
+    background: url("../images/add-new-icon.png") no-repeat;
+    width: 24px;
+    height: px;
+    cursor: pointer;
+    margin-right: 7px;
+    margin-top: 6px;
+    float: right;
+}
+
+/*End*/
+
 
 
 /* END - Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*/
@@ -9402,8 +9589,21 @@ footer {
 }
 
 /*Added By : Kalpesh Sharma #646 Cloning icon for campaigns with allocation*/
-#campaignAccordion span.duplicate-icon-campaignCopy {
-    background: url("../images/duplicate_icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+/*#campaignAccordion span.duplicate-icon-campaignCopy {
+    background: url("../images/Copy-icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    display: block;
+    float: right; /* modified for 1131*/
+/*height: 24px;
+    margin-left: 15px;
+    margin-top: 18px;*/
+/*visibility: hidden;*/
+/*width: 24px;
+
+
+}*/
+/*Added by Mitesh Vaishnav for PL ticket 1131*/
+#campaignAccordion span.duplicate-icon-campaignCopy-old {
+    background: rgba(0, 0, 0, 0) url("../images/duplicate_icon.png") no-repeat scroll 0 0;
     display: block;
     float: left;
     height: 16px;
@@ -9413,19 +9613,32 @@ footer {
     width: 16px;
 }
 
-.accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-campaignCopy {
+
+/*Modified By komal Rawal for #1131*/
+.duplicate-icon-Improvementtactic {
+    background: url("../images/Copy-icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    display: block;
+    float: right; /* modified for 1131*/
+    height: 16px;
+    margin-left: 15px;
+    margin-top: 18px;
+    /*visibility: hidden;*/
+    width: 16px;
+}
+
+.accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-campaignCopy-old {
     visibility: visible !important;
 }
 
 #campaignAccordion span.duplicate-icon-ProgramCopy {
-    background: url("../images/duplicate_icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    background: url("../images/Copy-icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
     display: block;
-    float: left;
-    height: 16px;
+    float: right;
+    height: 24px;
     margin-left: 15px;
     margin-top: 16px;
-    visibility: hidden;
-    width: 16px;
+    /*visibility: hidden;*/
+    width: 24px;
 }
 
 .accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-ProgramCopy {
@@ -9437,13 +9650,13 @@ footer {
 }
 
 .lineitem-level span.duplicate-icon-LineItemCopy {
-    background: url("../images/duplicate_icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    background: url("../images/Copy-icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
     display: block;
-    float: left;
+    float: right;
     height: 16px;
-    margin-left: 15px;
+    margin-left: 35px;
     margin-top: 13px;
-    visibility: hidden;
+    /*visibility: hidden;*/
     width: 16px;
     cursor: pointer;
 }
@@ -9457,13 +9670,13 @@ footer {
 }*/
 
 #campaignAccordion span.duplicate-icon-TacticCopy {
-    background: url("../images/duplicate_icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    background: url("../images/Copy-icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
     display: block;
-    float: left;
+    float: right;
     height: 16px;
     margin-left: 15px;
     margin-top: 14px;
-    visibility: hidden;
+    /*visibility: hidden;*/
     width: 16px;
 }
 
@@ -11104,23 +11317,27 @@ li.close-list {
         }
 
         .btn-dropdwn ul li.new-prog {
-            background-image: url(../images/add-small.png);
+            background-image: url(../images/add-new-icon.png);
             background-position: 7px 7px;
             background-repeat: no-repeat;
         }
 
             .btn-dropdwn ul li.new-prog:hover {
-                background-position: 7px -15px;
+                background-image: url(../images/add-new-icon-white.png);
+                background-position: 7px 7px;
+                background-repeat: no-repeat;
             }
 
         .btn-dropdwn ul li.copy-camp {
-            background-image: url(../images/copy.png);
+            background-image: url(../images/Copy-icon.png);
             background-position: 7px 7px;
             background-repeat: no-repeat;
         }
 
             .btn-dropdwn ul li.copy-camp:hover {
-                background-position: 7px -16px;
+                background-image: url(../images/Copy-icon-white.png);
+                background-position: 7px 7px;
+                background-repeat: no-repeat;
             }
 
 .successMessage-InspectPopUpSections {

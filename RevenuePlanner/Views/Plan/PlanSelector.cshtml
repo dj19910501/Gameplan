@@ -178,6 +178,47 @@
             formSubmitEvent(url, queryStringArr);
         });
 
+        //Added By komal Rawal for #1131
+        $('#table_baseline').on('click', 'tbody tr td .add-icon', function (e) {
+            e.stopPropagation();
+            var url = '@Url.Content("~/Plan/Create")';
+             //window.location.href = url;
+             var queryStringArr = [];
+
+             formSubmitEvent(url, queryStringArr);
+        });
+        
+        $('#table_baseline').on('click', 'tbody tr td .duplicate-icon', function (e) {
+            e.stopPropagation();
+            var PlanId = $(this).parent().parent().attr("id");
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/Clone")',
+                data: {
+                    CloneType: '@Enums.DuplicationModule.Plan',
+                    Id: PlanId,
+                    title: ''
+                },
+                success: function (data) {
+                      if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                          window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            alert(data.errormsg);
+                            return;
+                        }
+                    }
+                }
+              });
+        });
+
+        //End
+
         // Function to delete the selected Plan
         $('#table_baseline').on('click', 'tbody tr td .delete-temp-program', function (e) {
             if (confirm($("#Confirmationmessage").val())) {
@@ -343,7 +384,8 @@
         var $baselineTable = $('#table_baseline > tbody');
         var $html = "";
         $html += '<tr id="' + _PlanId + '">' +
-                '<td><span class="title-baseline-model truncate">' + _Title + '</span><span class="search-icon"></span></td>' +
+                '<td><span class="title-baseline-model truncate">' + _Title +
+                //'</span><span class="search-icon"></span></td>' +
                 @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Shift “Last Updated” column next to Status column. *@
                 '<td>' + _MQLs + '</td>' +
                 '<td class="BudgetFormater">$' + _Budget + '</td>' +
@@ -358,7 +400,10 @@
         else {
             $html += 'empty-delete-button width5">&nbsp;</span>'
         }
-        $html += '<span class="edit-temp-program width5"></span></td>';
+        if ('@IsPlanCreateAuthorized.ToString().ToLower()' == 'true') {
+            $html+='<span class="duplicate-icon"></span><span  class="add-icon" ></span>';
+        }
+        $html += '<span class="edit-temp-program width5"></span></td>'; @*Added By Komal Rawal for #1131 *@
 
         $html += '</tr>';
         $baselineTable.append($html);

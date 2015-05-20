@@ -291,7 +291,7 @@
         }
 
         //Added By : Kalpesh Sharma : Duplicate  08/11/2014
-        $(document).on("click", "#campaignAccordion .accordion-header .duplicate-icon-campaignCopy", function (e) {
+        $(document).on("click", "#campaignAccordion .accordion-header .duplicate-icon-campaignCopy-old", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var IdCampaing = $(this).attr('id');
@@ -555,7 +555,7 @@
             }
         });
 
-        $(document).on("click", ".add-icon.program", function (e) {
+        $(document).on("click", ".add-icon-old.program", function (e) {
             var idCampaing = $(this).parent().parent().attr('data-id-campaing');
 
             ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "0", idCampaing, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
@@ -691,7 +691,7 @@
                 }
             }
             else if (type == "tactic") {
-                if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
+                if (confirm('@Common.objCached.ConfirmationForDeleteLineItem')) {
                     var idTactic = id;
                     $.ajax({
                         type: 'POST',
@@ -882,7 +882,7 @@
 
         getCampaign(CampaignID, ProgramID, TacticID);
 
-        $(document).on("click", ".add-icon.impTactic", function (e) {
+        $(document).on("click", ".add-icon-old.impTactic", function (e) {
             $("#slidepanel").css("display", "none");
             var idProgram = $(this).parent().parent().attr('data-id-program');
 
@@ -949,7 +949,7 @@
     }
     @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
 
-    $(document).on("click", ".add-icon.campaign", function (e) {
+    $(document).on("click", ".add-icon-old.campaign", function (e) {
         ShowModel("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "0", "0", '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
     });
     //fill campaign table with data from json
@@ -976,7 +976,7 @@
                 $html += '<div class="accordion-header campaign-default">' +
                         '<a id="0" class="accordion-toggle chevron-right" data-toggle="collapse">' +
                             '<span id="0" class="pull-left width55"><span class="pull-left font-black">1.</span><span class="blue-bg-text campaign-name campaign-name-span">Add Campaign</span></span>' +
-                            '<span class="pull-right width50px"><div class="add-icon campaign"></div></span>' +
+                            '<span class="pull-right width50px"><div class="add-icon-old campaign"></div></span>' +
                             '<span class="pull-right width100px text-right font-black">' + 0 + '</span>' +
                             '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
                             '<span class="pull-right width100px text-right font-black tipsyclass">' + 0 + '</span>' +
@@ -1032,11 +1032,11 @@
                 */
         $html += '" data-toggle="collapse" data-parent="#accordion" href="#collapse' + _index + '">';
         if (_isOwner == 0) {
-            $html += '<span class="delete-program width5" id="delCampaign"></span>';
+            $html += '<span class="delete-program-old width5" id="delCampaign"></span>';
         }
         $html += '<span class="pull-left font-black">' + num + '.</span><span class="blue-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _title + '</span>' +
-                      '<span id="' + _id + '" class="duplicate-icon-campaignCopy" titles="' + _title + '" ></span>' +
-                           '<span class="pull-right width50px"><div class="add-icon campaign" ></div></span>' +
+                      '<span id="' + _id + '" class="duplicate-icon-campaignCopy-old" titles="' + _title + '" ></span>' +
+                           '<span class="pull-right width50px"><div class="add-icon-old campaign" ></div></span>' +
                             '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_programCount.toString(), false) + '</span>' +
                             '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_cost.toString(), false) + '</span>' +
                             '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_mqls.toString(), false) + '</span>' +
@@ -1066,11 +1066,11 @@
                     }
                     $html += '" data-toggle="collapse" href="#collapseTwo' + _programs[i].id + '">';
                     if (_programs[i].isOwner == 0) {
-                        $html += '<span class="delete-program width5" id="delprogram"></span>';
+                        $html += '<span class="delete-program-old width5" id="delprogram"></span>';
                     }
                     $html += '<span class="pull-left width55"><span class="gray-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _programs[i].title + '</span>' +
                     '<span id="' + _programs[i].id + '" class="duplicate-icon-ProgramCopy" titles="' + _programs[i].title + '" ></span></span>' +
-                     '<span class="pull-right width50px"><div class="add-icon program" ></div></span>' +
+                     '<span class="pull-right width50px"><div class="add-icon-old program" ></div></span>' +
                      '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                      '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
                      '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
@@ -1105,7 +1105,7 @@
                                     }
                                 }
                                 if (_programs[i].tactics[k].isOwner == 0) {
-                                    $html += '<span class="delete-program width5" id="delTactic"></span>';
+                                    $html += '<span class="delete-program-old width5" id="delTactic"></span>';
                                 }
                                 $html += '<span class="pull-left" index="' + _programs[i].tactics[k].id + '"><span class="underline tipsyclassTitle tactictitle">' + _programs[i].tactics[k].title + '</span>' +
                                      '<span id="' + _programs[i].tactics[k].id + '" class="duplicate-icon-TacticCopy" titles="' + _programs[i].tactics[k].title + '" ></span></span>' +
@@ -1133,7 +1133,7 @@
                                             $html += '<div id="lineitem_' + _programs[i].tactics[k].lineitems[z].id + '" class="accordion-body collapse in lineitem">' +
                                               '<div id="divlineitem" class="accordion-inner cursor-pointer" index="' + _programs[i].tactics[k].lineitems[z].id + '">';
                                             if (_programs[i].tactics[k].lineitems[z].title != '@Common.DefaultLineItemTitle') {
-                                                $html += '<span class="delete-program width5 " id="delLineItem"></span>';
+                                                $html += '<span class="delete-program-old width5 " id="delLineItem"></span>';
                                             }
                                             $html += '<span class="LineItem-widthAuto"> <span id="tacticTitle" class="underline tipsyclassTitle ">' + _programs[i].tactics[k].lineitems[z].title + '</span>';
                                             if (_programs[i].tactics[k].lineitems[z].title != "Other") {
@@ -1177,7 +1177,7 @@
                 $html += '<div class="accordion-header">' +
                             '<a id="0" class="accordion-toggle" data-id-campaing="' + _id + '" font-black" data-toggle="collapse">' +
                                 '<span class="pull-left width40"><span class="gray-bg-text campaign-name underline">Add Program</span></span>' +
-                                '<span class="pull-right width100px"><div class="add-icon program" ></div></span>' +
+                                '<span class="pull-right width100px"><div class="add-icon-old program" ></div></span>' +
                             '</a>' +
                         '</div>';
             }
@@ -1255,7 +1255,7 @@
         $html += '<div class="accordion-header campaign-default">' +
                        '<a class="accordion-toggle" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId + '" id="divimpTactic" index="0">' +
                            '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">Add Improvement Tactic</span></span>' +
-                           '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
+                           '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel"></div></span>' +
                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                            '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
@@ -1508,10 +1508,10 @@ function addRowImprovementTactic(_index, _id, _title, _cost, _isOwner, _programI
     $html += '<div class="accordion-header campaign-default">' +
                     '<a class="accordion-toggle" id="divimpTactic" index="' + _id + '" data-id-program="' + _programId + '">';
     if (_isOwner == 0) {
-        $html += '<span class="delete-Improvement width5" id="delimpTactic"></span>';
+        $html += '<span class="delete-Improvement-old width5" id="delimpTactic"></span>';
     }
     $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline" title="' + _title + '">' + GrapSubstring(_title, 40) + '</span></span>' +
-                        '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
+                        '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel"></div></span>' +
                         '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
                         '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities">$' + FormatCommas(_cost.toString(), false) + '</span>' +
                         '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +

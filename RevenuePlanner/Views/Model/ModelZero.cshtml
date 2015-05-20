@@ -57,10 +57,11 @@
         <table id="table_baseline" class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th class="width390">Model Title</th>
+                    <th class="width540">Model Title</th>
                     <th class="width86">Version</th>
                     <th>Status</th>
                     <th>Effective Date</th>
+                    <th>Actions</th>
                     @* Added By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column. *@
                 </tr>
             </thead>
@@ -136,6 +137,29 @@ else
               formSubmitEvent(url);
           });
     });
+
+    //Added By komal Rawal for #1131
+    $('#table_baseline').on('click', 'tbody tr td .add-icon', function (e) {
+        e.stopPropagation();
+        var url = '@Url.Content("~/Model/createModel")';
+        formSubmitEvent(url);
+    });
+
+    $('#table_baseline').on('click', 'tbody tr td .edit-temp-program', function (e) {
+        var id = $(this).attr("id");
+        if (id != null) {
+            var url = '@Url.Content("~/Model/createModel")';
+                var queryStringArr = [];
+                queryStringArr.push(
+                    {
+                        key: 'id',
+                        Value: id
+                    });
+                formSubmitEvent(url, queryStringArr);
+                @*//window.location.href = "@Url.Content("~/model/create?id=")" + id;*@
+            }
+     });
+    //End
     @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
     $(document).on('click', '.delete-temp-program', function (e) {
         var uId = $(window).attr('name');
@@ -283,17 +307,25 @@ function fillBaselineTable() {
             $html += '<tr id="' + _id + '" index="' + _index + '"><td>';
         }
      @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
-        if (_isOwner == 0) {
-            $html += '<span class="delete-temp-program width5 float-left-margin-top4-margin-right10"></span>';
-        }
-        else {
-            $html += '<span class="width3 float-left-margin-top4-margin-right10"></span>';
-        }
+        //if (_isOwner == 0) {
+        //    $html += '<span class="delete-temp-program width5 float-left-margin-top4-margin-right10"></span>';
+        //}
+        //else {
+        //    $html += '<span class="width3 float-left-margin-top4-margin-right10"></span>';
+        //}
 
-        $html += '<span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span><span id="' + _id + '" class="duplicate-icon"></span></td>' +
+        $html += '<span class="title-baseline-model">' + _title + 
         '<td>' + _version + '</td>' +
         '<td>' + _status + '</td>' +
         '<td>' + _effectiveDate + '</td>' +     @* Added By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column. *@
+        '<td><span class="';   @*Added By Komal Rawal for #1131 *@
+        if (_isOwner == 0) {
+            $html += 'delete-temp-program width5"></span>'
+        }
+        else {
+            $html += 'empty-delete-button width5">&nbsp;</span>'
+        }
+        $html += '<span id="' + _id + '" class="duplicate-icon"></span><span class="edit-temp-program width5"></span><span  class="add-icon" ></span></td>' +
         '</tr>';
         $baselineTable.append($html);
     }
