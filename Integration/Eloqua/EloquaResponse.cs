@@ -675,7 +675,7 @@ namespace Integration.Eloqua
                                     }
                                     catch (Exception ex)
                                     {
-                                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "An error occurred while creating directory at external server.", Enums.SyncStatus.Error, DateTime.Now));
+                                       // lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "An error occurred while creating directory at external server.", Enums.SyncStatus.Error, DateTime.Now));
                                     }
 
                                     // Upload processed local file to external server archived folder
