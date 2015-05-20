@@ -776,6 +776,28 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         /// <summary>
+        /// Get Projected Revenue Data With Month Wise.
+        /// </summary>
+        /// <param name="cl"></param>
+        /// <returns></returns>
+        public List<TacticMonthValue> GetProjectedRevenueDataWithVelocity(List<TacticStageValue> planTacticList)
+        {
+            //// Get tactic INQ with Velocity data from planTacticlist.
+            List<TacticDataTable> tacticdata = (from tactic in planTacticList
+                                                select new TacticDataTable
+                                                {
+                                                    TacticId = tactic.TacticObj.PlanTacticId,
+                                                    Value = tactic.RevenueValue,
+                                                    StartMonth = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month,
+                                                    EndMonth = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month,
+                                                    StartYear = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Year,
+                                                    EndYear = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Year
+                                                }).ToList();
+
+            return GetMonthWiseValueList(tacticdata);
+        }
+
+        /// <summary>
         /// Get Projected INQ Data With Month Wise.
         /// </summary>
         /// <param name="cl"></param>
@@ -816,6 +838,28 @@ namespace RevenuePlanner.Controllers
                                                     EndMonth = tactic.TacticObj.EndDate.AddDays(tactic.MQLVelocity).Month,
                                                     StartYear = tactic.TacticObj.StartDate.AddDays(tactic.MQLVelocity).Year,
                                                     EndYear = tactic.TacticObj.EndDate.AddDays(tactic.MQLVelocity).Year
+                                                }).ToList();
+
+            return GetMonthWiseValueList(tacticdata);
+        }
+
+        /// <summary>
+        /// Get Projected Revenue Data With Month Wise.
+        /// </summary>
+        /// <param name="cl"></param>
+        /// <returns></returns>
+        public List<TacticMonthValue> GetProjectedCWDataWithVelocity(List<TacticStageValue> planTacticList)
+        {
+            //// Get tactic INQ with Velocity data from planTacticlist.
+            List<TacticDataTable> tacticdata = (from tactic in planTacticList
+                                                select new TacticDataTable
+                                                {
+                                                    TacticId = tactic.TacticObj.PlanTacticId,
+                                                    Value = tactic.CWValue,
+                                                    StartMonth = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month,
+                                                    EndMonth = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month,
+                                                    StartYear = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Year,
+                                                    EndYear = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Year
                                                 }).ToList();
 
             return GetMonthWiseValueList(tacticdata);
@@ -6141,9 +6185,6 @@ namespace RevenuePlanner.Controllers
                         List<Plan_Campaign_Program_Tactic_Actual> lstActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
                         string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
                         List<ActualDataTable> ActualDataTable = new List<ActualDataTable>();
-                        List<TacticDataTable> TacticDataTable = new List<TacticDataTable>();
-                        List<ProjectedTrendModel> ProjectedRevenueTrendList = new List<ProjectedTrendModel>();
-                        List<ProjectedTacticModel> TacticList = new List<ProjectedTacticModel>();
                         List<ActualDataTable> CurrentMonthActualTacticList = new List<ActualDataTable>();
                         #endregion
 
@@ -6155,8 +6196,6 @@ namespace RevenuePlanner.Controllers
                         }
                         foreach (RevenueContrinutionData _obj in CustomFieldOptionList)
                         {
-                            ProjectedRevenueTrendList = new List<ProjectedTrendModel>();
-                            TacticList = new List<ProjectedTacticModel>();
 
                             #region "Get Actuals List"
                             lstActuals = ActualTacticList.Where(ta => _obj.planTacticList.Contains(ta.PlanTacticId)).ToList();
@@ -6291,7 +6330,7 @@ namespace RevenuePlanner.Controllers
                             #endregion
 
                             #region "Get Tactic data by Weightage for Projected by StageCode(Revenue)"
-                            TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, fltrTacticData, IsTacticCustomField);
+                            TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, fltrTacticData, IsTacticCustomField,true);
                             TacticListMonth = GetMonthWiseValueList(TacticDataTable);
                             TacticList = TacticListMonth.Select(tac => new ProjectedTacticModel
                             {
@@ -6396,7 +6435,7 @@ namespace RevenuePlanner.Controllers
                         #region "Calculate Total for Proj.Vs Goal & Trend"
                         List<ProjectedTacticModel> lstTotalTacticModel = new List<ProjectedTacticModel>();
                         TacticListMonth = new List<TacticMonthValue>();
-                        TacticListMonth = GetProjectedRevenueValueDataTableForReport(Tacticdata);
+                        TacticListMonth = GetProjectedRevenueDataWithVelocity(Tacticdata);
                         lstTotalTacticModel = TacticListMonth.Select(tac => new ProjectedTacticModel
                             {
                                 TacticId = tac.Id,
@@ -7021,22 +7060,22 @@ namespace RevenuePlanner.Controllers
                 if (StageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()))
                 {
                     // Get TacticDataTable list of Projected Revenue.
-                    ProjectedTacticList = GetProjectedRevenueValueDataTableForReport(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
+                    ProjectedTacticList = GetProjectedRevenueDataWithVelocity(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
                 }
                 else if (StageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))
                 {
-                    // Get TacticDataTable list of Projected Revenue.
-                    ProjectedTacticList = GetProjectedMQLValueDataTableForReport(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
+                    // Get TacticDataTable list of Projected MQL.
+                    ProjectedTacticList = GetProjectedMQLDataWithVelocity(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
                 }
                 else if (StageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()))
                 {
-                    // Get TacticDataTable list of Projected Revenue.
-                    ProjectedTacticList = GetProjectedCWValueDataTableForReport(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
+                    // Get TacticDataTable list of Projected CW.
+                    ProjectedTacticList = GetProjectedCWDataWithVelocity(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
                 }
                 else if (StageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()))
                 {
-                    // Get TacticDataTable list of Projected Revenue.
-                    ProjectedTacticList = GetConversionProjectedINQData(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
+                    // Get TacticDataTable list of Projected INQ.
+                    ProjectedTacticList = GetProjectedINQDataWithVelocity(TacticData).Where(mr => includeMonth.Contains(mr.Month)).ToList();
                 }
 
                 // Create ProjectedTacticModel from ProjectedRevenueTacticList to get ProjecteRevenueTrend model list.
