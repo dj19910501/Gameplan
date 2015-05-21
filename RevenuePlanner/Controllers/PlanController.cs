@@ -7096,7 +7096,7 @@ namespace RevenuePlanner.Controllers
                     List<string> DistCustomFieldOptionIDs = fltrModelCustomFieldEntities.Select(_ent => _ent.Value).Distinct().ToList(); // Get distinct CustomFieldOptionIds from filtered CustomFieldEntitylist.
 
                     //// Get distinct CustomFieldOption list by Ids.
-                    List<CustomFieldOption> lstdistCustomFieldOptions = db.CustomFieldOptions.ToList().Where(_option => DistCustomFieldOptionIDs.ToList().Contains(_option.CustomFieldOptionId.ToString())).ToList();
+                    List<CustomFieldOption> lstdistCustomFieldOptions = db.CustomFieldOptions.ToList().Where(_option => DistCustomFieldOptionIDs.ToList().Contains(_option.CustomFieldOptionId.ToString()) && _option.IsDeleted == false).ToList();
                     entCustomFieldOption_EntityMapping objOption_EntityMapping;
                     foreach (string OptionId in DistCustomFieldOptionIDs)
                     {

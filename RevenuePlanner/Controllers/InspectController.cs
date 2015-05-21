@@ -2309,7 +2309,7 @@ namespace RevenuePlanner.Controllers
                                      customentity.CustomField.CustomFieldType.Name == customFieldType
                                      select customentity).ToList();
             var customfieldids = customFieldEntity.Select(customentity => customentity.CustomFieldId).ToList();
-            var customOptionFieldList = db.CustomFieldOptions.Where(option => customfieldids.Contains(option.CustomFieldId)).ToList().Select(option => option.CustomFieldOptionId.ToString()).ToList();
+            var customOptionFieldList = db.CustomFieldOptions.Where(option => customfieldids.Contains(option.CustomFieldId) && option.IsDeleted == false).ToList().Select(option => option.CustomFieldOptionId.ToString()).ToList();
 
             var customFeildsWeightage = customFieldEntity.Where(cfs => customOptionFieldList.Contains(cfs.Value)).Select(cfs => new
             {
@@ -2542,7 +2542,7 @@ namespace RevenuePlanner.Controllers
             {
                 Name = cf.Name,
                 Class = "customfield-review" + (Index + 1).ToString(),
-                Value = cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Count > 0 ? string.Join(",", cf.CustomFieldOptions.Where(a => cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Contains(a.CustomFieldOptionId.ToString())).Select(a => a.Value).ToList()) : "N/A"
+                Value = cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Count > 0 ? string.Join(",", cf.CustomFieldOptions.Where(a => a.IsDeleted == false && cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Contains(a.CustomFieldOptionId.ToString())).Select(a => a.Value).ToList()) : "N/A"
             }).ToList();
             ViewBag.TopThreeCustomFields = topThreeCustomFields;
 

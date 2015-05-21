@@ -712,7 +712,7 @@ namespace RevenuePlanner.Controllers
                                             new { Key1 = customfieldoptionLeftJoin.CustomFieldId, Key2 = SqlFunctions.StringConvert((double)customfieldoptionLeftJoin.CustomFieldOptionId).Trim() } into cAll
                                         from cfo in cAll.DefaultIfEmpty()
                                         where customfield.IsDeleted == false && tactic.IsDeleted == false && customfield.EntityType == entityType && customfield.CustomFieldId == CustomTypeId &&
-                                        customfield.ClientId == Sessions.User.ClientId && tacticIdList.Contains(tactic.PlanTacticId)
+                                        customfield.ClientId == Sessions.User.ClientId && tacticIdList.Contains(tactic.PlanTacticId) && cfo.IsDeleted == false
                                         select new
                                         {
                                             tactic = tactic,
@@ -3372,7 +3372,7 @@ namespace RevenuePlanner.Controllers
 
                 //// Get list of custom field options
                 var lstCustomFieldOptions = objDbMrpEntities.CustomFieldOptions
-                                                            .Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId))
+                                                            .Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId) && customFieldOption.IsDeleted == false)
                                                             .Select(customFieldOption => new
                                                             {
                                                                 customFieldOption.CustomFieldId,

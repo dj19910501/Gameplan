@@ -662,7 +662,7 @@ namespace RevenuePlanner.Controllers
                         lstCustomFieldId = lstCustomField.Select(customField => customField.CustomFieldId).Distinct().ToList();
 
                         //// Get list of custom field options
-                        lstCustomFieldOption = db.CustomFieldOptions.Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId))
+                        lstCustomFieldOption = db.CustomFieldOptions.Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId) && customFieldOption.IsDeleted == false)
                                                                     .Select(customFieldOption => customFieldOption).ToList();
                     }
 
