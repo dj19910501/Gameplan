@@ -197,22 +197,6 @@
             $('.nl-dd-checked').attr('value', roleid.toString());//review point
         }
 
-
-        $('#closebtn').click(function () {
-            var url = '';
-            url = '@Url.Content("~/Organization/ManageRoles")';
-            window.location.href = url;
-        });//review point
-
-
-        $('#backbtn').click(function () {
-            var url = '';
-            url = '@Url.Content("~/Organization/ManageRoles")';
-            window.location.href = url;
-        });
-
-
-
         function ShowError(value) {
             $("#errorMessage").slideDown(400);
             $("html, body").animate({ scrollTop: 0 }, 1000);//to scroll the body to top automatically..dd
@@ -238,41 +222,42 @@
             $('#DivPartialShareTacticDel').hide();
         });
 
+    });
 
-        $('#savebtn').click(function () {
-            var checked = [];
-            var ids = [];
-            globalids = [];
-            $('.source-sans-proregular tr').each(function () {
-                $(this).find('input:checkbox').each(function () {
-                    if ($(this).is(':checked') == true) {
-                        ids.push(this.id + '_true');
-                    }
-                    else {
-                        ids.push(this.id + '_false');
-                    }
-                });
-            });
-            globalids = ids;
-            //validation
-            if (ids.toString() != null && ids.toString() != "") {
-                var truecheck = [];
-                var count = 0;
-                var str = String(ids);
-                var strsa = str.split(",");
-                for (var i = 0; i < strsa.length; i++) {
-                    var split = [];
-                    split = strsa[i].split("_");
-                    if (split[2] == "true") {
-                        count++;
-                        truecheck.push(split[1]);
-                    }
-                    else {
-                    }
+    $('#savebtn').click(function () {
+        var checked = [];
+        var ids = [];
+        globalids = [];
+        $('.source-sans-proregular tr').each(function () {
+            $(this).find('input:checkbox').each(function () {
+                if ($(this).is(':checked') == true) {
+                    ids.push(this.id + '_true');
                 }
-                if (count > 0) {
-                    //start uday for uncheck other validation                
-                    var permissions = '@ViewData["permissionids"]';
+                else {
+                    ids.push(this.id + '_false');
+                }
+            });
+        });
+        globalids = ids;
+        //validation
+        if (ids.toString() != null && ids.toString() != "") {
+            var truecheck = [];
+            var count = 0;
+            var str = String(ids);
+            var strsa = str.split(",");
+            for (var i = 0; i < strsa.length; i++) {
+                var split = [];
+                split = strsa[i].split("_");
+                if (split[2] == "true") {
+                    count++;
+                    truecheck.push(split[1]);
+                }
+                else {
+                }
+            }
+            if (count > 0) {
+                //start uday for uncheck other validation                
+                var permissions = '@ViewData["permissionids"]';
                     var originalpermissions = [];
                     var match = [];
                     var unmatch = [];
@@ -310,23 +295,35 @@
                             }
                         });
 
-                    return false;
+                        return false;
+                    }
+                    else {
+                        saveRoleActivity();
+                    }
+                    //end
                 }
                 else {
-                    saveRoleActivity();
-                }
-                    //end
-            }
-            else {
-                ShowError("@Common.objCached.ValidateRequiredPermission");
+                    ShowError("@Common.objCached.ValidateRequiredPermission");
                     return false;
                 }
             }
-            //end validation
-
-        });
+        //end validation
 
     });
+
+    $('#closebtn').click(function () {
+        var url = '';
+        url = '@Url.Content("~/Organization/ManageRoles")';
+            window.location.href = url;
+    });//review point
+
+
+        $('#backbtn').click(function () {
+            var url = '';
+            url = '@Url.Content("~/Organization/ManageRoles")';
+            window.location.href = url;
+        });
+
 
     function saveRoleActivity() {
         //syntax to get selected text 
@@ -372,14 +369,4 @@
         });
     }
 
-
-    function loadCheckPermissionScript() {
-        $('#okbtn').click(function () {
-            saveRoleActivity();
-        });
-
-        $('#cancelbtn').click(function () {
-            $('#DivPartialShareTacticCheck').hide();
-        });
-    }
 </script>

@@ -57,7 +57,11 @@
 </div>
 <script src="~/Scripts/js/Select2/select2.js"></script>
 <script type="text/javascript">
-    $(document).ready(function () {
-        loadCheckPermissionScript();
+    $('#okbtn').click(function () {
+        saveRoleActivity();
+    });
+
+    $('#cancelbtn').click(function () {
+        $('#DivPartialShareTacticCheck').hide();
     });
 </script>
