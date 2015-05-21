@@ -320,12 +320,12 @@ function fillBaselineTable() {
         '<td>' + _effectiveDate + '</td>' +     @* Added By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column. *@
         '<td><span class="';   @*Added By Komal Rawal for #1131 *@
         if (_isOwner == 0) {
-            $html += 'delete-temp-program width5"></span>'
+            $html += 'delete-temp-program width5" title="Delete"></span>'
         }
         else {
             $html += 'empty-delete-button width5">&nbsp;</span>'
         }
-        $html += '<span id="' + _id + '" class="duplicate-icon"></span><span class="edit-temp-program width5"></span><span  class="add-icon" ></span></td>' +
+        $html += '<span id="' + _id + '" class="duplicate-icon" title="Copy"></span></span><span class="add-icon" title="New" ></span><span class="edit-temp-program width5" title="Edit"></td>' +
         '</tr>';
         $baselineTable.append($html);
     }

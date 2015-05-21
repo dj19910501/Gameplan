@@ -395,15 +395,15 @@
         // Modified by Mitesh for Internal review points related to "Edit All Plan" permission 
         $html += '<td><span class="';
         if (_IsPlanEditable) {
-            $html += 'delete-temp-program width5"></span>'
+            $html += 'delete-temp-program width5" title="Delete"></span>'
         }
         else {
             $html += 'empty-delete-button width5">&nbsp;</span>'
         }
         if ('@IsPlanCreateAuthorized.ToString().ToLower()' == 'true') {
-            $html+='<span class="duplicate-icon"></span><span  class="add-icon" ></span>';
+            $html+='<span class="duplicate-icon" title="Copy"></span><span  class="add-icon" title="New" ></span>';
         }
-        $html += '<span class="edit-temp-program width5"></span></td>'; @*Added By Komal Rawal for #1131 *@
+        $html += '<span class="edit-temp-program width5" title="Edit"></span></td>'; @*Added By Komal Rawal for #1131 *@
 
         $html += '</tr>';
         $baselineTable.append($html);
