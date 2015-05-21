@@ -1895,11 +1895,11 @@ input.error {
 /*---------------------------
           login-header
 -----------------------------*/
-.bulldog-logo {
-    background-image: url("../images/bulldog-logo_2502.png");
+.hive9-logo {
+    background-image: url("../images/hive9-logo_2502.png");
     margin-top: 14px;
-    width: 171px;
-    height: 44px;
+    width: 152px;
+    height: 45px;
     float: left;
     margin-right: 35px;
     margin-left: 30px;
