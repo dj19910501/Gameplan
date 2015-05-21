@@ -652,8 +652,8 @@ namespace Integration.Eloqua
                     _ErrorMessage = Common.msgChildLevelError.ToString();
                     if (e.Message.Contains(NotFound))// || e.Message.Contains(InternalServerError))
                     {
-                        planIMPTactic.IntegrationInstanceTacticId = null;
-                        planIMPTactic = SyncImprovementData(planIMPTactic);
+                        //planIMPTactic.IntegrationInstanceTacticId = null;
+                        //planIMPTactic = SyncImprovementData(planIMPTactic);
                         return planIMPTactic;
                     }
                     else
@@ -944,8 +944,8 @@ namespace Integration.Eloqua
 
                     if (e.Message.Contains(NotFound))
                     {
-                        planTactic.IntegrationInstanceTacticId = null;
-                        planTactic = SyncTacticData(planTactic);
+                        //planTactic.IntegrationInstanceTacticId = null;
+                        //planTactic = SyncTacticData(planTactic);
                         return planTactic;
                     }
                     else
