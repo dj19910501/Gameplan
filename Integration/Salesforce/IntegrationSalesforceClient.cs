@@ -1224,8 +1224,8 @@ namespace Integration.Salesforce
                 {
                     if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                     {
-                        planCampaign.IntegrationInstanceCampaignId = null;
-                        planCampaign = SyncCampaingData(planCampaign);
+                        //planCampaign.IntegrationInstanceCampaignId = null;
+                        //planCampaign = SyncCampaingData(planCampaign);
                         return planCampaign;
                     }
                     else
@@ -1500,8 +1500,8 @@ namespace Integration.Salesforce
                 {
                     if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                     {
-                        planProgram.IntegrationInstanceProgramId = null;
-                        planProgram = SyncProgramData(planProgram);
+                       // planProgram.IntegrationInstanceProgramId = null;
+                       // planProgram = SyncProgramData(planProgram);
                         return planProgram;
                     }
                     else
@@ -1778,8 +1778,8 @@ namespace Integration.Salesforce
                 {
                     if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                     {
-                        planTactic.IntegrationInstanceTacticId = null;
-                        planTactic = SyncTacticData(planTactic);
+                        //planTactic.IntegrationInstanceTacticId = null;
+                       // planTactic = SyncTacticData(planTactic);
                         return planTactic;
                     }
                     else
@@ -2083,8 +2083,8 @@ namespace Integration.Salesforce
                 {
                     if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                     {
-                        planIMPTactic.IntegrationInstanceTacticId = null;
-                        planIMPTactic = SyncImprovementData(planIMPTactic);
+                       // planIMPTactic.IntegrationInstanceTacticId = null;
+                       // planIMPTactic = SyncImprovementData(planIMPTactic);
                         return planIMPTactic;
                     }
                     else
