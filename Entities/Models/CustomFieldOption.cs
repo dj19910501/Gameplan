@@ -27,6 +27,7 @@ namespace RevenuePlanner.Models
         public string Abbreviation { get; set; }
         public string Description { get; set; }
         public string ColorCode { get; set; }
+        public bool IsDeleted { get; set; }
     
         public virtual CustomField CustomField { get; set; }
         public virtual ICollection<CustomRestriction> CustomRestrictions { get; set; }

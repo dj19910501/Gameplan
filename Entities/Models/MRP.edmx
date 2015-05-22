@@ -465,6 +465,7 @@
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
           <Property Name="Description" Type="nvarchar" />
           <Property Name="ColorCode" Type="nvarchar" MaxLength="10" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CustomFieldType">
           <Key>
@@ -2460,6 +2461,7 @@
           <Property Type="String" Name="ColorCode" MaxLength="10" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CustomFieldOption_CustomField" FromRole="CustomFieldOption" ToRole="CustomField" />
           <NavigationProperty Name="CustomRestrictions" Relationship="MRPModel.FK_CustomRestriction_CustomFieldOption" FromRole="CustomFieldOption" ToRole="CustomRestriction" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
         </EntityType>
         <EntityType Name="CustomFieldType">
           <Key>
@@ -4246,6 +4248,7 @@
           <EntitySetMapping Name="CustomFieldOptions">
             <EntityTypeMapping TypeName="MRPModel.CustomFieldOption">
               <MappingFragment StoreEntitySet="CustomFieldOption">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
