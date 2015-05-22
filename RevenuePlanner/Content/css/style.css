@@ -9623,7 +9623,36 @@ footer {
     width: 16px;
 }
 
-
+#campaignAccordion span.duplicate-icon-ProgramCopy-old {
+    background: rgba(0, 0, 0, 0) url("../images/duplicate_icon.png") no-repeat scroll 0 0;
+    display: block;
+    float: left;
+    height: 16px;
+    margin-left: 15px;
+    margin-top: 18px;
+    visibility: hidden;
+    width: 16px;
+}
+#campaignAccordion span.duplicate-icon-TacticCopy-old {
+    background: rgba(0, 0, 0, 0) url("../images/duplicate_icon.png") no-repeat scroll 0 0;
+    display: block;
+    float: left;
+    height: 16px;
+    margin-left: 15px;
+    margin-top: 18px;
+    visibility: hidden;
+    width: 16px;
+}
+#campaignAccordion span.duplicate-icon-LineItemCopy-old {
+    background: rgba(0, 0, 0, 0) url("../images/duplicate_icon.png") no-repeat scroll 0 0;
+    display: block;
+    float: left;
+    height: 16px;
+    margin-left: 15px;
+    margin-top: 18px;
+    visibility: hidden;
+    width: 16px;
+}
 /*Modified By komal Rawal for #1131*/
 .duplicate-icon-Improvementtactic {
     background: url("../images/Copy-icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
@@ -9651,7 +9680,7 @@ footer {
     width: 24px;
 }
 
-.accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-ProgramCopy {
+.accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-ProgramCopy-old {
     visibility: visible !important;
 }
 
@@ -9671,7 +9700,7 @@ footer {
     cursor: pointer;
 }
 
-.accordion-campaign .accordion-body.lineitem-level .accordion-body:hover span.duplicate-icon-LineItemCopy {
+.accordion-campaign .accordion-body.lineitem-level .accordion-body:hover span.duplicate-icon-LineItemCopy-old {
     visibility: visible !important;
 }
 
@@ -9690,7 +9719,7 @@ footer {
     width: 16px;
 }
 
-.accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-TacticCopy {
+.accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-TacticCopy-old {
     visibility: visible !important;
 }
 

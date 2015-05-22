@@ -303,7 +303,7 @@
 
 
         //Added By : Kalpesh Sharma : Duplicate  08/11/2014
-        $(document).on("click", "#campaignAccordion .accordion-header .duplicate-icon-ProgramCopy", function (e) {
+        $(document).on("click", "#campaignAccordion .accordion-header .duplicate-icon-ProgramCopy-old", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var IdProgram = $(this).attr('id');
@@ -314,7 +314,7 @@
         });
 
         //Added By : Kalpesh Sharma : Duplicate  08/11/2014
-        $(document).on("click", "#campaignAccordion .accordion-header .duplicate-icon-TacticCopy", function (e) {
+        $(document).on("click", "#campaignAccordion .accordion-header .duplicate-icon-TacticCopy-old", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var IdTactic = $(this).attr('id');
@@ -325,7 +325,7 @@
         });
 
         //Added By : Kalpesh Sharma : Duplicate  08/11/2014
-        $(document).on("click", ".lineitem-level .duplicate-icon-LineItemCopy", function (e) {
+        $(document).on("click", ".lineitem-level .duplicate-icon-LineItemCopy-old", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var IdLineItem = $(this).attr('id');
@@ -1069,7 +1069,7 @@
                         $html += '<span class="delete-program-old width5" id="delprogram"></span>';
                     }
                     $html += '<span class="pull-left width55"><span class="gray-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _programs[i].title + '</span>' +
-                    '<span id="' + _programs[i].id + '" class="duplicate-icon-ProgramCopy" titles="' + _programs[i].title + '" ></span></span>' +
+                    '<span id="' + _programs[i].id + '" class="duplicate-icon-ProgramCopy-old" titles="' + _programs[i].title + '" ></span></span>' +
                      '<span class="pull-right width50px"><div class="add-icon-old program" ></div></span>' +
                      '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                      '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
@@ -1108,7 +1108,7 @@
                                     $html += '<span class="delete-program-old width5" id="delTactic"></span>';
                                 }
                                 $html += '<span class="pull-left" index="' + _programs[i].tactics[k].id + '"><span class="underline tipsyclassTitle tactictitle">' + _programs[i].tactics[k].title + '</span>' +
-                                     '<span id="' + _programs[i].tactics[k].id + '" class="duplicate-icon-TacticCopy" titles="' + _programs[i].tactics[k].title + '" ></span></span>' +
+                                     '<span id="' + _programs[i].tactics[k].id + '" class="duplicate-icon-TacticCopy-old" titles="' + _programs[i].tactics[k].title + '" ></span></span>' +
                                                 '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                           '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                           '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
@@ -1137,7 +1137,7 @@
                                             }
                                             $html += '<span class="LineItem-widthAuto"> <span id="tacticTitle" class="underline tipsyclassTitle ">' + _programs[i].tactics[k].lineitems[z].title + '</span>';
                                             if (_programs[i].tactics[k].lineitems[z].title != "Other") {
-                                                $html += '<span id="' + _programs[i].tactics[k].lineitems[z].id + '" class="duplicate-icon-LineItemCopy" titles="' + _programs[i].tactics[k].lineitems[z].title + '" ></span>';
+                                                $html += '<span id="' + _programs[i].tactics[k].lineitems[z].id + '" class="duplicate-icon-LineItemCopy-old" titles="' + _programs[i].tactics[k].lineitems[z].title + '" ></span>';
                                             }
                                             $html += '</span><span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                                         '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
