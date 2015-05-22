@@ -9,6 +9,7 @@ using System.IO;
 using System.Globalization;
 using RevenuePlanner.BDSService;
 using System.Data.Objects.SqlClient;
+using System.Web;
 
 /*
  *  Author: Manoj Limbachiya
@@ -99,10 +100,10 @@ namespace RevenuePlanner.Controllers
             HomePlanModel planmodel = new Models.HomePlanModel();
 
             //// Get active model list
-            List<Model> models = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.ClientId) && model.IsDeleted == false).ToList();
+            //List<Model> models = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.ClientId) && model.IsDeleted == false).ToList();
 
             //// Get modelIds
-            List<int> modelIds = models.Select(m => m.ModelId).ToList();
+            List<int> modelIds = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.ClientId) && model.IsDeleted == false).Select(m => m.ModelId).ToList();
             //// Get list of active plan by selected modelId list
             List<Plan> activePlan = objDbMrpEntities.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
 
@@ -111,18 +112,20 @@ namespace RevenuePlanner.Controllers
                 //// Get list of Active(published) plans for all above models
                 string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
                 activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
+                ViewBag.ActivePlan =Newtonsoft.Json.JsonConvert.SerializeObject( activePlan.Where(plan => plan.Model.ClientId == Sessions.User.ClientId)
+                                                            .Select(plan => new { PlanId=plan.PlanId,Title=HttpUtility.HtmlEncode( plan.Title) })
+                                                            .ToList().Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList());
+                //if (activePlan.Count == 0)
+                //{
+                //    //// Get active model of client id
+                //    //models = objDbMrpEntities.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).ToList();
 
-                if (activePlan.Count == 0)
-                {
-                    //// Get active model of client id
-                    models = objDbMrpEntities.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).ToList();
+                //    ////// Get modelIds
+                //    //modelIds = models.Select(m => m.ModelId).ToList();
 
-                    //// Get modelIds
-                    modelIds = models.Select(m => m.ModelId).ToList();
-
-                    activePlan = objDbMrpEntities.Plans.Where(plan => modelIds.Contains(plan.Model.ModelId) && plan.IsActive.Equals(true) && plan.IsDeleted.Equals(false)).ToList();
-                    activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).ToList();
-                }
+                //    //activePlan = objDbMrpEntities.Plans.Where(plan => modelIds.Contains(plan.Model.ModelId) && plan.IsActive.Equals(true) && plan.IsDeleted.Equals(false)).ToList();
+                //    //activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).ToList();
+                //}
             }
 
             //// Added by Bhavesh, Current year first plan select in dropdown

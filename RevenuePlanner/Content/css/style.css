@@ -9114,9 +9114,9 @@ a:hover, a:focus {
             white-space: nowrap; /*text-overflow:ellipsis; overflow:hidden;*/
         }
 
-    .budget-table table tbody.column1 tr {
+    /*.budget-table table tbody.column1 tr {
         display: table-row;
-    }
+    }*/
 
 tbody.column1 {
     width: 20%;
