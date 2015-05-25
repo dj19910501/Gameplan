@@ -2546,6 +2546,14 @@ namespace Integration.Salesforce
                     campaign[titleMappedValue] = Common.TruncateName(campaign[titleMappedValue].ToString());
                 }
             }
+            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+            if (_mappingCampaign.ContainsKey("ActivityType"))
+            {
+                string activityType = Enums.EntityType.Campaign.ToString();
+                string ActivityTypeMappedValue = _mappingCampaign["ActivityType"].ToString();
+                campaign.Add(ActivityTypeMappedValue, activityType);
+            }
+            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
 
             return _client.Update(objectName, planCampaign.IntegrationInstanceCampaignId, campaign);
         }
@@ -2562,6 +2570,13 @@ namespace Integration.Salesforce
                     program[titleMappedValue] = Common.TruncateName(program[titleMappedValue].ToString());
                 }
             }
+            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+            if (_mappingProgram.ContainsKey("ActivityType"))
+            {
+                string activityType = Enums.EntityType.Program.ToString();
+                program.Add(_mappingProgram["ActivityType"].ToString(), activityType);
+            }
+            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
 
             return _client.Update(objectName, planProgram.IntegrationInstanceProgramId, program);
         }
@@ -2579,6 +2594,13 @@ namespace Integration.Salesforce
                     tactic[titleMappedValue] = Common.TruncateName(planTactic.TacticCustomName.ToString());
                 }
             }
+            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+            if (_mappingTactic.ContainsKey("ActivityType"))
+            {
+                string activityType = Enums.EntityType.Tactic.ToString();
+                tactic.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+            }
+            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
             return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
         }
 
@@ -2594,6 +2616,13 @@ namespace Integration.Salesforce
                     tactic[titleMappedValue] = Common.TruncateName(tactic[titleMappedValue].ToString());
                 }
             }
+            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+            if (_mappingTactic.ContainsKey("ActivityType"))
+            {
+                string activityType = Enums.EntityType.ImprovementTactic.ToString();
+                tactic.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+            }
+            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
 
             return _client.Update(objectName, planIMPTactic.IntegrationInstanceTacticId, tactic);
         }
