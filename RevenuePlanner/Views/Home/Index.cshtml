@@ -54,7 +54,7 @@
         color: #6d6d6d !important;
     }
 </style>
-@if (activeMenu == "plan")
+@if (activeMenu.ToLower() == "plan")
 {
     @section nlFormContent{
         <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />

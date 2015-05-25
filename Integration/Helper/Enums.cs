@@ -69,7 +69,10 @@ namespace Integration.Helper
         {
             Campaign,
             Program,
-            Tactic
+            Tactic,
+            ImprovementCampaign,
+            ImprovementProgram,
+            ImprovementTactic
         }
 
         /// <summary>
@@ -140,7 +143,7 @@ namespace Integration.Helper
         /// <summary>
         /// sync status enum for error email
         /// </summary>
-        public enum SyncStatus 
+        public enum SyncStatus
         {
             Header,
             Success,
