@@ -14091,3 +14091,8 @@ div.clue-bottom-default .cluetip-arrows {
     font-size: 20px;
     font-weight: normal;
 }
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .display-table-row tr {
+    display:table-row !important;
+    }
+}
