@@ -203,24 +203,25 @@
         //in case of chrome browser it is creating design issue
         $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
         if ($.browser.chrome) {
-            var maxHeight = Math.max.apply(Math, heights);
-            var column1Width = $('.column1 div').css('width');
-            column1Width = column1Width.replace('px', '');
+            //var maxHeight = Math.max.apply(Math, heights);
+            //var column1Width = $('.column1 div').css('width');
+            //column1Width = column1Width.replace('px', '');
             try {
-                if (parseInt(column1Width) < maxHeight) {
-                    $('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
-                    $('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
-                    if ($('.column1 .programLevel').length > 0)
-                        $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 15);
-                    if ($('.column1 .campaignLevel').length > 0)
-                        $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
-                    if ($('.column1 .program-lvl').length > 0)
-                        $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
+                $('.display-table-row').removeClass('display-table-row');
+                //if (parseInt(column1Width) < maxHeight) {
+                //    $('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
+                //    $('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
+                //    if ($('.column1 .programLevel').length > 0)
+                //        $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 15);
+                //    if ($('.column1 .campaignLevel').length > 0)
+                //        $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
+                //    if ($('.column1 .program-lvl').length > 0)
+                //        $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
 
-                }
-                else {
-                    $('.display-table-row').removeClass('display-table-row');
-                }
+                //}
+                //else {
+                //    $('.display-table-row').removeClass('display-table-row');
+                //}
             } catch (e) {
 
             }
