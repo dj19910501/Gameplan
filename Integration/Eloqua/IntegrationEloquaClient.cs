@@ -411,12 +411,16 @@ namespace Integration.Eloqua
             {
                 EloquaResponse objEloquaResponse = new EloquaResponse();
                 List<SyncError> lstSyncError = new List<SyncError>();
-                objEloquaResponse.GetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId, out lstSyncError);
+                bool isError = objEloquaResponse.GetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId, out lstSyncError);
                 _lstSyncError.AddRange(lstSyncError);
+                if (isError)
+                {
+                    _isResultError = true;
+                }
             }
             catch (Exception ex)
             {
-                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while pulling response from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while pulling response from Eloqua. Exception :" + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
                 _ErrorMessage = GetErrorMessage(ex);
                 _isResultError = true;
             }
@@ -1633,8 +1637,12 @@ namespace Integration.Eloqua
             {
                 EloquaResponse objEloquaResponse = new EloquaResponse();
                 List<SyncError> lstSyncError = new List<SyncError>();
-                objEloquaResponse.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, EntityType.Tactic, out lstSyncError);
+                bool isError = objEloquaResponse.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, EntityType.Tactic, out lstSyncError);
                 _lstSyncError.AddRange(lstSyncError);
+                if (isError)
+                {
+                    _isResultError = true;
+                }
             }
             catch (Exception ex)
             {
