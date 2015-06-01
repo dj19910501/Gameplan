@@ -69,13 +69,14 @@ namespace Integration.Eloqua
         /// <param name="IntegrationInstanceLogId">Integration Instance Log Id.</param>
         /// <param name="_applicationId">Application Id.</param>
         /// <param name="_entityType">Entity Type.</param>
-        public void SetTacticMQLs(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType, out List<SyncError> _lstSyncError)
+        public bool SetTacticMQLs(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType, out List<SyncError> _lstSyncError)
         {
             _lstSyncError = new List<SyncError>();
 
             //// Insert log into IntegrationInstanceSection
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), DateTime.Now, _userId);
-
+            try
+            {
             //// PlanIDs which has configured for "Pull MQL" from Eloqua instances
             List<Plan> lstPlans = db.Plans.Where(objplan => objplan.Model.IntegrationInstanceIdMQL == IntegrationInstanceId && objplan.Model.Status.Equals("Published")).ToList();
             Guid _ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == IntegrationInstanceId).ClientId;
@@ -447,6 +448,7 @@ namespace Integration.Eloqua
                     string msg = e.Message;
                     // Update IntegrationInstanceSection log with Error status
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
+                        return true;
                 }
             }
             else
@@ -454,6 +456,16 @@ namespace Integration.Eloqua
                 // Update IntegrationInstanceSection log with Success status,
                 Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
             }
+            }
+            catch (Exception ex)
+            {
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "System error occurred while pulling mql from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
+                string msg = ex.Message;
+                // Update IntegrationInstanceSection log with Error status
+                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -462,13 +474,14 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="IntegrationInstanceId"></param>
         /// <returns></returns>
-        public void GetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, out List<SyncError> lstSyncError)
+        public bool GetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, out List<SyncError> lstSyncError)
         {
             lstSyncError = new List<SyncError>();
 
             // Insert log into IntegrationInstanceSection, Dharmraj PL#684
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
-
+            try
+            {
             // PlanIDs which has configured for "Pull response" from Eloqua instances
             List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceIdINQ == IntegrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
             if (planIds.Count > 0)
@@ -476,10 +489,11 @@ namespace Integration.Eloqua
                 var objIntegrationInstanceExternalServer = db.IntegrationInstanceExternalServers.FirstOrDefault(i => i.IntegrationInstanceId == IntegrationInstanceId);
                 if (objIntegrationInstanceExternalServer == null)
                 {
-                    lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "External server settings has not been configured.", Enums.SyncStatus.Error, DateTime.Now));
+                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), Common.msgExternalServerNotConfigured, Enums.SyncStatus.Error, DateTime.Now));
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgExternalServerNotConfigured);
-                    throw new Exception(Common.msgExternalServerNotConfigured);
+                        return true;
+                        //throw new Exception(Common.msgExternalServerNotConfigured);
                 }
                 string InstanceId = IntegrationInstanceId.ToString();
                 string _ftpURL = objIntegrationInstanceExternalServer.SFTPServerName;
@@ -516,7 +530,8 @@ namespace Integration.Eloqua
                     lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Eloqua response folder path does not exists.", Enums.SyncStatus.Error, DateTime.Now));
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Format(Common.msgDirectoryNotFound, localDestpath));
-                    throw new Exception(string.Format(Common.msgDirectoryNotFound, localDestpath));
+                        return true;
+                        //throw new Exception(string.Format(Common.msgDirectoryNotFound, localDestpath));
                 }
 
                 string localRunnungPath = localDestpath + InstanceId + "/";
@@ -533,8 +548,10 @@ namespace Integration.Eloqua
                     }
                     catch (Exception ex)
                     {
-                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "An error occurred while connecting to external server via SFTP.", Enums.SyncStatus.Error, DateTime.Now));
-                        throw new Exception(Common.msgNotConnectToExternalServer, ex.InnerException);
+                            lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), Common.msgNotConnectToExternalServer, Enums.SyncStatus.Error, DateTime.Now));
+                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
+                            //throw new Exception(Common.msgNotConnectToExternalServer, ex.InnerException);
+                            return true;
                     }
 
                     srclist = client.GetFileList(SFTPSourcePath);
@@ -650,8 +667,10 @@ namespace Integration.Eloqua
                                     }
                                     else
                                     {
-                                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Required column(s) does not exist in eloqua response.", Enums.SyncStatus.Error, DateTime.Now));
-                                        throw new Exception(Common.msgRequiredColumnNotExistEloquaPullResponse);
+                                            lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), Common.msgRequiredColumnNotExistEloquaPullResponse, Enums.SyncStatus.Error, DateTime.Now));
+                                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgRequiredColumnNotExistEloquaPullResponse);
+                                            //throw new Exception(Common.msgRequiredColumnNotExistEloquaPullResponse);
+                                            return true;
                                     }
                                 }
 
@@ -701,10 +720,10 @@ namespace Integration.Eloqua
                 }
                 catch (Exception ex)
                 {
-                    lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while processing tactic response from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
+                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while processing tactic response from Eloqua. Exception: " + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
                     // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
-                    throw ex;
+                        return true;
                 }
             }
             else
@@ -712,6 +731,14 @@ namespace Integration.Eloqua
                 // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
                 Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
             }
+            }
+            catch (Exception ex)
+            {
+                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while processing tactic response from Eloqua. Exception: " + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
+                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
+                return true;
+            }
+            return false;
         }
 
         public List<string> setarrExcelColumn(DataTable dt)
