@@ -4330,7 +4330,7 @@ namespace RevenuePlanner.Helpers
                         if (mode == Enums.InspectPopupMode.Edit.ToString() && editableOptions == true)
                         {
                             string DropDownStyle = " style=\"";
-                            string divPosition = "";
+                            string divPosition = "style=\"position:relative;\"";
                             string require = "";
                             string name = "";
                             string addResubmissionClass = "";
@@ -4342,7 +4342,7 @@ namespace RevenuePlanner.Helpers
                             if (fieldCounter % 4 == 3)
                             {
                                 DropDownStyle += "top:0px;margin-top:40px;";
-                                divPosition = "style=\"position:relative;\"";
+                                //divPosition = "style=\"position:relative;\"";
                             }
 
                             string displayCheckbox = "";

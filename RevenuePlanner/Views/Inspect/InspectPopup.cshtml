@@ -8,7 +8,7 @@
 }
 
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+@*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
 @{
     var TacticTitle = "";
     var Status = "";
@@ -44,37 +44,90 @@
 
         bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
         string InspectMode = ViewBag.InspectMode;
+        //Added By komal Rawal For #1213 - To maintain the mode on tab change after review
+
+        string ProgramOpt = "";
+        if(InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+        {
+            ProgramOpt = "View";
+        }
+        else
+        {
+             ProgramOpt = "Edit";
+        }
+        
+        //End
 
     }
 
 
 @Html.Hidden("hdnPlanTacticId", PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", Status, new { id = "hdnTacticStatus" })
-@Html.Hidden("hdnTacticBudgetAllocationOpt", "View", new { id = "hdnTacticBudgetAllocationOpt" })
+@Html.Hidden("hdnTacticBudgetAllocationOpt", ProgramOpt, new { id = "hdnTacticBudgetAllocationOpt" })
 @Html.Hidden("hdnIsResubmitableStatus", IsResubmitableStatus, new { id = "hdnIsResubmitableStatus" })
 @Html.Hidden("hdnInspectMode", InspectMode, new { id = "hdnInspectMode" })
 @Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
 @Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
-<form>
-     <div id="MultiSelectProcced" class="alert alert-error hide message-position-popup message-position-popup-border-color " proccedobject="#ATTRIBUTUTES#" style="display: none; margin: auto !important; max-width: 1000px !important;">
-                                <a class="close multiselect-close-button-popup">×</a>
-                                <span id="spanMultiSelectProcced" class="spanMultiSelectProcced-popup"><b><strong>Data will be lost!</strong></b> Switching <attributetext>#ATTRIBUTUTES#</attributetext> from Multi-selection to Single-selection will reset all weight (%).</span>
-                                <button class="proceed_btn" type="button"> Proceed </button> <a class="cncl_btn multiselect-cancel-link-popup" href="#">Cancel</a>
-                            </div>
-<div class="modal-popup-title" style="margin-bottom:3px;">
-    <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>
+
+@*Modified for #1318*@
+<style>
+    .headerfix-wraper {
+        top: 0;
+        left: 0;
+        width: 100%;
+        position: fixed;
+        background-color: #f2f2f2;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .headefix {
+        margin: 0 auto;
+        position: relative;
+        width: 72%;
+    }
+
+        .headefix span {
+            float: left;
+        }
+
+        .headefix .close-x-big-icon {
+            background-size: 36px auto !important;
+            position: absolute;
+            right: 6px;
+            top: 6px;
+        }
+
+    .pop-body-wraper {
+        float: left;
+        max-height: 700px;
+        overflow-x: hidden;
+        width: 130%;
+    }
+
+    .dummy {
+        width: 78%;
+        min-height: 800px;
+    }
+  
+        
+   
+    
+</style>
+<div class="headerfix-wraper">
+    <div class="headefix">
+
     <h2 class="title-simple source-sans-prolight">
+                
+        <span>
         @if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
         {            
-        <span>
-         <span id="lblTacticTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
-           
-             @if (IsPlanEditable)
+             if (IsPlanEditable)
              {
                         <div class="delete-btn-tab" style="float: right;" id="divDeleteTactic">
                             <button class="delete-btn-gray" id="deleteTactic" type="button">Delete</button>
                         </div>
              }
+           
            
                  <div style="float: right; position: relative;margin-left:10px;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
@@ -85,13 +138,50 @@
                                 </ul>
                             </div>
                  </div>
-              @if (IsPlanEditable)
+                  
+                   if (IsPlanEditable)
               {
                 <span class="edit-icon-white btn-blue btn-large" style="display:block;cursor: pointer;" id="EditForm"></span>
               }
-         </span>
-        }
+          }
 
+         @if(InspectMode == Enums.InspectPopupMode.Add.ToString())
+            {
+            <span class="Save-icon-white btn-blue btn-large" style="display:block;cursor: pointer;" id="EditForm"></span>
+
+            }
+             
+         </span>
+     
+             <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+
+           
+        </h2>
+
+    </div>
+</div>
+<div class="pop-body-wraper">
+    <div class="dummy">
+        <form>
+
+            <div id="MultiSelectProcced" class="alert alert-error hide message-position-popup-border-color " proccedobject="#ATTRIBUTUTES#" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                <a class="close multiselect-close-button-popup">×</a>
+                <span id="spanMultiSelectProcced" class="spanMultiSelectProcced-popup"><b><strong>Data will be lost!</strong></b> Switching
+                    <attributetext>#ATTRIBUTUTES#</attributetext>
+                    from Multi-selection to Single-selection will reset all weight (%).</span>
+                <button class="proceed_btn" type="button">Proceed </button>
+                <a class="cncl_btn multiselect-cancel-link-popup" href="#">Cancel</a>
+            </div>
+            <div class="modal-popup-title" style="margin-bottom: 3px;">
+                <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>
+                <h2 class="title-simple source-sans-prolight">
+                    @if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
+                    {            
+        <span>
+         <span id="lblTacticTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
+           </span>
+
+                    }
         @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(TacticTitle), new { placeholder = "Tactic name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = HttpUtility.HtmlDecode(TacticTitle) })
         @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
     </h2>
@@ -152,7 +242,8 @@
     <div id="divTab">
     </div>
 </div>
-
+    </div>
+</div>
 <script type="text/javascript">
 
     var divPartial = "#divPartial";
@@ -182,23 +273,75 @@
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
+              debugger;
               var activeTab = $("#InspectTab li.active a").text();
-              if (activeTab == 'Actuals') {
                   var tabtext = ($(this).children('a').text());
-                  displayConfirm('topTabsClick("' + tabtext + '");');
-              }
-              else {
+             
+              
+              //if (activeTab == 'Actuals') {
+              //    displayConfirm('topTabsClick("' + tabtext + '","' + activeTab + '");');
+              //}
+                  var returnpara = SaveAllData(activeTab); //Added By Komal Rawal for #1213 to save data to tab click
+
+                  if (returnpara) {
                   RemoveTabClass();
                   $(this).removeClass("pull-left");
                   $(this).addClass("active pull-left");
-                  $("#errorMessage").css("display", "none");
+                    //  $("#errorMessage").css("display", "none");
                   $("#successMessage").css("display", "none");
                   $('#MultiSelectProcced').css("display", "none");
-                  var tabtext = ($(this).children('a').text());
                   var planTacticId = $("#hdnPlanTacticId").val();
                   loadReview(planTacticId, tabtext);
               }
+       
           });
+
+          //Added By Komal Rawal for #1213
+          function SaveAllData(activeTab) {
+             //debugger;
+              var ProgramOpt = $("#hdnTacticBudgetAllocationOpt").val();
+              if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+                  if (activeTab == TabSetup) {
+                   //   debugger;
+                      var ReturnParameter = SetupSavetactic();
+                      if (ReturnParameter == false ) {
+                          return false;
+                      }
+                  }
+
+                     else if (activeTab == TabBudget) {
+                          var ReturnParameter = TacticBudgetSave();
+                         // alert("Budget" + ReturnParameter);
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                     }
+
+                     else if  (activeTab == TabActual)
+                     {
+                         var hdnTacticStatus = $("#hdnTacticStatus").val();
+                         var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                         var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                         var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                         if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
+                             var ReturnParameter = SaveActual();
+                             // alert("Actual" + ReturnParameter);
+                             if (ReturnParameter == false) {
+                                 return false;
+                             }
+
+                         }
+                        
+                     }
+                    
+                  }
+           
+               return true;
+             
+          }
+
+         
+          //End
 
           // Close event for Error Message & Success Message Close button 
           $(".alert").find(".close").on("click", function (e) {
@@ -215,13 +358,19 @@
           });
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
-          $("#EditForm").on("click", function (e) {
-              $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
-              $('#MultiSelectProcced').css("display", "none");
-              $("#txtTacticTitle").removeClass("error");              
+          $('#EditForm').on("click", function (e) {     //Modified for #1318 by Komal Rawal to handle the Save function
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();
+             
+              if ($('#EditForm').hasClass('edit-icon-white')) {
+                  $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                  $('#EditForm').addClass('Save-icon-white');
+                  $("#errorMessage").css("display", "none");
+                  $("#successMessage").css("display", "none");
+                  $('#MultiSelectProcced').css("display", "none");
+                  $("#txtTacticTitle").removeClass("error");
+                 
+                 
               if (activeTab == TabReview) {
                   activeTab = TabSetup;
               }
@@ -242,17 +391,89 @@
               $('#txtTacticTitle').css('display', 'block');
               //$("#txtTacticTitle").val($("#lblTacticTitle").text());
               $('#lblTacticTitle').css('display', 'none');
-              $('#EditForm').css('display', 'none');
+                  // $('#EditForm').css('display', 'none');
               loadReview(planTacticId, activeTab);
               //// Added By Kalpesh on 11/06/2014 to Non-Editable Tactic Name.mp4 mentioned in resolve ticket #868
               $("#txtTacticTitle").prop('readonly', false);
-              $("#AddForm").css("display", "none");
-              $('#divDeleteTactic').css('display', 'none');
+                  //  $("#AddForm").css("display", "none");
+                  //$('#divDeleteTactic').css('display', 'none');
+              }
+              else {
+                 // if (!InspectMode == Enums.InspectPopupMode.Add.ToString()) {
+                      //To save the Active Tab on Save Button
+                      if (activeTab == TabSetup) {
+                          var ReturnParameter = SetupSavetactic();
+                          //alert("Setup" + ReturnParameter);
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+                              $("#hdnTacticBudgetAllocationOpt").val("View");
+                              loadReview(planTacticId, activeTab);
+                              $('#EditForm').removeClass('Save-icon-white');
+                              $('#EditForm').addClass('edit-icon-white');
+                              $('#txtTacticTitle').css('display', 'none');
+                              $('#lblTacticTitle').css('display', 'block');
+                              $("#lblTacticTitle").removeAttr("style");
+                          }
+                      }
+
+                      else if (activeTab == TabBudget) {
+                          var ReturnParameter = TacticBudgetSave();
+                          // alert("Budget" + ReturnParameter);
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+                              $("#hdnTacticBudgetAllocationOpt").val("View");
+                              loadReview(planTacticId, activeTab);
+                              $('#EditForm').removeClass('Save-icon-white');
+                              $('#EditForm').addClass('edit-icon-white');
+                              $('#txtTacticTitle').css('display', 'none');
+                              $('#lblTacticTitle').css('display', 'block');
+                              $("#lblTacticTitle").removeAttr("style");
+                          }
+                      }
+
+                      else if (activeTab == TabActual) {
+
+                          var ReturnParameter = SaveActual();
+                          // alert("Actual" + ReturnParameter);
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+                              $("#hdnTacticBudgetAllocationOpt").val("View");
+                              loadReview(planTacticId, activeTab);
+                              $('#EditForm').removeClass('Save-icon-white');
+                              $('#EditForm').addClass('edit-icon-white');
+                              $('#txtTacticTitle').css('display', 'none');
+                              $('#lblTacticTitle').css('display', 'block');
+                              $("#lblTacticTitle").removeAttr("style");
+                          }
+                      }
+
+                      else if (activeTab == TabReview) {
+
+                          $("#hdnTacticBudgetAllocationOpt").val("View");
+                          loadReview(planTacticId, activeTab);
+                          $('#EditForm').removeClass('Save-icon-white');
+                          $('#EditForm').addClass('edit-icon-white');
+                          $('#txtTacticTitle').css('display', 'none');
+                          $('#lblTacticTitle').css('display', 'block');
+                          $("#lblTacticTitle").removeAttr("style");
+                      }
+                  }
+
+            //  }
           });
+        
           
       });
 
     function topTabsClick(tabText) {
+        var returnpara = savealldata(activeTab);
+        if (returnpara) {
         RemoveTabClass();
         $("#li" + tabText).removeClass("pull-left");
         $("#li" + tabText).addClass("active pull-left");
@@ -263,6 +484,7 @@
         var tabtext = ($("#li" + tabText).children('a').text());
         var planTacticId = $("#hdnPlanTacticId").val();
         loadReview(planTacticId, tabtext);
+    }
     }
 
     $('#AddForm').click(function () {
@@ -291,14 +513,16 @@
         $("#li" + tabValue).removeClass("pull-left");
         $("#li" + tabValue).addClass("active pull-left");
         $('#div' + tabValue).css({ display: "block" });
-        $("#divTab").empty();
+        
         if (tabValue == TabSetup) {
             if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()') {
                 url = '@Url.Content("~/Inspect/CreateTactic/")';
                 $("#divTab").load(url + '?id=' + "@PlanProgramId");
             }
             else if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+                
                 url = '@Url.Content("~/Inspect/EditTactic/")';
+               
                 $("#divTab").load(url + '?id=' + id + '&RedirectType=""&CalledFromBudget=""', function (response, status, xhr) {
                     if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                         //// Call function to redirect on service unavailibility.
@@ -307,6 +531,7 @@
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                 });
+              //  TacticBudgetSave()
             }
             else {
                 url = '@Url.Content("~/Inspect/LoadSetup/")';
@@ -339,8 +564,12 @@
         if (tabValue == TabActual) {
 
             if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+               
+              //  $("#divTab").empty();
                 $('#txtTacticTitle').css('display', 'block');
                 $('#lblTacticTitle').css('display', 'none');
+               // return false;
+              
             }
 
             url = '@Url.Content("~/Inspect/LoadActuals/")';

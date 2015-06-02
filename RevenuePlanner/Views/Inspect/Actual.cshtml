@@ -268,14 +268,14 @@
                 <label id="last-updated" class="pull-left last-updated" style="Width:45%;">@ViewBag.UpdatedBy</label>
                 <label id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
-            <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveTacticActualSection" style="display:none;">
+           @* <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveTacticActualSection" style="display:none;">
                 <div class="span2 btn-save">
                     <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left;" type="button">Update Actuals</button>
                 </div>
                 <div class="span2">
                     <button id="cancelTacticActuals" class="close-form btn-link source-sans-proregular margin-top23 actual_cancel" type="button">Cancel</button>
                 </div>
-            </div>
+            </div>*@
         </div>
     </div>
 <!--end content-panel-tab-->
@@ -602,7 +602,55 @@
             }
         }
 
-        $("#btnUploadResult").click(function () {
+       
+
+
+        
+        //Start-Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
+        $("#cancelTacticActuals").click(function () {
+            CancelEvent();
+            $("#successMessage").slideUp(50);
+            $("#errorMessage").slideUp(50);
+        });
+        function CancelEvent() {
+            var planTacticId = $("#hdnPlanTacticId").val();
+            $("#hdnTacticBudgetAllocationOpt").val("View");
+            loadReview(planTacticId, "Actuals");
+            $("#EditForm").css("display", "block");
+            $('#txtTacticTitle').css('display', 'none');
+            $('#lblTacticTitle').css('display', 'block');
+            $("#lblTacticTitle").removeAttr("style");
+            $('#divDeleteTactic').css('display', 'block');
+            $("#AddForm").css("display", "block");
+        }
+        $("#SaveTacticActualSection").css("display", "none");
+
+        var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();  
+        if (IsEditable == 'View') {                                 // check current page mode is editable or not.
+            $('.input-actual').removeClass('backgroundC6EBF3');
+            $('.input-actual').removeClass('input-table');
+            $('.input-actual').addClass('disabled-input-ActualPopup');
+            $('.input-actual').prop('readonly', true);                  
+            $("#SaveTacticActualSection").css("display", "none");       // hide Update & Cancel button
+        }
+        else {
+            $('.input-actual').addClass('backgroundC6EBF3');
+            $('.input-actual').addClass('input-table');
+            $('.input-actual').removeClass('disabled-input-ActualPopup');
+            $('.input-actual').prop('readonly', false);
+            $("#SaveTacticActualSection").css("display", "block");
+        }
+        //End - Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
+    });
+
+
+   
+
+    //Modified for #1213 by Komal Rawal - Function to save the data on Tab change called from inspect popup
+    function SaveActual() {
+        var planTacticId = $("#hdnPlanTacticId").val();
+        var returnparameter = false;
+        //$("#btnUploadResult").click(function () {
             var title = htmlEncode($('#txtTacticTitle').val()); // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
             var _tactic = [];
             var _LineItems = [];
@@ -626,6 +674,7 @@
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
             $('#tblActual').find('input').each(function () {
+           
 
                 if ($(this).val().trim() != '') {
                     if ($(this).val().trim().replace(/,/g, '').replace('$', '').match('^(0|[1-9][0-9]*)$')) {
@@ -677,6 +726,7 @@
                 
             });
             // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
+       
             if (title == '') {
                 isError = true;
             }
@@ -713,6 +763,7 @@
             $("#errorMessage").css("display", "none");
             $.ajax({
                 contentType: 'application/json; charset=utf-8',
+                async : false,
                 dataType: 'json',
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/UploadResult/")',
@@ -725,7 +776,7 @@
                                 $("#successMessage").css("display", "block");
                                 $("#spanMessageSuccess").empty();
                                 $("#spanMessageSuccess").text(data.msg);
-                                loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                                // loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
 
                                 if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                     $("#hdnBudgetingExpandId").val("tactic" + data.id);
@@ -734,16 +785,19 @@
                                 else {
                                     RefreshCurrentTab(requestedModule, 0, 0, 0);
                                 }
+                                returnparameter = true;
                             }
                             else {
                                 $("#errorMessage").css("display", "block");
                                 $("#spanMessageError").empty();
                                 $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                                returnparameter = false;
                         }
+                            returnparameter = true;
                         }
                     else {
                             ShowError(data.errormsg);
-                        return;
+                            returnparameter = false;
                     }
                     }
                 },
@@ -751,12 +805,12 @@
                     $("#errorMessage").css("display", "block");
                     $("#spanMessageError").empty();
                     GoToLogin();
-                    return false;
+                    returnparameter = false;
                 }
             });
 
 
-        });
+    }
         //Start-Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
         $("#cancelTacticActuals").click(function () {
             CancelEvent();
@@ -792,7 +846,7 @@
             $("#SaveTacticActualSection").css("display", "block");
         }
         //End - Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
-    });
+   // }
 function ShowError(value) {
     $("#modal-container-186470").scrollTop(0);
     $("#errorMessage").css("display", "block");

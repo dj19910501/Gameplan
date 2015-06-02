@@ -2476,6 +2476,7 @@ box-shadow: inset 0px -21px 12px -18px rgba(0,0,0,1);}*/
 
 #modal-container-186470 {
     position: absolute;
+    overflow:hidden;
 }
 /*---------------------------
           Modal welcome to revenue
@@ -10678,6 +10679,21 @@ li.close-list {
         vertical-align: top;
         font-weight: lighter; /* Added by Viral Kadiya to resolve Pl ticket #947. */
     }
+/*Added By komal Rawal for #1318*/
+.Save-icon-white:after {
+    background-image: url("../images/edit-icon-white.png");
+    background-position: 0 3px;
+    background-repeat: no-repeat;
+    content: "Save";
+    font-size: 14px;
+    height: 14px;
+    line-height: 34px;
+    /*margin-left: 10px;*/
+    margin-top: 12px;
+    padding-left: 24px;
+    vertical-align: top;
+    font-weight: lighter;
+}
 /* */
 
 /* Added by Pratik Chauhan*/
@@ -11557,6 +11573,11 @@ li.close-list {
 {
     .chrome-ie-height-720px {
         min-height: 720px !important;
+    }
+
+    /*Added for ticket #1318*/
+    .modal-inspect-review.modal-full-view {
+        overflow: visible;
     }
 }
 
@@ -13650,6 +13671,10 @@ div.clue-bottom-default .cluetip-arrows {
         padding-top: 0;
     }
 
+    .headefix {
+        width: 81% !important;
+    }
+
     .revenue-graph .revenue-graph-info {
         width: 21%;
     }
@@ -14091,8 +14116,16 @@ div.clue-bottom-default .cluetip-arrows {
     font-size: 20px;
     font-weight: normal;
 }
+
 @media screen and (-webkit-min-device-pixel-ratio:0) {
     .display-table-row tr {
     display:table-row !important;
+    }
+}
+
+@media screen and (max-width: 1440px) {
+
+    .pop-body-wraper {
+        width: 100%;
     }
 }

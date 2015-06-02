@@ -232,14 +232,14 @@
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
     </div>   
 
-    <div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
+    @*<div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
         <div class="span2 btn-save" style="width: 80px;">
             <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save</button>
         </div>
         <div class="span2">
             <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
         </div>
-    </div>
+    </div>*@
 }
 
 <script type="text/javascript">
@@ -284,7 +284,9 @@
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
           $('#divTacticSaveCancel').css('display', 'block');
-          $('#EditForm').css('display', 'none');
+          // $('#EditForm').css('display', 'none'); 
+          $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+          $('#EditForm').addClass('Save-icon-white');
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val());
           //$(".selectBox select").selectbox();
@@ -482,7 +484,7 @@
               $('#btnMultiselect_ddlProgram').after(spanProgram);
           }
 
-
+          debugger;
           var customFieldsValues = {};
           if ('@customFieldWeightage' != '') {
               customFieldsValues = JSON.parse('@Html.Raw(customFieldWeightage)');
@@ -552,7 +554,13 @@
             }
         });
     }
-    $("#btnUploadResult").on("click", function (e) {
+
+    var returnparameter = false;
+    //Modified for #1213 by Komal Rawal - Function to save the data on Tab change called from inspect popup
+    function SetupSavetactic() {
+          //debugger;
+
+       
         $('#MultiSelectProcced').css("display", "none");
         document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
         document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
@@ -728,12 +736,18 @@
         if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
             url = '@Url.Content("~/Inspect/LoadResubmission")';
             $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
-        } else {
+               // returnparameter = true;
+            }
+            else {
+              
             saveTactic();
-        }
-    });
+            }
+        return returnparameter;
+       
+    }
 
     function saveTactic(resubmission) {
+        returnparameter = false;
         resubmission = typeof resubmission !== 'undefined' ? resubmission : false;
         var ddlcampaignValue = $("#ddlcampaign").val();
         var ddlProgramValue = $("#ddlProgram").val();
@@ -749,6 +763,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Inspect/SetupSaveTactic")',
+            async : false,
             data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&resubmission=' + resubmission,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -771,7 +786,7 @@
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.Msg);
                             $("#errorMessage").css("display", "none");
-                            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                         //  loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", tabtext, "@Enums.InspectPopupMode.Edit.ToString()", 0, requestedModule);
                             $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                 $("#hdnBudgetingExpandId").val("tactic" + planTacticId);
@@ -783,6 +798,7 @@
                             $("#ddlcampaign").val(ddlcampaignValue);
                             $("#ddlProgram").val(ddlProgramValue);
                             $("#txtTacticTitle").val(txtTacticValue);
+                            $('#lblTacticTitle').text(txtTacticValue);
                             $("#Description").val(txtDescriptionValue);
 
                             //// if new record save then set Refresh flag to true.
@@ -793,17 +809,26 @@
                                       RefershPlanHeaderCalc();
                                   }
                               }
-                              return;
+                            returnparameter = true;
+                            
                           }
+                        returnparameter = true;
+                       
                       }
                       else {
+                       
                           ShowError(data.errormsg);
                           $("#divBudgetError").slideUp(30);
-                          return;
-                      }
-                  }
+                       returnparameter = false;
+
+                    }
+                   
+                }
+               
             }
+            
         });
+    
       }
 
       function ShowError(value) {

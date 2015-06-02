@@ -484,8 +484,9 @@
                             var inspectMode='';
                             if (IsEditable == strViewMode.toString())
                                 inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                            else
+                            else {
                                 inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                            }
 
                             loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);//section parameter passed to open tactic popup
                         }

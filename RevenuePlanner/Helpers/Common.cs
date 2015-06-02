@@ -5093,16 +5093,16 @@ namespace RevenuePlanner.Helpers
                         //Added by Komal Rawal
                         var CustomFieldexists = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic) &&
                                                                                    (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
-                                                                                     ).Select(customfield => customfield).ToList();
-                        if (CustomFieldexists.Count() == 0)
+                                                                                     ).Select(customfield => customfield).Any();
+                        if (!CustomFieldexists)
                         {
                             return lstTactic;
                         }
 
                         //For #774
-                        var Entityid = objDbMrpEntities.CustomField_Entity.Where(entityid=>lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).ToList();
+                        var Entityid = objDbMrpEntities.CustomField_Entity.Where(entityid=>lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).Any();
 
-                        if (Entityid.Count() == 0)
+                        if (!Entityid)
                        
                         {
                             return lstTactic;
