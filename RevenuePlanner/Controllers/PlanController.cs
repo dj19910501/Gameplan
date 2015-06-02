@@ -6902,7 +6902,6 @@ namespace RevenuePlanner.Controllers
                     }).Select(pctj => pctj).Distinct().OrderBy(pctj => pctj.id)
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
             }).Select(p => p).Distinct().OrderBy(p => p.id);
-
             //// Create BudgetModel based on PlanId.
             Plan objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId.Equals(PlanId));
             string parentPlanId = "0", parentCampaignId = "0", parentProgramId = "0", parentTacticId = "0", parentCustomId = "0";
@@ -7012,8 +7011,28 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-
+            
             //Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
+            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+            string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+            bool isDisplayForFilter = false;
+            bool IsCustomFeildExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), Sessions.User.ClientId);
+            var CustomFieldexists = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) &&
+                                                                        (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
+                                                                         ).Any();
+            List<string> tacIds = model.Where(t => t.ActivityType == EntityTypeTactic).Select(t => t.ActivityId).ToList();
+            tacIds = tacIds.Select(t => t.Replace("cpt_", "")).ToList();
+            List<int> intList = tacIds.ConvertAll(s => Int32.Parse(s));
+            var Entities = db.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).Select(entityid => entityid).ToList();
+
+            var lstAllTacticCustomFieldEntities = db.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == Sessions.User.ClientId &&
+                                                                                                        customFieldEntity.CustomField.IsDeleted.Equals(false) &&
+                                                                                                        customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
+                                                                                                        customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
+                                                                                                        (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
+                                                                                                        intList.Contains(customFieldEntity.EntityId))
+                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
+            List<CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
             foreach (var item in model)
             {
 
@@ -7024,7 +7043,7 @@ namespace RevenuePlanner.Controllers
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.ActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists,Entities,lstAllTacticCustomFieldEntities,userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isEditable = true;
@@ -7042,7 +7061,7 @@ namespace RevenuePlanner.Controllers
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.ParentActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList,false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isEditable = true;

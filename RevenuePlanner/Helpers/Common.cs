@@ -5295,7 +5295,7 @@ namespace RevenuePlanner.Helpers
             {
                 using (MRPEntities objDbMrpEntities = new MRPEntities())
                 {
-                    if (lstTactic.Count() > 0 && Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), clientId))
+                    if (lstTactic.Count() > 0 && Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), clientId)) //todo : able to move up
                     {
                         //// Get list customFieldEntity List for given tactic list
                         string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
@@ -5304,8 +5304,8 @@ namespace RevenuePlanner.Helpers
                         //Added by Komal Rawal
                         var CustomFieldexists = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic) &&
                                                                                     (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
-                                                                                     ).Any();
-                        if (CustomFieldexists)
+                                                                                     ).Any(); //todo : able to move up
+                        if (!CustomFieldexists)
                         {
                             return lstTactic;
                         }
@@ -5314,7 +5314,7 @@ namespace RevenuePlanner.Helpers
                         var Entityid = objDbMrpEntities.CustomField_Entity.Where(entityid => lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).Any();
 
                        
-                        if (Entityid)
+                        if (!Entityid)
                         {
                             return lstTactic;
                         }
@@ -5326,12 +5326,12 @@ namespace RevenuePlanner.Helpers
                                                                                                         customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
                                                                                                         (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
                                                                                                         lstTactic.Contains(customFieldEntity.EntityId))
-                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
+                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
 
                         if (lstAllTacticCustomFieldEntities.Count > 0)
                         {
                             //// Get Custom Restrictions
-                            var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(userId, true);
+                            var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(userId, true);//todo : able to move up
 
                             //// Check default custom restriction is editable or not
                             bool isDefaultRestrictionsEditable = IsDefaultCustomRestrictionsEditable();
@@ -5399,6 +5399,118 @@ namespace RevenuePlanner.Helpers
             return lstEditableEntityIds;
         }
 
+
+        public static List<int> GetEditableTacticListPO(Guid userId, Guid clientId, List<int> lstTactic, bool IsCustomFeildExist, bool CustomFieldexists, List<CustomField_Entity> Entities, List<CustomField_Entity> lstAllTacticCustomFieldEntities, List<Models.CustomRestriction> userCustomRestrictionList, bool isDisplayForFilter = true)
+        {
+            List<int> lstEditableEntityIds = new List<int>();
+
+            try
+            {
+                //using (MRPEntities objDbMrpEntities = new MRPEntities())
+                //{
+                    if (lstTactic.Count() > 0 && IsCustomFeildExist) //todo : able to move up
+                    {
+                        //// Get list customFieldEntity List for given tactic list
+                        string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+                        string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+
+                        //Added by Komal Rawal
+                        //var CustomFieldexists = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic) &&
+                        //                                                            (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
+                        //                                                             ).Any(); //todo : able to move up
+                        if (!CustomFieldexists)
+                        {
+                            return lstTactic;
+                        }
+
+                        //For #774
+                        var Entityid = Entities.Where(entityid => lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).Any();
+                        //todo : able to move up
+
+                        if (!Entityid)
+                        {
+                            return lstTactic;
+                        }
+
+                        //End
+                        //var lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == clientId &&
+                        //                                                                                customFieldEntity.CustomField.IsDeleted.Equals(false) &&
+                        //                                                                                customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
+                        //                                                                                customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
+                        //                                                                                (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
+                        //                                                                                lstTactic.Contains(customFieldEntity.EntityId))
+                        //                                                                        .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
+
+                        if (lstAllTacticCustomFieldEntities.Count > 0)
+                        {
+                            //// Get Custom Restrictions
+                            //var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(userId, true);//todo : able to move up
+
+                            //// Check default custom restriction is editable or not
+                            bool isDefaultRestrictionsEditable = IsDefaultCustomRestrictionsEditable();
+
+                            if (userCustomRestrictionList.Count() > 0)
+                            {
+                                //// Get list of tactic Ids
+                                List<int> lstTacticIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
+
+                                bool isEditableEntity = true;
+                                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+
+                                foreach (int tacticId in lstTacticIds)
+                                {
+                                    //// Get list of CustomFieldEntities for current selected tactic
+                                    var currentTacticEntities = lstAllTacticCustomFieldEntities.Where(entity => entity.EntityId == tacticId).ToList();
+
+                                    foreach (var entity in currentTacticEntities)
+                                    {
+                                        if (userCustomRestrictionList.Where(option => option.CustomFieldOptionId == int.Parse(entity.Value)).Any())
+                                        {
+                                            bool IsEditable = userCustomRestrictionList.Where(restriction => restriction.CustomFieldOptionId == int.Parse(entity.Value) &&
+                                                                                                restriction.Permission == ViewEditPermission).Any();
+                                            if (IsEditable == false)
+                                            {
+                                                isEditableEntity = false;
+                                                break;
+                                            }
+                                        }
+                                        else if (!isDefaultRestrictionsEditable)
+                                        {
+                                            isEditableEntity = false;
+                                            break;
+                                        }
+                                    }
+
+                                    //// If tactic is viewable then add it into final Entity list
+                                    if (isEditableEntity)
+                                    {
+                                        lstEditableEntityIds.Add(tacticId);
+                                    }
+
+                                    isEditableEntity = true;
+                                }
+                            }
+                            else if (isDefaultRestrictionsEditable)
+                            {
+                                //// Check default custom restrictions is set to editable
+                                //// set list of editable tactic Ids
+                                lstEditableEntityIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return lstTactic;
+                    }
+                }
+            //}
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return lstEditableEntityIds;
+        }
         /// <summary>
         /// Function to check that custom field exist for particular entity type.
         /// </summary>
