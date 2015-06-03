@@ -10681,7 +10681,7 @@ li.close-list {
     }
 /*Added By komal Rawal for #1318*/
 .Save-icon-white:after {
-    background-image: url("../images/edit-icon-white.png");
+    background-image: url("../images/save-icon-white.png");
     background-position: 0 3px;
     background-repeat: no-repeat;
     content: "Save";

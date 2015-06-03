@@ -448,6 +448,7 @@
     <Content Include="Content\images\Remove-icon.png" />
     <Content Include="Content\images\requests-logo.png" />
     <Content Include="Content\images\round-plus.png" />
+    <Content Include="Content\images\save-icon-white.png" />
     <Content Include="Content\images\select2-spinner.gif" />
     <Content Include="Content\images\select2.png" />
     <Content Include="Content\images\select2x2.png" />

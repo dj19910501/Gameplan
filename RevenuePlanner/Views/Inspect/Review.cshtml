@@ -488,7 +488,8 @@
                                 inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
                             }
 
-                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);//section parameter passed to open tactic popup
+                            // loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);//section parameter passed to open tactic popup
+                            loadReview($("#hdnPlanTacticId").val(), TabReview);
                         }
                         else {
                             $("#errorMessage").css("display", "block");

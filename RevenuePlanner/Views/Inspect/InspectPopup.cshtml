@@ -175,13 +175,11 @@
             <div class="modal-popup-title" style="margin-bottom: 3px;">
                 <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>
                 <h2 class="title-simple source-sans-prolight">
-                    @if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
-                    {            
         <span>
          <span id="lblTacticTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(TacticTitle)">@HttpUtility.HtmlDecode(TacticTitle)</span>
            </span>
 
-                    }
+                    
         @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(TacticTitle), new { placeholder = "Tactic name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = HttpUtility.HtmlDecode(TacticTitle) })
         @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
     </h2>
@@ -252,7 +250,8 @@
     var TabActual = "Actuals";
     var divTab = "#divTab";
     var TabBudget = "Budget";
-
+    var tabtext = "";
+var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Handling add mode of inspect popup
     $(document).ready(
       function () {
           NumberFormatterTipsyTitle($("#lblCustomNameFormat"), 130);
@@ -266,17 +265,23 @@
 
           $("#li" + InspectValue).removeClass("pull-left");
           $("#li" + InspectValue).addClass("active pull-left");
-          var tabtext = ($("#li" + InspectValue).children('a').text());
+          tabtext = ($("#li" + InspectValue).children('a').text());
           $('#div' + tabtext).css({ display: "block" });
 
           loadReview(planTacticId, tabtext);
-
+          if ($('#EditForm').hasClass('edit-icon-white') && InspectMode == '@Enums.InspectPopupMode.Edit.ToString()') {
+              $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+              $('#EditForm').addClass('Save-icon-white');
+              $("#errorMessage").css("display", "none");
+              $("#successMessage").css("display", "none");
+              $('#MultiSelectProcced').css("display", "none");
+              $("#txtTacticTitle").removeClass("error");
+          }
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
-              debugger;
+              
               var activeTab = $("#InspectTab li.active a").text();
-                  var tabtext = ($(this).children('a').text());
-             
+                  tabtext = ($(this).children('a').text());
               
               //if (activeTab == 'Actuals') {
               //    displayConfirm('topTabsClick("' + tabtext + '","' + activeTab + '");');
@@ -291,6 +296,7 @@
                   $("#successMessage").css("display", "none");
                   $('#MultiSelectProcced').css("display", "none");
                   var planTacticId = $("#hdnPlanTacticId").val();
+                      InspectMode = "@Enums.InspectPopupMode.Edit.ToString()";
                   loadReview(planTacticId, tabtext);
               }
        
@@ -325,13 +331,14 @@
                          var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
                          if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
                              var ReturnParameter = SaveActual();
+                         }
+                         else {
+                             ReturnParameter = true;
+                         }
                              // alert("Actual" + ReturnParameter);
                              if (ReturnParameter == false) {
                                  return false;
                              }
-
-                         }
-                        
                      }
                     
                   }
@@ -399,16 +406,19 @@
                   //$('#divDeleteTactic').css('display', 'none');
               }
               else {
-                 // if (!InspectMode == Enums.InspectPopupMode.Add.ToString()) {
+                
+                
                       //To save the Active Tab on Save Button
                       if (activeTab == TabSetup) {
                           var ReturnParameter = SetupSavetactic();
-                          //alert("Setup" + ReturnParameter);
                           if (ReturnParameter == false) {
                               return false;
                           }
                           else {
+
                               $("#hdnTacticBudgetAllocationOpt").val("View");
+                              planTacticId = $("#hdnPlanTacticId").val();
+                              InspectMode = "@Enums.InspectPopupMode.Edit.ToString()";
                               loadReview(planTacticId, activeTab);
                               $('#EditForm').removeClass('Save-icon-white');
                               $('#EditForm').addClass('edit-icon-white');
@@ -420,7 +430,6 @@
 
                       else if (activeTab == TabBudget) {
                           var ReturnParameter = TacticBudgetSave();
-                          // alert("Budget" + ReturnParameter);
                           if (ReturnParameter == false) {
                               return false;
                           }
@@ -437,8 +446,16 @@
 
                       else if (activeTab == TabActual) {
 
+                          var hdnTacticStatus = $("#hdnTacticStatus").val();
+                          var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                         var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                          var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                          if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
                           var ReturnParameter = SaveActual();
-                          // alert("Actual" + ReturnParameter);
+                          }
+                          else {
+                                ReturnParameter = true;
+                          }
                           if (ReturnParameter == false) {
                               return false;
                           }
@@ -515,7 +532,7 @@
         $('#div' + tabValue).css({ display: "block" });
         
         if (tabValue == TabSetup) {
-            if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()') {
+            if (InspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
                 url = '@Url.Content("~/Inspect/CreateTactic/")';
                 $("#divTab").load(url + '?id=' + "@PlanProgramId");
             }
@@ -785,5 +802,26 @@ $("#deleteTactic").click(function () {
  $('#NewTactic').click(function () {
 
         loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val());
-});
+ });
+
+    function setTacticStatus(status) {
+        var $this = $('#status');
+        $this.removeClass();
+        $this.text($('#hdnTacticStatus').val());
+        if (status == '@Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value') {
+            $this.addClass('source-sans-prosemibold statussubmitted');
+            
+        }
+        else if (status == '@Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value') {
+            $this.addClass('source-sans-prosemibold statusrejected');
+        }
+        else if (status == '@Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value'
+            || status == '@Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value'
+            || status == '@Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value') {
+            $this.addClass('source-sans-prosemibold statusapproved');
+        }
+        else if (status == '@Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value') {
+            $this.addClass('source-sans-prosemibold statuscreated');
+        }
+    }
 </script>

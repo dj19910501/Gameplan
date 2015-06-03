@@ -70,7 +70,7 @@
             $("#divBackground").fadeOut("slow", function () {
                 $('#divBackground').attr('style', 'display: none !important;');
             });
-
+            
             //// Check from where it opens.
             if ('@redirectionType' == '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)') {
                 //// Save to Tactic 
@@ -80,6 +80,21 @@
                 //// Save to Improvement Tactic 
                 SaveImprovementTactic();
             }
+            if (tabtext == "Setup") {
+                InspectMode = "@RevenuePlanner.Helpers.Enums.InspectPopupMode.Edit.ToString()";
+            }
+            setTacticStatus($('#hdnTacticStatus').val());
+            var activeTabResubmission=$("#InspectTab li.active a").text();
+            if (tabtext == activeTabResubmission) {
+                $("#hdnTacticBudgetAllocationOpt").val("View");
+                
+                $('#EditForm').removeClass('Save-icon-white');
+                $('#EditForm').addClass('edit-icon-white');
+                $('#txtTacticTitle').css('display', 'none');
+                $('#lblTacticTitle').css('display', 'block');
+                $("#lblTacticTitle").removeAttr("style");
+            }
+            loadReview($("#hdnPlanTacticId").val(), tabtext);
         });
     });
 </script>
