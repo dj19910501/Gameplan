@@ -843,6 +843,12 @@ namespace BDSService
                             objUser_Application.RoleId = user.RoleId;
                             objUser_Application.ModifiedDate = DateTime.Now;
                             objUser_Application.ModifiedBy = modifiedBy;
+                            //Start: Manoj (Measure) #364 Views exception handling - Measure Admin area 04-Jun-2015
+                            if (user.IsDeleted != null)
+                            {
+                                objUser_Application.IsDeleted = obj.IsDeleted;
+                            }
+                            //End: Manoj (Measure) #364 Views exception handling - Measure Admin area 04-Jun-2015
                             //Start Manoj 08Jul2014 PL # 34 (Measure)
                             //objUser_Application.ManagerId = user.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                             //End Manoj 08Jul2014 PL # 34 (Measure)
