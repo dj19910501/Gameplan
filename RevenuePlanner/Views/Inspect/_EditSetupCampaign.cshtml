@@ -6,7 +6,7 @@
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     string OwnerName = ViewBag.OwnerName;
-    
+
     //// Flag to indicate unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
@@ -86,7 +86,7 @@
     @Html.HiddenFor(model => model.CampaignBudget, new { id = "hdnOldCampaignBudget" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })  // Added by Viral Kadiya on 11/15/2014 for PL ticket #794
                                                                                 
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting" style="margin-bottom:0px;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting" style="margin-bottom: 0px;">
 
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
@@ -118,7 +118,7 @@
             }
             else
             {
-            @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
+                @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
             }
             <p>Start Date</p>
             <span style="position: relative;">
@@ -171,11 +171,11 @@
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
-    <div  id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0" id="attributesControlsArea">
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0" id="attributesControlsArea">
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
     </div>
     
-                if ((bool)ViewBag.IsOwner || (Convert.ToString(ViewBag.IsAuthorized) == "True"))
+@*     if ((bool)ViewBag.IsOwner || (Convert.ToString(ViewBag.IsAuthorized) == "True"))
                 {           
     <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div " id="divCampaignSaveCancel">
         <div class="span2 btn-save" style="width: 80px;">
@@ -185,7 +185,8 @@
             <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
         </div>
     </div>
-                }
+                }*@
+    
 }
 <script type="text/javascript">
 
@@ -204,7 +205,7 @@
     //// Ticket: 942 Exception handeling in Gameplan.
     function redirectOnServiceUnavailibility() {
         if ('@Html.Raw(Json.Encode(isServiceUnavailable))' == 'true') {
-                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
         }
     }
 
@@ -216,8 +217,8 @@
               noneSelectedText: "Please Select",
               selectedList: 1,
               CustomName: '@Common.CustomTitle'
-            }).multiselectfilter();
-         // $(".simpleSelectBox select").selectbox();
+          }).multiselectfilter();
+          // $(".simpleSelectBox select").selectbox();
           $('#ddlOwner').next().css('width', '95%');
           $('#ddlOwner').next().css('min-height', '30px');
           var spanOwner = $('#multipleselect_ddlOwner');
@@ -275,24 +276,24 @@
           //End - Added by Viral Kadiya on 18/11/2014 to resolve PL ticket #947.
 
       });
-    //<---  End Document.ready Event --->
+      //<---  End Document.ready Event --->
 
-    $("#btnCancel").click(function () {
-        if ($('#PlanCampaignId').val() != '0') {
-            CancelEvent();
-            $("#successMessageViewCampaign").slideUp(50);
-            $("#errorMessageEditCampaign").slideUp(50);
-            $('#txtTitle').val($('#lblCampaignTitle').text());
-        }
-        else {
-            $('.close-x-big-icon').trigger('click');
-        }
-    });
+      $("#btnCancel").click(function () {
+          if ($('#PlanCampaignId').val() != '0') {
+              CancelEvent();
+              $("#successMessageViewCampaign").slideUp(50);
+              $("#errorMessageEditCampaign").slideUp(50);
+              $('#txtTitle').val($('#lblCampaignTitle').text());
+          }
+          else {
+              $('.close-x-big-icon').trigger('click');
+          }
+      });
 
 
-    function CancelEvent() {
-        $("#hdnCampaignOpt").val("View");
-        loadReview('@Model.PlanCampaignId', "Setup");
+      function CancelEvent() {
+          $("#hdnCampaignOpt").val("View");
+          loadReview('@Model.PlanCampaignId', "Setup");
         $("#btnEditCampaign").css("display", "block");
         $("#AddForm").css("display", "block");
         $('#txtTitle').css('display', 'none');
@@ -311,69 +312,69 @@
 
     $('.dp').datepicker({
         format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
-          autoclose: true,
-      }).on('changeDate', function (ev) {
-          $(this).datepicker('hide');
-      });
-    
-    $('#dp_start .add-on').click(function (e) {
-        $('#dp_start').datepicker('show');
-        $('#dp_end').datepicker('hide');
-        $(".dropdown-menu").css("z-index", "25001");
-        var pos = $("#t_startdate").position();
-        var height = $("#t_startdate").height();
-        var scrollTop = $("#modal-container-186470").scrollTop();
-        var pos_top = pos.top + height+scrollTop+10;
-        setTimeout(function () {
-            if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-                $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
-                
-                $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
-                    top:pos_top.toString()+'px',
-                    display: 'block'
-                });
-            }
-            else {
-                $('#dp_start').find('.datepicker.dropdown-menu').css({
-                    top: pos_top.toString() + 'px',
-                    display: 'block'
-                });
-            }
-        }, 1);
+        autoclose: true,
+    }).on('changeDate', function (ev) {
+        $(this).datepicker('hide');
+    });
 
-        //// To resolve issue of Ticket #1025, Pratik 
-        $(".datepicker.dropdown-menu").last().css("display", "none");
-    })
+        $('#dp_start .add-on').click(function (e) {
+            $('#dp_start').datepicker('show');
+            $('#dp_end').datepicker('hide');
+            $(".dropdown-menu").css("z-index", "25001");
+            var pos = $("#t_startdate").position();
+            var height = $("#t_startdate").height();
+            var scrollTop = $("#modal-container-186470").scrollTop();
+            var pos_top = pos.top + height + scrollTop + 10;
+            setTimeout(function () {
+                if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                    $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
 
-    $('#dp_end .add-on').click(function () {
-        $('#dp_start').datepicker('hide');
-        $('#dp_end').datepicker('show');
-        $(".dropdown-menu").css("z-index", "25001");
-        var pos = $("#t_enddate").position();
-        var height = $("#t_enddate").height();
-        var scrollTop = $("#modal-container-186470").scrollTop();
-        var pos_top = pos.top + height + scrollTop + 10;
-        setTimeout(function () {
-            if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-                $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
-                $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
-                    top: pos_top.toString() + 'px',
-                    display: 'block'
+                    $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
+                        top: pos_top.toString() + 'px',
+                        display: 'block'
+                    });
+                }
+                else {
+                    $('#dp_start').find('.datepicker.dropdown-menu').css({
+                        top: pos_top.toString() + 'px',
+                        display: 'block'
+                    });
+                }
+            }, 1);
 
-                });
-            }
-            else {
-                $('#dp_end').find('.datepicker.dropdown-menu').css({
-                    top: pos_top.toString() + 'px',
-                    display: 'block'
+            //// To resolve issue of Ticket #1025, Pratik 
+            $(".datepicker.dropdown-menu").last().css("display", "none");
+        })
 
-                });
-            }
-        }, 1);
+        $('#dp_end .add-on').click(function () {
+            $('#dp_start').datepicker('hide');
+            $('#dp_end').datepicker('show');
+            $(".dropdown-menu").css("z-index", "25001");
+            var pos = $("#t_enddate").position();
+            var height = $("#t_enddate").height();
+            var scrollTop = $("#modal-container-186470").scrollTop();
+            var pos_top = pos.top + height + scrollTop + 10;
+            setTimeout(function () {
+                if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                    $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
+                    $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
+                        top: pos_top.toString() + 'px',
+                        display: 'block'
 
-        //// To resolve issue of Ticket #1025, Pratik 
-        $(".datepicker.dropdown-menu").first().css("display", "none");
-    })
+                    });
+                }
+                else {
+                    $('#dp_end').find('.datepicker.dropdown-menu').css({
+                        top: pos_top.toString() + 'px',
+                        display: 'block'
+
+                    });
+                }
+            }, 1);
+
+            //// To resolve issue of Ticket #1025, Pratik 
+            $(".datepicker.dropdown-menu").first().css("display", "none");
+        })
         $(".alert").find(".close").on("click", function (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -428,51 +429,55 @@
             }
         });
 
-        $("#save_campaign").click(function () {
+        //Modified By Komal rawal for #1324
+        function SetupCampaignSave() {
+            var returnparameter = false;
+
+            // $("#save_campaign").click(function () {
             var iserror = false;
             var campaignTitle = htmlEncode($('#txtTitle').val());
             var hdnYear = @ViewBag.Year
            $('#MultiSelectProcced').css("display", "none");
-        $('form').find('input[type=text], select, textarea').each(function () {
-            if ($(this).attr('require') == 'true') {
-                if ($(this).val().toString().trim() == '') {
-                    $(this).addClass("error");
-                    iserror = true;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
                 }
-                else {
-                    $(this).removeClass("error");
-                }
-            }
-        });
+            });
 
-        $('form').find('.sbSelector').each(function () {
-            if ($(this).parent().prev().attr('require') == 'true') {
-                if ($(this).text() == 'Please Select') {
+            $('form').find('.sbSelector').each(function () {
+                if ($(this).parent().prev().attr('require') == 'true') {
+                    if ($(this).text() == 'Please Select') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            $('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select') {
                     $(this).addClass("error");
                     iserror = true;
                 }
                 else {
                     $(this).removeClass("error");
                 }
-            }
-        });
-        $('.dropdown_new_btn').each(function () {
-            if (typeof $(this).attr('require')!='undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select') {
-                $(this).addClass("error");
+            });
+            if (campaignTitle == "") {
+                $('#txtTitle').addClass("error");
                 iserror = true;
             }
-            else {
-                $(this).removeClass("error");
-            }
-        });
-        if (campaignTitle == "") {
-            $('#txtTitle').addClass("error");
-            iserror = true;
-        }
 
             /* Start - Added by bhavesh on 10/03/2015 for PL ticket #711 */
             //// RequireField validation for Owner Dropdown
-        if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+            if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
             var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
             if (OwnerValue == "") {
                 $('#btnMultiselect_ddlOwner').addClass("error");
@@ -493,11 +498,11 @@
             return false;
         }*@
 
-        var regex = /(>|<)/m;
+            var regex = /(>|<)/m;
 
-        var descriptionvalue = $("#txtDescription").val();
-        if (descriptionvalue.search(regex) >= 0) {
-            ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
+            var descriptionvalue = $("#txtDescription").val();
+            if (descriptionvalue.search(regex) >= 0) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
             $("#txtDescription").addClass("error");
             return false;
         }
@@ -519,83 +524,108 @@
             return false;
         }
         if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-        if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
-        if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) {
-            return false;
-        }
-        if (!validateDateCompare(sdate, psdate, "@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate")) {
-            return false;
-        }
-        if (!validateDateCompare(pedate, edate, "@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate")) {
-            return false;
-        }
-        if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
-            return false;
-        }
-        if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
-            return false;
-        }
-
-        var _customFieldValues = [];
-        $('form').find('input[type=text],input:checked, select').each(function () {
-            if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
-                _customFieldValues.push({
-                    Key: $(this).attr('cf_id').toString(),
-                    Value: htmlEncode($(this).val().toString())
-                });
+            if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+            if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) {
+                return false;
             }
-        });
-        _customFieldValues = JSON.stringify(_customFieldValues);
-        document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-        $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
-        $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
-        document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
+            if (!validateDateCompare(sdate, psdate, "@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate")) {
+                return false;
+            }
+            if (!validateDateCompare(pedate, edate, "@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate")) {
+                return false;
+            }
+            if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
+                return false;
+            }
+            if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
+                return false;
+            }
 
-        var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-        var uId = $(window).attr('name');
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Inspect/SaveCampaign")',
-            data: formData + '&UserId=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues) + '&planId=@Model.PlanId',
+            var _customFieldValues = [];
+            $('form').find('input[type=text],input:checked, select').each(function () {
+                if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
+                    _customFieldValues.push({
+                        Key: $(this).attr('cf_id').toString(),
+                        Value: htmlEncode($(this).val().toString())
+                    });
+                }
+            });
+            _customFieldValues = JSON.stringify(_customFieldValues);
+            document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
+            $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
+            $("#lblCampaignTitle").html(htmlEncode($('#txtTitle').val())); //Modified for #1324
+            document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
+
+            var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            var uId = $(window).attr('name');
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: '@Url.Content("~/Inspect/SaveCampaign")',
+                    data: formData + '&UserId=' + uId + '&title=' + escape(campaignTitle) + '&customFieldInputs=' + escape(_customFieldValues) + '&planId=@Model.PlanId',
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
                     if (data.isSaved) {
-                        var activeTab = $("#InspectTab li.active a").text()
+                        var activeTab = $("#InspectTab li.active a").text();
+                        var TabBudget = "Budget";
                         var planCampaignId = $("#PlanCampaignId").val();
-                        $("#successMessage").css("display", "block");
-                        $("#spanMessageSuccess").empty();
-                        $("#spanMessageSuccess").text(data.msg);
-                        $("#errorMessage").css("display", "none");
                         var requestedModule = $("#hdnRedirectType").val();
-                        $("#liReview,#liBudget,#liSetup").bind('click');
                         if (planCampaignId == '0') {
                             planCampaignId = data.CampaignID;
                         }
-                        loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
-
-                        //// if new record save then set Refresh flag to true.
-                        var _planCampaignId = $("#PlanCampaignId").val();
-                        if (_planCampaignId == '' || _planCampaignId == null || _planCampaignId == '0' || _planCampaignId == 'undefined')
-                            $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
-
-                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
-                            $("#hdnBudgetingExpandId").val("campaign" + planCampaignId);
-                            $("#hdnBudgetingIsSave").val("true");
+                        $("#hdnPlanCampaignId").val(planCampaignId);
+                        if ($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()') {
+                            var ChangedTab = "Setup";
+                            if (tabtext != "") {
+                                ChangedTab = tabtext;
+                            }
+                            var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                                if (ChangedTab == "Setup") {
+                                    inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                                }
+                            loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                         }
                         else {
-                            RefreshCurrentTab(requestedModule, planCampaignId, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            $("#successMessage").css("display", "block");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
+                            $("#errorMessage").css("display", "none");
+
+                            $("#liReview,#liBudget,#liSetup").bind('click');
+
+                            //   loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", TabBudget, "@Enums.InspectPopupMode.Edit.ToString()", 0, requestedModule);
+
+                            //// if new record save then set Refresh flag to true.
+                            var _planCampaignId = $("#PlanCampaignId").val();
+                            if (_planCampaignId == '' || _planCampaignId == null || _planCampaignId == '0' || _planCampaignId == 'undefined')
+                                $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+
+                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                                $("#hdnBudgetingExpandId").val("campaign" + planCampaignId);
+                                $("#hdnBudgetingIsSave").val("true");
+                            }
+                            else {
+                                RefreshCurrentTab(requestedModule, planCampaignId, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            }
+
+                            returnparameter = true;
                         }
                     }
                     else {
                         ShowError(data.msg);
+                        returnparameter = false;
                     }
                 }
+
             }
         });
-        });
+
+        return returnparameter;
+    }
     $('.proceed_btn').click(function (e) {
         var label = $('#MultiSelectProcced').attr('proccedObject').toString();
         $('.dropdown_new_btn').each(function () {

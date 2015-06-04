@@ -466,7 +466,8 @@
                             else
                                 inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
                               var requestedModule = $("#hdnRedirectType").val();
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
+                              //loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
+                              loadReview(data.id, TabReview);
                           }
                           else {
                               $("#errorMessage").css("display", "block");

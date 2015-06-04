@@ -2434,7 +2434,7 @@ function Quarter() {
                   $("#successMessage").css("display", "none");
                   $("#errorMessage").css("display", "none");
                   $("#modal-container-186470").modal('show');
-                  loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
+                  loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()"); //Modified by Komal rawal For #1324 - To get the default mode as read only
             }
             else if (typeof planId != 'undefined' && planId != 0) {
                 modalFullPosition();

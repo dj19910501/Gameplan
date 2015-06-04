@@ -15,18 +15,28 @@
         margin-top: 6px;
     }
 
-.border-top-div-CampaignPopUp {
-    border-top: 1px solid #a8a8a8;
-    clear: both;
-    padding-top: 30px;
-}
+    .border-top-div-CampaignPopUp {
+        border-top: 1px solid #a8a8a8;
+        clear: both;
+        padding-top: 30px;
+    }
 
-.font-size16 { font-size:16px; }
- #divTab { margin-top: 30px; } 
- #txtRemainingBudget {margin-bottom: 40px;}
-    .CampaignBudgetSection
-    {
-        width: 70%; float: left;margin-bottom:50px;
+    .font-size16 {
+        font-size: 16px;
+    }
+
+    #divTab {
+        margin-top: 30px;
+    }
+
+    #txtRemainingBudget {
+        margin-bottom: 40px;
+    }
+
+    .CampaignBudgetSection {
+        width: 70%;
+        float: left;
+        margin-bottom: 50px;
     }
 </style>
 
@@ -59,27 +69,27 @@
                             <span class="unallocated-span">
                                 <input id="lblUnallocatedBudget" class="unallocated-text-BudgetPopUp" style="color: #666666;" readonly="true" /></span>
                         </div>
-                    <div class="SepraterStacticis"></div>
-                    <div class="budget-result source-sans-prolight">
-                        <p class="font-size16">
-                            Remaining @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
+                        <div class="SepraterStacticis"></div>
+                        <div class="budget-result source-sans-prolight">
+                            <p class="font-size16">
+                                Remaining @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
                                     	<span id="lblRemainingMonthlyBudget" class="source-sans-proregular"></span>
-                        </p>
-                          <p class="font-size16">
-                        Allocated Programs Budget (this @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
+                            </p>
+                            <p class="font-size16">
+                                Allocated Programs Budget (this @(@Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
                                     	<span id="lblAllocatedBudget" class="source-sans-proregular"></span>
-                    </p>
-                    <p class="font-size16">
-                        Total Allocated:
+                            </p>
+                            <p class="font-size16">
+                                Total Allocated:
                                     	<span id="lblTotalAllocated" class="source-sans-proregular"></span>
-                    </p>
-                        <p class="font-size16">
-                            Total Budgeted:
+                            </p>
+                            <p class="font-size16">
+                                Total Budgeted:
                           <span id="lblTotalBudget" class="source-sans-proregular">@Model.CampaignBudget</span>
-                        </p>
+                            </p>
+                        </div>
                     </div>
                 </div>
-                    </div>
             </div>
         }
         else
@@ -90,14 +100,14 @@
         }
     </div>
     
-    <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div " id="SaveCampaignBudgetSection">
+@*<div style="width: 100%; clear: both" class="wraper-btns cf border-top-div " id="SaveCampaignBudgetSection">
         <div class="span2 btn-save" style="width:80px;">
             <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save </button>
         </div>
         <div class="span2">
             <button id="cancelCampaignBudget" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
         </div>
-    </div>   
+    </div> *@  
     
 }
 
@@ -139,7 +149,7 @@
             });
 
             $("#SaveCampaignBudgetSection").css("display", "none");
-            
+
             $(".input-budget").removeClass('light-blue-background');
         }
         else {
@@ -395,8 +405,10 @@
         $('#divDeleteCampaign').css('display', 'block');
     }
 
-
-    $("#save_campaign").click(function () {
+    //Modified By Komal rawal for #1324
+    function BudgetCampaignSave() {
+        var returnparameter = false;
+        // $("#save_campaign").click(function () {
         var iserror = false;
 
         var title = htmlEncode($('#txtTitle').val());
@@ -433,99 +445,41 @@
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
             return false;
         }
-
-        @* if ($("#hdnIsBudgetAllocated").val() == "True") {
-            var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text-BudgetPopUp');
+        if (SaveCampaignFlag) {
+            var lstAllocInputs = $(".budget-section input.low-budgeted").not('.unallocated-text-BudgetPopUp');
             if (lstAllocInputs.length > 0) {
-                var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
-                 var inputLength = lstAllocInputs.length;
-                 var removeLength = 0;
-                 for (var i = 0; i < lstAllocInputs.length; i++) {
+                var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CampaignBudgetIsLowerthanTotalAllocatedPrograms ";
+                    // Added by Dharmraj 25-8-2014, for Internal review points
+                    errorMsg = errorMsg.replace("month", "@(Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "month" : "quarter")");
 
-                     if (inputLength == 1) {
-                         errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
-                     }
-                     else if (inputLength == 2) {
-                         errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
-                         removeLength = 4;
-                     }
-                     else if (inputLength > 2) {
-                         if (i == inputLength - 2) {
-                             errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
-                             removeLength = 4;
-                         }
-                         else {
-                             errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
-                             removeLength = 2;
-                         }
-                     }
-
-                 }
-
-                 errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
-                 errorMsg += '.';
-
-                 ShowError(errorMsg);
-                 return false;
-             }*@
-
-            if (SaveCampaignFlag) {
-                var lstAllocInputs = $(".budget-section input.low-budgeted").not('.unallocated-text-BudgetPopUp');
-                if (lstAllocInputs.length > 0) {
-                    var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CampaignBudgetIsLowerthanTotalAllocatedPrograms ";
-                        // Added by Dharmraj 25-8-2014, for Internal review points
-                        errorMsg = errorMsg.replace("month", "@(Model.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "month" : "quarter")");
-
-                        var removeLength = 0;
-                        var inputLength = lstAllocInputs.length;
-                        for (var i = 0; i < lstAllocInputs.length; i++) {
-                            if (inputLength == 1) {
-                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
-                            }
-                            else if (inputLength == 2) {
+                    var removeLength = 0;
+                    var inputLength = lstAllocInputs.length;
+                    for (var i = 0; i < lstAllocInputs.length; i++) {
+                        if (inputLength == 1) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
+                        }
+                        else if (inputLength == 2) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                            removeLength = 4;
+                        }
+                        else if (inputLength > 2) {
+                            if (i == inputLength - 2) {
                                 errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
                                 removeLength = 4;
                             }
-                            else if (inputLength > 2) {
-                                if (i == inputLength - 2) {
-                                    errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
-                                    removeLength = 4;
-                                }
-                                else {
-                                    errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
-                                    removeLength = 2;
-                                }
+                            else {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
+                                removeLength = 2;
                             }
                         }
-                        errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
-                        errorMsg += '. <br />If you want to continue, hit Save below.';
-                        ShowError(errorMsg);
-                        SaveCampaignFlag = false;
-                        return false;
                     }
-             }
-
-             @*if ($("#lblTotalAllocated").hasClass('error-text')) {
-                 ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted");
+                    errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
+                    errorMsg += '. <br />If you want to continue, hit Save below.';
+                    ShowError(errorMsg);
+                    SaveCampaignFlag = false;
                     return false;
                 }
-
-                if (parseInt(ReplaceCC($("#lblUnallocatedBudget").val())) < 0) {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotSetBudgetLessthanAllocated");
-                    return false;
-                }
-
-                if ($("#txtRemainingBudget").hasClass('error-text')) {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
-                    return false;
-                }
-            }*@
-           @* else {
-                if ($("#txtRemainingBudget").hasClass('error-text')) {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
-                    return false;
-                }
-            }*@
+            }
 
         ////Start added by Kalpesh  #608: Budget allocation for Program
         var allocationValue = [];
@@ -539,33 +493,40 @@
         $("#hdnCampaignTitle").val(htmlDecode($('#txtTitle').val()));
 
         var uId = $(window).attr('name');
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Inspect/SaveCampaignBudgetAllocation")',
-            data: $("form").serialize() + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
-             success: function (data) {
-                 if (data.IsSaved) {
-                     CancelEvent();
-                     var requestedModule = $("#hdnRedirectType").val();
-                     $("#errorMessageEditCampaign").slideUp(50);
-                     $("#successMessageViewCampaign").slideDown(400);
-                     $("#spanSuccessMessageViewCampaign").empty();
-                     $("#spanSuccessMessageViewCampaign").html(data.msg);
 
-                     if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+        $.ajax({
+
+            type: 'POST',
+            async: false,
+            url: '@Url.Content("~/Inspect/SaveCampaignBudgetAllocation")',
+                data: $("form").serialize() + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
+                success: function (data) {
+
+                    if (data.IsSaved) {
+                        // CancelEvent();
+                        var requestedModule = $("#hdnRedirectType").val();
+                        $("#errorMessageEditCampaign").slideUp(50);
+                        $("#successMessageViewCampaign").slideDown(400);
+                        $("#spanSuccessMessageViewCampaign").empty();
+                        $("#spanSuccessMessageViewCampaign").html(data.msg);
+
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                          $("#hdnBudgetingExpandId").val("campaign" + data.planCampaignId);
                          $("#hdnBudgetingIsSave").val("true");
                      }
                      else {
                          RefreshCurrentTab();
                      }
+                     returnparameter = true;
                  }
                  else {
                      ShowError(data.msg);
+                     returnparameter = false;
                  }
 
              }
-         });
-    });
+        });
+         return returnparameter;
+     }
 
 </script>

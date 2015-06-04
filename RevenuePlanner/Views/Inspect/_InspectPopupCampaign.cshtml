@@ -7,7 +7,7 @@
     var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+@*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
 @{
     var planCampaignId = 0;
     var campaignStatus = "";
@@ -37,18 +37,75 @@
     
 }
 
+@{
+    
+ //Added By komal Rawal For #1324 - To maintain the mode on tab change after review
+        string InspectMode = ViewBag.InspectMode;
+        string Campaignopt = "";
+        if(InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+        {
+            Campaignopt = "View";
+        }
+        else
+        {
+            Campaignopt = "Edit";
+        }
+        
+        //End
+}
+
 @Html.Hidden("hdnPlanCampaignId", planCampaignId, new { id = "hdnPlanCampaignId" })
 @Html.Hidden("hdnCampaignStatus", campaignStatus, new { id = "hdnCampaignStatus" })
-@Html.Hidden("hdnCampaignOpt", "View", new { id = "hdnCampaignOpt" })
+@Html.Hidden("hdnCampaignOpt", Campaignopt, new { id = "hdnCampaignOpt" })   @* Modified By komal Rawal For #1324*@
 @Html.Hidden("hdnCampaignTitle", HttpUtility.HtmlDecode(campaignTitle), new { id = "hdnCampaignTitle" })
 @Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
 @Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
+@Html.Hidden("hdnInspectMode", InspectMode, new { id = "hdnInspectMode" })
 
 <style type="text/css">
     #successMessageViewCampaign, #errorMessageEditCampaign
     {
         margin-bottom: 15px !important;
     }
+
+     .headerfix-wraper {
+        top: 0;
+        left: 0;
+        width: 100%;
+        position: fixed;
+        background-color: #f2f2f2;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .headefix {
+        margin: 0 auto;
+        position: relative;
+        width: 72%;
+    }
+
+        .headefix span {
+            float: left;
+        }
+
+        .headefix .close-x-big-icon {
+            background-size: 36px auto !important;
+            position: absolute;
+            right: 6px;
+            top: 6px;
+        }
+
+    .pop-body-wraper {
+        float: left;
+        max-height: 700px;
+        overflow-x: hidden;
+        width: 130%;
+    }
+
+    .dummy {
+        width: 78%;
+        min-height: 800px;
+    }
+  
 </style>
 
 <div id="successMessageViewCampaign" class="alert hide alert-success message-position-small">
@@ -62,22 +119,23 @@
     <strong>Error!</strong>
     <span id="spanMessageEditCampaign"></span>
 </div>
-<form>
-    <div class="modal-popup-title">
-        <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
-        <h2 class="title-simple source-sans-prolight">
-            @if (campaignMaster != null)
+<div class="headerfix-wraper">  @*Modified for Design changes ticket #1318*@
+    <div class="headefix">
+
+    <h2 class="title-simple source-sans-prolight">
+          @if (campaignMaster != null)
             {
-                <span>
-                    <span id="lblCampaignTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(campaignTitle)" >@HttpUtility.HtmlDecode(campaignTitle)</span>
-                    @if (campaignMaster.OwnerId == Sessions.User.UserId && IsPlanEditable)
+                
+        <span>
+                        @if (campaignMaster.OwnerId == Sessions.User.UserId && IsPlanEditable)
                     {
-                        <div class="delete-btn-tab" style="float: right;" id="divDeleteCampaign">
+                         <div class="delete-btn-tab" style="float: right;" id="divDeleteCampaign">
                             <button class="delete-btn-gray" id="deleteCampaign" type="button">Delete</button>
                         </div>
-                    }
-
-                    <div style="float: right; position: relative;">
+                        }
+             
+           
+                  <div style="float: right; position: relative;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                             <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupnewprogram">
                                 <ul style="margin: 0;">
@@ -86,23 +144,49 @@
                                 </ul>
                             </div>                            
                         </div>
-
-                    @if (IsPlanEditable)
+               @if (IsPlanEditable)
                     {
-                    <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;"></a>
-                    }
-                </span> 
-            }
+             <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;cursor: pointer;"></span>
+               }
+           
+              
+         </span>
+     
+             
+          }
+
+         @if (campaignMaster == null)
+         {
+              <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;"></span>
+         }
+     
+             <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+        
+        </h2>
+
+    </div>
+</div>
+<div class="pop-body-wraper">
+    <div class="dummy">
+        <form>
+    <div class="modal-popup-title">
+        <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
+        <h2 class="title-simple source-sans-prolight">
+            <span>
+                    <span id="lblCampaignTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(campaignTitle)" >@HttpUtility.HtmlDecode(campaignTitle)</span>
+                </span>
             @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignTitle), new { placeholder = "Campaign name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = HttpUtility.HtmlDecode(campaignTitle), id = "txtTitle" })
             @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
         </h2>
     </div>
 </form>
+          
 @if (campaignMaster != null)
 {
     <div class="modal-popup-summary" id="campaignSummary">
         <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight" style="margin-bottom:0px;">
         <p class="modal-status">
+           
             Status: 
             @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
             {
@@ -142,6 +226,8 @@
     </div>
 
 </div>
+        </div>
+    </div>
 
 <script type="text/javascript">
 
@@ -150,7 +236,7 @@
     var TabReview = "Review";
     var TabBudget = "Budget";
     var divTab = "#divTab";
-
+    var tabtext = "";
     $(document).ready(
       function () {
           CloseIconClick();
@@ -164,34 +250,78 @@
 
           $("#li" + InspectValue).removeClass("pull-left");
           $("#li" + InspectValue).addClass("active pull-left");
-          var tabtext = ($("#li" + InspectValue).children('a').text());
+          tabtext = ($("#li" + InspectValue).children('a').text());
           $('#div' + tabtext).css({ display: "block" });
 
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liBudget").on("click", function () {
-              $("#successMessageViewCampaign").slideUp(50);
-              $("#errorMessageEditCampaign").slideUp(50);
+              var activeTab = $("#InspectTab li.active a").text();
+               tabtext = ($(this).children('a').text());
+              var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1324
+
+              if (returnpara) {
+
+                  //$("#successMessageViewCampaign").slideUp(50);
+                  //$("#errorMessageEditCampaign").slideUp(50);
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
-              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-              var tabtext = ($(this).children('a').text());
-              var planTacticId = $("#hdnPlanTacticId").val();
-              loadReview(planCampaignId, tabtext);
+              $("#successMessageViewCampaign").css("display", "none");
+              $("#errorMessageEditCampaign").css("display", "none");
+                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+              var campaignId=$("#hdnPlanCampaignId").val()
+              loadReview(campaignId, tabtext);
+              }
 
           });
+
+
+          //Added By Komal Rawal for #1324
+          function SaveAllData(activeTab) {
+              var CampaignOpt = $("#hdnCampaignOpt").val();
+              if (CampaignOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+                  if (activeTab == TabSetup) {
+                      var ReturnParameter = SetupCampaignSave();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                  }
+
+                  else if (activeTab == TabBudget) {
+                      var ReturnParameter = BudgetCampaignSave();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                  }
+
+                 
+              }
+
+              return true;
+          }
+          //End
           if (planCampaignId != '0') {
+              if ($('#btnEditCampaign').hasClass('edit-icon-white') && $("#hdnCampaignOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
+                  $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                  $('#btnEditCampaign').addClass('Save-icon-white');
+                  $("#errorMessageEditCampaign").css("display", "none");
+                  $("#successMessageViewCampaign").css("display", "none");
+                  $("#txtTitle").removeClass("error");
+              }
               loadReview(planCampaignId, tabtext);
           }
           else {
-
-              $("#liReview ,#liBudget,#liSetup").unbind('click');
+             // $("#liReview ,#liBudget,#liSetup").unbind('click');
               loadAddSetup();
           }
           $("#btnEditCampaign").on("click", function () {
+              var activeTab = $("#InspectTab li.active a").text();
+              if ($('#btnEditCampaign').hasClass('edit-icon-white')) {
+                  $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                  $('#btnEditCampaign').addClass('Save-icon-white');
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
               $("#hdnCampaignOpt").val("Edit");
@@ -236,13 +366,65 @@
 
                   }
 
-              $("#btnEditCampaign").css("display", "none");
-              $("#AddForm").css("display", "none");
+                  //   $("#btnEditCampaign").css("display", "none");
+                  //  $("#AddForm").css("display", "none");
               $('#txtTitle').css('display', 'block');
               $('#lblCampaignTitle').css('display', 'none');
               $("#txtTitle").prop('readonly', false);
-              $('#divDeleteCampaign').css('display', 'none');
+                  //  $('#divDeleteCampaign').css('display', 'none');
               return false;
+              }
+                  //Added by komal Rawal for #1324 - To save the Active Tab on Save Button
+              else {
+                  
+                  if (activeTab == TabSetup) {
+                      var ReturnParameter = SetupCampaignSave();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+                          $("#hdnCampaignOpt").val("View");
+                          loadReview(planCampaignId, activeTab);
+                          $('#btnEditCampaign').removeClass('Save-icon-white');
+                          $('#btnEditCampaign').addClass('edit-icon-white');
+                          $('#txtTitle').css('display', 'none');
+                          $('#lblCampaignTitle').css('display', 'block');
+                          $("#txtTitle").prop('readonly', true);
+                          
+                      }
+                  }
+
+                  else if (activeTab == TabBudget) {
+                      var ReturnParameter = BudgetCampaignSave();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+                          $("#hdnCampaignOpt").val("View");
+                          loadReview(planCampaignId, activeTab);
+                          $('#btnEditCampaign').removeClass('Save-icon-white');
+                          $('#btnEditCampaign').addClass('edit-icon-white');
+                          $('#txtTitle').css('display', 'none');
+                          $('#lblCampaignTitle').css('display', 'block');
+                          $("#txtTitle").prop('readonly', true);
+                        
+                      }
+                  }
+
+                  else if (activeTab == TabReview) {
+
+                      $("#hdnCampaignOpt").val("View");
+                      loadReview(planCampaignId, activeTab);
+                      $('#btnEditCampaign').removeClass('Save-icon-white');
+                      $('#btnEditCampaign').addClass('edit-icon-white');
+                      $('#txtTitle').css('display', 'none');
+                      $('#lblCampaignTitle').css('display', 'block');
+                      $("#txtTitle").prop('readonly', true);
+                      
+                  }
+
+              }
+          
           });
 
           $("#btnAddCampaign").on("click", function () {
@@ -280,7 +462,9 @@
 
           var CampaignOpt = $("#hdnCampaignOpt").val();
           if (tabValue == TabSetup) {
+            
               if (CampaignOpt == "Edit") {
+                 // BudgetCampaignSave();
                   $('#txtTitle').css('display', 'block');
                   $('#lblCampaignTitle').css('display', 'none');
                   url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
@@ -298,9 +482,11 @@
         }
 
         if (tabValue == TabBudget) {
+             
             if (CampaignOpt == "Edit") {
                 $('#txtTitle').css('display', 'block');
                 $('#lblCampaignTitle').css('display', 'none');
+               // SetupCampaignSave();
             }
             url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
         }
@@ -333,9 +519,11 @@
             $("#divTab").empty();
             $("#divTab").load(url + '?id=@planId');
         }
-        $("#btnEditCampaign").css("display", "none");
-        $("#AddForm").css("display", "none");
+       // $("#btnEditCampaign").css("display", "none");
+      //  $("#AddForm").css("display", "none");
         //$(".btn-group").css("display", "none"); 
+        $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+        $('#btnEditCampaign').addClass('Save-icon-white');
         $('#txtTitle').css('display', 'block');
         $('#txtTitle').text('');
         $('#lblCampaignTitle').css('display', 'none');
