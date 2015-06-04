@@ -7,7 +7,7 @@
     var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+@*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
 @{
     var planProgramId = 0;
     var programStatus = "";
@@ -15,7 +15,8 @@
     string programTitle = "";
     var campaignId=Convert.ToString(ViewBag.CampaignId);
     RevenuePlanner.Models.InspectModel programMaster=null;
-    if (ViewBag.ProgramDetail!=null){
+    if (ViewBag.ProgramDetail != null)
+    {
     programMaster = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
     planProgramId = programMaster.PlanProgramId;
     programStatus = programMaster.Status;
@@ -24,22 +25,77 @@
     TempData["ProgramModel"] = programMaster;
     }
     bool IsPlanEditable = false;
-    if (ViewBag.IsPlanEditable!=null){
+    if (ViewBag.IsPlanEditable != null)
+    {
         IsPlanEditable =(bool)ViewBag.IsPlanEditable;
     }
+    
+   
+    
+        //Added By komal Rawal For #1325 - To maintain the mode on tab change after review
+        string InspectMode = ViewBag.InspectMode;
+        string ProgramOpt = "";
+        if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+        {
+            ProgramOpt = "View";
+        }
+        else
+        {
+            ProgramOpt = "Edit";
+        }
+
+    //End
+
 }
 @Html.Hidden("hdnPlanProgramId", planProgramId, new { id = "hdnPlanProgramId" })
 @Html.Hidden("hdnProgramStatus", programStatus, new { id = "hdnProgramStatus" })
-@Html.Hidden("hdnProgramOpt", "View", new { id = "hdnProgramOpt" })
+@Html.Hidden("hdnProgramOpt", ProgramOpt, new { id = "hdnProgramOpt" })
 @Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
 @Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
+@Html.Hidden("hdnInspectMode", InspectMode, new { id = "hdnInspectMode" })
 
 <style type="text/css">
-    #successMessageViewProgram, #errorMessageEditProgram
-    {
+    #successMessageViewProgram, #errorMessageEditProgram {
         margin-bottom: 15px !important;
     }
 
+    .headerfix-wraper {
+        top: 0;
+        left: 0;
+        width: 100%;
+        position: fixed;
+        background-color: #f2f2f2;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .headefix {
+        margin: 0 auto;
+        position: relative;
+        width: 72%;
+    }
+
+        .headefix span {
+            float: left;
+        }
+
+        .headefix .close-x-big-icon {
+            background-size: 36px auto !important;
+            position: absolute;
+            right: 6px;
+            top: 6px;
+        }
+
+    .pop-body-wraper {
+        float: left;
+        max-height: 700px;
+        overflow-x: hidden;
+        width: 130%;
+    }
+
+    .dummy {
+        width: 78%;
+        min-height: 800px;
+    }
 </style>
 
 <div id="successMessageViewProgram" class="alert hide alert-success message-position-small">
@@ -53,43 +109,69 @@
     <strong>Error!</strong>
     <span id="spanMessageEditProgram"></span>
 </div>
-<form>
-    <div class="modal-popup-title">
-        <span class="icon-flag bg-purple flagcolor" style="background-color:#@colorCode !important;"></span>
+<div class="headerfix-wraper">
+    @*Modified for Design changes ticket #1318*@
+    <div class="headefix">
+
         <h2 class="title-simple source-sans-prolight">
-            @if(programMaster!=null)
+            @if (programMaster != null)
             {
-            <span>
-                <span id="lblProgramTitle"  class="tipsyclassTitle ConcatTextlength" title="@Html.Raw(programMaster.ProgramTitle)">@Html.Raw(programMaster.ProgramTitle)</span>
+                
+                <span>
                     @if (programMaster.OwnerId == Sessions.User.UserId && IsPlanEditable)
                     {
-                        <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
+                       <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
                             <button class="delete-btn-gray" id="deleteProgram" type="button">Delete</button>
                         </div>
                     }
 
-                <div style="float: right;position:relative;">
-                    <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer;margin-right:10px;" id="AddForm"></span>
-                    <div class="btn-dropdwn" style="display:none;position:absolute;top:40px;" id="popupnewprogram">
-                                <ul style="margin:0;">
-                                    <li class="new-prog" id="NewTactic">New Tactic</li>
-                                    <li class="copy-camp" id="CloneProgram">Copy Program</li>
-                                </ul>
-                            </div>
-                        </div>
 
-                @if (IsPlanEditable)//Remove PlanOwner Condition because of Consistency in all view
-                {
-                    
-                    @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
-                }
-            </span>
+                    <div style="float: right; position: relative;">
+                        <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
+                        <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupnewprogram">
+                            <ul style="margin: 0;">
+                                <li class="new-prog" id="NewTactic">New Tactic</li>
+                                <li class="copy-camp" id="CloneProgram">Copy Program</li>
+                            </ul>
+                        </div>
+                    </div>
+                    @if (IsPlanEditable)
+                    {
+                       <span class="edit-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px;"></span>
+                       //  @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
+                    }
+
+
+                </span>
+     
+             
             }
-            @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { placeholder = "Program name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = programTitle })
-            @Html.TextBox("txtTitle1", "", new { @style = "display:none", id="txtTitle" })
+
+            @if (programMaster == null)
+            {
+                <span class="Save-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px;"></span>
+               @* @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "Save-icon-white btn-blue btn-large",style="margin-right:10px;" })*@
+            }
+
+            <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+
         </h2>
 
     </div>
+</div>
+<div class="pop-body-wraper">
+    <div class="dummy">
+        <form>
+            <div class="modal-popup-title">
+                <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
+                <h2 class="title-simple source-sans-prolight">
+                    <span>
+                        <span id="lblProgramTitle"  class="tipsyclassTitle ConcatTextlength" title="@Html.Raw(programTitle)">@Html.Raw(programTitle)</span>
+                    </span>
+                    @Html.TextBox("txtProgramTitle", HttpUtility.HtmlDecode(programTitle), new { placeholder = "Program name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = programTitle })
+                    @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
+                </h2>
+            </div>
 </form>
 @if (programMaster!=null)
 {
@@ -137,6 +219,8 @@
     <div id="divTab">
     </div>
 </div>
+    </div>
+</div>
 
 <script type="text/javascript">
 
@@ -146,9 +230,10 @@
     var TabBudget = "Budget";
 
     var divTab = "#divTab";
-
+    var tabtext = "";
     $(document).ready(
       function () {
+          debugger;
           CloseIconClick();
           NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
           var InspectValue = $("#hdnInspectPopup").val();
@@ -158,32 +243,77 @@
 
           $("#li" + InspectValue).removeClass("pull-left");
           $("#li" + InspectValue).addClass("active pull-left");
-          var tabtext = ($("#li" + InspectValue).children('a').text());
+          tabtext = ($("#li" + InspectValue).children('a').text());
           $('#div' + tabtext).css({ display: "block" });
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liBudget").on("click", function () {
-              $("#successMessageViewProgram").slideUp(50);
+              var activeTab = $("#InspectTab li.active a").text();
+              tabtext = ($(this).children('a').text());
+              var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1325
+
+              if (returnpara) {
               RemoveTabClass();
               $(this).removeClass("pull-left");
               $(this).addClass("active pull-left");
+              $("#successMessageViewProgram").css("display", "none");
+              $("#errorMessageEditProgram").css("display", "none");
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-              var tabtext = ($(this).children('a').text());
-              var planTacticId = $("#hdnPlanTacticId").val();
+              //var tabtext = ($(this).children('a').text());
+              var planProgramId = $("#hdnPlanProgramId").val();
               loadReview(planProgramId, tabtext);
+              }
 
           });
+
+          //Added By Komal Rawal for #1325
+          function SaveAllData(activeTab) {
+              var ProgramOpt = $("#hdnProgramOpt").val();
+              if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+                  if (activeTab == TabSetup) {
+                      var ReturnParameter = SetupSaveProgram();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                  }
+
+                  else if (activeTab == TabBudget) {
+                      var ReturnParameter = SaveProgramBudget();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                  }
+
+
+              }
+
+              return true;
+          }
+          //End
           if ($("#hdnPlanProgramId").val() != '0') {
+              if ($('#EditProgram').hasClass('edit-icon-white') && $("#hdnProgramOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
+                  $('#EditProgram').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                  $('#EditProgram').addClass('Save-icon-white');
+                  $("#successMessageViewProgram").css("display", "none");
+                  $("#errorMessageEditProgram").css("display", "none");
+                  $("#errorMessage").css("display", "none");
+                  $("#successMessage").css("display", "none");
+                  $("#txtTitle").removeClass("error");
+              }
               loadReview(planProgramId, tabtext);
           }
           else {
 
-              $("#liReview,#liBudget,#liSetup").unbind('click');
+             // $("#liReview,#liBudget,#liSetup").unbind('click');
               loadAddSetup();
           }
           $("#EditProgram").on("click", function () {
+              var activeTab = $("#InspectTab li.active a").text();
+              if ($('#EditProgram').hasClass('edit-icon-white')) {
+                  $('#EditProgram').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                  $('#EditProgram').addClass('Save-icon-white');
               var url;
               $("#successMessageViewProgram").slideUp(50);
               $("#errorMessageEditProgram").slideUp(50);
@@ -212,14 +342,65 @@
                   $("#liSetup").addClass('active pull-left');
               }
 
-              $("#EditProgram").css("display", "none"); 
-              $("#DeleteForm").css("display", "none");
-              $("#AddForm").css("display", "none");
+                  //  $("#EditProgram").css("display", "none");
+                  //  $("#DeleteForm").css("display", "none");
+                  //   $("#AddForm").css("display", "none");
               $('#txtProgramTitle').css('display', 'block');
               $('#lblProgramTitle').css('display', 'none');
               $("#txtProgramTitle").prop('readonly', false);
-              $('#divDeleteProgram').css('display', 'none');
+                 // $('#divDeleteProgram').css('display', 'none');
               return false;
+              }
+
+                  //Added by komal Rawal for #1325 - To save the Active Tab on Save Button
+              else {
+                  if (activeTab == TabSetup) {
+                      var ReturnParameter = SetupSaveProgram();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+                          $("#hdnProgramOpt").val("View");
+                          loadReview(planProgramId, activeTab);
+                          $('#EditProgram').removeClass('Save-icon-white');
+                          $('#EditProgram').addClass('edit-icon-white');
+                          $('#txtProgramTitle').css('display', 'none');
+                          $('#lblProgramTitle').css('display', 'block');
+                          $("#txtProgramTitle").prop('readonly', true);
+
+                      }
+                  }
+
+                  else if (activeTab == TabBudget) {
+                      var ReturnParameter = SaveProgramBudget();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+                          $("#hdnProgramOpt").val("View");
+                          loadReview(planProgramId, activeTab);
+                          $('#EditProgram').removeClass('Save-icon-white');
+                          $('#EditProgram').addClass('edit-icon-white');
+                          $('#txtProgramTitle').css('display', 'none');
+                          $('#lblProgramTitle').css('display', 'block');
+                          $("#txtProgramTitle").prop('readonly', true);
+
+                      }
+                  }
+
+                  else if (activeTab == TabReview) {
+
+                      $("#hdnProgramOpt").val("View");
+                      loadReview(planProgramId, activeTab);
+                      $('#EditProgram').removeClass('Save-icon-white');
+                      $('#EditProgram').addClass('edit-icon-white');
+                      $('#txtProgramTitle').css('display', 'none');
+                      $('#lblProgramTitle').css('display', 'block');
+                      $("#txtProgramTitle").prop('readonly', true);
+
+                  }
+
+              }
           });
 
           // Close event for Error Message & Success Message Close button 
@@ -245,6 +426,7 @@
               loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', planProgramId, $("#hdnRedirectType").val());
               return false;
           });
+          
       });
 
       function RemoveTabClass() {
@@ -314,7 +496,7 @@
             $("#divTab").empty();
             $("#divTab").load(url + '?id=@campaignId');
               }
-        $("#EditProgram").css("display", "none");
+       // $("#EditProgram").css("display", "none");
         $('#txtProgramTitle').css('display', 'block');
         $('#txtProgramTitle').text('');
         $('#lblProgramTitle').css('display', 'none');

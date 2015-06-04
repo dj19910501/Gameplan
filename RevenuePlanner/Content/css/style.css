@@ -10678,6 +10678,7 @@ li.close-list {
         padding-left: 24px;
         vertical-align: top;
         font-weight: lighter; /* Added by Viral Kadiya to resolve Pl ticket #947. */
+        cursor:pointer;
     }
 /*Added By komal Rawal for #1318*/
 .Save-icon-white:after {
@@ -10693,6 +10694,7 @@ li.close-list {
     padding-left: 24px;
     vertical-align: top;
     font-weight: lighter;
+    cursor:pointer;
 }
 /* */
 

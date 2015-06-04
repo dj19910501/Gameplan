@@ -2424,7 +2424,7 @@ function Quarter() {
           $("#successMessage").css("display", "none");
           $("#errorMessage").css("display", "none");
           $("#modal-container-186470").modal('show');
-          loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
+          loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");//Modified by Komal rawal For #1325 - To get the default mode as read only
               }
                   //// Checking whether current task is tactic or not.
               else if (typeof planCampaignId != 'undefined' && planCampaignId != 0) {

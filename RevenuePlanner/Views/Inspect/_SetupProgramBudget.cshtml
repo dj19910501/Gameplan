@@ -80,15 +80,15 @@
   </div>
     
     
-    <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div " id="SaveProgramBudgetSection">
+   @* <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div " id="SaveProgramBudgetSection">
             <div class="span2 btn-save" style="width:80px;">
             <button id="save_campaign_program"  class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save </button>
             </div>
             <div class="span2">
             <button id="cancelProgramBudget" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
             </div>
-        </div>   
-}
+        </div>   *@
+ }
      
        
 
@@ -373,7 +373,8 @@
     }
 
 
-    $("#save_campaign_program").click(function () {
+    function SaveProgramBudget() {
+        var returnparameter = false;
         var iserror = false;
 
         var title = htmlEncode($('#txtProgramTitle').val());
@@ -481,11 +482,12 @@
          var uId = $(window).attr('name');
          $.ajax({
              type: 'POST',
+                async : false,
              url: '@Url.Content("~/Inspect/SaveProgramBudgetAllocation")',
              data: $("form").serialize() + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
              success: function (data) {
                  if (data.IsSaved) {
-                     CancelEvent();
+                       // CancelEvent();
                      var requestedModule = $("#hdnRedirectType").val();
                      $("#errorMessageEditProgram").slideUp(50);
                      $("#spanMessageViewProgram").empty();
@@ -500,13 +502,16 @@
                      else {
                          RefreshCurrentTab(requestedModule, data.PlanCampaignId, data.PlanCampaignId, 0);
                      }
+                        returnparameter = true;
                  }
                  else {
                      ShowError(data.msg);
+                        returnparameter = false;
                  }
 
                 }
             });
-     });
+    return returnparameter
+    }
 
 </script>
