@@ -275,7 +275,7 @@
         });
 
         $("#t_integration_status").click(function () {
-            if (isOwner == 'True') {
+            
                 if ($(this).hasClass("icon-check-blue")) {
                     $(this).val("Don't sync to integration");
                     $(this).addClass("icon-check-gray");
@@ -288,7 +288,7 @@
                     $(this).removeClass("icon-check-gray");
                     $("#hdnIsDeployedToIntegration").val(true);
                 }
-            }
+            
         });
 
         $("span.tool-tip").tooltip();
