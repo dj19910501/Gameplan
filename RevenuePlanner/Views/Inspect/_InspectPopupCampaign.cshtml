@@ -39,19 +39,19 @@
 
 @{
     
- //Added By komal Rawal For #1324 - To maintain the mode on tab change after review
-        string InspectMode = ViewBag.InspectMode;
-        string Campaignopt = "";
-        if(InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
-        {
-            Campaignopt = "View";
-        }
-        else
-        {
-            Campaignopt = "Edit";
-        }
-        
-        //End
+    //Added By komal Rawal For #1324 - To maintain the mode on tab change after review
+    string InspectMode = ViewBag.InspectMode;
+    string Campaignopt = "";
+    if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+    {
+        Campaignopt = "View";
+    }
+    else
+    {
+        Campaignopt = "Edit";
+    }
+
+    //End
 }
 
 @Html.Hidden("hdnPlanCampaignId", planCampaignId, new { id = "hdnPlanCampaignId" })
@@ -63,54 +63,14 @@
 @Html.Hidden("hdnInspectMode", InspectMode, new { id = "hdnInspectMode" })
 
 <style type="text/css">
-    #successMessageViewCampaign, #errorMessageEditCampaign
-    {
+    #successMessageViewCampaign, #errorMessageEditCampaign {
         margin-bottom: 15px !important;
     }
-
-     .headerfix-wraper {
-        top: 0;
-        left: 0;
-        width: 100%;
-        position: fixed;
-        background-color: #f2f2f2;
-        border-bottom: 1px solid #ccc;
-    }
-
-    .headefix {
-        margin: 0 auto;
-        position: relative;
-        width: 72%;
-    }
-
-        .headefix span {
-            float: left;
-        }
-
-        .headefix .close-x-big-icon {
-            background-size: 36px auto !important;
-            position: absolute;
-            right: 6px;
-            top: 6px;
-        }
-
-    .pop-body-wraper {
-        float: left;
-        max-height: 700px;
-        overflow-x: hidden;
-        width: 130%;
-    }
-
-    .dummy {
-        width: 78%;
-        min-height: 800px;
-    }
-  
 </style>
 
 <div id="successMessageViewCampaign" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
-     <strong>Success.</strong>
+    <strong>Success.</strong>
     <span id="spanSuccessMessageViewCampaign"></span>
 </div>
 
@@ -119,75 +79,75 @@
     <strong>Error!</strong>
     <span id="spanMessageEditCampaign"></span>
 </div>
-<div class="headerfix-wraper">  @*Modified for Design changes ticket #1318*@
+<div class="headerfix-wraper">
+    @*Modified for Design changes ticket #1318*@
     <div class="headefix">
 
-    <h2 class="title-simple source-sans-prolight">
-          @if (campaignMaster != null)
+        <h2 class="title-simple source-sans-prolight">
+            @if (campaignMaster != null)
             {
                 
-        <span>
-                        @if (campaignMaster.OwnerId == Sessions.User.UserId && IsPlanEditable)
+                <span>
+                    @if (campaignMaster.OwnerId == Sessions.User.UserId && IsPlanEditable)
                     {
-                         <div class="delete-btn-tab" style="float: right;" id="divDeleteCampaign">
+                        <div class="delete-btn-tab" style="float: right;" id="divDeleteCampaign">
                             <button class="delete-btn-gray" id="deleteCampaign" type="button">Delete</button>
                         </div>
-                        }
-             
-           
-                  <div style="float: right; position: relative;">
-                            <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
-                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupnewprogram">
-                                <ul style="margin: 0;">
-                                    <li class="new-prog" id="NewProgram">New Program</li>
-                                    <li class="copy-camp" id="CloneCampaign">Copy Campaign</li>
-                                </ul>
-                            </div>                            
-                        </div>
-               @if (IsPlanEditable)
-                    {
-             <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;cursor: pointer;"></span>
-               }
-           
-              
-         </span>
-     
-             
-          }
+                    }
 
-         @if (campaignMaster == null)
-         {
-              <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;"></span>
-         }
+
+                    <div style="float: right; position: relative;">
+                        <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
+                        <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupnewprogram">
+                            <ul style="margin: 0;">
+                                <li class="new-prog" id="NewProgram">New Program</li>
+                                <li class="copy-camp" id="CloneCampaign">Copy Campaign</li>
+                            </ul>
+                        </div>
+                    </div>
+                    @if (IsPlanEditable)
+                    {
+                        <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px; cursor: pointer;"></span>
+                    }
+
+
+                </span>
      
-             <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
-        
+             
+            }
+
+            @if (campaignMaster == null)
+            {
+                <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;"></span>
+            }
+
+            <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+
         </h2>
 
     </div>
 </div>
 <div class="pop-body-wraper">
-    <div class="dummy">
+    <div class="PopupDiv">
         <form>
-    <div class="modal-popup-title">
-        <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
-        <h2 class="title-simple source-sans-prolight">
-            <span>
-                    <span id="lblCampaignTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(campaignTitle)" >@HttpUtility.HtmlDecode(campaignTitle)</span>
-                </span>
-            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignTitle), new { placeholder = "Campaign name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = HttpUtility.HtmlDecode(campaignTitle), id = "txtTitle" })
-            @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
-        </h2>
-    </div>
-</form>
-          
-@if (campaignMaster != null)
-{
-    <div class="modal-popup-summary" id="campaignSummary">
-        <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight" style="margin-bottom:0px;">
-        <p class="modal-status">
-           
-            Status: 
+            <div class="modal-popup-title">
+                <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
+                <h2 class="title-simple source-sans-prolight">
+                    <span>
+                        <span id="lblCampaignTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(campaignTitle)" >@HttpUtility.HtmlDecode(campaignTitle)</span>
+                    </span>
+                    @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignTitle), new { placeholder = "Campaign name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = HttpUtility.HtmlDecode(campaignTitle), id = "txtTitle" })
+                    @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
+                </h2>
+            </div>
+        </form>
+
+        @if (campaignMaster != null)
+        {
+            <div class="modal-popup-summary" id="campaignSummary">
+                <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight" style="margin-bottom: 0px;">
+                    <p class="modal-status">
+                        Status: 
             @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
             {
                 <span id="status" class="source-sans-prosemibold statussubmitted">@campaignMaster.Status</span>
@@ -206,28 +166,28 @@
             {
                 <span id="status" class="source-sans-prosemibold statuscreated">@campaignMaster.Status</span>
             }
-        </p>
-        </div>
-    </div>
-}
-<div>
-    <ul class="nav nav-tabs new-margin" id="InspectTab">
-        <li class="active pull-left" id="liSetup">
-            <a>Setup</a>
-        </li>
-        <li class="pull-left" id="liReview">
-            <a>Review</a>
-        </li>
-        <li class="pull-left" id="liBudget">
-            <a>Budget</a>
-        </li>
-    </ul>
-    <div id="divTab">
-    </div>
+                    </p>
+                </div>
+            </div>
+        }
+        <div>
+            <ul class="nav nav-tabs new-margin" id="InspectTab">
+                <li class="active pull-left" id="liSetup">
+                    <a>Setup</a>
+                </li>
+                <li class="pull-left" id="liReview">
+                    <a>Review</a>
+                </li>
+                <li class="pull-left" id="liBudget">
+                    <a>Budget</a>
+                </li>
+            </ul>
+            <div id="divTab">
+            </div>
 
-</div>
         </div>
     </div>
+</div>
 
 <script type="text/javascript">
 
@@ -257,23 +217,23 @@
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liBudget").on("click", function () {
               var activeTab = $("#InspectTab li.active a").text();
-               tabtext = ($(this).children('a').text());
+              tabtext = ($(this).children('a').text());
               var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1324
 
               if (returnpara) {
 
                   //$("#successMessageViewCampaign").slideUp(50);
                   //$("#errorMessageEditCampaign").slideUp(50);
-              RemoveTabClass();
-              $(this).removeClass("pull-left");
-              $(this).addClass("active pull-left");
-              $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
-              $("#successMessageViewCampaign").css("display", "none");
-              $("#errorMessageEditCampaign").css("display", "none");
+                  RemoveTabClass();
+                  $(this).removeClass("pull-left");
+                  $(this).addClass("active pull-left");
+                  $("#errorMessage").css("display", "none");
+                  $("#successMessage").css("display", "none");
+                  $("#successMessageViewCampaign").css("display", "none");
+                  $("#errorMessageEditCampaign").css("display", "none");
                   /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-              var campaignId=$("#hdnPlanCampaignId").val()
-              loadReview(campaignId, tabtext);
+                  var campaignId = $("#hdnPlanCampaignId").val()
+                  loadReview(campaignId, tabtext);
               }
 
           });
@@ -297,7 +257,7 @@
                       }
                   }
 
-                 
+
               }
 
               return true;
@@ -305,51 +265,51 @@
           //End
           if (planCampaignId != '0') {
               if ($('#btnEditCampaign').hasClass('edit-icon-white') && $("#hdnCampaignOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
-                  $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
-                  $('#btnEditCampaign').addClass('Save-icon-white');
-                  $("#errorMessageEditCampaign").css("display", "none");
-                  $("#successMessageViewCampaign").css("display", "none");
-                  $("#txtTitle").removeClass("error");
+                      $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                      $('#btnEditCampaign').addClass('Save-icon-white');
+                      $("#errorMessageEditCampaign").css("display", "none");
+                      $("#successMessageViewCampaign").css("display", "none");
+                      $("#txtTitle").removeClass("error");
+                  }
+                  loadReview(planCampaignId, tabtext);
               }
-              loadReview(planCampaignId, tabtext);
-          }
-          else {
-             // $("#liReview ,#liBudget,#liSetup").unbind('click');
-              loadAddSetup();
-          }
+              else {
+              // $("#liReview ,#liBudget,#liSetup").unbind('click');
+                  loadAddSetup();
+              }
           $("#btnEditCampaign").on("click", function () {
               var activeTab = $("#InspectTab li.active a").text();
               if ($('#btnEditCampaign').hasClass('edit-icon-white')) {
                   $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
                   $('#btnEditCampaign').addClass('Save-icon-white');
-              $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
-              $("#hdnCampaignOpt").val("Edit");
-              var InspectValue = $("#hdnInspectPopup").val();
-              var tabtext = ($("#li" + InspectValue).children('a').text());
+                  $("#errorMessage").css("display", "none");
+                  $("#successMessage").css("display", "none");
+                  $("#hdnCampaignOpt").val("Edit");
+                  var InspectValue = $("#hdnInspectPopup").val();
+                  var tabtext = ($("#li" + InspectValue).children('a').text());
 
-              if (tabtext == "Setup") {
-                  url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + planCampaignId
-, function (response, status, xhr) {
-    if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-        //// Call function to redirect on service unavailibility.
-        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-        //// Ticket: 942 Exception handeling in Gameplan.
-        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-    }
-});
-
-              }
-              else if (tabtext == "Budget") {
-                  url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + planCampaignId);
-              }
-              else if (tabtext == "Review") {
-                  url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
+                  if (tabtext == "Setup") {
+                      url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
                       $("#divTab").empty();
+                      $("#divTab").load(url + '?id=' + planCampaignId
+    , function (response, status, xhr) {
+        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+            //// Call function to redirect on service unavailibility.
+            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+            //// Ticket: 942 Exception handeling in Gameplan.
+            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+    }
+});
+
+}
+else if (tabtext == "Budget") {
+    url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
+    $("#divTab").empty();
+    $("#divTab").load(url + '?id=' + planCampaignId);
+}
+else if (tabtext == "Review") {
+    url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
+                  $("#divTab").empty();
                   $("#divTab").load(url + '?id=' + planCampaignId
 , function (response, status, xhr) {
     if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
@@ -360,71 +320,74 @@
     }
 });
 
-                      RemoveTabClass();
-                      $("#liSetup").removeClass('pull-left');
-                      $("#liSetup").addClass('active pull-left');
+    RemoveTabClass();
+    $("#liSetup").removeClass('pull-left');
+    $("#liSetup").addClass('active pull-left');
 
-                  }
+}
 
                   //   $("#btnEditCampaign").css("display", "none");
                   //  $("#AddForm").css("display", "none");
-              $('#txtTitle').css('display', 'block');
-              $('#lblCampaignTitle').css('display', 'none');
-              $("#txtTitle").prop('readonly', false);
+    $('#txtTitle').css('display', 'block');
+    $('#lblCampaignTitle').css('display', 'none');
+    $("#txtTitle").prop('readonly', false);
                   //  $('#divDeleteCampaign').css('display', 'none');
-              return false;
-              }
+    return false;
+}
                   //Added by komal Rawal for #1324 - To save the Active Tab on Save Button
-              else {
-                  
-                  if (activeTab == TabSetup) {
-                      var ReturnParameter = SetupCampaignSave();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                      else {
-                          $("#hdnCampaignOpt").val("View");
-                          loadReview(planCampaignId, activeTab);
-                          $('#btnEditCampaign').removeClass('Save-icon-white');
-                          $('#btnEditCampaign').addClass('edit-icon-white');
-                          $('#txtTitle').css('display', 'none');
-                          $('#lblCampaignTitle').css('display', 'block');
-                          $("#txtTitle").prop('readonly', true);
-                          
-                      }
-                  }
+else {
 
-                  else if (activeTab == TabBudget) {
-                      var ReturnParameter = BudgetCampaignSave();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                      else {
-                          $("#hdnCampaignOpt").val("View");
-                          loadReview(planCampaignId, activeTab);
-                          $('#btnEditCampaign').removeClass('Save-icon-white');
-                          $('#btnEditCampaign').addClass('edit-icon-white');
-                          $('#txtTitle').css('display', 'none');
-                          $('#lblCampaignTitle').css('display', 'block');
-                          $("#txtTitle").prop('readonly', true);
-                        
-                      }
-                  }
+    if (activeTab == TabSetup) {
+        var ReturnParameter = SetupCampaignSave();
+        if (ReturnParameter == false) {
+            return false;
+        }
+        else {
+            $("#hdnCampaignOpt").val("View");
+            var campaignId = $('#hdnPlanCampaignId').val();
+            loadReview(campaignId, activeTab);
+            $('#btnEditCampaign').removeClass('Save-icon-white');
+            $('#btnEditCampaign').addClass('edit-icon-white');
+            $('#txtTitle').css('display', 'none');
+            $('#lblCampaignTitle').css('display', 'block');
+            $("#txtTitle").prop('readonly', true);
 
-                  else if (activeTab == TabReview) {
+        }
+    }
 
-                      $("#hdnCampaignOpt").val("View");
-                      loadReview(planCampaignId, activeTab);
-                      $('#btnEditCampaign').removeClass('Save-icon-white');
-                      $('#btnEditCampaign').addClass('edit-icon-white');
-                      $('#txtTitle').css('display', 'none');
-                      $('#lblCampaignTitle').css('display', 'block');
-                      $("#txtTitle").prop('readonly', true);
-                      
-                  }
+    else if (activeTab == TabBudget) {
+        var ReturnParameter = BudgetCampaignSave();
+        if (ReturnParameter == false) {
+            return false;
+        }
+        else {
+            $("#hdnCampaignOpt").val("View");
+            var campaignId = $('#hdnPlanCampaignId').val();
+            loadReview(campaignId, activeTab);
+            $('#btnEditCampaign').removeClass('Save-icon-white');
+            $('#btnEditCampaign').addClass('edit-icon-white');
+            $('#txtTitle').css('display', 'none');
+            $('#lblCampaignTitle').css('display', 'block');
+            $("#txtTitle").prop('readonly', true);
 
-              }
-          
+        }
+    }
+
+    else if (activeTab == TabReview) {
+
+        $("#hdnCampaignOpt").val("View");
+        var campaignId = $('#hdnPlanCampaignId').val();
+        loadReview(campaignId, activeTab);
+        $('#btnEditCampaign').removeClass('Save-icon-white');
+        $('#btnEditCampaign').addClass('edit-icon-white');
+        $('#txtTitle').css('display', 'none');
+        $('#lblCampaignTitle').css('display', 'block');
+        $("#txtTitle").prop('readonly', true);
+
+    }
+
+}
+
           });
 
           $("#btnAddCampaign").on("click", function () {
@@ -462,9 +425,9 @@
 
           var CampaignOpt = $("#hdnCampaignOpt").val();
           if (tabValue == TabSetup) {
-            
+
               if (CampaignOpt == "Edit") {
-                 // BudgetCampaignSave();
+                  // BudgetCampaignSave();
                   $('#txtTitle').css('display', 'block');
                   $('#lblCampaignTitle').css('display', 'none');
                   url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
@@ -479,32 +442,32 @@
                   $('#lblCampaignTitle').css('display', 'block');
               }
               url = '@Url.Content("~/Inspect/LoadReviewCampaign/")';
-        }
+          }
 
-        if (tabValue == TabBudget) {
-             
-            if (CampaignOpt == "Edit") {
-                $('#txtTitle').css('display', 'block');
-                $('#lblCampaignTitle').css('display', 'none');
-               // SetupCampaignSave();
+          if (tabValue == TabBudget) {
+
+              if (CampaignOpt == "Edit") {
+                  $('#txtTitle').css('display', 'block');
+                  $('#lblCampaignTitle').css('display', 'none');
+                  // SetupCampaignSave();
+              }
+              url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
+          }
+
+          RemoveTabClass();
+          $("#li" + tabValue).removeClass("pull-left");
+          $("#li" + tabValue).addClass("active pull-left");
+          $('#div' + tabValue).css({ display: "block" });
+
+          $("#divTab").empty();
+
+          $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
+              if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                  //// Call function to redirect on service unavailibility.
+                  //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                  //// Ticket: 942 Exception handeling in Gameplan.
+                  window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
-            url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
-        }
-
-        RemoveTabClass();
-        $("#li" + tabValue).removeClass("pull-left");
-        $("#li" + tabValue).addClass("active pull-left");
-        $('#div' + tabValue).css({ display: "block" });
-
-        $("#divTab").empty();
-
-        $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
-            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                //// Call function to redirect on service unavailibility.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                    }
         });
     }
     function loadAddSetup() {
@@ -519,8 +482,8 @@
             $("#divTab").empty();
             $("#divTab").load(url + '?id=@planId');
         }
-       // $("#btnEditCampaign").css("display", "none");
-      //  $("#AddForm").css("display", "none");
+        // $("#btnEditCampaign").css("display", "none");
+        //  $("#AddForm").css("display", "none");
         //$(".btn-group").css("display", "none"); 
         $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
         $('#btnEditCampaign').addClass('Save-icon-white');
@@ -553,44 +516,44 @@
             type: 'POST',
             url: '@Url.Content("~/Inspect/Clone")',
             data: {
-                CloneType: '@Enums.DuplicationModule.Campaign', 
+                CloneType: '@Enums.DuplicationModule.Campaign',
                 Id: idPlanCamaign,
                 title: Title,
                 CalledFromBudget: '@CalledFromBudget',
                 RequsetedModule: '@RedirectType',
-                planId : '@planId'
+                planId: '@planId'
             },
             success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
-               
+
                     var currentTab = "Setup";
 
                     if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
                         currentTab = "Budget";
                     }
-                        var planCampaignId = data.Id;
-                        var expandplanCampaignId = data.expand;
-                        var planProgramId = "";
+                    var planCampaignId = data.Id;
+                    var expandplanCampaignId = data.expand;
+                    var planProgramId = "";
 
-                        loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+                    loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
 
-                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
-                            $("#hdnBudgetingExpandId").val(expandplanCampaignId);
-                            $("#hdnBudgetingIsSave").val("true");
+                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
+                        $("#hdnBudgetingExpandId").val(expandplanCampaignId);
+                        $("#hdnBudgetingIsSave").val("true");
+                    }
+                    else {
+                        RefreshCurrentTab('@RedirectType', 0, 0, 0);
                         }
-                        else {
-                            RefreshCurrentTab('@RedirectType', 0, 0, 0);
-                        }
 
-                    $("#successMessage").css("display", "block");
-                    $("#spanMessageSuccess").empty();
-                    $("#spanMessageSuccess").text(data.msg);
-                    $("#errorMessage").css("display", "none");
-                    $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
-                        return; 
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessage").css("display", "none");
+                        $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                        return;
 
                     }
                     else {
@@ -626,42 +589,42 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/DeleteSection")',
-                 data: {
-                     ID: campaignId
-                     , DeleteType: '@Enums.DuplicationModule.Campaign'
+                data: {
+                    ID: campaignId
+                    , DeleteType: '@Enums.DuplicationModule.Campaign'
                      , UserId: uId
                      , closedTask: arrClosedTaskString
                      , CalledFromBudget: '@CalledFromBudget'
                         , IsIndex: '@isIndex'
                         , RedirectType: '@RedirectTypeMode'
-                    },
-                 success: function (data) {
-                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                         window.location = '@Url.Content("~/Login/Index")';
-                        }
-                        else {
-                         if (data.IsSuccess && data.opt != 'undefined') {
-                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                    SaveMessageOnParent(data.msg);
-                                    //Added By : Kalpesh Sharma Internal review points 18/11/2014
-                                    RefershPlanHeaderCalc();
-                                    $('body').removeClass('bodyOverflow');
-                                }
-                                else {
-                                    window.location.href = data.redirect;
-                                    return;
-                                }
-                            }
-                            else {
-                                $("#successMessageViewCampaign").slideUp(50);
-                                $("#errorMessageEditCampaign").slideDown(400);
-                                $("#spanMessageEditCampaign").empty();
-                                $("#spanMessageEditCampaign").val(data.msg);
-                                return false;
-                            }
-                        }
+                },
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                     }
-             });
-            }
+                    else {
+                        if (data.IsSuccess && data.opt != 'undefined') {
+                            if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                                 SaveMessageOnParent(data.msg);
+                                 //Added By : Kalpesh Sharma Internal review points 18/11/2014
+                                 RefershPlanHeaderCalc();
+                                 $('body').removeClass('bodyOverflow');
+                             }
+                             else {
+                                 window.location.href = data.redirect;
+                                 return;
+                             }
+                         }
+                         else {
+                             $("#successMessageViewCampaign").slideUp(50);
+                             $("#errorMessageEditCampaign").slideDown(400);
+                             $("#spanMessageEditCampaign").empty();
+                             $("#spanMessageEditCampaign").val(data.msg);
+                             return false;
+                         }
+                     }
+                }
+            });
+         }
     });
 </script>

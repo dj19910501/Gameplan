@@ -69,50 +69,7 @@
 @Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
 @Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
 
-@*Modified for #1318*@
-<style>
-    .headerfix-wraper {
-        top: 0;
-        left: 0;
-        width: 100%;
-        position: fixed;
-        background-color: #f2f2f2;
-        border-bottom: 1px solid #ccc;
-    }
 
-    .headefix {
-        margin: 0 auto;
-        position: relative;
-        width: 72%;
-    }
-
-        .headefix span {
-            float: left;
-        }
-
-        .headefix .close-x-big-icon {
-            background-size: 36px auto !important;
-            position: absolute;
-            right: 6px;
-            top: 6px;
-        }
-
-    .pop-body-wraper {
-        float: left;
-        max-height: 700px;
-        overflow-x: hidden;
-        width: 130%;
-    }
-
-    .dummy {
-        width: 78%;
-        min-height: 800px;
-    }
-  
-        
-   
-    
-</style>
 <div class="headerfix-wraper">
     <div class="headefix">
 
@@ -161,7 +118,7 @@
     </div>
 </div>
 <div class="pop-body-wraper">
-    <div class="dummy">
+    <div class="PopupDiv">
         <form>
 
             <div id="MultiSelectProcced" class="alert alert-error hide message-position-popup-border-color " proccedobject="#ATTRIBUTUTES#" style="display: none; margin: auto !important; max-width: 1000px !important;">
