@@ -9,7 +9,7 @@
         deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
         deployStatus = tactic.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     }
-    
+
     string hdnYear = ViewBag.Year != null ? (string)ViewBag.Year : string.Empty;
     bool ExtIntService = ViewBag.ExtIntService != null ? (bool)ViewBag.ExtIntService : false;
     bool isOwner = ViewBag.IsOwner != null ? (bool)ViewBag.IsOwner : false;
@@ -60,7 +60,7 @@
     @Html.HiddenFor(model => model.Title)
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })  // Added by Viral Kadiya on 11/15/2014 for PL ticket #794
 
-    <div class="inspect-column-parent source-sans-proregular" style="margin-bottom:0px;">
+    <div class="inspect-column-parent source-sans-proregular" style="margin-bottom: 0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>Parent Campaign</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
@@ -70,7 +70,7 @@
                 @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:93px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
                 if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
                 {
-                    <div style="clear: both; width: 100%;">
+                <div style="clear: both; width: 100%;">
                     <label style="color: #808080">This improvement tactics boosts @ViewBag.NoOfTacticBoosts activities.</label>
                     <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
                 </div>
@@ -78,12 +78,12 @@
             }
             else
             {
-                 @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+@*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
                 <div class="description-content">
-                <div class="description-content-area">
+                    <div class="description-content-area">
                         @Html.Raw(HttpUtility.HtmlDecode(_editdescription))
+                    </div>
                 </div>
-            </div>
             }
         </div>
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
@@ -94,13 +94,13 @@
                 <p>Cost</p>    
                 @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate resubmission input-setup", style = "", id = "txtCost", label = "Cost" })
                 <p>Effective Date</p>
-                <span style="position:relative;">
-                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker" style="padding:0 0 4px;">
-                    @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate resubmission input-setup", id = "txtDate", label = "Effective_Date" })
-                    <span class="add-on">
-                        <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png"></span>
-                </div>
-                    </span>
+                <span style="position: relative;">
+                    <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker" style="padding:0 0 4px;">
+                        @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate resubmission input-setup", id = "txtDate", label = "Effective_Date" })
+                        <span class="add-on">
+                            <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png"></span>
+                    </div>
+                </span>
             }
             else
             {
@@ -114,19 +114,19 @@
         <div class="span3" id="inspect-modal-left-column3">
             <p>Owner</p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
-                         
+
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
             {
                 if (@ExtIntService)
                 {
-                    <p>Deployed to Integration</p>
+                <p>Deployed to Integration</p>
                     if (Model.IsDeployedToIntegration)
                     {
-                        <input id="t_integration_status" name="t_status" type="text" class="span12 icon-check-blue" placeholder="Sync to integration" readonly="true" />
+                <input id="t_integration_status" name="t_status" type="text" class="span12 icon-check-blue" placeholder="Sync to integration" readonly="true" />
                     }
                     else
                     {
-                        <input id="t_integration_status" name="t_status" type="text" class="span12 icon-check-gray" placeholder="Don't sync to integration" readonly="true" />
+                <input id="t_integration_status" name="t_status" type="text" class="span12 icon-check-gray" placeholder="Don't sync to integration" readonly="true" />
                     }
                 }
             }
@@ -137,19 +137,19 @@
             }
         </div>
 
-    </div>  
-    if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
-    {
-        <div style="width: 100%; clear: both" class="wraper-btns cf ">
-            <div class="span2 btn-save" style="width:80px;">
-                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save</button>
-            </div>
-            <div class="span2">
-                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
-            </div>
+    </div>@*  
+            if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
+            {
+    <div style="width: 100%; clear: both" class="wraper-btns cf ">
+        <div class="span2 btn-save" style="width: 80px;">
+            <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" type="button">Save</button>
         </div>
-    }                        
-    <span class="flag-icon"></span>
+        <div class="span2">
+            <button id="btnEditCancel" class="close-form btn-link source-sans-proregular" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
+        </div>
+    </div>
+            }                        
+    *@<span class="flag-icon"></span>
 }
 
 <script type="text/javascript">
@@ -161,14 +161,6 @@
           $(".datepicker.dropdown-menu").each(function () {
               $(this).remove();
           });
-          if ('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()')
-          {
-              $("#liSetup,#liReview,#liImpact").unbind("click");
-          }
-          else
-          {
-              $("#liSetup,#liReview,#liImpact").bind("click");
-          }
           
           $('#txtDate').val($('#txtDate').val().split(" ")[0].toString());
 
@@ -188,7 +180,7 @@
 
           $('.datepicker.dropdown-menu').css("display", "none");
                     
-         // $(".simpleSelectBox select").selectbox();
+          // $(".simpleSelectBox select").selectbox();
           $('#ddlTacticType').multiselect({
               multiple: false,
               noneSelectedText: "Please Select",
@@ -237,11 +229,11 @@
 
       $('.dp').datepicker({
           format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
-        autoclose: true,
-    }).on('changeDate', function (ev) {
-        $(this).datepicker('hide');
-        var sdate = $('#txtDate').val();
-        if (!CheckDateYear(sdate, @hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+          autoclose: true,
+      }).on('changeDate', function (ev) {
+          $(this).datepicker('hide');
+          var sdate = $('#txtDate').val();
+          if (!CheckDateYear(sdate, @hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
     });;
 
     //hide the other datepicker in add-on onclick
@@ -339,8 +331,8 @@
             });
         }
     }
-
-    $("#btnEditSave").click(function () {
+    var returnparameter = false;
+    function ValidateSaveImpTactic () {
         var iserror = false;
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
@@ -353,29 +345,13 @@
                 }
             }
         });
-
-        //sbSelector
-        //$('form').find('.sbSelector').each(function () {
-        //    if ($(this).parent().prev().attr('require') == 'true') {
-        //        if ($(this).text() == 'Please Select') {
-        //            $(this).addClass("error");
-        //            iserror = true;
-        //        }
-        //        else {
-        //            $(this).removeClass("error");
-        //        }
-        //    }
-        //});
-        if (!('@InspectMode' == '@Enums.InspectPopupMode.Add.ToString()')) {
-            var tacticTypeValue = $('#ddlTacticType').val();
-            if (tacticTypeValue == "") {
-                $('#btnMultiselect_ddlTacticType').addClass("error");
-            }
-            else {
-                $('#btnMultiselect_ddlTacticType').removeClass("error");
-            }
+        var tacticTypeValue = $('#ddlTacticType').val();
+        if (tacticTypeValue == "") {
+            $('#btnMultiselect_ddlTacticType').addClass("error");
         }
-
+        else {
+            $('#btnMultiselect_ddlTacticType').removeClass("error");
+        }
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
             return false;
@@ -410,73 +386,100 @@
             $("#divResubmission").load(url + '?redirectionType='+'@Convert.ToString(Enums.ResubmissionOpenFrom.ImprovementTactic)'+'&labelValues=' + _resubmissionLabelValues);
         } else {
             SaveImprovementTactic();
+        }
+        return returnparameter;
     }
-    });
 
 
     function SaveImprovementTactic() {
+        returnparameter = false;
+        var txtTacticValue = $("#txtTitle").val();
         var isAssortment = false;
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Inspect/SaveImprovementTactic")',
-                data: $("form").serialize() + '&RedirectType=' + isAssortment,
-                success: function (data) {
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            async : false,
+            data: $("form").serialize() + '&RedirectType=' + isAssortment,
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                     else{
                     if (data.isSaved) {
-                        $("#successMessage").css("display", "block");
-                        $("#spanMessageSuccess").empty();
-                        $("#spanMessageSuccess").text(data.msg);
-                        returnToReadOnlyMode(data.id);
-                        RefreshCurrentTab(requestedModule, 0, 0, 0);
-                        return;
-                    }
-                    else{
-                        if (data.errormsg != "") {
-                            document.getElementById("txtTitle").value = htmlDecode($('#txtTitle').val());
-                            document.getElementById("txtDescription").value = htmlDecode($('#txtDescription').val());
-                            ShowError(data.errormsg);
+                        var requestedModule = $("#hdnRequestedModule").val();
+                        if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
+                            var ChangedTab = "Setup";
+                            if (tabtext != "") {
+                                ChangedTab = tabtext;
+                            }
+                            var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                            if (ChangedTab == "Setup") {
+                                inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                            }
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
+                               
+                        }
+                        else{
+                            $("#successMessage").css("display", "block");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
+                            //returnToReadOnlyMode(data.id);
+                            $('#txtTitle').css('display', 'none');
+                            $('#spnImprovementTacticTitle').css('display', 'block');
+                            $("#spnImprovementTacticTitle").removeAttr("style");
+                            $("#txtTitle").val(txtTacticValue);
+                            $('#spnImprovementTacticTitle').text(txtTacticValue);
+                            RefreshCurrentTab(requestedModule, 0, 0, 0);
+                            returnparameter=true;
+                            
                             return;
+                        }
+                        }
+                        else{
+                            if (data.errormsg != "") {
+                                document.getElementById("txtTitle").value = htmlDecode($('#txtTitle').val());
+                                document.getElementById("txtDescription").value = htmlDecode($('#txtDescription').val());
+                                ShowError(data.errormsg);
+                                returnparameter=false;
+                                return;
+                            }
                         }
                     }
                 }
-                }
-     });
-    }
-
-function ShowError(value) {
-    $("#errorMessageImprovementTactic").slideDown(400);
-    $("#spanErrMessageImprovementTactic").empty();
-    $("#spanErrMessageImprovementTactic").html(value);
-}
-
-function ShowMessage(InspectSuccMsg) {
-    $("#successMessageImprovementTactic").css("display", "block");
-    $("#spanSuccMessageImprovementTactic").empty();
-    $("#spanSuccMessageImprovementTactic").text(InspectSuccMsg);
-    $("#errorMessageImprovementTactic").css("display", "none");
-    $("#spanErrMessageImprovementTactic").empty();
-    InspectSuccMsg = '';
-}
-
-$("#t_integration_status").click(function () {
-    if ('@isOwner' == 'True') {
-            if ($(this).hasClass("icon-check-blue")) {
-                $(this).val("Don't sync to integration");
-                $(this).addClass("icon-check-gray");
-                $(this).removeClass("icon-check-blue");
-                $("#hdnIsDeployedToIntegration").val(false);
-            }
-            else {
-                $(this).val("Sync to integration");
-                $(this).addClass("icon-check-blue");
-                $(this).removeClass("icon-check-gray");
-                $("#hdnIsDeployedToIntegration").val(true);
-            }
+        });
         }
-    });
+
+        function ShowError(value) {
+            $("#errorMessageImprovementTactic").slideDown(400);
+            $("#spanErrMessageImprovementTactic").empty();
+            $("#spanErrMessageImprovementTactic").html(value);
+        }
+
+        function ShowMessage(InspectSuccMsg) {
+            $("#successMessageImprovementTactic").css("display", "block");
+            $("#spanSuccMessageImprovementTactic").empty();
+            $("#spanSuccMessageImprovementTactic").text(InspectSuccMsg);
+            $("#errorMessageImprovementTactic").css("display", "none");
+            $("#spanErrMessageImprovementTactic").empty();
+            InspectSuccMsg = '';
+        }
+
+        $("#t_integration_status").click(function () {
+            if ('@isOwner' == 'True') {
+        if ($(this).hasClass("icon-check-blue")) {
+            $(this).val("Don't sync to integration");
+            $(this).addClass("icon-check-gray");
+            $(this).removeClass("icon-check-blue");
+            $("#hdnIsDeployedToIntegration").val(false);
+        }
+        else {
+            $(this).val("Sync to integration");
+            $(this).addClass("icon-check-blue");
+            $(this).removeClass("icon-check-gray");
+            $("#hdnIsDeployedToIntegration").val(true);
+        }
+    }
+});
     
     $('#ddlTacticType').change(function () {
         var tacticTypeId = $(this).val();
