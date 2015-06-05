@@ -13009,7 +13009,7 @@ div.clue-bottom-default .cluetip-arrows {
     width: 35%;
 }
 
-.revenue-graph-info .amountcounterhead {
+.revenue-graph-info .amountcounterhead{
     margin: 13% 0% 0% 0%;
     font-family: source_sans_proregular;
     font-size: 42px;
@@ -13017,7 +13017,14 @@ div.clue-bottom-default .cluetip-arrows {
     display: inline-block;
 }
 
-.revenue-graph-info .smallamountcounterhead {
+.revenue-financial .amountcounterhead {
+    font-family: source_sans_proregular;
+    font-size: 42px;
+    font-weight: normal;
+    margin: 10% 0 0;
+}
+
+.revenue-graph-info .smallamountcounterhead, .revenue-financial .smallamountcounterhead {
     font-size: 14px;
     font-family: source_sans_proregular;
     font-weight: normal;
@@ -13334,15 +13341,18 @@ div.clue-bottom-default .cluetip-arrows {
     }
 
         .budgetchart-table table thead tr th {
-            font-weight: normal;
-            font-size: 18px;
+            font-weight: bold;
+            font-size: 14px;
             padding-bottom: 20px;
+            text-align: center;
+            border:none !important;
         }
 
         .budgetchart-table table tbody tr td {
             text-align: center !important;
             line-height: 57px;
             font-size: 16px;
+            border:none !important;
         }
 
 /*for modal popup*/
@@ -14170,5 +14180,38 @@ div.clue-bottom-default .cluetip-arrows {
         width: 78%;
         min-height: 800px;
     }
-  
-        
+
+/*Start - Financial Section */
+.financial_progressPlanned {
+    background: #ccc none repeat scroll 0 0;
+    float: left;
+    height: 37px;
+    margin-right: 24px;
+    width: 100%;
+    margin:10px 24px 15px 0px;
+}
+
+    .financial_progressPlanned .financial_progress {
+    background: #2384b8 none repeat scroll 0 0;
+    border-radius: 0;
+    display: block;
+    height: 100%;
+    width: 75%;
+}
+.financial_progress {
+    background-color: #f7f7f7;
+    background-image: linear-gradient(to bottom, #f5f5f5, #f9f9f9);
+    background-repeat: repeat-x;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+    height: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+    .financial-chartinfo {
+    font-size:22px !important;
+    }
+    .financial-small-chartinfo {
+    font-size:16px !important;
+    }
+/*End - Financial Section */

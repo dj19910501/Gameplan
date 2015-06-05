@@ -5506,6 +5506,83 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+
+        #region "Get Actual Cost and Tactic mapping list"
+        /// <summary>
+        /// Created By : Viral Kadiya
+        /// Created Date : 27/02/2014
+        /// Desciption : Calculate the ActualCost of the tactic list
+        /// </summary>
+        /// <param name="PlanTacticId"></param>
+        /// <returns>Actual cost of a Tactic</returns>
+        public static List<TacticActualCostModel> CalculateActualCostTacticslist(List<int> PlanTacticIds)
+        {
+            string cost = "Cost";
+            //string strActualCost = "0";
+            Dictionary<int, string> dicTactic_ActualCost = new Dictionary<int, string>();
+            List<int> lstLineItems = new List<int>();
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstLineItemActuals = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+            List<Plan_Campaign_Program_Tactic_Actual> lstPlanTacticsActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
+
+            List<TacticActualCostModel> TacticActualCostList = new List<TacticActualCostModel>();
+            try
+            {
+                using (MRPEntities db = new MRPEntities())
+                {
+                    List<Plan_Campaign_Program_Tactic_LineItem> tblLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => PlanTacticIds.Contains(li.PlanTacticId) && li.IsDeleted.Equals(false)).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lia => tblLineItems.Select(line => line.PlanLineItemId).Contains(lia.PlanLineItemId)).ToList();
+                    List<Plan_Campaign_Program_Tactic_Actual> tblPlanTacticsActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pta => PlanTacticIds.Contains(pta.PlanTacticId) && pta.StageTitle.Equals(cost)).ToList();
+                    TacticActualCostModel objTacticActualCost = new TacticActualCostModel();
+                    List<BudgetedValue> lstActulalValue = new List<BudgetedValue>();
+                    foreach (int keyTactic in PlanTacticIds)
+                    {
+                        objTacticActualCost = new TacticActualCostModel();
+                        objTacticActualCost.PlanTacticId = keyTactic;
+                        lstLineItems = new List<int>();
+                        lstLineItems = tblLineItems.Where(line => line.PlanTacticId.Equals(keyTactic)).Select(li => li.PlanLineItemId).ToList();
+                        if (lstLineItems.Count > 0)
+                        {
+                            lstLineItemActuals = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                            lstLineItemActuals = tblLineItemActuals.Where(lia => lstLineItems.Contains(lia.PlanLineItemId)).ToList();
+                            //if (lstLineItemActuals.Count > 0)
+                            //{
+                            //    var actualCostSum = lstLineItemActuals.Sum(lia => lia.Value);
+                            //    strActualCost = actualCostSum.ToString();
+                            //}
+                            lstActulalValue = new List<BudgetedValue>();
+                            if (lstLineItemActuals.Any())
+                            {
+                                lstActulalValue = lstLineItemActuals.Select(actual => new BudgetedValue { Period = actual.Period, Value = actual.Value }).ToList();
+                            }
+
+                        }
+                        else
+                        {
+                            lstPlanTacticsActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
+                            lstPlanTacticsActuals = tblPlanTacticsActuals.Where(pta => pta.PlanTacticId.Equals(keyTactic)).ToList();
+                            //if (lstPlanTacticsActuals.Count > 0)
+                            //{
+                            //    var actualCostSum = lstPlanTacticsActuals.Sum(pta => pta.Actualvalue);
+                            //    strActualCost = actualCostSum.ToString();
+                            //}
+                            lstActulalValue = new List<BudgetedValue>();
+                            if (lstPlanTacticsActuals.Any())
+                            {
+                                lstActulalValue = lstPlanTacticsActuals.Select(actual => new BudgetedValue { Period = actual.Period, Value = actual.Actualvalue }).ToList();
+                            }
+                        }
+                        objTacticActualCost.ActualList = lstActulalValue;
+                        TacticActualCostList.Add(objTacticActualCost);
+                    }
+                }
+                return TacticActualCostList;
+            }
+            catch
+            {
+                return TacticActualCostList;
+            }
+        }
+        #endregion
     }
 
     /// <summary>

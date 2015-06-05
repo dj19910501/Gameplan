@@ -54,7 +54,10 @@
         /*font-size: 14px;*/
         color: #6d6d6d !important;
     }
-    
+    .budgeting-linechart {
+    padding: 0 75px;
+    text-align: center;
+}    
 </style>
 
 @section Sidebar
@@ -1377,4 +1380,110 @@ $('#liConversion').click(function () {
         $(_linechartDivId).highcharts(options);
     }
     // End:- Linchart script 
+
+    //Start:- BarLineChart Script
+    function BindBarChartData(_categories, _series, _linechartDivId, _title) {
+        Highcharts.setOptions({
+            lang: {
+                numericSymbols: ["k", "M", "B", "T", "P", "E"]
+            }
+        });
+        var options = {
+            chart: {
+                //height: _height,
+                //width: _width,
+                type: 'bar'
+            },
+            title: {
+                text: ''
+                //style: {
+                //    color: '#333',
+                //    fontFamily: 'source_sans_proregular',
+                //    fontSize: '22px',
+                //    fontWeight: 'normal'
+                //}
+            },
+            xAxis: {
+                lineWidth: 0,
+                categories: _categories,
+                gridLineWidth: 0,
+                tickWidth: 0
+            },
+            yAxis: {
+                gridLineWidth: 0,
+                labels: {
+                    enabled: false
+                },
+                title: {
+                    enabled: false
+                }
+            },
+            colors: ['#CCCCCC', '#2384b8'],
+            legend: {
+                //reversed: true,
+                align: 'center',
+                verticalAlign: 'top',
+                itemDistance: 50
+            },
+            plotOptions: {
+                series: {
+                    //stacking: 'normal',
+                    //pointWidth: 40,
+                    //pointPadding: 0.1
+                },
+                scatter: {
+                    marker: {
+                        symbol: 'line',
+                        lineWidth: 2,
+                        radius: 12,
+                        lineColor: '#F0BE29'
+                    }
+                },
+                bar: {
+                    grouping: false,
+                    shadow: false,
+                    borderWidth: 0
+                }
+            },
+            tooltip: {
+                valuePrefix: '$'
+            },
+            series: []
+        }
+
+        var serLength = _series.length;
+        var _catLength = _categories.length;
+        for (var i = 0; i < serLength ; i++) {
+            //alert(eval(_series[i]));
+            options.series.push(eval(_series[i]));
+            if (_series[i].type != null && _series[i].type != 'undefined' && _series[i].type == 'scatter') {
+                var datum = options.series[i];
+                datum.tooltip = {
+                    shared: true,
+                    useHTML: true,
+                    headerFormat: '<table>',
+                    pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
+                        '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+                    footerFormat: '</table>'
+                };
+                if (_catLength == 4) {
+                    datum.marker = {
+                        symbol: 'line',
+                        lineWidth: 2,
+                        radius: 26,
+                        lineColor: '#F0BE29'
+                    };
+                }
+                    
+            }
+        }
+
+        Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
+            return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
+        };
+        $(_linechartDivId).highcharts(options);
+
+    }
+    //End:- BarLineChart Script
+
 </script>

@@ -5,6 +5,7 @@
     var revenue_Projected_Goal = Model.revenueOverviewModel != null ? Model.revenueOverviewModel.projected_goal : new RevenuePlanner.Models.Projected_Goal();
     var SparkLineChartData = Model.revenueOverviewModel != null ? Model.revenueOverviewModel.SparkLineChartsData : new List<RevenuePlanner.Models.sparkLineCharts>();
     var ConversionOverviewModel = Model.conversionOverviewModel != null ? Model.conversionOverviewModel : new RevenuePlanner.Models.ConversionOverviewModel();
+    var FinancialOverviewModel = Model.financialOverviewModel != null ? Model.financialOverviewModel : new RevenuePlanner.Models.FinancialOverviewModel();
     bool isPlanExistToShowReport = Convert.ToBoolean(ViewBag.IsPlanExistToShowReport);
     var _actual_Projected = (dynamic)null;
     var _goal = (dynamic)null;
@@ -111,94 +112,13 @@ td,tbody th {
            </div>
         </div>
     </div>
-<div class="revenue-wrapper" style="display:none;" id="divBudgeting">
-    <div class="report-revenue">
-        <div class="report-btn-group">
-            <p class="revanue-p">Budgeting</p>
-            <button name="" class="btn btn-blue  text-shadow-blue source-sans-proregular" id="">Details</button>
-            <a name="" class="btn  source-sans-proregular report-grey-btn" id=""><span>
-                <img src="~/Content/images/export.png" /></span>Export</a>
-            <button name="" class="btn btn-blue  text-shadow-blue source-sans-proregular report-blue-btn " id=""><span>
-                <img src="~/Content/images/round-plus.png" /></span>Add Widget</button>
-        </div>
-        <div class="revenue-graph">
-            <div class="row">
-                <div class="budgeting-graph-info">
-                    <a href="" class="viewfullscreen">
-                        <img src="~/Content/images/view-fullscreen.png" /></a>
-                    <p class="budgeting-titel" id="">Allocated VS Budgeted</p>
-
-
-                    <div class="budgeting-linechart">
-                        <img src="~/Content/images/budgeting-linechart.png" />
-                    </div>
-                    <p class="chartinfo" id="">$1.69M / $2.00M</p>
-
-                </div>
-                <div class="budgeting-graph-info">
-                    <a href="" class="viewfullscreen">
-                        <img src="~/Content/images/view-fullscreen.png" /></a>
-                    <p class="budgeting-titel" id="">Planned Cost vs Allocated</p>
-
-
-                    <div class="budgeting-linechart">
-                        <img src="~/Content/images/budgeting-linechart.png" />
-                    </div>
-                    <p class="chartinfo" id="">$1.69M / $2.00M</p>
-
-                </div>
-                <div class="budgeting-graph-info noborder-right">
-                    <a href="" class="viewfullscreen">
-                        <img src="~/Content/images/view-fullscreen.png" /></a>
-                    <p class="budgeting-titel" id="">Actuals Vs Allocated</p>
-
-
-                    <div class="budgeting-linechart">
-                        <img src="~/Content/images/budgeting-linechart.png" />
-                    </div>
-                    <p class="chartinfo" id="">$1.69M / $2.00M</p>
-                </div>
+<div class="revenue-wrapper" id="divBudgeting" style="display:block;">
+        <div class="report-revenue">
+           <div id="financialPartial">
+               @Html.Partial("_financialOverview",FinancialOverviewModel)
+               </div>
             </div>
-            <div class="row noborder">
-                <div class="budget-linechart2">
-                    <img src="~/Content/images/budgeting-linechart2.png" /></div>
-                <div class="budgetchart-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Planned Cost</th>
-                                <th>Allocated</th>
-                                <th>Budgeted</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="below">$48,000</td>
-                                <td>$10,000</td>
-                                <td>$45,000</td>
-                            </tr>
-                            <tr>
-                                <td>$25,000</td>
-                                <td>$30,000</td>
-                                <td>$40,000</td>
-                            </tr>
-                            <tr>
-                                <td class="below">$10,000</td>
-                                <td>$8,500</td>
-                                <td>$50,000</td>
-                            </tr>
-                            <tr>
-                                <td>$41,000</td>
-                                <td>$46,500</td>
-                                <td>$50,000</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
     </div>
-</div>
 <div class="container-fluid all-height" id="modalMainContainer">
     <div class="row-fluid calc-height">
         <div class="container-fluid">
@@ -485,7 +405,7 @@ td,tbody th {
             $('#DivNoPlanToShowReport').css('display', 'none');
             $('#divRevenue').css('display', 'block');
             $('#divConversion').css('display', 'block');
-            //$('#divBudgeting').css('display', 'block');
+            $('#divBudgeting').css('display', 'block');
         }
         else {
             $('#DivNoPlanToShowReport').css('display', 'block');

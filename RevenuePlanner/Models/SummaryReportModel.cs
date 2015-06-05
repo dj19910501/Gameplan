@@ -90,6 +90,7 @@ namespace RevenuePlanner.Models
     { 
         public RevenueOverviewModel revenueOverviewModel { get; set; }
         public ConversionOverviewModel conversionOverviewModel { get; set; }
+        public FinancialOverviewModel financialOverviewModel { get; set; }
     }
     public class RevenueOverviewModel
     {
@@ -156,6 +157,23 @@ namespace RevenuePlanner.Models
     }
     #endregion
 
+    #region "Financial Overview"
+    public class FinancialOverviewModel
+    {
+        public double TotalBudgetAllocated { get; set; }
+        public double TotalBudgetUnAllocated { get; set; }
+        public double PlannedCostvsBudget { get; set; }
+        public double ActualCostvsBudet { get; set; }
+        public BarChartModel PlannedCostBarChartModel { get; set; }
+        public BarChartModel ActualCostBarChartModel { get; set; }
+        public BarChartModel MainBarChartModel { get; set; }
+        public List<double> MainPlannedCostList { get; set; }
+        public List<double> MainActualCostList { get; set; }
+        public List<double> MainBudgetCostList { get; set; }
+        public int CategoriesCount { get; set; }
+    }
+    #endregion
+
     public class ActualDataTable
     {
         public int PlanTacticId { get; set; }
@@ -208,6 +226,30 @@ namespace RevenuePlanner.Models
     {
         public List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList { get; set; }
         public string StageCode { get; set;}
+    }
+
+    public class BarChartModel
+    {
+        public List<string> categories { get; set; }
+        public List<BarChartSeries> series { get; set; }
+        public List<BarChartSeriesScatter> scatterdata { get; set; }
+    }
+    public class BarChartSeries
+    {
+        public string name { get; set; }
+        public List<double> data { get; set; }
+        public string type { get; set; }
+    }
+    public class BarChartSeriesScatter
+    {
+        public List<double> data { get; set; }
+        public string type { get; set; }
+    }
+    public class TacticActualCostModel
+    {
+        public int PlanTacticId { get; set; }
+        public bool IsLineItemExist { get; set; }
+        public List<BudgetedValue> ActualList { get; set; }
     }
 
     #endregion

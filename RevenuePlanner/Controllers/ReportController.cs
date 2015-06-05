@@ -34,6 +34,9 @@ namespace RevenuePlanner.Controllers
         private string belowPlan = "Below Plan";
         private string strPercentage = "%";
         private string strCurrency = "$";
+        private const string strPlannedCost = "Planned Cost";
+        private const string strActualCost = "Actual Cost";
+        private const string strBudget = "Budget";
         
         #endregion
 
@@ -5482,15 +5485,323 @@ namespace RevenuePlanner.Controllers
 
                     #endregion
 
+                    #region "Financial related Code"
+
+                    #region "Declare local variables"
+                    FinancialOverviewModel objFinanceModel = new FinancialOverviewModel();
+                    double _PlanBudget = 0,  _TacticTotalBudget = 0;
+                    List<int> lstPlanIds = new List<int>();
+                    List<int> _TacticIds = new List<int>();
+                    List<Plan_Campaign_Program_Tactic> _tacList = new List<Plan_Campaign_Program_Tactic>();
+                    List<Plan_Campaign_Program_Tactic_Cost> _tacCostList = new List<Plan_Campaign_Program_Tactic_Cost>();
+                    List<Plan_Campaign_Program_Tactic_Actual> _tacActualList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                    List<Plan_Campaign_Program_Tactic_Budget> _tacBudgetList = new List<Plan_Campaign_Program_Tactic_Budget>();
+                    string RevenueStageType = Enums.InspectStage.Revenue.ToString();
+                    List<string> categories = new List<string>();
+                    #endregion
+
+                    #region "Budget data"
+
+                    #region "Calculate Total Allocated/UnAllocated Budget for All Selected Plans"
+
+                    lstPlanIds = (List<int>)Sessions.ReportPlanIds;
+
+                    _tacList = GetTacticForReporting(true);
+                    _TacticIds = _tacList.Select(tac => tac.PlanTacticId).ToList();
+
+                    _tacBudgetList = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => _TacticIds.Contains(tac.PlanTacticId)).ToList();
+                    _TacticTotalBudget = _tacBudgetList != null && _tacBudgetList.Count > 0 ? _tacBudgetList.Sum(budget => budget.Value) : 0;
+
+                    _PlanBudget = db.Plans.Where(plan => lstPlanIds.Contains(plan.PlanId)).Sum(plan => plan.Budget);
+                    //List<Plan_Budget> lstPlanBudget = new List<Plan_Budget>();
+                    //lstPlanBudget = db.Plan_Budget.Where(budget => lstPlanIds.Contains(budget.PlanId)).ToList();
+                    //_TotalAllocatedBudget = lstPlanBudget != null && lstPlanBudget.Count > 0 ? lstPlanBudget.Sum(budget => budget.Value) : 0;
+
+                    objFinanceModel.TotalBudgetAllocated = _TacticTotalBudget;
+                    objFinanceModel.TotalBudgetUnAllocated = _PlanBudget - _TacticTotalBudget;
+
+                    #endregion
+
+                    #endregion
+
+                    #region "PlannedCost vs Budget Calculation"
+
+                    _tacCostList = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => _TacticIds.Contains(tacCost.PlanTacticId)).ToList();
+                    objFinanceModel.PlannedCostvsBudget = _tacCostList.Sum(tacCost => tacCost.Value);
+
+                    List<TacticActualCostModel> TacticActualCostList = new List<TacticActualCostModel>();
+                    TacticActualCostList = Common.CalculateActualCostTacticslist(_TacticIds);
+                    double _ActualCostvsBudget = 0;
+                    if (TacticActualCostList != null)
+                        TacticActualCostList.ForEach(tac => _ActualCostvsBudget += tac.ActualList.Sum(actual => actual.Value));
+                    objFinanceModel.ActualCostvsBudet = _ActualCostvsBudget;
+
+                    #region "Calculate Barchart data for PlanCost & ActualCost"
+
+                    List<BarChartSeries> lstSeries = new List<BarChartSeries>();
+                    BarChartSeries objSeries = new BarChartSeries();
+                    List<double> serData = new List<double>();
+
+                    #region "Old PlannedCost vs Budget , ActualCost vs Budget  Barchart Code"
+                    #region "Planned_Cost vs Budget Barchart Data"
+                    //BarChartModel objPlannedCostModel = new BarChartModel();
+                    //objSeries.name = "Planned Cost";
+                    //serData.Add(objFinanceModel.PlannedCostvsBudget);
+                    //objSeries.data = serData;
+                    //lstSeries.Add(objSeries);
+
+                    //objSeries = new BarChartSeries();
+                    //serData = new List<double>();
+                    //objSeries.name = "Budget";
+                    //serData.Add(_TacticTotalBudget);
+                    //objSeries.data = serData;
+                    //lstSeries.Add(objSeries);
+
+                    //objPlannedCostModel.series = lstSeries;
+                    //objPlannedCostModel.categories = new List<string>();
+
+                    #endregion
+
+                    #region "Actual_Cost vs Budget Barchart Data"
+                    //BarChartModel objActualCostModel = new BarChartModel();
+                    //objSeries = new BarChartSeries();
+                    //lstSeries = new List<BarChartSeries>();
+                    //serData = new List<double>();
+
+                    //objSeries.name = "Actual Cost";
+                    //serData.Add(objFinanceModel.ActualCostvsBudet);
+                    //objSeries.data = serData;
+                    //lstSeries.Add(objSeries);
+
+                    //objSeries = new BarChartSeries();
+                    //serData = new List<double>();
+                    //objSeries.name = "Budget";
+                    //serData.Add(_TacticTotalBudget);
+                    //objSeries.data = serData;
+                    //lstSeries.Add(objSeries);
+
+                    //objActualCostModel.series = lstSeries;
+                    //objActualCostModel.categories = new List<string>();
+
+                    #endregion
+                    #endregion
+
+
+                    #region "Get Categories based on selected Filter value like {'Monthly','Quarterly'}"
+                    if (IsQuarterly)
+                    {
+                        categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+                    }
+                    else
+                    {
+                        categories = GetDisplayMonthListForReport(timeframeOption); // Get Categories list for Yearly Filter value like {Jan,Feb..}.
+                    }
+                    #endregion
+
+                    #region "Calculate Barchart data by TimeFrame"
+                    BarChartModel objMainModel = new BarChartModel();
+                    lstSeries = new List<BarChartSeries>();
+                    List<double> btmPlannedCostList = new List<double>();
+                    List<double> btmActualCostList = new List<double>();
+                    List<double> btmBudgetCostList = new List<double>();
+                    double _PlannedCostValue = 0, _ActualCostValue = 0, _BudgetCostValue = 0;
+
+                    if (IsQuarterly)
+                    {
+                        List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+                        List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+                        List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+                        List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+
+                        List<double> serPlannedData = new List<double>();
+                        BarChartSeries plannedSeries = new BarChartSeries();
+                        plannedSeries.name = "Planned Cost";
+
+                        List<double> serBudgetData = new List<double>();
+                        BarChartSeries budgetSeries = new BarChartSeries();
+                        budgetSeries.name = "Budget";
+
+                        List<double> scatterData = new List<double>();
+                        BarChartSeries objSeriesScatter = new BarChartSeries();
+                        objSeriesScatter.name = "Actual Cost";
+                        objSeriesScatter.type = "scatter";
+
+
+                        List<double> PlannedCostList = new List<double>();
+                        List<double> ActualCostList = new List<double>();
+                        List<double> BudgetCostList = new List<double>();
+
+
+                        #region "Quarter 1 Calculation"
+
+                        PlannedCostList = _tacCostList.Where(plancost => Q1.Contains(plancost.Period)).Select(plancost => plancost.Value).ToList();
+                        TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Q1.Contains(actual.Period)).Sum(actual => actual.Value));
+                        BudgetCostList = _tacBudgetList.Where(budgtcost => Q1.Contains(budgtcost.Period)).Select(budgtcost => budgtcost.Value).ToList();
+
+                        _PlannedCostValue = PlannedCostList.Sum(val => val);
+                        serPlannedData.Add(_PlannedCostValue);
+
+                        _BudgetCostValue = BudgetCostList.Sum(val => val);
+                        serBudgetData.Add(_BudgetCostValue);
+
+                        scatterData.Add(_ActualCostValue);
+
+                        btmPlannedCostList.Add(_PlannedCostValue);
+                        btmActualCostList.Add(_ActualCostValue);
+                        btmBudgetCostList.Add(_BudgetCostValue);
+                        #endregion
+
+                        #region "Quarter 2 Calculation"
+                        PlannedCostList = new List<double>();
+                        BudgetCostList = new List<double>();
+                        _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
+
+                        PlannedCostList = _tacCostList.Where(plancost => Q2.Contains(plancost.Period)).Select(plancost => plancost.Value).ToList();
+                        TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Q2.Contains(actual.Period)).Sum(actual => actual.Value));
+                        BudgetCostList = _tacBudgetList.Where(budgtcost => Q2.Contains(budgtcost.Period)).Select(budgtcost => budgtcost.Value).ToList();
+
+                        _PlannedCostValue = PlannedCostList.Sum(val => val);
+                        serPlannedData.Add(_PlannedCostValue);
+
+                        _BudgetCostValue = BudgetCostList.Sum(val => val);
+                        serBudgetData.Add(_BudgetCostValue);
+
+                        scatterData.Add(_ActualCostValue);
+
+                        btmPlannedCostList.Add(_PlannedCostValue);
+                        btmActualCostList.Add(_ActualCostValue);
+                        btmBudgetCostList.Add(_BudgetCostValue);
+                        #endregion
+
+                        #region "Quarter 3 Calculation"
+                        PlannedCostList = new List<double>();
+                        BudgetCostList = new List<double>();
+                        _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
+
+                        PlannedCostList = _tacCostList.Where(plancost => Q3.Contains(plancost.Period)).Select(plancost => plancost.Value).ToList();
+                        TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Q3.Contains(actual.Period)).Sum(actual => actual.Value));
+                        BudgetCostList = _tacBudgetList.Where(budgtcost => Q3.Contains(budgtcost.Period)).Select(budgtcost => budgtcost.Value).ToList();
+
+                        _PlannedCostValue = PlannedCostList.Sum(val => val);
+                        serPlannedData.Add(_PlannedCostValue);
+
+                        _BudgetCostValue = BudgetCostList.Sum(val => val);
+                        serBudgetData.Add(_BudgetCostValue);
+
+                        scatterData.Add(_ActualCostValue);
+
+                        btmPlannedCostList.Add(_PlannedCostValue);
+                        btmActualCostList.Add(_ActualCostValue);
+                        btmBudgetCostList.Add(_BudgetCostValue);
+                        #endregion
+
+                        #region "Quarter 4 Calculation"
+                        PlannedCostList = new List<double>();
+                        BudgetCostList = new List<double>();
+                        _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
+
+                        PlannedCostList = _tacCostList.Where(plancost => Q4.Contains(plancost.Period)).Select(plancost => plancost.Value).ToList();
+                        TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.Value));
+                        BudgetCostList = _tacBudgetList.Where(budgtcost => Q4.Contains(budgtcost.Period)).Select(budgtcost => budgtcost.Value).ToList();
+
+                        _PlannedCostValue = PlannedCostList.Sum(val => val);
+                        serPlannedData.Add(_PlannedCostValue);
+
+                        _BudgetCostValue = BudgetCostList.Sum(val => val);
+                        serBudgetData.Add(_BudgetCostValue);
+
+                        scatterData.Add(_ActualCostValue);
+
+                        btmPlannedCostList.Add(_PlannedCostValue);
+                        btmActualCostList.Add(_ActualCostValue);
+                        btmBudgetCostList.Add(_BudgetCostValue);
+                        #endregion
+
+                        plannedSeries.data = serPlannedData;
+                        budgetSeries.data = serBudgetData;
+                        objSeriesScatter.data = scatterData;
+
+                        lstSeries.Add(budgetSeries);
+                        lstSeries.Add(plannedSeries);
+                        lstSeries.Add(objSeriesScatter);
+                    }
+                    else
+                    {
+                        string curntPeriod = string.Empty;
+                        List<double> serPlannedData = new List<double>();
+                        BarChartSeries plannedSeries = new BarChartSeries();
+                        plannedSeries.name = "Planned Cost";
+
+                        List<double> serBudgetData = new List<double>();
+                        BarChartSeries budgetSeries = new BarChartSeries();
+                        budgetSeries.name = "Budget";
+
+                        List<double> scatterData = new List<double>();
+                        BarChartSeries objSeriesScatter = new BarChartSeries();
+                        objSeriesScatter.name = "Actual Cost";
+                        objSeriesScatter.type = "scatter";
+
+                        for (int i = 1; i <= categories.Count; i++)
+                        {
+                            curntPeriod = PeriodPrefix + i;
+
+                            _PlannedCostValue = _tacCostList.Where(plancost => plancost.Period.Equals(curntPeriod)).Select(plancost => plancost.Value).FirstOrDefault();
+                            TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Value));
+                            //ActualCostList = _tacActualList.Where(actualcost => actualcost.Period.Equals(curntPeriod)).Select(actualcost => actualcost.Actualvalue).FirstOrDefault();
+                            _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod)).Select(budgtcost => budgtcost.Value).FirstOrDefault();
+
+                            //serPlannedData = new List<double>();
+                            serPlannedData.Add(_PlannedCostValue);
+
+                            //serBudgetData = new List<double>();
+                            serBudgetData.Add(_BudgetCostValue);
+
+                            //scatterData = new List<double>();
+                            scatterData.Add(_ActualCostValue);
+
+
+                            btmPlannedCostList.Add(_PlannedCostValue);
+                            btmActualCostList.Add(_ActualCostValue);
+                            btmBudgetCostList.Add(_BudgetCostValue);
+
+                        }
+
+                        plannedSeries.data = serPlannedData;
+                        budgetSeries.data = serBudgetData;
+                        objSeriesScatter.data = scatterData;
+
+                        lstSeries.Add(budgetSeries);
+                        lstSeries.Add(plannedSeries);
+                        lstSeries.Add(objSeriesScatter);
+                    }
+                    objMainModel.series = lstSeries;
+                    objMainModel.categories = categories;
+                    #endregion
+
+                    //objFinanceModel.PlannedCostBarChartModel = objPlannedCostModel;
+                    //objFinanceModel.ActualCostBarChartModel = objActualCostModel;
+                    objFinanceModel.MainBarChartModel = objMainModel;
+                    objFinanceModel.MainPlannedCostList = btmPlannedCostList;
+                    objFinanceModel.MainActualCostList = btmActualCostList;
+                    objFinanceModel.MainBudgetCostList = btmBudgetCostList;
+                    objFinanceModel.CategoriesCount = categories.Count;
+                    #endregion
+
+                    #endregion
+
+                    #endregion
+
                     #region "Set Revenue & Coversion model data to Master Model(i.e ReportOverviewModel)"
                     objReportOverviewModel.revenueOverviewModel = objRevenueOverviewModel;
                     objReportOverviewModel.conversionOverviewModel = objConversionOverviewModel;
+                    objReportOverviewModel.financialOverviewModel = objFinanceModel;
                     #endregion
                 }
                 else
                 {
                     objReportOverviewModel.revenueOverviewModel = new RevenueOverviewModel();
                     objReportOverviewModel.conversionOverviewModel = new ConversionOverviewModel();
+                    objReportOverviewModel.financialOverviewModel = new FinancialOverviewModel();
                 }
 
 
