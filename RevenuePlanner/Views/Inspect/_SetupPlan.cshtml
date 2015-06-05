@@ -21,7 +21,7 @@
             {
                  @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
                 <div class="description-content">
-                    <div class="description-content-area">
+                    <div class="description-content-area" id = "txtDescription">
                         @Html.Raw(HttpUtility.HtmlDecode(_editdescription))
                     </div>
                 </div>
@@ -59,7 +59,7 @@
             }
         </div>
     </div>  
-    if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+    @* if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
     {
         <div class="wraper-btns cf border-top-div" style="width: 100%; clear: both">
             <div style="width: 80px" class="span2 btn-save">
@@ -69,7 +69,7 @@
                 <button id="btnEditCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" type="button" style="float: left; margin-top: 30px; color:gray;">Cancel</button>
             </div>
         </div>
-    }                        
+    }*@                        
     <span class="flag-icon"></span>
 }
 
@@ -111,7 +111,10 @@
         });
     }
 
-    $("#btnEditSave").click(function () {
+    //Modified by Komal Rawal for #1327    
+    function SetupPlanSave() {
+        var returnparameter = false;
+      //  $("#btnEditSave").click(function () {
         var iserror = false;
         $('form').find('input[type=text], select').each(function () {
             if ($(this).attr('require') == 'true') {
@@ -201,6 +204,7 @@
                 var uId = $(window).attr('name');
                 $.ajax({
                     type: 'POST',
+                    async : false,
                     url: '@Url.Content("~/Inspect/SavePlanDetails")',
                     data: formData + '&BudgetInputValues=' + '' + '&RedirectType=' + RedirectType + '&UserId=' + uId,
                     success: function (data) {
@@ -215,7 +219,7 @@
                                     $("#successMessage").css("display", "block");
                                     $("#spanMessageSuccess").empty();
                                     $("#spanMessageSuccess").text(data.succmsg);
-                                    returnToReadOnlyMode(data.id);
+                                 //   returnToReadOnlyMode(data.id);
                                     if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                         $("#hdnBudgetingIsSave").val("true");
                                         $("#hdnBudgetingExpandId").val("0");
@@ -224,20 +228,23 @@
                                         RefreshCurrentTab(requestedModule, 0, 0, 0);
                                     }
                                     isDataModified = true;
+                                    returnparameter = true;
                                 }
-                                return;
+                                returnparameter = true;
                             }
-                            if (data.errormsg != "") {
+                            if (data.errormsg != "" && data.errormsg != undefined) {
                                 $("#txtTitle").value = htmlDecode($('#txtTitle').val());
                                 $("#Description").value = htmlDecode($('#Description').val());
                                 ShowError(data.errormsg);
-                                return false;
+                                returnparameter = false;
                             }
                         }
                     }
                 });
             }
-    });
+       
+        return returnparameter;
+    }
 
     function ShowError(value) {
         $("#errorMessagePlan").slideDown(400);

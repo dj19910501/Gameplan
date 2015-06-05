@@ -21,7 +21,47 @@
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Hidden("hdnPlanId", planDetails.PlanId, new { id = "hdnPlanId" })
 @Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
-<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+@*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
+
+<style type="text/css">
+    .headerfix-wraper {
+        top: 0;
+        left: 0;
+        width: 100%;
+        position: fixed;
+        background-color: #f2f2f2;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .headefix {
+        margin: 0 auto;
+        position: relative;
+        width: 72%;
+    }
+
+        .headefix span {
+            float: left;
+        }
+
+        .headefix .close-x-big-icon {
+            background-size: 36px auto !important;
+            position: absolute;
+            right: 6px;
+            top: 6px;
+        }
+
+    .pop-body-wraper {
+        float: left;
+        max-height: 700px;
+        overflow-x: hidden;
+        width: 130%;
+    }
+
+    .dummy {
+        width: 78%;
+        min-height: 800px;
+    }
+</style>
 
 <div id="successMessagePlan" class="alert hide alert-success message-position-small">
     <a class="close">×</a>
@@ -42,7 +82,7 @@
     <a class="close">×</a>
     <strong>Error! </strong><span id="BudgetErrorMessage">You cannot allocate more than budgeted for Jan and May .</span>
 </div>
-<form>
+@*<form>
     <div class="modal-popup-title">
         <span class="icon-flag bg-purple" style="background-color:#@planDetails.ColorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight">
@@ -89,8 +129,77 @@
             }
         </h2>
     </div>
-</form>
+</form>*@
+<div class="headerfix-wraper">
+    @*Modified for Design changes ticket #1318*@
+    <div class="headefix">
 
+        <h2 class="title-simple source-sans-prolight">
+
+
+            <span>
+                @if (IsPlanEditable)
+                {
+                    <div id="divDeletePlan" style="float: right;" class="delete-btn-tab">
+                        <button type="button" id="deletePlan" class="delete-btn-gray">Delete</button>
+                    </div>
+                }
+
+
+                <div style="float: right; position: relative;">
+                    <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;" class="add-icon-white btn-blue btn-large"></span>
+                    <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
+                        <ul style="margin: 0;">
+                            <li id="NewCampaign" class="new-prog">New Campaign</li>
+                            @if (IsPlanCreateAuthorized)
+                            {
+                                <li id="ClonePlan" class="copy-camp">Copy Plan</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                @if (IsPlanEditable)
+                {
+                    <div style="float: right; position: relative;">
+                        <span id="EditForm" style="display: block; cursor: pointer; margin-right: 10px;" class="edit-icon-white btn-blue btn-large"></span>
+                        <div id="popupeditplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
+                            <ul style="margin: 0; width: 141px;">
+                                <li id="lnkEdit" class="new-edit">Edit Details</li>
+                                <li id="EditDefination" class="new-edit">Edit Plan Definition</li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+
+
+            </span>
+
+
+
+            <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+
+        </h2>
+
+    </div>
+</div>
+<div class="pop-body-wraper">
+    <div class="dummy">
+        <form>
+            <div class="modal-popup-title">
+                <span class="icon-flag bg-purple" style="background-color:#@planDetails.ColorCode !important;"></span>
+                <h2 class="title-simple source-sans-prolight">
+                    @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+                    {
+                        @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(planDetails.Title), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small font20 light-blue-background", style = "width: 95%; height: 28px;", title = planDetails.Title })
+                        @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle1" })
+                    }
+                    else
+                    {
+                        <span class="tipsyclassTitle ConcatTextlength" title="@Html.Raw(planDetails.Title)">@Html.Raw(planDetails.Title)</span>
+                    }
+                </h2>
+            </div>
+</form>
 <div>
     <ul class="nav nav-tabs new-margin" id="InspectTab">
         <li class="active pull-left" id="liSetup">
@@ -101,6 +210,8 @@
         </li>
     </ul>
     <div id="divTab">
+    </div>
+</div>
     </div>
 </div>
 
@@ -164,14 +275,40 @@
 
     // Click on Tab Partialview Refresh Based On Selected Tab
     $("#liSetup,#liBudget").on("click", function () {
+        var activeTab = $("#InspectTab li.active a").text();
+        var tabtext = ($(this).children('a').text());
+        var planId = $("#hdnPlanId").val();
+        var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1327
+        if (returnpara) {
         RemoveTabClass();
         $(this).removeClass("pull-left");
         $(this).addClass("active pull-left");
         HideAllMessages();
-        var tabtext = ($(this).children('a').text());
-        var planId = $("#hdnPlanId").val();
         loadInnerTabs(planId, tabtext);
+        }
     });
+
+    //Added By Komal Rawal for #1327
+    function SaveAllData(activeTab) {
+        if ('@InspectMode' == '@Enums.InspectPopupMode.Edit.ToString()') {
+            if (activeTab == TabSetup) {
+                var ReturnParameter = SetupPlanSave();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+
+            else if (activeTab == TabBudget) {
+                var ReturnParameter = SavePlanBudget();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+        }
+        return true
+
+          }
+          //End
 
     // Close event for Error Message & Success Message Close button 
     $(".alert").find(".close").on("click", function (e) {
@@ -192,11 +329,42 @@
     }
 
     $('#EditForm').click(function () {
+        var activeTab = $("#InspectTab li.active a").text();
+        var planId = $("#hdnPlanId").val();
+      //  var requestedModule = $("#hdnRequestedModule").val();
+        if ($('#EditForm').hasClass('edit-icon-white')) {
         if ($('#popupeditplan').css('display') == 'none') {
-            $('#popupeditplan').css('display', 'block')
+                $('#popupeditplan').css('display', 'block');
         }
         else {
-            $('#popupeditplan').css('display', 'none')
+                $('#popupeditplan').css('display', 'none');
+            }
+        }
+        else {      //Modified for #1327 to save the data on save button
+            $('#popupeditplan').css('display', 'none');
+            if (activeTab == TabSetup) {
+                var ReturnParameter = SetupPlanSave();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+                else {
+                    returnToReadOnlyMode(planId);
+                    // loadInnerTabs(planId, activeTab);
+                    //RefreshCurrentTab(requestedModule, 0, 0, 0);
+
+                }
+            }
+
+            else if (activeTab == TabBudget) {
+                var ReturnParameter = SavePlanBudget();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+                else {
+                    returnToReadOnlyMode(planId);
+                }
+            }
+
         }
     });
 
@@ -231,7 +399,7 @@
 
     $('#NewCampaign').click(function () {
         var planId = $("#hdnPlanId").val();
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", planId, '@RequestedModule');
+        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", planId, '@RequestedModule');
     });
 
     $('#ClonePlan').click(function () {
@@ -296,6 +464,8 @@
         var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
         $("#divPartial").empty();
         $("#divPartial").load(url + '?id=' + planId + '&Section=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()" + '&TabValue=' + tabtext + '&InspectPopupMode=' + "@Enums.InspectPopupMode.Edit.ToString()" + '&RequestedModule=' + '@RequestedModule', function (response, status, xhr) {
+                $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                $('#EditForm').addClass('Save-icon-white');
             if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                 //// Call function to redirect on service unavailibility.
                 //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -303,6 +473,9 @@
                 window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
         });
+
+       
+        
     });
 
     $("#deletePlan").click(function () {

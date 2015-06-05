@@ -67,7 +67,7 @@
             }
         </div>
     
-    if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+    @*if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
     {
        
     <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div " id="SaveTacticBudgetSection">
@@ -81,6 +81,7 @@
     
     
     }                        
+    *@
     <span class="flag-icon"></span>
 }
 
@@ -263,7 +264,10 @@
         });
     });
 
-    $("#btnEditSave").click(function () {
+    //Modified by Komal Rawal for #1327    
+    function SavePlanBudget() {
+        var returnparameter = false;
+       // $("#btnEditSave").click(function () {
         var iserror = false;
         $('form').find('input[type=text], select').each(function () {
             if ($(this).attr('require') == 'true') {
@@ -364,6 +368,7 @@
             var uId = $(window).attr('name');
             $.ajax({
                 type: 'POST',
+                    async : false,
                 url: '@Url.Content("~/Inspect/SavePlanDetails")',
                 data: formData + '&BudgetInputValues=' + allocationValue.toString() + '&planBudget=' + planBudget + '&RedirectType=' + RedirectType + '&UserId=' + uId,
                 success: function (data) {
@@ -376,7 +381,7 @@
                                 $("#successMessage").css("display", "block");
                                 $("#spanMessageSuccess").empty();
                                 $("#spanMessageSuccess").text(data.succmsg);
-                                returnToReadOnlyMode(data.id);
+                                 //   returnToReadOnlyMode(data.id);
                                 if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                     $("#hdnBudgetingIsSave").val("true");
                                     $("#hdnBudgetingExpandId").val("0");
@@ -386,18 +391,20 @@
                                 }
                                 isDataModified = true;
                             }
-                            return;
+                                returnparameter = true;
                         }
-                        if (data.errormsg != "") {
+                            if (data.errormsg != "" && data.errormsg != undefined) {
                             $("#txtTitle").value = htmlDecode($('#txtTitle').val());
                             ShowError(data.errormsg);
-                            return false;
+                                returnparameter = false;
                         }
                     }
                 }
             });
         }
-    });
+        //  });
+        return returnparameter;
+    }
 
     function ShowBudgetError(value) {
         $("#divBudgetError").slideDown(400);
