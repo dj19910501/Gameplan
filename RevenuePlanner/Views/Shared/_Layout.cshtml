@@ -204,7 +204,7 @@
         if (IsSessionExist == 0 && isAlerted == false) {
             isAlerted = true;
             alert("@Common.objCached.SessionExpired");
-            if (readCookie('ReturnURL') != "") {
+            if (readCookie('ReturnURL') != "" && readCookie('ReturnURL') != null) {
                 window.location = '@Url.Content("~/login/Index?ReturnUrl=")' + readCookie('ReturnURL');
             }
             else {

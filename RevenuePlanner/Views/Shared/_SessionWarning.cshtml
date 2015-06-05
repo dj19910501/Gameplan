@@ -44,7 +44,7 @@
 
             $worked.html(ts[1] + ":" + ts[2]);
             if (ts[1] == "00" && ts[2] == "00") {
-                var returnUrl = document.URL;//window.location.pathname;
+                var returnUrl = document.URL != null ? document.URL : '';//window.location.pathname;
                 close_popup();
                 sessLogOut(returnUrl);
             }
