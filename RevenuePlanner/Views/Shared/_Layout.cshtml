@@ -72,7 +72,7 @@
 @RenderSection("Scripts", false)
 
 <script type="text/javascript">
-    var sess_pollInterval = 60000;
+    var sess_pollInterval = 20000;
     var sess_expirationMinutes = parseInt('@Session.Timeout');
     var sess_warningMinutes = sess_expirationMinutes - parseInt('@System.Configuration.ConfigurationManager.AppSettings["SessionWarningTime"]');
     var sess_intervalID;
