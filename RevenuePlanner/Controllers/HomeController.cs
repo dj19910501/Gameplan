@@ -110,36 +110,28 @@ namespace RevenuePlanner.Controllers
             if (Enums.ActiveMenu.Home.Equals(activeMenu))
             {
                 //// Get list of Active(published) plans for all above models
-                string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+                string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
                 activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
                 ViewBag.ActivePlan =Newtonsoft.Json.JsonConvert.SerializeObject( activePlan.Where(plan => plan.Model.ClientId == Sessions.User.ClientId)
                                                             .Select(plan => new { PlanId=plan.PlanId,Title=HttpUtility.HtmlEncode( plan.Title) })
-                                                            .ToList().Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList());
-                //if (activePlan.Count == 0)
-                //{
-                //    //// Get active model of client id
-                //    //models = objDbMrpEntities.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).ToList();
-
-                //    ////// Get modelIds
-                //    //modelIds = models.Select(m => m.ModelId).ToList();
-
-                //    //activePlan = objDbMrpEntities.Plans.Where(plan => modelIds.Contains(plan.Model.ModelId) && plan.IsActive.Equals(true) && plan.IsDeleted.Equals(false)).ToList();
-                //    //activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).ToList();
-                //}
+                                                            .Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList());
+                
             }
 
             //// Added by Bhavesh, Current year first plan select in dropdown
             string currentYear = DateTime.Now.Year.ToString();
-            if (activePlan.Count() != 0)
+            if (activePlan.Count > 0)
             {
                 try
                 {
                     Plan currentPlan = new Plan();
                     Plan latestPlan = new Plan();
                     latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
-                    if (activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).Count() > 0)
+                    List<Plan> fiterActivePlan = new List<Plan>();
+                    fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
+                    if (fiterActivePlan != null && fiterActivePlan.Any())
                     {
-                        latestPlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                        latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
                     }
                     if (currentPlanId != 0)
                     {
@@ -155,10 +147,12 @@ namespace RevenuePlanner.Controllers
                     {
                         if (Sessions.PublishedPlanId == 0)
                         {
+                            fiterActivePlan = new List<Plan>();
+                            fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear).ToList();
                             //// Added by Bhavesh, Current year first plan select in dropdown
-                            if (activePlan.Where(plan => plan.Year == currentYear).Count() > 0)
+                            if (fiterActivePlan != null && fiterActivePlan.Any())
                             {
-                                currentPlan = activePlan.Where(plan => plan.Year == currentYear).OrderBy(plan => plan.Title).FirstOrDefault();
+                                currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
                             }
                             else
                             {
@@ -179,10 +173,12 @@ namespace RevenuePlanner.Controllers
                         //// added by Nirav shah for TFS Point : 218
                         if (Sessions.PlanId == 0)
                         {
+                            fiterActivePlan = new List<Plan>();
+                            fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear).ToList();
                             //// Added by Bhavesh, Current year first plan select in dropdown
-                            if (activePlan.Where(plan => plan.Year == currentYear).Count() > 0)
+                            if (fiterActivePlan != null && fiterActivePlan.Any())
                             {
-                                currentPlan = activePlan.Where(plan => plan.Year == currentYear).OrderBy(plan => plan.Title).FirstOrDefault();
+                                currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
                             }
                             else
                             {
@@ -481,7 +477,7 @@ namespace RevenuePlanner.Controllers
             var subordinatesImprovementTactic = lstImprovementTactic.Where(improvementTactic => lstSubordinatesWithPeers.Contains(improvementTactic.CreatedBy)).ToList();
 
             //// Get Submitted tactic count for Request tab
-            string tacticStatus = Enums.TacticStatusValues.Single(status => status.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
+            string tacticStatus = Enums.TacticStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             //// Modified By Maninder Singh Wadhva PL Ticket#47, Modofied by Dharmraj #538
             string requestCount = Convert.ToString(subordinatesTactic.Where(tactic => tactic.objPlanTactic.Status.Equals(tacticStatus)).Count() + subordinatesImprovementTactic.Where(improvementTactic => improvementTactic.Status.Equals(tacticStatus)).Count());
 
@@ -1319,7 +1315,7 @@ namespace RevenuePlanner.Controllers
         {
             //// Modified By: Maninder Singh Wadhva to address Ticket 395
             int improvementPlanCampaignId = 0;
-            if (improvementTactics.Count() > 0)
+            if (improvementTactics.Any())
             {
                 improvementPlanCampaignId = improvementTactics[0].Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId;
             }
@@ -2264,11 +2260,13 @@ namespace RevenuePlanner.Controllers
                         year = tempYear;
                     }
                 }
-
+                DateTime startDate, endDate;
+                int monthNo = 0;
                 foreach (Plan_Campaign_Program_Tactic tactic in objPlan_Campaign_Program_Tactic)
                 {
-                    var startDate = Convert.ToDateTime(tactic.StartDate);
-                    var endDate = Convert.ToDateTime(tactic.EndDate);
+                    startDate = endDate = new DateTime();
+                    startDate = Convert.ToDateTime(tactic.StartDate);
+                    endDate = Convert.ToDateTime(tactic.EndDate);
 
                     if (year != 0)
                     {
@@ -2287,7 +2285,7 @@ namespace RevenuePlanner.Controllers
 
                             foreach (string objDifference in differenceItems)
                             {
-                                int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                                monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                                 if (monthNo == 1)
                                 {
                                     monthArray[0] = monthArray[0] + 1;
@@ -2306,7 +2304,7 @@ namespace RevenuePlanner.Controllers
                                 differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
                                 foreach (string objDifference in differenceItems)
                                 {
-                                    int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                                    monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                                     if (monthNo == 1)
                                     {
                                         monthArray[0] = monthArray[0] + 1;
@@ -2325,7 +2323,7 @@ namespace RevenuePlanner.Controllers
 
                         foreach (string objDifference in differenceItems)
                         {
-                            int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                            monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                             if (monthNo == DateTime.Now.Month)
                             {
                                 if (monthNo == 1)
@@ -2373,12 +2371,15 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
+            ActivityChart objActivityChart;
+            string strMonthName;
             //// Prepare Activity Chart list
             List<ActivityChart> lstActivityChart = new List<ActivityChart>();
             for (int month = 0; month < monthArray.Count(); month++)
             {
-                ActivityChart objActivityChart = new ActivityChart();
-                string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month + 1);
+                objActivityChart = new ActivityChart();
+                strMonthName = string.Empty;
+                strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month + 1);
 
                 if (month == 0)
                 {
@@ -2502,20 +2503,18 @@ namespace RevenuePlanner.Controllers
             {
                 IEnumerable<string> differenceItems;
                 int year = 0;
-                if (strparam != null)
+                if (strparam != null && isNumeric)
                 {
-                    if (isNumeric)
-                    {
-                        year = Planyear;
-                    }
+                    year = Planyear;
                 }
 
-                int currentMonth = DateTime.Now.Month;
-
+                int currentMonth = DateTime.Now.Month,monthNo =0;
+                DateTime startDate, endDate;
                 foreach (Plan_Campaign_Program_Tactic tactic in objPlan_Campaign_Program_Tactic)
                 {
-                    var startDate = Convert.ToDateTime(tactic.StartDate);
-                    var endDate = Convert.ToDateTime(tactic.EndDate);
+                    startDate = endDate = new DateTime();
+                    startDate = Convert.ToDateTime(tactic.StartDate);
+                    endDate = Convert.ToDateTime(tactic.EndDate);
 
                     if (year != 0)
                     {
@@ -2534,7 +2533,7 @@ namespace RevenuePlanner.Controllers
 
                             foreach (string objDifference in differenceItems)
                             {
-                                int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                                monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                                 if (monthNo == 1)
                                 {
                                     monthArray[0] = monthArray[0] + 1;
@@ -2554,7 +2553,7 @@ namespace RevenuePlanner.Controllers
 
                                 foreach (string objDifference in differenceItems)
                                 {
-                                    int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                                    monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                                     if (monthNo == 1)
                                     {
                                         monthArray[0] = monthArray[0] + 1;
@@ -2573,7 +2572,7 @@ namespace RevenuePlanner.Controllers
 
                         foreach (string objDifference in differenceItems)
                         {
-                            int monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                            monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                             if (monthNo == DateTime.Now.Month)
                             {
                                 if (monthNo == 1)
@@ -2707,13 +2706,14 @@ namespace RevenuePlanner.Controllers
                 month3 = 12;
             }
 
+            int monthNo = 0;
             //// Prepare array of months for seelcted quarter
             if (startDateParam.Month == month1 || startDateParam.Month == month2 || startDateParam.Month == month3 || endDateParam.Month == month1 || endDateParam.Month == month2 || endDateParam.Month == month3)
             {
                 differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDateParam.AddMonths(element)).TakeWhile(element => element <= endDateParam).Select(element => element.ToString("MM"));
                 foreach (string d in differenceItems)
                 {
-                    int monthNo = Convert.ToInt32(d.TrimStart('0'));
+                    monthNo = Convert.ToInt32(d.TrimStart('0'));
                     if (monthNo == month1 || monthNo == month2 || monthNo == month3)
                     {
                         if (monthNo == 1)
@@ -3150,7 +3150,7 @@ namespace RevenuePlanner.Controllers
                 {
                     OwnerId = owner.UserId,
                     Title = owner.FirstName + " " + owner.LastName,
-                }).Distinct().ToList().OrderBy(owner => owner.Title).ToList();
+                }).Distinct().OrderBy(owner => owner.Title).ToList();
 
                 lstAllowedOwners = lstAllowedOwners.Where(owner => !string.IsNullOrEmpty(owner.Title)).OrderBy(owner => owner.Title, new AlphaNumericComparer()).ToList();
 
@@ -3566,22 +3566,23 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> UpcomingActivityList = new List<SelectListItem>();
 
             //// Fetch the pervious year and future year list and insert into the list object
-            var yearlistPrevious = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) < DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
+            var yearlistPrevious = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) < DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
             yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
 
+            
+            string strThisQuarter = Enums.UpcomingActivities.thisquarter.ToString(), strThisMonth = Enums.UpcomingActivities.thismonth.ToString(),
+                                    quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString(),monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
+
             //// If active plan dosen't have any current plan at that time we have to remove this month and thisquater option
-            if (activePlan.Count > 0)
+            if (activePlan != null && activePlan.Any() && activePlan.Where(plan => plan.Year == currentYear).Any())
             {
-                if (activePlan.Where(plan => plan.Year == currentYear).Count() != 0)
-                {
-                    //// Add current year into the list
-                    UpcomingActivityList.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString(), Selected = false });
-                    UpcomingActivityList.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thismonth.ToString()].ToString(), Value = Enums.UpcomingActivities.thismonth.ToString(), Selected = false });
-                    UpcomingActivityList.Add(new SelectListItem { Text = DateTime.Now.Year.ToString(), Value = DateTime.Now.Year.ToString(), Selected = true });
-                }
+               //// Add current year into the list
+               UpcomingActivityList.Add(new SelectListItem { Text = quartText, Value = strThisQuarter, Selected = false });
+               UpcomingActivityList.Add(new SelectListItem { Text = monthText, Value = strThisMonth, Selected = false });
+               UpcomingActivityList.Add(new SelectListItem { Text = currentYear, Value = currentYear, Selected = true });
             }
 
-            var yearlistAfter = activePlan.Where(plan => plan.Year != DateTime.Now.Year.ToString() && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
+            var yearlistAfter = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
             yearlistAfter.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
             return UpcomingActivityList;
         }
