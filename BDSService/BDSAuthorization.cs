@@ -59,7 +59,8 @@ namespace BDSService
                 userObj.ProfilePhoto = user.u.ProfilePhoto;
                 userObj.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.u.UserId).Select(u => u.RoleId).FirstOrDefault();
                 userObj.RoleCode = db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Code).FirstOrDefault();
-                userObj.LastLoginDate = user.u.User_Application.Select(l => l.LastLoginDate).FirstOrDefault();
+                //userObj.LastLoginDate = user.u.User_Application.Select(l => l.LastLoginDate).FirstOrDefault();
+                userObj.LastLoginDate = user.u.User_Application.Where(l => l.ApplicationId == applicationId && l.IsDeleted == false).Select(l => l.LastLoginDate).FirstOrDefault();
                 userObj.SecurityQuestionId = user.u.SecurityQuestionId;
                 userObj.Answer = user.u.Answer;
             }
