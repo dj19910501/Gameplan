@@ -119,14 +119,14 @@
         <div class="pull-left" style="width: 100%">
             <label id="last-updated" class="pull-left last-updated" style="Width: 45%;"></label>
         </div>
-        <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveLineitemActualSection">
+       @* <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveLineitemActualSection">
             <div class="span2 btn-save">
                 <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float: left;" type="button">Update Actuals</button>
             </div>
             <div class="span2">
                 <button id="cancelLineitemActuals" class="close-form btn-link source-sans-proregular margin-top23 actual_cancel" type="button">Cancel</button>
             </div>
-        </div>
+        </div>*@
     </div>
 </div>
 <!--end content-panel-tab-->
@@ -280,7 +280,12 @@
         }
         //End - Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
 
-        $("#btnUploadResult").click(function () {
+       
+
+    });
+    function SaveLineitemActual() {
+        var returnparameter = false;
+        //  $("#btnUploadResult").click(function () {
             var iserror = false;
             var _lineitemtitle = htmlEncode($('#txtTitle').val());
             var _stractualsData = '';
@@ -309,6 +314,7 @@
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 type: 'POST',
+                    async: false,
                 url: '@Url.Content("~/Plan/SaveActualsLineitemData/")',
                 data: JSON.stringify({ strActualsData: _stractualsData, strPlanItemId: _strPlanLineitemId, LineItemTitle: _lineitemtitle }),
                 success: function (data) {
@@ -321,7 +327,7 @@
                             var requestedModule = $("#hdnRedirectType").val();
                             var activeTab = $("#InspectTab li.active a").text();
                             var planLineItemId = data.id;   
-                            loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                                    //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                 $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
                                 $("#hdnBudgetingIsSave").val("true");
@@ -335,24 +341,27 @@
                             $("#spanMessageError").empty();
                             $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                         }
+                                returnparameter = true;
                     }
                     else {
                         ShowError(data.errormsg);
-                        return;
+                                returnparameter = false;
                     }
+                            returnparameter = true;
                 }
                 },
                 error: function () {
                     $("#errorMessage").css("display", "block");
                     $("#spanMessageError").empty();
                     GoToLogin();
-                    return false;
+                        returnparameter = false;
                 }
             });
 
+                return returnparameter;
 
-        });
+         // });
+            }
 
-    });
 
 </script>

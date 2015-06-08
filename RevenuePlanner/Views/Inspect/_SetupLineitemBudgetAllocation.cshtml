@@ -97,7 +97,7 @@
 
     </div>
     
-   if ((bool)ViewBag.IsOwner && (bool)ViewBag.IsAllowCustomRestriction)
+ @*  if ((bool)ViewBag.IsOwner && (bool)ViewBag.IsAllowCustomRestriction)
    {
     
     
@@ -109,7 +109,7 @@
             <button id="cancelLineItemBudget" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
         </div>
     </div>   
-   }
+   }*@
 }
 
 <script type="text/javascript">
@@ -191,6 +191,7 @@
         var hdnPlanTacticId = $("#hdnPlanTacticId").val();
         $.ajax({
             type: 'POST',
+            async: false,
             url: '@Url.Content("~/Plan/GetCostAllocationLineItemData/")',
             data: {
                 id: hdnPlanLineItemId,
@@ -321,8 +322,9 @@
         $("#hdnOldLineitemCost").val(LineitemCostValue);
     });
 
-
-    $("#save_LineItem").click(function () {
+    function SaveLineitemBudget() {
+        var returnparameter = false;
+     //   $("#save_LineItem").click(function () {
         var title = htmlEncode($('#txtTitle').val());
         var iserror = false;
         $('form').find('input[type=text], select, textarea').each(function () {
@@ -375,11 +377,12 @@
         var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
+                async: false,
             url: '@Url.Content("~/Inspect/SaveLineItemBudgetAllocation")',
             data: $("form").serialize() + '&CostInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
             success: function (data) {
                 if (data.IsSaved) {
-                    CancelEvent();
+                     //   CancelEvent();
                     var activeTab = $("#InspectTab li.active a").text()
                     var requestedModule = $("#hdnRedirectType").val();
                     $("#lblLineitemTitle").html(htmlEncode($('#txtTitle').val()));
@@ -396,14 +399,18 @@
                     else {
                         RefreshCurrentTab(requestedModule, data.CamapignId, data.ProgramId, data.TacticId, 0, 0);
                     }
+                        returnparameter = true;
                 }
                 else {
                     $("#txtLineItemCost").val(FormatCommasBudget($("#txtLineItemCost").val(), false, true));
                     ShowError(data.msg);
+                        returnparameter = false;
                 }
 
             }
         });
-    });
+        // });
+        return returnparameter;
+    }
 
 </script>

@@ -86,14 +86,14 @@
         </div>
     </div>
           
-    <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
+    @*<div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
         <div class="span2 btn-save" style="width: 80px;">
             <button id="save_LineItem" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save </button>
         </div>
         <div class="span2">
             <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
         </div>
-    </div>
+    </div>*@
     
 }
 <script type="text/javascript">
@@ -187,7 +187,10 @@
             $("#txtLineItemCost").val('$0')
         }
     });
-    $("#save_LineItem").click(function () {
+    function SetupSaveLineitem() {
+       
+        var returnparameter = false;
+      //  $("#save_LineItem").click(function () {
         var iserror = false;
         var lineItemTitle = htmlEncode($('#txtTitle').val());
 
@@ -252,6 +255,7 @@
         document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
         $.ajax({
             type: 'POST',
+                async: false,
             url: '@Url.Content("~/Inspect/SaveLineitem")',
             data: $("form").serialize() + '&title='+escape(lineItemTitle)+'&tacticId=@Model.PlanTacticId'+'&UserId='+uId,
             success: function (data) {
@@ -274,10 +278,23 @@
                         if (planLineItemId == '0') {
                             planLineItemId = data.planLineitemID;
                         }
-                            plancampaignId = data.planCampaignID;
-                            planProgramId = data.planProgramID;
-                            planTacticId = data.planTacticID;
-                            loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                        plancampaignId = data.planCampaignID;
+                        planProgramId = data.planProgramID;
+                        planTacticId = data.planTacticID;
+                        $('#lblLineitemTitle').text(lineItemTitle);
+                        if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
+                                var ChangedTab = "Setup";
+                                if (tabtext != "") {
+                                    ChangedTab = tabtext;
+                                }
+                                var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                                if (ChangedTab == "Setup") {
+                                    inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                                }
+                            loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
+                            }
+                            else{
+                        //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
 
                         if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                             $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
@@ -286,13 +303,17 @@
                         else {
                             RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         }
+                        returnparameter = true;
+                    }
                     }
                     else {
                         ShowError(data.msg);
+                            returnparameter = false;
                     }
                 }
             }
         });
-    });
-
+        //   });
+        return returnparameter;
+    }
 </script>

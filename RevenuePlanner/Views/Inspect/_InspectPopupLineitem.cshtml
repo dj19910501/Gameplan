@@ -1,7 +1,8 @@
 ﻿@using RevenuePlanner.Helpers;
 @{
-    var popupvalue = (string)ViewBag.InspectPopup;
+     var popupvalue = (string)ViewBag.InspectPopup;
     var RedirectType = (string)ViewBag.RedirectType;
+    var inspectMode = ViewBag.InspectMode;
     var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
     bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
     var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
@@ -12,7 +13,7 @@
     
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+@*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
 @{
     var planLineItemId = 0;
     string colorCode = "C6EBF3";
@@ -61,7 +62,7 @@
     <span id="spanMessageEditLineitem"></span>
 </div>
 
-<form>
+@*<form>
     <div class="modal-popup-title">
         <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
         <h2 class="title-simple source-sans-prolight">
@@ -100,6 +101,71 @@
             @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
         </h2>
     </div>
+</form>*@
+
+<div class="headerfix-wraper">
+    @*Modified for Design changes ticket #1318*@
+    <div class="headefix">
+
+        <h2 class="title-simple source-sans-prolight">
+                 @if (lineitemTitle != string.Empty)
+                 {
+                <span>
+                    @if (IsPlanEditable)
+                    {
+                        if (!IsOtherLineItem)
+                        {  
+                        <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
+                            <button class="delete-btn-gray" id="deleteLineItem" type="button">Delete</button>
+                        </div>
+                        }
+                    }
+                    
+                    @if (!IsOtherLineItem)
+                    {
+                         <div style="float: right; position: relative;">
+                            <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
+                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupLineitem">
+                                <ul style="margin: 0;">
+                                    <li class="new-prog" id="NewLineItem">New Line Item</li>
+                                    <li class="copy-camp" id="CloneLineItem">Copy Line Item</li>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+
+                    @if (IsPlanEditable)
+                    {
+                        <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;"></span>
+                    }
+                </span> 
+                 }
+            
+            @if (string.IsNullOrEmpty(lineitemTitle))
+            {
+               <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;"></span>
+               
+            }
+
+            <buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+
+        </h2>
+
+    </div>
+</div>
+<div class="pop-body-wraper">
+    <div class="PopupDiv">
+        <form>
+            <div class="modal-popup-title">
+                <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
+                <h2 class="title-simple source-sans-prolight">
+                    <span>
+                       <span id="lblLineitemTitle" class="tipsyclassTitle" title="@Html.Raw(lineitemTitle)" >@Html.Raw(lineitemTitle)</span>
+                    </span>
+                     @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(lineitemTitle), new { placeholder = "Line Item name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = lineitemTitle, id = "txtTitle" })
+                   @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
+                </h2>
+            </div>
 </form>
 
 <div>
@@ -125,6 +191,8 @@
     </div>
 
 </div>
+        </div>
+    </div>
 
 <script type="text/javascript">
 
@@ -133,7 +201,9 @@
     
     var TabBudget = "Budget";
     var divTab = "#divTab";
-    var TabActual = "Actuals";	
+    var TabActual = "Actuals";
+    var tabtext = "";
+    var inspectMode = '@inspectMode';
  var PlanLineItemId = $("#hdnPlanLineItemID").val();
  //// Function to redirect to login page on unavailability of web service.
  //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -168,9 +238,14 @@
 
          $("#li" + InspectValue).removeClass("pull-left");
          $("#li" + InspectValue).addClass("active pull-left");
-         var tabtext = ($("#li" + InspectValue).children('a').text());
+         tabtext = ($("#li" + InspectValue).children('a').text());
          $('#div' + tabtext).css({ display: "block" });
          $("#liSetup,#liReview,#liBudget,#liActuals").on("click", function () {
+             var activeTab = $("#InspectTab li.active a").text();
+             tabtext = ($(this).children('a').text());
+             var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal 
+             //debugger;
+             if (returnpara) {
              $("#successMessageViewCampaign").slideUp(50);
              $("#errorMessageEditCampaign").slideUp(50);
              RemoveTabClass();
@@ -178,15 +253,68 @@
              $(this).addClass("active pull-left");
              $("#errorMessage").css("display", "none");
              $("#successMessage").css("display", "none");
-             var tabtext = ($(this).children('a').text());
              loadReview(PlanLineItemId, tabtext);
+             }
          });
+
+         //Added By Komal Rawal 
+         function SaveAllData(activeTab) {
+             //debugger;
+             var LineitemOpt = $("#hdnLineitemOpt").val();
+             if (LineitemOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+                  if (activeTab == TabSetup) {
+                      var ReturnParameter = SetupSaveLineitem();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                  }
+
+                  else if (activeTab == TabBudget) {
+                      var ReturnParameter = SaveLineitemBudget();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                  }
+                  else if (activeTab == TabActual) {
+                      //var ReturnParameter = SaveLineitemActual();
+                      //if (ReturnParameter == false) {
+                      //    return false;
+                      //}
+                      var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+                      var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                       var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                      var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                      if (typeof hdnTacticStatus!='undefined' && ( hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus)) {
+                          var ReturnParameter = SaveLineitemActual();
+                      }
+                      else {
+                          ReturnParameter = true;
+                      }
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                  }
+
+
+              }
+
+              return true;
+          }
+         //End
          if (planLineitemId != '0') {
              loadReview(planLineitemId, tabtext);
          }
          else {
-             $("#liActuals ,#liBudget,#liSetup").unbind('click');
+            // $("#liActuals ,#liBudget,#liSetup").unbind('click');
              loadAddSetup();
+         }
+         if ($('#btnEditlineItem').hasClass('edit-icon-white') && inspectMode == '@Enums.InspectPopupMode.Edit.ToString()') {
+             $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 
+             $('#btnEditlineItem').addClass('Save-icon-white');
+             $("#errorMessage").css("display", "none");
+             $("#successMessage").css("display", "none");
+             $("#txtTitle").removeClass("error");
+             $('#hdnLineitemOpt').val('Edit');
          }
        
 
@@ -199,6 +327,10 @@
     });
 
     $("#btnEditlineItem").on("click", function () {
+        var activeTab = $("#InspectTab li.active a").text();
+        if ($('#btnEditlineItem').hasClass('edit-icon-white')) {
+            $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+            $('#btnEditlineItem').addClass('Save-icon-white');
         $("#errorMessage").css("display", "none");
         $("#successMessage").css("display", "none");
         $("#hdnLineitemOpt").val("Edit");
@@ -236,14 +368,77 @@
                   }
 			  }
 
-           $("#btnEditlineItem").css("display", "none");
+          //  $("#btnEditlineItem").css("display", "none");
            $('#txtTitle').css('display', 'block');
            $('#lblLineitemTitle').css('display', 'none');
            $("#txtTitle").prop('readonly', false);
-           $("#AddForm").css("display", "none");
-           $("#divDeleteProgram").css("display", "none");
+          //  $("#AddForm").css("display", "none");
+          //  $("#divDeleteProgram").css("display", "none");
            $("#txtTitle").removeClass('error');
            return false;
+        }
+        else {
+            if (activeTab == TabSetup) {
+                var ReturnParameter = SetupSaveLineitem();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+                else {
+                    $("#hdnLineitemOpt").val("View");
+                    loadReview(PlanLineItemId, activeTab);
+                    $('#btnEditlineItem').removeClass('Save-icon-white');
+                    $('#btnEditlineItem').addClass('edit-icon-white');
+                    $('#txtTitle').css('display', 'none');
+                    $('#lblLineitemTitle').css('display', 'block');
+                    $("#txtTitle").prop('readonly', true);
+                }
+            }
+
+            else if (activeTab == TabBudget) {
+                var ReturnParameter = SaveLineitemBudget();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+                else {
+                    $("#hdnLineitemOpt").val("View");
+                    loadReview(PlanLineItemId, activeTab);
+                    $('#btnEditlineItem').removeClass('Save-icon-white');
+                    $('#btnEditlineItem').addClass('edit-icon-white');
+                    $('#txtTitle').css('display', 'none');
+                    $('#lblLineitemTitle').css('display', 'block');
+                    $("#txtTitle").prop('readonly', true);
+
+                }
+            }
+
+            else if (activeTab == TabActual) {
+                var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+                var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                 var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                if (hdnTacticStatus == Approvedstatus && hdnTacticStatus == InProgressstatus && hdnTacticStatus == Completestatus) {
+                    var ReturnParameter = SaveLineitemActual();
+                }
+                else {
+                    ReturnParameter = true;
+                }
+                    if (ReturnParameter == false) {
+                        return false;
+                    }
+                    else {
+                        $("#hdnLineitemOpt").val("View");
+                        loadReview(PlanLineItemId, activeTab);
+                        $('#btnEditlineItem').removeClass('Save-icon-white');
+                        $('#btnEditlineItem').addClass('edit-icon-white');
+                        $('#txtTitle').css('display', 'none');
+                        $('#lblLineitemTitle').css('display', 'block');
+                        $("#txtTitle").prop('readonly', true);
+
+                    }
+                
+            }
+
+        }
        });
 
     function RemoveTabClass() {
@@ -464,7 +659,7 @@ $("#deleteLineItem").click(function () {
             $("#divTab").empty();
             $("#divTab").load(url + '?id='+tacticId);
         }
-        $("#btnEditlineItem").css("display", "none");
+        //$("#btnEditlineItem").css("display", "none");
         $("#AddForm").css("display", "none");
         $('#txtTitle').css('display', 'block');
         $('#txtTitle').text('');
