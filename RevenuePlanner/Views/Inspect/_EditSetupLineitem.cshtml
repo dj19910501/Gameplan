@@ -70,10 +70,13 @@
         <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
             <p>@Html.Raw("Parent Tactic")</p>
             @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticTitle })
+              @if (!isOtherLineitem)
+                    {
               <p id="lblType">Type <span class="required-asterisk">*</span></p>
             <span style="min-width: 100%; position: relative;">
                 @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission hide", require = "true", label = "Type" })
             </span>
+              }
 
 
         </div>
