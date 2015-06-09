@@ -1895,10 +1895,12 @@ namespace RevenuePlanner.Controllers
             try
             {
                 List<string> lstMonthly = Common.lstMonthly;
+                
                 var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(campgn => campgn.PlanCampaignId == id && campgn.IsDeleted == false);    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
-                var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == Sessions.PlanId && _plan.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
+                int planId =objPlanCampaign==null? 0:objPlanCampaign.PlanId;
+                var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == planId && _plan.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
 
-                var lstAllCampaign = db.Plan_Campaign.Where(_campgn => _campgn.PlanId == Sessions.PlanId && _campgn.IsDeleted == false).ToList();
+                var lstAllCampaign = db.Plan_Campaign.Where(_campgn => _campgn.PlanId == planId && _campgn.IsDeleted == false).ToList();
                 var planCampaignId = lstAllCampaign.Select(_campgn => _campgn.PlanCampaignId);
                 var lstAllProgram = db.Plan_Campaign_Program.Where(_prgram => _prgram.PlanCampaignId == id && _prgram.IsDeleted == false).ToList();
                 var ProgramId = lstAllProgram.Select(_prgram => _prgram.PlanProgramId);
@@ -1921,7 +1923,7 @@ namespace RevenuePlanner.Controllers
                                                                    _prgrmBdgt.Value
                                                                }).ToList();
 
-                var lstPlanBudget = db.Plan_Budget.Where(_plnBdgt => _plnBdgt.PlanId == Sessions.PlanId);
+                var lstPlanBudget = db.Plan_Budget.Where(_plnBdgt => _plnBdgt.PlanId == planId);
 
                 double allCampaignBudget = lstAllCampaign.Sum(_campgn => _campgn.CampaignBudget);
                 double planBudget = objPlan.Budget;
