@@ -669,10 +669,10 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             List<string> collaboratorId = new List<string>();
             var planProgram = db.Plan_Campaign_Program.Where(t => t.PlanProgramId == PlanProgramId);
-            var planProgramModifiedBy = planProgram.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-            var planProgramCreatedBy = planProgram.Select(t => t.CreatedBy.ToString()).ToList();
+            var planProgramModifiedBy = planProgram.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+            var planProgramCreatedBy = planProgram.ToList().Select(t => t.CreatedBy.ToString()).ToList();
             var planProgramComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.PlanProgramId == PlanProgramId);
-            var planProgramCommentCreatedBy = planProgramComment.Select(pc => pc.CreatedBy.ToString()).ToList();
+            var planProgramCommentCreatedBy = planProgramComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
             collaboratorId.AddRange(planProgramCreatedBy);
             collaboratorId.AddRange(planProgramModifiedBy);
             collaboratorId.AddRange(planProgramCommentCreatedBy);
@@ -684,10 +684,10 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             List<string> collaboratorId = new List<string>();
             var planCampaign = db.Plan_Campaign.Where(t => t.PlanCampaignId == PlanCampaignId);
-            var planCampaignModifiedBy = planCampaign.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-            var planCampaignCreatedBy = planCampaign.Select(t => t.CreatedBy.ToString()).ToList();
+            var planCampaignModifiedBy = planCampaign.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+            var planCampaignCreatedBy = planCampaign.ToList().Select(t => t.CreatedBy.ToString()).ToList();
             var planCampaignComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.PlanCampaignId == PlanCampaignId);
-            var planCampaignCommentCreatedBy = planCampaignComment.Select(pc => pc.CreatedBy.ToString()).ToList();
+            var planCampaignCommentCreatedBy = planCampaignComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
             collaboratorId.AddRange(planCampaignCreatedBy);
             collaboratorId.AddRange(planCampaignModifiedBy);
             collaboratorId.AddRange(planCampaignCommentCreatedBy);
