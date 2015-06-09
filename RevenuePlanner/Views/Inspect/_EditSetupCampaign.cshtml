@@ -588,6 +588,7 @@
                                     inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                                 }
                             loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
+                            RefreshCurrentTab(requestedModule, 0, 0, 0);
                         }
                         else {
                             $("#successMessage").css("display", "block");

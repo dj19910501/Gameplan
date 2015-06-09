@@ -483,6 +483,7 @@
                                  inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                              }
                         loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
+                        RefreshCurrentTab(requestedModule, campaignId, 0, 0);
 
                     }
                     else {

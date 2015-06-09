@@ -787,7 +787,7 @@
                                     inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                                 }
                                 loadInspectPopup(data.planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                               
+                                RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
                             }
                             else{
                             
