@@ -10730,8 +10730,12 @@ li.close-list {
     border-bottom: none !important;
 }
 
+/*Modified By Komal Rawal for #1094*/
 .sub-head {
     color: #6d6d6d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 13px;
     padding-top: 6px;
     padding-bottom: 10px;
