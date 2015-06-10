@@ -1,4 +1,8 @@
-﻿using RevenuePlanner.Helpers;
+﻿using Elmah;
+using RestSharp;
+using RevenuePlanner.Helpers;
+using System;
+using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -41,12 +45,22 @@ namespace RevenuePlanner.Controllers
         /// <param name="filterContext"></param>
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            // to add client id into elmah error log
+            if (Sessions.User != null)
+            {
+                if (Sessions.User.ClientId != null)
+                {
+                    Common.SetCookie("ClientID", Convert.ToString(Sessions.User.ClientId));
+                }
+            }
+
             Session["LastViewURL"] = Request.RawUrl;//Get the current requested URL
             string controller = filterContext.Controller.ToString();//Get the name of controller
             string[] arr = controller.Split('.');//Splet controller name
             string entity = arr[arr.Length - 1];
             entity = entity.Substring(0, entity.IndexOf("Controller"));//Get the name of entity from controller name
             Common.SetCookie("IsSessionExist", "1");
+
             #region Check for Session
             if (filterContext.HttpContext.Request.IsAjaxRequest()) //It will check for ajax request and session is null
             {
@@ -145,6 +159,72 @@ namespace RevenuePlanner.Controllers
         public PartialViewResult LoadSessionWarning()
         {
             return PartialView("~/Views/Shared/_SessionWarning.cshtml");
+        }
+
+        protected override void OnException(ExceptionContext filterContext)
+        {
+            if (filterContext.ExceptionHandled || !filterContext.HttpContext.IsCustomErrorEnabled)
+            {
+                System.Exception e = filterContext.Exception;
+                filterContext.ExceptionHandled = true;
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+                if (filterContext.HttpContext.Request.IsAjaxRequest()) //It will check for ajax request and session is null
+                {
+                    filterContext.Result = this.RedirectToAction("ElmahError", "Error");
+                }
+                else //It will check for request and session is null
+                {
+                    filterContext.Result = this.RedirectToAction("Error", "Error");
+                }
+                base.OnException(filterContext);
+                return;
+            }
+            if (new System.Web.HttpException(null, filterContext.Exception).GetHttpCode() != 500)
+            {
+                System.Exception e = filterContext.Exception;
+                filterContext.ExceptionHandled = true;
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+                if (filterContext.HttpContext.Request.IsAjaxRequest()) //It will check for ajax request and session is null
+                {
+                    filterContext.Result = this.RedirectToAction("ElmahError", "Error");
+                }
+                else //It will check for request and session is null
+                {
+                    filterContext.Result = this.RedirectToAction("Error", "Error");
+                }
+                base.OnException(filterContext);
+                return;
+            }
+            // if the request is AJAX return JSON else view.
+            if (filterContext.HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+
+                filterContext.Result = new JsonResult
+                {
+                    JsonRequestBehavior = JsonRequestBehavior.AllowGet,
+                    Data = new
+                    {
+                        error = true,
+                        message = "Sorry, an error occurred while processing your request." //filterContext.Exception.Message
+                    }
+                };
+            }
+            else
+            {
+                var controllerName = (string)filterContext.RouteData.Values["controller"];
+                var actionName = (string)filterContext.RouteData.Values["action"];
+                var model = new HandleErrorInfo(filterContext.Exception, controllerName, actionName);
+                filterContext.Result = new ViewResult
+                {
+                    ViewName = "Error",
+                    ViewData = new ViewDataDictionary<HandleErrorInfo>(model),
+                    TempData = filterContext.Controller.TempData
+                };
+            }
+            filterContext.ExceptionHandled = true;
+            filterContext.HttpContext.Response.Clear();
+            filterContext.HttpContext.Response.StatusCode = 500;
+            filterContext.HttpContext.Response.TrySkipIisCustomErrors = true;
         }
     }
 }

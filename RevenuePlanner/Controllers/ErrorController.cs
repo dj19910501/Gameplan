@@ -1,4 +1,7 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
 /*
  *  Author: Manoj Limbachiya
  *  Created Date: 10/22/2013
@@ -15,7 +18,16 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Error()
         {
-            return View();
+            return View("~/Views/Shared/Error.cshtml");
+        }
+
+        /// <summary>
+        /// Error page
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ElmahError()
+        {
+            return View("~/Views/Shared/ElmahError.cshtml");
         }
 
         /// <summary>
@@ -49,6 +61,5 @@ namespace RevenuePlanner.Controllers
 
             return View("PageNotFound");
         }
-
     }
 }

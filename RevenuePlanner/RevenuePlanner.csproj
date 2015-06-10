@@ -44,8 +44,9 @@
     <AutoParameterizationWebConfigConnectionStrings>false</AutoParameterizationWebConfigConnectionStrings>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Elmah">
-      <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
+    <Reference Include="Elmah, Version=1.2.14706.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Exedfsdwdf\Elmah with client ID\Elmah.dll</HintPath>
     </Reference>
     <Reference Include="evohtmltopdf, Version=3.5.0.0, Culture=neutral, PublicKeyToken=5b5f377bc08a4d32, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -536,6 +537,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
+    <Content Include="DLLs\Elmah.dll" />
     <Content Include="DLLs\evohtmltopdf.dll" />
     <Content Include="DLLs\evointernal.dll" />
     <Content Include="DLLs\HelperSharp.dll" />
@@ -891,6 +893,7 @@
     <Content Include="Views\Report\_conversionOverview.cshtml" />
     <Content Include="Views\Shared\_SessionWarning.cshtml" />
     <Content Include="Views\Report\_financialOverview.cshtml" />
+    <Content Include="Views\Shared\ElmahError.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
