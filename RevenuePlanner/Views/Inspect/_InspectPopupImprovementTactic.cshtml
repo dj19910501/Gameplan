@@ -241,13 +241,26 @@
         }
         else if (tabValue == TabReview) {
             url = '@Url.Content("~/Inspect/LoadImprovementReview/")';
+            if (inspectMode == '@Enums.InspectPopupMode.Edit.ToString()')
+                {
+                $('#txtTitle').css('display', 'inline');
+            $('#spnImprovementTacticTitle').css('display', 'none');
+        }
+        else {
             $('#txtTitle').css('display', 'none');
             $('#spnImprovementTacticTitle').css('display', 'inline');
         }
+        }
         else if (tabValue == TabActual) {
             url = '@Url.Content("~/Inspect/LoadImprovementImpact/")';
+            if (inspectMode == '@Enums.InspectPopupMode.Edit.ToString()') {
+                $('#txtTitle').css('display', 'inline');
+                $('#spnImprovementTacticTitle').css('display', 'none');
+            }
+            else {
                 $('#txtTitle').css('display', 'none');
                 $('#spnImprovementTacticTitle').css('display', 'inline');
+            }
             }
 
     RemoveTabClass();
