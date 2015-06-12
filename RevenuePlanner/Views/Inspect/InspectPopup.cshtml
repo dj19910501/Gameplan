@@ -461,7 +461,13 @@ var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Hand
           
       });
 
-
+    function ShowError(value) {
+        $("#modal-container-186470").scrollTop(0);
+        $("#errorMessage").css("display", "block");
+        $("#errorMessage").slideDown(400);
+        $("#spanMessageError").empty();
+        $("#spanMessageError").html(value);
+    }
 
     //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
     function SaveTitle() {
@@ -469,19 +475,20 @@ var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Hand
         var title = htmlEncode($('#txtTacticTitle').val());
         var planTacticId = $("#hdnPlanTacticId").val();
         var txtTacticValue = $("#txtTacticTitle").val();
-        var isError = false;
+        var iserror = false;
 
         if (title == '') {
-            $('#title').addClass("error");
-            isError = true;
+            $('#txtTacticTitle').addClass("error");
+            iserror = true;
         }
         else {
-            $('#title').removeClass("error");
+            $('#txtTacticTitle').removeClass("error");
         }
-        if (isError) {
-            $("#errorMessage").css("display", "block");
-            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
+        if (iserror) {
+            if (iserror) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
                   return false;
+            }
               }
               $.ajax({
                   async: false,
