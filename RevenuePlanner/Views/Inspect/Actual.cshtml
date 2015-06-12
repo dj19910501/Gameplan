@@ -281,6 +281,10 @@
 <!--end content-panel-tab-->
 
 <script type="text/javascript">
+    var hdnTacticStatus = $("#hdnTacticStatus").val();
+    var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+    var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+    var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
     $(document).ready(function () {
         var TacticActual;
         var planTacticId = $("#hdnPlanTacticId").val();
@@ -293,10 +297,7 @@
             $('#SaveTacticActualSection').css('display', 'block');
         }
 
-        var hdnTacticStatus = $("#hdnTacticStatus").val();
-        var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-        var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-        var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+       
         $("#divActualInner").css('display', 'block');
         if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
             $("#divActualInner").empty();
@@ -650,6 +651,11 @@
     function SaveActual() {
         var planTacticId = $("#hdnPlanTacticId").val();
         var returnparameter = false;
+        var ReturnParameter = SaveTitle();
+            if (ReturnParameter == false) {
+                return false;
+            }
+        
         //$("#btnUploadResult").click(function () {
             var title = htmlEncode($('#txtTacticTitle').val()); // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
             var _tactic = [];

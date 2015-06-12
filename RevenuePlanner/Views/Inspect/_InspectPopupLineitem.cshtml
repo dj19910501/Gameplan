@@ -136,14 +136,14 @@
 
                     @if (IsPlanEditable)
                     {
-                        <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;"></span>
+                        <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;cursor: pointer;"></span>
                     }
                 </span> 
                  }
             
             @if (string.IsNullOrEmpty(lineitemTitle))
             {
-               <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;"></span>
+               <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;cursor: pointer;"></span>
                
             }
 
@@ -259,7 +259,6 @@
 
          //Added By Komal Rawal 
          function SaveAllData(activeTab) {
-             //debugger;
              var LineitemOpt = $("#hdnLineitemOpt").val();
              if (LineitemOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
                   if (activeTab == TabSetup) {
@@ -288,7 +287,7 @@
                           var ReturnParameter = SaveLineitemActual();
                       }
                       else {
-                          ReturnParameter = true;
+                          var ReturnParameter = SaveTitle();
                       }
                       if (ReturnParameter == false) {
                           return false;
@@ -319,6 +318,59 @@
        
 
      });
+
+    //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
+    function SaveTitle() {
+        var returnparameter = false;
+        var planLineitemId = $("#hdnPlanLineItemID").val();
+        var _lineitemtitle = htmlEncode($('#txtTitle').val());
+        var isotherlineitem = $("#hdnIsOtherLineItem").val();
+        if (isotherlineitem.toLowerCase() == 'false') {
+            if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
+                    var errorMsg = "You can't use 'Other' as title.";
+                    ShowError(errorMsg);
+                    return false;
+                }
+            }
+        var iserror = false;
+
+        if (_lineitemtitle == '') {
+            $('#txtTitle').addClass("error");
+            iserror = true;
+        }
+        else {
+            $('#txtTitle').removeClass("error");
+        }
+
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                return false;
+            }
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/SaveTitle/")',
+            data: { title: _lineitemtitle, Id: planLineitemId, ActivePopup: "LineItem" },
+            success: function (data) {
+                      if (!data.IsDuplicate) {
+                          var requestedModule = $("#hdnRedirectType").val();
+                          $('#lblLineitemTitle').text(_lineitemtitle);
+                          $("#successMessage").css("display", "block");
+                          $("#spanMessageSuccess").empty();
+                          $("#spanMessageSuccess").text(data.msg);
+                          $("#errorMessage").css("display", "none");
+                          RefreshCurrentTab(requestedModule, data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
+                          returnparameter = true
+                      }
+                      else {
+                          ShowError(data.errormsg);
+                          returnparameter = false;
+                      }
+                  }
+              });
+              return returnparameter;
+          }
+          //End
 
     //<--- End Document.ready event --->
   
@@ -420,7 +472,7 @@
                     var ReturnParameter = SaveLineitemActual();
                 }
                 else {
-                    ReturnParameter = true;
+                    var ReturnParameter = SaveTitle();
                 }
                     if (ReturnParameter == false) {
                         return false;

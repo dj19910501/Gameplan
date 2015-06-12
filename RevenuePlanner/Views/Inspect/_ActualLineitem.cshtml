@@ -286,6 +286,11 @@
     function SaveLineitemActual() {
         var returnparameter = false;
         //  $("#btnUploadResult").click(function () {
+
+        var ReturnParameter = SaveTitle();
+        if (ReturnParameter == false) {
+            return false;
+        }
             var iserror = false;
             var _lineitemtitle = htmlEncode($('#txtTitle').val());
             var _stractualsData = '';

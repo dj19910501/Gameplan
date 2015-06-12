@@ -68,6 +68,8 @@
 @Html.Hidden("hdnInspectMode", InspectMode, new { id = "hdnInspectMode" })
 @Html.Hidden("hdnRequestedModule", RequestedModule, new { id = "hdnRequestedModule" })
 @Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
+@Html.Hidden("hdnOwner", "", new { id = "hdnOwner" })
+
 
 
 <div class="headerfix-wraper">
@@ -88,7 +90,7 @@
            
                  <div style="float: right; position: relative;margin-left:10px;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
-                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupnewTactic">
+                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupnewTactic">
                                 <ul style="margin: 0;">
                                     <li class="new-prog" id="NewTactic">New Line Item</li>
                                     <li class="copy-camp" id="CloneTactic">Copy Tactic</li>
@@ -287,8 +289,16 @@ var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Hand
                              var ReturnParameter = SaveActual();
                          }
                          else {
-                             ReturnParameter = true;
+                             var ReturnParameter = SaveTitle();
+                             
                          }
+                             if (ReturnParameter == false) {
+                                 return false;
+                             }
+                     }
+
+                     else if (activeTab = TabReview) {
+                         var ReturnParameter = SaveTitle();
                              if (ReturnParameter == false) {
                                  return false;
                              }
@@ -300,6 +310,7 @@ var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Hand
              
           }
 
+         
          
           //End
 
@@ -408,7 +419,7 @@ var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Hand
                           var ReturnParameter = SaveActual();
                           }
                           else {
-                                ReturnParameter = true;
+                              var ReturnParameter = SaveTitle();
                           }
                           if (ReturnParameter == false) {
                               return false;
@@ -426,6 +437,13 @@ var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Hand
 
                       else if (activeTab == TabReview) {
 
+                          var ReturnParameter = SaveTitle();
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+
+
                           $("#hdnTacticBudgetAllocationOpt").val("View");
                           loadReview(planTacticId, activeTab);
                           $('#EditForm').removeClass('Save-icon-white');
@@ -435,12 +453,65 @@ var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Hand
                           $("#lblTacticTitle").removeAttr("style");
                       }
                   }
+                  }
 
             //  }
           });
         
           
       });
+
+
+
+    //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
+    function SaveTitle() {
+        var returnparameter = false;
+        var title = htmlEncode($('#txtTacticTitle').val());
+        var planTacticId = $("#hdnPlanTacticId").val();
+        var txtTacticValue = $("#txtTacticTitle").val();
+        var isError = false;
+
+        if (title == '') {
+            $('#title').addClass("error");
+            isError = true;
+        }
+        else {
+            $('#title').removeClass("error");
+        }
+        if (isError) {
+            $("#errorMessage").css("display", "block");
+            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
+                  return false;
+              }
+              $.ajax({
+                  async: false,
+                  type: 'POST',
+                  url: '@Url.Content("~/Inspect/SaveTitle/")',
+                  data: { title: title, Id: planTacticId ,ActivePopup:"Tactic" },
+                  success: function (data) {
+                      if (!data.IsDuplicate) {
+                          var planTacticId = data.planTacticId;
+                          var planCampaignId = data.planCampaignId;
+                          var planProgramId = data.planProgramId;
+                          var requestedModule = $("#hdnRequestedModule").val();
+                          $('#lblTacticTitle').text(txtTacticValue);
+                          $("#successMessage").css("display", "block");
+                          $("#spanMessageSuccess").empty();
+                          $("#spanMessageSuccess").text(data.Msg);
+                          $("#errorMessage").css("display", "none");
+                          RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId);
+                          returnparameter = true
+                      }
+                      else {
+                          ShowError(data.errormsg);
+                          returnparameter = false;
+                      }
+                  }
+              });
+              return returnparameter;
+          }
+    //End
+
 
     function topTabsClick(tabText) {
         var returnpara = savealldata(activeTab);

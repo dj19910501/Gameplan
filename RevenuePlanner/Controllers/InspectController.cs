@@ -6454,6 +6454,219 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        [HttpPost]
+        public JsonResult SaveTitle(string ActivePopup, string title = "", string Id = "")
+        {
+            MRPEntities db = new MRPEntities();
+            try
+            {
+                if (ActivePopup == "Tactic")
+                {
+                    int Tacticid = Convert.ToInt32(Id);
+                    int pid = db.Plan_Campaign_Program_Tactic.Where(program => program.PlanTacticId == Tacticid).Select(program => program.PlanProgramId).FirstOrDefault();
+                    int cid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == pid).Select(program => program.PlanCampaignId).FirstOrDefault();
+                   
+                    var objpcpt = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == Tacticid).FirstOrDefault();
+
+                    //// Get Tactic duplicate record.
+                    var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
+                                  join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                  join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                  where pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(Tacticid) && pcpt.IsDeleted.Equals(false)
+                                  && pcp.PlanProgramId == objpcpt.PlanProgramId
+                                  select pcp).FirstOrDefault();
+
+                    //// if duplicate record exist then return duplication message.
+                    if (pcpvar != null)
+                    {
+                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                        return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                    }
+                    else
+                    {
+                        
+                        Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(Tacticid)).FirstOrDefault();
+                        pcpobj.Title = title;
+                        db.Entry(pcpobj).State = EntityState.Modified;
+                        db.SaveChanges();
+                        string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                        return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = Tacticid }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid, tacticStatus = pcpobj.Status });
+                    }
+                }
+                else if (ActivePopup == "LineItem")
+                {
+                    int PlanLineItemId = int.Parse(Id);
+                    int tid = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanLineItemId == PlanLineItemId).FirstOrDefault().PlanTacticId;
+                    int cid = 0;
+                    int pid = 0;
+                 
+
+                    var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == tid);
+                    if (objTactic != null)
+                    {
+                        cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
+                        pid = objTactic.PlanProgramId;
+                      
+                    }
+                    else
+                    {
+                        objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == PlanLineItemId);
+                     
+                        cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
+                        pid = objTactic.PlanProgramId;
+                    }
+
+                    //// Get Duplicate record to check duplication.
+                    var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
+                                   join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                                   join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                   join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                   where pcptl.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(PlanLineItemId) && pcptl.IsDeleted.Equals(false)
+                                                   && pcpt.PlanTacticId == tid
+                                   select pcpt).FirstOrDefault();
+
+                    //// if duplicate record exist then return Duplicate message.
+                    if (pcptvar != null)
+                    {
+                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                        return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                    }
+                    else
+                    {
+                        Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(PlanLineItemId));
+                          objLineitem.Title = title;
+                          objLineitem.ModifiedBy = Sessions.User.UserId;
+                          objLineitem.ModifiedDate = DateTime.Now;
+                          db.Entry(objLineitem).State = EntityState.Modified;
+                          db.SaveChanges();
+                          string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    
+                          return Json(new { IsDuplicate = false, msg = strMessage, planLineitemID = PlanLineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
+                         
+                    }
+                }
+                else if (ActivePopup == "Program")
+                {
+                    int PlanCampaignid = Convert.ToInt32(Id);
+                    var Planprogramid = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == PlanCampaignid).Select(program => program.PlanProgramId).FirstOrDefault();
+                    //// Get duplicate record.
+                    var pcpvar = (from pcp in db.Plan_Campaign_Program
+                                  join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                  where pcp.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcp.PlanProgramId.Equals(Planprogramid) && pcp.IsDeleted.Equals(false)
+                                  && pc.PlanCampaignId == PlanCampaignid
+                                  select pcp).FirstOrDefault();
+
+                    //Get program id
+                    //var Planprogramid = (from pcp in db.Plan_Campaign_Program
+                    //              join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                    //              where pcp.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && pcp.IsDeleted.Equals(false)
+                    //               && pcp.PlanCampaignId == PlanCampaignid
+                    //              select pcp.PlanProgramId).FirstOrDefault();
+                   
+                  
+
+
+
+                    //// if duplicate record exist then return with duplication message.
+                    if (pcpvar != null)
+                    {
+                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);  
+                        return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                    }
+                    else
+                    {
+                        #region "Update record to Plan_Campaign_Program table"
+                        Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(Planprogramid)).FirstOrDefault();
+                        pcpobj.Title = title;
+                        Guid oldOwnerId = pcpobj.CreatedBy;
+                        pcpobj.ModifiedBy = Sessions.User.UserId;
+                        pcpobj.ModifiedDate = DateTime.Now;
+                        db.Entry(pcpobj).State = EntityState.Modified;
+                        db.SaveChanges();
+                        string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                        return Json(new { IsSaved = true, Msg = strMessage, campaignID = PlanCampaignid }, JsonRequestBehavior.AllowGet);
+                        #endregion
+                    }
+                }
+                else if (ActivePopup == "Campaign")
+                {
+                    int Campaignid = Convert.ToInt32(Id);
+                    //// Get PlanId by PlanCampaignId.
+                   var planId = db.Plan_Campaign.Where(_plan => _plan.PlanCampaignId.Equals(Campaignid)).FirstOrDefault().PlanId;
+                    //// check for duplicate record.
+                    var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(Campaignid))).FirstOrDefault();
+
+                    //// if record exist then return with duplication message.
+                    if (pc != null)
+                    {
+                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                        return Json(new { IsDuplicate = true, msg = strDuplicateMessage });
+                    }
+                    else
+                    {
+                        #region "Update record into Plan_Campaign table"
+                        Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(Campaignid) && pcobjw.IsDeleted.Equals(false)).FirstOrDefault();
+                        pcobj.Title = title;
+                        Guid oldOwnerId = pcobj.CreatedBy;
+                        pcobj.ModifiedBy = Sessions.User.UserId;
+                        pcobj.ModifiedDate = DateTime.Now;
+                        db.Entry(pcobj).State = EntityState.Modified;
+                        db.SaveChanges();
+                        string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                        return Json(new { IsDuplicate = false, msg = strMessage });
+                        #endregion
+                    }
+                }
+                else if (ActivePopup == "ImprovementTactic")
+                {
+                    int Improvementid = Convert.ToInt32(Id);
+                    //// Check for duplicate exist or not.
+                    Plan_Improvement_Campaign_Program_Tactic pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
+                                                                       where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.ImprovementPlanTacticId.Equals(Improvementid) && pcpt.IsDeleted.Equals(false)
+                                                                       select pcpt).FirstOrDefault();
+
+                    //// if duplicate record exist then return duplication message.
+                    if (pcpvar != null)
+                    {
+                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                        return Json(new { IsDuplicate = true, redirect = Url.Action("Assortment"), errormsg = strDuplicateMessage });  // Modified by Viral Kadiya on 11/18/2014 to resolve Internal Review Points.
+                    }
+                    else
+                    {
+                        bool isManagerLevelUser = false;
+                        string status = string.Empty;
+                        Plan_Improvement_Campaign_Program_Tactic pcpobj = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.ImprovementPlanTacticId.Equals(Improvementid)).FirstOrDefault();
+
+                        //If improvement tacitc modified by immediate manager then no resubmission will take place, By dharmraj, Ticket #537
+                        BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                        var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                        var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).Select(u => u.UserId).ToList();
+                        if (lstSubordinates.Contains(pcpobj.CreatedBy))
+                        {
+                            isManagerLevelUser = true;
+                        }
+
+                        pcpobj.Title = title;
+                        status = pcpobj.Status;
+                        pcpobj.ModifiedBy = Sessions.User.UserId;
+                        pcpobj.ModifiedDate = DateTime.Now;
+                        db.Entry(pcpobj).State = EntityState.Modified;
+                        db.SaveChanges();
+                        string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                        return Json(new { IsDuplicate = false, redirect = Url.Action("Assortment"), msg = strMessage });
+
+                    }
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { id = 0 });
+        }
+
         /// <summary>
         /// Load program title and Id based on campaign Id 
         /// </summary>

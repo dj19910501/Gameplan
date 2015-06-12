@@ -5,6 +5,7 @@
     var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
     bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
     var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
+   
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
@@ -61,6 +62,7 @@
 @Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
 @Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
 @Html.Hidden("hdnInspectMode", InspectMode, new { id = "hdnInspectMode" })
+@Html.Hidden("hdnOwner", "", new { id = "hdnOwner" })
 
 <style type="text/css">
     #successMessageViewCampaign, #errorMessageEditCampaign {
@@ -98,7 +100,7 @@
 
                     <div style="float: right; position: relative;">
                         <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
-                        <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupnewprogram">
+                        <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupnewprogram">
                             <ul style="margin: 0;">
                                 <li class="new-prog" id="NewProgram">New Program</li>
                                 <li class="copy-camp" id="CloneCampaign">Copy Campaign</li>
@@ -257,10 +259,62 @@
                       }
                   }
 
+                  else if (activeTab = TabReview) {
+                     
+                      var ReturnParameter = SaveTitle();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                  }
+
 
               }
 
               return true;
+          }
+          //End
+
+          //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
+          function SaveTitle() {
+              var returnparameter = false;
+              var campaignTitle = htmlEncode($('#txtTitle').val());
+              var campaignId = $("#hdnPlanCampaignId").val()
+              var iserror = false;
+
+              if (campaignTitle == "") {
+                  $('#txtTitle').addClass("error");
+                  iserror = true;
+              }
+              else {
+                  $('#txtTitle').removeClass("error");
+              }
+              if (iserror) {
+                  ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                 return false;
+             }
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/SaveTitle/")',
+            data: { title: campaignTitle, Id: campaignId, ActivePopup: "Campaign" },
+            success: function (data) {
+                      if (!data.IsDuplicate) {
+                          var requestedModule = $("#hdnRequestedModule").val();
+                          $('#lblCampaignTitle').text(campaignTitle);
+                          $("#successMessage").css("display", "block");
+                          $("#spanMessageSuccess").empty();
+                          $("#spanMessageSuccess").text(data.msg);
+                          $("#errorMessage").css("display", "none");
+                          RefreshCurrentTab(requestedModule, 0, 0, 0);
+                          returnparameter = true
+                      }
+                      else {
+                          ShowError(data.msg);
+                          returnparameter = false;
+                      }
+                  }
+              });
+              return returnparameter;
           }
           //End
           if (planCampaignId != '0') {
@@ -374,6 +428,11 @@ else {
     }
 
     else if (activeTab == TabReview) {
+        var ReturnParameter = SaveTitle();
+        if (ReturnParameter == false) {
+            return false;
+        }
+        else {
 
         $("#hdnCampaignOpt").val("View");
         var campaignId = $('#hdnPlanCampaignId').val();
@@ -383,6 +442,7 @@ else {
         $('#txtTitle').css('display', 'none');
         $('#lblCampaignTitle').css('display', 'block');
         $("#txtTitle").prop('readonly', true);
+        }
 
     }
 

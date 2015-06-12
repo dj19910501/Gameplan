@@ -6,7 +6,7 @@
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     string OwnerName = ViewBag.OwnerName;
-
+    var OwnerID = ViewBag.OwnerId;
     //// Flag to indicate unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
@@ -211,7 +211,6 @@
 
     $(document).ready(
       function () {
-
           $('#ddlOwner').multiselect({
               multiple: false,
               noneSelectedText: "Please Select",
@@ -230,6 +229,7 @@
               );
           });
           /*End Added by Mitesh Vaishnav for PL ticket #1136*/
+          $('#hdnOwner').val($('#ddlOwner').val()); 
 
           //// Call function to redirect on service unavailibility.
           //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -578,6 +578,20 @@
                             planCampaignId = data.CampaignID;
                         }
                         $("#hdnPlanCampaignId").val(planCampaignId);
+                       
+                        if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
+                            var ChangedTab = "Setup";
+                            if (tabtext != "") {
+                                ChangedTab = tabtext;
+                            }
+                            var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                            if (ChangedTab == "Setup") {
+                                inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                                }
+                                loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
+                            RefreshCurrentTab(requestedModule, 0, 0, 0);
+
+                        }
                         if ($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()') {
                             var ChangedTab = "Setup";
                             if (tabtext != "") {

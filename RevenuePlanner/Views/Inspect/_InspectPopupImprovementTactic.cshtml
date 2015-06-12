@@ -195,6 +195,23 @@
                         return false;
                     }
                 }
+
+                else if (activeTab = TabReview) {
+                    var ReturnParameter = SaveTitle();
+                    if (ReturnParameter == false) {
+                        return false;
+                    }
+                }
+
+                else if (activeTab = TabActual) {
+                    var ReturnParameter = SaveTitle();
+                    if (ReturnParameter == false) {
+                        return false;
+                    }
+                }
+
+               
+
                 //else if (activeTab == TabBudget) {
                 //    var ReturnParameter = BudgetCampaignSave();
                 //    if (ReturnParameter == false) {
@@ -216,6 +233,53 @@
 
     });
 
+    //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
+    function SaveTitle() {
+        var returnparameter = false;
+        var txtTacticValue = $("#txtTitle").val();
+        var planTacticId = $("#hdnPlanTacticId").val();
+        var iserror = false;
+
+        if (txtTacticValue == "") {
+            $('#txtTitle').addClass("error");
+            iserror = true;
+        }
+        else {
+            $('#txtTitle').removeClass("error");
+
+        }
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                  return false;
+              }
+              $.ajax({
+                  async: false,
+                  type: 'POST',
+                  url: '@Url.Content("~/Inspect/SaveTitle/")',
+                  data: { title: txtTacticValue, Id: planTacticId, ActivePopup: "ImprovementTactic" },
+                  success: function (data) {
+                if (!data.IsDuplicate) {
+                    var requestedModule = $("#hdnRequestedModule").val();
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.msg);
+                    $('#txtTitle').css('display', 'none');
+                    $('#spnImprovementTacticTitle').css('display', 'block');
+                    $("#spnImprovementTacticTitle").removeAttr("style");
+                    $("#txtTitle").val(txtTacticValue);
+                    $('#spnImprovementTacticTitle').text(txtTacticValue);
+                    RefreshCurrentTab(requestedModule, 0, 0, 0);
+                    returnparameter = true
+                }
+                else {
+                    ShowError(data.errormsg);
+                    returnparameter = false;
+                }
+            }
+        });
+        return returnparameter;
+    }
+    //End
         function RemoveTabClass() {
             $('#InspectTab').children().each(function () {
                 if ($(this).hasClass('active pull-left')) {
@@ -358,8 +422,13 @@
                     loadReview(planTacticId, activeTab);
 
                 }
-            } else if (activeTab == TabReview) {
-                // $("#hdnTacticBudgetAllocationOpt").val("View");
+            }
+            else if (activeTab == TabReview) {
+                var ReturnParameter = SaveTitle();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+                else {
                 inspectMode = "View";
                 $('#btnEditImrovement').removeClass('Save-icon-white');
                 $('#btnEditImrovement').addClass('edit-icon-white');
@@ -367,6 +436,23 @@
                 $('#spnImprovementTacticTitle').css('display', 'block');
                 $("#spnImprovementTacticTitle").removeAttr("style");
                 loadReview(planTacticId, activeTab);
+                }
+
+            }
+            else if (activeTab == TabActual) {
+                var ReturnParameter = SaveTitle();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+                else {
+                    inspectMode = "View";
+                    $('#btnEditImrovement').removeClass('Save-icon-white');
+                    $('#btnEditImrovement').addClass('edit-icon-white');
+                    $('#txtTitle').css('display', 'none');
+                    $('#spnImprovementTacticTitle').css('display', 'block');
+                    $("#spnImprovementTacticTitle").removeAttr("style");
+                    loadReview(planTacticId, activeTab);
+                }
 
             }
             else {

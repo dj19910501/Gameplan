@@ -53,6 +53,7 @@
 @Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
 @Html.Hidden("hdnIsPlanEditable", IsPlanEditable)
 @Html.Hidden("hdnInspectMode", InspectMode, new { id = "hdnInspectMode" })
+@Html.Hidden("hdnOwner", "", new { id = "hdnOwner" })
 
 <style type="text/css">
     #successMessageViewProgram, #errorMessageEditProgram {
@@ -91,7 +92,7 @@
 
                     <div style="float: right; position: relative;">
                         <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
-                        <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;" id="popupnewprogram">
+                        <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupnewprogram">
                             <ul style="margin: 0;">
                                 <li class="new-prog" id="NewTactic">New Tactic</li>
                                 <li class="copy-camp" id="CloneProgram">Copy Program</li>
@@ -100,7 +101,7 @@
                     </div>
                     @if (IsPlanEditable)
                     {
-                       <span class="edit-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px;"></span>
+                       <span class="edit-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px;cursor:pointer;"></span>
                        //  @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
                     }
 
@@ -112,7 +113,7 @@
 
             @if (programMaster == null)
             {
-                <span class="Save-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px;"></span>
+                <span class="Save-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px; cursor:pointer;"></span>
                @* @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "Save-icon-white btn-blue btn-large",style="margin-right:10px;" })*@
             }
 
@@ -248,10 +249,73 @@
                       }
                   }
 
+                  else if (activeTab = TabReview) {
+                      var ReturnParameter = SaveTitle();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                  }
+
 
               }
 
               return true;
+          }
+          //End
+
+          //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
+          function SaveTitle() {
+              var returnparameter = false;
+              var title = htmlEncode($('#txtProgramTitle').val());
+              var planCampaignId = '@campaignId';
+              var iserror = false;
+
+              if (title == '') {
+                  $('#txtProgramTitle').addClass("error");
+                  iserror = true;
+              }
+              else {
+                  $('#txtProgramTitle').removeClass("error");
+
+              }
+              if (iserror) {
+                  ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                 return false;
+             }
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/SaveTitle/")',
+            data: { title: title, Id: planCampaignId, ActivePopup: "Program" },
+            success: function (data) {
+                if (!data.IsDuplicate) {
+                    var planProgramId = $("#hdnPlanProgramId").val();
+                    var campaignId = data.campaignID;
+                          var requestedModule = $("#hdnRequestedModule").val();
+                          $('#lblProgramTitle').text(title);
+                          $("#successMessage").css("display", "block");
+                          $("#spanMessageSuccess").empty();
+                          $("#spanMessageSuccess").text(data.Msg);
+                          $("#errorMessage").css("display", "none");
+                          RefreshCurrentTab(requestedModule, campaignId, planProgramId, 0);
+                          returnparameter = true
+                      }
+                      else {
+                           ShowError(data.errormsg);
+                        //  $("#errorMessage").val(data.errormsg)
+                          returnparameter = false;
+                      }
+                  }
+              });
+              return returnparameter;
+          }
+
+          function ShowError(value) {
+              $("#modal-container-186470").scrollTop(0);
+              $("#successMessageViewProgram").slideUp(50);
+              $("#errorMessageEditProgram").slideDown(400);
+              $("#spanMessageEditProgram").empty();
+              $("#spanMessageEditProgram").html(value);
           }
           //End
           if ($("#hdnPlanProgramId").val() != '0') {
@@ -351,6 +415,11 @@
                   }
 
                   else if (activeTab == TabReview) {
+                      var ReturnParameter = SaveTitle();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
 
                       $("#hdnProgramOpt").val("View");
                       loadReview(planProgramId, activeTab);
@@ -359,6 +428,7 @@
                       $('#txtProgramTitle').css('display', 'none');
                       $('#lblProgramTitle').css('display', 'block');
                       $("#txtProgramTitle").prop('readonly', true);
+                      }
 
                   }
 
