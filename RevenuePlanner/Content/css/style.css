@@ -13619,6 +13619,12 @@ div.clue-bottom-default .cluetip-arrows {
     .report-btn-group {
         padding: 1% 0 0 2%;
     }
+    .headefix {
+    float: left;
+    left: 163px;
+    position: relative;
+    width: 77%;
+}
     /*.r-graph {margin: 0 0 0 65px;}*/
     /* .top-cost{padding:10px 10px 10px 66px;}*/
     .revenue-graph-info .viewfullscreen {
@@ -13850,70 +13856,15 @@ div.clue-bottom-default .cluetip-arrows {
     float: left;
     width: 50px;
 }
-
-
-
-
-/*start media css*/
-@media screen and (max-width: 1366px) {
-    .report-btn-group {
-        padding: 1% 0 0 2%;
-    }
-    /*.r-graph {margin: 0 0 0 65px;}*/
-    .reveanue-table .top-revenue:nth-child(2n) {
-        padding: 10px 10px 10px 66px;
-    }
-    /*Update on 13-03-2015 by tirthak*/
-    .revenue-graph-info .viewfullscreen {
-        margin-right: 16px;
-        padding-top: 0;
+   .headefix {
+        margin: 0 auto;
+        position: relative;
+        width: 65%;
     }
 
-    .revenue-graph .revenue-graph-info {
-        width: 21%;
-    }
 
-    .report-heder-tab li {
-        padding: 1% 5% !important;
-        width: 14.96%;
-    }
-    /*Update on 13-03-2015 by tirthak*/
 
-    /*for ticket # 1221 added by tirthak*/
 
-    .top-revenue-table table thead tr th:nth-child(1) {
-        width: 40%;
-    }
-
-    /*.volume-1-titel {
-            margin-left: 0;
-        }*/
-
-    .volume-1-counter {
-        width: 48%;
-    }
-
-    /*.volume-1-smallstatus {
-            margin-left: 40px !important;
-        }*/
-
-    .volume-last-titel {
-        margin-right: 15px;
-        margin-left: 0;
-    }
-
-    .volume-last-counter {
-        width: 49% !important;
-    }
-
-    .volume-last-smallstatus {
-        margin-left: 39px !important;
-    }
-
-    .volumechart {
-        margin-left: 97px;
-    }
-}
 
 @media screen and (max-width: 1440px) {
     .report-btn-group {
@@ -14032,11 +13983,82 @@ div.clue-bottom-default .cluetip-arrows {
         margin-left: 99px;
     }
 }
+/*start media css*/
+@media screen and (max-width: 1366px) {
+    .report-btn-group {
+        padding: 1% 0 0 2%;
+    }
+    /*.r-graph {margin: 0 0 0 65px;}*/
+    .reveanue-table .top-revenue:nth-child(2n) {
+        padding: 10px 10px 10px 66px;
+    }
+    /*Update on 13-03-2015 by tirthak*/
+    .revenue-graph-info .viewfullscreen {
+        margin-right: 16px;
+        padding-top: 0;
+    }
+
+    .revenue-graph .revenue-graph-info {
+        width: 21%;
+    }
+
+    .report-heder-tab li {
+        padding: 1% 5% !important;
+        width: 14.96%;
+    }
+    /*Update on 13-03-2015 by tirthak*/
+
+    /*for ticket # 1221 added by tirthak*/
+
+    .top-revenue-table table thead tr th:nth-child(1) {
+        width: 40%;
+    }
+
+    /*.volume-1-titel {
+            margin-left: 0;
+        }*/
+
+    .volume-1-counter {
+        width: 48%;
+    }
+
+    /*.volume-1-smallstatus {
+            margin-left: 40px !important;
+        }*/
+
+    .volume-last-titel {
+        margin-right: 15px;
+        margin-left: 0;
+    }
+
+    .volume-last-counter {
+        width: 49% !important;
+    }
+
+    .volume-last-smallstatus {
+        margin-left: 39px !important;
+    }
+
+    .volumechart {
+        margin-left: 97px;
+    }
+    .headefix {
+    margin: 0 auto;
+    position: relative;
+    width: 77%;
+}
+}
 
 @media screen and (max-width: 1280px) {
     .report-btn-group {
         padding: 1% 0 0 2%;
     }
+    .headefix {
+    float: left;
+    left: 120px;
+    position: relative;
+    width: 83% !important;
+}
     /*.r-graph {margin: 0 0 0 65px;}*/
     .reveanue-table .top-revenue:nth-child(2n) {
         padding: 10px 10px 10px 58px;
@@ -14157,11 +14179,7 @@ div.clue-bottom-default .cluetip-arrows {
         border-bottom: 1px solid #ccc;
     }
 
-    .headefix {
-        margin: 0 auto;
-        position: relative;
-        width: 76%;
-    }
+ 
 
         .headefix span {
             float: left;
