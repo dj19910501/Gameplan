@@ -131,7 +131,7 @@
         if (_totalBudgetUnAllocated == null || _totalBudgetUnAllocated == 'undefined' || _totalBudgetUnAllocated == '')
             _totalBudgetUnAllocated = "0";
         else {
-            setBootstrapTooltip(_lblTotalBudgetUnAllocated, _totalBudgetUnAllocated, 4, true);
+            setBootstrapTooltip(_lblTotalBudgetUnAllocated, _totalBudgetUnAllocated, 9, true);
             _formtTotalBudgetUnAllocated = $(_lblTotalBudgetUnAllocated).text();
         }
         $(_lblTotalBudgetUnAllocated).html('Unallocated: '+_formtTotalBudgetUnAllocated);
@@ -207,7 +207,8 @@
             _tdBudgetId = _tdBudgetPrefix + i;
             var _redlabel = '';
             var _intactualCost = parseFloat(_actualCostList[i]);
-            var _intbudgetCost = parseFloat(_actualCostList[i]);
+            var _intbudgetCost = parseFloat(_budgetCostList[i]);
+            
             if (_intactualCost > _intbudgetCost)
                 _redlabel = ' redLabel';
             _html +='<tr>';

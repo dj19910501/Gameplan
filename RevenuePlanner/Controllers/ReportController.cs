@@ -5746,7 +5746,7 @@ namespace RevenuePlanner.Controllers
                             curntPeriod = PeriodPrefix + i;
 
                             _PlannedCostValue = _tacCostList.Where(plancost => plancost.Period.Equals(curntPeriod)).Select(plancost => plancost.Value).FirstOrDefault();
-                            TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Value));
+                            TacticActualCostList.ForEach(tactic => _ActualCostValue = tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Value));
                             //ActualCostList = _tacActualList.Where(actualcost => actualcost.Period.Equals(curntPeriod)).Select(actualcost => actualcost.Actualvalue).FirstOrDefault();
                             _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod)).Select(budgtcost => budgtcost.Value).FirstOrDefault();
 

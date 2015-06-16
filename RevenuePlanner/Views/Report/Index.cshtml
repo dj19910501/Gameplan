@@ -1434,7 +1434,7 @@ $('#liConversion').click(function () {
                 scatter: {
                     marker: {
                         symbol: 'line',
-                        lineWidth: 2,
+                        lineWidth: 3,
                         radius: 12,
                         lineColor: '#F0BE29'
                     }
@@ -1466,15 +1466,14 @@ $('#liConversion').click(function () {
                         '<td style="text-align: right"><b>{point.y}</b></td></tr>',
                     footerFormat: '</table>'
                 };
-                if (_catLength == 4) {
-                    datum.marker = {
-                        symbol: 'line',
-                        lineWidth: 2,
-                        radius: 26,
-                        lineColor: '#F0BE29'
-                    };
-                }
-                    
+                //if (_catLength == 4) {
+                //    datum.marker = {
+                //        symbol: 'line',
+                //        lineWidth: 3,
+                //        radius: 12,
+                //        lineColor: '#F0BE29'
+                //    };
+                //}  
             }
         }
 
