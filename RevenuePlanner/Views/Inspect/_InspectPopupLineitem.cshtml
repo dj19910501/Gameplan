@@ -169,7 +169,7 @@
 </form>
 
 <div>
-    <ul class="nav nav-tabs new-margin" id="InspectTab">
+    <ul class="nav nav-tabs new-margin no-position" id="InspectTab">
         <li class="active pull-left" id="liSetup">
             <a>Setup</a>
         </li>
@@ -314,6 +314,8 @@
              $("#successMessage").css("display", "none");
              $("#txtTitle").removeClass("error");
              $('#hdnLineitemOpt').val('Edit');
+             $('#txtTitle').css('display', 'block');
+             $('#lblLineitemTitle').css('display', 'none');
          }
        
 
@@ -545,6 +547,10 @@
             url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
         }
         if (tabValue == TabActual) {
+            if (LineitemOpt == "Edit") {
+                $('#txtTitle').css('display', 'block');
+                $('#lblLineitemTitle').css('display', 'none');
+            }
             url = '@Url.Content("~/Inspect/LoadActualsLineItem/")';
         }
 

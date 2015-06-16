@@ -14238,3 +14238,7 @@ div.clue-bottom-default .cluetip-arrows {
     font-size:16px !important;
     }
 /*End - Financial Section */
+
+.nav-tabs.no-position {
+    position:static;
+}
