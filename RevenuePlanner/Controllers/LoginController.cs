@@ -713,7 +713,9 @@ namespace RevenuePlanner.Controllers
                             notificationShare = Enums.Custom_Notification.ResetPasswordLink.ToString();
                             notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
 
-                            string PasswordResetLink = Url.Action("SecurityQuestion", "Login", new { id = PasswordResetRequestId }, Request.Url.Scheme);
+                            //Changes made by Komal rawal for #1328
+                            TempData["UserId"] = objUser.UserId;
+                            string PasswordResetLink = Url.Action("ResetPassword", "Login", new { id = PasswordResetRequestId }, Request.Url.Scheme);
                             emailBody = notification.EmailContent.Replace("[PasswordResetLinkToBeReplaced]", "<a href='" + PasswordResetLink + "'>" + PasswordResetLink + "</a>")
                                                                  .Replace("[ExpireDateToBeReplaced]", objPasswordResetRequest.CreatedDate.AddHours(int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"])).ToString());
 
@@ -902,11 +904,39 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public ActionResult ResetPassword()
+        public ActionResult ResetPassword(string id)
         {
             try
             {
-                //TempData["UserId"] = "F37A855C-9BF4-4A1F-AB7F-B21AF43EB2BF";
+                //Changes made by Komal rawal for #1328
+                Guid PasswordResetRequestId = Guid.Parse(id);
+
+                SecurityQuestionModel objSecurityQuestionModel = new SecurityQuestionModel();
+
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                var objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(PasswordResetRequestId);
+
+                if (objPasswordResetRequest == null)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login", new { returnUrl = "" });
+                }
+                else
+                {
+                    int interval = int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"]); // Link expiration duration in hour.
+
+                    if (objPasswordResetRequest.IsUsed)
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.PasswordResetLinkAlreadyUsed;
+                        return RedirectToAction("Index", "Login", new { returnUrl = "" });
+                    }
+                    else if ((DateTime.Now - objPasswordResetRequest.CreatedDate).Hours >= interval)
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.PasswordResetLinkExpired;
+                        return RedirectToAction("Index", "Login", new { returnUrl = "" });
+                    }
+                    else
+                    {
 
                 if (string.IsNullOrEmpty(Convert.ToString(TempData["UserId"])))
                 {
@@ -914,6 +944,9 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                            objPasswordResetRequest.PasswordResetRequestId = PasswordResetRequestId;
+                            objPasswordResetRequest.IsUsed = true;
+                            objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
                     Guid UserId = Guid.Parse(TempData["UserId"].ToString());
 
                     TempData["UserId"] = null;
@@ -923,6 +956,8 @@ namespace RevenuePlanner.Controllers
                     objResetPasswordModel.UserId = UserId;
 
                     return View(objResetPasswordModel);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
