@@ -846,7 +846,7 @@ namespace BDSService
                             //Start: Manoj (Measure) #364 Views exception handling - Measure Admin area 04-Jun-2015
                             if (user.IsDeleted != null)
                             {
-                                objUser_Application.IsDeleted = obj.IsDeleted;
+                                objUser_Application.IsDeleted = user.IsDeleted;
                             }
                             //End: Manoj (Measure) #364 Views exception handling - Measure Admin area 04-Jun-2015
                             //Start Manoj 08Jul2014 PL # 34 (Measure)
